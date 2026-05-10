@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Paiements",
+    "subtitle": "Suivi des paiements de loyer et revenus"
+  },
+  "actions": {
+    "schedulePayment": "Planifier un paiement",
+    "registerPayment": "Enregistrer un paiement",
+    "registerReceival": "Enregistrer un encaissement",
+    "markAsPaid": "Marquer comme payé"
+  },
+  "stats": {
+    "pendingPayments": "Paiements en attente",
+    "pendingCount": "{{count}} paiement",
+    "pendingCount_other": "{{count}} paiements",
+    "overduePayments": "Paiements en retard",
+    "overdueCount": "{{count}} paiement en retard",
+    "overdueCount_other": "{{count}} paiements en retard",
+    "overdueAction": "Action requise : Vérifier les paiements en retard",
+    "allCaughtUp": "Tout est à jour !",
+    "noOverdue": "Aucun paiement en retard. Continuez comme ça !",
+    "lastSixMonths": "6 derniers mois",
+    "tooltipReceived": "Reçu"
+  },
+  "filters": {
+    "title": "Filtres",
+    "property": "Bien",
+    "contract": "Contrat",
+    "status": "Statut",
+    "allStatuses": "Tous les statuts",
+    "allProperties": "Tous les biens",
+    "allContracts": "Tous les contrats"
+  },
+  "status": {
+    "pending": "En attente",
+    "partiallyPaid": "Partiel",
+    "paid": "Payé",
+    "overdue": "En retard",
+    "late": "Tardif",
+    "cancelled": "Annulé"
+  },
+  "table": {
+    "dueDate": "Date d'échéance",
+    "paymentNumber": "Paiement #",
+    "contract": "Contrat",
+    "amount": "Montant",
+    "status": "Statut",
+    "balance": "Solde : {{amount}}"
+  },
+  "empty": {
+    "title": "Aucun paiement trouvé",
+    "filtered": "Essayez d'ajuster vos filtres",
+    "noData": "Commencez par enregistrer votre premier paiement"
+  },
+  "card": {
+    "paymentId": "Paiement #{{id}}",
+    "contractId": "Contrat #{{id}}",
+    "property": "Bien",
+    "contact": "Contact",
+    "amount": "Montant",
+    "balance": "Solde : {{amount}}",
+    "dueDate": "Date d'échéance",
+    "paidOn": "Payé le"
+  },
+  "form": {
+    "amount": "Montant",
+    "dueDate": "Date d'échéance",
+    "paymentDate": "Date de paiement",
+    "contact": "Contact",
+    "notes": "Notes",
+    "notesPlaceholder": "Ajouter des notes supplémentaires sur ce paiement...",
+    "continueAdding": "Continuer à ajouter",
+    "today": "Aujourd'hui",
+    "clear": "Effacer",
+    "updatePayment": "Mettre à jour le paiement",
+    "saving": "Enregistrement...",
+    "contract": "Contrat",
+    "currency": "Devise",
+    "selectContractFirst": "Veuillez d'abord sélectionner un contrat",
+    "rentPeriodNotice": "Cette date tombe dans une période de loyer différente ({{amount}}/mois à partir de {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " au {{date}}",
+    "rentPeriodCurrentRent": "Le loyer actuel est de {{amount}}/mois.",
+    "rentPeriodWarning": "Cette date correspond à une période de loyer différente ({{currency}}{{amount}}/mois du {{from}}{{to}}).",
+    "rentPeriodTo": " au {{date}}",
+    "currentRentInfo": "Loyer actuel : {{currency}}{{amount}}/mois."
+  },
+  "validation": {
+    "amountRequired": "Le montant doit être supérieur à 0",
+    "dueDateRequired": "La date d'échéance est obligatoire",
+    "currencyRequired": "La devise est obligatoire",
+    "paymentDateRequired": "La date de paiement est obligatoire"
+  },
+  "bulkColumns": {
+    "date": "Date",
+    "amount": "Montant"
+  },
+  "create": {
+    "titleRegister": "Enregistrer un paiement",
+    "titleSchedule": "Planifier un paiement",
+    "addedCount": "{{count}} paiement {{action}} cette session",
+    "addedCount_other": "{{count}} paiements {{action}} cette session",
+    "actionRegistered": "enregistré",
+    "actionScheduled": "planifié",
+    "single": "Individuel",
+    "bulk": "En masse",
+    "contractInactiveWarning": "Le contrat lié n'est pas actif. Veuillez sélectionner un contrat actif."
+  },
+  "detail": {
+    "titlePrefix": "Paiement #{{id}}",
+    "subtitlePrefix": "Contrat #{{id}}",
+    "paymentDetails": "Détails du paiement",
+    "relatedInformation": "Informations associées",
+    "amount": "Montant",
+    "received": "Reçu",
+    "balance": "Solde",
+    "dueDate": "Date d'échéance",
+    "paymentDate": "Date de paiement",
+    "contract": "Contrat",
+    "contractId": "Contrat #{{id}}",
+    "property": "Bien",
+    "contact": "Contact",
+    "notes": "Notes",
+    "metadata": "Métadonnées",
+    "created": "Créé :",
+    "lastUpdated": "Dernière mise à jour :",
+    "editPayment": "Modifier le paiement"
+  },
+  "tabs": {
+    "details": "Détails",
+    "receivals": "Encaissements",
+    "documents": "Documents",
+    "history": "Historique"
+  },
+  "receivals": {
+    "title": "Encaissements ({{count}})",
+    "totalAmount": "Montant total",
+    "received": "Reçu",
+    "balance": "Solde",
+    "empty": "Aucun encaissement enregistré",
+    "searchPlaceholder": "Rechercher par montant, date ou notes...",
+    "date": "Date",
+    "amount": "Montant",
+    "notes": "Notes",
+    "actions": "Actions",
+    "showing": "Affichage de {{from}} à {{to}} sur {{total}}",
+    "remainingBalance": "Solde restant :",
+    "receivalDate": "Date d'encaissement",
+    "notesOptional": "Notes (Optionnel)",
+    "notesPlaceholder": "Ajouter des notes sur cet encaissement...",
+    "register": "Enregistrer"
+  },
+  "history": {
+    "title": "Historique des paiements",
+    "empty": "Aucun historique disponible",
+    "emptySubtitle": "Les modifications de ce paiement apparaîtront ici",
+    "clickToView": "Cliquez pour voir les modifications",
+    "clickToHide": "Cliquez pour masquer les modifications",
+    "changedFields": "Champs modifiés",
+    "old": "Ancien :",
+    "new": "Nouveau :",
+    "impersonated": "Usurpé",
+    "na": "N/D",
+    "none": "Aucun",
+    "receivalOn": "{{amount}} le {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Supprimer le paiement",
+    "message": "Êtes-vous sûr de vouloir supprimer ce paiement ? Cette action est irréversible.",
+    "messageWithRelated": "Êtes-vous sûr de vouloir supprimer ce paiement ? Toutes les données associées (encaissements, documents) seront également supprimées. Cette action est irréversible."
+  },
+  "markPaidDialog": {
+    "title": "Marquer le paiement comme payé",
+    "balanceMessage": "Ceci enregistrera un encaissement pour le solde restant de {{amount}} et marquera le paiement comme entièrement payé.",
+    "paymentDate": "Date de paiement",
+    "notesOptional": "Notes (Optionnel)",
+    "notesPlaceholder": "Ajouter des notes sur ce paiement..."
+  },
+  "receivalDialog": {
+    "title": "Enregistrer un encaissement",
+    "remainingBalance": "Solde restant :",
+    "amount": "Montant",
+    "receivalDate": "Date d'encaissement",
+    "notesOptional": "Notes (Optionnel)",
+    "notesPlaceholder": "Ajouter des notes sur cet encaissement...",
+    "register": "Enregistrer"
+  },
+  "tooltips": {
+    "viewPayment": "Voir le paiement",
+    "deletePayment": "Supprimer le paiement",
+    "editReceival": "Modifier l'encaissement",
+    "deleteReceival": "Supprimer l'encaissement",
+    "save": "Enregistrer",
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "errors": {
+    "loadFailed": "Échec du chargement des paiements",
+    "loadPaymentFailed": "Échec du chargement du paiement",
+    "loadHistoryFailed": "Échec du chargement de l'historique"
+  }
+}

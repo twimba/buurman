@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar } from 'lucide-react';
 
 export type PeriodPreset =
@@ -28,18 +29,18 @@ export interface PeriodFilterProps {
   defaultPreset?: PeriodPreset;
 }
 
-const PRESET_LABELS: Record<PeriodPreset, string> = {
-  month: 'This Month',
-  quarter: 'This Quarter',
-  ytd: 'YTD',
-  year: 'This Year',
-  '3': '3M',
-  '6': '6M',
-  '12': '12M',
-  '24': '24M',
-  '36': '36M',
-  all: 'All Time',
-  custom: 'Custom',
+const PRESET_LABEL_KEYS: Record<PeriodPreset, string> = {
+  month: 'period.thisMonth',
+  quarter: 'period.thisQuarter',
+  ytd: 'period.ytd',
+  year: 'period.thisYear',
+  '3': 'period.3m',
+  '6': 'period.6m',
+  '12': 'period.12m',
+  '24': 'period.24m',
+  '36': 'period.36m',
+  all: 'period.allTime',
+  custom: 'period.custom',
 };
 
 const DEFAULT_PRESETS: PeriodPreset[] = [
@@ -115,6 +116,7 @@ export function PeriodFilter({
   onChange,
   defaultPreset = 'month',
 }: PeriodFilterProps) {
+  const { t } = useTranslation('common');
   const [activePreset, setActivePreset] = useState<PeriodPreset>(defaultPreset);
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
@@ -171,7 +173,7 @@ export function PeriodFilter({
                 : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
             }`}
           >
-            {PRESET_LABELS[preset]}
+            {t(PRESET_LABEL_KEYS[preset])}
           </button>
         ))}
       </div>
@@ -183,7 +185,7 @@ export function PeriodFilter({
             onChange={(e) => handleCustomStartChange(e.target.value)}
             className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-surface-card text-text-primary"
           />
-          <span className="text-xs text-text-secondary">to</span>
+          <span className="text-xs text-text-secondary">{t('period.to')}</span>
           <input
             type="date"
             value={customEndDate}

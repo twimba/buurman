@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.ContactType;
 import com.buurman.domain.RelationshipType;
+import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,9 +94,12 @@ public class DemoContactRelationshipGenerator {
       int targetRelationships = random.nextInt(8, 13);
       int created = 0;
 
+      List<Object[]> records = new ArrayList<>();
+
       // 1. GUARANTOR_FOR: individual guarantees another individual (up to 3)
       for (int i = 0; i + 1 < individuals.size() && created < 3; i += 2) {
-        insertRelationship(
+        addRelationship(
+            records,
             teamId,
             individuals.get(i),
             individuals.get(i + 1),
@@ -110,7 +114,8 @@ public class DemoContactRelationshipGenerator {
       // 2. FAMILY_OF: pairs of individuals (up to 3)
       int familyStart = Math.min(6, individuals.size());
       for (int i = familyStart; i + 1 < individuals.size() && created < 6; i += 2) {
-        insertRelationship(
+        addRelationship(
+            records,
             teamId,
             individuals.get(i),
             individuals.get(i + 1),
@@ -125,7 +130,8 @@ public class DemoContactRelationshipGenerator {
       // 3. PARTNER_OF: one pair of individuals
       if (individuals.size() >= 2) {
         int partnerIdx = Math.min(10, individuals.size() - 2);
-        insertRelationship(
+        addRelationship(
+            records,
             teamId,
             individuals.get(partnerIdx),
             individuals.get(partnerIdx + 1),
@@ -139,7 +145,8 @@ public class DemoContactRelationshipGenerator {
 
       // 4. WORKS_FOR: individual works for a business contact (up to 3)
       for (int i = 0; i < businesses.size() && i < 3 && i < individuals.size(); i++) {
-        insertRelationship(
+        addRelationship(
+            records,
             teamId,
             individuals.get(individuals.size() - 1 - i),
             businesses.get(i),
@@ -155,7 +162,8 @@ public class DemoContactRelationshipGenerator {
       for (int i = 0; i < Math.min(2, businesses.size()) && created < targetRelationships; i++) {
         int indivIdx = Math.min(i + 5, individuals.size() - 1);
         if (indivIdx >= 0) {
-          insertRelationship(
+          addRelationship(
+              records,
               teamId,
               individuals.get(indivIdx),
               businesses.get(i),
@@ -170,7 +178,8 @@ public class DemoContactRelationshipGenerator {
 
       // 6. OTHER: one catch-all
       if (created < targetRelationships && individuals.size() >= 4) {
-        insertRelationship(
+        addRelationship(
+            records,
             teamId,
             individuals.get(2),
             individuals.get(3),
@@ -181,13 +190,48 @@ public class DemoContactRelationshipGenerator {
         totalRelationships++;
       }
 
+      if (!records.isEmpty()) {
+        var insert =
+            dsl.insertInto(CONTACT_RELATIONSHIPS)
+                .columns(
+                    CONTACT_RELATIONSHIPS.ID,
+                    CONTACT_RELATIONSHIPS.IDENTIFIER,
+                    CONTACT_RELATIONSHIPS.TEAM_ID,
+                    CONTACT_RELATIONSHIPS.SOURCE_CONTACT_ID,
+                    CONTACT_RELATIONSHIPS.TARGET_CONTACT_ID,
+                    CONTACT_RELATIONSHIPS.RELATIONSHIP_TYPE,
+                    CONTACT_RELATIONSHIPS.NOTES,
+                    CONTACT_RELATIONSHIPS.CREATED_AT,
+                    CONTACT_RELATIONSHIPS.UPDATED_AT,
+                    CONTACT_RELATIONSHIPS.CREATED_BY,
+                    CONTACT_RELATIONSHIPS.UPDATED_BY)
+                .values(
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (String) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : records) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
+      }
+
       log.info("Created contact relationships for team {}", teamKey);
     }
 
     log.info("Created {} contact relationships total", totalRelationships);
   }
 
-  private void insertRelationship(
+  private void addRelationship(
+      List<Object[]> records,
       UUID teamId,
       UUID sourceId,
       UUID targetId,
@@ -196,19 +240,20 @@ public class DemoContactRelationshipGenerator {
       LocalDateTime now,
       @Nullable UUID createdBy) {
     LocalDateTime createdAt = now.minusDays(random.nextInt(1, 365));
-    dsl.insertInto(CONTACT_RELATIONSHIPS)
-        .set(CONTACT_RELATIONSHIPS.ID, UUID.randomUUID())
-        .set(CONTACT_RELATIONSHIPS.IDENTIFIER, newContactRelationshipId())
-        .set(CONTACT_RELATIONSHIPS.TEAM_ID, teamId)
-        .set(CONTACT_RELATIONSHIPS.SOURCE_CONTACT_ID, sourceId)
-        .set(CONTACT_RELATIONSHIPS.TARGET_CONTACT_ID, targetId)
-        .set(CONTACT_RELATIONSHIPS.RELATIONSHIP_TYPE, type.name())
-        .set(CONTACT_RELATIONSHIPS.NOTES, notes)
-        .set(CONTACT_RELATIONSHIPS.CREATED_AT, createdAt)
-        .set(CONTACT_RELATIONSHIPS.UPDATED_AT, createdAt)
-        .set(CONTACT_RELATIONSHIPS.CREATED_BY, createdBy)
-        .set(CONTACT_RELATIONSHIPS.UPDATED_BY, createdBy)
-        .execute();
+    records.add(
+        new Object[] {
+          UUID.randomUUID(),
+          newContactRelationshipId(),
+          teamId,
+          sourceId,
+          targetId,
+          type.name(),
+          notes,
+          createdAt,
+          createdAt,
+          createdBy,
+          createdBy
+        });
   }
 
   private @Nullable String randomNullable(String[] options) {

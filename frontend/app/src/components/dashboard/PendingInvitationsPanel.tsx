@@ -1,22 +1,10 @@
 import { Users, CheckCircle, Loader2, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   usePendingInvitations,
   useAcceptInvitation,
 } from '@/hooks/useTeamHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
-
-const formatRole = (role: string) => {
-  switch (role) {
-    case 'TEAM_ADMIN':
-      return 'Admin';
-    case 'TEAM_EDITOR':
-      return 'Editor';
-    case 'TEAM_VIEWER':
-      return 'Viewer';
-    default:
-      return role;
-  }
-};
 
 const roleBadgeClass = (role: string) => {
   switch (role) {
@@ -30,6 +18,20 @@ const roleBadgeClass = (role: string) => {
 };
 
 export const PendingInvitationsPanel = () => {
+  const { t } = useTranslation('common');
+
+  const formatRole = (role: string) => {
+    switch (role) {
+      case 'TEAM_ADMIN':
+        return t('dashboard.pendingInvitations.roles.admin');
+      case 'TEAM_EDITOR':
+        return t('dashboard.pendingInvitations.roles.editor');
+      case 'TEAM_VIEWER':
+        return t('dashboard.pendingInvitations.roles.viewer');
+      default:
+        return role;
+    }
+  };
   const { data: invitations, isLoading } = usePendingInvitations();
   const acceptMutation = useAcceptInvitation();
   const { formatDate } = useFormatDate();
@@ -46,13 +48,14 @@ export const PendingInvitationsPanel = () => {
         </div>
         <div>
           <h2 className="text-lg font-semibold text-text-primary">
-            Pending Team Invitations
+            {t('dashboard.pendingInvitations.title')}
           </h2>
           <p className="text-sm text-text-secondary">
-            You have been invited to join{' '}
             {invitations.length === 1
-              ? 'a team'
-              : `${invitations.length} teams`}
+              ? t('dashboard.pendingInvitations.invitedToOne')
+              : t('dashboard.pendingInvitations.invitedToMany', {
+                  count: invitations.length,
+                })}
           </p>
         </div>
       </div>
@@ -79,8 +82,13 @@ export const PendingInvitationsPanel = () => {
                   </span>
                 </div>
                 <p className="text-xs text-text-secondary">
-                  Invited by {inv.inviterName} &middot; Expires{' '}
-                  {formatDate(inv.expiresAt)}
+                  {t('dashboard.pendingInvitations.invitedBy', {
+                    name: inv.inviterName,
+                  })}{' '}
+                  &middot;{' '}
+                  {t('dashboard.pendingInvitations.expires', {
+                    date: formatDate(inv.expiresAt),
+                  })}
                 </p>
               </div>
             </div>

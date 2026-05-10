@@ -7,6 +7,7 @@ import type {
   RentAdjustmentType,
   CreateContractExtensionRequest,
 } from '@/types/contractExtension';
+import { useTranslation } from 'react-i18next';
 
 interface CreateExtensionModalProps {
   currentRentAmount: number;
@@ -44,13 +45,6 @@ function computeAdjustedRent(
   }
 }
 
-const ADJUSTMENT_TYPE_LABELS: Record<RentAdjustmentType, string> = {
-  NONE: 'No adjustment',
-  FIXED_PERCENTAGE: 'Fixed percentage',
-  FIXED_AMOUNT: 'Fixed amount',
-  MANUAL: 'Manual',
-};
-
 export const CreateExtensionModal = ({
   currentRentAmount,
   currency,
@@ -62,6 +56,15 @@ export const CreateExtensionModal = ({
   onConfirm,
   isLoading = false,
 }: CreateExtensionModalProps) => {
+  const { t } = useTranslation('contracts');
+
+  const ADJUSTMENT_TYPE_LABELS: Record<RentAdjustmentType, string> = {
+    NONE: t('extensions.modal.adjustmentTypes.none'),
+    FIXED_PERCENTAGE: t('extensions.modal.adjustmentTypes.fixedPercentage'),
+    FIXED_AMOUNT: t('extensions.modal.adjustmentTypes.fixedAmount'),
+    MANUAL: t('extensions.modal.adjustmentTypes.manual'),
+  };
+
   const defaultNewEnd =
     currentEndDate && renewalTermMonths
       ? computeNewEndDate(currentEndDate, renewalTermMonths)
@@ -128,7 +131,7 @@ export const CreateExtensionModal = ({
   const submitForm = () => {
     // Validate new end date is after current end date
     if (newEndDate && currentEndDate && newEndDate <= currentEndDate) {
-      setDateError('New end date must be after the current end date');
+      setDateError(t('extensions.modal.dateError'));
       return;
     }
     setDateError('');
@@ -167,7 +170,7 @@ export const CreateExtensionModal = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border-default">
           <h2 className="text-lg font-semibold text-text-primary">
-            Create Contract Extension
+            {t('extensions.modal.title')}
           </h2>
           <button
             onClick={onClose}
@@ -184,7 +187,7 @@ export const CreateExtensionModal = ({
             {/* Current Rent */}
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Current Rent
+                {t('extensions.modal.currentRent')}
               </label>
               <p className="text-sm text-text-primary">
                 {currency} {currentRentAmount.toFixed(2)}
@@ -197,7 +200,7 @@ export const CreateExtensionModal = ({
                 htmlFor="newEndDate"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                New End Date
+                {t('extensions.modal.newEndDate')}
               </label>
               <input
                 id="newEndDate"
@@ -216,7 +219,7 @@ export const CreateExtensionModal = ({
               )}
               {currentEndDate && !dateError && (
                 <p className="mt-1 text-xs text-text-muted">
-                  Current end date: {currentEndDate}
+                  {t('extensions.modal.currentEndDate')} {currentEndDate}
                 </p>
               )}
             </div>
@@ -227,7 +230,7 @@ export const CreateExtensionModal = ({
                 htmlFor="adjustmentType"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                Rent Adjustment Type
+                {t('extensions.modal.rentAdjustmentType')}
               </label>
               <select
                 id="adjustmentType"
@@ -258,9 +261,9 @@ export const CreateExtensionModal = ({
                   htmlFor="adjustmentValue"
                   className="block text-sm font-medium text-text-secondary mb-1"
                 >
-                  Adjustment Value
+                  {t('extensions.modal.adjustmentValue')}
                   {adjustmentType === 'FIXED_PERCENTAGE'
-                    ? ' (%)'
+                    ? ` (${t('extensions.modal.percentageUnit')})`
                     : ` (${currency})`}
                 </label>
                 <input
@@ -286,7 +289,7 @@ export const CreateExtensionModal = ({
                 htmlFor="newRentAmount"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                New Rent Amount
+                {t('extensions.modal.newRentAmount')}
               </label>
               <div className="relative">
                 <MoneyInput
@@ -324,7 +327,7 @@ export const CreateExtensionModal = ({
               </div>
               {adjustmentType !== 'NONE' && adjustmentType !== 'MANUAL' && (
                 <p className="mt-1 text-xs text-text-muted">
-                  Computed from current rent with{' '}
+                  {t('extensions.modal.computedFromRent')}{' '}
                   {adjustmentType.toLowerCase().replace('_', ' ')}
                 </p>
               )}
@@ -333,12 +336,12 @@ export const CreateExtensionModal = ({
             {/* Notes */}
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Notes (Optional)
+                {t('extensions.modal.notesOptional')}
               </label>
               <RichTextEditor
                 value={notes}
                 onChange={setNotes}
-                placeholder="Additional notes about this extension..."
+                placeholder={t('extensions.modal.notesPlaceholder')}
               />
             </div>
           </div>
@@ -351,14 +354,16 @@ export const CreateExtensionModal = ({
               className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
               disabled={isLoading}
             >
-              Cancel
+              {t('common:buttons.cancel')}
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLoading ? 'Creating...' : 'Create Extension'}
+              {isLoading
+                ? t('common:buttons.loading')
+                : t('extensions.createExtension')}
             </button>
           </div>
         </form>

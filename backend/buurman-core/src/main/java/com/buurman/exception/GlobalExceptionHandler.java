@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -36,10 +38,16 @@ public class GlobalExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+  private final MessageSource messageSource;
+
+  public GlobalExceptionHandler(MessageSource messageSource) {
+    this.messageSource = messageSource;
+  }
+
   @ExceptionHandler(NotFoundException.class)
   public ProblemDetail handleNotFound(NotFoundException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(NOT_FOUND, ex.getMessage());
-    problem.setTitle("Not Found");
+    problem.setTitle(msg("error.not-found.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -47,7 +55,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(ForbiddenException.class)
   public ProblemDetail handleForbidden(ForbiddenException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(FORBIDDEN, ex.getMessage());
-    problem.setTitle("Forbidden");
+    problem.setTitle(msg("error.forbidden.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -56,7 +64,7 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleImpersonationRestriction(
       ImpersonationRestrictionException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(FORBIDDEN, ex.getMessage());
-    problem.setTitle("Impersonation Restriction");
+    problem.setTitle(msg("error.impersonation.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -65,8 +73,8 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleReauthRequired(
       ReauthenticationRequiredException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(FORBIDDEN, ex.getMessage());
-    problem.setTitle("Re-authentication Required");
-    problem.setProperty("error", "REAUTH_REQUIRED");
+    problem.setTitle(msg("error.reauth.title"));
+    problem.setProperty("error", msg("error.reauth.detail"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -74,7 +82,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(BusinessRuleException.class)
   public ProblemDetail handleBusinessRule(BusinessRuleException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(CONFLICT, ex.getMessage());
-    problem.setTitle("Conflict");
+    problem.setTitle(msg("error.conflict.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -82,7 +90,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(BadRequestException.class)
   public ProblemDetail handleBadRequest(BadRequestException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(BAD_REQUEST, ex.getMessage());
-    problem.setTitle("Bad Request");
+    problem.setTitle(msg("error.bad-request.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -92,7 +100,7 @@ public class GlobalExceptionHandler {
       ExternalServiceException ex, HttpServletRequest request) {
     log.error("External service error: {}", ex.getMessage(), ex);
     ProblemDetail problem = forStatusAndDetail(BAD_GATEWAY, ex.getMessage());
-    problem.setTitle("Bad Gateway");
+    problem.setTitle(msg("error.bad-gateway.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -102,8 +110,8 @@ public class GlobalExceptionHandler {
       DocumentRenderException ex, HttpServletRequest request) {
     log.error("Document rendering failed: {}", ex.getMessage(), ex);
     ProblemDetail problem =
-        forStatusAndDetail(INTERNAL_SERVER_ERROR, "Failed to generate document");
-    problem.setTitle("Document Generation Error");
+        forStatusAndDetail(INTERNAL_SERVER_ERROR, msg("error.document-render.detail"));
+    problem.setTitle(msg("error.document-render.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -112,7 +120,7 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleValidation(
       MethodArgumentNotValidException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatus(BAD_REQUEST);
-    problem.setTitle("Validation Failed");
+    problem.setTitle(msg("error.validation.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
 
     Map<String, String> fieldErrors = new LinkedHashMap<>();
@@ -120,7 +128,7 @@ public class GlobalExceptionHandler {
       fieldErrors.put(error.getField(), error.getDefaultMessage());
     }
     problem.setProperty("fieldErrors", fieldErrors);
-    problem.setDetail("Validation failed for " + fieldErrors.size() + " field(s)");
+    problem.setDetail(msg("error.validation.detail", fieldErrors.size()));
     return problem;
   }
 
@@ -128,7 +136,7 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleConstraintViolation(
       ConstraintViolationException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatus(BAD_REQUEST);
-    problem.setTitle("Validation Failed");
+    problem.setTitle(msg("error.validation.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
 
     Map<String, String> fieldErrors =
@@ -140,15 +148,15 @@ public class GlobalExceptionHandler {
                     (a, b) -> a,
                     LinkedHashMap::new));
     problem.setProperty("fieldErrors", fieldErrors);
-    problem.setDetail("Validation failed for " + fieldErrors.size() + " field(s)");
+    problem.setDetail(msg("error.validation.detail", fieldErrors.size()));
     return problem;
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ProblemDetail handleMessageNotReadable(
       HttpMessageNotReadableException ex, HttpServletRequest request) {
-    ProblemDetail problem = forStatusAndDetail(BAD_REQUEST, "Malformed request body");
-    problem.setTitle("Bad Request");
+    ProblemDetail problem = forStatusAndDetail(BAD_REQUEST, msg("error.malformed-request.detail"));
+    problem.setTitle(msg("error.bad-request.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -157,7 +165,7 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleNoResourceFound(
       NoResourceFoundException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(NOT_FOUND, ex.getMessage());
-    problem.setTitle("Not Found");
+    problem.setTitle(msg("error.not-found.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -166,15 +174,15 @@ public class GlobalExceptionHandler {
   public ProblemDetail handleIllegalArgument(
       IllegalArgumentException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(BAD_REQUEST, ex.getMessage());
-    problem.setTitle("Bad Request");
+    problem.setTitle(msg("error.bad-request.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
 
   @ExceptionHandler(AccessDeniedException.class)
   public ProblemDetail handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
-    ProblemDetail problem = forStatusAndDetail(FORBIDDEN, "Access denied");
-    problem.setTitle("Forbidden");
+    ProblemDetail problem = forStatusAndDetail(FORBIDDEN, msg("error.access-denied.detail"));
+    problem.setTitle(msg("error.forbidden.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -185,7 +193,7 @@ public class GlobalExceptionHandler {
     log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
     String message = extractDataIntegrityMessage(ex);
     ProblemDetail problem = forStatusAndDetail(CONFLICT, message);
-    problem.setTitle("Conflict");
+    problem.setTitle(msg("error.conflict.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -196,7 +204,7 @@ public class GlobalExceptionHandler {
     log.warn("JOOQ integrity constraint violation: {}", ex.getMessage());
     String message = extractJooqConstraintMessage(ex);
     ProblemDetail problem = forStatusAndDetail(CONFLICT, message);
-    problem.setTitle("Conflict");
+    problem.setTitle(msg("error.conflict.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
@@ -204,54 +212,61 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ProblemDetail handleGenericException(Exception ex, HttpServletRequest request) {
     log.error("Unhandled exception", ex);
-    ProblemDetail problem =
-        forStatusAndDetail(INTERNAL_SERVER_ERROR, "An unexpected error occurred");
-    problem.setTitle("Internal Server Error");
+    ProblemDetail problem = forStatusAndDetail(INTERNAL_SERVER_ERROR, msg("error.internal.detail"));
+    problem.setTitle(msg("error.internal.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
   }
 
   private String extractJooqConstraintMessage(
       org.jooq.exception.IntegrityConstraintViolationException ex) {
-    String msg = ex.getMessage();
-    if (msg == null) {
-      return "A data conflict occurred";
+    String rawMsg = ex.getMessage();
+    if (rawMsg == null) {
+      return msg("error.data-conflict.default");
     }
-    String lower = msg.toLowerCase(Locale.ROOT);
+    String lower = rawMsg.toLowerCase(Locale.ROOT);
     if (lower.contains("chk_cpi_dates")) {
-      return "The effective date range conflicts with an existing payment instruction";
+      return msg("error.constraint.payment-instruction-dates");
     }
     if (lower.contains("chk_mortgage_dates_valid")) {
-      return "Mortgage end date must be after the start date";
+      return msg("error.constraint.mortgage-dates");
     }
     if (lower.contains("chk_cpi_custom_method") || lower.contains("chk_pi_payment_method")) {
-      return "The selected payment method is not supported";
+      return msg("error.constraint.payment-method");
     }
     if (lower.contains("duplicate key") || lower.contains("unique constraint")) {
-      return "A record with this information already exists";
+      return msg("error.data-conflict.duplicate");
     }
-    return "A data conflict occurred";
+    return msg("error.data-conflict.default");
   }
 
   private String extractDataIntegrityMessage(DataIntegrityViolationException ex) {
     String cause = ex.getMostSpecificCause().getMessage();
     if (cause == null) {
-      return "A data conflict occurred";
+      return msg("error.data-conflict.default");
     }
 
     String lowerCause = cause.toLowerCase(Locale.ROOT);
     if (lowerCause.contains("uq_contract_parties_contract_contact")) {
-      return "This contact is already a party to this contract";
+      return msg("error.data-conflict.contract-party");
     }
     if (lowerCause.contains("uq_contacts_team_email")) {
-      return "A contact with this email address already exists";
+      return msg("error.data-conflict.contact-email");
     }
     if (lowerCause.contains("duplicate key") || lowerCause.contains("unique constraint")) {
-      return "A record with this information already exists";
+      return msg("error.data-conflict.duplicate");
     }
     if (lowerCause.contains("foreign key") || lowerCause.contains("is not present in table")) {
-      return "This action cannot be completed because it references data that does not exist";
+      return msg("error.data-conflict.foreign-key");
     }
-    return "A data conflict occurred";
+    return msg("error.data-conflict.default");
+  }
+
+  private String msg(String code) {
+    return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
+  }
+
+  private String msg(String code, Object... args) {
+    return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
   }
 }

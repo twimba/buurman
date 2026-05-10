@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Download,
   BarChart3,
@@ -39,6 +40,7 @@ const PERIOD_OPTIONS: PeriodOption[] = [
 ];
 
 export const PortfolioDashboard = () => {
+  const { t } = useTranslation('common');
   const [months, setMonths] = useState<number | undefined>(12);
   const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
     null
@@ -126,9 +128,7 @@ export const PortfolioDashboard = () => {
     return (
       <Card padding="lg" className="text-center">
         <Home className="h-10 w-10 text-text-secondary mx-auto mb-3" />
-        <p className="text-text-secondary">
-          Add properties to see your portfolio dashboard.
-        </p>
+        <p className="text-text-secondary">{t('dashboard.addProperties')}</p>
       </Card>
     );
   }
@@ -137,12 +137,11 @@ export const PortfolioDashboard = () => {
     return (
       <Card padding="lg" className="text-center">
         <BarChart3 className="h-10 w-10 text-text-secondary mx-auto mb-3" />
-        <p className="text-text-secondary">
-          Add financial data to your properties to see portfolio analytics.
-        </p>
+        <p className="text-text-secondary">{t('dashboard.addFinancialData')}</p>
         <p className="text-xs text-text-muted mt-1">
-          {dashboard.totalProperties} properties found, but none have financial
-          data yet.
+          {t('dashboard.propertiesNoData', {
+            count: dashboard.totalProperties,
+          })}
         </p>
       </Card>
     );
@@ -155,11 +154,13 @@ export const PortfolioDashboard = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-lg font-semibold text-text-primary">
-              Portfolio Overview
+              {t('dashboard.portfolioOverview')}
             </h2>
             <span className="text-xs text-text-secondary bg-surface-inset px-2 py-1 rounded-md">
-              {dashboard.propertiesWithFinancialData} of{' '}
-              {dashboard.totalProperties} properties have financial data
+              {t('dashboard.propertiesWithData', {
+                withData: dashboard.propertiesWithFinancialData,
+                total: dashboard.totalProperties,
+              })}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -194,7 +195,7 @@ export const PortfolioDashboard = () => {
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border-default text-text-secondary hover:bg-surface-inset transition-colors disabled:opacity-50"
               >
                 <Download className="h-3.5 w-3.5" />
-                {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
+                {exporting === 'pdf' ? t('dashboard.exporting') : 'PDF'}
               </button>
             </div>
           </div>
@@ -210,7 +211,7 @@ export const PortfolioDashboard = () => {
       {/* Cash Flow + Allocation */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
-          title="Portfolio Cash Flow"
+          title={t('dashboard.charts.cashFlow')}
           icon={<BarChart3 className="h-5 w-5" />}
         >
           <PortfolioCashFlowChart
@@ -221,7 +222,7 @@ export const PortfolioDashboard = () => {
         </ChartCard>
 
         <ChartCard
-          title="Portfolio Allocation"
+          title={t('dashboard.charts.allocation')}
           icon={<PieChart className="h-5 w-5" />}
         >
           <PortfolioAllocationChart
@@ -234,7 +235,7 @@ export const PortfolioDashboard = () => {
       {/* Comparison + Equity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
-          title="Property Comparison"
+          title={t('dashboard.charts.propertyComparison')}
           icon={<TrendingUp className="h-5 w-5" />}
         >
           <PropertyComparisonChart
@@ -245,7 +246,7 @@ export const PortfolioDashboard = () => {
         </ChartCard>
 
         <ChartCard
-          title="Equity Composition"
+          title={t('dashboard.charts.equityComposition')}
           icon={<Activity className="h-5 w-5" />}
         >
           <EquityCompositionChart
@@ -258,7 +259,7 @@ export const PortfolioDashboard = () => {
 
       {/* Performance Table */}
       <ChartCard
-        title="Property Performance"
+        title={t('dashboard.charts.performance')}
         icon={<Table2 className="h-5 w-5" />}
       >
         <PropertyPerformanceTable
@@ -269,7 +270,7 @@ export const PortfolioDashboard = () => {
 
       {/* Occupancy */}
       <ChartCard
-        title="Portfolio Occupancy"
+        title={t('dashboard.charts.occupancy')}
         icon={<Home className="h-5 w-5" />}
       >
         <PortfolioOccupancyChart
@@ -280,7 +281,7 @@ export const PortfolioDashboard = () => {
 
       {/* Disclaimer */}
       <p className="text-xs text-text-muted text-center">
-        Metrics are for informational purposes only.
+        {t('dashboard.disclaimer')}
       </p>
     </div>
   );

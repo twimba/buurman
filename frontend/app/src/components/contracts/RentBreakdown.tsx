@@ -1,11 +1,8 @@
 import { useMemo } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import {
-  RentComponentFormItem,
-  RentComponentType,
-  RENT_COMPONENT_LABELS,
-} from '@/types/contract';
+import { RentComponentFormItem, RentComponentType } from '@/types/contract';
+import { useTranslation } from 'react-i18next';
 
 interface RentBreakdownProps {
   value: number | '';
@@ -36,6 +33,7 @@ export const RentBreakdown = ({
   breakdownMode,
   onBreakdownModeChange,
 }: RentBreakdownProps) => {
+  const { t } = useTranslation('contracts');
   const total = useMemo(
     () =>
       components.reduce(
@@ -125,7 +123,8 @@ export const RentBreakdown = ({
     return (
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-1">
-          Rent Amount <span className="text-error-text">*</span>
+          {t('rentBreakdown.rentAmount')}{' '}
+          <span className="text-error-text">*</span>
         </label>
         <MoneyInput
           value={typeof value === 'number' ? value : undefined}
@@ -140,7 +139,7 @@ export const RentBreakdown = ({
           className="mt-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
           disabled={disabled}
         >
-          Break down rent into components
+          {t('rentBreakdown.breakDown')}
         </button>
       </div>
     );
@@ -150,7 +149,7 @@ export const RentBreakdown = ({
     <div className="col-span-1 lg:col-span-2">
       <div className="flex items-center justify-between mb-2">
         <label className="block text-sm font-medium text-text-secondary">
-          Rent Breakdown <span className="text-error-text">*</span>
+          {t('rentBreakdown.title')} <span className="text-error-text">*</span>
         </label>
         <button
           type="button"
@@ -158,7 +157,7 @@ export const RentBreakdown = ({
           className="text-xs text-primary-500 hover:text-primary-600 transition-colors"
           disabled={disabled}
         >
-          Use single amount
+          {t('rentBreakdown.useSingleAmount')}
         </button>
       </div>
 
@@ -175,7 +174,7 @@ export const RentBreakdown = ({
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-text-secondary min-w-[140px]">
-                    {RENT_COMPONENT_LABELS[comp.componentType]}
+                    {t(`enums.rentComponents.${comp.componentType}`)}
                   </span>
                   <div className="flex-1">
                     <MoneyInput
@@ -197,7 +196,7 @@ export const RentBreakdown = ({
                       onClick={() => handleRemoveComponent(index)}
                       className="p-1.5 text-text-muted hover:text-error-text transition-colors"
                       disabled={disabled}
-                      title="Remove component"
+                      title={t('adjustRent.removeComponent')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -212,7 +211,7 @@ export const RentBreakdown = ({
                       onChange={(e) =>
                         handleComponentDescriptionChange(index, e.target.value)
                       }
-                      placeholder="Custom label"
+                      placeholder={t('adjustRent.customLabel')}
                       className="w-full border border-border-strong rounded px-3 py-1.5 text-sm bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                       disabled={disabled}
                     />
@@ -226,7 +225,7 @@ export const RentBreakdown = ({
         {/* Total row */}
         <div className="flex items-center gap-2 pt-2 border-t border-border-default">
           <span className="text-sm font-semibold text-text-primary min-w-[140px]">
-            Total
+            {t('rentBreakdown.total')}
           </span>
           <span className="flex-1 text-sm font-semibold text-text-primary">
             {formattedTotal}
@@ -258,6 +257,7 @@ function AddComponentButton({
   onAdd: (type: RentComponentType) => void;
   disabled: boolean;
 }) {
+  const { t } = useTranslation('contracts');
   return (
     <div className="relative inline-block">
       <select
@@ -272,11 +272,11 @@ function AddComponentButton({
         value=""
       >
         <option value="" disabled>
-          + Add component
+          {t('adjustRent.addComponent')}
         </option>
         {availableTypes.map((type) => (
           <option key={type} value={type}>
-            {RENT_COMPONENT_LABELS[type]}
+            {t(`enums.rentComponents.${type}`)}
           </option>
         ))}
       </select>

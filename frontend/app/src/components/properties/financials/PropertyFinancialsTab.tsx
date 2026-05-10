@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   Building2,
@@ -41,20 +42,6 @@ import {
   InsuranceStatus,
   TaxStatus,
   FeeStatus,
-  formatAcquisitionType,
-  formatDepreciationMethod,
-  formatValuationType,
-  formatFinancingType,
-  formatRateType,
-  formatFinancingStatus,
-  formatInsuranceType,
-  formatInsuranceStatus,
-  formatTaxType,
-  formatTaxStatus,
-  formatFeeType,
-  formatFeeStatus,
-  formatPaymentFrequency,
-  formatPaymentStatus,
   PaymentStatus,
 } from '@/types/propertyFinancials';
 import {
@@ -119,10 +106,11 @@ type DeleteState = {
 
 const formatMoney = (
   amount: number | undefined | null,
-  currency?: string | null
+  currency?: string | null,
+  fallback = ''
 ): string => {
   if (amount == null) {
-    return 'Not set';
+    return fallback;
   }
   try {
     return new Intl.NumberFormat(undefined, {
@@ -136,9 +124,12 @@ const formatMoney = (
   }
 };
 
-const formatPercent = (rate: number | undefined | null): string => {
+const formatPercent = (
+  rate: number | undefined | null,
+  fallback = ''
+): string => {
   if (rate == null) {
-    return 'N/A';
+    return fallback;
   }
   return `${rate.toFixed(2)}%`;
 };
@@ -367,49 +358,51 @@ const KeyMetricsSection = ({
 }: {
   summary: PropertyFinancialSummaryResponse;
 }) => {
+  const { t } = useTranslation('properties');
   const currency = summary.currency;
+  const notSet = t('financials.notSet');
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <MetricCard
         icon={TrendingUp}
-        label="Net Worth"
+        label={t('financials.metrics.netWorth')}
         value={
           summary.netWorth != null
             ? formatMoney(summary.netWorth, currency)
-            : 'Not set'
+            : notSet
         }
         muted={summary.netWorth == null}
       />
       <MetricCard
         icon={Receipt}
-        label="Total Annual Costs"
+        label={t('financials.metrics.totalAnnualCosts')}
         value={
           summary.totalAnnualCosts != null
             ? formatMoney(summary.totalAnnualCosts, currency)
-            : 'Not set'
+            : notSet
         }
         muted={summary.totalAnnualCosts == null}
       />
       <MetricCard
         icon={Landmark}
-        label="Total Financing Balance"
+        label={t('financials.metrics.totalFinancingBalance')}
         value={
           summary.totalFinancingBalance != null
             ? formatMoney(summary.totalFinancingBalance, currency)
-            : 'Not set'
+            : notSet
         }
         muted={summary.totalFinancingBalance == null}
       />
       <MetricCard
         icon={Building2}
-        label="Latest Valuation"
+        label={t('financials.metrics.latestValuation')}
         value={
           summary.latestValuation
             ? formatMoney(
                 summary.latestValuation.amount,
                 summary.latestValuation.currency
               )
-            : 'Not set'
+            : notSet
         }
         muted={!summary.latestValuation}
       />
@@ -429,98 +422,110 @@ const AcquisitionSection = ({
   acquisition?: PropertyAcquisitionResponse;
   formatDate: (d: string | Date) => string;
   onEdit: () => void;
-}) => (
-  <div>
-    <SectionHeader
-      icon={PiggyBank}
-      title="Acquisition"
-      action={
-        <AddButton label={acquisition ? 'Edit' : 'Add'} onClick={onEdit} />
-      }
-    />
-    {acquisition ? (
-      <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-          <div>
-            <DetailRow
-              label="Acquisition Type"
-              value={formatAcquisitionType(acquisition.acquisitionType)}
-            />
-            {acquisition.acquisitionDate && (
+}) => {
+  const { t } = useTranslation('properties');
+  return (
+    <div>
+      <SectionHeader
+        icon={PiggyBank}
+        title={t('financials.sections.acquisition')}
+        action={
+          <AddButton
+            label={
+              acquisition ? t('common:buttons.edit') : t('common:buttons.add')
+            }
+            onClick={onEdit}
+          />
+        }
+      />
+      {acquisition ? (
+        <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            <div>
               <DetailRow
-                label="Date"
-                value={formatDate(acquisition.acquisitionDate)}
-              />
-            )}
-            {acquisition.purchasePrice != null && (
-              <DetailRow
-                label="Purchase Price"
-                value={formatMoney(
-                  acquisition.purchasePrice,
-                  acquisition.purchasePriceCurrency
+                label={t('financials.labels.acquisitionType')}
+                value={t(
+                  `financials.acquisitionTypes.${acquisition.acquisitionType}`
                 )}
               />
-            )}
-            {acquisition.closingCosts != null && (
-              <DetailRow
-                label="Closing Costs"
-                value={formatMoney(
-                  acquisition.closingCosts,
-                  acquisition.closingCostsCurrency
-                )}
-              />
-            )}
+              {acquisition.acquisitionDate && (
+                <DetailRow
+                  label={t('financials.labels.date')}
+                  value={formatDate(acquisition.acquisitionDate)}
+                />
+              )}
+              {acquisition.purchasePrice != null && (
+                <DetailRow
+                  label={t('financials.labels.purchasePrice')}
+                  value={formatMoney(
+                    acquisition.purchasePrice,
+                    acquisition.purchasePriceCurrency
+                  )}
+                />
+              )}
+              {acquisition.closingCosts != null && (
+                <DetailRow
+                  label={t('financials.labels.closingCosts')}
+                  value={formatMoney(
+                    acquisition.closingCosts,
+                    acquisition.closingCostsCurrency
+                  )}
+                />
+              )}
+            </div>
+            <div>
+              {acquisition.renovationCosts != null && (
+                <DetailRow
+                  label={t('financials.labels.renovationCosts')}
+                  value={formatMoney(
+                    acquisition.renovationCosts,
+                    acquisition.renovationCostsCurrency
+                  )}
+                />
+              )}
+              {acquisition.landValue != null && (
+                <DetailRow
+                  label={t('financials.labels.landValue')}
+                  value={formatMoney(
+                    acquisition.landValue,
+                    acquisition.landValueCurrency
+                  )}
+                />
+              )}
+              {acquisition.depreciationMethod && (
+                <DetailRow
+                  label={t('financials.labels.depreciationMethod')}
+                  value={t(
+                    `financials.depreciationMethods.${acquisition.depreciationMethod}`
+                  )}
+                />
+              )}
+              {acquisition.depreciationYears != null && (
+                <DetailRow
+                  label={t('financials.labels.depreciationYears')}
+                  value={`${acquisition.depreciationYears} ${t('financials.units.years')}`}
+                />
+              )}
+            </div>
           </div>
-          <div>
-            {acquisition.renovationCosts != null && (
-              <DetailRow
-                label="Renovation Costs"
-                value={formatMoney(
-                  acquisition.renovationCosts,
-                  acquisition.renovationCostsCurrency
-                )}
+          {acquisition.notes && (
+            <div className="mt-4 pt-4 border-t border-border-default">
+              <p className="text-xs font-medium text-text-secondary mb-1">
+                {t('financials.labels.notes')}
+              </p>
+              <RichTextDisplay
+                content={acquisition.notes}
+                className="text-sm text-text-secondary"
               />
-            )}
-            {acquisition.landValue != null && (
-              <DetailRow
-                label="Land Value"
-                value={formatMoney(
-                  acquisition.landValue,
-                  acquisition.landValueCurrency
-                )}
-              />
-            )}
-            {acquisition.depreciationMethod && (
-              <DetailRow
-                label="Depreciation Method"
-                value={formatDepreciationMethod(acquisition.depreciationMethod)}
-              />
-            )}
-            {acquisition.depreciationYears != null && (
-              <DetailRow
-                label="Depreciation Years"
-                value={`${acquisition.depreciationYears} years`}
-              />
-            )}
-          </div>
+            </div>
+          )}
         </div>
-        {acquisition.notes && (
-          <div className="mt-4 pt-4 border-t border-border-default">
-            <p className="text-xs font-medium text-text-secondary mb-1">
-              Notes
-            </p>
-            <RichTextDisplay
-              content={acquisition.notes}
-              className="text-sm text-text-secondary"
-            />
-          </div>
-        )}
-      </div>
-    ) : (
-      <EmptyState message="No acquisition data recorded." />
-    )}
-  </div>
-);
+      ) : (
+        <EmptyState message={t('financials.empty.noAcquisition')} />
+      )}
+    </div>
+  );
+};
 
 // ============================================================
 // Section: Valuation
@@ -540,141 +545,155 @@ const ValuationSection = ({
   onAdd: () => void;
   onEdit: (v: PropertyValuationResponse) => void;
   onDelete: (v: PropertyValuationResponse) => void;
-}) => (
-  <div>
-    <SectionHeader
-      icon={Building2}
-      title="Valuations"
-      action={<AddButton label="Add" onClick={onAdd} />}
-    />
-    {latest ? (
-      <div className="space-y-4">
-        <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold text-text-primary">
-              Latest Valuation
-            </h4>
-            <div className="flex items-center gap-1">
-              <ActionButton
-                icon={Pencil}
-                label="Edit"
-                onClick={() => onEdit(latest)}
-              />
-              <ActionButton
-                icon={Trash2}
-                label="Delete"
-                onClick={() => onDelete(latest)}
-                variant="danger"
-              />
+}) => {
+  const { t } = useTranslation('properties');
+  return (
+    <div>
+      <SectionHeader
+        icon={Building2}
+        title={t('financials.sections.valuations')}
+        action={<AddButton label={t('common:buttons.add')} onClick={onAdd} />}
+      />
+      {latest ? (
+        <div className="space-y-4">
+          <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-semibold text-text-primary">
+                {t('financials.latestValuation')}
+              </h4>
+              <div className="flex items-center gap-1">
+                <ActionButton
+                  icon={Pencil}
+                  label={t('common:buttons.edit')}
+                  onClick={() => onEdit(latest)}
+                />
+                <ActionButton
+                  icon={Trash2}
+                  label={t('common:buttons.delete')}
+                  onClick={() => onDelete(latest)}
+                  variant="danger"
+                />
+              </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+              <div>
+                <DetailRow
+                  label={t('financials.labels.type')}
+                  value={t(`financials.valuationTypes.${latest.valuationType}`)}
+                />
+                <DetailRow
+                  label={t('financials.labels.date')}
+                  value={formatDate(latest.valuationDate)}
+                />
+              </div>
+              <div>
+                <DetailRow
+                  label={t('financials.labels.amount')}
+                  value={formatMoney(latest.amount, latest.currency)}
+                />
+                {latest.source && (
+                  <DetailRow
+                    label={t('financials.labels.source')}
+                    value={latest.source}
+                  />
+                )}
+              </div>
+            </div>
+            {latest.notes && (
+              <div className="mt-4 pt-4 border-t border-border-default">
+                <p className="text-xs font-medium text-text-secondary mb-1">
+                  {t('financials.labels.notes')}
+                </p>
+                <RichTextDisplay
+                  content={latest.notes}
+                  className="text-sm text-text-secondary"
+                />
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-            <div>
-              <DetailRow
-                label="Type"
-                value={formatValuationType(latest.valuationType)}
-              />
-              <DetailRow
-                label="Date"
-                value={formatDate(latest.valuationDate)}
-              />
-            </div>
-            <div>
-              <DetailRow
-                label="Amount"
-                value={formatMoney(latest.amount, latest.currency)}
-              />
-              {latest.source && (
-                <DetailRow label="Source" value={latest.source} />
-              )}
-            </div>
-          </div>
-          {latest.notes && (
-            <div className="mt-4 pt-4 border-t border-border-default">
-              <p className="text-xs font-medium text-text-secondary mb-1">
-                Notes
-              </p>
-              <RichTextDisplay
-                content={latest.notes}
-                className="text-sm text-text-secondary"
-              />
+
+          {history.length > 1 && (
+            <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
+              <h4 className="text-sm font-semibold text-text-primary mb-3">
+                {t('financials.valuationHistory')}
+              </h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-text-secondary border-b border-border-default">
+                      <th className="pb-2 pr-4 font-medium">
+                        {t('financials.labels.date')}
+                      </th>
+                      <th className="pb-2 pr-4 font-medium">
+                        {t('financials.labels.type')}
+                      </th>
+                      <th className="pb-2 pr-4 font-medium text-right">
+                        {t('financials.labels.amount')}
+                      </th>
+                      <th className="pb-2 pr-4 font-medium">
+                        {t('financials.labels.source')}
+                      </th>
+                      <th className="pb-2 font-medium w-16" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {history.map((v) => (
+                      <React.Fragment key={v.identifier}>
+                        <tr
+                          className={`border-b border-border-default last:border-0 ${v.notes ? 'border-b-0' : ''}`}
+                        >
+                          <td className="py-2 pr-4 text-text-primary">
+                            {formatDate(v.valuationDate)}
+                          </td>
+                          <td className="py-2 pr-4 text-text-primary">
+                            {t(`financials.valuationTypes.${v.valuationType}`)}
+                          </td>
+                          <td className="py-2 pr-4 text-right font-medium text-text-primary">
+                            {formatMoney(v.amount, v.currency)}
+                          </td>
+                          <td className="py-2 pr-4 text-text-secondary">
+                            {v.source || t('financials.na')}
+                          </td>
+                          <td className="py-2">
+                            <div className="flex items-center gap-1 justify-end">
+                              <ActionButton
+                                icon={Pencil}
+                                label={t('common:buttons.edit')}
+                                onClick={() => onEdit(v)}
+                              />
+                              <ActionButton
+                                icon={Trash2}
+                                label={t('common:buttons.delete')}
+                                onClick={() => onDelete(v)}
+                                variant="danger"
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                        {v.notes && (
+                          <tr className="border-b border-border-default last:border-0">
+                            <td colSpan={5} className="pb-2 pt-0">
+                              <RichTextDisplay
+                                content={v.notes}
+                                className="text-xs text-text-secondary"
+                              />
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
-
-        {history.length > 1 && (
-          <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
-            <h4 className="text-sm font-semibold text-text-primary mb-3">
-              Valuation History
-            </h4>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-text-secondary border-b border-border-default">
-                    <th className="pb-2 pr-4 font-medium">Date</th>
-                    <th className="pb-2 pr-4 font-medium">Type</th>
-                    <th className="pb-2 pr-4 font-medium text-right">Amount</th>
-                    <th className="pb-2 pr-4 font-medium">Source</th>
-                    <th className="pb-2 font-medium w-16" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.map((v) => (
-                    <React.Fragment key={v.identifier}>
-                      <tr
-                        className={`border-b border-border-default last:border-0 ${v.notes ? 'border-b-0' : ''}`}
-                      >
-                        <td className="py-2 pr-4 text-text-primary">
-                          {formatDate(v.valuationDate)}
-                        </td>
-                        <td className="py-2 pr-4 text-text-primary">
-                          {formatValuationType(v.valuationType)}
-                        </td>
-                        <td className="py-2 pr-4 text-right font-medium text-text-primary">
-                          {formatMoney(v.amount, v.currency)}
-                        </td>
-                        <td className="py-2 pr-4 text-text-secondary">
-                          {v.source || 'N/A'}
-                        </td>
-                        <td className="py-2">
-                          <div className="flex items-center gap-1 justify-end">
-                            <ActionButton
-                              icon={Pencil}
-                              label="Edit"
-                              onClick={() => onEdit(v)}
-                            />
-                            <ActionButton
-                              icon={Trash2}
-                              label="Delete"
-                              onClick={() => onDelete(v)}
-                              variant="danger"
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                      {v.notes && (
-                        <tr className="border-b border-border-default last:border-0">
-                          <td colSpan={5} className="pb-2 pt-0">
-                            <RichTextDisplay
-                              content={v.notes}
-                              className="text-xs text-text-secondary"
-                            />
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </div>
-    ) : (
-      <EmptyState message="No valuation data recorded." />
-    )}
-  </div>
-);
+      ) : (
+        <EmptyState message={t('financials.empty.noValuation')} />
+      )}
+    </div>
+  );
+};
 
 // ============================================================
 // Section: Financings
@@ -701,6 +720,7 @@ const FinancingCard = ({
   onEditPayment: (p: FinancingPaymentResponse) => void;
   onDeletePayment: (p: FinancingPaymentResponse) => void;
 }) => {
+  const { t } = useTranslation('properties');
   const { data: payments = [] } = useFinancingPayments(
     propertyId,
     financing.identifier
@@ -712,7 +732,7 @@ const FinancingCard = ({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h4 className="text-sm font-semibold text-text-primary">
-            {formatFinancingType(financing.financingType)}
+            {t(`financials.financingTypes.${financing.financingType}`)}
           </h4>
           {financing.lenderName && (
             <span className="text-sm text-text-secondary">
@@ -722,14 +742,18 @@ const FinancingCard = ({
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge
-            label={formatFinancingStatus(financing.status)}
+            label={t(`financials.financingStatuses.${financing.status}`)}
             variant={financingStatusVariant(financing.status)}
           />
           <div className="flex items-center gap-1">
-            <ActionButton icon={Pencil} label="Edit" onClick={onEdit} />
+            <ActionButton
+              icon={Pencil}
+              label={t('common:buttons.edit')}
+              onClick={onEdit}
+            />
             <ActionButton
               icon={Trash2}
-              label="Delete"
+              label={t('common:buttons.delete')}
               onClick={onDelete}
               variant="danger"
             />
@@ -739,51 +763,59 @@ const FinancingCard = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
         <div>
           <DetailRow
-            label="Rate Type"
-            value={formatRateType(financing.rateType)}
+            label={t('financials.labels.rateType')}
+            value={t(`financials.rateTypes.${financing.rateType}`)}
           />
           <DetailRow
-            label="Original Amount"
+            label={t('financials.labels.originalAmount')}
             value={formatMoney(
               financing.originalAmount,
               financing.originalAmountCurrency
             )}
           />
           <DetailRow
-            label="Current Balance"
+            label={t('financials.labels.currentBalance')}
             value={formatMoney(
               financing.currentBalance,
               financing.currentBalanceCurrency
             )}
           />
           <DetailRow
-            label="Interest Rate"
-            value={formatPercent(financing.interestRate)}
+            label={t('financials.labels.interestRate')}
+            value={formatPercent(financing.interestRate, t('financials.na'))}
           />
         </div>
         <div>
           <DetailRow
-            label="Monthly Payment"
+            label={t('financials.labels.monthlyPayment')}
             value={formatMoney(
               financing.monthlyPayment,
               financing.monthlyPaymentCurrency
             )}
           />
           <DetailRow
-            label="Start Date"
+            label={t('financials.labels.startDate')}
             value={formatDate(financing.startDate)}
           />
           {financing.endDate && (
-            <DetailRow label="End Date" value={formatDate(financing.endDate)} />
+            <DetailRow
+              label={t('financials.labels.endDate')}
+              value={formatDate(financing.endDate)}
+            />
           )}
           {financing.termMonths != null && (
-            <DetailRow label="Term" value={`${financing.termMonths} months`} />
+            <DetailRow
+              label={t('financials.term')}
+              value={`${financing.termMonths} ${t('financials.units.months')}`}
+            />
           )}
         </div>
       </div>
       {financing.notes && (
         <div className="mt-4 pt-4 border-t border-border-default">
-          <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
+          <p className="text-xs font-medium text-text-secondary mb-1">
+            {t('financials.labels.notes')}
+          </p>
           <RichTextDisplay
             content={financing.notes}
             className="text-sm text-text-secondary"
@@ -800,7 +832,7 @@ const FinancingCard = ({
             className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary"
           >
             <Wallet className="w-4 h-4" />
-            Payments
+            {t('financials.payments')}
             {payments.length > 0 && (
               <span className="bg-primary-500/10 text-primary-500 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                 {payments.length}
@@ -817,7 +849,7 @@ const FinancingCard = ({
               className="flex items-center gap-1 text-xs font-medium text-primary-500 hover:text-primary-600"
             >
               <Plus className="w-3.5 h-3.5" />
-              Bulk Add
+              {t('financials.bulkAdd')}
             </button>
             <button
               type="button"
@@ -825,7 +857,7 @@ const FinancingCard = ({
               className="flex items-center gap-1 text-xs font-medium text-primary-500 hover:text-primary-600"
             >
               <Plus className="w-3.5 h-3.5" />
-              Record Payment
+              {t('financials.modals.recordPayment')}
             </button>
           </div>
         </div>
@@ -834,12 +866,22 @@ const FinancingCard = ({
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs text-text-secondary border-b border-border-default">
-                  <th className="pb-2 font-medium">Date</th>
-                  <th className="pb-2 font-medium">Total</th>
-                  <th className="pb-2 font-medium">Principal</th>
-                  <th className="pb-2 font-medium">Interest</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium text-right">Actions</th>
+                  <th className="pb-2 font-medium">
+                    {t('financials.labels.date')}
+                  </th>
+                  <th className="pb-2 font-medium">{t('financials.total')}</th>
+                  <th className="pb-2 font-medium">
+                    {t('financials.labels.principal')}
+                  </th>
+                  <th className="pb-2 font-medium">
+                    {t('financials.labels.interest')}
+                  </th>
+                  <th className="pb-2 font-medium">
+                    {t('financials.labels.status')}
+                  </th>
+                  <th className="pb-2 font-medium text-right">
+                    {t('financials.actions')}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -866,7 +908,7 @@ const FinancingCard = ({
                     </td>
                     <td className="py-2">
                       <StatusBadge
-                        label={formatPaymentStatus(p.status)}
+                        label={t(`financials.paymentStatuses.${p.status}`)}
                         variant={paymentStatusVariant(p.status)}
                       />
                     </td>
@@ -874,12 +916,12 @@ const FinancingCard = ({
                       <div className="flex items-center justify-end gap-1">
                         <ActionButton
                           icon={Pencil}
-                          label="Edit"
+                          label={t('common:buttons.edit')}
                           onClick={() => onEditPayment(p)}
                         />
                         <ActionButton
                           icon={Trash2}
-                          label="Delete"
+                          label={t('common:buttons.delete')}
                           onClick={() => onDeletePayment(p)}
                           variant="danger"
                         />
@@ -893,7 +935,7 @@ const FinancingCard = ({
         )}
         {showPayments && payments.length === 0 && (
           <p className="text-xs text-text-muted dark:text-text-disabled">
-            No payments recorded yet.
+            {t('financials.empty.noPayments')}
           </p>
         )}
       </div>
@@ -923,37 +965,40 @@ const FinancingsSection = ({
   onBulkAddPayment: (financingId: string, currency: string) => void;
   onEditPayment: (financingId: string, p: FinancingPaymentResponse) => void;
   onDeletePayment: (financingId: string, p: FinancingPaymentResponse) => void;
-}) => (
-  <div>
-    <SectionHeader
-      icon={Landmark}
-      title="Financings"
-      action={<AddButton label="Add" onClick={onAdd} />}
-    />
-    {financings.length > 0 ? (
-      <div className="space-y-4">
-        {financings.map((f) => (
-          <FinancingCard
-            key={f.identifier}
-            financing={f}
-            propertyId={propertyId}
-            formatDate={formatDate}
-            onEdit={() => onEdit(f)}
-            onDelete={() => onDelete(f)}
-            onAddPayment={() => onAddPayment(f.identifier)}
-            onBulkAddPayment={() =>
-              onBulkAddPayment(f.identifier, f.originalAmountCurrency)
-            }
-            onEditPayment={(p) => onEditPayment(f.identifier, p)}
-            onDeletePayment={(p) => onDeletePayment(f.identifier, p)}
-          />
-        ))}
-      </div>
-    ) : (
-      <EmptyState message="No financing instruments recorded." />
-    )}
-  </div>
-);
+}) => {
+  const { t } = useTranslation('properties');
+  return (
+    <div>
+      <SectionHeader
+        icon={Landmark}
+        title={t('financials.sections.financings')}
+        action={<AddButton label={t('common:buttons.add')} onClick={onAdd} />}
+      />
+      {financings.length > 0 ? (
+        <div className="space-y-4">
+          {financings.map((f) => (
+            <FinancingCard
+              key={f.identifier}
+              financing={f}
+              propertyId={propertyId}
+              formatDate={formatDate}
+              onEdit={() => onEdit(f)}
+              onDelete={() => onDelete(f)}
+              onAddPayment={() => onAddPayment(f.identifier)}
+              onBulkAddPayment={() =>
+                onBulkAddPayment(f.identifier, f.originalAmountCurrency)
+              }
+              onEditPayment={(p) => onEditPayment(f.identifier, p)}
+              onDeletePayment={(p) => onDeletePayment(f.identifier, p)}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyState message={t('financials.empty.noFinancing')} />
+      )}
+    </div>
+  );
+};
 
 // ============================================================
 // Section: Recurring Costs (Insurances, Taxes, Fees)
@@ -969,59 +1014,77 @@ const InsuranceCard = ({
   formatDate: (d: string | Date) => string;
   onEdit: () => void;
   onDelete: () => void;
-}) => (
-  <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
-    <div className="flex items-center justify-between mb-3">
-      <h5 className="text-sm font-semibold text-text-primary">
-        {formatInsuranceType(insurance.insuranceType)}
-      </h5>
-      <div className="flex items-center gap-2">
-        <StatusBadge
-          label={formatInsuranceStatus(insurance.status)}
-          variant={insuranceStatusVariant(insurance.status)}
-        />
-        <div className="flex items-center gap-1">
-          <ActionButton icon={Pencil} label="Edit" onClick={onEdit} />
-          <ActionButton
-            icon={Trash2}
-            label="Delete"
-            onClick={onDelete}
-            variant="danger"
+}) => {
+  const { t } = useTranslation('properties');
+  return (
+    <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h5 className="text-sm font-semibold text-text-primary">
+          {t(`financials.insuranceTypes.${insurance.insuranceType}`)}
+        </h5>
+        <div className="flex items-center gap-2">
+          <StatusBadge
+            label={t(`financials.insuranceStatuses.${insurance.status}`)}
+            variant={insuranceStatusVariant(insurance.status)}
           />
+          <div className="flex items-center gap-1">
+            <ActionButton
+              icon={Pencil}
+              label={t('common:buttons.edit')}
+              onClick={onEdit}
+            />
+            <ActionButton
+              icon={Trash2}
+              label={t('common:buttons.delete')}
+              onClick={onDelete}
+              variant="danger"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    {insurance.provider && (
-      <DetailRow label="Provider" value={insurance.provider} />
-    )}
-    <DetailRow
-      label="Annual Premium"
-      value={formatMoney(
-        insurance.annualPremium,
-        insurance.annualPremiumCurrency
-      )}
-    />
-    <DetailRow
-      label="Frequency"
-      value={formatPaymentFrequency(insurance.paymentFrequency)}
-    />
-    {insurance.startDate && (
-      <DetailRow label="Start Date" value={formatDate(insurance.startDate)} />
-    )}
-    {insurance.endDate && (
-      <DetailRow label="End Date" value={formatDate(insurance.endDate)} />
-    )}
-    {insurance.notes && (
-      <div className="mt-3 pt-3 border-t border-border-default">
-        <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
-        <RichTextDisplay
-          content={insurance.notes}
-          className="text-sm text-text-secondary"
+      {insurance.provider && (
+        <DetailRow
+          label={t('financials.labels.provider')}
+          value={insurance.provider}
         />
-      </div>
-    )}
-  </div>
-);
+      )}
+      <DetailRow
+        label={t('financials.labels.annualPremium')}
+        value={formatMoney(
+          insurance.annualPremium,
+          insurance.annualPremiumCurrency
+        )}
+      />
+      <DetailRow
+        label={t('financials.frequency')}
+        value={t(`financials.paymentFrequencies.${insurance.paymentFrequency}`)}
+      />
+      {insurance.startDate && (
+        <DetailRow
+          label={t('financials.labels.startDate')}
+          value={formatDate(insurance.startDate)}
+        />
+      )}
+      {insurance.endDate && (
+        <DetailRow
+          label={t('financials.labels.endDate')}
+          value={formatDate(insurance.endDate)}
+        />
+      )}
+      {insurance.notes && (
+        <div className="mt-3 pt-3 border-t border-border-default">
+          <p className="text-xs font-medium text-text-secondary mb-1">
+            {t('financials.labels.notes')}
+          </p>
+          <RichTextDisplay
+            content={insurance.notes}
+            className="text-sm text-text-secondary"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
 
 const TaxCard = ({
   tax,
@@ -1033,57 +1096,80 @@ const TaxCard = ({
   formatDate: (d: string | Date) => string;
   onEdit: () => void;
   onDelete: () => void;
-}) => (
-  <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
-    <div className="flex items-center justify-between mb-3">
-      <h5 className="text-sm font-semibold text-text-primary">
-        {formatTaxType(tax.taxType)}
-      </h5>
-      <div className="flex items-center gap-2">
-        <StatusBadge
-          label={formatTaxStatus(tax.status)}
-          variant={taxStatusVariant(tax.status)}
-        />
-        <div className="flex items-center gap-1">
-          <ActionButton icon={Pencil} label="Edit" onClick={onEdit} />
-          <ActionButton
-            icon={Trash2}
-            label="Delete"
-            onClick={onDelete}
-            variant="danger"
+}) => {
+  const { t } = useTranslation('properties');
+  return (
+    <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h5 className="text-sm font-semibold text-text-primary">
+          {t(`financials.taxTypes.${tax.taxType}`)}
+        </h5>
+        <div className="flex items-center gap-2">
+          <StatusBadge
+            label={t(`financials.taxStatuses.${tax.status}`)}
+            variant={taxStatusVariant(tax.status)}
           />
+          <div className="flex items-center gap-1">
+            <ActionButton
+              icon={Pencil}
+              label={t('common:buttons.edit')}
+              onClick={onEdit}
+            />
+            <ActionButton
+              icon={Trash2}
+              label={t('common:buttons.delete')}
+              onClick={onDelete}
+              variant="danger"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    {tax.authority && <DetailRow label="Authority" value={tax.authority} />}
-    <DetailRow
-      label="Annual Amount"
-      value={formatMoney(tax.annualAmount, tax.currency)}
-    />
-    <DetailRow
-      label="Frequency"
-      value={formatPaymentFrequency(tax.paymentFrequency)}
-    />
-    {tax.taxYear != null && (
-      <DetailRow label="Tax Year" value={String(tax.taxYear)} />
-    )}
-    {tax.startDate && (
-      <DetailRow label="Start Date" value={formatDate(tax.startDate)} />
-    )}
-    {tax.endDate && (
-      <DetailRow label="End Date" value={formatDate(tax.endDate)} />
-    )}
-    {tax.notes && (
-      <div className="mt-3 pt-3 border-t border-border-default">
-        <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
-        <RichTextDisplay
-          content={tax.notes}
-          className="text-sm text-text-secondary"
+      {tax.authority && (
+        <DetailRow
+          label={t('financials.labels.authority')}
+          value={tax.authority}
         />
-      </div>
-    )}
-  </div>
-);
+      )}
+      <DetailRow
+        label={t('financials.labels.annualAmount')}
+        value={formatMoney(tax.annualAmount, tax.currency)}
+      />
+      <DetailRow
+        label={t('financials.frequency')}
+        value={t(`financials.paymentFrequencies.${tax.paymentFrequency}`)}
+      />
+      {tax.taxYear != null && (
+        <DetailRow
+          label={t('financials.labels.taxYear')}
+          value={String(tax.taxYear)}
+        />
+      )}
+      {tax.startDate && (
+        <DetailRow
+          label={t('financials.labels.startDate')}
+          value={formatDate(tax.startDate)}
+        />
+      )}
+      {tax.endDate && (
+        <DetailRow
+          label={t('financials.labels.endDate')}
+          value={formatDate(tax.endDate)}
+        />
+      )}
+      {tax.notes && (
+        <div className="mt-3 pt-3 border-t border-border-default">
+          <p className="text-xs font-medium text-text-secondary mb-1">
+            {t('financials.labels.notes')}
+          </p>
+          <RichTextDisplay
+            content={tax.notes}
+            className="text-sm text-text-secondary"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
 
 const FeeCard = ({
   fee,
@@ -1095,54 +1181,71 @@ const FeeCard = ({
   formatDate: (d: string | Date) => string;
   onEdit: () => void;
   onDelete: () => void;
-}) => (
-  <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
-    <div className="flex items-center justify-between mb-3">
-      <h5 className="text-sm font-semibold text-text-primary">
-        {formatFeeType(fee.feeType)}
-      </h5>
-      <div className="flex items-center gap-2">
-        <StatusBadge
-          label={formatFeeStatus(fee.status)}
-          variant={feeStatusVariant(fee.status)}
-        />
-        <div className="flex items-center gap-1">
-          <ActionButton icon={Pencil} label="Edit" onClick={onEdit} />
-          <ActionButton
-            icon={Trash2}
-            label="Delete"
-            onClick={onDelete}
-            variant="danger"
+}) => {
+  const { t } = useTranslation('properties');
+  return (
+    <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h5 className="text-sm font-semibold text-text-primary">
+          {t(`financials.feeTypes.${fee.feeType}`)}
+        </h5>
+        <div className="flex items-center gap-2">
+          <StatusBadge
+            label={t(`financials.feeStatuses.${fee.status}`)}
+            variant={feeStatusVariant(fee.status)}
           />
+          <div className="flex items-center gap-1">
+            <ActionButton
+              icon={Pencil}
+              label={t('common:buttons.edit')}
+              onClick={onEdit}
+            />
+            <ActionButton
+              icon={Trash2}
+              label={t('common:buttons.delete')}
+              onClick={onDelete}
+              variant="danger"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    {fee.name && <DetailRow label="Name" value={fee.name} />}
-    <DetailRow
-      label="Annual Amount"
-      value={formatMoney(fee.annualAmount, fee.currency)}
-    />
-    <DetailRow
-      label="Frequency"
-      value={formatPaymentFrequency(fee.paymentFrequency)}
-    />
-    {fee.startDate && (
-      <DetailRow label="Start Date" value={formatDate(fee.startDate)} />
-    )}
-    {fee.endDate && (
-      <DetailRow label="End Date" value={formatDate(fee.endDate)} />
-    )}
-    {fee.notes && (
-      <div className="mt-3 pt-3 border-t border-border-default">
-        <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
-        <RichTextDisplay
-          content={fee.notes}
-          className="text-sm text-text-secondary"
+      {fee.name && (
+        <DetailRow label={t('financials.labels.name')} value={fee.name} />
+      )}
+      <DetailRow
+        label={t('financials.labels.annualAmount')}
+        value={formatMoney(fee.annualAmount, fee.currency)}
+      />
+      <DetailRow
+        label={t('financials.frequency')}
+        value={t(`financials.paymentFrequencies.${fee.paymentFrequency}`)}
+      />
+      {fee.startDate && (
+        <DetailRow
+          label={t('financials.labels.startDate')}
+          value={formatDate(fee.startDate)}
         />
-      </div>
-    )}
-  </div>
-);
+      )}
+      {fee.endDate && (
+        <DetailRow
+          label={t('financials.labels.endDate')}
+          value={formatDate(fee.endDate)}
+        />
+      )}
+      {fee.notes && (
+        <div className="mt-3 pt-3 border-t border-border-default">
+          <p className="text-xs font-medium text-text-secondary mb-1">
+            {t('financials.labels.notes')}
+          </p>
+          <RichTextDisplay
+            content={fee.notes}
+            className="text-sm text-text-secondary"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
 
 const RecurringCostsSection = ({
   insurances,
@@ -1174,114 +1277,129 @@ const RecurringCostsSection = ({
   onDeleteTax: (t: PropertyTaxResponse) => void;
   onEditFee: (f: PropertyFeeResponse) => void;
   onDeleteFee: (f: PropertyFeeResponse) => void;
-}) => (
-  <div>
-    <SectionHeader icon={Calendar} title="Recurring Costs" />
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Insurances */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-text-secondary " />
-            <h4 className="text-sm font-semibold text-text-primary">
-              Insurances
-            </h4>
-          </div>
-          <div className="flex items-center gap-2">
-            {summary.totalAnnualInsurance != null && (
-              <span className="text-xs font-medium text-text-secondary">
-                {formatMoney(summary.totalAnnualInsurance, summary.currency)}
-                /yr
-              </span>
-            )}
-            <AddButton label="Add" onClick={onAddInsurance} />
-          </div>
-        </div>
-        {insurances.length > 0 ? (
-          <div className="space-y-3">
-            {sortRecurringCosts(insurances).map((i) => (
-              <InsuranceCard
-                key={i.identifier}
-                insurance={i}
-                formatDate={formatDate}
-                onEdit={() => onEditInsurance(i)}
-                onDelete={() => onDeleteInsurance(i)}
+}) => {
+  const { t } = useTranslation('properties');
+  return (
+    <div>
+      <SectionHeader
+        icon={Calendar}
+        title={t('financials.sections.recurringCosts')}
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Insurances */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-text-secondary " />
+              <h4 className="text-sm font-semibold text-text-primary">
+                {t('financials.insurances')}
+              </h4>
+            </div>
+            <div className="flex items-center gap-2">
+              {summary.totalAnnualInsurance != null && (
+                <span className="text-xs font-medium text-text-secondary">
+                  {formatMoney(summary.totalAnnualInsurance, summary.currency)}
+                  {t('financials.units.perYear')}
+                </span>
+              )}
+              <AddButton
+                label={t('common:buttons.add')}
+                onClick={onAddInsurance}
               />
-            ))}
+            </div>
           </div>
-        ) : (
-          <EmptyState message="No insurances." />
-        )}
-      </div>
+          {insurances.length > 0 ? (
+            <div className="space-y-3">
+              {sortRecurringCosts(insurances).map((i) => (
+                <InsuranceCard
+                  key={i.identifier}
+                  insurance={i}
+                  formatDate={formatDate}
+                  onEdit={() => onEditInsurance(i)}
+                  onDelete={() => onDeleteInsurance(i)}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState message={t('financials.empty.noInsurances')} />
+          )}
+        </div>
 
-      {/* Taxes */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Receipt className="h-4 w-4 text-text-secondary " />
-            <h4 className="text-sm font-semibold text-text-primary">Taxes</h4>
+        {/* Taxes */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Receipt className="h-4 w-4 text-text-secondary " />
+              <h4 className="text-sm font-semibold text-text-primary">
+                {t('financials.taxes')}
+              </h4>
+            </div>
+            <div className="flex items-center gap-2">
+              {summary.totalAnnualTaxes != null && (
+                <span className="text-xs font-medium text-text-secondary">
+                  {formatMoney(summary.totalAnnualTaxes, summary.currency)}
+                  {t('financials.units.perYear')}
+                </span>
+              )}
+              <AddButton label={t('common:buttons.add')} onClick={onAddTax} />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {summary.totalAnnualTaxes != null && (
-              <span className="text-xs font-medium text-text-secondary">
-                {formatMoney(summary.totalAnnualTaxes, summary.currency)}/yr
-              </span>
-            )}
-            <AddButton label="Add" onClick={onAddTax} />
-          </div>
+          {taxes.length > 0 ? (
+            <div className="space-y-3">
+              {sortRecurringCosts(taxes).map((tx) => (
+                <TaxCard
+                  key={tx.identifier}
+                  tax={tx}
+                  formatDate={formatDate}
+                  onEdit={() => onEditTax(tx)}
+                  onDelete={() => onDeleteTax(tx)}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState message={t('financials.empty.noTaxes')} />
+          )}
         </div>
-        {taxes.length > 0 ? (
-          <div className="space-y-3">
-            {sortRecurringCosts(taxes).map((t) => (
-              <TaxCard
-                key={t.identifier}
-                tax={t}
-                formatDate={formatDate}
-                onEdit={() => onEditTax(t)}
-                onDelete={() => onDeleteTax(t)}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState message="No taxes." />
-        )}
-      </div>
 
-      {/* Fees */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Wallet className="h-4 w-4 text-text-secondary " />
-            <h4 className="text-sm font-semibold text-text-primary">Fees</h4>
+        {/* Fees */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Wallet className="h-4 w-4 text-text-secondary " />
+              <h4 className="text-sm font-semibold text-text-primary">
+                {t('financials.fees')}
+              </h4>
+            </div>
+            <div className="flex items-center gap-2">
+              {summary.totalAnnualFees != null && (
+                <span className="text-xs font-medium text-text-secondary">
+                  {formatMoney(summary.totalAnnualFees, summary.currency)}
+                  {t('financials.units.perYear')}
+                </span>
+              )}
+              <AddButton label={t('common:buttons.add')} onClick={onAddFee} />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {summary.totalAnnualFees != null && (
-              <span className="text-xs font-medium text-text-secondary">
-                {formatMoney(summary.totalAnnualFees, summary.currency)}/yr
-              </span>
-            )}
-            <AddButton label="Add" onClick={onAddFee} />
-          </div>
+          {fees.length > 0 ? (
+            <div className="space-y-3">
+              {sortRecurringCosts(fees).map((f) => (
+                <FeeCard
+                  key={f.identifier}
+                  fee={f}
+                  formatDate={formatDate}
+                  onEdit={() => onEditFee(f)}
+                  onDelete={() => onDeleteFee(f)}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState message={t('financials.empty.noFees')} />
+          )}
         </div>
-        {fees.length > 0 ? (
-          <div className="space-y-3">
-            {sortRecurringCosts(fees).map((f) => (
-              <FeeCard
-                key={f.identifier}
-                fee={f}
-                formatDate={formatDate}
-                onEdit={() => onEditFee(f)}
-                onDelete={() => onDeleteFee(f)}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState message="No fees." />
-        )}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ============================================================
 // Main component
@@ -1290,6 +1408,7 @@ const RecurringCostsSection = ({
 export const PropertyFinancialsTab = ({
   propertyId,
 }: PropertyFinancialsTabProps) => {
+  const { t } = useTranslation('properties');
   const {
     data: summary,
     isLoading,
@@ -1326,10 +1445,10 @@ export const PropertyFinancialsTab = ({
         queryKey: ['propertyFinancials', propertyId],
       });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
-      showToast('Payment deleted successfully', 'success');
+      showToast(t('financials.toast.paymentDeleted'), 'success');
     },
     onError: () => {
-      showToast('Failed to delete payment', 'error');
+      showToast(t('financials.toast.paymentDeleteFailed'), 'error');
     },
   });
 
@@ -1383,13 +1502,13 @@ export const PropertyFinancialsTab = ({
   if (error) {
     return (
       <div className="bg-error-bg border border-error-border text-error-text px-4 py-3 rounded-lg text-sm">
-        Failed to load financial data.{' '}
+        {t('financials.failedToLoad')}{' '}
         <button
           onClick={() => refetch()}
           className="underline hover:no-underline font-medium inline-flex items-center gap-1"
         >
           <RefreshCw className="h-3 w-3" />
-          Retry
+          {t('common:buttons.retry')}
         </button>
       </div>
     );
@@ -1424,7 +1543,9 @@ export const PropertyFinancialsTab = ({
           setDeleteState({
             entity: 'valuation',
             identifier: v.identifier,
-            label: `${formatValuationType(v.valuationType)} valuation`,
+            label: t('financials.delete.valuation', {
+              type: t(`financials.valuationTypes.${v.valuationType}`),
+            }),
           })
         }
       />
@@ -1440,7 +1561,7 @@ export const PropertyFinancialsTab = ({
           setDeleteState({
             entity: 'financing',
             identifier: f.identifier,
-            label: `${formatFinancingType(f.financingType)}${f.lenderName ? ` (${f.lenderName})` : ''}`,
+            label: `${t(`financials.financingTypes.${f.financingType}`)}${f.lenderName ? ` (${f.lenderName})` : ''}`,
           })
         }
         onAddPayment={(financingId) =>
@@ -1461,7 +1582,9 @@ export const PropertyFinancialsTab = ({
             entity: 'financingPayment',
             identifier: p.identifier,
             financingId,
-            label: `payment (${formatDate(p.paymentDate)})`,
+            label: t('financials.delete.payment', {
+              date: formatDate(p.paymentDate),
+            }),
           })
         }
       />
@@ -1481,15 +1604,19 @@ export const PropertyFinancialsTab = ({
           setDeleteState({
             entity: 'insurance',
             identifier: i.identifier,
-            label: `${formatInsuranceType(i.insuranceType)} insurance`,
+            label: t('financials.delete.insurance', {
+              type: t(`financials.insuranceTypes.${i.insuranceType}`),
+            }),
           })
         }
-        onEditTax={(t) => setModal({ type: 'tax', data: t })}
-        onDeleteTax={(t) =>
+        onEditTax={(tx) => setModal({ type: 'tax', data: tx })}
+        onDeleteTax={(tx) =>
           setDeleteState({
             entity: 'tax',
-            identifier: t.identifier,
-            label: `${formatTaxType(t.taxType)} tax`,
+            identifier: tx.identifier,
+            label: t('financials.delete.tax', {
+              type: t(`financials.taxTypes.${tx.taxType}`),
+            }),
           })
         }
         onEditFee={(f) => setModal({ type: 'fee', data: f })}
@@ -1497,7 +1624,9 @@ export const PropertyFinancialsTab = ({
           setDeleteState({
             entity: 'fee',
             identifier: f.identifier,
-            label: `${formatFeeType(f.feeType)} fee`,
+            label: t('financials.delete.fee', {
+              type: t(`financials.feeTypes.${f.feeType}`),
+            }),
           })
         }
       />

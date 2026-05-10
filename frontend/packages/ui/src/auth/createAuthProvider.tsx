@@ -95,9 +95,11 @@ export function createAuthProvider(options: AuthProviderOptions) {
     }, []);
 
     const login = (redirectUri?: string, loginHint?: string) => {
+      const locale = localStorage.getItem('buurman-language') || 'en';
       keycloak.login({
         redirectUri:
           redirectUri || `${window.location.origin}${defaultRedirect}`,
+        locale,
         ...(loginHint && { loginHint }),
       });
     };

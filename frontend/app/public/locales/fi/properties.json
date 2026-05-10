@@ -1,0 +1,1112 @@
+{
+  "list": {
+    "title": "Kohteet",
+    "subtitle": "Hallitse vuokrakiinteistojasi ja -yksikoitasi",
+    "addButton": "Lisaa kohde",
+    "searchPlaceholder": "Hae osoitteella, kaupungilla, postinumerolla tai tyypilla...",
+    "filters": "Suodattimet",
+    "category": "Kategoria",
+    "allCategories": "Kaikki kategoriat",
+    "status": "Tila",
+    "allStatuses": "Kaikki tilat",
+    "count_one": "{{count}} kohde",
+    "count_other": "{{count}} kohdetta",
+    "empty": {
+      "title": "Kohteita ei loytynyt",
+      "filtered": "Kokeile muuttaa suodattimia tai hakuehtoja",
+      "noData": "Aloita lisaamalla ensimmainen kohde"
+    },
+    "error": "Kohteiden lataus epaonnistui"
+  },
+  "create": {
+    "title": "Lisaa uusi kohde",
+    "readOnlyMessage": "Kohteiden luominen ei ole kaytettavissa vain luku -tilassa."
+  },
+  "edit": {
+    "title": "Muokkaa kohdetta",
+    "notFound": "Kohdetta ei loytynyt"
+  },
+  "detail": {
+    "notFound": "Kohdetta ei loytynyt",
+    "booklet": "Vihko",
+    "bookletDownloadFailed": "Vihkon lataus epaonnistui. Yrita uudelleen.",
+    "tabs": {
+      "info": "Tiedot",
+      "dashboard": "Hallintapaneeli",
+      "financials": "Talous",
+      "photos": "Valokuvat",
+      "documents": "Asiakirjat",
+      "contracts": "Sopimukset",
+      "expenses": "Kulut",
+      "history": "Historia"
+    },
+    "timeline": {
+      "title": "Kohteen aikajana",
+      "rentalContract": "Vuokrasopimus",
+      "selfOccupied": "Omakaytossa",
+      "financing": "Rahoitus"
+    },
+    "specs": {
+      "bedrooms": "Makuuhuoneet",
+      "bathrooms": "Kylpyhuoneet",
+      "area": "Pinta-ala",
+      "type": "Tyyppi",
+      "street": "Katu",
+      "city": "Kaupunki",
+      "postalCode": "Postinumero",
+      "country": "Maa",
+      "location": "Sijainti"
+    },
+    "characteristics": {
+      "title": "Kohteen ominaisuudet"
+    },
+    "construction": {
+      "title": "Rakenne",
+      "yearBuilt": "Rakennusvuosi",
+      "lastRenovated": "Viimeksi remontoitu",
+      "construction": "Rakenne",
+      "foundation": "Perustus",
+      "roof": "Katto",
+      "wallConstruction": "Seinarakenne",
+      "flooring": "Lattia",
+      "windows": "Ikkunat",
+      "floors": "Kerrokset",
+      "structuralNotes": "Rakennemuistiinpanot"
+    },
+    "energy": {
+      "title": "Energia ja ilmasto",
+      "energyRating": "Energialuokitus",
+      "certificateExpiry": "Todistuksen vanheneminen",
+      "heating": "Lammitys",
+      "cooling": "Jaahdytys",
+      "hotWater": "Lammin vesi",
+      "insulationNotes": "Eristysmuistiinpanot"
+    },
+    "utilities": {
+      "title": "Palvelut ja liittymat",
+      "electricity": "Sahko",
+      "capacity": "Kapasiteetti",
+      "water": "Vesi",
+      "gasConnection": "Kaasuliittyma",
+      "sewage": "Viemari",
+      "internet": "Internet",
+      "internetSpeed": "Internetin nopeus",
+      "internetStatus": "Internetin tila"
+    },
+    "parking": {
+      "title": "Paikoitus",
+      "parkingSpaces": "Autopaikat",
+      "parkingType": "Paikoitustyyppi"
+    },
+    "outdoorAreas": {
+      "title": "Ulkoalueet"
+    },
+    "amenities": {
+      "title": "Mukavuudet"
+    },
+    "safety": {
+      "title": "Turvallisuus",
+      "smokeDetectors": "Palovaroittimet",
+      "coDetectors": "CO-ilmaisimet",
+      "fireExtinguisher": "Sammutin",
+      "sprinklerSystem": "Sprinklerilaitteisto",
+      "alarmSystem": "Halytysjarjestelma",
+      "securityCameras": "Valvontakamerat",
+      "secureEntry": "Turvallinen sisaankaynti",
+      "safetyNotes": "Turvallisuusmuistiinpanot"
+    },
+    "accessibility": {
+      "title": "Esteettomyys",
+      "wheelchairAccessible": "Pyoratuolikelpoinen",
+      "elevator": "Hissi",
+      "stepFreeEntrance": "Tasainen sisaankaynti",
+      "adaptedBathroom": "Mukautettu kylpyhuone",
+      "accessibilityNotes": "Esteettomyysmuistiinpanot"
+    },
+    "wws": {
+      "title": "WWS-pisteet",
+      "calculate": "Laske",
+      "recalculate": "Laske uudelleen",
+      "points": "pistetta",
+      "regulated": "Saadelty",
+      "midSegment": "Keskisegmentti",
+      "freeSector": "Vapaa sektori",
+      "maxRent": "Enimmaisvuokra",
+      "calculated": "Laskettu",
+      "history": "Historia",
+      "noCalculation": "Ei laskelmaa viela",
+      "noCalculationDescription": "Laske WWS-pisteet selvittaaksesi taman kohteen enimmaiskorotus.",
+      "noPreviousCalculations": "Ei aiempia laskelmia."
+    },
+    "metadata": {
+      "title": "Metatiedot",
+      "created": "Luotu:",
+      "lastUpdated": "Viimeksi paivitetty:",
+      "at": "klo"
+    },
+    "yes": "Kylla",
+    "no": "Ei",
+    "deleteProperty": "Poista kohde",
+    "deletePropertyConfirm": "Haluatko varmasti poistaa taman kohteen?",
+    "cannotBeUndone": "Tata toimintoa ei voi kumota.",
+    "deleteWwsConfirm": "Poista WWS-laskelma?",
+    "deleteWwsMessage": "Tama poistaa pysyvasti tallennetun laskelman tasta kohteesta.",
+    "deleteWwsHistoryMessage": "Tama poistaa pysyvasti taman historiallisen laskelman."
+  },
+  "enums": {
+    "characteristics": {
+      "constructionType": {
+        "BRICK": "Tiili",
+        "CONCRETE": "Betoni",
+        "WOOD": "Puu",
+        "STEEL": "Teräs",
+        "MIXED": "Sekarakenne",
+        "OTHER": "Muu"
+      },
+      "foundationType": {
+        "CONCRETE_SLAB": "Betonilaatta",
+        "CRAWL_SPACE": "Ryömintätila",
+        "BASEMENT": "Kellari",
+        "PILE": "Paaluperustus",
+        "OTHER": "Muu"
+      },
+      "roofType": {
+        "FLAT": "Tasakatto",
+        "PITCHED": "Harjakatto",
+        "HIP": "Valmarikatto",
+        "GABLE": "Päätykolmiokatto",
+        "MANSARD": "Mansardikatto",
+        "OTHER": "Muu"
+      },
+      "flooringType": {
+        "HARDWOOD": "Massiivipuu",
+        "LAMINATE": "Laminaatti",
+        "TILE": "Laatta",
+        "VINYL": "Vinyyli",
+        "CARPET": "Matto",
+        "CONCRETE": "Betoni",
+        "MIXED": "Sekalattia",
+        "OTHER": "Muu"
+      },
+      "windowType": {
+        "SINGLE_PANE": "Yksinkertainen lasi",
+        "DOUBLE_PANE": "Kaksilasinen",
+        "TRIPLE_PANE": "Kolmilasinen",
+        "OTHER": "Muu"
+      },
+      "heatingType": {
+        "CENTRAL": "Keskuslämmitys",
+        "DISTRICT": "Kaukolämpö",
+        "HEAT_PUMP": "Lämpöpumppu",
+        "ELECTRIC": "Sähkö",
+        "GAS": "Kaasu",
+        "NONE": "Ei mitään",
+        "OTHER": "Muu"
+      },
+      "coolingType": {
+        "CENTRAL_AC": "Keskusilmastointi",
+        "SPLIT_AC": "Split-ilmastointi",
+        "EVAPORATIVE": "Haihdutusviilennys",
+        "NONE": "Ei mitään",
+        "OTHER": "Muu"
+      },
+      "hotWaterSystem": {
+        "BOILER": "Kattila",
+        "TANKLESS": "Virtauslämmitin",
+        "HEAT_PUMP": "Lämpöpumppu",
+        "SOLAR": "Aurinko",
+        "ELECTRIC": "Sähkö",
+        "OTHER": "Muu"
+      },
+      "sewageType": {
+        "MUNICIPAL": "Kunnallinen",
+        "SEPTIC": "Saostuskaivo",
+        "OTHER": "Muu"
+      },
+      "internetConnectionType": {
+        "FIBER": "Kuitu",
+        "CABLE": "Kaapeli",
+        "DSL": "DSL",
+        "NONE": "Ei mitään",
+        "OTHER": "Muu"
+      },
+      "internetStatus": {
+        "ACTIVE": "Aktiivinen",
+        "AVAILABLE": "Saatavilla",
+        "NOT_AVAILABLE": "Ei saatavilla",
+        "UNKNOWN": "Tuntematon"
+      },
+      "electricityConnectionType": {
+        "SINGLE_PHASE": "Yksivaiheinen",
+        "THREE_PHASE": "Kolmivaiheinen"
+      },
+      "waterConnectionType": {
+        "MUNICIPAL": "Kunnallinen",
+        "WELL": "Kaivo",
+        "SHARED": "Jaettu",
+        "OTHER": "Muu"
+      },
+      "parkingType": {
+        "GARAGE": "Autotalli",
+        "CARPORT": "Autokatos",
+        "DRIVEWAY": "Ajotie",
+        "STREET": "Katu",
+        "UNDERGROUND": "Maanalainen",
+        "NONE": "Ei mitään",
+        "OTHER": "Muu"
+      },
+      "outdoorAreaType": {
+        "BALCONY": "Parveke",
+        "TERRACE": "Terassi",
+        "GARDEN": "Puutarha",
+        "ROOFTOP": "Kattoterassi",
+        "PATIO": "Patio",
+        "YARD": "Piha",
+        "OTHER": "Muu",
+        "PARKING_LOT": "Parkkipaikka",
+        "COURTYARD": "Sisäpiha",
+        "LOADING_AREA": "Lastauspiha",
+        "STORAGE_AREA": "Varastointialue",
+        "PASTURE": "Laidun",
+        "PADDOCK": "Laiduntarha",
+        "ORCHARD_AREA": "Hedelmätarha",
+        "GREENHOUSE_AREA": "Kasvihuone"
+      },
+      "petPolicy": {
+        "ALLOWED": "Sallittu",
+        "NOT_ALLOWED": "Ei sallittu",
+        "NEGOTIABLE": "Neuvoteltavissa",
+        "SMALL_PETS_ONLY": "Vain pienet lemmikit"
+      },
+      "soilType": {
+        "CLAY": "Savi",
+        "SANDY": "Hiekkainen",
+        "LOAM": "Hietasavi",
+        "SILT": "Siltti",
+        "PEAT": "Turve",
+        "CHALK": "Liitu",
+        "MIXED": "Sekalaatuinen",
+        "OTHER": "Muu"
+      },
+      "irrigationType": {
+        "DRIP": "Tihkukastelu",
+        "SPRINKLER": "Sadetuskastelu",
+        "FLOOD": "Tulvakastelu",
+        "CENTER_PIVOT": "Keskuspivotti",
+        "NONE": "Ei mitään",
+        "OTHER": "Muu"
+      },
+      "waterSource": {
+        "RIVER": "Joki",
+        "WELL": "Kaivo",
+        "MUNICIPAL": "Kunnallinen",
+        "RAINWATER": "Sadevesi",
+        "CANAL": "Kanava",
+        "NONE": "Ei mitään",
+        "OTHER": "Muu"
+      },
+      "fencingType": {
+        "WIRE": "Lanka",
+        "WOODEN": "Puu",
+        "ELECTRIC": "Sähkö",
+        "HEDGE": "Pensasaita",
+        "STONE": "Kivi",
+        "NONE": "Ei mitään",
+        "OTHER": "Muu"
+      }
+    },
+    "categories": {
+      "RESIDENTIAL": "Asuin",
+      "COMMERCIAL": "Liike",
+      "INDUSTRIAL": "Teollisuus",
+      "AGRICULTURAL": "Maatalous",
+      "MIXED_USE": "Sekakaytto"
+    },
+    "types": {
+      "APARTMENT": "Kerrostaloasunto",
+      "HOUSE": "Talo",
+      "STUDIO": "Yksio",
+      "ROOM": "Huone",
+      "VILLA": "Huvila",
+      "TOWNHOUSE": "Rivitalo",
+      "OTHER_RESIDENTIAL": "Muu",
+      "OFFICE": "Toimisto",
+      "RETAIL": "Myymala",
+      "RESTAURANT": "Ravintola",
+      "HOTEL": "Hotelli",
+      "SHOWROOM": "Naytelytila",
+      "AUTO_DEALERSHIP": "Autoliike",
+      "SNACKBAR": "Grilli",
+      "CAFE": "Kahvila",
+      "MOTEL": "Motelli",
+      "BAR": "Baari",
+      "BED_AND_BREAKFAST": "B&B",
+      "OTHER_COMMERCIAL": "Muu",
+      "WAREHOUSE": "Varasto",
+      "WORKSHOP": "Verstas",
+      "FACTORY": "Tehdas",
+      "DATA_CENTER": "Datakeskus",
+      "COLD_STORAGE": "Kylmavarasto",
+      "GARAGE": "Autotalli",
+      "OTHER_INDUSTRIAL": "Muu",
+      "FARMLAND": "Viljelymaa",
+      "RANCH": "Maatila",
+      "GREENHOUSE": "Kasvihuone",
+      "ORCHARD": "Hedelmapuutarha",
+      "VINEYARD": "Viinitarha",
+      "OTHER_AGRICULTURAL": "Muu",
+      "MIXED_USE": "Sekakaytto",
+      "COMMERCIAL": "Liiketila"
+    },
+    "statuses": {
+      "VACANT": "Vapaa",
+      "OCCUPIED": "Vuokrattu",
+      "SELF_OCCUPIED": "Omakaytossa",
+      "MAINTENANCE": "Huolto",
+      "UNAVAILABLE": "Ei kaytettavissa",
+      "UNDER_RENOVATION": "Remontissa",
+      "FALLOW": "Kesanto",
+      "LISTED": "Myynnissa"
+    },
+    "amenities": {
+      "categories": {
+        "APPLIANCE": "Kodinkoneet",
+        "COMFORT": "Mukavuus",
+        "LEISURE": "Vapaa-aika",
+        "PARKING": "Pysäköinti",
+        "SERVICE": "Palvelut",
+        "STORAGE": "Säilytys"
+      },
+      "items": {
+        "SWIMMING_POOL": "Uima-allas",
+        "GYM": "Kuntosali",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Takka",
+        "BUILT_IN_VACUUM": "Keskuspölynimuri",
+        "IN_UNIT_LAUNDRY": "Pesukone asunnossa",
+        "SHARED_LAUNDRY": "Yhteinen pesutupa",
+        "DISHWASHER": "Astianpesukone",
+        "STORAGE_UNIT": "Varasto",
+        "BIKE_STORAGE": "Pyörävarasto",
+        "FURNISHED": "Kalustettu",
+        "DOORMAN_CONCIERGE": "Vahtimestari / Concierge",
+        "CONFERENCE_ROOM": "Kokoushuone",
+        "RECEPTION_AREA": "Vastaanotto",
+        "SERVER_ROOM": "Palvelinhuone",
+        "KITCHENETTE": "Keittiönurkkaus",
+        "LOADING_BAY": "Lastauslaituri",
+        "COMPRESSED_AIR_SYSTEM": "Paineilmajärjestelmä",
+        "CHEMICAL_STORAGE": "Kemikaalivarasto",
+        "OVERHEAD_CRANE": "Siltanosturi",
+        "IRRIGATION_SYSTEM": "Kastelujärjestelmä",
+        "GRAIN_SILO": "Viljasiilo",
+        "LIVESTOCK_SHELTER": "Eläinsuoja",
+        "COLD_STORAGE": "Kylmävarasto",
+        "SECURITY_BOOTH": "Vartijakoppi"
+      }
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Hallintapaneelin tietojen lataus epaonnistui.",
+    "retry": "Yrita uudelleen",
+    "exporting": "Viedaan...",
+    "allTime": "Koko aika",
+    "custom": "Mukautettu",
+    "to": "asti",
+    "resetZoom": "Nollaa zoomaus",
+    "charts": {
+      "monthlyCashFlow": "Kuukausittainen kassavirta",
+      "occupancyIncomeTrend": "Kayttoaste- ja tulotrendi",
+      "expenseBreakdown": "Kuluerittely",
+      "sixMonthProjection": "6 kuukauden ennuste",
+      "equityOverview": "Oman paaoman yleiskatsaus"
+    },
+    "summary": {
+      "totalRoi": "Kokonais-ROI",
+      "annualizedRoi": "Vuosittainen ROI",
+      "capRate": "Tuottoprosentti",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Kuukausittainen kassavirta",
+      "annualNoi": "Vuotuinen NOI",
+      "totalEquity": "Oma paaoma yhteensa",
+      "equityGrowth": "Oman paaoman kasvu",
+      "occupancy": "Kayttoaste",
+      "grossRentMultiplier": "Bruttovuokrakerroin"
+    },
+    "cashFlow": {
+      "income": "Tulot",
+      "expenses": "Kulut",
+      "mortgage": "Asuntolaina",
+      "net": "Netto",
+      "noData": "Ei tapahtumatietoja"
+    },
+    "occupancy": {
+      "label": "Kayttoaste",
+      "contact": "Yhteystieto",
+      "selfOccupied": "Omakaytossa",
+      "vacant": "Vapaa",
+      "contactOccupied": "Vuokrattu",
+      "netIncomeTrend": "Nettotulotrendi",
+      "netIncome": "Nettotulot",
+      "noData": "Ei sopimustietoja"
+    },
+    "expense": {
+      "noData": "Ei kulutietoja"
+    },
+    "equity": {
+      "purchasePrice": "Ostohinta",
+      "marketValue": "Markkina-arvo",
+      "mortgage": "Asuntolaina",
+      "equity": "Oma paaoma",
+      "noData": "Lisaa ostohinta ja markkina-arvo nahdaksesi oman paaoman"
+    },
+    "completeness": {
+      "title": "Tietojen kattavuus: {{percent}} %",
+      "purchasePrice": "Ostohinta",
+      "marketValue": "Markkina-arvo",
+      "mortgageInfo": "Asuntolainan tiedot",
+      "operatingCosts": "Kayttokulut",
+      "contracts": "Sopimukset",
+      "payments": "Maksut",
+      "expenses": "Kulut"
+    },
+    "projection": {
+      "description": "Ennustetut tulot ja kulut aktiivisten sopimusten ja kaytokulujenperysteella",
+      "expectedIncome": "Odotetut tulot",
+      "expectedExpenses": "Odotetut kulut",
+      "expectedNet": "Odotettu netto"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Valitse --",
+    "residential": {
+      "title": "Asunnon tiedot",
+      "bedrooms": "Makuuhuoneet",
+      "bathrooms": "Kylpyhuoneet",
+      "furnished": "Kalustettu",
+      "petPolicy": "Lemmikkikaytanto"
+    },
+    "commercial": {
+      "title": "Liiketilan tiedot",
+      "usableArea": "Kayttokelpoinen pinta-ala",
+      "commonArea": "Yhteistila",
+      "floorLevel": "Kerros",
+      "ceilingHeight": "Huonekorkeus",
+      "maxOccupancy": "Enimmaiskayttajamaa",
+      "restroomCount": "WC-tilat",
+      "zoningClassification": "Kaavoitusluokitus",
+      "zoningPlaceholder": "esim. C-2, Sekaliiketoiminta",
+      "hasStorefront": "Myymalaikkuna",
+      "signageRights": "Kyltitysoikeudet",
+      "kitchenFacility": "Keittiotiilat",
+      "accessibilityCompliant": "Esteettomyysvaatimusten mukainen"
+    },
+    "industrial": {
+      "title": "Teollisuustilan tiedot",
+      "clearHeight": "Vapaa korkeus",
+      "loadingDocks": "Lastauslaiturit",
+      "driveInDoors": "Ajoreliovet",
+      "floorLoadCapacity": "Lattiankuormituskapasiteetti",
+      "powerCapacity": "Tehokapasiteetti",
+      "craneCapacity": "Nosturikapasiteetti",
+      "yardArea": "Piha-alue",
+      "zoningClassification": "Kaavoitusluokitus",
+      "zoningPlaceholder": "esim. I-1, Kevyt teollisuus",
+      "threePhasePower": "Kolmivaihevirta",
+      "craneAvailable": "Nosturi saatavilla",
+      "hazmatCertified": "Vaarallisten aineiden sertifioitu",
+      "ventilationSystem": "Ilmanvaihtojarjestelma",
+      "climateControl": "Ilmastointiohjaus"
+    },
+    "agricultural": {
+      "title": "Maatalouskohteen tiedot",
+      "totalLandArea": "Maa-alue yhteensa",
+      "arableArea": "Viljelykelpoinen alue",
+      "soilType": "Maapertyyppi",
+      "waterSource": "Vesiltahde",
+      "irrigationType": "Kastelutyyppi",
+      "fencingType": "Aitaustyyppi",
+      "currentUse": "Nykyinen kaytto",
+      "currentUsePlaceholder": "esim. Viljelys, Laidunnus",
+      "zoningClassification": "Kaavoitusluokitus",
+      "zoningPlaceholder": "esim. A-1, Maatalous",
+      "waterRights": "Vesioikeudet",
+      "hasOutbuildings": "Ulkorakennuksia",
+      "outbuildingDetails": "Ulkorakennusten tiedot",
+      "outbuildingPlaceholder": "esim. Navetta, Varastorakennus, Konesuoja"
+    },
+    "construction": {
+      "yearBuilt": "Rakennusvuosi",
+      "yearLastRenovated": "Viimeisin remontti",
+      "constructionType": "Rakennetyyppi",
+      "foundationType": "Perustustyyppi",
+      "roofType": "Kattotyyppi",
+      "wallConstruction": "Seinarakenne",
+      "flooringType": "Lattiatyyppi",
+      "windowType": "Ikkunatyyppi",
+      "numberOfFloors": "Kerrosten maara",
+      "structuralNotes": "Rakennemuistiinpanot",
+      "structuralNotesTooltip": "Merkittavat rakenteelliset yksityiskohdat, remontit tai ongelmat"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Energiatehokkuusluokitus",
+      "energyRatingTooltip": "Virallinen energialuokka (A++ - G)",
+      "certificateExpiry": "Energiatodistuksen vanheneminen",
+      "certificateExpiryTooltip": "Milloin nykyinen energiatodistus vanhenee",
+      "heatingType": "Lammitystyyppi",
+      "coolingType": "Jaahdytystyyppi",
+      "hotWaterSystem": "Lampovesijarjestelma",
+      "insulationNotes": "Eristysmuistiinpanot",
+      "insulationTooltip": "Seinan, katon ja lattian eristystiedot"
+    },
+    "utilities": {
+      "electricityConnection": "Sahkoliittyma",
+      "electricityCapacity": "Sahkokapasiteetti",
+      "electricityCapacityTooltip": "Paasulaakkeen kapasiteetti",
+      "waterConnection": "Vesiliittyma",
+      "hasGasConnection": "Kaasuliittyma",
+      "sewageType": "Viemarityyppi",
+      "internetConnection": "Internetyhteys",
+      "internetMaxSpeed": "Internetin maksiminopeus",
+      "internetStatus": "Internetin tila"
+    },
+    "parking": {
+      "parkingSpaces": "Autopaikat",
+      "parkingType": "Paikoitustyyppi"
+    },
+    "safety": {
+      "smokeDetectors": "Palovaroittimet",
+      "coDetectors": "CO-ilmaisimet",
+      "fireExtinguisher": "Sammutin",
+      "sprinklerSystem": "Sprinklerilaitteisto",
+      "alarmSystem": "Halytysjarjestelma",
+      "securityCameras": "Valvontakamerat",
+      "secureEntry": "Turvallinen sisaankaynti",
+      "safetyNotes": "Turvallisuusmuistiinpanot",
+      "safetyNotesTooltip": "Paloportaat, viimeisin tarkastuspaiva jne."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Pyoratuolikelpoinen",
+      "elevator": "Hissi",
+      "stepFreeEntrance": "Tasainen sisaankaynti",
+      "adaptedBathroom": "Mukautettu kylpyhuone",
+      "accessibilityNotes": "Esteettomyysmuistiinpanot",
+      "accessibilityNotesTooltip": "Ovileveydet, rampin saatavuus jne."
+    },
+    "outdoorAreas": {
+      "type": "Tyyppi",
+      "area": "Pinta-ala",
+      "unit": "Yksikko",
+      "add": "Lisaa",
+      "addOutdoorArea": "Lisaa ulkoalue"
+    }
+  },
+  "form": {
+    "address": "Osoite",
+    "street": "Katu",
+    "streetPlaceholder": "Mannerheimintie 1",
+    "city": "Kaupunki",
+    "cityPlaceholder": "Helsinki",
+    "postalCode": "Postinumero",
+    "postalCodePlaceholder": "00100",
+    "country": "Maa",
+    "region": "Alue",
+    "regionOther": "Muu",
+    "locationPreview": "Sijainnin esikatselu",
+    "specifications": "Tiedot",
+    "category": "Kategoria",
+    "categoryCannotChange": "(ei voi muuttaa)",
+    "type": "Tyyppi",
+    "status": "Tila",
+    "area": "Pinta-ala",
+    "areaPlaceholder": "75,5",
+    "saving": "Tallennetaan...",
+    "updateProperty": "Paivita kohde",
+    "createProperty": "Luo kohde",
+    "validation": {
+      "streetRequired": "Katu on pakollinen",
+      "cityRequired": "Kaupunki on pakollinen",
+      "postalCodeRequired": "Postinumero on pakollinen",
+      "countryRequired": "Maa on pakollinen",
+      "areaPositive": "Pinta-alan on oltava suurempi kuin 0"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} / {{total}} taytetty"
+  },
+  "documents": {
+    "title": "Asiakirjat",
+    "uploadButton": "Lataa asiakirja",
+    "empty": "Asiakirjoja ei ole viela ladattu",
+    "failedToLoad": "Asiakirjojen lataus epaonnistui",
+    "table": {
+      "document": "Asiakirja",
+      "size": "Koko",
+      "uploaded": "Ladattu",
+      "actions": "Toiminnot"
+    },
+    "selection": {
+      "selected": "{{selected}} / {{total}} valittu",
+      "count_one": "{{count}} asiakirja",
+      "count_other": "{{count}} asiakirjaa"
+    },
+    "preview": "Esikatselu",
+    "editTitleNotes": "Muokkaa otsikkoa ja muistiinpanoja",
+    "upload": {
+      "title_one": "Lataa asiakirja",
+      "title_other": "Lataa asiakirjat",
+      "files": "{{count}} tiedostoa",
+      "titleLabel": "Otsikko (valinnainen)",
+      "titlePlaceholder": "esim. Pohjapiirros",
+      "notesLabel": "Muistiinpanot (valinnainen)",
+      "notesPlaceholder": "Lisamuistiinpanoja tasta asiakirjasta",
+      "uploading": "Ladataan {{current}} / {{total}}...",
+      "uploadCount": "Lataa {{count}} asiakirjaa"
+    },
+    "delete": {
+      "title_one": "Poista asiakirja",
+      "title_other": "Poista asiakirjat",
+      "message_one": "Haluatko varmasti poistaa taman asiakirjan? Tata toimintoa ei voi kumota.",
+      "message_other": "Olet poistamassa {{count}} asiakirjaa. Tata toimintoa ei voi kumota.",
+      "confirmLabel_other": "Poista {{count}} asiakirjaa"
+    },
+    "editModal": "Muokkaa asiakirjaa",
+    "downloading": "Ladataan..."
+  },
+  "photos": {
+    "title": "Valokuvat",
+    "uploadButton": "Lataa valokuva",
+    "empty": "Ei valokuvia viela",
+    "upload": {
+      "title_one": "Lataa valokuva",
+      "title_other": "Lataa valokuvat",
+      "files": "{{count}} tiedostoa",
+      "titleLabel": "Otsikko (valinnainen)",
+      "titlePlaceholder": "esim. Olohuone",
+      "notesLabel": "Muistiinpanot (valinnainen)",
+      "notesPlaceholder": "Lisamuistiinpanoja tasta valokuvasta",
+      "uploading": "Ladataan {{current}} / {{total}}...",
+      "uploadCount": "Lataa {{count}} valokuvaa"
+    },
+    "delete": {
+      "title_one": "Poista valokuva",
+      "title_other": "Poista valokuvat",
+      "mainPhotoWarning_one": "Tama on paavalokuva. Poistaminen tarkoittaa, etta kohteella ei ole enaa paavalokuvaa. Tata toimintoa ei voi kumota.",
+      "mainPhotoWarning_other": "Olet poistamassa {{count}} valokuvaa, mukaan lukien paavalokuvan. Kohteella ei ole enaa paavalokuvaa. Tata toimintoa ei voi kumota.",
+      "message_one": "Haluatko varmasti poistaa taman valokuvan? Tata toimintoa ei voi kumota.",
+      "message_other": "Olet poistamassa {{count}} valokuvaa. Tata toimintoa ei voi kumota.",
+      "confirmLabel_other": "Poista {{count}} valokuvaa"
+    },
+    "editModal": "Muokkaa valokuvaa"
+  },
+  "contracts": {
+    "title": "Sopimukset",
+    "addContract": "Lisaa sopimus",
+    "empty": "Ei sopimuksia talle kohteelle",
+    "createFirst": "Luo ensimmainen sopimus",
+    "searchPlaceholder": "Hae sopimusnumerolla, yhteystiedolla, tyypilla...",
+    "noMatchingSearch": "Hakuasi vastaavia sopimuksia ei loytynyt",
+    "table": {
+      "contractNumber": "Sopimus #",
+      "contact": "Yhteystieto",
+      "type": "Tyyppi",
+      "startDate": "Alkamispaiva",
+      "endDate": "Paattymispaiva",
+      "rentAmount": "Vuokrasumma",
+      "status": "Tila"
+    },
+    "pagination": {
+      "showing": "Naytettavissa {{from}}-{{to}} / {{total}} sopimusta"
+    },
+    "selfOccupancy": {
+      "title": "Omakayttojaksot",
+      "addButton": "Lisaa omakaytto",
+      "empty": "Ei kirjattuja omakayttojaksoja",
+      "recordPeriod": "Kirjaa omakayttojakso",
+      "table": {
+        "period": "Ajanjakso",
+        "type": "Tyyppi",
+        "occupant": "Asukas",
+        "status": "Tila",
+        "actions": "Toiminnot"
+      },
+      "ongoing": "Kaynnissa",
+      "active": "Aktiivinen",
+      "ended": "Paattynyt",
+      "endOccupancy": "Lopeta omakaytto",
+      "deleteTitle": "Poista omakayttojakso",
+      "deleteMessage": "Haluatko varmasti poistaa taman omakayttojakson?",
+      "deleteWarning": "Tata toimintoa ei voi kumota.",
+      "takenPeriods": {
+        "selfUse": "Omakaytto: {{period}}",
+        "contract": "Sopimus {{identifier}}: {{period}}",
+        "ongoing": "Kaynnissa"
+      }
+    }
+  },
+  "expenses": {
+    "title": "Kulut",
+    "addExpense": "Lisaa kulu",
+    "empty": "Ei kuluja talle kohteelle",
+    "createFirst": "Luo ensimmainen kulu",
+    "failedToLoad": "Kulujen lataus epaonnistui",
+    "searchPlaceholder": "Hae kulunumerolla, kuvauksella, kategorialla...",
+    "noMatchingSearch": "Hakuasi vastaavia kuluja ei loytynyt",
+    "table": {
+      "expenseNumber": "Kulu #",
+      "date": "Paivamaara",
+      "description": "Kuvaus",
+      "category": "Kategoria",
+      "amount": "Summa"
+    },
+    "pagination": {
+      "showing": "Naytettavissa {{from}}-{{to}} / {{total}} kulua"
+    }
+  },
+  "audit": {
+    "title": "Kohteen historia",
+    "failedToLoad": "Historian lataus epaonnistui",
+    "empty": {
+      "title": "Historiaa ei ole saatavilla",
+      "description": "Taman kohteen muutokset naytetaan taalla"
+    },
+    "impersonated": "Toisena kayttajana",
+    "clickToHide": "Piilota muutokset klikkaamalla",
+    "clickToView": "Nayta muutokset klikkaamalla",
+    "changedFields": "Muuttuneet kentat",
+    "old": "Vanha:",
+    "new": "Uusi:",
+    "fileName": "Tiedostonimi",
+    "titleLabel": "Otsikko",
+    "typeLabel": "Tyyppi",
+    "photo": "Valokuva",
+    "document": "Asiakirja"
+  },
+  "selfOccupancy": {
+    "title": "Omakaytto",
+    "markTitle": "Merkitse omakaytossa olevaksi",
+    "editTitle": "Muokkaa omakayttoa",
+    "endTitle": "Lopeta omakaytto",
+    "active": "Aktiivinen",
+    "period": "Ajanjakso",
+    "type": "Tyyppi",
+    "occupant": "Asukas",
+    "imputedRent": "Laskennallinen vuokra",
+    "perMonth": "/ kk",
+    "endReason": "Lopetuksen syy",
+    "notes": "Muistiinpanot",
+    "endOccupancy": "Lopeta omakaytto",
+    "form": {
+      "startDate": "Alkamispaiva *",
+      "endDate": "Paattymispaiva",
+      "endDateRequired": "Paattymispaiva *",
+      "occupancyType": "Omakayttotyyppi *",
+      "occupantName": "Asukkaan nimi",
+      "occupantNamePlaceholder": "esim. Omistaja, Perheenjasen",
+      "monthlyImputedRent": "Kuukausittainen laskennallinen vuokra",
+      "notes": "Muistiinpanot",
+      "notesPlaceholder": "Lisamuistiinpanoja...",
+      "reason": "Syy",
+      "reasonPlaceholder": "Valitse syy...",
+      "alreadyTakenPeriods": "Jo varatut jaksot"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Henkilokohtainen",
+      "FAMILY": "Perhe",
+      "BUSINESS": "Liiketoiminta"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Muutetaan vuokrakayttoon",
+      "SELLING": "Myynti",
+      "RENOVATION": "Remontti",
+      "OTHER": "Muu"
+    }
+  },
+  "map": {
+    "unavailable": "Kartan esikatselu ei ole saatavilla",
+    "configureApiKey": "Maarittele VITE_GOOGLE_MAPS_API_KEY ottaaksesi kartat kayttoon",
+    "loading": "Ladataan karttaa...",
+    "locationNotFound": "Sijaintia ei loytynyt",
+    "couldNotFind": "Tata osoitetta ei loytynyt kartalta",
+    "apiKeyNotConfigured": "Google Maps API-avainta ei ole maaritelty",
+    "geocodeFailed": "Osoitteen geokoodaus epaonnistui",
+    "locationNotFoundShort": "Sijaintia ei loytynyt",
+    "findingLocation": "Etsitaan sijaintia...",
+    "couldNotLoadMaps": "Google Mapsia ei voitu ladata juuri nyt",
+    "clickToPlace": "Karttataitomme pettivat talla kertaa. Klikkaa karttaa asettaaksesi kohteen merkki.",
+    "placePinManually": "Aseta merkki manuaalisesti",
+    "accuracy": {
+      "rooftop": "Vedaa merkkia hienosataaksesi sijaintia",
+      "manual": "Merkki asetettu manuaalisesti - vedaa tarvittaessa",
+      "approximate": "Loysimme alueen mutta emme tarkkaa paikkaa - vedaa merkki kohteesi kohdalle!",
+      "country": "No, maan ainakin loysimme! Vedaa merkki oikeaan sijaintiin."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Omakaytto",
+    "contract": "Sopimus",
+    "vacancy": "Tyhja",
+    "noEntries": "Ei aikajanakohtia viela",
+    "ongoing": "Kaynnissa"
+  },
+  "statusChart": {
+    "occupied": "Vuokrattu",
+    "selfOccupied": "Omakaytossa",
+    "vacant": "Vapaa",
+    "maintenance": "Huolto",
+    "unavailable": "Ei kaytettavissa",
+    "noProperties": "Ei naytettavia kohteita"
+  },
+  "financials": {
+    "failedToLoad": "Taloustietojen lataus epaonnistui.",
+    "saving": "Tallennetaan...",
+    "deleting": "Poistetaan...",
+    "notSet": "Ei asetettu",
+    "latestValuation": "Viimeisin arvio",
+    "valuationHistory": "Arviohistoria",
+    "payments": "Maksut",
+    "bulkAdd": "Joukkosyotto",
+    "sections": {
+      "acquisition": "Hankinta",
+      "valuations": "Arviot",
+      "financings": "Rahoitukset",
+      "recurringCosts": "Toistuvat kulut"
+    },
+    "metrics": {
+      "netWorth": "Nettovarallisuus",
+      "totalAnnualCosts": "Vuosikulut yhteensa",
+      "totalFinancingBalance": "Rahoitussaldo yhteensa",
+      "latestValuation": "Viimeisin arvio"
+    },
+    "modals": {
+      "addTax": "Lisaa vero",
+      "editTax": "Muokkaa veroa",
+      "addFee": "Lisaa maksu",
+      "editFee": "Muokkaa maksua",
+      "addFinancing": "Lisaa rahoitus",
+      "editFinancing": "Muokkaa rahoitusta",
+      "addInsurance": "Lisaa vakuutus",
+      "editInsurance": "Muokkaa vakuutusta",
+      "addValuation": "Lisaa arvio",
+      "editValuation": "Muokkaa arviota",
+      "addAcquisition": "Lisaa hankinta",
+      "editAcquisition": "Muokkaa hankintaa",
+      "editPayment": "Muokkaa maksua",
+      "recordPayment": "Kirjaa maksu",
+      "bulkAddPayments": "Joukkosyotto maksut"
+    },
+    "labels": {
+      "taxType": "Verotyyppi",
+      "authority": "Viranomainen",
+      "annualAmount": "Vuotuinen summa",
+      "paymentFrequency": "Maksutiheys",
+      "taxYear": "Verovuosi",
+      "dueMonths": "Erakuukaudet",
+      "startDate": "Alkamispaiva",
+      "endDate": "Paattymispaiva",
+      "status": "Tila",
+      "notes": "Muistiinpanot",
+      "feeType": "Maksutyyppi",
+      "name": "Nimi",
+      "financingType": "Rahoitustyyppi",
+      "rateType": "Korkotyyppi",
+      "lenderName": "Lainanantajan nimi",
+      "loanNumber": "Lainanumero",
+      "originalAmount": "Alkuperainen summa",
+      "currentBalance": "Nykyinen saldo",
+      "interestRate": "Korko",
+      "monthlyPayment": "Kuukausimaksu",
+      "variablePayment": "Vaihtuva maksu",
+      "termMonths": "Laina-aika (kuukautta)",
+      "insuranceType": "Vakuutustyyppi",
+      "provider": "Palveluntarjoaja",
+      "policyNumber": "Vakuutusnumero",
+      "coverageAmount": "Vakuutussumma",
+      "annualPremium": "Vuotuinen vakuutusmaksu",
+      "valuationType": "Arviotyyppi",
+      "valuationDate": "Arviopaiva",
+      "amount": "Summa",
+      "source": "Lahde",
+      "acquisitionType": "Hankintatyyppi",
+      "acquisitionDate": "Hankintapaiva",
+      "purchasePrice": "Ostohinta",
+      "closingCosts": "Kaupanpaatoskulut",
+      "renovationCosts": "Remonttikustannukset",
+      "landValue": "Maan arvo",
+      "depreciationMethod": "Poistomenetelma",
+      "depreciationYears": "Poistovuodet",
+      "paymentDate": "Maksupaivamaara",
+      "totalAmount": "Kokonaissumma",
+      "principal": "Paaoma",
+      "interest": "Korko",
+      "escrow": "Rahastotili",
+      "extraPayment": "Ylimaatainen maksu",
+      "deductFromBalance": "Vahenna paaoma rahoitussaldosta",
+      "documents": "Asiakirjat",
+      "currency": "Valuutta",
+      "type": "Tyyppi",
+      "date": "Paivamaara"
+    },
+    "placeholders": {
+      "addNotes": "Lisaa muistiinpanoja...",
+      "source": "esim. Kiinteistonvalittaja, Verkkotyokalu"
+    },
+    "units": {
+      "years": "vuotta",
+      "months": "kuukautta",
+      "perYear": "/v"
+    },
+    "recurringCosts": "Toistuvat kulut",
+    "insurances": "Vakuutukset",
+    "taxes": "Verot",
+    "fees": "Maksut",
+    "na": "N/A",
+    "all": "Kaikki",
+    "term": "Laina-aika",
+    "frequency": "Tiheys",
+    "actions": "Toiminnot",
+    "total": "Yhteensa",
+    "empty": {
+      "noAcquisition": "Hankintatietoja ei ole kirjattu.",
+      "noValuation": "Arviotietoja ei ole kirjattu.",
+      "noFinancing": "Rahoitusinstrumentteja ei ole kirjattu.",
+      "noPayments": "Maksuja ei ole viela kirjattu.",
+      "noInsurances": "Ei vakuutuksia.",
+      "noTaxes": "Ei veroja.",
+      "noFees": "Ei maksuja."
+    },
+    "delete": {
+      "title": "Poista {{label}}?",
+      "message": "Haluatko varmasti poistaa taman: {{label}}? Tata toimintoa ei voi kumota.",
+      "valuation": "{{type}} arvio",
+      "payment": "maksu ({{date}})",
+      "insurance": "{{type}} vakuutus",
+      "tax": "{{type}} vero",
+      "fee": "{{type}} maksu"
+    },
+    "toast": {
+      "paymentDeleted": "Maksu poistettu onnistuneesti",
+      "paymentDeleteFailed": "Maksun poisto epaonnistui",
+      "paymentsCreated_one": "{{count}} maksu luotu onnistuneesti",
+      "paymentsCreated_other": "{{count}} maksua luotu onnistuneesti"
+    },
+    "months": {
+      "jan": "Tammi",
+      "feb": "Helmi",
+      "mar": "Maalis",
+      "apr": "Huhti",
+      "may": "Touko",
+      "jun": "Kesa",
+      "jul": "Heina",
+      "aug": "Elo",
+      "sep": "Syys",
+      "oct": "Loka",
+      "nov": "Marras",
+      "dec": "Joulu"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Osto",
+      "INHERITANCE": "Perinto",
+      "GIFT": "Lahja",
+      "FORECLOSURE": "Ulosmittaus",
+      "AUCTION": "Huutokauppa",
+      "OTHER": "Muu"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Tasapoisto",
+      "DECLINING_BALANCE": "Menojaanospoisto",
+      "NONE": "Ei poistoja"
+    },
+    "valuationTypes": {
+      "MARKET": "Markkina-arvo",
+      "APPRAISAL": "Arviokirja",
+      "TAX_ASSESSED": "Verotusarvo",
+      "PURCHASE": "Ostohinta",
+      "INSURANCE": "Vakuutusarvo",
+      "USER_ESTIMATE": "Oma arvio"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Asuntolaina",
+      "LEASING": "Leasing",
+      "LOAN": "Laina",
+      "LINE_OF_CREDIT": "Luottoraja",
+      "PRIVATE_FINANCING": "Yksityinen rahoitus",
+      "OTHER": "Muu"
+    },
+    "rateTypes": {
+      "FIXED": "Kiintea",
+      "VARIABLE": "Vaihtuva",
+      "INTEREST_ONLY": "Vain korko",
+      "HYBRID": "Hybridi"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Aktiivinen",
+      "PAID_OFF": "Maksettu pois",
+      "REFINANCED": "Uudelleenrahoitettu",
+      "DEFAULTED": "Laimminlyoty"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Ajoitettu",
+      "COMPLETED": "Suoritettu",
+      "MISSED": "Jaanyt valiin",
+      "LATE": "Myohassa"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Kiinteisto",
+      "LIABILITY": "Vastuu",
+      "CONTENTS": "Irtaimisto",
+      "FLOOD": "Tulva",
+      "EARTHQUAKE": "Maanjaristys",
+      "UMBRELLA": "Sateenvarjo",
+      "RENT_GUARANTEE": "Vuokratakuu",
+      "OTHER": "Muu"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Aktiivinen",
+      "EXPIRED": "Vanhentunut",
+      "CANCELLED": "Peruutettu"
+    },
+    "taxTypes": {
+      "PROPERTY": "Kiinteisto",
+      "MUNICIPAL": "Kunnallinen",
+      "STATE": "Valtion",
+      "LOCAL": "Paikallinen",
+      "LAND": "Maa",
+      "SPECIAL_ASSESSMENT": "Erityisarviointi",
+      "OTHER": "Muu"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Aktiivinen",
+      "EXPIRED": "Vanhentunut",
+      "EXEMPT": "Vapautettu"
+    },
+    "feeTypes": {
+      "HOA": "Taloyhtio",
+      "MANAGEMENT": "Hallinta",
+      "MAINTENANCE_RESERVE": "Yllapitovaraus",
+      "CLEANING": "Siivous",
+      "GARDENING": "Puutarhanhoito",
+      "SECURITY": "Turvallisuus",
+      "WASTE_MANAGEMENT": "Jatehuolto",
+      "WATER": "Vesi",
+      "UTILITIES": "Kayttokulut",
+      "OTHER": "Muu"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Aktiivinen",
+      "EXPIRED": "Vanhentunut",
+      "CANCELLED": "Peruutettu"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Kuukausittain",
+      "QUARTERLY": "Neljanneksvuosittain",
+      "SEMI_ANNUALLY": "Puolivuosittain",
+      "ANNUALLY": "Vuosittain",
+      "CUSTOM": "Mukautettu"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Avaa sopimus",
+    "clickToEdit": "Muokkaa klikkaamalla"
+  }
+}

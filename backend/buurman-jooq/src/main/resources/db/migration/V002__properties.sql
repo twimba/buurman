@@ -252,7 +252,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Swimming Pool',
+        'SWIMMING_POOL',
         'LEISURE',
         'swimming_pool',
         '{RESIDENTIAL,COMMERCIAL}'
@@ -261,7 +261,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Gym',
+        'GYM',
         'LEISURE',
         'gym',
         '{RESIDENTIAL,COMMERCIAL}'
@@ -270,7 +270,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Sauna',
+        'SAUNA',
         'LEISURE',
         'sauna',
         '{RESIDENTIAL,COMMERCIAL}'
@@ -279,7 +279,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Fireplace',
+        'FIREPLACE',
         'COMFORT',
         'fireplace',
         '{RESIDENTIAL,COMMERCIAL}'
@@ -288,7 +288,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Built-in Vacuum',
+        'BUILT_IN_VACUUM',
         'COMFORT',
         'built_in_vacuum',
         '{RESIDENTIAL}'
@@ -297,7 +297,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'In-unit Laundry',
+        'IN_UNIT_LAUNDRY',
         'APPLIANCE',
         'in_unit_laundry',
         '{RESIDENTIAL}'
@@ -306,7 +306,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Shared Laundry',
+        'SHARED_LAUNDRY',
         'APPLIANCE',
         'shared_laundry',
         '{RESIDENTIAL,COMMERCIAL}'
@@ -315,7 +315,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Dishwasher',
+        'DISHWASHER',
         'APPLIANCE',
         'dishwasher',
         '{RESIDENTIAL}'
@@ -324,7 +324,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Storage Unit',
+        'STORAGE_UNIT',
         'STORAGE',
         'storage_unit',
         '{RESIDENTIAL,COMMERCIAL,INDUSTRIAL}'
@@ -333,7 +333,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Bike Storage',
+        'BIKE_STORAGE',
         'STORAGE',
         'bike_storage',
         '{RESIDENTIAL,COMMERCIAL}'
@@ -342,7 +342,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Furnished',
+        'FURNISHED',
         'COMFORT',
         'furnished',
         '{RESIDENTIAL}'
@@ -351,7 +351,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Doorman / Concierge',
+        'DOORMAN_CONCIERGE',
         'SERVICE',
         'doorman_concierge',
         '{RESIDENTIAL,COMMERCIAL}'
@@ -361,7 +361,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Conference Room',
+        'CONFERENCE_ROOM',
         'COMFORT',
         'conference_room',
         '{COMMERCIAL}'
@@ -370,7 +370,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Reception Area',
+        'RECEPTION_AREA',
         'COMFORT',
         'reception_area',
         '{COMMERCIAL}'
@@ -379,7 +379,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Server Room',
+        'SERVER_ROOM',
         'APPLIANCE',
         'server_room',
         '{COMMERCIAL,INDUSTRIAL}'
@@ -388,7 +388,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Kitchenette',
+        'KITCHENETTE',
         'APPLIANCE',
         'kitchenette',
         '{COMMERCIAL}'
@@ -397,7 +397,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Loading Bay',
+        'LOADING_BAY',
         'SERVICE',
         'loading_bay',
         '{COMMERCIAL,INDUSTRIAL}'
@@ -406,7 +406,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Compressed Air System',
+        'COMPRESSED_AIR_SYSTEM',
         'APPLIANCE',
         'compressed_air',
         '{INDUSTRIAL}'
@@ -415,7 +415,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Chemical Storage',
+        'CHEMICAL_STORAGE',
         'STORAGE',
         'chemical_storage',
         '{INDUSTRIAL}'
@@ -424,7 +424,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Overhead Crane',
+        'OVERHEAD_CRANE',
         'APPLIANCE',
         'overhead_crane',
         '{INDUSTRIAL}'
@@ -433,7 +433,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Irrigation System',
+        'IRRIGATION_SYSTEM',
         'SERVICE',
         'irrigation_system',
         '{AGRICULTURAL}'
@@ -442,7 +442,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Grain Silo',
+        'GRAIN_SILO',
         'STORAGE',
         'grain_silo',
         '{AGRICULTURAL}'
@@ -451,7 +451,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Livestock Shelter',
+        'LIVESTOCK_SHELTER',
         'SERVICE',
         'livestock_shelter',
         '{AGRICULTURAL}'
@@ -460,7 +460,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Cold Storage',
+        'COLD_STORAGE',
         'STORAGE',
         'cold_storage',
         '{INDUSTRIAL,AGRICULTURAL}'
@@ -469,7 +469,7 @@ VALUES
         'AMN' || upper(
             substr(replace(gen_random_uuid()::TEXT, '-', ''), 1, 26)
         ),
-        'Security Booth',
+        'SECURITY_BOOTH',
         'SERVICE',
         'security_booth',
         '{COMMERCIAL,INDUSTRIAL}'

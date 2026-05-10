@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, RichTextEditor } from '@buurman/ui';
 import {
   useCreateOccupancyPeriod,
   useOccupancyPeriods,
 } from '@/hooks/useOccupancyPeriodHooks';
 import { useContracts } from '@/hooks/useContractHooks';
-import { OccupancyType, OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
+import { OccupancyType } from '@/types/occupancyPeriod';
 import { ContractStatus } from '@/types/contract';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { X, Info } from 'lucide-react';
@@ -19,6 +20,7 @@ export const SelfOccupancyModal = ({
   propertyIdentifier,
   onClose,
 }: SelfOccupancyModalProps) => {
+  const { t } = useTranslation('properties');
   const createMutation = useCreateOccupancyPeriod(propertyIdentifier);
   const { formatDate } = useFormatDate();
   const { data: existingPeriods = [] } =
@@ -63,7 +65,7 @@ export const SelfOccupancyModal = ({
       <div className="bg-surface-card rounded-lg p-6 max-w-lg w-full mx-4">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-text-primary">
-            Mark as Self-Occupied
+            {t('selfOccupancy.markTitle')}
           </h3>
           <button
             onClick={onClose}
@@ -77,7 +79,7 @@ export const SelfOccupancyModal = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Start Date *
+                {t('selfOccupancy.form.startDate')}
               </label>
               <input
                 type="date"
@@ -89,7 +91,7 @@ export const SelfOccupancyModal = ({
             </div>
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                End Date
+                {t('selfOccupancy.form.endDate')}
               </label>
               <input
                 type="date"
@@ -105,7 +107,7 @@ export const SelfOccupancyModal = ({
             <div className="bg-warning-bg border border-warning-border rounded-lg p-3">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-warning-text mb-2">
                 <Info className="h-3.5 w-3.5 flex-shrink-0" />
-                Already taken periods
+                {t('selfOccupancy.form.alreadyTakenPeriods')}
               </div>
               <div className="space-y-1">
                 {existingPeriods.map((p) => (
@@ -115,8 +117,9 @@ export const SelfOccupancyModal = ({
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />
                     <span>
-                      Self-use: {formatDate(p.startDate)} —{' '}
-                      {p.endDate ? formatDate(p.endDate) : 'Ongoing'}
+                      {t('contracts.selfOccupancy.takenPeriods.selfUse', {
+                        period: `${formatDate(p.startDate)} — ${p.endDate ? formatDate(p.endDate) : t('contracts.selfOccupancy.takenPeriods.ongoing')}`,
+                      })}
                       {p.occupantName && ` (${p.occupantName})`}
                     </span>
                   </div>
@@ -128,8 +131,10 @@ export const SelfOccupancyModal = ({
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
                     <span>
-                      Contract {c.identifier}: {formatDate(c.startDate)} —{' '}
-                      {c.endDate ? formatDate(c.endDate) : 'Ongoing'}
+                      {t('contracts.selfOccupancy.takenPeriods.contract', {
+                        identifier: c.identifier,
+                        period: `${formatDate(c.startDate)} — ${c.endDate ? formatDate(c.endDate) : t('contracts.selfOccupancy.takenPeriods.ongoing')}`,
+                      })}
                     </span>
                   </div>
                 ))}
@@ -139,7 +144,7 @@ export const SelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Occupancy Type *
+              {t('selfOccupancy.form.occupancyType')}
             </label>
             <select
               value={type}
@@ -147,9 +152,9 @@ export const SelfOccupancyModal = ({
               required
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              {Object.values(OccupancyType).map((t) => (
-                <option key={t} value={t}>
-                  {OCCUPANCY_TYPE_LABELS[t]}
+              {Object.values(OccupancyType).map((ot) => (
+                <option key={ot} value={ot}>
+                  {t(`selfOccupancy.occupancyTypes.${ot}`)}
                 </option>
               ))}
             </select>
@@ -157,13 +162,13 @@ export const SelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Occupant Name
+              {t('selfOccupancy.form.occupantName')}
             </label>
             <input
               type="text"
               value={occupantName}
               onChange={(e) => setOccupantName(e.target.value)}
-              placeholder="e.g. Owner, Family member"
+              placeholder={t('selfOccupancy.form.occupantNamePlaceholder')}
               maxLength={255}
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
@@ -171,7 +176,7 @@ export const SelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Monthly Imputed Rent
+              {t('selfOccupancy.form.monthlyImputedRent')}
             </label>
             <input
               type="number"
@@ -186,12 +191,12 @@ export const SelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Notes
+              {t('selfOccupancy.form.notes')}
             </label>
             <RichTextEditor
               value={notes}
               onChange={setNotes}
-              placeholder="Additional notes..."
+              placeholder={t('selfOccupancy.form.notesPlaceholder')}
             />
           </div>
 
@@ -201,14 +206,14 @@ export const SelfOccupancyModal = ({
               onClick={onClose}
               disabled={createMutation.isPending}
             >
-              Cancel
+              {t('buttons.cancel', { ns: 'common' })}
             </Button>
             <Button
               variant="primary"
               type="submit"
               isLoading={createMutation.isPending}
             >
-              Confirm
+              {t('buttons.confirm', { ns: 'common' })}
             </Button>
           </div>
         </form>

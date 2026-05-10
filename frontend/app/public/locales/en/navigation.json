@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "properties": "Properties",
+    "contacts": "Contacts",
+    "contracts": "Contracts",
+    "rentRegulations": "Rent Regulations",
+    "rentAdjustments": "Rent Adjustments",
+    "paymentInstructions": "Payment Instructions",
+    "payments": "Payments",
+    "expenses": "Expenses",
+    "documents": "Documents",
+    "photos": "Photos",
+    "reports": "Reports"
+  },
+  "admin": {
+    "title": "Administration",
+    "preferences": "Preferences",
+    "teamMembers": "Team Members",
+    "calendarFeeds": "Calendar Feeds",
+    "notifications": "Notifications",
+    "dataExport": "Data Export",
+    "billing": "Subscription & Billing",
+    "activityLog": "Activity Log",
+    "apiDocs": "API Documentation"
+  },
+  "settings": "Settings",
+  "signOut": "Sign Out"
+}

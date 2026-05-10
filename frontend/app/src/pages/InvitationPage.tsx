@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -29,6 +30,7 @@ const formatRole = (role: string) => {
 };
 
 export const InvitationPage = () => {
+  const { t } = useTranslation('admin');
   const { formatDate } = useFormatDate();
   const { token = '' } = useParams<{ token: string }>();
   const navigate = useNavigate();
@@ -109,7 +111,9 @@ export const InvitationPage = () => {
       <div className="min-h-screen bg-surface-inset flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary-500 mx-auto" />
-          <p className="mt-4 text-text-secondary">Loading invitation...</p>
+          <p className="mt-4 text-text-secondary">
+            {t('common:invitation.loading')}
+          </p>
         </div>
       </div>
     );
@@ -121,17 +125,16 @@ export const InvitationPage = () => {
         <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <XCircle className="h-16 w-16 text-error-text mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-text-primary mb-2">
-            Invalid Invitation
+            {t('common:invitation.invalid.title')}
           </h1>
           <p className="text-text-secondary mb-6">
-            This invitation link is invalid, has already been used, or has
-            expired.
+            {t('common:invitation.invalid.message')}
           </p>
           <button
             onClick={() => navigate('/login')}
             className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
-            Go to Login
+            {t('common:invitation.invalid.goToLogin')}
           </button>
         </div>
       </div>
@@ -144,17 +147,16 @@ export const InvitationPage = () => {
         <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <CheckCircle className="h-16 w-16 text-success-text mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-text-primary mb-2">
-            Already Accepted
+            {t('common:invitation.accepted.title')}
           </h1>
           <p className="text-text-secondary mb-6">
-            This invitation has already been accepted. You can log in to access
-            the team.
+            {t('common:invitation.accepted.message')}
           </p>
           <button
             onClick={() => navigate('/login')}
             className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
-            Go to Login
+            {t('common:invitation.accepted.goToLogin')}
           </button>
         </div>
       </div>
@@ -167,17 +169,16 @@ export const InvitationPage = () => {
         <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <Clock className="h-16 w-16 text-warning-text mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-text-primary mb-2">
-            Invitation Expired
+            {t('common:invitation.expired.title')}
           </h1>
           <p className="text-text-secondary mb-6">
-            This invitation has expired. Please contact the team administrator
-            to request a new invitation.
+            {t('common:invitation.expired.message')}
           </p>
           <button
             onClick={() => navigate('/login')}
             className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
-            Go to Login
+            {t('common:invitation.expired.goToLogin')}
           </button>
         </div>
       </div>
@@ -192,11 +193,12 @@ export const InvitationPage = () => {
             <Users className="h-8 w-8 text-primary-500 dark:text-primary-300" />
           </div>
           <h1 className="text-2xl font-bold text-text-primary mb-2">
-            You&apos;re Invited!
+            {t('common:invitation.youreInvited')}
           </h1>
           <p className="text-text-secondary">
-            <span className="font-medium">{invitation.inviterName}</span> has
-            invited you to join
+            {t('common:invitation.inviterMessage', {
+              name: invitation.inviterName,
+            })}
           </p>
         </div>
 
@@ -206,15 +208,21 @@ export const InvitationPage = () => {
           </h2>
           <div className="space-y-2 text-sm text-text-secondary">
             <p>
-              <span className="font-medium">Your role:</span>{' '}
+              <span className="font-medium">
+                {t('common:invitation.yourRole')}
+              </span>{' '}
               {formatRole(invitation.role)}
             </p>
             <p>
-              <span className="font-medium">Invited email:</span>{' '}
+              <span className="font-medium">
+                {t('common:invitation.invitedEmail')}
+              </span>{' '}
               {invitation.email}
             </p>
             <p>
-              <span className="font-medium">Expires:</span>{' '}
+              <span className="font-medium">
+                {t('common:invitation.expires')}
+              </span>{' '}
               {formatDate(invitation.expiresAt)}
             </p>
           </div>
@@ -224,7 +232,7 @@ export const InvitationPage = () => {
           <div className="bg-error-bg border border-error-border rounded-lg p-3 mb-4">
             <p className="text-sm text-error-text">
               {(acceptMutation.error as Error)?.message ||
-                'Failed to accept invitation. Please try again.'}
+                t('common:invitation.acceptError')}
             </p>
           </div>
         )}
@@ -239,37 +247,37 @@ export const InvitationPage = () => {
               {acceptMutation.isPending ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Accepting...
+                  {t('common:invitation.accepting')}
                 </>
               ) : (
                 <>
                   <CheckCircle className="h-5 w-5" />
-                  Accept Invitation
+                  {t('common:invitation.acceptInvitation')}
                 </>
               )}
             </button>
             <p className="text-xs text-center text-text-secondary">
-              By accepting, you&apos;ll join this team with the specified role.
+              {t('common:invitation.joinNote')}
             </p>
           </div>
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-text-secondary text-center mb-4">
-              To accept this invitation, please log in or create an account.
+              {t('common:invitation.loginRequired')}
             </p>
             <button
               onClick={handleLogin}
               className="w-full px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2"
             >
               <LogIn className="h-5 w-5" />
-              Log In to Accept
+              {t('common:invitation.loginToAccept')}
             </button>
             <button
               onClick={handleRegister}
               className="w-full px-6 py-3 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-page transition-colors flex items-center justify-center gap-2"
             >
               <UserPlus className="h-5 w-5" />
-              Create Account
+              {t('common:invitation.createAccount')}
             </button>
           </div>
         )}

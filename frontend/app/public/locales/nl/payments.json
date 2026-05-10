@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Betalingen",
+    "subtitle": "Volg huurbetalingen en inkomsten"
+  },
+  "actions": {
+    "schedulePayment": "Betaling plannen",
+    "registerPayment": "Betaling registreren",
+    "registerReceival": "Ontvangst registreren",
+    "markAsPaid": "Markeer als betaald"
+  },
+  "stats": {
+    "pendingPayments": "Openstaande betalingen",
+    "pendingCount": "{{count}} betaling",
+    "pendingCount_other": "{{count}} betalingen",
+    "overduePayments": "Achterstallige betalingen",
+    "overdueCount": "{{count}} betaling achterstallig",
+    "overdueCount_other": "{{count}} betalingen achterstallig",
+    "overdueAction": "Actie vereist: Controleer achterstallige betalingen",
+    "allCaughtUp": "Alles bij!",
+    "noOverdue": "Geen achterstallige betalingen. Goed bezig!",
+    "lastSixMonths": "Laatste 6 maanden",
+    "tooltipReceived": "Ontvangen"
+  },
+  "filters": {
+    "title": "Filters",
+    "property": "Pand",
+    "contract": "Contract",
+    "status": "Status",
+    "allStatuses": "Alle statussen",
+    "allProperties": "Alle panden",
+    "allContracts": "Alle contracten"
+  },
+  "status": {
+    "pending": "Openstaand",
+    "partiallyPaid": "Gedeeltelijk",
+    "paid": "Betaald",
+    "overdue": "Achterstallig",
+    "late": "Te laat",
+    "cancelled": "Geannuleerd"
+  },
+  "table": {
+    "dueDate": "Vervaldatum",
+    "paymentNumber": "Betaling #",
+    "contract": "Contract",
+    "amount": "Bedrag",
+    "status": "Status",
+    "balance": "Saldo: {{amount}}"
+  },
+  "empty": {
+    "title": "Geen betalingen gevonden",
+    "filtered": "Probeer uw filters aan te passen",
+    "noData": "Begin door uw eerste betaling vast te leggen"
+  },
+  "card": {
+    "paymentId": "Betaling #{{id}}",
+    "contractId": "Contract #{{id}}",
+    "property": "Pand",
+    "contact": "Contact",
+    "amount": "Bedrag",
+    "balance": "Saldo: {{amount}}",
+    "dueDate": "Vervaldatum",
+    "paidOn": "Betaald op"
+  },
+  "form": {
+    "amount": "Bedrag",
+    "dueDate": "Vervaldatum",
+    "paymentDate": "Betaaldatum",
+    "contact": "Contact",
+    "notes": "Notities",
+    "notesPlaceholder": "Voeg eventuele extra opmerkingen over deze betaling toe...",
+    "continueAdding": "Doorgaan met toevoegen",
+    "today": "Vandaag",
+    "clear": "Wissen",
+    "updatePayment": "Betaling bijwerken",
+    "saving": "Opslaan...",
+    "contract": "Contract",
+    "currency": "Valuta",
+    "selectContractFirst": "Selecteer eerst een contract",
+    "rentPeriodNotice": "Deze datum valt in een andere huurperiode ({{amount}}/mnd vanaf {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " tot {{date}}",
+    "rentPeriodCurrentRent": "Huidige huur is {{amount}}/mnd.",
+    "rentPeriodWarning": "Deze datum valt in een andere huurperiode ({{currency}}{{amount}}/mnd vanaf {{from}}{{to}}).",
+    "rentPeriodTo": " tot {{date}}",
+    "currentRentInfo": "Huidige huur is {{currency}}{{amount}}/mnd."
+  },
+  "validation": {
+    "amountRequired": "Bedrag moet groter zijn dan 0",
+    "dueDateRequired": "Vervaldatum is verplicht",
+    "currencyRequired": "Valuta is verplicht",
+    "paymentDateRequired": "Betaaldatum is verplicht"
+  },
+  "bulkColumns": {
+    "date": "Datum",
+    "amount": "Bedrag"
+  },
+  "create": {
+    "titleRegister": "Betaling registreren",
+    "titleSchedule": "Betaling plannen",
+    "addedCount": "{{count}} betaling {{action}} deze sessie",
+    "addedCount_other": "{{count}} betalingen {{action}} deze sessie",
+    "actionRegistered": "geregistreerd",
+    "actionScheduled": "gepland",
+    "single": "Enkel",
+    "bulk": "Bulk",
+    "contractInactiveWarning": "Het gekoppelde contract is niet actief. Selecteer een actief contract."
+  },
+  "detail": {
+    "titlePrefix": "Betaling #{{id}}",
+    "subtitlePrefix": "Contract #{{id}}",
+    "paymentDetails": "Betalingsdetails",
+    "relatedInformation": "Gerelateerde informatie",
+    "amount": "Bedrag",
+    "received": "Ontvangen",
+    "balance": "Saldo",
+    "dueDate": "Vervaldatum",
+    "paymentDate": "Betaaldatum",
+    "contract": "Contract",
+    "contractId": "Contract #{{id}}",
+    "property": "Pand",
+    "contact": "Contact",
+    "notes": "Notities",
+    "metadata": "Metadata",
+    "created": "Aangemaakt:",
+    "lastUpdated": "Laatst bijgewerkt:",
+    "editPayment": "Betaling bewerken"
+  },
+  "tabs": {
+    "details": "Details",
+    "receivals": "Ontvangsten",
+    "documents": "Documenten",
+    "history": "Geschiedenis"
+  },
+  "receivals": {
+    "title": "Ontvangsten ({{count}})",
+    "totalAmount": "Totaalbedrag",
+    "received": "Ontvangen",
+    "balance": "Saldo",
+    "empty": "Nog geen ontvangsten geregistreerd",
+    "searchPlaceholder": "Zoek op bedrag, datum of notities...",
+    "date": "Datum",
+    "amount": "Bedrag",
+    "notes": "Notities",
+    "actions": "Acties",
+    "showing": "{{from}} tot {{to}} van {{total}} weergegeven",
+    "remainingBalance": "Resterend saldo:",
+    "receivalDate": "Ontvangstdatum",
+    "notesOptional": "Notities (optioneel)",
+    "notesPlaceholder": "Opmerkingen over deze ontvangst toevoegen...",
+    "register": "Registreren"
+  },
+  "history": {
+    "title": "Betalingsgeschiedenis",
+    "empty": "Geen geschiedenis beschikbaar",
+    "emptySubtitle": "Wijzigingen aan deze betaling verschijnen hier",
+    "clickToView": "Klik om wijzigingen te bekijken",
+    "clickToHide": "Klik om wijzigingen te verbergen",
+    "changedFields": "Gewijzigde velden",
+    "old": "Oud:",
+    "new": "Nieuw:",
+    "impersonated": "Geïmpersoneerd",
+    "na": "N.v.t.",
+    "none": "Geen",
+    "receivalOn": "{{amount}} op {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Betaling verwijderen",
+    "message": "Weet u zeker dat u deze betaling wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    "messageWithRelated": "Weet u zeker dat u deze betaling wilt verwijderen? Alle gerelateerde gegevens (ontvangsten, documenten) worden ook verwijderd. Deze actie kan niet ongedaan worden gemaakt."
+  },
+  "markPaidDialog": {
+    "title": "Betaling markeren als betaald",
+    "balanceMessage": "Hiermee wordt een ontvangst geregistreerd voor het resterende saldo van {{amount}} en wordt de betaling als volledig betaald gemarkeerd.",
+    "paymentDate": "Betaaldatum",
+    "notesOptional": "Notities (optioneel)",
+    "notesPlaceholder": "Opmerkingen over deze betaling toevoegen..."
+  },
+  "receivalDialog": {
+    "title": "Ontvangst registreren",
+    "remainingBalance": "Resterend saldo:",
+    "amount": "Bedrag",
+    "receivalDate": "Ontvangstdatum",
+    "notesOptional": "Notities (optioneel)",
+    "notesPlaceholder": "Opmerkingen over deze ontvangst toevoegen...",
+    "register": "Registreren"
+  },
+  "tooltips": {
+    "viewPayment": "Betaling bekijken",
+    "deletePayment": "Betaling verwijderen",
+    "editReceival": "Ontvangst bewerken",
+    "deleteReceival": "Ontvangst verwijderen",
+    "save": "Opslaan",
+    "previous": "Vorige",
+    "next": "Volgende"
+  },
+  "errors": {
+    "loadFailed": "Kan betalingen niet laden",
+    "loadPaymentFailed": "Kan betaling niet laden",
+    "loadHistoryFailed": "Kan geschiedenis niet laden"
+  }
+}

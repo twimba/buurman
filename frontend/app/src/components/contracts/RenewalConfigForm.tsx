@@ -4,27 +4,7 @@ import type {
   RenewalMode,
   RentAdjustmentType,
 } from '@/types/contractExtension';
-
-const RENEWAL_MODE_LABELS: Record<RenewalMode, string> = {
-  NONE: 'No renewal',
-  AUTOMATIC: 'Automatic',
-  MANUAL: 'Manual',
-};
-
-const ADJUSTMENT_TYPE_LABELS: Record<RentAdjustmentType, string> = {
-  NONE: 'No adjustment',
-  FIXED_PERCENTAGE: 'Fixed percentage',
-  FIXED_AMOUNT: 'Fixed amount',
-  MANUAL: 'Manual',
-};
-
-const RENEWAL_MODE_DESCRIPTIONS: Record<RenewalMode, string> = {
-  NONE: '',
-  AUTOMATIC:
-    'The contract will be automatically extended when the notice window passes. If contact confirmation is required, the extension stays pending until confirmed.',
-  MANUAL:
-    'You will receive a reminder when the notice window approaches. Extensions must be created and activated manually.',
-};
+import { useTranslation } from 'react-i18next';
 
 interface RenewalConfigFormProps {
   renewalMode: RenewalMode;
@@ -55,6 +35,27 @@ export const RenewalConfigForm = ({
   onChange,
   disabled = false,
 }: RenewalConfigFormProps) => {
+  const { t } = useTranslation('contracts');
+
+  const RENEWAL_MODE_LABELS: Record<RenewalMode, string> = {
+    NONE: t('renewalConfig.modes.NONE'),
+    AUTOMATIC: t('renewalConfig.modes.AUTOMATIC'),
+    MANUAL: t('renewalConfig.modes.MANUAL'),
+  };
+
+  const ADJUSTMENT_TYPE_LABELS: Record<RentAdjustmentType, string> = {
+    NONE: t('renewalConfig.adjustmentTypes.NONE'),
+    FIXED_PERCENTAGE: t('renewalConfig.adjustmentTypes.FIXED_PERCENTAGE'),
+    FIXED_AMOUNT: t('renewalConfig.adjustmentTypes.FIXED_AMOUNT'),
+    MANUAL: t('renewalConfig.adjustmentTypes.MANUAL'),
+  };
+
+  const RENEWAL_MODE_DESCRIPTIONS: Record<RenewalMode, string> = {
+    NONE: '',
+    AUTOMATIC: t('renewalConfig.modeDescriptions.AUTOMATIC'),
+    MANUAL: t('renewalConfig.modeDescriptions.MANUAL'),
+  };
+
   const { data: jurisdictionDefaults, isLoading: loadingDefaults } =
     useJurisdictionDefaults(
       countryCode,
@@ -96,7 +97,7 @@ export const RenewalConfigForm = ({
   return (
     <div className="space-y-4">
       <h4 className="text-base font-semibold text-text-primary">
-        Renewal Configuration
+        {t('renewalConfig.title')}
       </h4>
 
       {/* Load Defaults Button */}
@@ -109,7 +110,9 @@ export const RenewalConfigForm = ({
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary-500 bg-primary-500/10 rounded-md hover:bg-primary-500/20 transition-colors disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            {loadingDefaults ? 'Loading...' : 'Load Jurisdiction Defaults'}
+            {loadingDefaults
+              ? t('common:buttons.loading')
+              : t('form.loadJurisdictionDefaults')}
           </button>
           {jurisdictionDefaults?.disclaimer && (
             <p className="text-[11px] text-text-muted italic">
@@ -125,7 +128,7 @@ export const RenewalConfigForm = ({
           htmlFor="renewalMode"
           className="block text-sm font-medium text-text-secondary mb-1"
         >
-          Renewal Mode
+          {t('renewalConfig.renewalMode')}
         </label>
         <select
           id="renewalMode"
@@ -156,7 +159,7 @@ export const RenewalConfigForm = ({
                 htmlFor="renewalTermMonths"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                Renewal Term (months)
+                {t('form.renewalTermMonths')}
               </label>
               <input
                 id="renewalTermMonths"
@@ -179,7 +182,7 @@ export const RenewalConfigForm = ({
                 htmlFor="maxRenewals"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                Max Renewals
+                {t('form.maxRenewals')}
               </label>
               <input
                 id="maxRenewals"
@@ -206,7 +209,7 @@ export const RenewalConfigForm = ({
                 htmlFor="landlordNoticeDays"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                Landlord Notice (days)
+                {t('form.landlordNoticeDays')}
               </label>
               <input
                 id="landlordNoticeDays"
@@ -229,7 +232,7 @@ export const RenewalConfigForm = ({
                 htmlFor="contactNoticeDays"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                Contact Notice (days)
+                {t('form.contactNoticeDays')}
               </label>
               <input
                 id="contactNoticeDays"
@@ -255,7 +258,7 @@ export const RenewalConfigForm = ({
               htmlFor="requiresContactConfirmation"
               className="text-sm font-medium text-text-secondary"
             >
-              Requires Contact Confirmation
+              {t('form.requiresContactConfirmation')}
             </label>
             <button
               type="button"
@@ -292,7 +295,7 @@ export const RenewalConfigForm = ({
                 htmlFor="rentAdjustmentType"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                Rent Adjustment Type
+                {t('form.rentAdjustmentType')}
               </label>
               <select
                 id="rentAdjustmentType"
@@ -317,7 +320,7 @@ export const RenewalConfigForm = ({
                   htmlFor="rentAdjustmentValue"
                   className="block text-sm font-medium text-text-secondary mb-1"
                 >
-                  Adjustment Value
+                  {t('form.adjustmentValue')}
                   {rentAdjustmentType === 'FIXED_PERCENTAGE' ? ' (%)' : ''}
                 </label>
                 <input

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LoadingSpinner,
   Pagination,
@@ -24,22 +25,7 @@ import { format } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
 
-const entityTypeFilters = [
-  { value: undefined, label: 'All Types' },
-  { value: 'PROPERTY', label: 'Properties' },
-  { value: 'CONTACT', label: 'Contacts' },
-  { value: 'CONTRACT', label: 'Contracts' },
-  { value: 'PAYMENT', label: 'Payments' },
-  { value: 'EXPENSE', label: 'Expenses' },
-];
-
-const actionFilters = [
-  { value: undefined, label: 'All Actions' },
-  { value: 'CREATE', label: 'Created' },
-  { value: 'UPDATE', label: 'Updated' },
-  { value: 'DELETE', label: 'Deleted' },
-  { value: 'RESTORE', label: 'Restored' },
-];
+// Moved inside component as useMemo
 
 const getActionColor = (action: string) => {
   switch (action) {
@@ -74,9 +60,33 @@ const getEntityTypeColor = (entityType: string) => {
 };
 
 export const AuditLogPage = () => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
   const { canEditTeamSettings, isLoading: isTeamLoading } = useTeam();
+
+  const entityTypeFilters = useMemo(
+    () => [
+      { value: undefined, label: t('common:auditLog.allTypes') },
+      { value: 'PROPERTY', label: t('common:auditLog.entityTypes.property') },
+      { value: 'CONTACT', label: t('common:auditLog.entityTypes.contact') },
+      { value: 'CONTRACT', label: t('common:auditLog.entityTypes.contract') },
+      { value: 'PAYMENT', label: t('common:auditLog.entityTypes.payment') },
+      { value: 'EXPENSE', label: t('common:auditLog.entityTypes.expense') },
+    ],
+    [t]
+  );
+
+  const actionFilters = useMemo(
+    () => [
+      { value: undefined, label: t('common:auditLog.allActions') },
+      { value: 'CREATE', label: t('common:auditLog.actions.created') },
+      { value: 'UPDATE', label: t('common:auditLog.actions.updated') },
+      { value: 'DELETE', label: t('common:auditLog.actions.deleted') },
+      { value: 'RESTORE', label: t('common:auditLog.actions.restored') },
+    ],
+    [t]
+  );
 
   useEffect(() => {
     if (!isTeamLoading && !canEditTeamSettings) {
@@ -163,7 +173,7 @@ export const AuditLogPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load activity logs" />
+        <ErrorMessage message={t('auditLog.failedToLoad')} />
       </div>
     );
   }
@@ -177,11 +187,11 @@ export const AuditLogPage = () => {
             <div className="flex items-center gap-3 mb-1">
               <ClipboardList className="h-8 w-8 text-primary-500 dark:text-primary-300" />
               <h1 className="text-3xl font-bold text-text-primary">
-                Activity Log
+                {t('common:auditLog.title')}
               </h1>
             </div>
             <p className="text-text-secondary ml-11">
-              Track all changes and actions across your data
+              {t('common:auditLog.subtitle')}
             </p>
           </div>
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
@@ -195,7 +205,7 @@ export const AuditLogPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by user, property address, contact name/email, identifier..."
+              placeholder={t('common:auditLog.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-lg bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
           </div>
@@ -208,7 +218,9 @@ export const AuditLogPage = () => {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Filter className="h-5 w-5 text-text-secondary " />
-                <h3 className="font-semibold text-text-primary">Entity Type</h3>
+                <h3 className="font-semibold text-text-primary">
+                  {t('common:auditLog.entityType')}
+                </h3>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {entityTypeFilters.map((filter) => (
@@ -234,7 +246,9 @@ export const AuditLogPage = () => {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Filter className="h-5 w-5 text-text-secondary " />
-                <h3 className="font-semibold text-text-primary">Action</h3>
+                <h3 className="font-semibold text-text-primary">
+                  {t('common:auditLog.action')}
+                </h3>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {actionFilters.map((filter) => (
@@ -260,8 +274,9 @@ export const AuditLogPage = () => {
 
         {/* Activity Count */}
         <p className="text-sm text-text-secondary mb-4">
-          {activitiesData?.totalElements ?? 0}{' '}
-          {activitiesData?.totalElements === 1 ? 'activity' : 'activities'}
+          {t('common:auditLog.activityCount', {
+            count: activitiesData?.totalElements ?? 0,
+          })}
         </p>
 
         {/* Activities Table */}
@@ -276,7 +291,7 @@ export const AuditLogPage = () => {
                       onClick={() => handleSortChange('timestamp')}
                     >
                       <div className="flex items-center gap-1">
-                        Time
+                        {t('common:auditLog.table.time')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
@@ -285,7 +300,7 @@ export const AuditLogPage = () => {
                       onClick={() => handleSortChange('entityType')}
                     >
                       <div className="flex items-center gap-1">
-                        Type
+                        {t('common:auditLog.table.type')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
@@ -294,18 +309,18 @@ export const AuditLogPage = () => {
                       onClick={() => handleSortChange('action')}
                     >
                       <div className="flex items-center gap-1">
-                        Action
+                        {t('common:auditLog.table.action')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Description
+                      {t('common:auditLog.table.description')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      User
+                      {t('common:auditLog.table.user')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Details
+                      {t('common:auditLog.table.details')}
                     </th>
                   </tr>
                 </thead>
@@ -339,7 +354,7 @@ export const AuditLogPage = () => {
                               {activity.impersonatedBy && (
                                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
                                   <Eye className="h-3 w-3" />
-                                  Impersonated
+                                  {t('common:auditLog.table.impersonated')}
                                 </span>
                               )}
                             </div>
@@ -351,7 +366,10 @@ export const AuditLogPage = () => {
                             <span
                               className={`px-2 py-1 text-xs font-semibold rounded ${getEntityTypeColor(activity.entityType)}`}
                             >
-                              {activity.entityType}
+                              {t(
+                                `common:auditLog.entityTypes.${activity.entityType.toLowerCase()}`,
+                                { defaultValue: activity.entityType }
+                              )}
                             </span>
                           </td>
                           <td
@@ -361,7 +379,10 @@ export const AuditLogPage = () => {
                             <span
                               className={`px-2 py-1 text-xs font-semibold rounded ${getActionColor(activity.action)}`}
                             >
-                              {activity.action}
+                              {t(
+                                `common:auditLog.actions.${activity.action.toLowerCase()}d`,
+                                { defaultValue: activity.action }
+                              )}
                             </span>
                           </td>
                           <td
@@ -388,12 +409,12 @@ export const AuditLogPage = () => {
                                 {isExpanded ? (
                                   <>
                                     <ChevronUp className="h-4 w-4" />
-                                    Hide
+                                    {t('common:auditLog.table.hide')}
                                   </>
                                 ) : (
                                   <>
                                     <ChevronDown className="h-4 w-4" />
-                                    Show
+                                    {t('common:auditLog.table.show')}
                                   </>
                                 )}
                               </button>
@@ -408,7 +429,7 @@ export const AuditLogPage = () => {
                             >
                               <div className="space-y-2">
                                 <h4 className="text-xs font-semibold text-text-secondary uppercase mb-2">
-                                  Changed Fields
+                                  {t('common:auditLog.changedFields')}
                                 </h4>
                                 {Object.entries(
                                   activity.changedFields ?? {}
@@ -429,7 +450,7 @@ export const AuditLogPage = () => {
                                         className="bg-surface-card rounded p-3 text-xs"
                                       >
                                         <div className="font-semibold text-text-secondary mb-1">
-                                          File Name
+                                          {t('common:auditLog.fileName')}
                                         </div>
                                         <div className="text-text-primary">
                                           {formatAuditValue(value)}
@@ -452,7 +473,7 @@ export const AuditLogPage = () => {
                                       <div className="grid grid-cols-2 gap-4">
                                         <div>
                                           <div className="text-text-secondary mb-1">
-                                            Before
+                                            {t('common:auditLog.before')}
                                           </div>
                                           <div className="text-text-primary">
                                             {oldValue !== null &&
@@ -475,7 +496,7 @@ export const AuditLogPage = () => {
                                         </div>
                                         <div>
                                           <div className="text-text-secondary mb-1">
-                                            After
+                                            {t('common:auditLog.after')}
                                           </div>
                                           <div className="text-text-primary font-semibold">
                                             {newValue !== null &&
@@ -526,12 +547,12 @@ export const AuditLogPage = () => {
           <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
             <ClipboardList className="h-12 w-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No activities found
+              {t('common:auditLog.noActivities')}
             </h3>
             <p className="text-text-secondary">
               {entityTypeFilter || actionFilter || searchTerm
-                ? 'Try adjusting your filters or search'
-                : 'No activity has been logged yet'}
+                ? t('common:auditLog.adjustFilters')
+                : t('common:auditLog.noActivityYet')}
             </p>
           </div>
         )}

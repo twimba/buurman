@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { useExpenses } from '@/hooks/useExpenseHooks';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { formatExpenseCategory } from '@/types/expense';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { LoadingSpinner } from '@buurman/ui';
 import { getCurrencySymbol } from '@/utils/currencies';
 import { Receipt, CreditCard, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ContactFinancialsTabProps {
   contactIdentifier: string;
@@ -18,6 +18,7 @@ export const ContactFinancialsTab = ({
   contactIdentifier,
   backTo,
 }: ContactFinancialsTabProps) => {
+  const { t } = useTranslation('tenants');
   const { formatDate } = useFormatDate();
 
   const { data: expensesData, isLoading: expensesLoading } = useExpenses({
@@ -65,16 +66,14 @@ export const ContactFinancialsTab = ({
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
             <Receipt className="h-5 w-5" />
-            Expenses ({expenses.length})
+            {t('financials.expenses')} ({expenses.length})
           </h2>
         </div>
 
         {expenses.length === 0 ? (
           <div className="text-center py-8">
             <Receipt className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-            <p className="text-text-secondary">
-              No expenses linked to this contact
-            </p>
+            <p className="text-text-secondary">{t('financials.noExpenses')}</p>
           </div>
         ) : (
           <>
@@ -83,19 +82,19 @@ export const ContactFinancialsTab = ({
                 <thead>
                   <tr className="border-b border-border-default text-left">
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Date
+                      {t('financials.date')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Description
+                      {t('financials.description')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Category
+                      {t('financials.category')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Property
+                      {t('financials.property')}
                     </th>
                     <th className="pb-2 text-right font-medium text-text-secondary">
-                      Amount
+                      {t('financials.amount')}
                     </th>
                     <th className="pb-2 w-8" />
                   </tr>
@@ -113,7 +112,7 @@ export const ContactFinancialsTab = ({
                         {expense.description}
                       </td>
                       <td className="py-2.5 pr-4 text-text-secondary whitespace-nowrap">
-                        {formatExpenseCategory(expense.category)}
+                        {t(`expenses:category.${expense.category}`)}
                       </td>
                       <td className="py-2.5 pr-4 text-text-secondary truncate max-w-[150px]">
                         {expense.property.street}
@@ -141,7 +140,9 @@ export const ContactFinancialsTab = ({
             {expenseTotal && (
               <div className="mt-4 pt-3 border-t border-border-default flex justify-end">
                 <div className="text-sm">
-                  <span className="text-text-secondary">Total: </span>
+                  <span className="text-text-secondary">
+                    {t('financials.total')}{' '}
+                  </span>
                   <span className="font-semibold text-text-primary">
                     {getCurrencySymbol(expenseTotal.currency)}{' '}
                     {expenseTotal.total.toFixed(2)}
@@ -158,16 +159,14 @@ export const ContactFinancialsTab = ({
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
             <CreditCard className="h-5 w-5" />
-            Payments ({payments.length})
+            {t('financials.payments')} ({payments.length})
           </h2>
         </div>
 
         {payments.length === 0 ? (
           <div className="text-center py-8">
             <CreditCard className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-            <p className="text-text-secondary">
-              No payments linked to this contact
-            </p>
+            <p className="text-text-secondary">{t('financials.noPayments')}</p>
           </div>
         ) : (
           <>
@@ -176,19 +175,19 @@ export const ContactFinancialsTab = ({
                 <thead>
                   <tr className="border-b border-border-default text-left">
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Due Date
+                      {t('financials.dueDate')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Property
+                      {t('financials.property')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Notes
+                      {t('financials.notes')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Status
+                      {t('financials.status')}
                     </th>
                     <th className="pb-2 text-right font-medium text-text-secondary">
-                      Amount
+                      {t('financials.amount')}
                     </th>
                     <th className="pb-2 w-8" />
                   </tr>
@@ -234,14 +233,18 @@ export const ContactFinancialsTab = ({
             {paymentTotal && (
               <div className="mt-4 pt-3 border-t border-border-default flex justify-end gap-6">
                 <div className="text-sm">
-                  <span className="text-text-secondary">Total: </span>
+                  <span className="text-text-secondary">
+                    {t('financials.total')}{' '}
+                  </span>
                   <span className="font-semibold text-text-primary">
                     {getCurrencySymbol(paymentTotal.currency)}{' '}
                     {paymentTotal.total.toFixed(2)}
                   </span>
                 </div>
                 <div className="text-sm">
-                  <span className="text-text-secondary">Received: </span>
+                  <span className="text-text-secondary">
+                    {t('financials.received')}{' '}
+                  </span>
                   <span className="font-semibold text-success-text">
                     {getCurrencySymbol(paymentTotal.currency)}{' '}
                     {paymentTotal.received.toFixed(2)}

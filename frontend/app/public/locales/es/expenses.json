@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Gastos",
+    "subtitle": "Seguimiento de gastos y costes de propiedades"
+  },
+  "actions": {
+    "addExpense": "Añadir Gasto"
+  },
+  "stats": {
+    "totalExpenses": "Total de Gastos",
+    "categorySummary": "en {{category}}",
+    "categorySummaryAll": "en {{count}} categorías",
+    "topCategories": "Categorías Principales",
+    "noData": "Sin datos disponibles",
+    "lastSixMonths": "Últimos 6 Meses",
+    "tooltipExpenses": "Gastos"
+  },
+  "filters": {
+    "title": "Filtros",
+    "property": "Propiedad",
+    "category": "Categoría",
+    "allProperties": "Todas las Propiedades",
+    "allCategories": "Todas las Categorías"
+  },
+  "category": {
+    "MAINTENANCE": "Mantenimiento",
+    "REPAIR": "Reparación",
+    "UTILITY": "Suministros",
+    "TAX": "Impuesto",
+    "INSURANCE": "Seguro",
+    "LEGAL": "Legal",
+    "MARKETING": "Marketing",
+    "CLEANING": "Limpieza",
+    "LANDSCAPING": "Jardinería",
+    "PROPERTY_MANAGEMENT": "Gestión de Propiedades",
+    "FEES": "Tasas",
+    "PROPERTY_TAX": "Impuesto sobre Inmuebles",
+    "OTHER": "Otro"
+  },
+  "table": {
+    "date": "Fecha",
+    "expenseNumber": "Gasto #",
+    "description": "Descripción",
+    "category": "Categoría",
+    "property": "Propiedad",
+    "amount": "Importe"
+  },
+  "empty": {
+    "title": "No se encontraron gastos",
+    "filtered": "Intente ajustar sus filtros",
+    "noData": "Comience registrando su primer gasto"
+  },
+  "card": {
+    "expenseId": "Gasto #{{id}}",
+    "property": "Propiedad",
+    "contact": "Contacto",
+    "amount": "Importe",
+    "expenseDate": "Fecha del Gasto",
+    "documentsAttached": "{{count}} documento(s) adjunto(s)"
+  },
+  "form": {
+    "property": "Propiedad",
+    "category": "Categoría",
+    "contact": "Contacto",
+    "amount": "Importe",
+    "expenseDate": "Fecha del Gasto",
+    "description": "Descripción",
+    "descriptionPlaceholder": "ej., Reparación de fontanería en el baño",
+    "notes": "Notas",
+    "notesPlaceholder": "Añadir notas adicionales sobre este gasto...",
+    "continueAdding": "Continuar añadiendo",
+    "today": "Hoy",
+    "updateExpense": "Actualizar",
+    "createExpense": "Crear",
+    "expenseSuffix": " Gasto",
+    "saving": "Guardando...",
+    "currency": "Moneda"
+  },
+  "validation": {
+    "propertyRequired": "La propiedad es obligatoria",
+    "amountRequired": "El importe debe ser mayor que 0",
+    "currencyRequired": "La moneda es obligatoria",
+    "expenseDateRequired": "La fecha del gasto es obligatoria",
+    "descriptionRequired": "La descripción es obligatoria"
+  },
+  "create": {
+    "title": "Añadir Nuevo Gasto",
+    "addedCount": "{{count}} gasto añadido en esta sesión",
+    "addedCount_other": "{{count}} gastos añadidos en esta sesión",
+    "single": "Individual",
+    "bulk": "Masivo"
+  },
+  "detail": {
+    "titlePrefix": "Gasto #{{id}}",
+    "expenseDetails": "Detalles del Gasto",
+    "propertyAndContact": "Propiedad y Contacto",
+    "amount": "Importe",
+    "expenseDate": "Fecha del Gasto",
+    "category": "Categoría",
+    "description": "Descripción",
+    "property": "Propiedad",
+    "contact": "Contacto",
+    "noContactLinked": "Sin contacto vinculado",
+    "notes": "Notas",
+    "metadata": "Metadatos",
+    "created": "Creado:",
+    "lastUpdated": "Última Actualización:",
+    "editExpense": "Editar Gasto"
+  },
+  "tabs": {
+    "details": "Detalles",
+    "documents": "Documentos",
+    "history": "Historial"
+  },
+  "history": {
+    "title": "Historial de Gastos",
+    "empty": "Sin historial disponible",
+    "emptySubtitle": "Los cambios a este gasto aparecerán aquí",
+    "clickToView": "Haga clic para ver cambios",
+    "clickToHide": "Haga clic para ocultar cambios",
+    "changedFields": "Campos Modificados",
+    "old": "Anterior:",
+    "new": "Nuevo:",
+    "impersonated": "Suplantado"
+  },
+  "deleteDialog": {
+    "title": "Eliminar Gasto",
+    "message": "¿Está seguro de que desea eliminar este gasto? Esta acción no se puede deshacer.",
+    "messageWithRelated": "¿Está seguro de que desea eliminar este gasto? Todos los documentos relacionados también serán eliminados. Esta acción no se puede deshacer."
+  },
+  "tooltips": {
+    "viewExpense": "Ver gasto",
+    "deleteExpense": "Eliminar gasto"
+  },
+  "errors": {
+    "loadFailed": "Error al cargar gastos",
+    "loadExpenseFailed": "Error al cargar gasto",
+    "loadHistoryFailed": "Error al cargar historial"
+  }
+}

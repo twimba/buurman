@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "properties": "Ejendomme",
+    "contacts": "Kontakter",
+    "contracts": "Kontrakter",
+    "rentRegulations": "Lejereguleringer",
+    "rentAdjustments": "Lejejusteringer",
+    "paymentInstructions": "Betalingsinstruktioner",
+    "payments": "Betalinger",
+    "expenses": "Udgifter",
+    "documents": "Dokumenter",
+    "photos": "Fotos",
+    "reports": "Rapporter"
+  },
+  "admin": {
+    "title": "Administration",
+    "preferences": "Praeferencer",
+    "teamMembers": "Teammedlemmer",
+    "calendarFeeds": "Kalenderfeeds",
+    "notifications": "Notifikationer",
+    "dataExport": "Dataeksport",
+    "billing": "Abonnement & Fakturering",
+    "activityLog": "Aktivitetslog",
+    "apiDocs": "API-dokumentation"
+  },
+  "settings": "Indstillinger",
+  "signOut": "Log ud"
+}

@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import {
   useContact,
@@ -18,6 +19,7 @@ import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
+import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
 import { LoadingSpinner, RichTextDisplay } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { trackEvent } from '@/utils/analytics';
@@ -32,11 +34,7 @@ import { ContactRelationshipsTab } from '@/components/contacts/ContactRelationsh
 import { ContactTagsTab } from '@/components/contacts/ContactTagsTab';
 import { ContactFinancialsTab } from '@/components/contacts/ContactFinancialsTab';
 import { ContactContractsTable } from '@/components/contacts/ContactContractsTable';
-import {
-  ContractStatus,
-  ContractPartyRole,
-  PARTY_ROLE_LABELS,
-} from '@/types/contract';
+import { ContractStatus, ContractPartyRole } from '@/types/contract';
 import {
   Button,
   ConfirmDialog,
@@ -57,7 +55,6 @@ import {
   Plus,
   ChevronUp,
   ChevronDown,
-  Download,
   Activity,
   Users,
   FolderOpen,
@@ -69,7 +66,7 @@ import {
   CheckCircle2,
   Shield,
 } from 'lucide-react';
-import client from '@/api/client';
+import { downloadContactBooklet } from '@/api/contacts';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
@@ -79,12 +76,6 @@ const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
 };
 
-const CONTACT_TYPE_LABELS: Record<string, string> = {
-  INDIVIDUAL: 'Individual',
-  COMPANY: 'Company',
-  SERVICE_PROVIDER: 'Service Provider',
-};
-
 const formatCurrency = (amount: number, currency: string) =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -92,11 +83,17 @@ const formatCurrency = (amount: number, currency: string) =>
     minimumFractionDigits: 2,
   }).format(amount);
 
-const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
+const RoleBadge = ({
+  role,
+  label,
+}: {
+  role: ContractPartyRole;
+  label: string;
+}) => (
   <span
     className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-surface-inset text-text-primary'}`}
   >
-    {PARTY_ROLE_LABELS[role] ?? role}
+    {label}
   </span>
 );
 
@@ -111,6 +108,8 @@ const TAB_IDS = [
 ] as const;
 
 export const ContactDetailPage = () => {
+  const { t } = useTranslation('tenants');
+  const { t: tCommon } = useTranslation('common');
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData, activeTeam } = useTeam();
@@ -292,7 +291,7 @@ export const ContactDetailPage = () => {
   if (error || !contact) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load contact" />
+        <ErrorMessage message={t('detail.failedToLoad')} />
       </div>
     );
   }
@@ -309,8 +308,10 @@ export const ContactDetailPage = () => {
           title={displayName}
           subtitle={`#${contact.identifier} · ${
             contact.contactType
-              ? (CONTACT_TYPE_LABELS[contact.contactType] ??
-                contact.contactType)
+              ? t(
+                  `enums.contactTypes.${contact.contactType}`,
+                  contact.contactType
+                )
               : ''
           }`}
           backTo="/contacts"
@@ -324,33 +325,19 @@ export const ContactDetailPage = () => {
           }
           actions={
             <>
-              <Button
-                variant="primary"
-                leftIcon={<Download />}
-                onClick={async () => {
-                  try {
-                    const response = await client.get(
-                      `/booklets/contact/${id}`,
-                      { responseType: 'blob' }
-                    );
-                    const blob = new Blob([response.data], {
-                      type: 'application/pdf',
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'contact-booklet.pdf';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                  } catch {
-                    // Download error handled by browser
-                  }
+              <BookletDownloadButton
+                onDownload={async (lang) => {
+                  const blob = await downloadContactBooklet(id, lang);
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = `contact-booklet-${lang}.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(url);
                 }}
-              >
-                Booklet
-              </Button>
+              />
               {id && (
                 <CalendarFeedButton
                   feedType={CalendarFeedType.CONTACT_PAYMENTS}
@@ -363,7 +350,7 @@ export const ContactDetailPage = () => {
                 onClick={() => navigate(`/contacts/${id}/edit`)}
                 disabled={!canEditData}
               >
-                Edit
+                {t('detail.edit')}
               </Button>
               <Button
                 variant="danger"
@@ -371,7 +358,7 @@ export const ContactDetailPage = () => {
                 onClick={() => setShowDeleteModal(true)}
                 disabled={!canEditData}
               >
-                Delete
+                {t('detail.delete')}
               </Button>
               {isAdmin && contact.dataRetentionStatus !== 'ANONYMIZED' && (
                 <Button
@@ -379,7 +366,7 @@ export const ContactDetailPage = () => {
                   leftIcon={<ShieldAlert />}
                   onClick={() => setShowEraseModal(true)}
                 >
-                  Erase Data
+                  {t('detail.eraseData')}
                 </Button>
               )}
             </>
@@ -391,7 +378,7 @@ export const ContactDetailPage = () => {
           <div
             className="flex gap-6 min-w-max"
             role="tablist"
-            aria-label="Contact detail tabs"
+            aria-label={tCommon('accessibility.contactDetailTabs')}
           >
             <button
               role="tab"
@@ -406,7 +393,7 @@ export const ContactDetailPage = () => {
               }`}
             >
               <User className="h-4 w-4" />
-              Overview
+              {t('detail.tabs.overview')}
             </button>
             <button
               role="tab"
@@ -421,7 +408,7 @@ export const ContactDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              Notes {notes.length > 0 && `(${notes.length})`}
+              {t('detail.tabs.notes')} {notes.length > 0 && `(${notes.length})`}
             </button>
             <button
               role="tab"
@@ -436,7 +423,7 @@ export const ContactDetailPage = () => {
               }`}
             >
               <Activity className="h-4 w-4" />
-              Activity
+              {t('detail.tabs.activity')}
             </button>
             <button
               role="tab"
@@ -451,7 +438,7 @@ export const ContactDetailPage = () => {
               }`}
             >
               <Wallet className="h-4 w-4" />
-              Financials
+              {t('detail.tabs.financials')}
             </button>
             <button
               role="tab"
@@ -466,7 +453,7 @@ export const ContactDetailPage = () => {
               }`}
             >
               <Users className="h-4 w-4" />
-              Relationships
+              {t('detail.tabs.relationships')}
             </button>
             <button
               role="tab"
@@ -481,7 +468,7 @@ export const ContactDetailPage = () => {
               }`}
             >
               <FolderOpen className="h-4 w-4" />
-              Files{' '}
+              {t('detail.tabs.files')}{' '}
               {documents.length + photos.length > 0 &&
                 `(${documents.length + photos.length})`}
             </button>
@@ -498,7 +485,8 @@ export const ContactDetailPage = () => {
               }`}
             >
               <MapPin className="h-4 w-4" />
-              Addresses {addresses.length > 0 && `(${addresses.length})`}
+              {t('detail.tabs.addresses')}{' '}
+              {addresses.length > 0 && `(${addresses.length})`}
             </button>
           </div>
         </div>
@@ -564,7 +552,7 @@ export const ContactDetailPage = () => {
               <div
                 className="rounded-lg shadow-sm border border-success-border bg-success-bg/30 p-4 flex items-center justify-between"
                 role="status"
-                aria-label="All payments are up to date"
+                aria-label={t('card.allPaidAriaLabel')}
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-success-bg text-success-text">
@@ -572,14 +560,18 @@ export const ContactDetailPage = () => {
                   </div>
                   <div>
                     <p className="text-sm text-text-secondary">
-                      Payment Status
+                      {t('detail.balance.paymentStatus')}
                     </p>
                     <p className="text-xl font-semibold text-text-primary">
-                      All Paid
+                      {t('detail.balance.allPaid')}
                     </p>
                   </div>
                 </div>
-                <StatusBadge label="All paid" color="green" size="sm" />
+                <StatusBadge
+                  label={t('detail.balance.allPaid')}
+                  color="green"
+                  size="sm"
+                />
               </div>
             )}
             {contact.balanceSummary &&
@@ -606,7 +598,7 @@ export const ContactDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-text-secondary">
-                        Outstanding Balance
+                        {t('detail.balance.outstandingBalance')}
                       </p>
                       <p className="text-xl font-semibold text-text-primary">
                         {formatCurrency(
@@ -620,8 +612,8 @@ export const ContactDetailPage = () => {
                     <StatusBadge
                       label={
                         contact.balanceSummary.status === 'OVERDUE'
-                          ? 'Overdue'
-                          : 'Pending'
+                          ? t('detail.balance.overdue')
+                          : t('detail.balance.pending')
                       }
                       color={
                         contact.balanceSummary.status === 'OVERDUE'
@@ -652,7 +644,7 @@ export const ContactDetailPage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-text-secondary">
-                        Guaranteed Amount
+                        {t('detail.balance.guaranteedAmount')}
                       </p>
                       <p className="text-xl font-semibold text-text-primary">
                         {formatCurrency(
@@ -663,7 +655,11 @@ export const ContactDetailPage = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <StatusBadge label="Guarantor" color="blue" size="sm" />
+                    <StatusBadge
+                      label={t('detail.balance.guarantor')}
+                      color="blue"
+                      size="sm"
+                    />
                     <p className="text-xs text-text-muted mt-1">
                       {contact.balanceSummary.guaranteedPaymentCount ?? 0}{' '}
                       payment
@@ -680,13 +676,15 @@ export const ContactDetailPage = () => {
               {/* Contact Information */}
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h2 className="text-lg font-semibold text-text-primary mb-4">
-                  Contact Information
+                  {t('detail.contactInfo')}
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <User className="h-5 w-5 text-text-muted" />
                     <div>
-                      <p className="text-sm text-text-secondary">Name</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.name')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {contact.firstName} {contact.lastName}
                       </p>
@@ -696,7 +694,9 @@ export const ContactDetailPage = () => {
                     <div className="flex items-center gap-3">
                       <Building2 className="h-5 w-5 text-text-muted" />
                       <div>
-                        <p className="text-sm text-text-secondary">Company</p>
+                        <p className="text-sm text-text-secondary">
+                          {t('detail.company')}
+                        </p>
                         <p className="font-medium text-text-primary">
                           {contact.companyName}
                           {contact.tradeName && (
@@ -711,7 +711,9 @@ export const ContactDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Mail className="h-5 w-5 text-text-muted" />
                     <div>
-                      <p className="text-sm text-text-secondary">Email</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.email')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {contact.email ? (
                           <a
@@ -722,7 +724,7 @@ export const ContactDetailPage = () => {
                           </a>
                         ) : (
                           <span className="text-text-muted italic">
-                            Not set
+                            {t('detail.notSet')}
                           </span>
                         )}
                       </p>
@@ -732,7 +734,9 @@ export const ContactDetailPage = () => {
                     <div className="flex items-center gap-3">
                       <Phone className="h-5 w-5 text-text-muted" />
                       <div>
-                        <p className="text-sm text-text-secondary">Phone</p>
+                        <p className="text-sm text-text-secondary">
+                          {t('detail.phone')}
+                        </p>
                         <p className="font-medium text-text-primary">
                           <a
                             href={`tel:${contact.phone}`}
@@ -749,7 +753,7 @@ export const ContactDetailPage = () => {
                       <FileText className="h-5 w-5 text-text-muted" />
                       <div>
                         <p className="text-sm text-text-secondary">
-                          Tax Number
+                          {t('detail.taxNumber')}
                         </p>
                         <p className="font-medium text-text-primary">
                           {contact.taxNumber}
@@ -762,7 +766,7 @@ export const ContactDetailPage = () => {
                       <FileText className="h-5 w-5 text-text-muted" />
                       <div>
                         <p className="text-sm text-text-secondary">
-                          Government ID Number
+                          {t('detail.governmentIdNumber')}
                         </p>
                         <p className="font-medium text-text-primary">
                           {contact.idNumber}
@@ -775,7 +779,7 @@ export const ContactDetailPage = () => {
                       <Calendar className="h-5 w-5 text-text-muted" />
                       <div>
                         <p className="text-sm text-text-secondary">
-                          Date of Birth
+                          {t('detail.dateOfBirth')}
                         </p>
                         <p className="font-medium text-text-primary">
                           {formatDate(contact.dateOfBirth)}
@@ -790,13 +794,13 @@ export const ContactDetailPage = () => {
               <div className="space-y-6">
                 <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                   <h2 className="text-lg font-semibold text-text-primary mb-4">
-                    Additional Information
+                    {t('detail.additionalInfo')}
                   </h2>
                   {contact.notes ? (
                     <RichTextDisplay content={contact.notes} />
                   ) : (
                     <p className="text-sm text-text-muted italic">
-                      No additional information available
+                      {t('detail.noAdditionalInfo')}
                     </p>
                   )}
                 </div>
@@ -810,7 +814,7 @@ export const ContactDetailPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-text-primary">
-                  Active Contracts & Properties
+                  {t('detail.activeContractsProperties')}
                 </h2>
                 <button
                   onClick={() => navigate(`/contracts/new?contactId=${id}`)}
@@ -818,7 +822,7 @@ export const ContactDetailPage = () => {
                   className="text-sm text-primary-500 hover:text-primary-600 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="h-4 w-4" />
-                  Add Contract
+                  {t('detail.addContract')}
                 </button>
               </div>
               {contractsLoading ? (
@@ -848,13 +852,21 @@ export const ContactDetailPage = () => {
                           </p>
                         </div>
                       </div>
-                      {item.role && <RoleBadge role={item.role} />}
+                      {item.role && (
+                        <RoleBadge
+                          role={item.role}
+                          label={t(
+                            'contracts:enums.partyRoles.' + item.role,
+                            item.role
+                          )}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
               ) : (
                 <p className="text-sm text-text-muted italic">
-                  No active contracts for this contact
+                  {t('detail.noActiveContracts')}
                 </p>
               )}
 
@@ -869,7 +881,7 @@ export const ContactDetailPage = () => {
             {(overdueFollowUps.length > 0 || upcomingFollowUps.length > 0) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h2 className="text-lg font-semibold text-text-primary mb-4">
-                  Follow-ups
+                  {t('detail.followUps')}
                 </h2>
                 <div className="space-y-2">
                   {overdueFollowUps.map((note) => (
@@ -879,7 +891,8 @@ export const ContactDetailPage = () => {
                     >
                       <AlertCircle className="h-4 w-4 text-error-text flex-shrink-0" />
                       <span className="text-error-text font-medium">
-                        Overdue: {formatDate(note.followUpDate ?? '')}
+                        {t('detail.overduePrefix')}{' '}
+                        {formatDate(note.followUpDate ?? '')}
                       </span>
                       <span className="text-text-secondary truncate">
                         {note.subject ?? note.body.substring(0, 60)}
@@ -911,7 +924,7 @@ export const ContactDetailPage = () => {
                 className="w-full flex items-center justify-between text-left group"
               >
                 <h2 className="text-lg font-semibold text-text-primary">
-                  Metadata
+                  {t('detail.metadata.title')}
                 </h2>
                 {isMetadataExpanded ? (
                   <ChevronUp className="h-5 w-5 text-text-secondary" />
@@ -922,18 +935,23 @@ export const ContactDetailPage = () => {
               {isMetadataExpanded && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                   <div>
-                    <span className="text-text-secondary">Created:</span>{' '}
+                    <span className="text-text-secondary">
+                      {t('detail.metadata.created')}
+                    </span>{' '}
                     <span className="text-text-primary">
-                      {formatDate(contact.createdAt)} at{' '}
+                      {formatDate(contact.createdAt)} {t('detail.metadata.at')}{' '}
                       {new Date(contact.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-text-secondary">Last Updated:</span>{' '}
+                    <span className="text-text-secondary">
+                      {t('detail.metadata.lastUpdated')}
+                    </span>{' '}
                     <span className="text-text-primary">
                       {contact.updatedAt ? (
                         <>
-                          {formatDate(contact.updatedAt)} at{' '}
+                          {formatDate(contact.updatedAt)}{' '}
+                          {t('detail.metadata.at')}{' '}
                           {new Date(contact.updatedAt).toLocaleTimeString()}
                         </>
                       ) : (
@@ -983,7 +1001,7 @@ export const ContactDetailPage = () => {
           <div id="tabpanel-files" role="tabpanel" className="space-y-6">
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Documents
+                {t('detail.documents')}
               </h2>
               <DocumentList
                 documents={documents}
@@ -998,7 +1016,7 @@ export const ContactDetailPage = () => {
             </div>
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Photos
+                {t('detail.photos')}
               </h2>
               <PhotoGallery
                 photos={photos}
@@ -1029,8 +1047,8 @@ export const ContactDetailPage = () => {
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
           <ConfirmDialog
-            title="Delete Contact"
-            message="Are you sure you want to delete this contact? This action cannot be undone."
+            title={t('detail.deleteTitle')}
+            message={t('detail.deleteMessage')}
             confirmLabel="Delete"
             variant="danger"
             isLoading={deleteContactMutation.isPending}
@@ -1047,7 +1065,7 @@ export const ContactDetailPage = () => {
               setShowEraseModal(false);
               setEraseConfirmText('');
             }}
-            title="Permanently erase all personal data?"
+            title={t('detail.privacy.eraseTitle')}
             size="sm"
             preventClose={eraseContactMutation.isPending}
             footer={
@@ -1068,16 +1086,14 @@ export const ContactDetailPage = () => {
                   disabled={eraseConfirmText !== 'ERASE'}
                   isLoading={eraseContactMutation.isPending}
                 >
-                  Erase Data
+                  {t('detail.privacy.eraseConfirm')}
                 </Button>
               </>
             }
           >
             <div className="space-y-4">
               <p className="text-text-secondary">
-                This will permanently erase all personal data for this contact.
-                Financial records linked via contracts are retained for legal
-                compliance. This action cannot be undone.
+                {t('detail.privacy.eraseMessage')}
               </p>
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-1">

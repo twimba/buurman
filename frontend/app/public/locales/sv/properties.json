@@ -1,0 +1,1112 @@
+{
+  "list": {
+    "title": "Fastigheter",
+    "subtitle": "Hantera dina hyresfastigheter och enheter",
+    "addButton": "Lagg till fastighet",
+    "searchPlaceholder": "Sok efter adress, stad, postnummer eller typ...",
+    "filters": "Filter",
+    "category": "Kategori",
+    "allCategories": "Alla kategorier",
+    "status": "Status",
+    "allStatuses": "Alla statusar",
+    "count_one": "{{count}} fastighet",
+    "count_other": "{{count}} fastigheter",
+    "empty": {
+      "title": "Inga fastigheter hittades",
+      "filtered": "Forsok justera dina filter eller soktermer",
+      "noData": "Kom igang genom att lagga till din forsta fastighet"
+    },
+    "error": "Det gick inte att ladda fastigheter"
+  },
+  "create": {
+    "title": "Lagg till ny fastighet",
+    "readOnlyMessage": "Att skapa fastigheter ar inte tillgangligt i skrivskyddat lage."
+  },
+  "edit": {
+    "title": "Redigera fastighet",
+    "notFound": "Fastigheten hittades inte"
+  },
+  "detail": {
+    "notFound": "Fastigheten hittades inte",
+    "booklet": "Sammanfattning",
+    "bookletDownloadFailed": "Det gick inte att ladda ner sammanfattningen. Forsok igen.",
+    "tabs": {
+      "info": "Info",
+      "dashboard": "Oversikt",
+      "financials": "Ekonomi",
+      "photos": "Foton",
+      "documents": "Dokument",
+      "contracts": "Kontrakt",
+      "expenses": "Kostnader",
+      "history": "Historik"
+    },
+    "timeline": {
+      "title": "Fastighetstidslinje",
+      "rentalContract": "Hyreskontrakt",
+      "selfOccupied": "Eget boende",
+      "financing": "Finansiering"
+    },
+    "specs": {
+      "bedrooms": "Sovrum",
+      "bathrooms": "Badrum",
+      "area": "Yta",
+      "type": "Typ",
+      "street": "Gata",
+      "city": "Stad",
+      "postalCode": "Postnummer",
+      "country": "Land",
+      "location": "Plats"
+    },
+    "characteristics": {
+      "title": "Fastighetsegenskaper"
+    },
+    "construction": {
+      "title": "Byggnation & Struktur",
+      "yearBuilt": "Byggar",
+      "lastRenovated": "Senast renoverad",
+      "construction": "Byggnation",
+      "foundation": "Grund",
+      "roof": "Tak",
+      "wallConstruction": "Vaggkonstruktion",
+      "flooring": "Golv",
+      "windows": "Fonster",
+      "floors": "Vaningar",
+      "structuralNotes": "Strukturella anteckningar"
+    },
+    "energy": {
+      "title": "Energi & Klimat",
+      "energyRating": "Energiklassificering",
+      "certificateExpiry": "Certifikatets utgang",
+      "heating": "Uppvarmning",
+      "cooling": "Kylning",
+      "hotWater": "Varmvatten",
+      "insulationNotes": "Isoleringsanteckningar"
+    },
+    "utilities": {
+      "title": "Installationer & Anslutningar",
+      "electricity": "Elektricitet",
+      "capacity": "Kapacitet",
+      "water": "Vatten",
+      "gasConnection": "Gasanslutning",
+      "sewage": "Avlopp",
+      "internet": "Internet",
+      "internetSpeed": "Internethastighet",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "title": "Parkering",
+      "parkingSpaces": "Parkeringsplatser",
+      "parkingType": "Parkeringstyp"
+    },
+    "outdoorAreas": {
+      "title": "Utomhusytor"
+    },
+    "amenities": {
+      "title": "Bekvamligheter"
+    },
+    "safety": {
+      "title": "Sakerhet & Trygghet",
+      "smokeDetectors": "Rokdetektorer",
+      "coDetectors": "CO-detektorer",
+      "fireExtinguisher": "Brandslackare",
+      "sprinklerSystem": "Sprinklersystem",
+      "alarmSystem": "Larmsystem",
+      "securityCameras": "Overvakningskameror",
+      "secureEntry": "Saker entre",
+      "safetyNotes": "Sakerhetsanteckningar"
+    },
+    "accessibility": {
+      "title": "Tillganglighet",
+      "wheelchairAccessible": "Rullstolsanpassad",
+      "elevator": "Hiss",
+      "stepFreeEntrance": "Steafri entre",
+      "adaptedBathroom": "Anpassat badrum",
+      "accessibilityNotes": "Tillganglighetsanteckningar"
+    },
+    "wws": {
+      "title": "WWS-poang",
+      "calculate": "Berakna",
+      "recalculate": "Berakna om",
+      "points": "poang",
+      "regulated": "Reglerad",
+      "midSegment": "Mellansegment",
+      "freeSector": "Fri sektor",
+      "maxRent": "Max hyra",
+      "calculated": "Beraknad",
+      "history": "Historik",
+      "noCalculation": "Ingen berakning annu",
+      "noCalculationDescription": "Berakna WWS-poangen for att avgora den maximala reglerade hyran for denna fastighet.",
+      "noPreviousCalculations": "Inga tidigare berakningar."
+    },
+    "metadata": {
+      "title": "Metadata",
+      "created": "Skapad:",
+      "lastUpdated": "Senast uppdaterad:",
+      "at": "kl"
+    },
+    "yes": "Ja",
+    "no": "Nej",
+    "deleteProperty": "Ta bort fastighet",
+    "deletePropertyConfirm": "Ar du saker pa att du vill ta bort denna fastighet?",
+    "cannotBeUndone": "Denna atgard kan inte angras.",
+    "deleteWwsConfirm": "Ta bort WWS-berakning?",
+    "deleteWwsMessage": "Detta tar permanent bort den sparade berakningen fran denna fastighet.",
+    "deleteWwsHistoryMessage": "Detta tar permanent bort denna historiska berakning."
+  },
+  "enums": {
+    "characteristics": {
+      "constructionType": {
+        "BRICK": "Tegel",
+        "CONCRETE": "Betong",
+        "WOOD": "Trä",
+        "STEEL": "Stål",
+        "MIXED": "Blandad",
+        "OTHER": "Annat"
+      },
+      "foundationType": {
+        "CONCRETE_SLAB": "Betongplatta",
+        "CRAWL_SPACE": "Krypgrund",
+        "BASEMENT": "Källare",
+        "PILE": "Pålar",
+        "OTHER": "Annat"
+      },
+      "roofType": {
+        "FLAT": "Platt",
+        "PITCHED": "Sadeltak",
+        "HIP": "Valmat tak",
+        "GABLE": "Pulpettak",
+        "MANSARD": "Mansardtak",
+        "OTHER": "Annat"
+      },
+      "flooringType": {
+        "HARDWOOD": "Trägolv",
+        "LAMINATE": "Laminat",
+        "TILE": "Kakel",
+        "VINYL": "Vinyl",
+        "CARPET": "Matta",
+        "CONCRETE": "Betong",
+        "MIXED": "Blandad",
+        "OTHER": "Annat"
+      },
+      "windowType": {
+        "SINGLE_PANE": "Enkelt glas",
+        "DOUBLE_PANE": "Dubbelt glas",
+        "TRIPLE_PANE": "Trippelt glas",
+        "OTHER": "Annat"
+      },
+      "heatingType": {
+        "CENTRAL": "Centralvärme",
+        "DISTRICT": "Fjärrvärme",
+        "HEAT_PUMP": "Värmepump",
+        "ELECTRIC": "Elektrisk",
+        "GAS": "Gas",
+        "NONE": "Ingen",
+        "OTHER": "Annat"
+      },
+      "coolingType": {
+        "CENTRAL_AC": "Central AC",
+        "SPLIT_AC": "Split AC",
+        "EVAPORATIVE": "Evaporativ kylning",
+        "NONE": "Ingen",
+        "OTHER": "Annat"
+      },
+      "hotWaterSystem": {
+        "BOILER": "Panna",
+        "TANKLESS": "Genomströmningsberedare",
+        "HEAT_PUMP": "Värmepump",
+        "SOLAR": "Sol",
+        "ELECTRIC": "Elektrisk",
+        "OTHER": "Annat"
+      },
+      "sewageType": {
+        "MUNICIPAL": "Kommunalt",
+        "SEPTIC": "Septiktank",
+        "OTHER": "Annat"
+      },
+      "internetConnectionType": {
+        "FIBER": "Fiber",
+        "CABLE": "Kabel",
+        "DSL": "DSL",
+        "NONE": "Ingen",
+        "OTHER": "Annat"
+      },
+      "internetStatus": {
+        "ACTIVE": "Aktiv",
+        "AVAILABLE": "Tillgänglig",
+        "NOT_AVAILABLE": "Inte tillgänglig",
+        "UNKNOWN": "Okänd"
+      },
+      "electricityConnectionType": {
+        "SINGLE_PHASE": "Enfas",
+        "THREE_PHASE": "Trefas"
+      },
+      "waterConnectionType": {
+        "MUNICIPAL": "Kommunalt",
+        "WELL": "Brunn",
+        "SHARED": "Delad",
+        "OTHER": "Annat"
+      },
+      "parkingType": {
+        "GARAGE": "Garage",
+        "CARPORT": "Carport",
+        "DRIVEWAY": "Uppfart",
+        "STREET": "Gata",
+        "UNDERGROUND": "Underjordisk",
+        "NONE": "Ingen",
+        "OTHER": "Annat"
+      },
+      "outdoorAreaType": {
+        "BALCONY": "Balkong",
+        "TERRACE": "Terrass",
+        "GARDEN": "Trädgård",
+        "ROOFTOP": "Takterrass",
+        "PATIO": "Uteplats",
+        "YARD": "Gård",
+        "OTHER": "Annat",
+        "PARKING_LOT": "Parkering",
+        "COURTYARD": "Innergård",
+        "LOADING_AREA": "Lastområde",
+        "STORAGE_AREA": "Lagerområde",
+        "PASTURE": "Betesmark",
+        "PADDOCK": "Hage",
+        "ORCHARD_AREA": "Fruktträdgård",
+        "GREENHOUSE_AREA": "Växthus"
+      },
+      "petPolicy": {
+        "ALLOWED": "Tillåtet",
+        "NOT_ALLOWED": "Inte tillåtet",
+        "NEGOTIABLE": "Förhandlingsbart",
+        "SMALL_PETS_ONLY": "Endast små husdjur"
+      },
+      "soilType": {
+        "CLAY": "Lera",
+        "SANDY": "Sandig",
+        "LOAM": "Lerjord",
+        "SILT": "Silt",
+        "PEAT": "Torv",
+        "CHALK": "Krita",
+        "MIXED": "Blandad",
+        "OTHER": "Annat"
+      },
+      "irrigationType": {
+        "DRIP": "Droppbevattning",
+        "SPRINKLER": "Sprinkler",
+        "FLOOD": "Översvämning",
+        "CENTER_PIVOT": "Centrumpivot",
+        "NONE": "Ingen",
+        "OTHER": "Annat"
+      },
+      "waterSource": {
+        "RIVER": "Flod",
+        "WELL": "Brunn",
+        "MUNICIPAL": "Kommunalt",
+        "RAINWATER": "Regnvatten",
+        "CANAL": "Kanal",
+        "NONE": "Ingen",
+        "OTHER": "Annat"
+      },
+      "fencingType": {
+        "WIRE": "Tråd",
+        "WOODEN": "Trä",
+        "ELECTRIC": "Elektrisk",
+        "HEDGE": "Häck",
+        "STONE": "Sten",
+        "NONE": "Ingen",
+        "OTHER": "Annat"
+      }
+    },
+    "categories": {
+      "RESIDENTIAL": "Bostad",
+      "COMMERCIAL": "Kommersiell",
+      "INDUSTRIAL": "Industriell",
+      "AGRICULTURAL": "Jordbruk",
+      "MIXED_USE": "Blandat"
+    },
+    "types": {
+      "APARTMENT": "Lagenhet",
+      "HOUSE": "Hus",
+      "STUDIO": "Studio",
+      "ROOM": "Rum",
+      "VILLA": "Villa",
+      "TOWNHOUSE": "Radhus",
+      "OTHER_RESIDENTIAL": "Ovrigt",
+      "OFFICE": "Kontor",
+      "RETAIL": "Butik",
+      "RESTAURANT": "Restaurang",
+      "HOTEL": "Hotell",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Bilhandlare",
+      "SNACKBAR": "Snackbar",
+      "CAFE": "Kafe",
+      "MOTEL": "Motell",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "B&B",
+      "OTHER_COMMERCIAL": "Ovrigt",
+      "WAREHOUSE": "Lager",
+      "WORKSHOP": "Verkstad",
+      "FACTORY": "Fabrik",
+      "DATA_CENTER": "Datacenter",
+      "COLD_STORAGE": "Kylforvaring",
+      "GARAGE": "Garage",
+      "OTHER_INDUSTRIAL": "Ovrigt",
+      "FARMLAND": "Jordbruksmark",
+      "RANCH": "Ranch",
+      "GREENHOUSE": "Vaxthus",
+      "ORCHARD": "Fruktodling",
+      "VINEYARD": "Vingard",
+      "OTHER_AGRICULTURAL": "Ovrigt",
+      "MIXED_USE": "Blandat",
+      "COMMERCIAL": "Kommersiell"
+    },
+    "statuses": {
+      "VACANT": "Ledig",
+      "OCCUPIED": "Uthyrd",
+      "SELF_OCCUPIED": "Eget boende",
+      "MAINTENANCE": "Underhall",
+      "UNAVAILABLE": "Otillganglig",
+      "UNDER_RENOVATION": "Under renovering",
+      "FALLOW": "I trada",
+      "LISTED": "Annonserad"
+    },
+    "amenities": {
+      "categories": {
+        "APPLIANCE": "Vitvaror",
+        "COMFORT": "Komfort",
+        "LEISURE": "Fritid",
+        "PARKING": "Parkering",
+        "SERVICE": "Tjänster",
+        "STORAGE": "Förvaring"
+      },
+      "items": {
+        "SWIMMING_POOL": "Simbassäng",
+        "GYM": "Gym",
+        "SAUNA": "Bastu",
+        "FIREPLACE": "Öppen spis",
+        "BUILT_IN_VACUUM": "Centraldammsugare",
+        "IN_UNIT_LAUNDRY": "Tvättmaskin i lägenheten",
+        "SHARED_LAUNDRY": "Gemensam tvättstuga",
+        "DISHWASHER": "Diskmaskin",
+        "STORAGE_UNIT": "Förråd",
+        "BIKE_STORAGE": "Cykelförråd",
+        "FURNISHED": "Möblerad",
+        "DOORMAN_CONCIERGE": "Portvakt / Concierge",
+        "CONFERENCE_ROOM": "Konferensrum",
+        "RECEPTION_AREA": "Reception",
+        "SERVER_ROOM": "Serverrum",
+        "KITCHENETTE": "Pentry",
+        "LOADING_BAY": "Lastkaj",
+        "COMPRESSED_AIR_SYSTEM": "Tryckluftssystem",
+        "CHEMICAL_STORAGE": "Kemikalieförråd",
+        "OVERHEAD_CRANE": "Traverss",
+        "IRRIGATION_SYSTEM": "Bevattningssystem",
+        "GRAIN_SILO": "Spannmålssilo",
+        "LIVESTOCK_SHELTER": "Djurstall",
+        "COLD_STORAGE": "Kylrum",
+        "SECURITY_BOOTH": "Vaktbod"
+      }
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Det gick inte att ladda oversiktsdata.",
+    "retry": "Forsok igen",
+    "exporting": "Exporterar...",
+    "allTime": "Hela perioden",
+    "custom": "Anpassad",
+    "to": "till",
+    "resetZoom": "Aterstall zoom",
+    "charts": {
+      "monthlyCashFlow": "Manatligt kassaflode",
+      "occupancyIncomeTrend": "Belaggnings- & Inkomsttrend",
+      "expenseBreakdown": "Utgiftsfordelning",
+      "sixMonthProjection": "6-manadersprognos",
+      "equityOverview": "Oversikt eget kapital"
+    },
+    "summary": {
+      "totalRoi": "Total ROI",
+      "annualizedRoi": "Arlig ROI",
+      "capRate": "Cap Rate",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Manatligt kassaflode",
+      "annualNoi": "Arligt NOI",
+      "totalEquity": "Totalt eget kapital",
+      "equityGrowth": "Tillvaxt eget kapital",
+      "occupancy": "Belaggning",
+      "grossRentMultiplier": "Bruttohyresmultiplikator"
+    },
+    "cashFlow": {
+      "income": "Inkomst",
+      "expenses": "Utgifter",
+      "mortgage": "Bolan",
+      "net": "Netto",
+      "noData": "Ingen transaktionsdata"
+    },
+    "occupancy": {
+      "label": "Belaggning",
+      "contact": "Kontakt",
+      "selfOccupied": "Eget boende",
+      "vacant": "Ledig",
+      "contactOccupied": "Kontaktuthyrd",
+      "netIncomeTrend": "Nettoinkomsttrend",
+      "netIncome": "Nettoinkomst",
+      "noData": "Ingen kontraktsdata"
+    },
+    "expense": {
+      "noData": "Ingen utgiftsdata"
+    },
+    "equity": {
+      "purchasePrice": "Kopeskilling",
+      "marketValue": "Marknadsvarde",
+      "mortgage": "Bolan",
+      "equity": "Eget kapital",
+      "noData": "Lagg till kopeskilling och marknadsvarde for att se eget kapital"
+    },
+    "completeness": {
+      "title": "Datakompletthet: {{percent}}%",
+      "purchasePrice": "Kopeskilling",
+      "marketValue": "Marknadsvarde",
+      "mortgageInfo": "Bolansinformation",
+      "operatingCosts": "Driftskostnader",
+      "contracts": "Kontrakt",
+      "payments": "Betalningar",
+      "expenses": "Kostnader"
+    },
+    "projection": {
+      "description": "Prognostiserad inkomst och utgifter baserat pa aktiva kontrakt och driftskostnader",
+      "expectedIncome": "Forvantad inkomst",
+      "expectedExpenses": "Forvantade utgifter",
+      "expectedNet": "Forvantad netto"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Valj --",
+    "residential": {
+      "title": "Bostadsdetaljer",
+      "bedrooms": "Sovrum",
+      "bathrooms": "Badrum",
+      "furnished": "Moblerad",
+      "petPolicy": "Husdjurspolicy"
+    },
+    "commercial": {
+      "title": "Kommersiella detaljer",
+      "usableArea": "Anvandbar yta",
+      "commonArea": "Gemensam yta",
+      "floorLevel": "Vaningsplan",
+      "ceilingHeight": "Takhoejd",
+      "maxOccupancy": "Max belaggning",
+      "restroomCount": "Antal toaletter",
+      "zoningClassification": "Zonklassificering",
+      "zoningPlaceholder": "t.ex. C-2, Blandat kommersiellt",
+      "hasStorefront": "Har skyltfonster",
+      "signageRights": "Skyltrattigheter",
+      "kitchenFacility": "Koksfacilitet",
+      "accessibilityCompliant": "Tillganglighetsanpassad"
+    },
+    "industrial": {
+      "title": "Industriella detaljer",
+      "clearHeight": "Fri hoejd",
+      "loadingDocks": "Lastbryggor",
+      "driveInDoors": "Korportar",
+      "floorLoadCapacity": "Golvbelastningskapacitet",
+      "powerCapacity": "Elkapacitet",
+      "craneCapacity": "Krankapacitet",
+      "yardArea": "Gardsyta",
+      "zoningClassification": "Zonklassificering",
+      "zoningPlaceholder": "t.ex. I-1, Latt industri",
+      "threePhasePower": "Trefasel",
+      "craneAvailable": "Kran tillganglig",
+      "hazmatCertified": "Farligt gods-certifierad",
+      "ventilationSystem": "Ventilationssystem",
+      "climateControl": "Klimatkontroll"
+    },
+    "agricultural": {
+      "title": "Jordbruksdetaljer",
+      "totalLandArea": "Total markyta",
+      "arableArea": "Odlingsbar yta",
+      "soilType": "Jordtyp",
+      "waterSource": "Vattenkalla",
+      "irrigationType": "Bevattningstyp",
+      "fencingType": "Stangseltyp",
+      "currentUse": "Nuvarande anvandning",
+      "currentUsePlaceholder": "t.ex. Vaxtodling, Djurhallning",
+      "zoningClassification": "Zonklassificering",
+      "zoningPlaceholder": "t.ex. A-1, Jordbruk",
+      "waterRights": "Vattenrattigheter",
+      "hasOutbuildings": "Har uthus",
+      "outbuildingDetails": "Uthusdetaljer",
+      "outbuildingPlaceholder": "t.ex. Lada, Forrad, Maskingarage"
+    },
+    "construction": {
+      "yearBuilt": "Byggar",
+      "yearLastRenovated": "Senast renoverad",
+      "constructionType": "Byggnationstyp",
+      "foundationType": "Grundtyp",
+      "roofType": "Taktyp",
+      "wallConstruction": "Vaggkonstruktion",
+      "flooringType": "Golvtyp",
+      "windowType": "Fonstertyp",
+      "numberOfFloors": "Antal vaningar",
+      "structuralNotes": "Strukturella anteckningar",
+      "structuralNotesTooltip": "Namnvarda strukturella detaljer, renoveringar eller problem"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Energieffektivitetsklassificering",
+      "energyRatingTooltip": "Officiell energimarkning (A++ till G)",
+      "certificateExpiry": "Energicertifikatets utgang",
+      "certificateExpiryTooltip": "Nar det aktuella energicertifikatet gar ut",
+      "heatingType": "Uppvarmningstyp",
+      "coolingType": "Kylningstyp",
+      "hotWaterSystem": "Varmvattensystem",
+      "insulationNotes": "Isoleringsanteckningar",
+      "insulationTooltip": "Vagg-, tak-, golvisoleringsdetaljer"
+    },
+    "utilities": {
+      "electricityConnection": "Elanslutning",
+      "electricityCapacity": "Elkapacitet",
+      "electricityCapacityTooltip": "Huvudsakringens kapacitet",
+      "waterConnection": "Vattenanslutning",
+      "hasGasConnection": "Har gasanslutning",
+      "sewageType": "Avloppstyp",
+      "internetConnection": "Internetanslutning",
+      "internetMaxSpeed": "Internet maxhastighet",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "parkingSpaces": "Parkeringsplatser",
+      "parkingType": "Parkeringstyp"
+    },
+    "safety": {
+      "smokeDetectors": "Rokdetektorer",
+      "coDetectors": "CO-detektorer",
+      "fireExtinguisher": "Brandslackare",
+      "sprinklerSystem": "Sprinklersystem",
+      "alarmSystem": "Larmsystem",
+      "securityCameras": "Overvakningskameror",
+      "secureEntry": "Saker entre",
+      "safetyNotes": "Sakerhetsanteckningar",
+      "safetyNotesTooltip": "Utrymningsvagar, senaste inspektionsdatum osv."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Rullstolsanpassad",
+      "elevator": "Hiss",
+      "stepFreeEntrance": "Stegfri entre",
+      "adaptedBathroom": "Anpassat badrum",
+      "accessibilityNotes": "Tillganglighetsanteckningar",
+      "accessibilityNotesTooltip": "Dorrbredder, ramptillgang osv."
+    },
+    "outdoorAreas": {
+      "type": "Typ",
+      "area": "Yta",
+      "unit": "Enhet",
+      "add": "Lagg till",
+      "addOutdoorArea": "Lagg till utomhusyta"
+    }
+  },
+  "form": {
+    "address": "Adress",
+    "street": "Gata",
+    "streetPlaceholder": "Storgatan 123",
+    "city": "Stad",
+    "cityPlaceholder": "Stockholm",
+    "postalCode": "Postnummer",
+    "postalCodePlaceholder": "111 22",
+    "country": "Land",
+    "region": "Region",
+    "regionOther": "Ovrigt",
+    "locationPreview": "Platsforhandsvisning",
+    "specifications": "Specifikationer",
+    "category": "Kategori",
+    "categoryCannotChange": "(kan inte andras)",
+    "type": "Typ",
+    "status": "Status",
+    "area": "Yta",
+    "areaPlaceholder": "75,5",
+    "saving": "Sparar...",
+    "updateProperty": "Uppdatera fastighet",
+    "createProperty": "Skapa fastighet",
+    "validation": {
+      "streetRequired": "Gata ar obligatorisk",
+      "cityRequired": "Stad ar obligatorisk",
+      "postalCodeRequired": "Postnummer ar obligatoriskt",
+      "countryRequired": "Land ar obligatoriskt",
+      "areaPositive": "Ytan maste vara storre an 0"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} av {{total}} ifyllda"
+  },
+  "documents": {
+    "title": "Dokument",
+    "uploadButton": "Ladda upp dokument",
+    "empty": "Inga dokument uppladdade annu",
+    "failedToLoad": "Det gick inte att ladda dokument",
+    "table": {
+      "document": "Dokument",
+      "size": "Storlek",
+      "uploaded": "Uppladdad",
+      "actions": "Atgarder"
+    },
+    "selection": {
+      "selected": "{{selected}} av {{total}} markerade",
+      "count_one": "{{count}} dokument",
+      "count_other": "{{count}} dokument"
+    },
+    "preview": "Forhandsvisning",
+    "editTitleNotes": "Redigera titel och anteckningar",
+    "upload": {
+      "title_one": "Ladda upp dokument",
+      "title_other": "Ladda upp dokument",
+      "files": "{{count}} filer",
+      "titleLabel": "Titel (valfritt)",
+      "titlePlaceholder": "t.ex. Planritning",
+      "notesLabel": "Anteckningar (valfritt)",
+      "notesPlaceholder": "Ytterligare anteckningar om detta dokument",
+      "uploading": "Laddar upp {{current}} av {{total}}...",
+      "uploadCount": "Ladda upp {{count}} dokument"
+    },
+    "delete": {
+      "title_one": "Ta bort dokument",
+      "title_other": "Ta bort dokument",
+      "message_one": "Ar du saker pa att du vill ta bort detta dokument? Denna atgard kan inte angras.",
+      "message_other": "Du haller pa att ta bort {{count}} dokument. Denna atgard kan inte angras.",
+      "confirmLabel_other": "Ta bort {{count}} dokument"
+    },
+    "editModal": "Redigera dokument",
+    "downloading": "Laddar ner..."
+  },
+  "photos": {
+    "title": "Foton",
+    "uploadButton": "Ladda upp foto",
+    "empty": "Inga foton annu",
+    "upload": {
+      "title_one": "Ladda upp foto",
+      "title_other": "Ladda upp foton",
+      "files": "{{count}} filer",
+      "titleLabel": "Titel (valfritt)",
+      "titlePlaceholder": "t.ex. Vardagsrum",
+      "notesLabel": "Anteckningar (valfritt)",
+      "notesPlaceholder": "Ytterligare anteckningar om detta foto",
+      "uploading": "Laddar upp {{current}} av {{total}}...",
+      "uploadCount": "Ladda upp {{count}} foton"
+    },
+    "delete": {
+      "title_one": "Ta bort foto",
+      "title_other": "Ta bort foton",
+      "mainPhotoWarning_one": "Detta ar huvudfotot. Att ta bort det innebar att denna fastighet inte langre har ett huvudfoto. Denna atgard kan inte angras.",
+      "mainPhotoWarning_other": "Du haller pa att ta bort {{count}} foton, inklusive huvudfotot. Denna fastighet kommer inte langre att ha ett huvudfoto. Denna atgard kan inte angras.",
+      "message_one": "Ar du saker pa att du vill ta bort detta foto? Denna atgard kan inte angras.",
+      "message_other": "Du haller pa att ta bort {{count}} foton. Denna atgard kan inte angras.",
+      "confirmLabel_other": "Ta bort {{count}} foton"
+    },
+    "editModal": "Redigera foto"
+  },
+  "contracts": {
+    "title": "Kontrakt",
+    "addContract": "Lagg till kontrakt",
+    "empty": "Inga kontrakt for denna fastighet",
+    "createFirst": "Skapa forsta kontraktet",
+    "searchPlaceholder": "Sok efter kontrakt #, kontakt, typ...",
+    "noMatchingSearch": "Inga kontrakt hittades som matchar din sokning",
+    "table": {
+      "contractNumber": "Kontrakt #",
+      "contact": "Kontakt",
+      "type": "Typ",
+      "startDate": "Startdatum",
+      "endDate": "Slutdatum",
+      "rentAmount": "Hyresbelopp",
+      "status": "Status"
+    },
+    "pagination": {
+      "showing": "Visar {{from}} till {{to}} av {{total}} kontrakt"
+    },
+    "selfOccupancy": {
+      "title": "Perioder med eget boende",
+      "addButton": "Lagg till eget boende",
+      "empty": "Inga perioder med eget boende registrerade",
+      "recordPeriod": "Registrera en period med eget boende",
+      "table": {
+        "period": "Period",
+        "type": "Typ",
+        "occupant": "Boende",
+        "status": "Status",
+        "actions": "Atgarder"
+      },
+      "ongoing": "Pagaende",
+      "active": "Aktiv",
+      "ended": "Avslutad",
+      "endOccupancy": "Avsluta boende",
+      "deleteTitle": "Ta bort period med eget boende",
+      "deleteMessage": "Ar du saker pa att du vill ta bort denna period med eget boende?",
+      "deleteWarning": "Denna atgard kan inte angras.",
+      "takenPeriods": {
+        "selfUse": "Eget bruk: {{period}}",
+        "contract": "Kontrakt {{identifier}}: {{period}}",
+        "ongoing": "Pagaende"
+      }
+    }
+  },
+  "expenses": {
+    "title": "Kostnader",
+    "addExpense": "Lagg till kostnad",
+    "empty": "Inga kostnader for denna fastighet",
+    "createFirst": "Skapa forsta kostnaden",
+    "failedToLoad": "Det gick inte att ladda kostnader",
+    "searchPlaceholder": "Sok efter kostnad #, beskrivning, kategori...",
+    "noMatchingSearch": "Inga kostnader hittades som matchar din sokning",
+    "table": {
+      "expenseNumber": "Kostnad #",
+      "date": "Datum",
+      "description": "Beskrivning",
+      "category": "Kategori",
+      "amount": "Belopp"
+    },
+    "pagination": {
+      "showing": "Visar {{from}} till {{to}} av {{total}} kostnader"
+    }
+  },
+  "audit": {
+    "title": "Fastighetshistorik",
+    "failedToLoad": "Det gick inte att ladda historik",
+    "empty": {
+      "title": "Ingen historik tillganglig",
+      "description": "Andringar i denna fastighet visas har"
+    },
+    "impersonated": "Imiterad",
+    "clickToHide": "Klicka for att dolja andringar",
+    "clickToView": "Klicka for att visa andringar",
+    "changedFields": "Andrade falt",
+    "old": "Gammal:",
+    "new": "Ny:",
+    "fileName": "Filnamn",
+    "titleLabel": "Titel",
+    "typeLabel": "Typ",
+    "photo": "Foto",
+    "document": "Dokument"
+  },
+  "selfOccupancy": {
+    "title": "Eget boende",
+    "markTitle": "Markera som eget boende",
+    "editTitle": "Redigera eget boende",
+    "endTitle": "Avsluta eget boende",
+    "active": "Aktiv",
+    "period": "Period",
+    "type": "Typ",
+    "occupant": "Boende",
+    "imputedRent": "Kalkylerad hyra",
+    "perMonth": "/ manad",
+    "endReason": "Avslutningsorsak",
+    "notes": "Anteckningar",
+    "endOccupancy": "Avsluta boende",
+    "form": {
+      "startDate": "Startdatum *",
+      "endDate": "Slutdatum",
+      "endDateRequired": "Slutdatum *",
+      "occupancyType": "Boendetyp *",
+      "occupantName": "Boendets namn",
+      "occupantNamePlaceholder": "t.ex. Agaren, Familjemedlem",
+      "monthlyImputedRent": "Manatlig kalkylerad hyra",
+      "notes": "Anteckningar",
+      "notesPlaceholder": "Ytterligare anteckningar...",
+      "reason": "Anledning",
+      "reasonPlaceholder": "Valj en anledning...",
+      "alreadyTakenPeriods": "Redan upptagna perioder"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Personligt",
+      "FAMILY": "Familj",
+      "BUSINESS": "Foretagsbruk"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Konverterar till uthyrning",
+      "SELLING": "Forsaljning",
+      "RENOVATION": "Renovering",
+      "OTHER": "Ovrigt"
+    }
+  },
+  "map": {
+    "unavailable": "Kartforhandsvisning otillganglig",
+    "configureApiKey": "Konfigurera VITE_GOOGLE_MAPS_API_KEY for att aktivera kartor",
+    "loading": "Laddar karta...",
+    "locationNotFound": "Platsen hittades inte",
+    "couldNotFind": "Kunde inte hitta denna adress pa kartan",
+    "apiKeyNotConfigured": "Google Maps API-nyckel inte konfigurerad",
+    "geocodeFailed": "Det gick inte att geokoda adressen",
+    "locationNotFoundShort": "Kunde inte hitta platsen",
+    "findingLocation": "Soker plats...",
+    "couldNotLoadMaps": "Kunde inte ladda Google Maps just nu",
+    "clickToPlace": "Var kartfunktion misslyckades denna gang. Klicka var som helst pa kartan for att placera din fastighetsnal.",
+    "placePinManually": "Placera nal manuellt",
+    "accuracy": {
+      "rooftop": "Dra nalen for att finjustera platsen",
+      "manual": "Nalen placerad manuellt -- dra for att justera vid behov",
+      "approximate": "Vi hittade omradet men inte den exakta platsen -- dra nalen till din fastighet!",
+      "country": "Vi hittade landet atminstone! Dra nalen till ratt plats."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Eget boende",
+    "contract": "Kontrakt",
+    "vacancy": "Ledighet",
+    "noEntries": "Inga tidslinjeposter annu",
+    "ongoing": "Pagaende"
+  },
+  "statusChart": {
+    "occupied": "Uthyrd",
+    "selfOccupied": "Eget boende",
+    "vacant": "Ledig",
+    "maintenance": "Underhall",
+    "unavailable": "Otillganglig",
+    "noProperties": "Inga fastigheter att visa"
+  },
+  "financials": {
+    "failedToLoad": "Det gick inte att ladda finansiell data.",
+    "saving": "Sparar...",
+    "deleting": "Tar bort...",
+    "notSet": "Ej angivet",
+    "latestValuation": "Senaste vardering",
+    "valuationHistory": "Varderingshistorik",
+    "payments": "Betalningar",
+    "bulkAdd": "Masslagg till",
+    "sections": {
+      "acquisition": "Forvary",
+      "valuations": "Varderingar",
+      "financings": "Finansieringar",
+      "recurringCosts": "Aterkommande kostnader"
+    },
+    "metrics": {
+      "netWorth": "Nettovarde",
+      "totalAnnualCosts": "Totala arliga kostnader",
+      "totalFinancingBalance": "Totalt finansieringssaldo",
+      "latestValuation": "Senaste vardering"
+    },
+    "modals": {
+      "addTax": "Lagg till skatt",
+      "editTax": "Redigera skatt",
+      "addFee": "Lagg till avgift",
+      "editFee": "Redigera avgift",
+      "addFinancing": "Lagg till finansiering",
+      "editFinancing": "Redigera finansiering",
+      "addInsurance": "Lagg till forsakring",
+      "editInsurance": "Redigera forsakring",
+      "addValuation": "Lagg till vardering",
+      "editValuation": "Redigera vardering",
+      "addAcquisition": "Lagg till forvary",
+      "editAcquisition": "Redigera forvary",
+      "editPayment": "Redigera betalning",
+      "recordPayment": "Registrera betalning",
+      "bulkAddPayments": "Masslagg till betalningar"
+    },
+    "labels": {
+      "taxType": "Skattetyp",
+      "authority": "Myndighet",
+      "annualAmount": "Arligt belopp",
+      "paymentFrequency": "Betalningsfrekvens",
+      "taxYear": "Skattear",
+      "dueMonths": "Forfallamanader",
+      "startDate": "Startdatum",
+      "endDate": "Slutdatum",
+      "status": "Status",
+      "notes": "Anteckningar",
+      "feeType": "Avgiftstyp",
+      "name": "Namn",
+      "financingType": "Finansieringstyp",
+      "rateType": "Rantetyp",
+      "lenderName": "Langivarens namn",
+      "loanNumber": "Lanenummer",
+      "originalAmount": "Ursprungligt belopp",
+      "currentBalance": "Aktuellt saldo",
+      "interestRate": "Rantesats",
+      "monthlyPayment": "Manatlig betalning",
+      "variablePayment": "Rorlig betalning",
+      "termMonths": "Lopetid (manader)",
+      "insuranceType": "Forsakringstyp",
+      "provider": "Leverantor",
+      "policyNumber": "Forsakringsnummer",
+      "coverageAmount": "Forsakringsbelopp",
+      "annualPremium": "Arlig premie",
+      "valuationType": "Varderingstyp",
+      "valuationDate": "Varderingsdatum",
+      "amount": "Belopp",
+      "source": "Kalla",
+      "acquisitionType": "Forvarytyp",
+      "acquisitionDate": "Forvarvsdatum",
+      "purchasePrice": "Kopeskilling",
+      "closingCosts": "Stangningskostnader",
+      "renovationCosts": "Renoveringskostnader",
+      "landValue": "Markvarde",
+      "depreciationMethod": "Avskrivningsmetod",
+      "depreciationYears": "Avskrivningsar",
+      "paymentDate": "Betalningsdatum",
+      "totalAmount": "Totalt belopp",
+      "principal": "Amortering",
+      "interest": "Ranta",
+      "escrow": "Sparande",
+      "extraPayment": "Extra betalning",
+      "deductFromBalance": "Dra av amortering fran finansieringssaldo",
+      "documents": "Dokument",
+      "currency": "Valuta",
+      "type": "Typ",
+      "date": "Datum"
+    },
+    "placeholders": {
+      "addNotes": "Lagg till anteckningar...",
+      "source": "t.ex. Fastighetsmaklare, Onlineverktyg"
+    },
+    "units": {
+      "years": "ar",
+      "months": "manader",
+      "perYear": "/ar"
+    },
+    "recurringCosts": "Aterkommande kostnader",
+    "insurances": "Forsakringar",
+    "taxes": "Skatter",
+    "fees": "Avgifter",
+    "na": "Ej tillampligt",
+    "all": "Alla",
+    "term": "Lopetid",
+    "frequency": "Frekvens",
+    "actions": "Atgarder",
+    "total": "Totalt",
+    "empty": {
+      "noAcquisition": "Inga forvarvsdata registrerade.",
+      "noValuation": "Inga varderingsdata registrerade.",
+      "noFinancing": "Inga finansieringsinstrument registrerade.",
+      "noPayments": "Inga betalningar registrerade annu.",
+      "noInsurances": "Inga forsakringar.",
+      "noTaxes": "Inga skatter.",
+      "noFees": "Inga avgifter."
+    },
+    "delete": {
+      "title": "Ta bort {{label}}?",
+      "message": "Ar du saker pa att du vill ta bort denna {{label}}? Denna atgard kan inte angras.",
+      "valuation": "{{type}}-vardering",
+      "payment": "betalning ({{date}})",
+      "insurance": "{{type}}-forsakring",
+      "tax": "{{type}}-skatt",
+      "fee": "{{type}}-avgift"
+    },
+    "toast": {
+      "paymentDeleted": "Betalningen har tagits bort",
+      "paymentDeleteFailed": "Det gick inte att ta bort betalningen",
+      "paymentsCreated_one": "{{count}} betalning skapad",
+      "paymentsCreated_other": "{{count}} betalningar skapade"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "Maj",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Kop",
+      "INHERITANCE": "Arv",
+      "GIFT": "Gava",
+      "FORECLOSURE": "Utmatning",
+      "AUCTION": "Auktion",
+      "OTHER": "Ovrigt"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Linjar",
+      "DECLINING_BALANCE": "Degressiv",
+      "NONE": "Ingen"
+    },
+    "valuationTypes": {
+      "MARKET": "Marknad",
+      "APPRAISAL": "Vardering",
+      "TAX_ASSESSED": "Taxerad",
+      "PURCHASE": "Kop",
+      "INSURANCE": "Forsakring",
+      "USER_ESTIMATE": "Egen uppskattning"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Bolan",
+      "LEASING": "Leasing",
+      "LOAN": "Lan",
+      "LINE_OF_CREDIT": "Kredit",
+      "PRIVATE_FINANCING": "Privat finansiering",
+      "OTHER": "Ovrigt"
+    },
+    "rateTypes": {
+      "FIXED": "Fast",
+      "VARIABLE": "Rorlig",
+      "INTEREST_ONLY": "Enbart ranta",
+      "HYBRID": "Hybrid"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Aktiv",
+      "PAID_OFF": "Avbetald",
+      "REFINANCED": "Omfinansierad",
+      "DEFAULTED": "Fallerad"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Schemalaged",
+      "COMPLETED": "Slutford",
+      "MISSED": "Missad",
+      "LATE": "Sen"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Byggnad",
+      "LIABILITY": "Ansvar",
+      "CONTENTS": "Inventarier",
+      "FLOOD": "Oversvamning",
+      "EARTHQUAKE": "Jordbavning",
+      "UMBRELLA": "Paraply",
+      "RENT_GUARANTEE": "Hyresgaranti",
+      "OTHER": "Ovrigt"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Utgangen",
+      "CANCELLED": "Avbruten"
+    },
+    "taxTypes": {
+      "PROPERTY": "Fastighet",
+      "MUNICIPAL": "Kommunal",
+      "STATE": "Statlig",
+      "LOCAL": "Lokal",
+      "LAND": "Mark",
+      "SPECIAL_ASSESSMENT": "Specialtaxering",
+      "OTHER": "Ovrigt"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Utgangen",
+      "EXEMPT": "Befriad"
+    },
+    "feeTypes": {
+      "HOA": "BRF",
+      "MANAGEMENT": "Forvaltning",
+      "MAINTENANCE_RESERVE": "Underhallsreserv",
+      "CLEANING": "Stadning",
+      "GARDENING": "Tradgardsarbete",
+      "SECURITY": "Sakerhet",
+      "WASTE_MANAGEMENT": "Avfallshantering",
+      "WATER": "Vatten",
+      "UTILITIES": "Drift",
+      "OTHER": "Ovrigt"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Utgangen",
+      "CANCELLED": "Avbruten"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Manatligen",
+      "QUARTERLY": "Kvartalsvis",
+      "SEMI_ANNUALLY": "Halvarsvis",
+      "ANNUALLY": "Arsvis",
+      "CUSTOM": "Anpassad"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Oppna kontrakt",
+    "clickToEdit": "Klicka for att redigera"
+  }
+}

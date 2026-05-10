@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ExpenseCategory, formatExpenseCategory } from '@/types/expense';
+import { ExpenseCategory } from '@/types/expense';
 import {
   useExpenses,
   useExpenseStats,
@@ -44,24 +45,25 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const categoryFilters = [
-  { value: undefined, label: 'All Categories' },
-  { value: ExpenseCategory.MAINTENANCE, label: 'Maintenance' },
-  { value: ExpenseCategory.REPAIR, label: 'Repair' },
-  { value: ExpenseCategory.UTILITY, label: 'Utility' },
-  { value: ExpenseCategory.TAX, label: 'Tax' },
-  { value: ExpenseCategory.INSURANCE, label: 'Insurance' },
-  { value: ExpenseCategory.LEGAL, label: 'Legal' },
-  { value: ExpenseCategory.MARKETING, label: 'Marketing' },
-  { value: ExpenseCategory.CLEANING, label: 'Cleaning' },
-  { value: ExpenseCategory.LANDSCAPING, label: 'Landscaping' },
-  { value: ExpenseCategory.PROPERTY_MANAGEMENT, label: 'Property Management' },
-  { value: ExpenseCategory.FEES, label: 'Fees' },
-  { value: ExpenseCategory.PROPERTY_TAX, label: 'Property Taxes' },
-  { value: ExpenseCategory.OTHER, label: 'Other' },
+const categoryFilterValues = [
+  undefined,
+  ExpenseCategory.MAINTENANCE,
+  ExpenseCategory.REPAIR,
+  ExpenseCategory.UTILITY,
+  ExpenseCategory.TAX,
+  ExpenseCategory.INSURANCE,
+  ExpenseCategory.LEGAL,
+  ExpenseCategory.MARKETING,
+  ExpenseCategory.CLEANING,
+  ExpenseCategory.LANDSCAPING,
+  ExpenseCategory.PROPERTY_MANAGEMENT,
+  ExpenseCategory.FEES,
+  ExpenseCategory.PROPERTY_TAX,
+  ExpenseCategory.OTHER,
 ];
 
 export const ExpensesPage = () => {
+  const { t } = useTranslation('expenses');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -162,7 +164,7 @@ export const ExpensesPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load expenses" />
+        <ErrorMessage message={t('errors.loadFailed')} />
       </div>
     );
   }
@@ -175,11 +177,11 @@ export const ExpensesPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Receipt className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">Expenses</h1>
+              <h1 className="text-3xl font-bold text-text-primary">
+                {t('page.title')}
+              </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              Track property expenses and costs
-            </p>
+            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton
@@ -192,7 +194,7 @@ export const ExpensesPage = () => {
               className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <Plus className="h-5 w-5" />
-              Add Expense
+              {t('actions.addExpense')}
             </button>
           </div>
         </div>
@@ -204,7 +206,7 @@ export const ExpensesPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-text-secondary">
-                  Total Expenses
+                  {t('stats.totalExpenses')}
                 </h3>
                 <DollarSign className="h-5 w-5 text-error-text" />
               </div>
@@ -214,8 +216,12 @@ export const ExpensesPage = () => {
                 </p>
                 <p className="text-sm text-text-secondary mt-1">
                   {categoryFilter
-                    ? `in ${formatExpenseCategory(categoryFilter)}`
-                    : `across ${expenseStats.topCategories.length} categories`}
+                    ? t('stats.categorySummary', {
+                        category: t(`category.${categoryFilter}`),
+                      })
+                    : t('stats.categorySummaryAll', {
+                        count: expenseStats.topCategories.length,
+                      })}
                 </p>
               </div>
             </div>
@@ -224,7 +230,7 @@ export const ExpensesPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-medium text-text-secondary">
-                  Top Categories
+                  {t('stats.topCategories')}
                 </h3>
                 <PieChart className="h-5 w-5 text-primary-500" />
               </div>
@@ -245,7 +251,7 @@ export const ExpensesPage = () => {
                         }`}
                       />
                       <span className="text-sm text-text-secondary truncate">
-                        {formatExpenseCategory(cat.category as ExpenseCategory)}
+                        {t(`category.${cat.category}`)}
                       </span>
                     </div>
                     <span className="text-sm font-semibold text-text-primary">
@@ -255,7 +261,7 @@ export const ExpensesPage = () => {
                 ))}
                 {expenseStats.topCategories.length === 0 && (
                   <p className="text-sm text-text-secondary">
-                    No data available
+                    {t('stats.noData')}
                   </p>
                 )}
               </div>
@@ -265,7 +271,7 @@ export const ExpensesPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-text-secondary">
-                  Last 6 Months
+                  {t('stats.lastSixMonths')}
                 </h3>
                 <TrendingDown className="h-5 w-5 text-error-text" />
               </div>
@@ -295,7 +301,7 @@ export const ExpensesPage = () => {
                       typeof value === 'number'
                         ? fmtMoney(value, statsCurrency)
                         : 'N/A',
-                      'Expenses',
+                      t('stats.tooltipExpenses'),
                     ]}
                     contentStyle={{ fontSize: 12 }}
                   />
@@ -317,7 +323,9 @@ export const ExpensesPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h3 className="font-semibold text-text-primary">Filters</h3>
+            <h3 className="font-semibold text-text-primary">
+              {t('filters.title')}
+            </h3>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -325,7 +333,7 @@ export const ExpensesPage = () => {
             <div className="flex flex-col lg:flex-row gap-4 items-end">
               <div className="lg:w-96">
                 <label className="block text-xs font-medium text-text-secondary mb-1">
-                  Property
+                  {t('filters.property')}
                 </label>
                 <PropertySelector
                   value={propertyFilter ?? ''}
@@ -334,7 +342,7 @@ export const ExpensesPage = () => {
                     resetPage();
                   }}
                   clearable
-                  placeholder="All Properties"
+                  placeholder={t('filters.allProperties')}
                 />
               </div>
               <div className="flex-1">
@@ -352,23 +360,25 @@ export const ExpensesPage = () => {
             {/* Row 2: Category filter */}
             <div>
               <label className="block text-xs font-medium text-text-secondary mb-1">
-                Category
+                {t('filters.category')}
               </label>
               <div className="flex gap-2 flex-wrap">
-                {categoryFilters.map((filter) => (
+                {categoryFilterValues.map((value) => (
                   <button
-                    key={filter.label}
+                    key={value ?? 'all'}
                     onClick={() => {
-                      setCategoryFilter(filter.value);
+                      setCategoryFilter(value);
                       resetPage();
                     }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
-                      categoryFilter === filter.value
+                      categoryFilter === value
                         ? 'bg-primary-500 text-white'
                         : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                     }`}
                   >
-                    {filter.label}
+                    {value
+                      ? t(`category.${value}`)
+                      : t('filters.allCategories')}
                   </button>
                 ))}
               </div>
@@ -388,34 +398,34 @@ export const ExpensesPage = () => {
                       onClick={() => handleSortChange('expenseDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Date
+                        {t('table.date')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Expense #
+                      {t('table.expenseNumber')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Description
+                      {t('table.description')}
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSortChange('category')}
                     >
                       <div className="flex items-center gap-1">
-                        Category
+                        {t('table.category')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[220px]">
-                      Property
+                      {t('table.property')}
                     </th>
                     <th
                       className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSortChange('amount')}
                     >
                       <div className="flex items-center justify-end gap-1">
-                        Amount
+                        {t('table.amount')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
@@ -466,7 +476,7 @@ export const ExpensesPage = () => {
                               navigate(`/expenses/${expense.identifier}`);
                             }}
                             className="p-1.5 rounded hover:bg-neutral-100 text-text-secondary hover:text-primary-500 transition-colors"
-                            title="View expense"
+                            title={t('tooltips.viewExpense')}
                           >
                             <Eye className="h-4 w-4" />
                           </button>
@@ -477,7 +487,7 @@ export const ExpensesPage = () => {
                                 setDeleteTarget(expense.identifier);
                               }}
                               className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title="Delete expense"
+                              title={t('tooltips.deleteExpense')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -505,12 +515,12 @@ export const ExpensesPage = () => {
           <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
             <Receipt className="h-12 w-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No expenses found
+              {t('empty.title')}
             </h3>
             <p className="text-text-secondary mb-6">
               {categoryFilter || propertyFilter
-                ? 'Try adjusting your filters'
-                : 'Get started by recording your first expense'}
+                ? t('empty.filtered')
+                : t('empty.noData')}
             </p>
             {!categoryFilter && !propertyFilter && (
               <button
@@ -519,7 +529,7 @@ export const ExpensesPage = () => {
                 className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
               >
                 <Plus className="h-5 w-5" />
-                Add Expense
+                {t('actions.addExpense')}
               </button>
             )}
           </div>
@@ -528,9 +538,9 @@ export const ExpensesPage = () => {
 
       {deleteTarget && (
         <ConfirmDialog
-          title="Delete Expense"
-          message="Are you sure you want to delete this expense? All related documents will also be deleted. This action cannot be undone."
-          confirmLabel="Delete"
+          title={t('deleteDialog.title')}
+          message={t('deleteDialog.messageWithRelated')}
+          confirmLabel={t('buttons.delete', { ns: 'common' })}
           variant="danger"
           isLoading={deleteExpenseMutation.isPending}
           onConfirm={async () => {

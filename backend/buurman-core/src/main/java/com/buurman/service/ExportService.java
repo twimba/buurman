@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,11 +19,14 @@ public interface ExportService {
   byte[] generateTransactionHistoryPDF(
       Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId);
 
-  byte[] generatePropertyBrochurePDF(PropertyIdentifier propertyIdentifier, UUID teamId);
+  byte[] generatePropertyBrochurePDF(
+      PropertyIdentifier propertyIdentifier, UUID teamId, Locale locale);
 
-  byte[] generateContractReportPDF(ContractIdentifier contractIdentifier, UUID teamId);
+  byte[] generateContractReportPDF(
+      ContractIdentifier contractIdentifier, UUID teamId, Locale locale);
 
-  byte[] generateContactReportPDF(ContactIdentifier contactIdentifier, UUID teamId);
+  byte[] generateContactReportPDF(
+      ContactIdentifier contactIdentifier, UUID teamId, Locale locale);
 
   byte[] generatePropertyDashboardPDF(PropertyDashboardResponse dashboard);
 

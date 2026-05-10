@@ -1,0 +1,1112 @@
+{
+  "list": {
+    "title": "Ejendomme",
+    "subtitle": "Administrer dine udlejningsejendomme og enheder",
+    "addButton": "Tilfoej ejendom",
+    "searchPlaceholder": "Soeg efter adresse, by, postnummer eller type...",
+    "filters": "Filtre",
+    "category": "Kategori",
+    "allCategories": "Alle kategorier",
+    "status": "Status",
+    "allStatuses": "Alle statusser",
+    "count_one": "{{count}} ejendom",
+    "count_other": "{{count}} ejendomme",
+    "empty": {
+      "title": "Ingen ejendomme fundet",
+      "filtered": "Proev at justere dine filtre eller soegetermer",
+      "noData": "Kom i gang ved at tilfoeje din foerste ejendom"
+    },
+    "error": "Kunne ikke indlaese ejendomme"
+  },
+  "create": {
+    "title": "Tilfoej ny ejendom",
+    "readOnlyMessage": "Oprettelse af ejendomme er ikke tilgaengelig i skrivebeskyttet tilstand."
+  },
+  "edit": {
+    "title": "Rediger ejendom",
+    "notFound": "Ejendom ikke fundet"
+  },
+  "detail": {
+    "notFound": "Ejendom ikke fundet",
+    "booklet": "Haendelsesrapport",
+    "bookletDownloadFailed": "Kunne ikke downloade haendelsesrapport. Proev venligst igen.",
+    "tabs": {
+      "info": "Info",
+      "dashboard": "Dashboard",
+      "financials": "Oekonomi",
+      "photos": "Fotos",
+      "documents": "Dokumenter",
+      "contracts": "Kontrakter",
+      "expenses": "Udgifter",
+      "history": "Historik"
+    },
+    "timeline": {
+      "title": "Ejendomstidslinje",
+      "rentalContract": "Lejekontrakt",
+      "selfOccupied": "Selvbeboet",
+      "financing": "Finansiering"
+    },
+    "specs": {
+      "bedrooms": "Sovevaerelser",
+      "bathrooms": "Badevaerelser",
+      "area": "Areal",
+      "type": "Type",
+      "street": "Gade",
+      "city": "By",
+      "postalCode": "Postnummer",
+      "country": "Land",
+      "location": "Beliggenhed"
+    },
+    "characteristics": {
+      "title": "Ejendomskarakteristika"
+    },
+    "construction": {
+      "title": "Konstruktion & Struktur",
+      "yearBuilt": "Byggeaar",
+      "lastRenovated": "Sidst renoveret",
+      "construction": "Konstruktion",
+      "foundation": "Fundament",
+      "roof": "Tag",
+      "wallConstruction": "Vaegkonstruktion",
+      "flooring": "Gulvbelaegning",
+      "windows": "Vinduer",
+      "floors": "Etager",
+      "structuralNotes": "Strukturelle noter"
+    },
+    "energy": {
+      "title": "Energi & Klima",
+      "energyRating": "Energimaerke",
+      "certificateExpiry": "Certifikatudloeb",
+      "heating": "Opvarmning",
+      "cooling": "Koeling",
+      "hotWater": "Varmt vand",
+      "insulationNotes": "Isoleringsnoter"
+    },
+    "utilities": {
+      "title": "Forsyninger & Tilslutninger",
+      "electricity": "Elektricitet",
+      "capacity": "Kapacitet",
+      "water": "Vand",
+      "gasConnection": "Gasforbindelse",
+      "sewage": "Kloak",
+      "internet": "Internet",
+      "internetSpeed": "Internethastighed",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "title": "Parkering",
+      "parkingSpaces": "Parkeringspladser",
+      "parkingType": "Parkeringstype"
+    },
+    "outdoorAreas": {
+      "title": "Udendoersarealer"
+    },
+    "amenities": {
+      "title": "Faciliteter"
+    },
+    "safety": {
+      "title": "Sikkerhed",
+      "smokeDetectors": "Roegalarmer",
+      "coDetectors": "CO-alarmer",
+      "fireExtinguisher": "Brandslukker",
+      "sprinklerSystem": "Sprinklersystem",
+      "alarmSystem": "Alarmsystem",
+      "securityCameras": "Overvagningskameraer",
+      "secureEntry": "Sikker indgang",
+      "safetyNotes": "Sikkerhedsnoter"
+    },
+    "accessibility": {
+      "title": "Tilgaengelighed",
+      "wheelchairAccessible": "Koelstolstilgaengelig",
+      "elevator": "Elevator",
+      "stepFreeEntrance": "Trinfri indgang",
+      "adaptedBathroom": "Tilpasset badevaerelse",
+      "accessibilityNotes": "Tilgaengelighedsnoter"
+    },
+    "wws": {
+      "title": "WWS-point",
+      "calculate": "Beregn",
+      "recalculate": "Genberegn",
+      "points": "point",
+      "regulated": "Reguleret",
+      "midSegment": "Mellemsegment",
+      "freeSector": "Fri sektor",
+      "maxRent": "Maks. leje",
+      "calculated": "Beregnet",
+      "history": "Historik",
+      "noCalculation": "Ingen beregning endnu",
+      "noCalculationDescription": "Beregn WWS-pointene for at bestemme den maksimale regulerede leje for denne ejendom.",
+      "noPreviousCalculations": "Ingen tidligere beregninger."
+    },
+    "metadata": {
+      "title": "Metadata",
+      "created": "Oprettet:",
+      "lastUpdated": "Sidst opdateret:",
+      "at": "kl."
+    },
+    "yes": "Ja",
+    "no": "Nej",
+    "deleteProperty": "Slet ejendom",
+    "deletePropertyConfirm": "Er du sikker paa, at du vil slette denne ejendom?",
+    "cannotBeUndone": "Denne handling kan ikke fortrydes.",
+    "deleteWwsConfirm": "Slet WWS-beregning?",
+    "deleteWwsMessage": "Dette fjerner permanent den gemte beregning fra denne ejendom.",
+    "deleteWwsHistoryMessage": "Dette fjerner permanent denne historiske beregning."
+  },
+  "enums": {
+    "characteristics": {
+      "constructionType": {
+        "BRICK": "Mursten",
+        "CONCRETE": "Beton",
+        "WOOD": "Træ",
+        "STEEL": "Stål",
+        "MIXED": "Blandet",
+        "OTHER": "Andet"
+      },
+      "foundationType": {
+        "CONCRETE_SLAB": "Betonplade",
+        "CRAWL_SPACE": "Krybkælder",
+        "BASEMENT": "Kælder",
+        "PILE": "Pæle",
+        "OTHER": "Andet"
+      },
+      "roofType": {
+        "FLAT": "Fladt",
+        "PITCHED": "Sadeltag",
+        "HIP": "Valmtag",
+        "GABLE": "Gavltag",
+        "MANSARD": "Mansardtag",
+        "OTHER": "Andet"
+      },
+      "flooringType": {
+        "HARDWOOD": "Hårdttræ",
+        "LAMINATE": "Laminat",
+        "TILE": "Fliser",
+        "VINYL": "Vinyl",
+        "CARPET": "Tæppe",
+        "CONCRETE": "Beton",
+        "MIXED": "Blandet",
+        "OTHER": "Andet"
+      },
+      "windowType": {
+        "SINGLE_PANE": "Enkeltglas",
+        "DOUBLE_PANE": "Dobbeltglas",
+        "TRIPLE_PANE": "Tredobbeltglas",
+        "OTHER": "Andet"
+      },
+      "heatingType": {
+        "CENTRAL": "Central",
+        "DISTRICT": "Fjernvarme",
+        "HEAT_PUMP": "Varmepumpe",
+        "ELECTRIC": "Elektrisk",
+        "GAS": "Gas",
+        "NONE": "Ingen",
+        "OTHER": "Andet"
+      },
+      "coolingType": {
+        "CENTRAL_AC": "Central aircondition",
+        "SPLIT_AC": "Split-aircondition",
+        "EVAPORATIVE": "Fordampningskøling",
+        "NONE": "Ingen",
+        "OTHER": "Andet"
+      },
+      "hotWaterSystem": {
+        "BOILER": "Kedel",
+        "TANKLESS": "Gennemstrømningsvandvarmer",
+        "HEAT_PUMP": "Varmepumpe",
+        "SOLAR": "Sol",
+        "ELECTRIC": "Elektrisk",
+        "OTHER": "Andet"
+      },
+      "sewageType": {
+        "MUNICIPAL": "Kommunal",
+        "SEPTIC": "Septiktank",
+        "OTHER": "Andet"
+      },
+      "internetConnectionType": {
+        "FIBER": "Fiber",
+        "CABLE": "Kabel",
+        "DSL": "DSL",
+        "NONE": "Ingen",
+        "OTHER": "Andet"
+      },
+      "internetStatus": {
+        "ACTIVE": "Aktiv",
+        "AVAILABLE": "Tilgængelig",
+        "NOT_AVAILABLE": "Ikke tilgængelig",
+        "UNKNOWN": "Ukendt"
+      },
+      "electricityConnectionType": {
+        "SINGLE_PHASE": "Enfaset",
+        "THREE_PHASE": "Trefaset"
+      },
+      "waterConnectionType": {
+        "MUNICIPAL": "Kommunal",
+        "WELL": "Brønd",
+        "SHARED": "Delt",
+        "OTHER": "Andet"
+      },
+      "parkingType": {
+        "GARAGE": "Garage",
+        "CARPORT": "Carport",
+        "DRIVEWAY": "Indkørsel",
+        "STREET": "Gade",
+        "UNDERGROUND": "Underjordisk",
+        "NONE": "Ingen",
+        "OTHER": "Andet"
+      },
+      "outdoorAreaType": {
+        "BALCONY": "Altan",
+        "TERRACE": "Terrasse",
+        "GARDEN": "Have",
+        "ROOFTOP": "Tagterrasse",
+        "PATIO": "Patio",
+        "YARD": "Gård",
+        "OTHER": "Andet",
+        "PARKING_LOT": "Parkeringsplads",
+        "COURTYARD": "Gårdhave",
+        "LOADING_AREA": "Lastezone",
+        "STORAGE_AREA": "Lagerzone",
+        "PASTURE": "Græsgang",
+        "PADDOCK": "Indhegning",
+        "ORCHARD_AREA": "Frugtplantage",
+        "GREENHOUSE_AREA": "Drivhus"
+      },
+      "petPolicy": {
+        "ALLOWED": "Tilladt",
+        "NOT_ALLOWED": "Ikke tilladt",
+        "NEGOTIABLE": "Forhandlingsbar",
+        "SMALL_PETS_ONLY": "Kun små kæledyr"
+      },
+      "soilType": {
+        "CLAY": "Ler",
+        "SANDY": "Sandet",
+        "LOAM": "Lerjord",
+        "SILT": "Silt",
+        "PEAT": "Tørv",
+        "CHALK": "Kridt",
+        "MIXED": "Blandet",
+        "OTHER": "Andet"
+      },
+      "irrigationType": {
+        "DRIP": "Drypvanding",
+        "SPRINKLER": "Sprinkler",
+        "FLOOD": "Oversvømmelse",
+        "CENTER_PIVOT": "Centerpivot",
+        "NONE": "Ingen",
+        "OTHER": "Andet"
+      },
+      "waterSource": {
+        "RIVER": "Flod",
+        "WELL": "Brønd",
+        "MUNICIPAL": "Kommunal",
+        "RAINWATER": "Regnvand",
+        "CANAL": "Kanal",
+        "NONE": "Ingen",
+        "OTHER": "Andet"
+      },
+      "fencingType": {
+        "WIRE": "Tråd",
+        "WOODEN": "Træ",
+        "ELECTRIC": "Elektrisk",
+        "HEDGE": "Hæk",
+        "STONE": "Sten",
+        "NONE": "Ingen",
+        "OTHER": "Andet"
+      }
+    },
+    "categories": {
+      "RESIDENTIAL": "Bolig",
+      "COMMERCIAL": "Erhverv",
+      "INDUSTRIAL": "Industri",
+      "AGRICULTURAL": "Landbrug",
+      "MIXED_USE": "Blandet brug"
+    },
+    "types": {
+      "APARTMENT": "Lejlighed",
+      "HOUSE": "Hus",
+      "STUDIO": "Studio",
+      "ROOM": "Vaerelse",
+      "VILLA": "Villa",
+      "TOWNHOUSE": "Raekke-/byhus",
+      "OTHER_RESIDENTIAL": "Andet",
+      "OFFICE": "Kontor",
+      "RETAIL": "Detailhandel",
+      "RESTAURANT": "Restaurant",
+      "HOTEL": "Hotel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Bilforhandler",
+      "SNACKBAR": "Snackbar",
+      "CAFE": "Cafe",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "B&B",
+      "OTHER_COMMERCIAL": "Andet",
+      "WAREHOUSE": "Lager",
+      "WORKSHOP": "Vaerksted",
+      "FACTORY": "Fabrik",
+      "DATA_CENTER": "Datacenter",
+      "COLD_STORAGE": "Koelelager",
+      "GARAGE": "Garage",
+      "OTHER_INDUSTRIAL": "Andet",
+      "FARMLAND": "Landbrugsjord",
+      "RANCH": "Ranch",
+      "GREENHOUSE": "Drivhus",
+      "ORCHARD": "Frugtplantage",
+      "VINEYARD": "Vingaard",
+      "OTHER_AGRICULTURAL": "Andet",
+      "MIXED_USE": "Blandet brug",
+      "COMMERCIAL": "Erhverv"
+    },
+    "statuses": {
+      "VACANT": "Ledig",
+      "OCCUPIED": "Udlejet",
+      "SELF_OCCUPIED": "Selvbeboet",
+      "MAINTENANCE": "Vedligeholdelse",
+      "UNAVAILABLE": "Utilgaengelig",
+      "UNDER_RENOVATION": "Under renovering",
+      "FALLOW": "Brak",
+      "LISTED": "Annonceret"
+    },
+    "amenities": {
+      "categories": {
+        "APPLIANCE": "Apparater",
+        "COMFORT": "Komfort",
+        "LEISURE": "Fritid",
+        "PARKING": "Parkering",
+        "SERVICE": "Services",
+        "STORAGE": "Opbevaring"
+      },
+      "items": {
+        "SWIMMING_POOL": "Svømmebassin",
+        "GYM": "Fitnesslokale",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Pejs",
+        "BUILT_IN_VACUUM": "Centralstøvsuger",
+        "IN_UNIT_LAUNDRY": "Vaskemaskine i bolig",
+        "SHARED_LAUNDRY": "Fælles vaskeri",
+        "DISHWASHER": "Opvaskemaskine",
+        "STORAGE_UNIT": "Opbevaringsrum",
+        "BIKE_STORAGE": "Cykelkælder",
+        "FURNISHED": "Møbleret",
+        "DOORMAN_CONCIERGE": "Portner / Concierge",
+        "CONFERENCE_ROOM": "Mødelokale",
+        "RECEPTION_AREA": "Reception",
+        "SERVER_ROOM": "Serverrum",
+        "KITCHENETTE": "Tekøkken",
+        "LOADING_BAY": "Læsserampe",
+        "COMPRESSED_AIR_SYSTEM": "Trykluftssystem",
+        "CHEMICAL_STORAGE": "Kemikalielager",
+        "OVERHEAD_CRANE": "Traverskran",
+        "IRRIGATION_SYSTEM": "Vandingssystem",
+        "GRAIN_SILO": "Kornsilo",
+        "LIVESTOCK_SHELTER": "Stald",
+        "COLD_STORAGE": "Kølerum",
+        "SECURITY_BOOTH": "Vagtbod"
+      }
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Kunne ikke indlaese dashboard-data.",
+    "retry": "Proev igen",
+    "exporting": "Eksporterer...",
+    "allTime": "Al tid",
+    "custom": "Brugerdefineret",
+    "to": "til",
+    "resetZoom": "Nulstil zoom",
+    "charts": {
+      "monthlyCashFlow": "Maanedlig pengestroem",
+      "occupancyIncomeTrend": "Udlejnings- & Indtaegtstendens",
+      "expenseBreakdown": "Udgiftsfordeling",
+      "sixMonthProjection": "6-maaneders prognose",
+      "equityOverview": "Egenkapitaloversigt"
+    },
+    "summary": {
+      "totalRoi": "Samlet ROI",
+      "annualizedRoi": "Aarlig ROI",
+      "capRate": "Cap Rate",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Maanedlig pengestroem",
+      "annualNoi": "Aarlig NOI",
+      "totalEquity": "Samlet egenkapital",
+      "equityGrowth": "Egenkapitalvaekst",
+      "occupancy": "Udlejningsgrad",
+      "grossRentMultiplier": "Bruttolejeforhold"
+    },
+    "cashFlow": {
+      "income": "Indtaegter",
+      "expenses": "Udgifter",
+      "mortgage": "Realkredit",
+      "net": "Netto",
+      "noData": "Ingen transaktionsdata"
+    },
+    "occupancy": {
+      "label": "Udlejningsgrad",
+      "contact": "Kontakt",
+      "selfOccupied": "Selvbeboet",
+      "vacant": "Ledig",
+      "contactOccupied": "Udlejet til kontakt",
+      "netIncomeTrend": "Nettoindtaegtstendens",
+      "netIncome": "Nettoindtaegt",
+      "noData": "Ingen kontraktdata"
+    },
+    "expense": {
+      "noData": "Ingen udgiftsdata"
+    },
+    "equity": {
+      "purchasePrice": "Koebspris",
+      "marketValue": "Markedsvaerdi",
+      "mortgage": "Realkredit",
+      "equity": "Egenkapital",
+      "noData": "Tilfoej koebspris og markedsvaerdi for at se egenkapital"
+    },
+    "completeness": {
+      "title": "Datakomplethed: {{percent}}%",
+      "purchasePrice": "Koebspris",
+      "marketValue": "Markedsvaerdi",
+      "mortgageInfo": "Realkreditinfo",
+      "operatingCosts": "Driftsomkostninger",
+      "contracts": "Kontrakter",
+      "payments": "Betalinger",
+      "expenses": "Udgifter"
+    },
+    "projection": {
+      "description": "Forventede indtaegter & udgifter baseret paa aktive kontrakter og driftsomkostninger",
+      "expectedIncome": "Forventede indtaegter",
+      "expectedExpenses": "Forventede udgifter",
+      "expectedNet": "Forventet netto"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Vaelg --",
+    "residential": {
+      "title": "Boligdetaljer",
+      "bedrooms": "Sovevaerelser",
+      "bathrooms": "Badevaerelser",
+      "furnished": "Moelbleret",
+      "petPolicy": "Kaeledyrspolitik"
+    },
+    "commercial": {
+      "title": "Erhvervsdetaljer",
+      "usableArea": "Bruttoareal",
+      "commonArea": "Faellesareal",
+      "floorLevel": "Etage",
+      "ceilingHeight": "Loftshoejde",
+      "maxOccupancy": "Maks. belægning",
+      "restroomCount": "Antal toiletter",
+      "zoningClassification": "Zoneringsklassifikation",
+      "zoningPlaceholder": "f.eks. C-2, Blandet erhverv",
+      "hasStorefront": "Har butiksfacade",
+      "signageRights": "Skilterettigheder",
+      "kitchenFacility": "Koekkenfacilitet",
+      "accessibilityCompliant": "Tilgaengelighedskompatibel"
+    },
+    "industrial": {
+      "title": "Industridetaljer",
+      "clearHeight": "Fri hoejde",
+      "loadingDocks": "Lastramper",
+      "driveInDoors": "Indkoerselsdoere",
+      "floorLoadCapacity": "Gulvbelastningskapacitet",
+      "powerCapacity": "Stroemkapacitet",
+      "craneCapacity": "Krankapacitet",
+      "yardArea": "Gaardspladsareal",
+      "zoningClassification": "Zoneringsklassifikation",
+      "zoningPlaceholder": "f.eks. I-1, Let industri",
+      "threePhasePower": "Trefaset stroem",
+      "craneAvailable": "Kran tilgaengelig",
+      "hazmatCertified": "Farligt-gods-certificeret",
+      "ventilationSystem": "Ventilationssystem",
+      "climateControl": "Klimastyring"
+    },
+    "agricultural": {
+      "title": "Landbrugsdetaljer",
+      "totalLandArea": "Samlet jordareal",
+      "arableArea": "Dyrkbart areal",
+      "soilType": "Jordtype",
+      "waterSource": "Vandkilde",
+      "irrigationType": "Vandingstype",
+      "fencingType": "Hegnstype",
+      "currentUse": "Aktuel brug",
+      "currentUsePlaceholder": "f.eks. Planteavl, Kvaeggræsning",
+      "zoningClassification": "Zoneringsklassifikation",
+      "zoningPlaceholder": "f.eks. A-1, Landbrug",
+      "waterRights": "Vandrettigheder",
+      "hasOutbuildings": "Har udbygninger",
+      "outbuildingDetails": "Udbygningsdetaljer",
+      "outbuildingPlaceholder": "f.eks. Lade, Opbevaringsrum, Maskingarage"
+    },
+    "construction": {
+      "yearBuilt": "Byggeaar",
+      "yearLastRenovated": "Aar sidst renoveret",
+      "constructionType": "Konstruktionstype",
+      "foundationType": "Fundamenttype",
+      "roofType": "Tagtype",
+      "wallConstruction": "Vaegkonstruktion",
+      "flooringType": "Gulvtype",
+      "windowType": "Vinduestype",
+      "numberOfFloors": "Antal etager",
+      "structuralNotes": "Strukturelle noter",
+      "structuralNotesTooltip": "Bemærkelsesværdige strukturelle detaljer, renoveringer eller problemer"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Energieffektivitetsmaerke",
+      "energyRatingTooltip": "Officielt energimaerke (A++ til G)",
+      "certificateExpiry": "Energicertifikatudloeb",
+      "certificateExpiryTooltip": "Naar det aktuelle energicertifikat udloeber",
+      "heatingType": "Opvarmningstype",
+      "coolingType": "Koelingstype",
+      "hotWaterSystem": "Varmtvandssystem",
+      "insulationNotes": "Isoleringsnoter",
+      "insulationTooltip": "Vaeg-, tag-, gulvisoleringsdetaljer"
+    },
+    "utilities": {
+      "electricityConnection": "Elforbindelse",
+      "electricityCapacity": "Elkapacitet",
+      "electricityCapacityTooltip": "Hovedsikringskapacitet",
+      "waterConnection": "Vandforbindelse",
+      "hasGasConnection": "Har gasforbindelse",
+      "sewageType": "Kloaktype",
+      "internetConnection": "Internetforbindelse",
+      "internetMaxSpeed": "Internet maks. hastighed",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "parkingSpaces": "Parkeringspladser",
+      "parkingType": "Parkeringstype"
+    },
+    "safety": {
+      "smokeDetectors": "Roegalarmer",
+      "coDetectors": "CO-alarmer",
+      "fireExtinguisher": "Brandslukker",
+      "sprinklerSystem": "Sprinklersystem",
+      "alarmSystem": "Alarmsystem",
+      "securityCameras": "Overvagningskameraer",
+      "secureEntry": "Sikker indgang",
+      "safetyNotes": "Sikkerhedsnoter",
+      "safetyNotesTooltip": "Flugtrutevejer, sidste inspektionsdato osv."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Koelestolstilgaengelig",
+      "elevator": "Elevator",
+      "stepFreeEntrance": "Trinfri indgang",
+      "adaptedBathroom": "Tilpasset badevaerelse",
+      "accessibilityNotes": "Tilgaengelighedsnoter",
+      "accessibilityNotesTooltip": "Doerbredder, rampertilgaengelighed osv."
+    },
+    "outdoorAreas": {
+      "type": "Type",
+      "area": "Areal",
+      "unit": "Enhed",
+      "add": "Tilfoej",
+      "addOutdoorArea": "Tilfoej udendoersareal"
+    }
+  },
+  "form": {
+    "address": "Adresse",
+    "street": "Gade",
+    "streetPlaceholder": "Hovedgaden 123",
+    "city": "By",
+    "cityPlaceholder": "Koebenhavn",
+    "postalCode": "Postnummer",
+    "postalCodePlaceholder": "1000",
+    "country": "Land",
+    "region": "Region",
+    "regionOther": "Andet",
+    "locationPreview": "Beliggenheds-forhåndsvisning",
+    "specifications": "Specifikationer",
+    "category": "Kategori",
+    "categoryCannotChange": "(kan ikke aendres)",
+    "type": "Type",
+    "status": "Status",
+    "area": "Areal",
+    "areaPlaceholder": "75,5",
+    "saving": "Gemmer...",
+    "updateProperty": "Opdater ejendom",
+    "createProperty": "Opret ejendom",
+    "validation": {
+      "streetRequired": "Gade er paakraevet",
+      "cityRequired": "By er paakraevet",
+      "postalCodeRequired": "Postnummer er paakraevet",
+      "countryRequired": "Land er paakraevet",
+      "areaPositive": "Areal skal vaere stoerre end 0"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} af {{total}} udfyldt"
+  },
+  "documents": {
+    "title": "Dokumenter",
+    "uploadButton": "Upload dokument",
+    "empty": "Ingen dokumenter uploadet endnu",
+    "failedToLoad": "Kunne ikke indlaese dokumenter",
+    "table": {
+      "document": "Dokument",
+      "size": "Stoerrelse",
+      "uploaded": "Uploadet",
+      "actions": "Handlinger"
+    },
+    "selection": {
+      "selected": "{{selected}} af {{total}} valgt",
+      "count_one": "{{count}} dokument",
+      "count_other": "{{count}} dokumenter"
+    },
+    "preview": "Forhåndsvisning",
+    "editTitleNotes": "Rediger titel & noter",
+    "upload": {
+      "title_one": "Upload dokument",
+      "title_other": "Upload dokumenter",
+      "files": "{{count}} filer",
+      "titleLabel": "Titel (valgfrit)",
+      "titlePlaceholder": "f.eks. Plantegning",
+      "notesLabel": "Noter (valgfrit)",
+      "notesPlaceholder": "Yderligere noter om dette dokument",
+      "uploading": "Uploader {{current}} af {{total}}...",
+      "uploadCount": "Upload {{count}} dokumenter"
+    },
+    "delete": {
+      "title_one": "Slet dokument",
+      "title_other": "Slet dokumenter",
+      "message_one": "Er du sikker paa, at du vil slette dette dokument? Denne handling kan ikke fortrydes.",
+      "message_other": "Du er ved at slette {{count}} dokumenter. Denne handling kan ikke fortrydes.",
+      "confirmLabel_other": "Slet {{count}} dokumenter"
+    },
+    "editModal": "Rediger dokument",
+    "downloading": "Downloader..."
+  },
+  "photos": {
+    "title": "Fotos",
+    "uploadButton": "Upload foto",
+    "empty": "Ingen fotos endnu",
+    "upload": {
+      "title_one": "Upload foto",
+      "title_other": "Upload fotos",
+      "files": "{{count}} filer",
+      "titleLabel": "Titel (valgfrit)",
+      "titlePlaceholder": "f.eks. Stue",
+      "notesLabel": "Noter (valgfrit)",
+      "notesPlaceholder": "Yderligere noter om dette foto",
+      "uploading": "Uploader {{current}} af {{total}}...",
+      "uploadCount": "Upload {{count}} fotos"
+    },
+    "delete": {
+      "title_one": "Slet foto",
+      "title_other": "Slet fotos",
+      "mainPhotoWarning_one": "Dette er hovedfotoet. Sletning betyder, at denne ejendom ikke laengere har et hovedfoto. Denne handling kan ikke fortrydes.",
+      "mainPhotoWarning_other": "Du er ved at slette {{count}} fotos, inklusive hovedfotoet. Denne ejendom vil ikke laengere have et hovedfoto. Denne handling kan ikke fortrydes.",
+      "message_one": "Er du sikker paa, at du vil slette dette foto? Denne handling kan ikke fortrydes.",
+      "message_other": "Du er ved at slette {{count}} fotos. Denne handling kan ikke fortrydes.",
+      "confirmLabel_other": "Slet {{count}} fotos"
+    },
+    "editModal": "Rediger foto"
+  },
+  "contracts": {
+    "title": "Kontrakter",
+    "addContract": "Tilfoej kontrakt",
+    "empty": "Ingen kontrakter for denne ejendom",
+    "createFirst": "Opret foerste kontrakt",
+    "searchPlaceholder": "Soeg efter kontrakt #, kontakt, type...",
+    "noMatchingSearch": "Ingen kontrakter fundet der matcher din soegning",
+    "table": {
+      "contractNumber": "Kontrakt #",
+      "contact": "Kontakt",
+      "type": "Type",
+      "startDate": "Startdato",
+      "endDate": "Slutdato",
+      "rentAmount": "Lejebeloeb",
+      "status": "Status"
+    },
+    "pagination": {
+      "showing": "Viser {{from}} til {{to}} af {{total}} kontrakter"
+    },
+    "selfOccupancy": {
+      "title": "Selvbeboelsesperioder",
+      "addButton": "Tilfoej selvbeboelse",
+      "empty": "Ingen selvbeboelsesperioder registreret",
+      "recordPeriod": "Registrer en selvbeboelsesperiode",
+      "table": {
+        "period": "Periode",
+        "type": "Type",
+        "occupant": "Beboer",
+        "status": "Status",
+        "actions": "Handlinger"
+      },
+      "ongoing": "Igangvaerende",
+      "active": "Aktiv",
+      "ended": "Afsluttet",
+      "endOccupancy": "Afslut beboelse",
+      "deleteTitle": "Slet selvbeboelsesperiode",
+      "deleteMessage": "Er du sikker paa, at du vil slette denne selvbeboelsesperiode?",
+      "deleteWarning": "Denne handling kan ikke fortrydes.",
+      "takenPeriods": {
+        "selfUse": "Egen brug: {{period}}",
+        "contract": "Kontrakt {{identifier}}: {{period}}",
+        "ongoing": "Igangvaerende"
+      }
+    }
+  },
+  "expenses": {
+    "title": "Udgifter",
+    "addExpense": "Tilfoej udgift",
+    "empty": "Ingen udgifter for denne ejendom",
+    "createFirst": "Opret foerste udgift",
+    "failedToLoad": "Kunne ikke indlaese udgifter",
+    "searchPlaceholder": "Soeg efter udgift #, beskrivelse, kategori...",
+    "noMatchingSearch": "Ingen udgifter fundet der matcher din soegning",
+    "table": {
+      "expenseNumber": "Udgift #",
+      "date": "Dato",
+      "description": "Beskrivelse",
+      "category": "Kategori",
+      "amount": "Beloeb"
+    },
+    "pagination": {
+      "showing": "Viser {{from}} til {{to}} af {{total}} udgifter"
+    }
+  },
+  "audit": {
+    "title": "Ejendomshistorik",
+    "failedToLoad": "Kunne ikke indlaese historik",
+    "empty": {
+      "title": "Ingen historik tilgaengelig",
+      "description": "Aendringer af denne ejendom vil blive vist her"
+    },
+    "impersonated": "Efterlignet",
+    "clickToHide": "Klik for at skjule aendringer",
+    "clickToView": "Klik for at se aendringer",
+    "changedFields": "Aendrede felter",
+    "old": "Gammel:",
+    "new": "Ny:",
+    "fileName": "Filnavn",
+    "titleLabel": "Titel",
+    "typeLabel": "Type",
+    "photo": "Foto",
+    "document": "Dokument"
+  },
+  "selfOccupancy": {
+    "title": "Selvbeboelse",
+    "markTitle": "Marker som selvbeboet",
+    "editTitle": "Rediger selvbeboelse",
+    "endTitle": "Afslut selvbeboelse",
+    "active": "Aktiv",
+    "period": "Periode",
+    "type": "Type",
+    "occupant": "Beboer",
+    "imputedRent": "Imputeret leje",
+    "perMonth": "/ maaned",
+    "endReason": "Aarsag til afslutning",
+    "notes": "Noter",
+    "endOccupancy": "Afslut beboelse",
+    "form": {
+      "startDate": "Startdato *",
+      "endDate": "Slutdato",
+      "endDateRequired": "Slutdato *",
+      "occupancyType": "Beboelsestype *",
+      "occupantName": "Beboernavn",
+      "occupantNamePlaceholder": "f.eks. Ejer, Familiemedlem",
+      "monthlyImputedRent": "Maanedlig imputeret leje",
+      "notes": "Noter",
+      "notesPlaceholder": "Yderligere noter...",
+      "reason": "Aarsag",
+      "reasonPlaceholder": "Vaelg en aarsag...",
+      "alreadyTakenPeriods": "Allerede optagne perioder"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Personlig",
+      "FAMILY": "Familie",
+      "BUSINESS": "Erhverv"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Konvertering til udlejning",
+      "SELLING": "Salg",
+      "RENOVATION": "Renovering",
+      "OTHER": "Andet"
+    }
+  },
+  "map": {
+    "unavailable": "Kortforhåndsvisning ikke tilgaengelig",
+    "configureApiKey": "Konfigurer VITE_GOOGLE_MAPS_API_KEY for at aktivere kort",
+    "loading": "Indlaeser kort...",
+    "locationNotFound": "Lokation ikke fundet",
+    "couldNotFind": "Kunne ikke finde denne adresse paa kortet",
+    "apiKeyNotConfigured": "Google Maps API-noegle ikke konfigureret",
+    "geocodeFailed": "Kunne ikke geokode adressen",
+    "locationNotFoundShort": "Kunne ikke finde lokation",
+    "findingLocation": "Finder lokation...",
+    "couldNotLoadMaps": "Kunne ikke indlaese Google Maps lige nu",
+    "clickToPlace": "Vores kortfaerdigheder svigtede os denne gang. Klik et vilkaarligt sted paa kortet for at placere din ejendomsnal.",
+    "placePinManually": "Placer nal manuelt",
+    "accuracy": {
+      "rooftop": "Traek i nalen for at finjustere lokationen",
+      "manual": "Nal placeret manuelt - traek for at justere om noedvendigt",
+      "approximate": "Vi fandt nabolaget, men ikke det praecise sted - traek nalen til din ejendom!",
+      "country": "Naa, vi fandt i hvert fald landet! Traek nalen til den rigtige lokation."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Selvbeboelse",
+    "contract": "Kontrakt",
+    "vacancy": "Ledighed",
+    "noEntries": "Ingen tidslinjeindlaeg endnu",
+    "ongoing": "Igangvaerende"
+  },
+  "statusChart": {
+    "occupied": "Udlejet",
+    "selfOccupied": "Selvbeboet",
+    "vacant": "Ledig",
+    "maintenance": "Vedligeholdelse",
+    "unavailable": "Utilgaengelig",
+    "noProperties": "Ingen ejendomme at vise"
+  },
+  "financials": {
+    "failedToLoad": "Kunne ikke indlaese finansielle data.",
+    "saving": "Gemmer...",
+    "deleting": "Sletter...",
+    "notSet": "Ikke angivet",
+    "latestValuation": "Seneste vurdering",
+    "valuationHistory": "Vurderingshistorik",
+    "payments": "Betalinger",
+    "bulkAdd": "Massetilfoejelse",
+    "sections": {
+      "acquisition": "Erhvervelse",
+      "valuations": "Vurderinger",
+      "financings": "Finansieringer",
+      "recurringCosts": "Tilbagevendende omkostninger"
+    },
+    "metrics": {
+      "netWorth": "Nettovaerdi",
+      "totalAnnualCosts": "Samlede aarlige omkostninger",
+      "totalFinancingBalance": "Samlet finansieringssaldo",
+      "latestValuation": "Seneste vurdering"
+    },
+    "modals": {
+      "addTax": "Tilfoej skat",
+      "editTax": "Rediger skat",
+      "addFee": "Tilfoej gebyr",
+      "editFee": "Rediger gebyr",
+      "addFinancing": "Tilfoej finansiering",
+      "editFinancing": "Rediger finansiering",
+      "addInsurance": "Tilfoej forsikring",
+      "editInsurance": "Rediger forsikring",
+      "addValuation": "Tilfoej vurdering",
+      "editValuation": "Rediger vurdering",
+      "addAcquisition": "Tilfoej erhvervelse",
+      "editAcquisition": "Rediger erhvervelse",
+      "editPayment": "Rediger betaling",
+      "recordPayment": "Registrer betaling",
+      "bulkAddPayments": "Massetilfoej betalinger"
+    },
+    "labels": {
+      "taxType": "Skattetype",
+      "authority": "Myndighed",
+      "annualAmount": "Aarligt beloeb",
+      "paymentFrequency": "Betalingsfrekvens",
+      "taxYear": "Skatteaar",
+      "dueMonths": "Forfaldne maaneder",
+      "startDate": "Startdato",
+      "endDate": "Slutdato",
+      "status": "Status",
+      "notes": "Noter",
+      "feeType": "Gebyrtype",
+      "name": "Navn",
+      "financingType": "Finansieringstype",
+      "rateType": "Rentetype",
+      "lenderName": "Laangiver",
+      "loanNumber": "Laanenummer",
+      "originalAmount": "Oprindeligt beloeb",
+      "currentBalance": "Aktuel saldo",
+      "interestRate": "Rentesats",
+      "monthlyPayment": "Maanedlig betaling",
+      "variablePayment": "Variabel betaling",
+      "termMonths": "Loegetid (maaneder)",
+      "insuranceType": "Forsikringstype",
+      "provider": "Udbyder",
+      "policyNumber": "Policenummer",
+      "coverageAmount": "Daekningsbeloeb",
+      "annualPremium": "Aarlig praemie",
+      "valuationType": "Vurderingstype",
+      "valuationDate": "Vurderingsdato",
+      "amount": "Beloeb",
+      "source": "Kilde",
+      "acquisitionType": "Erhvervelsestype",
+      "acquisitionDate": "Erhvervelsesdato",
+      "purchasePrice": "Koebspris",
+      "closingCosts": "Afslutningsomkostninger",
+      "renovationCosts": "Renoveringsomkostninger",
+      "landValue": "Grundvaerdi",
+      "depreciationMethod": "Afskrivningsmetode",
+      "depreciationYears": "Afskrivningsaar",
+      "paymentDate": "Betalingsdato",
+      "totalAmount": "Samlet beloeb",
+      "principal": "Afdrag",
+      "interest": "Rente",
+      "escrow": "Deponering",
+      "extraPayment": "Ekstra betaling",
+      "deductFromBalance": "Traek afdrag fra finansieringssaldo",
+      "documents": "Dokumenter",
+      "currency": "Valuta",
+      "type": "Type",
+      "date": "Dato"
+    },
+    "placeholders": {
+      "addNotes": "Tilfoej noter...",
+      "source": "f.eks. Ejendomsmaegler, Online vaerktoej"
+    },
+    "units": {
+      "years": "aar",
+      "months": "maaneder",
+      "perYear": "/aar"
+    },
+    "recurringCosts": "Tilbagevendende omkostninger",
+    "insurances": "Forsikringer",
+    "taxes": "Skatter",
+    "fees": "Gebyrer",
+    "na": "N/A",
+    "all": "Alle",
+    "term": "Loegetid",
+    "frequency": "Frekvens",
+    "actions": "Handlinger",
+    "total": "Total",
+    "empty": {
+      "noAcquisition": "Ingen erhvervelsesdata registreret.",
+      "noValuation": "Ingen vurderingsdata registreret.",
+      "noFinancing": "Ingen finansieringsinstrumenter registreret.",
+      "noPayments": "Ingen betalinger registreret endnu.",
+      "noInsurances": "Ingen forsikringer.",
+      "noTaxes": "Ingen skatter.",
+      "noFees": "Ingen gebyrer."
+    },
+    "delete": {
+      "title": "Slet {{label}}?",
+      "message": "Er du sikker paa, at du vil slette denne {{label}}? Denne handling kan ikke fortrydes.",
+      "valuation": "{{type}} vurdering",
+      "payment": "betaling ({{date}})",
+      "insurance": "{{type}} forsikring",
+      "tax": "{{type}} skat",
+      "fee": "{{type}} gebyr"
+    },
+    "toast": {
+      "paymentDeleted": "Betaling slettet",
+      "paymentDeleteFailed": "Kunne ikke slette betaling",
+      "paymentsCreated_one": "{{count}} betaling oprettet",
+      "paymentsCreated_other": "{{count}} betalinger oprettet"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "Maj",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Koeb",
+      "INHERITANCE": "Arv",
+      "GIFT": "Gave",
+      "FORECLOSURE": "Tvangsauktion",
+      "AUCTION": "Auktion",
+      "OTHER": "Andet"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Lineaer",
+      "DECLINING_BALANCE": "Saldometode",
+      "NONE": "Ingen"
+    },
+    "valuationTypes": {
+      "MARKET": "Marked",
+      "APPRAISAL": "Vurdering",
+      "TAX_ASSESSED": "Skatteansaettelse",
+      "PURCHASE": "Koeb",
+      "INSURANCE": "Forsikring",
+      "USER_ESTIMATE": "Brugerestimat"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Realkredit",
+      "LEASING": "Leasing",
+      "LOAN": "Laan",
+      "LINE_OF_CREDIT": "Kassekredit",
+      "PRIVATE_FINANCING": "Privat finansiering",
+      "OTHER": "Andet"
+    },
+    "rateTypes": {
+      "FIXED": "Fast",
+      "VARIABLE": "Variabel",
+      "INTEREST_ONLY": "Afdragsfrit",
+      "HYBRID": "Hybrid"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Aktiv",
+      "PAID_OFF": "Indfriet",
+      "REFINANCED": "Refinansieret",
+      "DEFAULTED": "Misligholdt"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Planlagt",
+      "COMPLETED": "Gennemfoert",
+      "MISSED": "Udeblevet",
+      "LATE": "Forsinket"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Bygning",
+      "LIABILITY": "Ansvar",
+      "CONTENTS": "Indbo",
+      "FLOOD": "Oversvoemning",
+      "EARTHQUAKE": "Jordskælv",
+      "UMBRELLA": "Paraply",
+      "RENT_GUARANTEE": "Lejegaranti",
+      "OTHER": "Andet"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Udloebet",
+      "CANCELLED": "Annulleret"
+    },
+    "taxTypes": {
+      "PROPERTY": "Ejendom",
+      "MUNICIPAL": "Kommunal",
+      "STATE": "Stats",
+      "LOCAL": "Lokal",
+      "LAND": "Grund",
+      "SPECIAL_ASSESSMENT": "Saerlig ansaettelse",
+      "OTHER": "Andet"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Udloebet",
+      "EXEMPT": "Fritaget"
+    },
+    "feeTypes": {
+      "HOA": "Ejerforening",
+      "MANAGEMENT": "Administration",
+      "MAINTENANCE_RESERVE": "Vedligeholdelsesreserve",
+      "CLEANING": "Rengoering",
+      "GARDENING": "Havearbejde",
+      "SECURITY": "Sikkerhed",
+      "WASTE_MANAGEMENT": "Affaldshåndtering",
+      "WATER": "Vand",
+      "UTILITIES": "Forsyninger",
+      "OTHER": "Andet"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Udloebet",
+      "CANCELLED": "Annulleret"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Maanedlig",
+      "QUARTERLY": "Kvartalsvis",
+      "SEMI_ANNUALLY": "Halvaarlig",
+      "ANNUALLY": "Aarlig",
+      "CUSTOM": "Brugerdefineret"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Aabn kontrakt",
+    "clickToEdit": "Klik for at redigere"
+  }
+}

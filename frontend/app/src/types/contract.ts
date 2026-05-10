@@ -44,25 +44,6 @@ import type { ContractResponseStatus } from '../generated/models';
 import { ContractPartyResponseRole } from '../generated/models';
 import { RentComponentType } from '../generated/models';
 
-export const PARTY_ROLE_LABELS: Record<ContractPartyResponseRole, string> = {
-  [ContractPartyResponseRole.PRIMARY_TENANT]: 'Primary Contact',
-  [ContractPartyResponseRole.GUARANTOR]: 'Guarantor',
-  [ContractPartyResponseRole.COSIGNER]: 'Co-signer',
-  [ContractPartyResponseRole.EXTRA_TENANT]: 'Additional Contact',
-};
-
-export const RENT_COMPONENT_LABELS: Record<RentComponentType, string> = {
-  [RentComponentType.BASE_RENT]: 'Base Rent',
-  [RentComponentType.UTILITIES_ADVANCE]: 'Utilities Advance',
-  [RentComponentType.SERVICE_COSTS]: 'Service Costs',
-  [RentComponentType.HOA_FEES]: 'HOA / Condo Fees',
-  [RentComponentType.FURNITURE_RENTAL]: 'Furniture Rental',
-  [RentComponentType.PARKING]: 'Parking',
-  [RentComponentType.STORAGE]: 'Storage',
-  [RentComponentType.GARBAGE_COLLECTION]: 'Garbage Collection',
-  [RentComponentType.OTHER]: 'Other',
-};
-
 export interface RentComponentFormItem {
   componentType: RentComponentType;
   amount: number | '';

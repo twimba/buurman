@@ -7,6 +7,7 @@ import static com.buurman.util.SidGenerator.newPaymentId;
 import static com.buurman.util.SidGenerator.newPaymentReceivalId;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,6 +48,8 @@ public class DemoPaymentGenerator {
         continue;
       }
 
+      List<Object[]> paymentRecords = new ArrayList<>();
+      List<Object[]> receivalRecords = new ArrayList<>();
       int teamPayments = 0;
 
       for (UUID contractId : contractIds) {
@@ -161,80 +164,147 @@ public class DemoPaymentGenerator {
             paymentCreatedAt = now;
           }
 
-          dsl.insertInto(PAYMENTS)
-              .set(PAYMENTS.ID, paymentId)
-              .set(PAYMENTS.IDENTIFIER, newPaymentId())
-              .set(PAYMENTS.TEAM_ID, teamId)
-              .set(PAYMENTS.CONTRACT_ID, contractId)
-              .set(PAYMENTS.AMOUNT, rentAmount)
-              .set(PAYMENTS.CURRENCY, currency)
-              .set(PAYMENTS.DUE_DATE, dueDate)
-              .set(PAYMENTS.PAYMENT_DATE, paymentDate)
-              .set(PAYMENTS.STATUS, paymentStatus)
-              .set(PAYMENTS.AUTO_GENERATED, true)
-              .set(PAYMENTS.CREATED_AT, paymentCreatedAt)
-              .set(PAYMENTS.UPDATED_AT, now)
-              .set(PAYMENTS.CREATED_BY, createdBy)
-              .set(PAYMENTS.UPDATED_BY, createdBy)
-              .execute();
+          paymentRecords.add(
+              new Object[] {
+                paymentId,
+                newPaymentId(),
+                teamId,
+                contractId,
+                rentAmount,
+                currency,
+                dueDate,
+                paymentDate,
+                paymentStatus,
+                true,
+                paymentCreatedAt,
+                now,
+                createdBy,
+                createdBy
+              });
 
           paymentIds.add(paymentId);
           ctx.incrementPayments();
           teamPayments++;
 
-          // Create payment receival for PAID payments
+          // Collect payment receival for PAID, PARTIALLY_PAID, or LATE payments
           if ("PAID".equals(paymentStatus)) {
-            dsl.insertInto(PAYMENT_RECEIVALS)
-                .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId())
-                .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
-                .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
-                .set(PAYMENT_RECEIVALS.AMOUNT, rentAmount)
-                .set(PAYMENT_RECEIVALS.CURRENCY, currency)
-                .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
-                .set(PAYMENT_RECEIVALS.CREATED_AT, now)
-                .set(PAYMENT_RECEIVALS.UPDATED_AT, now)
-                .set(PAYMENT_RECEIVALS.CREATED_BY, createdBy)
-                .set(PAYMENT_RECEIVALS.UPDATED_BY, createdBy)
-                .execute();
+            receivalRecords.add(
+                new Object[] {
+                  UUID.randomUUID(),
+                  newPaymentReceivalId(),
+                  teamId,
+                  paymentId,
+                  rentAmount,
+                  currency,
+                  paymentDate,
+                  now,
+                  now,
+                  createdBy,
+                  createdBy
+                });
           } else if ("PARTIALLY_PAID".equals(paymentStatus)) {
             BigDecimal partialAmount =
-                rentAmount
-                    .multiply(new BigDecimal("0.6"))
-                    .setScale(0, java.math.RoundingMode.HALF_UP);
-            dsl.insertInto(PAYMENT_RECEIVALS)
-                .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId())
-                .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
-                .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
-                .set(PAYMENT_RECEIVALS.AMOUNT, partialAmount)
-                .set(PAYMENT_RECEIVALS.CURRENCY, currency)
-                .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
-                .set(PAYMENT_RECEIVALS.CREATED_AT, now)
-                .set(PAYMENT_RECEIVALS.UPDATED_AT, now)
-                .set(PAYMENT_RECEIVALS.CREATED_BY, createdBy)
-                .set(PAYMENT_RECEIVALS.UPDATED_BY, createdBy)
-                .execute();
+                rentAmount.multiply(new BigDecimal("0.6")).setScale(0, RoundingMode.HALF_UP);
+            receivalRecords.add(
+                new Object[] {
+                  UUID.randomUUID(),
+                  newPaymentReceivalId(),
+                  teamId,
+                  paymentId,
+                  partialAmount,
+                  currency,
+                  paymentDate,
+                  now,
+                  now,
+                  createdBy,
+                  createdBy
+                });
           } else if ("LATE".equals(paymentStatus) && paymentDate != null) {
-            dsl.insertInto(PAYMENT_RECEIVALS)
-                .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId())
-                .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
-                .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
-                .set(PAYMENT_RECEIVALS.AMOUNT, rentAmount)
-                .set(PAYMENT_RECEIVALS.CURRENCY, currency)
-                .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
-                .set(PAYMENT_RECEIVALS.CREATED_AT, now)
-                .set(PAYMENT_RECEIVALS.UPDATED_AT, now)
-                .set(PAYMENT_RECEIVALS.CREATED_BY, createdBy)
-                .set(PAYMENT_RECEIVALS.UPDATED_BY, createdBy)
-                .execute();
+            receivalRecords.add(
+                new Object[] {
+                  UUID.randomUUID(),
+                  newPaymentReceivalId(),
+                  teamId,
+                  paymentId,
+                  rentAmount,
+                  currency,
+                  paymentDate,
+                  now,
+                  now,
+                  createdBy,
+                  createdBy
+                });
           }
 
           dueDate = dueDate.plusMonths(periodMonths);
         }
 
         ctx.getPaymentIdsByContract().put(contractId, paymentIds);
+      }
+
+      // Batch insert all payments for this team
+      if (!paymentRecords.isEmpty()) {
+        var insert =
+            dsl.insertInto(PAYMENTS)
+                .columns(
+                    PAYMENTS.ID,
+                    PAYMENTS.IDENTIFIER,
+                    PAYMENTS.TEAM_ID,
+                    PAYMENTS.CONTRACT_ID,
+                    PAYMENTS.AMOUNT,
+                    PAYMENTS.CURRENCY,
+                    PAYMENTS.DUE_DATE,
+                    PAYMENTS.PAYMENT_DATE,
+                    PAYMENTS.STATUS,
+                    PAYMENTS.AUTO_GENERATED,
+                    PAYMENTS.CREATED_AT,
+                    PAYMENTS.UPDATED_AT,
+                    PAYMENTS.CREATED_BY,
+                    PAYMENTS.UPDATED_BY)
+                .values(
+                    (UUID) null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : paymentRecords) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
+      }
+
+      // Batch insert all payment receivals for this team
+      if (!receivalRecords.isEmpty()) {
+        var insert =
+            dsl.insertInto(PAYMENT_RECEIVALS)
+                .columns(
+                    PAYMENT_RECEIVALS.ID,
+                    PAYMENT_RECEIVALS.IDENTIFIER,
+                    PAYMENT_RECEIVALS.TEAM_ID,
+                    PAYMENT_RECEIVALS.PAYMENT_ID,
+                    PAYMENT_RECEIVALS.AMOUNT,
+                    PAYMENT_RECEIVALS.CURRENCY,
+                    PAYMENT_RECEIVALS.RECEIVAL_DATE,
+                    PAYMENT_RECEIVALS.CREATED_AT,
+                    PAYMENT_RECEIVALS.UPDATED_AT,
+                    PAYMENT_RECEIVALS.CREATED_BY,
+                    PAYMENT_RECEIVALS.UPDATED_BY)
+                .values((UUID) null, null, null, null, null, null, null, null, null, null, null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : receivalRecords) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
       }
 
       log.info("Created {} payments for team {}", teamPayments, teamKey);

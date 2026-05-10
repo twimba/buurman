@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "properties": "Biens",
+    "contacts": "Contacts",
+    "contracts": "Contrats",
+    "rentRegulations": "Réglementations de loyer",
+    "rentAdjustments": "Ajustements de loyer",
+    "paymentInstructions": "Instructions de paiement",
+    "payments": "Paiements",
+    "expenses": "Dépenses",
+    "documents": "Documents",
+    "photos": "Photos",
+    "reports": "Rapports"
+  },
+  "admin": {
+    "title": "Administration",
+    "preferences": "Préférences",
+    "teamMembers": "Membres de l'équipe",
+    "calendarFeeds": "Flux de calendrier",
+    "notifications": "Notifications",
+    "dataExport": "Export de données",
+    "billing": "Abonnement et facturation",
+    "activityLog": "Journal d'activité",
+    "apiDocs": "Documentation de l'API"
+  },
+  "settings": "Paramètres",
+  "signOut": "Déconnexion"
+}

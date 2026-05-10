@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { RichTextDisplay } from '@buurman/ui';
 import { RequestCountryCard } from './RequestCountryCard';
 import type { RentRegulationCountryResponse } from '@/types/rentRegulation';
@@ -21,6 +22,7 @@ export const CountrySelector = ({
   selectedCode,
   onSelect,
 }: CountrySelectorProps) => {
+  const { t } = useTranslation('contracts');
   // Compact horizontal strip when a country is selected
   if (selectedCode) {
     return (
@@ -64,7 +66,7 @@ export const CountrySelector = ({
               </span>
               {country.hasRegionalRegulations && (
                 <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-surface-inset text-text-secondary ring-1 ring-border-default dark:ring-border-strong">
-                  Regional
+                  {t('rentRegulations.regional')}
                 </span>
               )}
             </div>

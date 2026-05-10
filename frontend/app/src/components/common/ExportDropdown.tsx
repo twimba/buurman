@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Download, ChevronDown } from 'lucide-react';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
@@ -24,6 +25,7 @@ export const ExportDropdown = ({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { isEnabled } = useFeatureFlags();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,7 +53,7 @@ export const ExportDropdown = ({
           className={smButtonClass}
         >
           <Download className="h-3.5 w-3.5" />
-          {exporting ? 'Exporting...' : firstOption.label}
+          {exporting ? t('buttons.exporting') : firstOption.label}
         </button>
       );
     }
@@ -64,7 +66,7 @@ export const ExportDropdown = ({
           className={smButtonClass}
         >
           <Download className="h-3.5 w-3.5" />
-          {exporting ? 'Exporting...' : 'Export'}
+          {exporting ? t('buttons.exporting') : t('buttons.export')}
           <ChevronDown className="h-3 w-3" />
         </button>
         {open && (
@@ -101,7 +103,7 @@ export const ExportDropdown = ({
         className={mdButtonClass}
       >
         <Download className="h-4 w-4" />
-        {exporting ? 'Exporting...' : firstOption.label}
+        {exporting ? t('buttons.exporting') : firstOption.label}
       </button>
     );
   }
@@ -114,7 +116,7 @@ export const ExportDropdown = ({
         className={mdButtonClass}
       >
         <Download className="h-4 w-4" />
-        Export
+        {t('buttons.export')}
         <ChevronDown className="h-3.5 w-3.5" />
       </button>
       {open && (

@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Spese",
+    "subtitle": "Registri le spese e i costi degli immobili"
+  },
+  "actions": {
+    "addExpense": "Aggiungi spesa"
+  },
+  "stats": {
+    "totalExpenses": "Spese totali",
+    "categorySummary": "in {{category}}",
+    "categorySummaryAll": "in {{count}} categorie",
+    "topCategories": "Categorie principali",
+    "noData": "Nessun dato disponibile",
+    "lastSixMonths": "Ultimi 6 mesi",
+    "tooltipExpenses": "Spese"
+  },
+  "filters": {
+    "title": "Filtri",
+    "property": "Immobile",
+    "category": "Categoria",
+    "allProperties": "Tutti gli immobili",
+    "allCategories": "Tutte le categorie"
+  },
+  "category": {
+    "MAINTENANCE": "Manutenzione",
+    "REPAIR": "Riparazione",
+    "UTILITY": "Utenze",
+    "TAX": "Imposte",
+    "INSURANCE": "Assicurazione",
+    "LEGAL": "Legale",
+    "MARKETING": "Marketing",
+    "CLEANING": "Pulizia",
+    "LANDSCAPING": "Giardinaggio",
+    "PROPERTY_MANAGEMENT": "Gestione immobiliare",
+    "FEES": "Commissioni",
+    "PROPERTY_TAX": "Imposte immobiliari",
+    "OTHER": "Altro"
+  },
+  "table": {
+    "date": "Data",
+    "expenseNumber": "Spesa #",
+    "description": "Descrizione",
+    "category": "Categoria",
+    "property": "Immobile",
+    "amount": "Importo"
+  },
+  "empty": {
+    "title": "Nessuna spesa trovata",
+    "filtered": "Provi a modificare i filtri",
+    "noData": "Inizi registrando la Sua prima spesa"
+  },
+  "card": {
+    "expenseId": "Spesa #{{id}}",
+    "property": "Immobile",
+    "contact": "Contatto",
+    "amount": "Importo",
+    "expenseDate": "Data della spesa",
+    "documentsAttached": "{{count}} documento/i allegato/i"
+  },
+  "form": {
+    "property": "Immobile",
+    "category": "Categoria",
+    "contact": "Contatto",
+    "amount": "Importo",
+    "expenseDate": "Data della spesa",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "es. Riparazione idraulica in bagno",
+    "notes": "Note",
+    "notesPlaceholder": "Aggiunga eventuali note aggiuntive su questa spesa...",
+    "continueAdding": "Continua ad aggiungere",
+    "today": "Oggi",
+    "updateExpense": "Aggiorna",
+    "createExpense": "Crea",
+    "expenseSuffix": " spesa",
+    "saving": "Salvataggio...",
+    "currency": "Valuta"
+  },
+  "validation": {
+    "propertyRequired": "L'immobile è obbligatorio",
+    "amountRequired": "L'importo deve essere maggiore di 0",
+    "currencyRequired": "La valuta è obbligatoria",
+    "expenseDateRequired": "La data della spesa è obbligatoria",
+    "descriptionRequired": "La descrizione è obbligatoria"
+  },
+  "create": {
+    "title": "Aggiungi nuova spesa",
+    "addedCount": "{{count}} spesa aggiunta in questa sessione",
+    "addedCount_other": "{{count}} spese aggiunte in questa sessione",
+    "single": "Singola",
+    "bulk": "Multipla"
+  },
+  "detail": {
+    "titlePrefix": "Spesa #{{id}}",
+    "expenseDetails": "Dettagli della spesa",
+    "propertyAndContact": "Immobile e contatto",
+    "amount": "Importo",
+    "expenseDate": "Data della spesa",
+    "category": "Categoria",
+    "description": "Descrizione",
+    "property": "Immobile",
+    "contact": "Contatto",
+    "noContactLinked": "Nessun contatto collegato",
+    "notes": "Note",
+    "metadata": "Metadati",
+    "created": "Creato:",
+    "lastUpdated": "Ultimo aggiornamento:",
+    "editExpense": "Modifica spesa"
+  },
+  "tabs": {
+    "details": "Dettagli",
+    "documents": "Documenti",
+    "history": "Cronologia"
+  },
+  "history": {
+    "title": "Cronologia della spesa",
+    "empty": "Nessuna cronologia disponibile",
+    "emptySubtitle": "Le modifiche a questa spesa appariranno qui",
+    "clickToView": "Clicchi per visualizzare le modifiche",
+    "clickToHide": "Clicchi per nascondere le modifiche",
+    "changedFields": "Campi modificati",
+    "old": "Precedente:",
+    "new": "Nuovo:",
+    "impersonated": "Impersonificato"
+  },
+  "deleteDialog": {
+    "title": "Elimina spesa",
+    "message": "Conferma l'eliminazione di questa spesa? Questa azione non può essere annullata.",
+    "messageWithRelated": "Conferma l'eliminazione di questa spesa? Anche tutti i documenti collegati verranno eliminati. Questa azione non può essere annullata."
+  },
+  "tooltips": {
+    "viewExpense": "Visualizza spesa",
+    "deleteExpense": "Elimina spesa"
+  },
+  "errors": {
+    "loadFailed": "Impossibile caricare le spese",
+    "loadExpenseFailed": "Impossibile caricare la spesa",
+    "loadHistoryFailed": "Impossibile caricare la cronologia"
+  }
+}

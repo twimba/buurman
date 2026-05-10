@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useCurrencies, splitCurrencies } from '@/hooks/useCurrencies';
@@ -19,6 +20,7 @@ export const CurrencyDropdown = ({
   onClose,
   triggerRef,
 }: CurrencyDropdownProps) => {
+  const { t } = useTranslation('common');
   const isMobile = useIsMobile();
   const [search, setSearch] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -231,7 +233,7 @@ export const CurrencyDropdown = ({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Select Currency"
+        aria-label={t('selectors.selectCurrency')}
         className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex flex-col justify-end"
         onMouseDown={(e) => {
           if (e.target === e.currentTarget) {
@@ -268,9 +270,9 @@ export const CurrencyDropdown = ({
                 setHighlightedIndex(0);
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Search currencies..."
+              placeholder={t('selectors.searchCurrencies')}
               autoComplete="off"
-              aria-label="Search currencies"
+              aria-label={t('selectors.searchCurrencies')}
               aria-activedescendant={highlightedId}
               className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
             />
@@ -280,7 +282,7 @@ export const CurrencyDropdown = ({
           <div
             ref={listRef}
             role="listbox"
-            aria-label="Currencies"
+            aria-label={t('selectors.currencies')}
             className="overflow-y-auto flex-1 pb-[env(safe-area-inset-bottom)]"
           >
             {listContent}
@@ -312,9 +314,9 @@ export const CurrencyDropdown = ({
             setHighlightedIndex(0);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Search currencies..."
+          placeholder={t('selectors.searchCurrencies')}
           autoComplete="off"
-          aria-label="Search currencies"
+          aria-label={t('selectors.searchCurrencies')}
           aria-activedescendant={highlightedId}
           className="w-full border border-border-strong rounded px-2 py-1.5 bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
         />
@@ -324,7 +326,7 @@ export const CurrencyDropdown = ({
       <div
         ref={listRef}
         role="listbox"
-        aria-label="Currencies"
+        aria-label={t('selectors.currencies')}
         className="overflow-y-auto flex-1"
       >
         {listContent}

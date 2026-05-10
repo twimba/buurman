@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Copy, Check, X, Link, Calendar } from 'lucide-react';
 import { Button, useToast } from '@buurman/ui';
@@ -22,6 +23,7 @@ export const CalendarFeedButton = ({
   entityIdentifier,
 }: CalendarFeedPopoverProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
   const { showToast } = useToast();
   const { canEditTeamSettings } = useTeam();
   const [showPopover, setShowPopover] = useState(false);
@@ -71,10 +73,10 @@ export const CalendarFeedButton = ({
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      showToast('Calendar feed URL copied', 'info');
+      showToast(t('calendarFeed.copied'), 'info');
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      showToast('Failed to copy link', 'error');
+      showToast(t('calendarFeed.copyFailed'), 'error');
     }
   };
 
@@ -86,13 +88,13 @@ export const CalendarFeedButton = ({
         onClick={handleClick}
         isLoading={createMutation.isPending}
       >
-        Calendar Feed
+        {t('calendarFeed.button')}
       </Button>
       {showPopover && existingFeed && (
         <div className="absolute right-0 top-full mt-2 w-96 bg-surface-card rounded-lg shadow-xl border border-border-default p-4 z-50">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-medium text-sm text-text-primary">
-              Calendar Subscription URL
+              {t('calendarFeed.title')}
             </h4>
             <button
               onClick={() => setShowPopover(false)}
@@ -117,8 +119,7 @@ export const CalendarFeedButton = ({
             </button>
           </div>
           <p className="text-xs text-text-muted">
-            Add this URL to Google Calendar (Settings &gt; Add calendar &gt;
-            From URL) or Apple Calendar (File &gt; New Calendar Subscription).
+            {t('calendarFeed.instructions')}
           </p>
           {canEditTeamSettings && (
             <div className="mt-3 pt-3 border-t border-border-default">
@@ -130,7 +131,7 @@ export const CalendarFeedButton = ({
                 className="text-xs text-primary-500 dark:text-primary-300 hover:underline flex items-center gap-1"
               >
                 <Link className="h-3 w-3" />
-                Manage all calendar feeds in Settings
+                {t('calendarFeed.manageFeeds')}
               </button>
             </div>
           )}

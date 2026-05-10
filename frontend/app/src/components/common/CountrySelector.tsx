@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { countries } from '@/utils/countries';
 import { ChevronDown } from 'lucide-react';
 
@@ -15,8 +16,10 @@ export const CountrySelector = ({
   onChange,
   onBlur,
   disabled = false,
-  placeholder = 'Select a country',
+  placeholder,
 }: CountrySelectorProps) => {
+  const { t } = useTranslation('common');
+  const resolvedPlaceholder = placeholder ?? t('selectors.selectCountry');
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -123,7 +126,9 @@ export const CountrySelector = ({
           }}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder={isOpen ? 'Type to search...' : placeholder}
+          placeholder={
+            isOpen ? t('selectors.typeToSearch') : resolvedPlaceholder
+          }
           autoComplete="off"
           className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 dark:hover:border-primary-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-sm text-text-primary"
         />
@@ -159,7 +164,7 @@ export const CountrySelector = ({
 
           {filtered.length === 0 && (
             <div className="px-3 py-8 text-center text-sm text-text-secondary">
-              No countries found
+              {t('selectors.noCountriesFound')}
             </div>
           )}
         </div>

@@ -1,0 +1,306 @@
+{
+  "apiDocs": {
+    "title": "API-documentatie",
+    "subtitle": "Verken en test de Buurman REST API"
+  },
+  "billing": {
+    "title": "Abonnement & Facturering",
+    "subtitle": "Beheer uw abonnement en bekijk factureringsgeschiedenis",
+    "impersonationBlocked": "Factureringsacties zijn niet beschikbaar tijdens een impersonatiesessie."
+  },
+  "calendarFeeds": {
+    "title": "Agendafeeds",
+    "pageSubtitle": "Beheer iCalendar-feeds voor betalingstermijnen en contractgebeurtenissen"
+  },
+  "dataExport": {
+    "title": "Gegevensexport",
+    "pageSubtitle": "Exporteer de gegevens van uw team als een downloadbaar archief"
+  },
+  "notifications": {
+    "title": "Notificaties",
+    "subtitle": "Volg en beheer alle notificaties die binnen uw team zijn verzonden",
+    "loading": "Notificaties laden...",
+    "noResults": "Geen notificaties gevonden",
+    "view": "Bekijken",
+    "viewDetails": "Details bekijken",
+    "resend": "Opnieuw verzenden",
+    "resendNotification": "Notificatie opnieuw verzenden",
+    "resendConfirm": {
+      "title": "Notificatie opnieuw verzenden",
+      "message": "Hiermee wordt een nieuwe notificatie aangemaakt en wordt opnieuw geprobeerd deze te bezorgen. De originele notificatie blijft in het logboek staan."
+    },
+    "demoBanner": {
+      "title": "Demo-account — notificaties worden gesimuleerd",
+      "emailAndSms": "E-mail- en SMS-notificaties worden vastgelegd maar niet daadwerkelijk bezorgd.",
+      "emailOnly": "E-mailnotificaties worden vastgelegd maar niet daadwerkelijk bezorgd.",
+      "smsOnly": "SMS-notificaties worden vastgelegd maar niet daadwerkelijk bezorgd."
+    },
+    "stats": {
+      "total": "Totaal",
+      "delivered": "Bezorgd",
+      "pending": "Openstaand",
+      "failed": "Mislukt",
+      "byChannel": "Per kanaal",
+      "demoBlocked": "Demo geblokkeerd"
+    },
+    "table": {
+      "type": "Type",
+      "channel": "Kanaal",
+      "recipient": "Ontvanger",
+      "subjectBody": "Onderwerp / Inhoud",
+      "status": "Status",
+      "date": "Datum",
+      "actions": "Acties"
+    },
+    "typeLabels": {
+      "welcome": "Welkom",
+      "verification": "Verificatie",
+      "invitation": "Uitnodiging",
+      "accepted": "Geaccepteerd",
+      "password": "Wachtwoord",
+      "payment": "Betaling",
+      "contract": "Contract",
+      "property": "Pand",
+      "newContract": "Nieuw contract",
+      "statusChange": "Statuswijziging",
+      "reopened": "Heropend",
+      "paid": "Betaald",
+      "receival": "Ontvangst",
+      "expense": "Uitgave"
+    },
+    "details": {
+      "title": "Notificatiedetails",
+      "demoBlocked": "Deze notificatie is niet bezorgd omdat dit een demo-account is. In een echt account zou deze via {{channel}} worden verzonden.",
+      "type": "Type",
+      "subject": "Onderwerp",
+      "content": "Inhoud",
+      "recipient": "Ontvanger",
+      "sentAt": "Verzonden op",
+      "statusUpdated": "Status bijgewerkt",
+      "providerStatus": "Providerstatus",
+      "refresh": "Vernieuwen",
+      "error": "Fout",
+      "engagement": "Betrokkenheid",
+      "open": "{{count}} opening",
+      "open_other": "{{count}} openingen",
+      "click": "{{count}} klik",
+      "click_other": "{{count}} klikken",
+      "first": "eerste: {{date}}",
+      "resentFrom": "Opnieuw verzonden vanuit",
+      "resendReason": "Reden voor opnieuw verzenden",
+      "resend": "Opnieuw verzenden",
+      "emailPreview": "E-mail voorbeeld",
+      "smsMessage": "SMS-bericht",
+      "delivered": "Bezorgd"
+    },
+    "filters": {
+      "searchByEmail": "Zoeken op e-mail...",
+      "allTypes": "Alle typen",
+      "allChannels": "Alle kanalen",
+      "allStatuses": "Alle statussen",
+      "fromDate": "Vanaf datum",
+      "toDate": "Tot datum"
+    },
+    "types": {
+      "welcome": "Welkom",
+      "verificationCode": "Verificatiecode",
+      "teamInvitation": "Teamuitnodiging",
+      "invitationAccepted": "Uitnodiging geaccepteerd",
+      "passwordChanged": "Wachtwoord gewijzigd",
+      "paymentReminder": "Betalingsherinnering",
+      "contractExpiry": "Contractverloop",
+      "propertyCreated": "Pand aangemaakt",
+      "contractCreated": "Contract aangemaakt",
+      "contractStatusChanged": "Contractstatus gewijzigd",
+      "contractReopened": "Contract heropend",
+      "paymentPaid": "Betaling betaald",
+      "paymentReceival": "Betaling ontvangen",
+      "expenseCreated": "Uitgave aangemaakt"
+    },
+    "statuses": {
+      "pending": "Openstaand",
+      "queued": "In wachtrij",
+      "sent": "Verzonden",
+      "delivered": "Bezorgd",
+      "failed": "Mislukt",
+      "bounced": "Gebounced",
+      "rejected": "Afgewezen",
+      "demo": "Demo"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Betaalinstructies",
+    "pageSubtitle": "Beheer betaalinstructiesjablonen voor uw team"
+  },
+  "preferences": {
+    "title": "Voorkeuren",
+    "subtitle": "Configureer teamoverstijgende voorkeuren en regionale instellingen"
+  },
+  "teamMembers": {
+    "title": "Teamleden",
+    "subtitle": "Beheer teamleden, rollen en uitnodigingen",
+    "impersonationBlocked": "Teamwijzigingen zijn niet beschikbaar tijdens een impersonatiesessie."
+  },
+  "transactions": {
+    "title": "Transactiegeschiedenis",
+    "subtitle": "Volledige geschiedenis van inkomsten en uitgaven",
+    "searchPlaceholder": "Zoek transacties...",
+    "allTypes": "Alle typen",
+    "incomeOnly": "Alleen inkomsten",
+    "expensesOnly": "Alleen uitgaven",
+    "totalIncome": "Totale inkomsten",
+    "totalExpenses": "Totale uitgaven",
+    "netTotal": "Netto totaal",
+    "noTransactions": "Geen transacties gevonden",
+    "downloadFailed": "Downloaden mislukt. Probeer het opnieuw.",
+    "table": {
+      "date": "Datum",
+      "type": "Type",
+      "description": "Omschrijving",
+      "property": "Pand",
+      "amount": "Bedrag"
+    }
+  },
+  "dashboard": {
+    "portfolioOverview": "Portefeuilleoverzicht",
+    "propertiesWithData": "{{withData}} van {{total}} panden hebben financiële gegevens",
+    "addProperties": "Voeg panden toe om uw portefeuilledashboard te zien.",
+    "addFinancialData": "Voeg financiële gegevens toe aan uw panden om portefeuilleanalyse te zien.",
+    "propertiesNoData": "{{count}} panden gevonden, maar geen ervan heeft al financiële gegevens.",
+    "exporting": "Exporteren...",
+    "disclaimer": "Statistieken zijn uitsluitend ter informatie.",
+    "charts": {
+      "cashFlow": "Kasstroom portefeuille",
+      "allocation": "Portefeuilleallocatie",
+      "propertyComparison": "Pandvergelijking",
+      "equityComposition": "Vermogenssamenstelling",
+      "performance": "Pandprestaties",
+      "occupancy": "Bezetting portefeuille"
+    },
+    "cashFlow": {
+      "noData": "Geen kasstroomgegevens beschikbaar",
+      "income": "Inkomsten",
+      "expenses": "Uitgaven",
+      "mortgage": "Hypotheek",
+      "net": "Netto"
+    },
+    "allocation": {
+      "noData": "Geen allocatiegegevens beschikbaar",
+      "byCategory": "Per categorie",
+      "byCountry": "Per land"
+    },
+    "comparison": {
+      "noData": "Geen pandvergelijkingsgegevens beschikbaar",
+      "monthlyCashFlow": "Maandelijkse kasstroom"
+    },
+    "equity": {
+      "noData": "Geen vermogensgegevens beschikbaar",
+      "equity": "Eigen vermogen",
+      "mortgage": "Hypotheek"
+    },
+    "performanceTable": {
+      "noData": "Geen pandprestatiegegevens beschikbaar",
+      "property": "Pand",
+      "category": "Categorie",
+      "monthlyCF": "Maandelijkse KS",
+      "annualNOI": "Jaarlijks NOI",
+      "capRate": "Cap Rate",
+      "coc": "CoC",
+      "occupancy": "Bezetting",
+      "dataPercent": "Data %"
+    },
+    "occupancy": {
+      "noData": "Geen bezettingsgegevens beschikbaar",
+      "contactOccupancy": "Huurdersbezetting",
+      "selfOccupancy": "Eigen bewoning"
+    },
+    "pendingExtensions": {
+      "title": "Openstaande verlengingen",
+      "awaitingAction": "{{count}} verlenging wacht op actie",
+      "awaitingAction_other": "{{count}} verlengingen wachten op actie",
+      "extensionNumber": "Verlenging #{{number}}",
+      "contractNumber": "Contract #{{id}}",
+      "until": "tot {{date}}",
+      "activate": "Activeren",
+      "decline": "Afwijzen"
+    },
+    "pendingInvitations": {
+      "title": "Openstaande teamuitnodigingen",
+      "invitedToOne": "U bent uitgenodigd om lid te worden van een team",
+      "invitedToMany": "U bent uitgenodigd om lid te worden van {{count}} teams",
+      "invitedBy": "Uitgenodigd door {{name}}",
+      "expires": "Verloopt {{date}}",
+      "accept": "Accepteren"
+    },
+    "upcomingRenewals": {
+      "title": "Aankomende verlengingen",
+      "property": "Pand",
+      "contact": "Contact",
+      "endDate": "Einddatum",
+      "daysLeft": "Dagen resterend",
+      "mode": "Modus",
+      "rent": "Huur",
+      "renewalModes": {
+        "none": "Geen",
+        "automatic": "Auto",
+        "manual": "Handmatig"
+      }
+    }
+  },
+  "reports": {
+    "title": "Financiële rapportages",
+    "subtitle": "Uitgebreid financieel overzicht en analyse",
+    "transactions": "Transacties",
+    "failedToLoad": "Kan financiële rapportages niet laden",
+    "period": "Periode:",
+    "month": "Maand",
+    "quarter": "Kwartaal",
+    "year": "Jaar",
+    "allTime": "Alle tijd",
+    "custom": "Aangepast",
+    "to": "tot",
+    "advancedFilters": "Geavanceerde filters",
+    "properties": "Panden",
+    "clearAll": "Alles wissen",
+    "noProperties": "Geen panden gevonden",
+    "totalIncome": "Totale inkomsten",
+    "totalExpenses": "Totale uitgaven",
+    "incomeTrend": {
+      "title": "Inkomstentrend",
+      "subtitle": "Maandelijkse inkomsten, uitgaven en nettowinst",
+      "line": "Lijn",
+      "bar": "Staaf"
+    },
+    "expenseBreakdown": {
+      "title": "Uitgavenverdeling",
+      "subtitle": "Per categorie voor geselecteerde periode",
+      "pie": "Taart",
+      "bar": "Staaf",
+      "noData": "Geen uitgavengegevens voor geselecteerde periode"
+    },
+    "propertyPerformance": {
+      "title": "Pandprestaties",
+      "subtitle": "Inkomsten, uitgaven & nettowinst per pand",
+      "property": "Pand",
+      "income": "Inkomsten",
+      "expenses": "Uitgaven",
+      "netProfit": "Nettowinst",
+      "margin": "Marge",
+      "total": "Totaal",
+      "noData": "Geen pandgegevens voor geselecteerde periode"
+    },
+    "occupancyTrend": {
+      "title": "Bezettingstrend",
+      "subtitle": "Maandelijks bezettingspercentage",
+      "occupancyRate": "Bezettingsgraad (%)"
+    },
+    "netProfit": "Nettowinst",
+    "income": "Inkomsten",
+    "expenses": "Uitgaven",
+    "amount": "Bedrag",
+    "downloadPdf": "PDF downloaden"
+  },
+  "auditLog": {
+    "failedToLoad": "Activiteitenlogboek laden mislukt"
+  }
+}

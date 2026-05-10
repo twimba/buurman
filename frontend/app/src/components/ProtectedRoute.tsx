@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { useCurrentUser } from '../hooks/useAuthHooks';
@@ -13,6 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireVerification = true,
 }) => {
+  const { t } = useTranslation('common');
   const { isAuthenticated, isLoading } = useAuth();
   const { active: isImpersonating } = useImpersonation();
 
@@ -26,7 +28,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (isLoading || (effectivelyAuthenticated && isUserLoading)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
+        <div className="text-lg">{t('buttons.loading')}</div>
       </div>
     );
   }

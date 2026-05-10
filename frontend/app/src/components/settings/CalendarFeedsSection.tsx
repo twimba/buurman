@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Calendar,
   Copy,
@@ -29,6 +30,7 @@ import {
 } from '../../generated/models';
 
 export const CalendarFeedsSection = () => {
+  const { t } = useTranslation('settings');
   const { data: feeds = [], isLoading } = useCalendarFeeds();
   const createFeedMutation = useCreateCalendarFeed();
   const rotateMutation = useRotateCalendarFeedToken();
@@ -65,10 +67,10 @@ export const CalendarFeedsSection = () => {
     try {
       await navigator.clipboard.writeText(url);
       setCopiedId(identifier);
-      showToast('Feed URL copied to clipboard', 'info');
+      showToast(t('calendarFeeds.copied'), 'info');
       setTimeout(() => setCopiedId(null), 2000);
     } catch {
-      showToast('Failed to copy link', 'error');
+      showToast(t('calendarFeeds.copyFailed'), 'error');
     }
   };
 
@@ -100,10 +102,14 @@ export const CalendarFeedsSection = () => {
       CalendarFeedType.CONTRACT,
     ];
     const labels: Record<CalendarFeedType, string> = {
-      [CalendarFeedType.ALL_PAYMENTS]: 'All Payments',
-      [CalendarFeedType.PROPERTY_PAYMENTS]: 'Property Payments',
-      [CalendarFeedType.CONTACT_PAYMENTS]: 'Contact Payments',
-      [CalendarFeedType.CONTRACT]: 'Contract',
+      [CalendarFeedType.ALL_PAYMENTS]: t('calendarFeeds.feedTypes.allPayments'),
+      [CalendarFeedType.PROPERTY_PAYMENTS]: t(
+        'calendarFeeds.feedTypes.propertyPayments'
+      ),
+      [CalendarFeedType.CONTACT_PAYMENTS]: t(
+        'calendarFeeds.feedTypes.contactPayments'
+      ),
+      [CalendarFeedType.CONTRACT]: t('calendarFeeds.feedTypes.contract'),
     };
     const icons: Record<CalendarFeedType, typeof Calendar> = {
       [CalendarFeedType.ALL_PAYMENTS]: Calendar,
@@ -125,7 +131,7 @@ export const CalendarFeedsSection = () => {
         Icon: icons[type],
         feeds: grouped.get(type) ?? [],
       }));
-  }, [feeds]);
+  }, [feeds, t]);
 
   if (isLoading) {
     return (
@@ -142,13 +148,11 @@ export const CalendarFeedsSection = () => {
         <div className="flex items-center gap-3 mb-2">
           <Calendar className="h-6 w-6 text-primary-500 dark:text-primary-300" />
           <h2 className="text-xl font-semibold text-text-primary">
-            Calendar Feeds
+            {t('calendarFeeds.title')}
           </h2>
         </div>
         <p className="text-sm text-text-secondary mb-4">
-          Subscribe to payment due dates in Google Calendar, Apple Calendar, or
-          any app that supports iCalendar feeds. Each feed has a unique URL that
-          you can add as a calendar subscription.
+          {t('calendarFeeds.subtitle')}
         </p>
 
         {!hasAllPaymentsFeed && (
@@ -158,7 +162,7 @@ export const CalendarFeedsSection = () => {
             onClick={handleCreateAllPayments}
             isLoading={createFeedMutation.isPending}
           >
-            Create All Payments Feed
+            {t('calendarFeeds.createAllPayments')}
           </Button>
         )}
       </div>
@@ -197,7 +201,7 @@ export const CalendarFeedsSection = () => {
                       <button
                         onClick={() => setPreviewFeed(feed)}
                         className="p-2 rounded-lg hover:bg-surface-inset transition-colors"
-                        title="Preview calendar"
+                        title={t('calendarFeeds.previewCalendar')}
                       >
                         <Eye className="h-4 w-4 text-text-secondary" />
                       </button>
@@ -206,7 +210,7 @@ export const CalendarFeedsSection = () => {
                           handleCopy(feed.feedUrl, feed.identifier)
                         }
                         className="p-2 rounded-lg hover:bg-surface-inset transition-colors"
-                        title="Copy URL"
+                        title={t('calendarFeeds.copyUrl')}
                       >
                         {copiedId === feed.identifier ? (
                           <Check className="h-4 w-4 text-success-text" />
@@ -217,14 +221,14 @@ export const CalendarFeedsSection = () => {
                       <button
                         onClick={() => setConfirmRotateId(feed.identifier)}
                         className="p-2 rounded-lg hover:bg-surface-inset transition-colors"
-                        title="Regenerate URL"
+                        title={t('calendarFeeds.regenerateUrl')}
                       >
                         <RefreshCw className="h-4 w-4 text-text-secondary " />
                       </button>
                       <button
                         onClick={() => setConfirmDeleteId(feed.identifier)}
                         className="p-2 rounded-lg hover:bg-error-bg transition-colors"
-                        title="Delete feed"
+                        title={t('calendarFeeds.deleteFeed')}
                       >
                         <Trash2 className="h-4 w-4 text-text-muted hover:text-error-text" />
                       </button>
@@ -241,7 +245,7 @@ export const CalendarFeedsSection = () => {
                     <div className="flex items-center gap-3 bg-warning-bg border border-warning-border rounded-lg px-4 py-3">
                       <AlertTriangle className="h-4 w-4 text-warning-text flex-shrink-0" />
                       <span className="text-sm text-warning-text flex-1">
-                        Regenerating will invalidate the current URL.
+                        {t('calendarFeeds.regenerateWarning')}
                       </span>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <Button
@@ -249,7 +253,7 @@ export const CalendarFeedsSection = () => {
                           size="sm"
                           onClick={() => setConfirmRotateId(null)}
                         >
-                          Cancel
+                          {t('common:buttons.cancel')}
                         </Button>
                         <Button
                           variant="danger"
@@ -257,7 +261,7 @@ export const CalendarFeedsSection = () => {
                           onClick={() => handleRotate(feed.identifier)}
                           isLoading={rotateMutation.isPending}
                         >
-                          Regenerate
+                          {t('calendarFeeds.regenerate')}
                         </Button>
                       </div>
                     </div>
@@ -266,7 +270,7 @@ export const CalendarFeedsSection = () => {
                     <div className="flex items-center gap-3 bg-error-bg border border-error-border rounded-lg px-4 py-3">
                       <AlertTriangle className="h-4 w-4 text-error-text flex-shrink-0" />
                       <span className="text-sm text-error-text flex-1">
-                        Delete this calendar feed?
+                        {t('calendarFeeds.deleteConfirm')}
                       </span>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <Button
@@ -274,7 +278,7 @@ export const CalendarFeedsSection = () => {
                           size="sm"
                           onClick={() => setConfirmDeleteId(null)}
                         >
-                          Cancel
+                          {t('common:buttons.cancel')}
                         </Button>
                         <Button
                           variant="danger"
@@ -282,7 +286,7 @@ export const CalendarFeedsSection = () => {
                           onClick={() => handleDelete(feed.identifier)}
                           isLoading={deleteMutation.isPending}
                         >
-                          Delete
+                          {t('common:buttons.delete')}
                         </Button>
                       </div>
                     </div>
@@ -298,9 +302,7 @@ export const CalendarFeedsSection = () => {
       {feeds.length === 0 && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-12 text-center">
           <Calendar className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-          <p className="text-text-secondary">
-            No calendar feeds yet. Create one to get started.
-          </p>
+          <p className="text-text-secondary">{t('calendarFeeds.empty')}</p>
         </div>
       )}
 

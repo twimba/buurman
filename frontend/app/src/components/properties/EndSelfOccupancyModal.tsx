@@ -1,10 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, RichTextEditor } from '@buurman/ui';
 import { useEndOccupancyPeriod } from '@/hooks/useOccupancyPeriodHooks';
-import {
-  OccupancyEndReason,
-  OCCUPANCY_END_REASON_LABELS,
-} from '@/types/occupancyPeriod';
+import { OccupancyEndReason } from '@/types/occupancyPeriod';
 import { X } from 'lucide-react';
 
 interface EndSelfOccupancyModalProps {
@@ -18,6 +16,7 @@ export const EndSelfOccupancyModal = ({
   periodIdentifier,
   onClose,
 }: EndSelfOccupancyModalProps) => {
+  const { t } = useTranslation('properties');
   const endMutation = useEndOccupancyPeriod(propertyIdentifier);
   const [endDate, setEndDate] = useState(
     new Date().toISOString().split('T')[0]
@@ -45,7 +44,7 @@ export const EndSelfOccupancyModal = ({
       <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-text-primary">
-            End Self-Occupancy
+            {t('selfOccupancy.endTitle')}
           </h3>
           <button
             onClick={onClose}
@@ -58,7 +57,7 @@ export const EndSelfOccupancyModal = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              End Date *
+              {t('selfOccupancy.form.endDateRequired')}
             </label>
             <input
               type="date"
@@ -71,7 +70,7 @@ export const EndSelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Reason
+              {t('selfOccupancy.form.reason')}
             </label>
             <select
               value={endReason}
@@ -80,10 +79,12 @@ export const EndSelfOccupancyModal = ({
               }
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              <option value="">Select a reason...</option>
+              <option value="">
+                {t('selfOccupancy.form.reasonPlaceholder')}
+              </option>
               {Object.values(OccupancyEndReason).map((r) => (
                 <option key={r} value={r}>
-                  {OCCUPANCY_END_REASON_LABELS[r]}
+                  {t(`selfOccupancy.endReasons.${r}`)}
                 </option>
               ))}
             </select>
@@ -91,12 +92,12 @@ export const EndSelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Notes
+              {t('selfOccupancy.form.notes')}
             </label>
             <RichTextEditor
               value={notes}
               onChange={setNotes}
-              placeholder="Additional notes..."
+              placeholder={t('selfOccupancy.form.notesPlaceholder')}
             />
           </div>
 
@@ -106,14 +107,14 @@ export const EndSelfOccupancyModal = ({
               onClick={onClose}
               disabled={endMutation.isPending}
             >
-              Cancel
+              {t('buttons.cancel', { ns: 'common' })}
             </Button>
             <Button
               variant="primary"
               type="submit"
               isLoading={endMutation.isPending}
             >
-              End Occupancy
+              {t('selfOccupancy.endOccupancy')}
             </Button>
           </div>
         </form>

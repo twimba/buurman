@@ -1,0 +1,99 @@
+{
+  "documentsPage": {
+    "title": "Asiakirjakirjasto",
+    "subtitle": "Hae ja hallitse kaikkia asiakirjojasi yhdessa paikassa",
+    "searchPlaceholder": "Hae asiakirjoja otsikolla, tiedostonimella tai muistiinpanoilla...",
+    "entityTypeFilter": {
+      "all": "Kaikki tyypit",
+      "property": "Kohteet",
+      "contact": "Yhteystiedot",
+      "contract": "Sopimukset",
+      "payment": "Maksut",
+      "expense": "Kulut"
+    },
+    "table": {
+      "document": "Asiakirja",
+      "type": "Tyyppi",
+      "size": "Koko",
+      "uploaded": "Ladattu",
+      "actions": "Toiminnot"
+    },
+    "selection": {
+      "selected": "{{selected}} / {{total}} valittu",
+      "count": "{{count}} asiakirja",
+      "count_other": "{{count}} asiakirjaa"
+    },
+    "empty": "Asiakirjoja ei loytynyt",
+    "editModal": "Muokkaa asiakirjaa"
+  },
+  "photosPage": {
+    "title": "Valokuvakirjasto",
+    "subtitle": "Selaa ja hallitse kaikkia valokuviasi yhdessa paikassa",
+    "searchPlaceholder": "Hae valokuvia otsikolla, tiedostonimella tai muistiinpanoilla...",
+    "entityTypeFilter": {
+      "all": "Kaikki tyypit",
+      "property": "Kohteet",
+      "contact": "Yhteystiedot",
+      "contract": "Sopimukset",
+      "payment": "Maksut",
+      "expense": "Kulut"
+    },
+    "empty": "Valokuvia ei loytynyt",
+    "editModal": "Muokkaa valokuvaa"
+  },
+  "photoGrid": {
+    "noPhotos": "Ei valokuvia viela",
+    "failedToLoad": "Valokuvien lataus epaonnistui",
+    "failedToLoadImage": "Lataus epaonnistui",
+    "noUrl": "Ei URL-osoitetta",
+    "main": "Paa",
+    "selection": {
+      "selected": "{{selected}} / {{total}} valittu",
+      "count": "{{count}} valokuva",
+      "count_other": "{{count}} valokuvaa"
+    },
+    "downloading": "Ladataan...",
+    "tooltips": {
+      "setAsMain": "Aseta paavalokuvaksi",
+      "editTitleNotes": "Muokkaa otsikkoa ja muistiinpanoja",
+      "deletePhoto": "Poista valokuva"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Esikatselu ei ole saatavilla talle tiedostotyypille ({{mimeType}})",
+    "downloadFile": "Lataa tiedosto",
+    "notes": "Muistiinpanot:",
+    "tooltips": {
+      "editTitleNotes": "Muokkaa otsikkoa ja muistiinpanoja",
+      "download": "Lataa",
+      "openInNewTab": "Avaa uudessa valilehdessa",
+      "close": "Sulje",
+      "previous": "Edellinen",
+      "next": "Seuraava"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Poista asiakirja",
+    "titlePlural": "Poista asiakirjat",
+    "messageSingle": "Haluatko varmasti poistaa taman asiakirjan? Tata toimintoa ei voi kumota.",
+    "messagePlural": "Olet poistamassa {{count}} asiakirjaa. Tata toimintoa ei voi kumota.",
+    "confirmSingle": "Poista",
+    "confirmPlural": "Poista {{count}} asiakirjaa"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Poista valokuva",
+    "titlePlural": "Poista valokuvat",
+    "messageSingle": "Haluatko varmasti poistaa taman valokuvan? Tata toimintoa ei voi kumota.",
+    "messagePlural": "Olet poistamassa {{count}} valokuvaa. Tata toimintoa ei voi kumota.",
+    "mainPhotoSingle": "Tama on paavalokuva. Poistaminen tarkoittaa, etta kohteella ei ole enaa paavalokuvaa. Tata toimintoa ei voi kumota.",
+    "mainPhotoPlural": "Olet poistamassa {{count}} valokuvaa, mukaan lukien paavalokuvan. Kohteella ei ole enaa paavalokuvaa. Tata toimintoa ei voi kumota.",
+    "confirmSingle": "Poista",
+    "confirmPlural": "Poista {{count}} valokuvaa"
+  },
+  "tooltips": {
+    "preview": "Esikatselu",
+    "editTitleNotes": "Muokkaa otsikkoa ja muistiinpanoja",
+    "delete": "Poista",
+    "download": "Lataa"
+  }
+}

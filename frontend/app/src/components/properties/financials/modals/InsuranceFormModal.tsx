@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@buurman/ui';
@@ -30,6 +31,7 @@ export const InsuranceFormModal = ({
   existing,
   onClose,
 }: InsuranceFormModalProps) => {
+  const { t } = useTranslation('properties');
   const { defaultCurrency } = useTeamDefaults();
   const createMutation = useCreateInsurance(propertyId);
   const updateMutation = useUpdateInsurance(propertyId);
@@ -102,7 +104,9 @@ export const InsuranceFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
           <h2 className="text-lg font-semibold text-text-primary">
-            {existing ? 'Edit Insurance' : 'Add Insurance'}
+            {existing
+              ? t('financials.modals.editInsurance')
+              : t('financials.modals.addInsurance')}
           </h2>
           <button
             type="button"
@@ -120,7 +124,8 @@ export const InsuranceFormModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>
-                Insurance Type <span className="text-error-text">*</span>
+                {t('financials.labels.insuranceType')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <select
                 value={formData.insuranceType ?? ''}
@@ -137,7 +142,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Provider</label>
+              <label className={labelClass}>
+                {t('financials.labels.provider')}
+              </label>
               <input
                 type="text"
                 value={formData.provider ?? ''}
@@ -149,7 +156,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Policy Number</label>
+              <label className={labelClass}>
+                {t('financials.labels.policyNumber')}
+              </label>
               <input
                 type="text"
                 value={formData.policyNumber ?? ''}
@@ -161,7 +170,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Coverage Amount</label>
+              <label className={labelClass}>
+                {t('financials.labels.coverageAmount')}
+              </label>
               <MoneyInput
                 value={formData.coverageAmount}
                 onChange={(v) => update('coverageAmount', v)}
@@ -173,7 +184,8 @@ export const InsuranceFormModal = ({
 
             <div className="min-w-0">
               <label className={labelClass}>
-                Annual Premium <span className="text-error-text">*</span>
+                {t('financials.labels.annualPremium')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <MoneyInput
                 value={formData.annualPremium}
@@ -185,7 +197,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Payment Frequency</label>
+              <label className={labelClass}>
+                {t('financials.labels.paymentFrequency')}
+              </label>
               <select
                 value={formData.paymentFrequency ?? ''}
                 onChange={(e) =>
@@ -202,7 +216,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Start Date</label>
+              <label className={labelClass}>
+                {t('financials.labels.startDate')}
+              </label>
               <input
                 type="date"
                 value={formData.startDate ?? ''}
@@ -214,7 +230,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>End Date</label>
+              <label className={labelClass}>
+                {t('financials.labels.endDate')}
+              </label>
               <input
                 type="date"
                 value={formData.endDate ?? ''}
@@ -224,7 +242,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Status</label>
+              <label className={labelClass}>
+                {t('financials.labels.status')}
+              </label>
               <select
                 value={formData.status ?? ''}
                 onChange={(e) => update('status', e.target.value || undefined)}
@@ -239,11 +259,13 @@ export const InsuranceFormModal = ({
             </div>
 
             <div className="col-span-2">
-              <label className={labelClass}>Notes</label>
+              <label className={labelClass}>
+                {t('financials.labels.notes')}
+              </label>
               <RichTextEditor
                 value={formData.notes ?? ''}
                 onChange={(value) => update('notes', value || undefined)}
-                placeholder="Add notes..."
+                placeholder={t('financials.placeholders.addNotes')}
               />
             </div>
           </div>
@@ -255,7 +277,7 @@ export const InsuranceFormModal = ({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             type="submit"
@@ -263,7 +285,11 @@ export const InsuranceFormModal = ({
             disabled={isLoading}
             className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
-            {isLoading ? 'Saving...' : existing ? 'Save Changes' : 'Create'}
+            {isLoading
+              ? t('financials.saving')
+              : existing
+                ? t('common:buttons.saveChanges')
+                : t('common:buttons.create')}
           </button>
         </div>
       </div>

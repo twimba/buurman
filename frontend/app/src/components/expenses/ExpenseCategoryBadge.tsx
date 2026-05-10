@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ExpenseCategory } from '@/types/expense';
 
 interface ExpenseCategoryBadgeProps {
@@ -32,26 +34,31 @@ const categoryColors: Record<ExpenseCategory, string> = {
     'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/20 dark:bg-slate-500/10 dark:text-slate-400 dark:ring-slate-500/20',
 };
 
-const categoryLabels: Record<ExpenseCategory, string> = {
-  MAINTENANCE: 'Maintenance',
-  REPAIR: 'Repair',
-  UTILITY: 'Utility',
-  TAX: 'Tax',
-  INSURANCE: 'Insurance',
-  LEGAL: 'Legal',
-  MARKETING: 'Marketing',
-  CLEANING: 'Cleaning',
-  LANDSCAPING: 'Landscaping',
-  PROPERTY_MANAGEMENT: 'Property Management',
-  FEES: 'Fees',
-  PROPERTY_TAX: 'Property Taxes',
-  OTHER: 'Other',
-};
-
 export const ExpenseCategoryBadge = ({
   category,
   className = '',
 }: ExpenseCategoryBadgeProps) => {
+  const { t } = useTranslation('expenses');
+
+  const categoryLabels = useMemo(
+    (): Record<ExpenseCategory, string> => ({
+      MAINTENANCE: t('category.MAINTENANCE'),
+      REPAIR: t('category.REPAIR'),
+      UTILITY: t('category.UTILITY'),
+      TAX: t('category.TAX'),
+      INSURANCE: t('category.INSURANCE'),
+      LEGAL: t('category.LEGAL'),
+      MARKETING: t('category.MARKETING'),
+      CLEANING: t('category.CLEANING'),
+      LANDSCAPING: t('category.LANDSCAPING'),
+      PROPERTY_MANAGEMENT: t('category.PROPERTY_MANAGEMENT'),
+      FEES: t('category.FEES'),
+      PROPERTY_TAX: t('category.PROPERTY_TAX'),
+      OTHER: t('category.OTHER'),
+    }),
+    [t]
+  );
+
   return (
     <span
       className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${categoryColors[category]} ${className}`}

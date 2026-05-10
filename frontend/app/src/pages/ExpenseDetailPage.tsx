@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
 import {
@@ -38,13 +39,10 @@ import {
   User,
 } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import {
-  UpdateExpenseRequest,
-  CreateExpenseRequest,
-  formatExpenseCategory,
-} from '@/types/expense';
+import { UpdateExpenseRequest, CreateExpenseRequest } from '@/types/expense';
 
 export const ExpenseDetailPage = () => {
+  const { t } = useTranslation('expenses');
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -116,7 +114,7 @@ export const ExpenseDetailPage = () => {
   if (error || !expense) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load expense" />
+        <ErrorMessage message={t('errors.loadExpenseFailed')} />
       </div>
     );
   }
@@ -126,7 +124,7 @@ export const ExpenseDetailPage = () => {
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
-          title={`Expense #${expense.identifier}`}
+          title={t('detail.titlePrefix', { id: expense.identifier })}
           subtitle={expense.description}
           backTo={backTo}
           badge={<ExpenseCategoryBadge category={expense.category} />}
@@ -142,7 +140,7 @@ export const ExpenseDetailPage = () => {
                   }}
                   disabled={!canEditData}
                 >
-                  Edit
+                  {t('common:buttons.edit')}
                 </Button>
               )}
               <Button
@@ -151,7 +149,7 @@ export const ExpenseDetailPage = () => {
                 onClick={() => setShowDeleteModal(true)}
                 disabled={!canEditData}
               >
-                Delete
+                {t('common:buttons.delete')}
               </Button>
             </>
           }
@@ -168,7 +166,7 @@ export const ExpenseDetailPage = () => {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              Details
+              {t('tabs.details')}
             </button>
             <button
               onClick={() => setActiveTab('documents')}
@@ -179,7 +177,8 @@ export const ExpenseDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              Documents {documents.length > 0 && `(${documents.length})`}
+              {t('tabs.documents')}{' '}
+              {documents.length > 0 && `(${documents.length})`}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -190,7 +189,8 @@ export const ExpenseDetailPage = () => {
               }`}
             >
               <History className="h-4 w-4" />
-              History {auditLog.length > 0 && `(${auditLog.length})`}
+              {t('tabs.history')}{' '}
+              {auditLog.length > 0 && `(${auditLog.length})`}
             </button>
           </div>
         </div>
@@ -200,7 +200,7 @@ export const ExpenseDetailPage = () => {
           (isEditing ? (
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Edit Expense
+                {t('detail.editExpense')}
               </h2>
               <ExpenseForm
                 expense={expense}
@@ -214,13 +214,15 @@ export const ExpenseDetailPage = () => {
               {/* Expense Details */}
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h2 className="text-lg font-semibold text-text-primary mb-4">
-                  Expense Details
+                  {t('detail.expenseDetails')}
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-text-secondary">Amount</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.amount')}
+                      </p>
                       <p className="font-medium text-text-primary text-lg">
                         {expense.currency} {expense.amount.toFixed(2)}
                       </p>
@@ -230,7 +232,7 @@ export const ExpenseDetailPage = () => {
                     <Calendar className="h-5 w-5 text-text-muted " />
                     <div>
                       <p className="text-sm text-text-secondary">
-                        Expense Date
+                        {t('detail.expenseDate')}
                       </p>
                       <p className="font-medium text-text-primary">
                         {formatDate(expense.expenseDate)}
@@ -240,16 +242,20 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Package className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-text-secondary">Category</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.category')}
+                      </p>
                       <p className="font-medium text-text-primary">
-                        {formatExpenseCategory(expense.category)}
+                        {t(`category.${expense.category}`)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Receipt className="h-5 w-5 text-text-muted mt-1" />
                     <div>
-                      <p className="text-sm text-text-secondary">Description</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.description')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {expense.description}
                       </p>
@@ -261,13 +267,15 @@ export const ExpenseDetailPage = () => {
               {/* Property & Contact Info */}
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h2 className="text-lg font-semibold text-text-primary mb-4">
-                  Property & Contact
+                  {t('detail.propertyAndContact')}
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <Home className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">Property</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.property')}
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/properties/${expense.property.identifier}`)
@@ -284,7 +292,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <User className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">Contact</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.contact')}
+                      </p>
                       {expense.contact ? (
                         <>
                           <button
@@ -304,7 +314,7 @@ export const ExpenseDetailPage = () => {
                         </>
                       ) : (
                         <p className="text-sm text-text-muted">
-                          No contact linked
+                          {t('detail.noContactLinked')}
                         </p>
                       )}
                     </div>
@@ -316,7 +326,7 @@ export const ExpenseDetailPage = () => {
               {expense.notes && (
                 <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
                   <h2 className="text-lg font-semibold text-text-primary mb-4">
-                    Notes
+                    {t('detail.notes')}
                   </h2>
                   <RichTextDisplay content={expense.notes} />
                 </div>
@@ -329,7 +339,7 @@ export const ExpenseDetailPage = () => {
                   className="w-full flex items-center justify-between text-left group"
                 >
                   <h2 className="text-lg font-semibold text-text-primary">
-                    Metadata
+                    {t('detail.metadata')}
                   </h2>
                   {isMetadataExpanded ? (
                     <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
@@ -340,16 +350,20 @@ export const ExpenseDetailPage = () => {
                 {isMetadataExpanded && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                     <div>
-                      <span className="text-text-secondary">Created:</span>{' '}
+                      <span className="text-text-secondary">
+                        {t('detail.created')}
+                      </span>{' '}
                       <span className="text-text-primary">
-                        {formatDate(expense.createdAt)} at{' '}
+                        {formatDate(expense.createdAt)}{' '}
                         {new Date(expense.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
                     <div>
-                      <span className="text-text-secondary">Last Updated:</span>{' '}
+                      <span className="text-text-secondary">
+                        {t('detail.lastUpdated')}
+                      </span>{' '}
                       <span className="text-text-primary">
-                        {formatDate(expense.updatedAt)} at{' '}
+                        {formatDate(expense.updatedAt)}{' '}
                         {new Date(expense.updatedAt).toLocaleTimeString()}
                       </span>
                     </div>
@@ -379,14 +393,14 @@ export const ExpenseDetailPage = () => {
         {activeTab === 'history' && (
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <h2 className="text-xl font-semibold text-text-primary mb-4">
-              Expense History
+              {t('history.title')}
             </h2>
             {auditLoading ? (
               <div className="flex items-center justify-center py-8">
                 <LoadingSpinner />
               </div>
             ) : auditError ? (
-              <ErrorMessage message="Failed to load history" />
+              <ErrorMessage message={t('errors.loadHistoryFailed')} />
             ) : auditLog.length > 0 ? (
               <div className="space-y-4">
                 {auditLog.map((activity) => {
@@ -453,15 +467,15 @@ export const ExpenseDetailPage = () => {
                             {activity.impersonatedBy && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
                                 <Eye className="h-3 w-3" />
-                                Impersonated
+                                {t('history.impersonated')}
                               </span>
                             )}
                           </div>
                           {hasChanges && (
                             <p className="text-xs text-primary-500 mt-1">
                               {isExpanded
-                                ? 'Click to hide changes'
-                                : 'Click to view changes'}
+                                ? t('history.clickToHide')
+                                : t('history.clickToView')}
                             </p>
                           )}
                         </div>
@@ -470,7 +484,7 @@ export const ExpenseDetailPage = () => {
                       {isExpanded && hasChanges && (
                         <div className="bg-surface-page px-4 py-3 border-t border-border-default">
                           <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
-                            Changed Fields
+                            {t('history.changedFields')}
                           </h4>
                           <div className="space-y-2">
                             {Object.entries(activity.changedFields ?? {}).map(
@@ -488,7 +502,7 @@ export const ExpenseDetailPage = () => {
                                   <div className="grid grid-cols-2 gap-2">
                                     <div>
                                       <span className="text-text-secondary">
-                                        Old:{' '}
+                                        {t('history.old')}{' '}
                                       </span>
                                       {typeof activity.oldValues?.[field] ===
                                         'string' &&
@@ -509,7 +523,7 @@ export const ExpenseDetailPage = () => {
                                     </div>
                                     <div>
                                       <span className="text-text-secondary">
-                                        New:{' '}
+                                        {t('history.new')}{' '}
                                       </span>
                                       {typeof activity.newValues?.[field] ===
                                         'string' &&
@@ -542,9 +556,9 @@ export const ExpenseDetailPage = () => {
             ) : (
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-                <p className="text-text-secondary">No history available</p>
+                <p className="text-text-secondary">{t('history.empty')}</p>
                 <p className="text-sm text-text-muted mt-1">
-                  Changes to this expense will appear here
+                  {t('history.emptySubtitle')}
                 </p>
               </div>
             )}
@@ -557,25 +571,24 @@ export const ExpenseDetailPage = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h2 className="text-lg font-semibold text-text-primary mb-4">
-              Delete Expense
+              {t('deleteDialog.title')}
             </h2>
             <p className="text-text-secondary mb-6">
-              Are you sure you want to delete this expense? This action cannot
-              be undone.
+              {t('deleteDialog.message')}
             </p>
             <div className="flex justify-end gap-3">
               <Button
                 variant="secondary"
                 onClick={() => setShowDeleteModal(false)}
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 variant="danger"
                 onClick={handleDelete}
                 isLoading={deleteExpenseMutation.isPending}
               >
-                Delete
+                {t('common:buttons.delete')}
               </Button>
             </div>
           </div>

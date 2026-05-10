@@ -12,12 +12,12 @@ RUN npm install -g --force corepack && corepack enable
 
 # Copy ALL workspace package.json files so Yarn resolves the full dependency
 # graph identically to local installs (prevents duplicate transitive deps).
-COPY frontend/package.json frontend/.yarnrc.yml ./
+COPY frontend/package.json frontend/.yarnrc.yml frontend/yarn.lock ./
 COPY frontend/packages/ui/package.json packages/ui/
 COPY frontend/app/package.json app/
 COPY frontend/backoffice/package.json backoffice/
 
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 # Copy shared UI library + build scripts
 COPY frontend/packages/ui/ packages/ui/

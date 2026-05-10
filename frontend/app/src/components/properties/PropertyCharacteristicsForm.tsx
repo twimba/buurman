@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Info, Plus, Trash2 } from 'lucide-react';
 import { CollapsibleSection } from './CollapsibleSection';
 import { MeasurementInput } from '@/components/common/MeasurementInput';
@@ -56,6 +57,17 @@ function arrayOptions(arr: readonly string[]): Record<string, string> {
   return Object.fromEntries(arr.map((v) => [v, humanize(v)]));
 }
 
+/** Build translated dropdown options, falling back to humanized value */
+function translatedOptions(
+  arr: readonly string[],
+  t: (key: string, options?: { defaultValue: string }) => string,
+  prefix: string
+): Record<string, string> {
+  return Object.fromEntries(
+    arr.map((v) => [v, t(`${prefix}.${v}`, { defaultValue: humanize(v) })])
+  );
+}
+
 const Tooltip = ({ text }: { text: string }) => (
   <span className="relative group ml-1 inline-flex">
     <Info className="h-3.5 w-3.5 text-text-muted cursor-help" />
@@ -79,26 +91,29 @@ const SelectField = ({
   options,
   onChange,
   tooltip,
-}: SelectFieldProps) => (
-  <div>
-    <label className={labelCls}>
-      {label}
-      {tooltip && <Tooltip text={tooltip} />}
-    </label>
-    <select
-      value={value ?? ''}
-      onChange={(e) => onChange(e.target.value || null)}
-      className={inputCls}
-    >
-      <option value="">-- Select --</option>
-      {Object.entries(options).map(([k, v]) => (
-        <option key={k} value={k}>
-          {v}
-        </option>
-      ))}
-    </select>
-  </div>
-);
+}: SelectFieldProps) => {
+  const { t } = useTranslation('properties');
+  return (
+    <div>
+      <label className={labelCls}>
+        {label}
+        {tooltip && <Tooltip text={tooltip} />}
+      </label>
+      <select
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value || null)}
+        className={inputCls}
+      >
+        <option value="">{t('characteristics.selectPlaceholder')}</option>
+        {Object.entries(options).map(([k, v]) => (
+          <option key={k} value={k}>
+            {v}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
 
 interface NumberFieldProps {
   label: string;
@@ -300,6 +315,7 @@ export const PropertyCharacteristicsForm = ({
   onAddAmenity,
   onRemoveAmenity,
 }: PropertyCharacteristicsFormProps) => {
+  const { t } = useTranslation('properties');
   const constructionFields = [
     formData.yearBuilt,
     formData.yearLastRenovated,
@@ -357,100 +373,126 @@ export const PropertyCharacteristicsForm = ({
   return (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold text-text-primary mb-2">
-        Property Characteristics
+        {t('detail.characteristics.title')}
       </h3>
 
       {/* Construction & Structure */}
       <CollapsibleSection
-        title="Construction & Structure"
+        title={t('detail.construction.title')}
         filledCount={countFilled(constructionFields)}
         totalCount={constructionFields.length}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <NumberField
-            label="Year Built"
+            label={t('characteristics.construction.yearBuilt')}
             value={formData.yearBuilt}
             onChange={(v) => onChange('yearBuilt', v)}
             min={1600}
             step={1}
           />
           <NumberField
-            label="Year Last Renovated"
+            label={t('characteristics.construction.yearLastRenovated')}
             value={formData.yearLastRenovated}
             onChange={(v) => onChange('yearLastRenovated', v)}
             min={1600}
             step={1}
           />
           <SelectField
-            label="Construction Type"
+            label={t('characteristics.construction.constructionType')}
             value={formData.constructionType}
-            options={arrayOptions(CONSTRUCTION_TYPES)}
+            options={translatedOptions(
+              CONSTRUCTION_TYPES,
+              t,
+              'enums.characteristics.constructionType'
+            )}
             onChange={(v) => onChange('constructionType', v)}
           />
           <SelectField
-            label="Foundation Type"
+            label={t('characteristics.construction.foundationType')}
             value={formData.foundationType}
-            options={arrayOptions(FOUNDATION_TYPES)}
+            options={translatedOptions(
+              FOUNDATION_TYPES,
+              t,
+              'enums.characteristics.foundationType'
+            )}
             onChange={(v) => onChange('foundationType', v)}
           />
           <SelectField
-            label="Roof Type"
+            label={t('characteristics.construction.roofType')}
             value={formData.roofType}
-            options={arrayOptions(ROOF_TYPES)}
+            options={translatedOptions(
+              ROOF_TYPES,
+              t,
+              'enums.characteristics.roofType'
+            )}
             onChange={(v) => onChange('roofType', v)}
           />
           <SelectField
-            label="Wall Construction"
+            label={t('characteristics.construction.wallConstruction')}
             value={formData.wallConstruction}
-            options={arrayOptions(CONSTRUCTION_TYPES)}
+            options={translatedOptions(
+              CONSTRUCTION_TYPES,
+              t,
+              'enums.characteristics.constructionType'
+            )}
             onChange={(v) => onChange('wallConstruction', v)}
           />
           <SelectField
-            label="Flooring Type"
+            label={t('characteristics.construction.flooringType')}
             value={formData.flooringType}
-            options={arrayOptions(FLOORING_TYPES)}
+            options={translatedOptions(
+              FLOORING_TYPES,
+              t,
+              'enums.characteristics.flooringType'
+            )}
             onChange={(v) => onChange('flooringType', v)}
           />
           <SelectField
-            label="Window Type"
+            label={t('characteristics.construction.windowType')}
             value={formData.windowType}
-            options={arrayOptions(WINDOW_TYPES)}
+            options={translatedOptions(
+              WINDOW_TYPES,
+              t,
+              'enums.characteristics.windowType'
+            )}
             onChange={(v) => onChange('windowType', v)}
           />
           <NumberField
-            label="Number of Floors"
+            label={t('characteristics.construction.numberOfFloors')}
             value={formData.numberOfFloors}
             onChange={(v) => onChange('numberOfFloors', v)}
             min={1}
             step={1}
           />
           <RichTextNotesField
-            label="Structural Notes"
+            label={t('characteristics.construction.structuralNotes')}
             value={formData.structuralNotes}
             onChange={(v) => onChange('structuralNotes', v)}
-            tooltip="Any notable structural details, renovations, or issues"
+            tooltip={t('characteristics.construction.structuralNotesTooltip')}
           />
         </div>
       </CollapsibleSection>
 
       {/* Energy & Climate */}
       <CollapsibleSection
-        title="Energy & Climate"
+        title={t('detail.energy.title')}
         filledCount={countFilled(energyFields)}
         totalCount={energyFields.length}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SelectField
-            label="Energy Efficiency Rating"
+            label={t('characteristics.energy.energyEfficiencyRating')}
             value={formData.energyEfficiencyRating}
             options={arrayOptions(ENERGY_EFFICIENCY_RATINGS)}
             onChange={(v) => onChange('energyEfficiencyRating', v)}
-            tooltip="Official energy label (A++ to G)"
+            tooltip={t('characteristics.energy.energyRatingTooltip')}
           />
           <div>
             <label className={labelCls}>
-              Energy Certificate Expiry
-              <Tooltip text="When the current energy certificate expires" />
+              {t('characteristics.energy.certificateExpiry')}
+              <Tooltip
+                text={t('characteristics.energy.certificateExpiryTooltip')}
+              />
             </label>
             <input
               type="date"
@@ -462,80 +504,108 @@ export const PropertyCharacteristicsForm = ({
             />
           </div>
           <SelectField
-            label="Heating Type"
+            label={t('characteristics.energy.heatingType')}
             value={formData.heatingType}
-            options={arrayOptions(HEATING_TYPES)}
+            options={translatedOptions(
+              HEATING_TYPES,
+              t,
+              'enums.characteristics.heatingType'
+            )}
             onChange={(v) => onChange('heatingType', v)}
           />
           <SelectField
-            label="Cooling Type"
+            label={t('characteristics.energy.coolingType')}
             value={formData.coolingType}
-            options={arrayOptions(COOLING_TYPES)}
+            options={translatedOptions(
+              COOLING_TYPES,
+              t,
+              'enums.characteristics.coolingType'
+            )}
             onChange={(v) => onChange('coolingType', v)}
           />
           <SelectField
-            label="Hot Water System"
+            label={t('characteristics.energy.hotWaterSystem')}
             value={formData.hotWaterSystem}
-            options={arrayOptions(HOT_WATER_SYSTEMS)}
+            options={translatedOptions(
+              HOT_WATER_SYSTEMS,
+              t,
+              'enums.characteristics.hotWaterSystem'
+            )}
             onChange={(v) => onChange('hotWaterSystem', v)}
           />
           <RichTextNotesField
-            label="Insulation Notes"
+            label={t('characteristics.energy.insulationNotes')}
             value={formData.insulationNotes}
             onChange={(v) => onChange('insulationNotes', v)}
-            tooltip="Wall, roof, floor insulation details"
+            tooltip={t('characteristics.energy.insulationTooltip')}
           />
         </div>
       </CollapsibleSection>
 
       {/* Utilities & Connections */}
       <CollapsibleSection
-        title="Utilities & Connections"
+        title={t('detail.utilities.title')}
         filledCount={countFilled(utilityFields)}
         totalCount={utilityFields.length}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SelectField
-            label="Electricity Connection"
+            label={t('characteristics.utilities.electricityConnection')}
             value={formData.electricityConnectionType}
-            options={arrayOptions(ELECTRICITY_CONNECTION_TYPES)}
+            options={translatedOptions(
+              ELECTRICITY_CONNECTION_TYPES,
+              t,
+              'enums.characteristics.electricityConnectionType'
+            )}
             onChange={(v) => onChange('electricityConnectionType', v)}
           />
           <MeasurementField
-            label="Electricity Capacity"
+            label={t('characteristics.utilities.electricityCapacity')}
             value={formData.electricityCapacityValue}
             onChange={(v) => onChange('electricityCapacityValue', v)}
             unit={formData.electricityCapacityUnit ?? 'a'}
             unitOptions={ELECTRICITY_UNITS}
             onUnitChange={(u) => onChange('electricityCapacityUnit', u)}
             min={0}
-            tooltip="Main fuse capacity"
+            tooltip={t('characteristics.utilities.electricityCapacityTooltip')}
           />
           <SelectField
-            label="Water Connection"
+            label={t('characteristics.utilities.waterConnection')}
             value={formData.waterConnectionType}
-            options={arrayOptions(WATER_CONNECTION_TYPES)}
+            options={translatedOptions(
+              WATER_CONNECTION_TYPES,
+              t,
+              'enums.characteristics.waterConnectionType'
+            )}
             onChange={(v) => onChange('waterConnectionType', v)}
           />
           <ToggleField
-            label="Has Gas Connection"
+            label={t('characteristics.utilities.hasGasConnection')}
             value={formData.hasGasConnection}
             onChange={(v) => onChange('hasGasConnection', v)}
           />
           <SelectField
-            label="Sewage Type"
+            label={t('characteristics.utilities.sewageType')}
             value={formData.sewageType}
-            options={arrayOptions(SEWAGE_TYPES)}
+            options={translatedOptions(
+              SEWAGE_TYPES,
+              t,
+              'enums.characteristics.sewageType'
+            )}
             onChange={(v) => onChange('sewageType', v)}
           />
           <SelectField
-            label="Internet Connection"
+            label={t('characteristics.utilities.internetConnection')}
             value={formData.internetConnectionType}
-            options={arrayOptions(INTERNET_CONNECTION_TYPES)}
+            options={translatedOptions(
+              INTERNET_CONNECTION_TYPES,
+              t,
+              'enums.characteristics.internetConnectionType'
+            )}
             onChange={(v) => onChange('internetConnectionType', v)}
           />
           <MeasurementField
-            label="Internet Max Speed"
+            label={t('characteristics.utilities.internetMaxSpeed')}
             value={formData.internetMaxSpeedValue}
             onChange={(v) => onChange('internetMaxSpeedValue', v)}
             unit={formData.internetMaxSpeedUnit ?? 'mbps'}
@@ -544,9 +614,13 @@ export const PropertyCharacteristicsForm = ({
             min={0}
           />
           <SelectField
-            label="Internet Status"
+            label={t('characteristics.utilities.internetStatus')}
             value={formData.internetStatus}
-            options={arrayOptions(INTERNET_STATUSES)}
+            options={translatedOptions(
+              INTERNET_STATUSES,
+              t,
+              'enums.characteristics.internetStatus'
+            )}
             onChange={(v) => onChange('internetStatus', v)}
           />
         </div>
@@ -554,22 +628,26 @@ export const PropertyCharacteristicsForm = ({
 
       {/* Parking */}
       <CollapsibleSection
-        title="Parking"
+        title={t('detail.parking.title')}
         filledCount={countFilled(parkingFields)}
         totalCount={parkingFields.length}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <NumberField
-            label="Parking Spaces"
+            label={t('characteristics.parking.parkingSpaces')}
             value={formData.parkingSpaces}
             onChange={(v) => onChange('parkingSpaces', v)}
             min={0}
             step={1}
           />
           <SelectField
-            label="Parking Type"
+            label={t('characteristics.parking.parkingType')}
             value={formData.parkingType}
-            options={arrayOptions(PARKING_TYPES)}
+            options={translatedOptions(
+              PARKING_TYPES,
+              t,
+              'enums.characteristics.parkingType'
+            )}
             onChange={(v) => onChange('parkingType', v)}
           />
         </div>
@@ -577,88 +655,88 @@ export const PropertyCharacteristicsForm = ({
 
       {/* Safety & Security */}
       <CollapsibleSection
-        title="Safety & Security"
+        title={t('detail.safety.title')}
         filledCount={countFilled(safetyFields)}
         totalCount={safetyFields.length}
       >
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
           <ToggleField
-            label="Smoke Detectors"
+            label={t('characteristics.safety.smokeDetectors')}
             value={formData.hasSmokeDetectors}
             onChange={(v) => onChange('hasSmokeDetectors', v)}
           />
           <ToggleField
-            label="CO Detectors"
+            label={t('characteristics.safety.coDetectors')}
             value={formData.hasCoDetectors}
             onChange={(v) => onChange('hasCoDetectors', v)}
           />
           <ToggleField
-            label="Fire Extinguisher"
+            label={t('characteristics.safety.fireExtinguisher')}
             value={formData.hasFireExtinguisher}
             onChange={(v) => onChange('hasFireExtinguisher', v)}
           />
           <ToggleField
-            label="Sprinkler System"
+            label={t('characteristics.safety.sprinklerSystem')}
             value={formData.hasSprinklerSystem}
             onChange={(v) => onChange('hasSprinklerSystem', v)}
           />
           <ToggleField
-            label="Alarm System"
+            label={t('characteristics.safety.alarmSystem')}
             value={formData.hasAlarmSystem}
             onChange={(v) => onChange('hasAlarmSystem', v)}
           />
           <ToggleField
-            label="Security Cameras"
+            label={t('characteristics.safety.securityCameras')}
             value={formData.hasSecurityCameras}
             onChange={(v) => onChange('hasSecurityCameras', v)}
           />
           <ToggleField
-            label="Secure Entry"
+            label={t('characteristics.safety.secureEntry')}
             value={formData.hasSecureEntry}
             onChange={(v) => onChange('hasSecureEntry', v)}
           />
         </div>
         <RichTextNotesField
-          label="Safety Notes"
+          label={t('characteristics.safety.safetyNotes')}
           value={formData.safetyNotes}
           onChange={(v) => onChange('safetyNotes', v)}
-          tooltip="Fire escape routes, last inspection date, etc."
+          tooltip={t('characteristics.safety.safetyNotesTooltip')}
         />
       </CollapsibleSection>
 
       {/* Accessibility */}
       <CollapsibleSection
-        title="Accessibility"
+        title={t('detail.accessibility.title')}
         filledCount={countFilled(accessibilityFields)}
         totalCount={accessibilityFields.length}
       >
         <div className="grid grid-cols-2 md:grid-cols-2 gap-x-4 gap-y-1">
           <ToggleField
-            label="Wheelchair Accessible"
+            label={t('characteristics.accessibility.wheelchairAccessible')}
             value={formData.isWheelchairAccessible}
             onChange={(v) => onChange('isWheelchairAccessible', v)}
           />
           <ToggleField
-            label="Elevator"
+            label={t('characteristics.accessibility.elevator')}
             value={formData.hasElevator}
             onChange={(v) => onChange('hasElevator', v)}
           />
           <ToggleField
-            label="Step-free Entrance"
+            label={t('characteristics.accessibility.stepFreeEntrance')}
             value={formData.hasStepFreeEntrance}
             onChange={(v) => onChange('hasStepFreeEntrance', v)}
           />
           <ToggleField
-            label="Adapted Bathroom"
+            label={t('characteristics.accessibility.adaptedBathroom')}
             value={formData.hasAdaptedBathroom}
             onChange={(v) => onChange('hasAdaptedBathroom', v)}
           />
         </div>
         <RichTextNotesField
-          label="Accessibility Notes"
+          label={t('characteristics.accessibility.accessibilityNotes')}
           value={formData.accessibilityNotes}
           onChange={(v) => onChange('accessibilityNotes', v)}
-          tooltip="Door widths, ramp availability, etc."
+          tooltip={t('characteristics.accessibility.accessibilityNotesTooltip')}
         />
       </CollapsibleSection>
 
@@ -727,6 +805,7 @@ const OutdoorAreasSection = ({
   onCreate,
   onDelete,
 }: OutdoorAreasSectionProps) => {
+  const { t } = useTranslation('properties');
   const [newType, setNewType] = useState('GARDEN');
   const [newValue, setNewValue] = useState<number | undefined>(undefined);
   const [newUnit, setNewUnit] = useState('sqm');
@@ -742,7 +821,7 @@ const OutdoorAreasSection = ({
 
   return (
     <CollapsibleSection
-      title="Outdoor Areas"
+      title={t('detail.outdoorAreas.title')}
       filledCount={areas.length}
       totalCount={areas.length}
     >
@@ -754,7 +833,9 @@ const OutdoorAreasSection = ({
               className="flex items-center gap-3 bg-surface-page rounded px-3 py-2"
             >
               <span className="text-sm font-medium text-text-secondary flex-1">
-                {humanize(area.type)}
+                {t(`enums.characteristics.outdoorAreaType.${area.type}`, {
+                  defaultValue: humanize(area.type),
+                })}
               </span>
               {area.areaValue && (
                 <span className="text-sm text-text-secondary">
@@ -776,20 +857,24 @@ const OutdoorAreasSection = ({
       {showAdd ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end pt-2">
           <SelectField
-            label="Type"
+            label={t('characteristics.outdoorAreas.type')}
             value={newType}
-            options={arrayOptions(OUTDOOR_AREA_TYPES)}
+            options={translatedOptions(
+              OUTDOOR_AREA_TYPES,
+              t,
+              'enums.characteristics.outdoorAreaType'
+            )}
             onChange={(v) => setNewType(v || 'GARDEN')}
           />
           <NumberField
-            label="Area"
+            label={t('characteristics.outdoorAreas.area')}
             value={newValue}
             onChange={setNewValue}
             min={0}
             step={0.1}
           />
           <SelectField
-            label="Unit"
+            label={t('characteristics.outdoorAreas.unit')}
             value={newUnit}
             options={{ sqm: 'm²', sqft: 'ft²' }}
             onChange={(v) => setNewUnit(v || 'sqm')}
@@ -800,14 +885,14 @@ const OutdoorAreasSection = ({
               onClick={handleAdd}
               className="bg-primary-500 text-white px-3 py-2 rounded text-sm hover:bg-primary-600 transition-colors"
             >
-              Add
+              {t('characteristics.outdoorAreas.add')}
             </button>
             <button
               type="button"
               onClick={() => setShowAdd(false)}
               className="border border-border-strong px-3 py-2 rounded text-sm hover:bg-surface-inset transition-colors"
             >
-              Cancel
+              {t('common:actions.cancel')}
             </button>
           </div>
         </div>
@@ -818,7 +903,7 @@ const OutdoorAreasSection = ({
           className="flex items-center gap-1.5 text-sm text-primary-500 hover:text-primary-600 pt-1"
         >
           <Plus className="h-3.5 w-3.5" />
-          Add outdoor area
+          {t('characteristics.outdoorAreas.addOutdoorArea')}
         </button>
       )}
     </CollapsibleSection>
@@ -843,6 +928,7 @@ const ResidentialDetailsSection = ({
   details,
   onChange,
 }: ResidentialDetailsSectionProps) => {
+  const { t } = useTranslation('properties');
   const update = (field: keyof ResidentialDetailsRequest, value: unknown) =>
     onChange({ ...details, [field]: value } as ResidentialDetailsRequest);
 
@@ -855,34 +941,38 @@ const ResidentialDetailsSection = ({
 
   return (
     <CollapsibleSection
-      title="Residential Details"
+      title={t('characteristics.residential.title')}
       filledCount={countFilled(fields)}
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <NumberField
-          label="Bedrooms"
+          label={t('characteristics.residential.bedrooms')}
           value={details.bedrooms}
           onChange={(v) => update('bedrooms', v)}
           min={0}
           step={1}
         />
         <NumberField
-          label="Bathrooms"
+          label={t('characteristics.residential.bathrooms')}
           value={details.bathrooms}
           onChange={(v) => update('bathrooms', v)}
           min={0}
           step={1}
         />
         <ToggleField
-          label="Furnished"
+          label={t('characteristics.residential.furnished')}
           value={details.furnished ?? false}
           onChange={(v) => update('furnished', v)}
         />
         <SelectField
-          label="Pet Policy"
+          label={t('characteristics.residential.petPolicy')}
           value={details.petPolicy ?? null}
-          options={arrayOptions(PET_POLICIES)}
+          options={translatedOptions(
+            PET_POLICIES,
+            t,
+            'enums.characteristics.petPolicy'
+          )}
           onChange={(v) => update('petPolicy', v)}
         />
       </div>
@@ -901,6 +991,7 @@ const CommercialDetailsSection = ({
   details,
   onChange,
 }: CommercialDetailsSectionProps) => {
+  const { t } = useTranslation('properties');
   const update = (field: keyof CommercialDetailsRequest, value: unknown) =>
     onChange({ ...details, [field]: value } as CommercialDetailsRequest);
 
@@ -920,13 +1011,13 @@ const CommercialDetailsSection = ({
 
   return (
     <CollapsibleSection
-      title="Commercial Details"
+      title={t('characteristics.commercial.title')}
       filledCount={countFilled(fields)}
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <MeasurementField
-          label="Usable Area"
+          label={t('characteristics.commercial.usableArea')}
           value={details.usableAreaValue}
           onChange={(v) => update('usableAreaValue', v)}
           min={0}
@@ -936,7 +1027,7 @@ const CommercialDetailsSection = ({
           onUnitChange={(u) => update('usableAreaUnit', u)}
         />
         <MeasurementField
-          label="Common Area"
+          label={t('characteristics.commercial.commonArea')}
           value={details.commonAreaValue}
           onChange={(v) => update('commonAreaValue', v)}
           min={0}
@@ -946,13 +1037,13 @@ const CommercialDetailsSection = ({
           onUnitChange={(u) => update('commonAreaUnit', u)}
         />
         <NumberField
-          label="Floor Level"
+          label={t('characteristics.commercial.floorLevel')}
           value={details.floorLevel}
           onChange={(v) => update('floorLevel', v)}
           step={1}
         />
         <MeasurementField
-          label="Ceiling Height"
+          label={t('characteristics.commercial.ceilingHeight')}
           value={details.ceilingHeightValue}
           onChange={(v) => update('ceilingHeightValue', v)}
           min={0}
@@ -962,21 +1053,23 @@ const CommercialDetailsSection = ({
           onUnitChange={(u) => update('ceilingHeightUnit', u)}
         />
         <NumberField
-          label="Max Occupancy"
+          label={t('characteristics.commercial.maxOccupancy')}
           value={details.maxOccupancy}
           onChange={(v) => update('maxOccupancy', v)}
           min={0}
           step={1}
         />
         <NumberField
-          label="Restroom Count"
+          label={t('characteristics.commercial.restroomCount')}
           value={details.restroomCount}
           onChange={(v) => update('restroomCount', v)}
           min={0}
           step={1}
         />
         <div>
-          <label className={labelCls}>Zoning Classification</label>
+          <label className={labelCls}>
+            {t('characteristics.commercial.zoningClassification')}
+          </label>
           <input
             type="text"
             value={details.zoningClassification ?? ''}
@@ -984,28 +1077,28 @@ const CommercialDetailsSection = ({
               update('zoningClassification', e.target.value || null)
             }
             className={inputCls}
-            placeholder="e.g. C-2, Mixed Commercial"
+            placeholder={t('characteristics.commercial.zoningPlaceholder')}
           />
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mt-3">
         <ToggleField
-          label="Has Storefront"
+          label={t('characteristics.commercial.hasStorefront')}
           value={details.hasStorefront ?? false}
           onChange={(v) => update('hasStorefront', v)}
         />
         <ToggleField
-          label="Signage Rights"
+          label={t('characteristics.commercial.signageRights')}
           value={details.hasSignageRights ?? false}
           onChange={(v) => update('hasSignageRights', v)}
         />
         <ToggleField
-          label="Kitchen Facility"
+          label={t('characteristics.commercial.kitchenFacility')}
           value={details.hasKitchenFacility ?? false}
           onChange={(v) => update('hasKitchenFacility', v)}
         />
         <ToggleField
-          label="Accessibility Compliant"
+          label={t('characteristics.commercial.accessibilityCompliant')}
           value={details.accessibilityCompliant ?? false}
           onChange={(v) => update('accessibilityCompliant', v)}
         />
@@ -1025,6 +1118,7 @@ const IndustrialDetailsSection = ({
   details,
   onChange,
 }: IndustrialDetailsSectionProps) => {
+  const { t } = useTranslation('properties');
   const update = (field: keyof IndustrialDetailsRequest, value: unknown) =>
     onChange({ ...details, [field]: value } as IndustrialDetailsRequest);
 
@@ -1046,13 +1140,13 @@ const IndustrialDetailsSection = ({
 
   return (
     <CollapsibleSection
-      title="Industrial Details"
+      title={t('characteristics.industrial.title')}
       filledCount={countFilled(fields)}
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <MeasurementField
-          label="Clear Height"
+          label={t('characteristics.industrial.clearHeight')}
           value={details.clearHeightValue}
           onChange={(v) => update('clearHeightValue', v)}
           min={0}
@@ -1062,21 +1156,21 @@ const IndustrialDetailsSection = ({
           onUnitChange={(u) => update('clearHeightUnit', u)}
         />
         <NumberField
-          label="Loading Docks"
+          label={t('characteristics.industrial.loadingDocks')}
           value={details.loadingDocks}
           onChange={(v) => update('loadingDocks', v)}
           min={0}
           step={1}
         />
         <NumberField
-          label="Drive-in Doors"
+          label={t('characteristics.industrial.driveInDoors')}
           value={details.driveInDoors}
           onChange={(v) => update('driveInDoors', v)}
           min={0}
           step={1}
         />
         <MeasurementField
-          label="Floor Load Capacity"
+          label={t('characteristics.industrial.floorLoadCapacity')}
           value={details.floorLoadCapacityValue}
           onChange={(v) => update('floorLoadCapacityValue', v)}
           min={0}
@@ -1086,7 +1180,7 @@ const IndustrialDetailsSection = ({
           onUnitChange={(u) => update('floorLoadCapacityUnit', u)}
         />
         <MeasurementField
-          label="Power Capacity"
+          label={t('characteristics.industrial.powerCapacity')}
           value={details.powerCapacityValue}
           onChange={(v) => update('powerCapacityValue', v)}
           unit={details.powerCapacityUnit ?? 'kva'}
@@ -1096,7 +1190,7 @@ const IndustrialDetailsSection = ({
           step={1}
         />
         <MeasurementField
-          label="Crane Capacity"
+          label={t('characteristics.industrial.craneCapacity')}
           value={details.craneCapacityValue}
           onChange={(v) => update('craneCapacityValue', v)}
           min={0}
@@ -1104,10 +1198,9 @@ const IndustrialDetailsSection = ({
           unit={details.craneCapacityUnit ?? 'metric_tons'}
           unitOptions={WEIGHT_UNITS}
           onUnitChange={(u) => update('craneCapacityUnit', u)}
-          tooltip="Only relevant if crane is available"
         />
         <MeasurementField
-          label="Yard Area"
+          label={t('characteristics.industrial.yardArea')}
           value={details.yardAreaValue}
           onChange={(v) => update('yardAreaValue', v)}
           min={0}
@@ -1117,7 +1210,9 @@ const IndustrialDetailsSection = ({
           onUnitChange={(u) => update('yardAreaUnit', u)}
         />
         <div>
-          <label className={labelCls}>Zoning Classification</label>
+          <label className={labelCls}>
+            {t('characteristics.industrial.zoningClassification')}
+          </label>
           <input
             type="text"
             value={details.zoningClassification ?? ''}
@@ -1125,33 +1220,33 @@ const IndustrialDetailsSection = ({
               update('zoningClassification', e.target.value || null)
             }
             className={inputCls}
-            placeholder="e.g. I-1, Light Industrial"
+            placeholder={t('characteristics.industrial.zoningPlaceholder')}
           />
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mt-3">
         <ToggleField
-          label="Three-Phase Power"
+          label={t('characteristics.industrial.threePhasePower')}
           value={details.hasThreePhasePower ?? false}
           onChange={(v) => update('hasThreePhasePower', v)}
         />
         <ToggleField
-          label="Crane Available"
+          label={t('characteristics.industrial.craneAvailable')}
           value={details.hasCrane ?? false}
           onChange={(v) => update('hasCrane', v)}
         />
         <ToggleField
-          label="Hazmat Certified"
+          label={t('characteristics.industrial.hazmatCertified')}
           value={details.hasHazmatCertification ?? false}
           onChange={(v) => update('hasHazmatCertification', v)}
         />
         <ToggleField
-          label="Ventilation System"
+          label={t('characteristics.industrial.ventilationSystem')}
           value={details.hasVentilationSystem ?? false}
           onChange={(v) => update('hasVentilationSystem', v)}
         />
         <ToggleField
-          label="Climate Control"
+          label={t('characteristics.industrial.climateControl')}
           value={details.hasClimateControl ?? false}
           onChange={(v) => update('hasClimateControl', v)}
         />
@@ -1208,6 +1303,7 @@ const AgriculturalDetailsSection = ({
   details,
   onChange,
 }: AgriculturalDetailsSectionProps) => {
+  const { t } = useTranslation('properties');
   const update = (field: keyof AgriculturalDetailsRequest, value: unknown) =>
     onChange({ ...details, [field]: value } as AgriculturalDetailsRequest);
 
@@ -1227,13 +1323,13 @@ const AgriculturalDetailsSection = ({
 
   return (
     <CollapsibleSection
-      title="Agricultural Details"
+      title={t('characteristics.agricultural.title')}
       filledCount={countFilled(fields)}
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <MeasurementField
-          label="Total Land Area"
+          label={t('characteristics.agricultural.totalLandArea')}
           value={details.totalLandAreaValue}
           onChange={(v) => update('totalLandAreaValue', v)}
           min={0}
@@ -1243,7 +1339,7 @@ const AgriculturalDetailsSection = ({
           onUnitChange={(u) => update('totalLandAreaUnit', u)}
         />
         <MeasurementField
-          label="Arable Area"
+          label={t('characteristics.agricultural.arableArea')}
           value={details.arableAreaValue}
           onChange={(v) => update('arableAreaValue', v)}
           min={0}
@@ -1253,41 +1349,63 @@ const AgriculturalDetailsSection = ({
           onUnitChange={(u) => update('arableAreaUnit', u)}
         />
         <SelectField
-          label="Soil Type"
+          label={t('characteristics.agricultural.soilType')}
           value={details.soilType ?? null}
-          options={arrayOptions(SOIL_TYPES)}
+          options={translatedOptions(
+            SOIL_TYPES,
+            t,
+            'enums.characteristics.soilType'
+          )}
           onChange={(v) => update('soilType', v)}
         />
         <SelectField
-          label="Water Source"
+          label={t('characteristics.agricultural.waterSource')}
           value={details.waterSource ?? null}
-          options={arrayOptions(WATER_SOURCES)}
+          options={translatedOptions(
+            WATER_SOURCES,
+            t,
+            'enums.characteristics.waterSource'
+          )}
           onChange={(v) => update('waterSource', v)}
         />
         <SelectField
-          label="Irrigation Type"
+          label={t('characteristics.agricultural.irrigationType')}
           value={details.irrigationType ?? null}
-          options={arrayOptions(IRRIGATION_TYPES)}
+          options={translatedOptions(
+            IRRIGATION_TYPES,
+            t,
+            'enums.characteristics.irrigationType'
+          )}
           onChange={(v) => update('irrigationType', v)}
         />
         <SelectField
-          label="Fencing Type"
+          label={t('characteristics.agricultural.fencingType')}
           value={details.fencingType ?? null}
-          options={arrayOptions(FENCING_TYPES)}
+          options={translatedOptions(
+            FENCING_TYPES,
+            t,
+            'enums.characteristics.fencingType'
+          )}
           onChange={(v) => update('fencingType', v)}
         />
         <div>
-          <label className={labelCls}>Current Use</label>
+          <label className={labelCls}>
+            {t('characteristics.agricultural.currentUse')}
+          </label>
           <input
             type="text"
             value={details.currentUse ?? ''}
             onChange={(e) => update('currentUse', e.target.value || null)}
             className={inputCls}
-            placeholder="e.g. Crop farming, Livestock grazing"
+            placeholder={t(
+              'characteristics.agricultural.currentUsePlaceholder'
+            )}
           />
         </div>
         <div>
-          <label className={labelCls}>Zoning Classification</label>
+          <label className={labelCls}>
+            {t('characteristics.agricultural.zoningClassification')}
+          </label>
           <input
             type="text"
             value={details.zoningClassification ?? ''}
@@ -1295,25 +1413,27 @@ const AgriculturalDetailsSection = ({
               update('zoningClassification', e.target.value || null)
             }
             className={inputCls}
-            placeholder="e.g. A-1, Agricultural"
+            placeholder={t('characteristics.agricultural.zoningPlaceholder')}
           />
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 gap-x-4 gap-y-1 mt-3">
         <ToggleField
-          label="Water Rights"
+          label={t('characteristics.agricultural.waterRights')}
           value={details.hasWaterRights ?? false}
           onChange={(v) => update('hasWaterRights', v)}
         />
         <ToggleField
-          label="Has Outbuildings"
+          label={t('characteristics.agricultural.hasOutbuildings')}
           value={details.hasOutbuildings ?? false}
           onChange={(v) => update('hasOutbuildings', v)}
         />
       </div>
       {details.hasOutbuildings && (
         <div className="mt-3">
-          <label className={labelCls}>Outbuilding Details</label>
+          <label className={labelCls}>
+            {t('characteristics.agricultural.outbuildingDetails')}
+          </label>
           <input
             type="text"
             value={details.outbuildingDetails ?? ''}
@@ -1321,7 +1441,9 @@ const AgriculturalDetailsSection = ({
               update('outbuildingDetails', e.target.value || null)
             }
             className={inputCls}
-            placeholder="e.g. Barn, Storage shed, Equipment garage"
+            placeholder={t(
+              'characteristics.agricultural.outbuildingPlaceholder'
+            )}
           />
         </div>
       )}
@@ -1344,6 +1466,7 @@ const AmenitiesSection = ({
   onAdd,
   onRemove,
 }: AmenitiesSectionProps) => {
+  const { t } = useTranslation('properties');
   const selectedIds = new Set(
     propertyAmenities.map((a) => a.amenityIdentifier)
   );
@@ -1360,7 +1483,7 @@ const AmenitiesSection = ({
 
   return (
     <CollapsibleSection
-      title="Amenities"
+      title={t('detail.amenities.title')}
       filledCount={selectedIds.size}
       totalCount={totalAmenities}
     >
@@ -1370,7 +1493,9 @@ const AmenitiesSection = ({
           .map(([category, amenities]) => (
             <div key={category}>
               <h4 className="text-sm font-semibold text-text-secondary mb-2 uppercase tracking-wide">
-                {humanize(category)}
+                {t(`enums.amenities.categories.${category}`, {
+                  defaultValue: humanize(category),
+                })}
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
                 {amenities.map((amenity) => {
@@ -1390,7 +1515,9 @@ const AmenitiesSection = ({
                           className="rounded border-border-strong text-primary-500 focus:ring-primary-500"
                         />
                         <span className="text-sm text-text-secondary">
-                          {amenity.name}
+                          {t(`enums.amenities.items.${amenity.name}`, {
+                            defaultValue: amenity.name,
+                          })}
                         </span>
                       </label>
                       {checked && existing?.notes && (

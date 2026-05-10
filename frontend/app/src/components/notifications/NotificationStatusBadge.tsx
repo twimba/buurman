@@ -1,18 +1,43 @@
+import { useTranslation } from 'react-i18next';
 import { StatusBadge, type BadgeColorVariant } from '@buurman/ui';
 import { NotificationStatus } from '@/types/notification';
 
 const statusConfig: Record<
   NotificationStatus,
-  { label: string; color: BadgeColorVariant }
+  { labelKey: string; color: BadgeColorVariant }
 > = {
-  [NotificationStatus.PENDING]: { label: 'Pending', color: 'gray' },
-  [NotificationStatus.QUEUED]: { label: 'Queued', color: 'blue' },
-  [NotificationStatus.SENT]: { label: 'Sent', color: 'cyan' },
-  [NotificationStatus.DELIVERED]: { label: 'Delivered', color: 'emerald' },
-  [NotificationStatus.FAILED]: { label: 'Failed', color: 'red' },
-  [NotificationStatus.BOUNCED]: { label: 'Bounced', color: 'amber' },
-  [NotificationStatus.REJECTED]: { label: 'Rejected', color: 'red' },
-  [NotificationStatus.DEMO_BLOCKED]: { label: 'Demo', color: 'violet' },
+  [NotificationStatus.PENDING]: {
+    labelKey: 'notifications.statuses.pending',
+    color: 'gray',
+  },
+  [NotificationStatus.QUEUED]: {
+    labelKey: 'notifications.statuses.queued',
+    color: 'blue',
+  },
+  [NotificationStatus.SENT]: {
+    labelKey: 'notifications.statuses.sent',
+    color: 'cyan',
+  },
+  [NotificationStatus.DELIVERED]: {
+    labelKey: 'notifications.statuses.delivered',
+    color: 'emerald',
+  },
+  [NotificationStatus.FAILED]: {
+    labelKey: 'notifications.statuses.failed',
+    color: 'red',
+  },
+  [NotificationStatus.BOUNCED]: {
+    labelKey: 'notifications.statuses.bounced',
+    color: 'amber',
+  },
+  [NotificationStatus.REJECTED]: {
+    labelKey: 'notifications.statuses.rejected',
+    color: 'red',
+  },
+  [NotificationStatus.DEMO_BLOCKED]: {
+    labelKey: 'notifications.statuses.demo',
+    color: 'violet',
+  },
 };
 
 interface NotificationStatusBadgeProps {
@@ -22,9 +47,12 @@ interface NotificationStatusBadgeProps {
 export const NotificationStatusBadge = ({
   status,
 }: NotificationStatusBadgeProps) => {
+  const { t } = useTranslation('admin');
   const config = statusConfig[status] ?? {
-    label: status,
+    labelKey: status,
     color: 'gray' as BadgeColorVariant,
   };
-  return <StatusBadge label={config.label} color={config.color} shape="pill" />;
+  return (
+    <StatusBadge label={t(config.labelKey)} color={config.color} shape="pill" />
+  );
 };

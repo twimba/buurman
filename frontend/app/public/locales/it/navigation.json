@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "properties": "Immobili",
+    "contacts": "Contatti",
+    "contracts": "Contratti",
+    "rentRegulations": "Normative sui canoni",
+    "rentAdjustments": "Adeguamenti canoni",
+    "paymentInstructions": "Istruzioni di pagamento",
+    "payments": "Pagamenti",
+    "expenses": "Spese",
+    "documents": "Documenti",
+    "photos": "Foto",
+    "reports": "Report"
+  },
+  "admin": {
+    "title": "Amministrazione",
+    "preferences": "Preferenze",
+    "teamMembers": "Membri del team",
+    "calendarFeeds": "Feed calendario",
+    "notifications": "Notifiche",
+    "dataExport": "Esportazione dati",
+    "billing": "Abbonamento e fatturazione",
+    "activityLog": "Registro attività",
+    "apiDocs": "Documentazione API"
+  },
+  "settings": "Impostazioni",
+  "signOut": "Esci"
+}

@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Pagamenti",
+    "subtitle": "Registri i pagamenti del canone e le entrate"
+  },
+  "actions": {
+    "schedulePayment": "Programma pagamento",
+    "registerPayment": "Registra pagamento",
+    "registerReceival": "Registra incasso",
+    "markAsPaid": "Segna come pagato"
+  },
+  "stats": {
+    "pendingPayments": "Pagamenti in attesa",
+    "pendingCount": "{{count}} pagamento",
+    "pendingCount_other": "{{count}} pagamenti",
+    "overduePayments": "Pagamenti scaduti",
+    "overdueCount": "{{count}} pagamento scaduto",
+    "overdueCount_other": "{{count}} pagamenti scaduti",
+    "overdueAction": "Azione richiesta: verifichi i pagamenti scaduti",
+    "allCaughtUp": "Tutto in regola!",
+    "noOverdue": "Nessun pagamento scaduto. Continui così!",
+    "lastSixMonths": "Ultimi 6 mesi",
+    "tooltipReceived": "Ricevuto"
+  },
+  "filters": {
+    "title": "Filtri",
+    "property": "Immobile",
+    "contract": "Contratto",
+    "status": "Stato",
+    "allStatuses": "Tutti gli stati",
+    "allProperties": "Tutti gli immobili",
+    "allContracts": "Tutti i contratti"
+  },
+  "status": {
+    "pending": "In attesa",
+    "partiallyPaid": "Parziale",
+    "paid": "Pagato",
+    "overdue": "Scaduto",
+    "late": "In ritardo",
+    "cancelled": "Annullato"
+  },
+  "table": {
+    "dueDate": "Scadenza",
+    "paymentNumber": "Pagamento #",
+    "contract": "Contratto",
+    "amount": "Importo",
+    "status": "Stato",
+    "balance": "Saldo: {{amount}}"
+  },
+  "empty": {
+    "title": "Nessun pagamento trovato",
+    "filtered": "Provi a modificare i filtri",
+    "noData": "Inizi registrando il Suo primo pagamento"
+  },
+  "card": {
+    "paymentId": "Pagamento #{{id}}",
+    "contractId": "Contratto #{{id}}",
+    "property": "Immobile",
+    "contact": "Contatto",
+    "amount": "Importo",
+    "balance": "Saldo: {{amount}}",
+    "dueDate": "Scadenza",
+    "paidOn": "Pagato il"
+  },
+  "form": {
+    "amount": "Importo",
+    "dueDate": "Scadenza",
+    "paymentDate": "Data di pagamento",
+    "contact": "Contatto",
+    "notes": "Note",
+    "notesPlaceholder": "Aggiunga eventuali note aggiuntive su questo pagamento...",
+    "continueAdding": "Continua ad aggiungere",
+    "today": "Oggi",
+    "clear": "Cancella",
+    "updatePayment": "Aggiorna pagamento",
+    "saving": "Salvataggio...",
+    "contract": "Contratto",
+    "currency": "Valuta",
+    "selectContractFirst": "Selezioni prima un contratto",
+    "rentPeriodNotice": "Questa data rientra in un periodo di canone diverso ({{amount}}/mese dal {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " al {{date}}",
+    "rentPeriodCurrentRent": "Il canone attuale è {{amount}}/mese.",
+    "rentPeriodWarning": "Questa data rientra in un periodo di canone diverso ({{currency}}{{amount}}/mese dal {{from}}{{to}}).",
+    "rentPeriodTo": " al {{date}}",
+    "currentRentInfo": "Il canone attuale è {{currency}}{{amount}}/mese."
+  },
+  "validation": {
+    "amountRequired": "L'importo deve essere maggiore di 0",
+    "dueDateRequired": "La data di scadenza è obbligatoria",
+    "currencyRequired": "La valuta è obbligatoria",
+    "paymentDateRequired": "La data di pagamento è obbligatoria"
+  },
+  "bulkColumns": {
+    "date": "Data",
+    "amount": "Importo"
+  },
+  "create": {
+    "titleRegister": "Registra pagamento",
+    "titleSchedule": "Programma pagamento",
+    "addedCount": "{{count}} pagamento {{action}} in questa sessione",
+    "addedCount_other": "{{count}} pagamenti {{action}} in questa sessione",
+    "actionRegistered": "registrato",
+    "actionScheduled": "programmato",
+    "single": "Singolo",
+    "bulk": "Multiplo",
+    "contractInactiveWarning": "Il contratto collegato non è attivo. Selezioni un contratto attivo."
+  },
+  "detail": {
+    "titlePrefix": "Pagamento #{{id}}",
+    "subtitlePrefix": "Contratto #{{id}}",
+    "paymentDetails": "Dettagli del pagamento",
+    "relatedInformation": "Informazioni correlate",
+    "amount": "Importo",
+    "received": "Ricevuto",
+    "balance": "Saldo",
+    "dueDate": "Scadenza",
+    "paymentDate": "Data di pagamento",
+    "contract": "Contratto",
+    "contractId": "Contratto #{{id}}",
+    "property": "Immobile",
+    "contact": "Contatto",
+    "notes": "Note",
+    "metadata": "Metadati",
+    "created": "Creato:",
+    "lastUpdated": "Ultimo aggiornamento:",
+    "editPayment": "Modifica pagamento"
+  },
+  "tabs": {
+    "details": "Dettagli",
+    "receivals": "Incassi",
+    "documents": "Documenti",
+    "history": "Cronologia"
+  },
+  "receivals": {
+    "title": "Incassi ({{count}})",
+    "totalAmount": "Importo totale",
+    "received": "Ricevuto",
+    "balance": "Saldo",
+    "empty": "Nessun incasso registrato",
+    "searchPlaceholder": "Cerca per importo, data o note...",
+    "date": "Data",
+    "amount": "Importo",
+    "notes": "Note",
+    "actions": "Azioni",
+    "showing": "{{from}} a {{to}} di {{total}}",
+    "remainingBalance": "Saldo rimanente:",
+    "receivalDate": "Data dell'incasso",
+    "notesOptional": "Note (facoltativo)",
+    "notesPlaceholder": "Aggiunga note su questo incasso...",
+    "register": "Registra"
+  },
+  "history": {
+    "title": "Cronologia del pagamento",
+    "empty": "Nessuna cronologia disponibile",
+    "emptySubtitle": "Le modifiche a questo pagamento appariranno qui",
+    "clickToView": "Clicchi per visualizzare le modifiche",
+    "clickToHide": "Clicchi per nascondere le modifiche",
+    "changedFields": "Campi modificati",
+    "old": "Precedente:",
+    "new": "Nuovo:",
+    "impersonated": "Impersonificato",
+    "na": "N/D",
+    "none": "Nessuno",
+    "receivalOn": "{{amount}} il {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Elimina pagamento",
+    "message": "Conferma l'eliminazione di questo pagamento? Questa azione non può essere annullata.",
+    "messageWithRelated": "Conferma l'eliminazione di questo pagamento? Tutti i dati collegati (incassi, documenti) verranno eliminati. Questa azione non può essere annullata."
+  },
+  "markPaidDialog": {
+    "title": "Segna pagamento come pagato",
+    "balanceMessage": "Verrà registrato un incasso per il saldo rimanente di {{amount}} e il pagamento verrà contrassegnato come completamente saldato.",
+    "paymentDate": "Data di pagamento",
+    "notesOptional": "Note (facoltativo)",
+    "notesPlaceholder": "Aggiunga eventuali note su questo pagamento..."
+  },
+  "receivalDialog": {
+    "title": "Registra incasso",
+    "remainingBalance": "Saldo rimanente:",
+    "amount": "Importo",
+    "receivalDate": "Data dell'incasso",
+    "notesOptional": "Note (facoltativo)",
+    "notesPlaceholder": "Aggiunga note su questo incasso...",
+    "register": "Registra"
+  },
+  "tooltips": {
+    "viewPayment": "Visualizza pagamento",
+    "deletePayment": "Elimina pagamento",
+    "editReceival": "Modifica incasso",
+    "deleteReceival": "Elimina incasso",
+    "save": "Salva",
+    "previous": "Precedente",
+    "next": "Successivo"
+  },
+  "errors": {
+    "loadFailed": "Impossibile caricare i pagamenti",
+    "loadPaymentFailed": "Impossibile caricare il pagamento",
+    "loadHistoryFailed": "Impossibile caricare la cronologia"
+  }
+}

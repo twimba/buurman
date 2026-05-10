@@ -804,8 +804,7 @@ public class ContactService {
     Optional<ContactBalanceSummary> balanceSummary =
         Optional.ofNullable(
                 resolveBalanceSummaries(List.of(contact.getId()), teamId).get(contact.getId()))
-            .filter(
-                b -> b.status() != BalanceStatus.ALL_PAID || !activeContracts.isEmpty());
+            .filter(b -> b.status() != BalanceStatus.ALL_PAID || !activeContracts.isEmpty());
 
     List<ContactPropertyAssignment> activeProperties = new ArrayList<>();
     for (Contract activeContract : activeContracts) {

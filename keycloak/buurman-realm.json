@@ -4,6 +4,7 @@
   "displayName": "Buurman",
   "enabled": true,
   "loginTheme": "buurman",
+  "emailTheme": "buurman",
   "sslRequired": "external",
   "registrationAllowed": false,
   "registrationEmailAsUsername": true,
@@ -292,10 +293,18 @@
       ]
     }
   ],
-  "internationalizationEnabled": false,
-  "supportedLocales": [],
-  "defaultLocale": "",
-  "smtpServer": {},
+  "internationalizationEnabled": true,
+  "supportedLocales": ["en", "nl", "pt", "es", "fr", "de", "it", "sv", "fi", "el", "pl", "da", "nb"],
+  "defaultLocale": "en",
+  "smtpServer": {
+    "host": "mailpit",
+    "port": "1025",
+    "from": "noreply@buurman.io",
+    "fromDisplayName": "Buurman",
+    "ssl": "false",
+    "starttls": "false",
+    "auth": "false"
+  },
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"

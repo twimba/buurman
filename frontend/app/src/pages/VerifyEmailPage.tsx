@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   useVerifyEmail,
@@ -12,6 +13,7 @@ import { Mail, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 const RESEND_COOLDOWN_SECONDS = 60;
 
 export const VerifyEmailPage: React.FC = () => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -54,8 +56,7 @@ export const VerifyEmailPage: React.FC = () => {
         setTokenVerifying(false);
         const error = err as { response?: { data?: { message?: string } } };
         setError(
-          error.response?.data?.message ||
-            'This verification link is invalid or has expired. Please enter the code manually or request a new one.'
+          error.response?.data?.message || t('common:verifyEmail.invalidLink')
         );
       },
     });
@@ -118,7 +119,7 @@ export const VerifyEmailPage: React.FC = () => {
     e.preventDefault();
     const code = digits.join('');
     if (code.length !== 6) {
-      setError('Please enter all 6 digits');
+      setError(t('common:verifyEmail.enterAllDigits'));
       return;
     }
 
@@ -128,7 +129,9 @@ export const VerifyEmailPage: React.FC = () => {
       setTimeout(() => navigate('/dashboard', { replace: true }), 2000);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || 'Invalid verification code');
+      setError(
+        error.response?.data?.message || t('common:verifyEmail.invalidCode')
+      );
       setDigits(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     }
@@ -153,9 +156,11 @@ export const VerifyEmailPage: React.FC = () => {
           <div className="bg-surface-card rounded-2xl shadow-xl p-8 text-center">
             <Loader2 className="h-12 w-12 text-primary-500 animate-spin mx-auto mb-5" />
             <h2 className="text-2xl font-bold text-text-primary mb-2">
-              Verifying your email...
+              {t('common:verifyEmail.verifying')}
             </h2>
-            <p className="text-text-secondary">Please wait a moment.</p>
+            <p className="text-text-secondary">
+              {t('common:verifyEmail.pleaseWait')}
+            </p>
           </div>
         </div>
       </div>
@@ -171,9 +176,11 @@ export const VerifyEmailPage: React.FC = () => {
               <CheckCircle className="h-12 w-12 text-success-text" />
             </div>
             <h2 className="text-2xl font-bold text-text-primary mb-2">
-              Email verified!
+              {t('common:verifyEmail.verified')}
             </h2>
-            <p className="text-text-secondary">Redirecting to dashboard...</p>
+            <p className="text-text-secondary">
+              {t('common:verifyEmail.redirecting')}
+            </p>
           </div>
         </div>
       </div>
@@ -189,10 +196,10 @@ export const VerifyEmailPage: React.FC = () => {
               <Mail className="h-10 w-10 text-info-text" />
             </div>
             <h2 className="text-2xl font-bold text-text-primary mb-2">
-              Check your email
+              {t('common:verifyEmail.checkEmail')}
             </h2>
             <p className="text-text-secondary">
-              We sent a 6-digit verification code to
+              {t('common:verifyEmail.codeSent')}
             </p>
             {user?.email && (
               <p className="text-text-primary font-medium mt-1">{user.email}</p>
@@ -233,23 +240,25 @@ export const VerifyEmailPage: React.FC = () => {
               disabled={verifyMutation.isPending || digits.some((d) => !d)}
               className="w-full bg-primary-500 text-white py-3 px-6 rounded-lg hover:bg-primary-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {verifyMutation.isPending ? 'Verifying...' : 'Verify email'}
+              {verifyMutation.isPending
+                ? t('common:verifyEmail.verifyingButton')
+                : t('common:verifyEmail.verifyButton')}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-text-secondary">
-              Didn&apos;t receive the code?{' '}
+              {t('common:verifyEmail.didntReceive')}{' '}
               <button
                 onClick={handleResend}
                 disabled={cooldown > 0 || resendMutation.isPending}
                 className="text-primary-500 hover:text-primary-600 font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {cooldown > 0
-                  ? `Resend in ${cooldown}s`
+                  ? t('common:verifyEmail.resendIn', { seconds: cooldown })
                   : resendMutation.isPending
-                    ? 'Sending...'
-                    : 'Resend code'}
+                    ? t('common:verifyEmail.sending')
+                    : t('common:verifyEmail.resendCode')}
               </button>
             </p>
           </div>

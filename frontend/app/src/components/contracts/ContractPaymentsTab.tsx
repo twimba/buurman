@@ -23,6 +23,7 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { ContractStatus } from '@/types/contract';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentStatus } from '@/types/payment';
+import { useTranslation } from 'react-i18next';
 
 interface ContractPaymentsTabProps {
   contractId: string;
@@ -33,6 +34,7 @@ export const ContractPaymentsTab = ({
   contractId,
   contractStatus,
 }: ContractPaymentsTabProps) => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -136,7 +138,7 @@ export const ContractPaymentsTab = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-text-primary">
-            Payments ({filteredAndSortedPayments.length})
+            {t('payments.title')} ({filteredAndSortedPayments.length})
           </h2>
           <div className="flex items-center gap-2">
             {contractStatus === ContractStatus.ACTIVE && (
@@ -146,7 +148,7 @@ export const ContractPaymentsTab = ({
                 onClick={() => setShowGeneratePaymentsModal(true)}
                 disabled={!canEditData}
               >
-                Generate Future Payments
+                {t('payments.generateFuture')}
               </Button>
             )}
             <Button
@@ -155,7 +157,7 @@ export const ContractPaymentsTab = ({
               onClick={() => navigate(`/payments/new?contractId=${contractId}`)}
               disabled={!canEditData}
             >
-              Schedule Payment
+              {t('payments.schedulePayment')}
             </Button>
             <Button
               variant="primary"
@@ -165,7 +167,7 @@ export const ContractPaymentsTab = ({
               }
               disabled={!canEditData}
             >
-              Register Payments
+              {t('payments.registerPayments')}
             </Button>
           </div>
         </div>
@@ -173,12 +175,12 @@ export const ContractPaymentsTab = ({
         {paymentsLoading ? (
           <LoadingSpinner />
         ) : paymentsError ? (
-          <ErrorMessage message="Failed to load payments" />
+          <ErrorMessage message={t('payments.failedToLoad')} />
         ) : payments.length === 0 ? (
           <div className="text-center py-12">
             <DollarSign className="h-12 w-12 text-text-disabled mx-auto mb-3" />
             <p className="text-text-secondary mb-4">
-              No payments for this contract
+              {t('payments.noPayments')}
             </p>
             <Button
               variant="primary"
@@ -186,7 +188,7 @@ export const ContractPaymentsTab = ({
               onClick={() => navigate(`/payments/new?contractId=${contractId}`)}
               disabled={!canEditData}
             >
-              Create First Payment
+              {t('payments.createFirstPayment')}
             </Button>
           </div>
         ) : (
@@ -197,7 +199,7 @@ export const ContractPaymentsTab = ({
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
                 <input
                   type="text"
-                  placeholder="Search by payment #, status..."
+                  placeholder={t('payments.searchPlaceholder')}
                   value={paymentsSearchTerm}
                   onChange={(e) => {
                     setPaymentsSearchTerm(e.target.value);
@@ -214,14 +216,14 @@ export const ContractPaymentsTab = ({
                 <thead className="bg-surface-page">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Payment #
+                      {t('payments.table.paymentNumber')}
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handlePaymentsSort('dueDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Due Date
+                        {t('payments.table.dueDate')}
                         {paymentsSortField === 'dueDate' &&
                           (paymentsSortOrder === 'asc' ? (
                             <ChevronUp className="h-4 w-4" />
@@ -235,7 +237,7 @@ export const ContractPaymentsTab = ({
                       onClick={() => handlePaymentsSort('amount')}
                     >
                       <div className="flex items-center gap-1">
-                        Amount
+                        {t('payments.table.amount')}
                         {paymentsSortField === 'amount' &&
                           (paymentsSortOrder === 'asc' ? (
                             <ChevronUp className="h-4 w-4" />
@@ -249,7 +251,7 @@ export const ContractPaymentsTab = ({
                       onClick={() => handlePaymentsSort('status')}
                     >
                       <div className="flex items-center gap-1">
-                        Status
+                        {t('payments.table.status')}
                         {paymentsSortField === 'status' &&
                           (paymentsSortOrder === 'asc' ? (
                             <ChevronUp className="h-4 w-4" />
@@ -263,7 +265,7 @@ export const ContractPaymentsTab = ({
                       onClick={() => handlePaymentsSort('paymentDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Payment Date
+                        {t('payments.table.paymentDate')}
                         {paymentsSortField === 'paymentDate' &&
                           (paymentsSortOrder === 'asc' ? (
                             <ChevronUp className="h-4 w-4" />
@@ -273,7 +275,7 @@ export const ContractPaymentsTab = ({
                       </div>
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Actions
+                      {t('payments.table.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -284,7 +286,7 @@ export const ContractPaymentsTab = ({
                         colSpan={5}
                         className="px-6 py-12 text-center text-text-secondary"
                       >
-                        No payments found matching your search
+                        {t('payments.noMatch')}
                       </td>
                     </tr>
                   ) : (
@@ -314,8 +316,10 @@ export const ContractPaymentsTab = ({
                             {payment.receivedAmount > 0 &&
                               payment.status !== PaymentStatus.PAID && (
                                 <p className="text-xs text-text-secondary">
-                                  Balance: {payment.currency}{' '}
-                                  {(payment.balance ?? 0).toFixed(2)}
+                                  {t('payments.balance', {
+                                    currency: payment.currency,
+                                    amount: (payment.balance ?? 0).toFixed(2),
+                                  })}
                                 </p>
                               )}
                           </div>
@@ -336,7 +340,7 @@ export const ContractPaymentsTab = ({
                                 setDeletePaymentTarget(payment.identifier);
                               }}
                               className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title="Delete payment"
+                              title={t('common:buttons.delete')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -353,12 +357,14 @@ export const ContractPaymentsTab = ({
             {paymentsTotalPages > 1 && (
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
                 <div className="text-sm text-text-secondary">
-                  Showing {(paymentsCurrentPage - 1) * paymentsPerPage + 1} to{' '}
-                  {Math.min(
-                    paymentsCurrentPage * paymentsPerPage,
-                    filteredAndSortedPayments.length
-                  )}{' '}
-                  of {filteredAndSortedPayments.length} payments
+                  {t('payments.showing', {
+                    from: (paymentsCurrentPage - 1) * paymentsPerPage + 1,
+                    to: Math.min(
+                      paymentsCurrentPage * paymentsPerPage,
+                      filteredAndSortedPayments.length
+                    ),
+                    total: filteredAndSortedPayments.length,
+                  })}
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -368,10 +374,13 @@ export const ContractPaymentsTab = ({
                     disabled={paymentsCurrentPage === 1}
                     className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                   >
-                    Previous
+                    {t('common:pagination.previous')}
                   </button>
                   <span className="px-3 py-1 text-sm text-text-secondary">
-                    Page {paymentsCurrentPage} of {paymentsTotalPages}
+                    {t('payments.page', {
+                      current: paymentsCurrentPage,
+                      total: paymentsTotalPages,
+                    })}
                   </span>
                   <button
                     onClick={() =>
@@ -380,7 +389,7 @@ export const ContractPaymentsTab = ({
                     disabled={paymentsCurrentPage === paymentsTotalPages}
                     className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                   >
-                    Next
+                    {t('common:pagination.next')}
                   </button>
                 </div>
               </div>
@@ -401,9 +410,9 @@ export const ContractPaymentsTab = ({
 
       {deletePaymentTarget && (
         <ConfirmDialog
-          title="Delete Payment"
-          message="Are you sure you want to delete this payment? All related data (receivals, documents) will also be deleted. This action cannot be undone."
-          confirmLabel="Delete"
+          title={t('payments.deleteTitle')}
+          message={t('payments.deleteMessage')}
+          confirmLabel={t('common:buttons.delete')}
           variant="danger"
           isLoading={deletePaymentMutation.isPending}
           onConfirm={async () => {

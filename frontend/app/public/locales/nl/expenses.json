@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Uitgaven",
+    "subtitle": "Volg vastgoeduitgaven en kosten"
+  },
+  "actions": {
+    "addExpense": "Uitgave toevoegen"
+  },
+  "stats": {
+    "totalExpenses": "Totale uitgaven",
+    "categorySummary": "in {{category}}",
+    "categorySummaryAll": "over {{count}} categorieën",
+    "topCategories": "Topcategorieën",
+    "noData": "Geen gegevens beschikbaar",
+    "lastSixMonths": "Laatste 6 maanden",
+    "tooltipExpenses": "Uitgaven"
+  },
+  "filters": {
+    "title": "Filters",
+    "property": "Pand",
+    "category": "Categorie",
+    "allProperties": "Alle panden",
+    "allCategories": "Alle categorieën"
+  },
+  "category": {
+    "MAINTENANCE": "Onderhoud",
+    "REPAIR": "Reparatie",
+    "UTILITY": "Nutsvoorzieningen",
+    "TAX": "Belasting",
+    "INSURANCE": "Verzekering",
+    "LEGAL": "Juridisch",
+    "MARKETING": "Marketing",
+    "CLEANING": "Schoonmaak",
+    "LANDSCAPING": "Tuinonderhoud",
+    "PROPERTY_MANAGEMENT": "Vastgoedbeheer",
+    "FEES": "Kosten",
+    "PROPERTY_TAX": "Onroerendezaakbelasting",
+    "OTHER": "Overig"
+  },
+  "table": {
+    "date": "Datum",
+    "expenseNumber": "Uitgave #",
+    "description": "Omschrijving",
+    "category": "Categorie",
+    "property": "Pand",
+    "amount": "Bedrag"
+  },
+  "empty": {
+    "title": "Geen uitgaven gevonden",
+    "filtered": "Probeer uw filters aan te passen",
+    "noData": "Begin door uw eerste uitgave vast te leggen"
+  },
+  "card": {
+    "expenseId": "Uitgave #{{id}}",
+    "property": "Pand",
+    "contact": "Contact",
+    "amount": "Bedrag",
+    "expenseDate": "Uitgavedatum",
+    "documentsAttached": "{{count}} document(en) bijgevoegd"
+  },
+  "form": {
+    "property": "Pand",
+    "category": "Categorie",
+    "contact": "Contact",
+    "amount": "Bedrag",
+    "expenseDate": "Uitgavedatum",
+    "description": "Omschrijving",
+    "descriptionPlaceholder": "bijv. Loodgietersreparatie in badkamer",
+    "notes": "Notities",
+    "notesPlaceholder": "Voeg eventuele extra opmerkingen over deze uitgave toe...",
+    "continueAdding": "Doorgaan met toevoegen",
+    "today": "Vandaag",
+    "updateExpense": "Bijwerken",
+    "createExpense": "Aanmaken",
+    "expenseSuffix": " uitgave",
+    "saving": "Opslaan...",
+    "currency": "Valuta"
+  },
+  "validation": {
+    "propertyRequired": "Pand is verplicht",
+    "amountRequired": "Bedrag moet groter zijn dan 0",
+    "currencyRequired": "Valuta is verplicht",
+    "expenseDateRequired": "Uitgavedatum is verplicht",
+    "descriptionRequired": "Omschrijving is verplicht"
+  },
+  "create": {
+    "title": "Nieuwe uitgave toevoegen",
+    "addedCount": "{{count}} uitgave toegevoegd deze sessie",
+    "addedCount_other": "{{count}} uitgaven toegevoegd deze sessie",
+    "single": "Enkel",
+    "bulk": "Bulk"
+  },
+  "detail": {
+    "titlePrefix": "Uitgave #{{id}}",
+    "expenseDetails": "Uitgavedetails",
+    "propertyAndContact": "Pand & Contact",
+    "amount": "Bedrag",
+    "expenseDate": "Uitgavedatum",
+    "category": "Categorie",
+    "description": "Omschrijving",
+    "property": "Pand",
+    "contact": "Contact",
+    "noContactLinked": "Geen contact gekoppeld",
+    "notes": "Notities",
+    "metadata": "Metadata",
+    "created": "Aangemaakt:",
+    "lastUpdated": "Laatst bijgewerkt:",
+    "editExpense": "Uitgave bewerken"
+  },
+  "tabs": {
+    "details": "Details",
+    "documents": "Documenten",
+    "history": "Geschiedenis"
+  },
+  "history": {
+    "title": "Uitgavegeschiedenis",
+    "empty": "Geen geschiedenis beschikbaar",
+    "emptySubtitle": "Wijzigingen aan deze uitgave verschijnen hier",
+    "clickToView": "Klik om wijzigingen te bekijken",
+    "clickToHide": "Klik om wijzigingen te verbergen",
+    "changedFields": "Gewijzigde velden",
+    "old": "Oud:",
+    "new": "Nieuw:",
+    "impersonated": "Geïmpersoneerd"
+  },
+  "deleteDialog": {
+    "title": "Uitgave verwijderen",
+    "message": "Weet u zeker dat u deze uitgave wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    "messageWithRelated": "Weet u zeker dat u deze uitgave wilt verwijderen? Alle gerelateerde documenten worden ook verwijderd. Deze actie kan niet ongedaan worden gemaakt."
+  },
+  "tooltips": {
+    "viewExpense": "Uitgave bekijken",
+    "deleteExpense": "Uitgave verwijderen"
+  },
+  "errors": {
+    "loadFailed": "Kan uitgaven niet laden",
+    "loadExpenseFailed": "Kan uitgave niet laden",
+    "loadHistoryFailed": "Kan geschiedenis niet laden"
+  }
+}

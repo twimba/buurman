@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { usePropertyTimeline } from '@/hooks/useOccupancyPeriodHooks';
 import { LoadingSpinner } from '@buurman/ui';
 import { Home, FileText, AlertCircle } from 'lucide-react';
@@ -7,9 +8,9 @@ interface PropertyTimelineProps {
   propertyIdentifier: string;
 }
 
-const typeConfig = {
+const typeConfigStyles = {
   SELF_OCCUPANCY: {
-    label: 'Self-Occupancy',
+    labelKey: 'timeline.selfOccupancy',
     icon: Home,
     bg: 'bg-info-bg',
     border: 'border-info-border',
@@ -17,7 +18,7 @@ const typeConfig = {
     text: 'text-info-text',
   },
   CONTRACT: {
-    label: 'Contract',
+    labelKey: 'timeline.contract',
     icon: FileText,
     bg: 'bg-info-bg',
     border: 'border-info-border',
@@ -25,7 +26,7 @@ const typeConfig = {
     text: 'text-info-text',
   },
   VACANCY: {
-    label: 'Vacancy',
+    labelKey: 'timeline.vacancy',
     icon: AlertCircle,
     bg: 'bg-surface-inset',
     border: 'border-border-default',
@@ -37,6 +38,7 @@ const typeConfig = {
 export const PropertyTimeline = ({
   propertyIdentifier,
 }: PropertyTimelineProps) => {
+  const { t } = useTranslation('properties');
   const { data: timeline, isLoading } = usePropertyTimeline(propertyIdentifier);
   const { formatDate } = useFormatDate();
 
@@ -47,7 +49,7 @@ export const PropertyTimeline = ({
   if (!timeline?.entries.length) {
     return (
       <div className="text-center py-12 text-text-secondary">
-        No timeline entries yet
+        {t('timeline.noEntries')}
       </div>
     );
   }
@@ -55,7 +57,7 @@ export const PropertyTimeline = ({
   return (
     <div className="space-y-4">
       {timeline.entries.map((entry) => {
-        const config = typeConfig[entry.type];
+        const config = typeConfigStyles[entry.type];
         const Icon = config.icon;
 
         return (
@@ -71,7 +73,7 @@ export const PropertyTimeline = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className={`text-sm font-semibold ${config.text}`}>
-                  {config.label}
+                  {t(config.labelKey)}
                 </span>
                 {entry.description && (
                   <span className="text-xs text-text-secondary">
@@ -81,7 +83,9 @@ export const PropertyTimeline = ({
               </div>
               <div className="text-sm text-text-secondary">
                 {formatDate(entry.startDate)} &mdash;{' '}
-                {entry.endDate ? formatDate(entry.endDate) : 'Ongoing'}
+                {entry.endDate
+                  ? formatDate(entry.endDate)
+                  : t('timeline.ongoing')}
               </div>
               {entry.metadata && (
                 <div className="text-xs text-text-secondary mt-1">

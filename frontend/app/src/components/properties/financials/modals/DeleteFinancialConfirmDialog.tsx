@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 
 interface DeleteFinancialConfirmDialogProps {
@@ -16,6 +17,7 @@ export const DeleteFinancialConfirmDialog = ({
   onCancel,
   isLoading,
 }: DeleteFinancialConfirmDialogProps) => {
+  const { t } = useTranslation('properties');
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -54,7 +56,7 @@ export const DeleteFinancialConfirmDialog = ({
             onClick={onCancel}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             type="button"
@@ -62,7 +64,7 @@ export const DeleteFinancialConfirmDialog = ({
             disabled={isLoading}
             className="bg-error-text text-white px-4 py-2 text-sm font-medium rounded-md hover:opacity-90 disabled:opacity-50"
           >
-            {isLoading ? 'Deleting...' : 'Delete'}
+            {isLoading ? t('financials.deleting') : t('common:buttons.delete')}
           </button>
         </div>
       </div>

@@ -6,6 +6,7 @@ import type {
   RentIncreaseContractPreview,
   RentIncreaseItem,
 } from '@/types/rentIncrease';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmationStepProps {
   response: ApplyRentIncreasesResponse;
@@ -20,6 +21,7 @@ export const ConfirmationStep = ({
   increases,
   onBack,
 }: ConfirmationStepProps) => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { results, summary } = response;
 
@@ -74,20 +76,24 @@ export const ConfirmationStep = ({
           <div>
             <h3 className="text-xl font-bold text-text-primary">
               {summary.totalFailed === 0
-                ? 'All rent adjustments applied successfully'
-                : `${successCount} of ${results.length} adjustments applied`}
+                ? t('rentIncrease.allSuccess')
+                : t('rentIncrease.partialSuccess', {
+                    success: successCount,
+                    total: results.length,
+                  })}
             </h3>
             {summary.totalFailed > 0 && (
               <p className="text-sm text-warning-text">
-                {summary.totalFailed}{' '}
-                {summary.totalFailed === 1 ? 'increase' : 'increases'} failed
+                {t('rentIncrease.increasesFailed', {
+                  count: summary.totalFailed,
+                })}
               </p>
             )}
             {summary.totalPaymentsGenerated > 0 && (
               <p className="text-sm text-info-text">
-                {summary.totalPaymentsGenerated} adjustment{' '}
-                {summary.totalPaymentsGenerated === 1 ? 'payment' : 'payments'}{' '}
-                created for retroactive changes
+                {t('rentIncrease.adjustmentPayments', {
+                  count: summary.totalPaymentsGenerated,
+                })}
               </p>
             )}
           </div>
@@ -101,24 +107,33 @@ export const ConfirmationStep = ({
               className="p-4 rounded-lg bg-surface-page dark:bg-surface-card"
             >
               <p className="text-sm text-text-secondary mb-2">
-                {currency} ({totals.count}{' '}
-                {totals.count === 1 ? 'contract' : 'contracts'})
+                {currency} (
+                {t('rentIncrease.contract', {
+                  count: totals.count,
+                })}
+                )
               </p>
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-sm text-text-secondary">Previous</span>
+                  <span className="text-sm text-text-secondary">
+                    {t('rentIncrease.previous')}
+                  </span>
                   <span className="font-medium text-text-primary">
                     {formatMoney(totals.previousTotal, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-text-secondary">New</span>
+                  <span className="text-sm text-text-secondary">
+                    {t('rentIncrease.new')}
+                  </span>
                   <span className="font-semibold text-text-primary">
                     {formatMoney(totals.newTotal, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-border-default pt-1">
-                  <span className="text-sm text-text-secondary">Increase</span>
+                  <span className="text-sm text-text-secondary">
+                    {t('rentIncrease.increase')}
+                  </span>
                   <span
                     className={`font-semibold ${
                       totals.newTotal >= totals.previousTotal
@@ -146,22 +161,22 @@ export const ConfirmationStep = ({
             <thead>
               <tr className="border-b border-border-default">
                 <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                  Status
+                  {t('rentIncrease.status')}
                 </th>
                 <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                  Property
+                  {t('rentIncrease.tableHeaders.property')}
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-text-secondary">
-                  Previous
+                  {t('rentIncrease.previous')}
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-text-secondary">
-                  New
+                  {t('rentIncrease.new')}
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-text-secondary">
-                  Increase
+                  {t('rentIncrease.increase')}
                 </th>
                 <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                  Effective Date
+                  {t('rentIncrease.tableHeaders.effectiveDate')}
                 </th>
               </tr>
             </thead>
@@ -237,7 +252,7 @@ export const ConfirmationStep = ({
               onClick={onBack}
               className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
             >
-              Back to Adjust
+              {t('rentIncrease.backToAdjust')}
             </button>
           )}
         </div>
@@ -246,13 +261,13 @@ export const ConfirmationStep = ({
             onClick={() => navigate('/rent-regulations')}
             className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
           >
-            View Regulations
+            {t('rentRegulations.title')}
           </button>
           <button
             onClick={() => navigate('/contracts')}
             className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors"
           >
-            View Contracts
+            {t('list.title')}
           </button>
         </div>
       </div>

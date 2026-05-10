@@ -1,4 +1,5 @@
 import { Building2, TrendingUp, DollarSign, Percent, Home } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { MetricCard } from '@buurman/ui';
 import type { PortfolioSummary } from '@/types/portfolio';
 import { MetricHint } from '@/components/common/MetricHint';
@@ -8,9 +9,13 @@ interface PortfolioSummaryCardsProps {
   currency?: string;
 }
 
-function formatMoney(value: number | undefined, currencyCode?: string): string {
+function formatMoney(
+  value: number | undefined,
+  currencyCode: string | undefined,
+  fallback: string
+): string {
   if (value == null) {
-    return 'N/A';
+    return fallback;
   }
   if (currencyCode) {
     try {
@@ -30,9 +35,9 @@ function formatMoney(value: number | undefined, currencyCode?: string): string {
   });
 }
 
-function formatPercent(value: number | undefined): string {
+function formatPercent(value: number | undefined, fallback: string): string {
   if (value == null) {
-    return 'N/A';
+    return fallback;
   }
   return `${value.toFixed(1)}%`;
 }
@@ -73,6 +78,9 @@ export const PortfolioSummaryCards = ({
   summary,
   currency,
 }: PortfolioSummaryCardsProps) => {
+  const { t } = useTranslation('common');
+  const na = t('dashboard.portfolio.notAvailable');
+
   const cards: {
     key: string;
     label: React.ReactNode;
@@ -83,48 +91,68 @@ export const PortfolioSummaryCards = ({
   }[] = [
     {
       key: 'portfolio-value',
-      label: <MetricHint label="Portfolio Value" />,
-      value: formatMoney(summary.totalPortfolioValue, currency),
+      label: <MetricHint label={t('dashboard.portfolio.portfolioValue')} />,
+      value: formatMoney(summary.totalPortfolioValue, currency, na),
       valueClassName: '',
       icon: <Building2 />,
       iconBgVariant: 'primary',
     },
     {
       key: 'total-equity',
-      label: <MetricHint label="Total Equity" />,
-      value: formatMoney(summary.totalEquity, currency),
+      label: <MetricHint label={t('dashboard.portfolio.totalEquity')} />,
+      value: formatMoney(summary.totalEquity, currency, na),
       valueClassName: '',
       icon: <TrendingUp />,
       iconBgVariant: 'success',
     },
     {
       key: 'monthly-cash-flow',
-      label: <MetricHint label="Monthly Cash Flow" />,
-      value: formatMoney(summary.monthlyCashFlow, currency),
+      label: (
+        <MetricHint
+          label={t('dashboard.portfolio.monthlyCashFlow')}
+          hintKey="metricHints.monthlyCF"
+        />
+      ),
+      value: formatMoney(summary.monthlyCashFlow, currency, na),
       valueClassName: cashFlowColor(summary.monthlyCashFlow),
       icon: <DollarSign />,
       iconBgVariant: 'success',
     },
     {
       key: 'wtd-cap-rate',
-      label: <MetricHint label="Wtd Cap Rate" />,
-      value: formatPercent(summary.weightedCapRate),
+      label: (
+        <MetricHint
+          label={t('dashboard.portfolio.wtdCapRate')}
+          hintKey="metricHints.wtdCapRate"
+        />
+      ),
+      value: formatPercent(summary.weightedCapRate, na),
       valueClassName: rateColor(summary.weightedCapRate, 5, 3),
       icon: <Percent />,
       iconBgVariant: 'accent',
     },
     {
       key: 'wtd-cash-on-cash',
-      label: <MetricHint label="Wtd Cash-on-Cash" />,
-      value: formatPercent(summary.weightedCashOnCash),
+      label: (
+        <MetricHint
+          label={t('dashboard.portfolio.wtdCashOnCash')}
+          hintKey="metricHints.wtdCashOnCash"
+        />
+      ),
+      value: formatPercent(summary.weightedCashOnCash, na),
       valueClassName: rateColor(summary.weightedCashOnCash, 8, 4),
       icon: <Percent />,
       iconBgVariant: 'accent',
     },
     {
       key: 'occupancy',
-      label: <MetricHint label="Occupancy" />,
-      value: formatPercent(summary.portfolioOccupancy),
+      label: (
+        <MetricHint
+          label={t('dashboard.portfolio.occupancy')}
+          hintKey="metricHints.occupancy"
+        />
+      ),
+      value: formatPercent(summary.portfolioOccupancy, na),
       valueClassName: rateColor(summary.portfolioOccupancy, 90, 75),
       icon: <Home />,
       iconBgVariant: 'info',

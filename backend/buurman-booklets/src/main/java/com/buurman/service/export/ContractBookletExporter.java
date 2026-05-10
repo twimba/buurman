@@ -38,6 +38,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contact;
@@ -65,10 +67,7 @@ import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class ContractBookletExporter {
 
   private final ContractRepository contractRepository;
@@ -82,7 +81,41 @@ public class ContractBookletExporter {
   private final ContractExtensionRepository contractExtensionRepository;
   private final ContractPartyService contractPartyService;
   private final PdfRenderer pdfRenderer;
+  private final MessageSource messageSource;
   private final Clock clock;
+
+  public ContractBookletExporter(
+      ContractRepository contractRepository,
+      PropertyRepository propertyRepository,
+      ContactRepository contactRepository,
+      PaymentRepository paymentRepository,
+      PaymentReceivalRepository paymentReceivalRepository,
+      ContractPaymentInstructionRepository contractPaymentInstructionRepository,
+      PaymentInstructionRepository paymentInstructionRepository,
+      ContractRentPeriodRepository rentPeriodRepository,
+      ContractExtensionRepository contractExtensionRepository,
+      ContractPartyService contractPartyService,
+      PdfRenderer pdfRenderer,
+      @Qualifier("bookletMessageSource") MessageSource messageSource,
+      Clock clock) {
+    this.contractRepository = contractRepository;
+    this.propertyRepository = propertyRepository;
+    this.contactRepository = contactRepository;
+    this.paymentRepository = paymentRepository;
+    this.paymentReceivalRepository = paymentReceivalRepository;
+    this.contractPaymentInstructionRepository = contractPaymentInstructionRepository;
+    this.paymentInstructionRepository = paymentInstructionRepository;
+    this.rentPeriodRepository = rentPeriodRepository;
+    this.contractExtensionRepository = contractExtensionRepository;
+    this.contractPartyService = contractPartyService;
+    this.pdfRenderer = pdfRenderer;
+    this.messageSource = messageSource;
+    this.clock = clock;
+  }
+
+  private String msg(String key, Locale locale) {
+    return java.util.Objects.requireNonNullElse(messageSource.getMessage(key, null, key, locale), key);
+  }
 
   private static final Map<String, String> PAYMENT_METHOD_LABELS =
       Map.of(
@@ -95,7 +128,7 @@ public class ContractBookletExporter {
           "ZELLE", "Zelle",
           "OTHER", "Other");
 
-  public byte[] generate(ContractIdentifier contractIdentifier, UUID teamId) {
+  public byte[] generate(ContractIdentifier contractIdentifier, UUID teamId, Locale locale) {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
@@ -160,7 +193,8 @@ public class ContractBookletExporter {
             rentPeriods,
             allCpis,
             piMap,
-            effectiveEndDate);
+            effectiveEndDate,
+            locale);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -176,8 +210,9 @@ public class ContractBookletExporter {
       List<ContractRentPeriod> rentPeriods,
       List<ContractPaymentInstruction> allCpis,
       Map<UUID, PaymentInstruction> piMap,
-      Optional<LocalDate> effectiveEndDate) {
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
+      Optional<LocalDate> effectiveEndDate,
+      Locale locale) {
+    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
     String ccy = contract.getRentAmount().currency();
 
@@ -202,12 +237,12 @@ public class ContractBookletExporter {
     appendRunningFooter(html, generatedDate);
 
     appendCoverPage(
-        html, contract, property, primaryName, ccy, dateFmt, generatedDate, effectiveEndDate);
+        html, contract, property, primaryName, ccy, dateFmt, generatedDate, effectiveEndDate, locale);
     appendContractDetailsPage(
-        html, contract, property, rentPeriods, dateFmt, ccy, effectiveEndDate);
-    appendPartiesPage(html, parties, contactMap);
-    appendPaymentInstructionsPage(html, allCpis, piMap, dateFmt);
-    appendPaymentOverviewPage(html, payments, receivedByPayment, agg, ccy, dateFmt);
+        html, contract, property, rentPeriods, dateFmt, ccy, effectiveEndDate, locale);
+    appendPartiesPage(html, parties, contactMap, locale);
+    appendPaymentInstructionsPage(html, allCpis, piMap, dateFmt, locale);
+    appendPaymentOverviewPage(html, payments, receivedByPayment, agg, ccy, dateFmt, locale);
 
     appendDocumentEnd(html);
     return html.toString();
@@ -223,10 +258,11 @@ public class ContractBookletExporter {
       String ccy,
       DateTimeFormatter dateFmt,
       String generatedDate,
-      Optional<LocalDate> effectiveEndDate) {
+      Optional<LocalDate> effectiveEndDate,
+      Locale locale) {
     appendCoverStart(
         html,
-        "CONTRACT REPORT",
+        msg("cover.title", locale),
         escapeHtml(contract.getIdentifier().orElseThrow().value()),
         generatedDate);
 
@@ -236,25 +272,29 @@ public class ContractBookletExporter {
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
     appendCoverCell(
-        html, "Property", escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
-    appendCoverCell(html, "Primary Contact", primaryName);
-    html.append("</tr><tr>");
-    appendCoverCell(
-        html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
-    String period =
-        formatDate(contract.getStartDate(), dateFmt)
-            + " — "
-            + effectiveEndDate.map(d -> formatDate(d, dateFmt)).orElse("Indefinite");
-    appendCoverCell(html, "Contract Period", period);
+        html,
+        msg("cover.property", locale),
+        escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
+    appendCoverCell(html, msg("cover.primary.contact", locale), primaryName);
     html.append("</tr><tr>");
     appendCoverCell(
         html,
-        "Contract Type",
+        msg("cover.current.rent", locale),
+        CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
+    String period =
+        formatDate(contract.getStartDate(), dateFmt)
+            + " — "
+            + effectiveEndDate.map(d -> formatDate(d, dateFmt)).orElse(msg("value.indefinite", locale));
+    appendCoverCell(html, msg("cover.contract.period", locale), period);
+    html.append("</tr><tr>");
+    appendCoverCell(
+        html,
+        msg("cover.contract.type", locale),
         formatEnumValue(
             contract.getContractType() != null ? contract.getContractType().name() : ""));
     appendCoverCell(
         html,
-        "Payment Frequency",
+        msg("cover.payment.frequency", locale),
         formatEnumValue(
             contract.getPaymentFrequency() != null ? contract.getPaymentFrequency().name() : ""));
     html.append("</tr>");
@@ -272,83 +312,92 @@ public class ContractBookletExporter {
       List<ContractRentPeriod> rentPeriods,
       DateTimeFormatter dateFmt,
       String ccy,
-      Optional<LocalDate> effectiveEndDate) {
-    appendPageStart(html, "Contract Details");
+      Optional<LocalDate> effectiveEndDate,
+      Locale locale) {
+    appendPageStart(html, msg("page.contract.details", locale));
 
-    appendSectionTitle(html, "Contract Information");
+    appendSectionTitle(html, msg("section.contract.information", locale));
     String statusStr = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(html, "Contract ID", contract.getIdentifier().orElseThrow().value());
-    appendField(html, "Status", formatEnumValue(statusStr));
+    appendField(html, msg("field.contract.id", locale), contract.getIdentifier().orElseThrow().value());
+    appendField(html, msg("field.status", locale), formatEnumValue(statusStr));
     html.append("</tr><tr>");
     appendField(
         html,
-        "Contract Type",
+        msg("field.contract.type", locale),
         formatEnumValue(
             contract.getContractType() != null ? contract.getContractType().name() : ""));
     appendField(
         html,
-        "Signed Date",
-        contract.getSignedDate().map(d -> formatDate(d, dateFmt)).orElse("Not signed"));
+        msg("field.signed.date", locale),
+        contract.getSignedDate().map(d -> formatDate(d, dateFmt)).orElse(msg("value.not.signed", locale)));
     html.append("</tr><tr>");
-    appendField(html, "Start Date", formatDate(contract.getStartDate(), dateFmt));
+    appendField(html, msg("field.start.date", locale), formatDate(contract.getStartDate(), dateFmt));
     appendField(
-        html, "End Date", effectiveEndDate.map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
+        html,
+        msg("field.end.date", locale),
+        effectiveEndDate.map(d -> formatDate(d, dateFmt)).orElse(msg("value.indefinite", locale)));
     html.append("</tr>");
     // Show original end date if it differs from the effective end date
     if (!effectiveEndDate.equals(contract.getEndDate())) {
       html.append("<tr>");
       appendField(
           html,
-          "Original End Date",
-          contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
+          msg("field.original.end.date", locale),
+          contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse(msg("value.indefinite", locale)));
       appendField(html, "", null);
       html.append("</tr>");
     }
     html.append("<tr>");
     appendField(
-        html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
+        html,
+        msg("field.current.rent", locale),
+        CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
     appendField(
         html,
-        "Deposit Amount",
+        msg("field.deposit.amount", locale),
         CurrencyUtils.formatCurrency(
             contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value).orElse(null),
             ccy));
     html.append("</tr><tr>");
     appendField(
         html,
-        "Security Deposit",
+        msg("field.security.deposit", locale),
         CurrencyUtils.formatCurrency(
             contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null),
             ccy));
-    appendField(html, "Currency", CurrencyUtils.getCurrencySymbol(ccy) + " (" + ccy + ")");
+    appendField(html, msg("field.currency", locale), CurrencyUtils.getCurrencySymbol(ccy) + " (" + ccy + ")");
     html.append("</tr><tr>");
     appendField(
         html,
-        "Payment Frequency",
+        msg("field.payment.frequency", locale),
         formatEnumValue(
             contract.getPaymentFrequency() != null ? contract.getPaymentFrequency().name() : ""));
     appendField(
         html,
-        "Payment Due Day",
-        contract.getPaymentDueDay().map(d -> "Day " + d + " of month").orElse("—"));
+        msg("field.payment.due.day", locale),
+        contract.getPaymentDueDay().map(d -> msg("value.day.of.month", locale).replace("{0}", String.valueOf(d))).orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
-        "Renewal Mode",
+        msg("field.renewal.mode", locale),
         contract.getRenewalMode() != null
             ? formatEnumValue(contract.getRenewalMode().name())
-            : "None");
-    appendField(html, "Landlord Notice", contract.getLandlordNoticeDays() + " days");
+            : msg("value.none", locale));
+    appendField(
+        html,
+        msg("field.landlord.notice", locale),
+        contract.getLandlordNoticeDays() + " " + msg("value.days", locale));
     html.append("</tr><tr>");
     appendField(
         html,
-        "Termination Notice",
+        msg("field.termination.notice", locale),
         contract.getTerminationNoticeDays() != null
-            ? contract.getTerminationNoticeDays() + " days"
+            ? contract.getTerminationNoticeDays() + " " + msg("value.days", locale)
             : "—");
-    appendField(html, "Late Fee", contract.getLateFeePercentage().map(p -> p + "%").orElse("—"));
+    appendField(
+        html, msg("field.late.fee", locale), contract.getLateFeePercentage().map(p -> p + "%").orElse("—"));
     html.append("</tr>");
     html.append("</table>");
 
@@ -358,7 +407,7 @@ public class ContractBookletExporter {
         .filter(s -> !s.isBlank())
         .ifPresent(
             tc -> {
-              appendSectionTitle(html, "Terms &amp; Conditions");
+              appendSectionTitle(html, msg("section.terms.conditions", locale));
               html.append("<div class='text-block'>").append(sanitizeRichText(tc)).append("</div>");
             });
     contract
@@ -366,7 +415,7 @@ public class ContractBookletExporter {
         .filter(s -> !s.isBlank())
         .ifPresent(
             notes -> {
-              appendSectionTitle(html, "Notes");
+              appendSectionTitle(html, msg("section.notes", locale));
               html.append("<div class='text-block'>")
                   .append(sanitizeRichText(notes))
                   .append("</div>");
@@ -374,26 +423,29 @@ public class ContractBookletExporter {
 
     // Rent History section
     if (rentPeriods.size() > 1) {
-      appendRentHistorySection(html, rentPeriods, ccy, dateFmt);
+      appendRentHistorySection(html, rentPeriods, ccy, dateFmt, locale);
     }
 
     // Property section
-    appendSectionTitle(html, "Property");
+    appendSectionTitle(html, msg("section.property", locale));
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(html, "Address", escapeHtml(property.getStreet()));
+    appendField(html, msg("field.address", locale), escapeHtml(property.getStreet()));
     appendField(
-        html, "City", escapeHtml(property.getCity()) + " " + escapeHtml(property.getPostalCode()));
+        html,
+        msg("field.city", locale),
+        escapeHtml(property.getCity()) + " " + escapeHtml(property.getPostalCode()));
     html.append("</tr><tr>");
-    appendField(html, "Country", escapeHtml(property.getCountryCode()));
-    appendField(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
+    appendField(html, msg("field.country", locale), escapeHtml(property.getCountryCode()));
+    appendField(
+        html, msg("field.property.type", locale), formatEnumValue(property.getPropertyType().name()));
     html.append("</tr><tr>");
-    appendField(html, "Category", formatEnumValue(property.getPropertyCategory().name()));
-    appendField(html, "Property ID", property.getIdentifier().orElseThrow().value());
+    appendField(html, msg("field.category", locale), formatEnumValue(property.getPropertyCategory().name()));
+    appendField(html, msg("field.property.id", locale), property.getIdentifier().orElseThrow().value());
     html.append("</tr><tr>");
     appendField(
         html,
-        "Area",
+        msg("field.area", locale),
         property
             .getAreaValue()
             .map(av -> "%s %s".formatted(av, property.getAreaUnit().orElse("")))
@@ -407,10 +459,13 @@ public class ContractBookletExporter {
   // ── Page: Contract Parties ──────────────────────────────────────
 
   private void appendPartiesPage(
-      StringBuilder html, List<ContractParty> parties, Map<UUID, Contact> contactMap) {
-    appendPageStart(html, "Contract Parties");
+      StringBuilder html,
+      List<ContractParty> parties,
+      Map<UUID, Contact> contactMap,
+      Locale locale) {
+    appendPageStart(html, msg("page.contract.parties", locale));
 
-    appendSectionTitle(html, "Parties (" + parties.size() + ")");
+    appendSectionTitle(html, msg("section.parties", locale) + " (" + parties.size() + ")");
 
     List<ContractParty> sortedParties = new ArrayList<>(parties);
     sortedParties.sort(
@@ -506,8 +561,11 @@ public class ContractBookletExporter {
       StringBuilder html,
       List<ContractRentPeriod> rentPeriods,
       String ccy,
-      DateTimeFormatter dateFmt) {
-    appendSectionTitle(html, "Rent History (" + rentPeriods.size() + " periods)");
+      DateTimeFormatter dateFmt,
+      Locale locale) {
+    appendSectionTitle(
+        html,
+        msg("section.rent.history", locale) + " (" + rentPeriods.size() + " " + msg("value.periods", locale) + ")");
 
     // Periods are already ordered by effective_from DESC from the repository
     List<ContractRentPeriod> sorted = new ArrayList<>(rentPeriods);
@@ -515,9 +573,15 @@ public class ContractBookletExporter {
 
     html.append("<table class='payment-table'>");
     html.append("<thead><tr>");
-    html.append(
-        "<th>Effective From</th><th>Effective To</th><th style='text-align:right'>Rent"
-            + " Amount</th><th style='text-align:right'>Change</th>");
+    html.append("<th>")
+        .append(msg("col.effective.from", locale))
+        .append("</th><th>")
+        .append(msg("col.effective.to", locale))
+        .append("</th><th style='text-align:right'>")
+        .append(msg("col.rent.amount", locale))
+        .append("</th><th style='text-align:right'>")
+        .append(msg("col.change", locale))
+        .append("</th>");
     html.append("</tr></thead><tbody>");
 
     for (int i = 0; i < sorted.size(); i++) {
@@ -530,7 +594,7 @@ public class ContractBookletExporter {
           .append(
               period.getEffectiveTo().isPresent()
                   ? formatDate(period.getEffectiveTo().get(), dateFmt)
-                  : "<span style='color:#166534;font-weight:600;'>Current</span>")
+                  : "<span style='color:#166534;font-weight:600;'>" + msg("value.current", locale) + "</span>")
           .append("</td>");
       html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;")
           .append(isCurrent ? "font-weight:600;" : "")
@@ -560,7 +624,7 @@ public class ContractBookletExporter {
               .append("%</span>");
         }
       } else {
-        html.append("<span style='color:#78716c;font-size:12px;'>Initial</span>");
+        html.append("<span style='color:#78716c;font-size:12px;'>").append(msg("value.initial", locale)).append("</span>");
       }
       html.append("</td>");
 
@@ -576,12 +640,13 @@ public class ContractBookletExporter {
       StringBuilder html,
       List<ContractPaymentInstruction> allCpis,
       Map<UUID, PaymentInstruction> piMap,
-      DateTimeFormatter dateFmt) {
+      DateTimeFormatter dateFmt,
+      Locale locale) {
     if (allCpis.isEmpty()) {
       return;
     }
 
-    appendPageStart(html, "Payment Instructions");
+    appendPageStart(html, msg("page.payment.instructions", locale));
 
     List<ContractPaymentInstruction> sortedCpis = new ArrayList<>(allCpis);
     sortedCpis.sort(
@@ -663,14 +728,14 @@ public class ContractBookletExporter {
             .append("</span>");
       }
       if (isCurrent) {
-        html.append("<span class='pi-current'>Current</span>");
+        html.append("<span class='pi-current'>").append(msg("value.current", locale)).append("</span>");
       }
       html.append("</div>");
 
       // Period
       String fromStr =
           cpi.getEffectiveFrom() != null ? formatDate(cpi.getEffectiveFrom(), dateFmt) : "—";
-      String toStr = cpi.getEffectiveTo().map(d -> formatDate(d, dateFmt)).orElse("Present");
+      String toStr = cpi.getEffectiveTo().map(d -> formatDate(d, dateFmt)).orElse(msg("value.present", locale));
       html.append("<div class='pi-period'>")
           .append(fromStr)
           .append(" — ")
@@ -683,37 +748,41 @@ public class ContractBookletExporter {
       boolean hasHolder = piAccountHolder != null && !piAccountHolder.isBlank();
       if (hasBank || hasHolder) {
         html.append("<tr>");
-        appendField(html, "Bank Name", hasBank ? escapeHtml(piBankName) : null);
-        appendField(html, "Account Holder", hasHolder ? escapeHtml(piAccountHolder) : null);
+        appendField(html, msg("field.bank.name", locale), hasBank ? escapeHtml(piBankName) : null);
+        appendField(
+            html, msg("field.account.holder", locale), hasHolder ? escapeHtml(piAccountHolder) : null);
         html.append("</tr>");
       }
       boolean hasIban = piIban != null && !piIban.isBlank();
       boolean hasBic = piBicSwift != null && !piBicSwift.isBlank();
       if (hasIban || hasBic) {
         html.append("<tr>");
-        appendField(html, "IBAN", hasIban ? escapeHtml(piIban) : null);
-        appendField(html, "BIC / SWIFT", hasBic ? escapeHtml(piBicSwift) : null);
+        appendField(html, msg("field.iban", locale), hasIban ? escapeHtml(piIban) : null);
+        appendField(html, msg("field.bic.swift", locale), hasBic ? escapeHtml(piBicSwift) : null);
         html.append("</tr>");
       }
       boolean hasAccNum = piAccountNumber != null && !piAccountNumber.isBlank();
       boolean hasRouting = piRoutingNumber != null && !piRoutingNumber.isBlank();
       if (hasAccNum || hasRouting) {
         html.append("<tr>");
-        appendField(html, "Account Number", hasAccNum ? escapeHtml(piAccountNumber) : null);
-        appendField(html, "Routing Number", hasRouting ? escapeHtml(piRoutingNumber) : null);
+        appendField(
+            html, msg("field.account.number", locale), hasAccNum ? escapeHtml(piAccountNumber) : null);
+        appendField(
+            html, msg("field.routing.number", locale), hasRouting ? escapeHtml(piRoutingNumber) : null);
         html.append("</tr>");
       }
       if (piReference != null && !piReference.isBlank()) {
         html.append("<tr>");
-        appendField(html, "Payment Reference", escapeHtml(piReference));
+        appendField(html, msg("field.payment.reference", locale), escapeHtml(piReference));
         html.append("<td></td>");
         html.append("</tr>");
       }
       html.append("</table>");
 
       if (piDetails != null && !piDetails.isBlank()) {
-        html.append(
-            "<div class='pi-details'><span class='fg-label'>Additional Details</span><br/>");
+        html.append("<div class='pi-details'><span class='fg-label'>")
+            .append(msg("field.additional.details", locale))
+            .append("</span><br/>");
         html.append("<span style='font-size:13px;color:#44403c;'>")
             .append(escapeHtml(piDetails))
             .append("</span></div>");
@@ -722,7 +791,9 @@ public class ContractBookletExporter {
           .filter(n -> !n.isBlank())
           .ifPresent(
               n -> {
-                html.append("<div class='pi-details'><span class='fg-label'>Notes</span><br/>");
+                html.append("<div class='pi-details'><span class='fg-label'>")
+                    .append(msg("section.notes", locale))
+                    .append("</span><br/>");
                 html.append("<span style='font-size:13px;color:#44403c;'>")
                     .append(escapeHtml(n))
                     .append("</span></div>");
@@ -742,15 +813,16 @@ public class ContractBookletExporter {
       Map<UUID, BigDecimal> receivedByPayment,
       PaymentAggregation agg,
       String ccy,
-      DateTimeFormatter dateFmt) {
-    appendPageStart(html, "Payment Overview");
+      DateTimeFormatter dateFmt,
+      Locale locale) {
+    appendPageStart(html, msg("page.payment.overview", locale));
 
     // Summary cards
-    appendSectionTitle(html, "Summary");
+    appendSectionTitle(html, msg("section.summary", locale));
     html.append("<table class='summary-grid'><tr>");
     appendSummaryCard(
         html,
-        "Paid",
+        msg("status.paid", locale),
         agg.countPaid,
         CurrencyUtils.formatCurrency(agg.totalPaid, ccy),
         "#f0fdf4",
@@ -758,7 +830,7 @@ public class ContractBookletExporter {
         "#166534");
     appendSummaryCard(
         html,
-        "Pending",
+        msg("status.pending", locale),
         agg.countPending,
         CurrencyUtils.formatCurrency(agg.totalPending, ccy),
         "#fefce8",
@@ -766,7 +838,7 @@ public class ContractBookletExporter {
         "#854d0e");
     appendSummaryCard(
         html,
-        "Partial",
+        msg("status.partial", locale),
         agg.countPartial,
         CurrencyUtils.formatCurrency(
             payments.stream()
@@ -779,7 +851,7 @@ public class ContractBookletExporter {
         "#0c4a6e");
     appendSummaryCard(
         html,
-        "Overdue",
+        msg("status.overdue", locale),
         agg.countOverdue,
         CurrencyUtils.formatCurrency(agg.totalOverdue, ccy),
         "#fef2f2",
@@ -788,24 +860,35 @@ public class ContractBookletExporter {
     html.append("</tr></table>");
 
     // Payment table
-    html.append("<h2 class='section-title'>Payment History (")
+    html.append("<h2 class='section-title'>")
+        .append(msg("section.payment.history", locale))
+        .append(" (")
         .append(payments.size())
         .append(")</h2>");
 
     if (payments.isEmpty()) {
-      html.append(
-          "<p style='color:#78716c;font-style:italic;'>No payments recorded for this"
-              + " contract.</p>");
+      html.append("<p style='color:#78716c;font-style:italic;'>")
+          .append(msg("msg.no.payments", locale))
+          .append("</p>");
     } else {
       List<Payment> sortedPayments = new ArrayList<>(payments);
       sortedPayments.sort((a, b) -> b.getDueDate().compareTo(a.getDueDate()));
 
       html.append("<table class='payment-table'>");
       html.append("<thead><tr>");
-      html.append(
-          "<th>Due Date</th><th style='text-align:right'>Amount</th><th"
-              + " style='text-align:right'>Paid</th><th"
-              + " style='text-align:right'>Balance</th><th>Status</th><th>Payment Date</th>");
+      html.append("<th>")
+          .append(msg("col.due.date", locale))
+          .append("</th><th style='text-align:right'>")
+          .append(msg("col.amount", locale))
+          .append("</th><th style='text-align:right'>")
+          .append(msg("col.paid", locale))
+          .append("</th><th style='text-align:right'>")
+          .append(msg("col.balance", locale))
+          .append("</th><th>")
+          .append(msg("col.status", locale))
+          .append("</th><th>")
+          .append(msg("col.payment.date", locale))
+          .append("</th>");
       html.append("</tr></thead><tbody>");
 
       for (Payment payment : sortedPayments) {

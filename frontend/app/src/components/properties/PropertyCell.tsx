@@ -3,8 +3,8 @@ import {
   PropertyStatus,
   PropertyType,
   PropertyCategory,
-  PROPERTY_STATUS_LABELS,
 } from '@/types/property';
+import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { Home, Building2, Factory, Tractor, MapPin } from 'lucide-react';
 
 interface PropertyCellProps {
@@ -62,6 +62,7 @@ export const PropertyCell = ({
   onClick,
 }: PropertyCellProps) => {
   const navigate = useNavigate();
+  const { statusLabel } = usePropertyLabels();
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -94,7 +95,7 @@ export const PropertyCell = ({
         <div className="flex-shrink-0 pt-1">
           <div
             className={`w-2 h-2 rounded-full ${statusColors[propertyStatus] ?? 'bg-gray-400'}`}
-            title={PROPERTY_STATUS_LABELS[propertyStatus] ?? propertyStatus}
+            title={statusLabel(propertyStatus)}
           />
         </div>
 

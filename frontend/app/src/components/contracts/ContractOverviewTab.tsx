@@ -26,7 +26,6 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   AddContractPartyRequest,
   ContractResponse,
-  PARTY_ROLE_LABELS,
   ContractPartyRole,
 } from '@/types/contract';
 import { ContractPartyResponseRole } from '@/generated/models';
@@ -36,6 +35,7 @@ import type { CreateContactRequest } from '@/types/contact';
 import CountryMetadataForm, {
   useCountryName,
 } from '@/components/contracts/CountryMetadataForm';
+import { useTranslation } from 'react-i18next';
 
 interface ContractOverviewTabProps {
   contract: ContractResponse;
@@ -46,6 +46,7 @@ export const ContractOverviewTab = ({
   contract,
   contractId,
 }: ContractOverviewTabProps) => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -113,7 +114,7 @@ export const ContractOverviewTab = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-text-primary">
-            Contract Parties
+            {t('overview.contractParties')}
           </h2>
           {canEditData && (
             <button
@@ -121,7 +122,7 @@ export const ContractOverviewTab = ({
               className="flex items-center gap-1 text-sm text-primary-500 hover:text-primary-600 transition-colors"
             >
               <Plus className="h-4 w-4" />
-              Add Party
+              {t('overview.addParty')}
             </button>
           )}
         </div>
@@ -129,7 +130,9 @@ export const ContractOverviewTab = ({
           <div className="flex items-start gap-3">
             <Home className="h-5 w-5 text-text-muted mt-1" />
             <div className="flex-1">
-              <p className="text-sm text-text-secondary">Property</p>
+              <p className="text-sm text-text-secondary">
+                {t('overview.property')}
+              </p>
               <button
                 onClick={() =>
                   navigate(`/properties/${contract.property.identifier}`)
@@ -152,8 +155,7 @@ export const ContractOverviewTab = ({
               <User className="h-5 w-5 text-text-muted mt-1" />
               <div className="flex-1">
                 <p className="text-sm text-text-secondary">
-                  {PARTY_ROLE_LABELS[party.role as ContractPartyRole] ??
-                    party.role}
+                  {t(`enums.partyRoles.${party.role}`, party.role)}
                 </p>
                 <button
                   onClick={() =>
@@ -171,7 +173,7 @@ export const ContractOverviewTab = ({
                 <button
                   onClick={() => setRemovePartyTarget(party.identifier)}
                   className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-error-text transition-all mt-1"
-                  title="Remove party"
+                  title={t('overview.removeParty.title')}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -184,7 +186,7 @@ export const ContractOverviewTab = ({
             <div className="border border-border-strong rounded-lg p-4 space-y-3 bg-surface-page">
               <div>
                 <label className="block text-xs font-medium text-text-secondary mb-1">
-                  Role
+                  {t('overview.addPartyForm.role')}
                 </label>
                 <select
                   value={addPartyRole}
@@ -193,9 +195,9 @@ export const ContractOverviewTab = ({
                   }
                   className="w-full border border-border-strong rounded px-3 py-2 bg-surface-card text-text-primary text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 >
-                  {Object.entries(PARTY_ROLE_LABELS).map(([value, label]) => (
+                  {Object.values(ContractPartyRole).map((value) => (
                     <option key={value} value={value}>
-                      {label}
+                      {t(`enums.partyRoles.${value}`, value)}
                     </option>
                   ))}
                 </select>
@@ -211,7 +213,7 @@ export const ContractOverviewTab = ({
                       : 'bg-surface-inset text-text-secondary hover:bg-surface-card'
                   }`}
                 >
-                  Select existing
+                  {t('overview.addPartyForm.selectExisting')}
                 </button>
                 <button
                   type="button"
@@ -222,14 +224,14 @@ export const ContractOverviewTab = ({
                       : 'bg-surface-inset text-text-secondary hover:bg-surface-card'
                   }`}
                 >
-                  Create new
+                  {t('overview.addPartyForm.createNew')}
                 </button>
               </div>
 
               {addPartyMode === 'select' ? (
                 <div>
                   <label className="block text-xs font-medium text-text-secondary mb-1">
-                    Contact
+                    {t('overview.addPartyForm.contact')}
                   </label>
                   <ContactSelector
                     value={selectedContactId}
@@ -240,7 +242,8 @@ export const ContractOverviewTab = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-text-secondary mb-1">
-                      First Name <span className="text-error-text">*</span>
+                      {t('overview.addPartyForm.firstName')}{' '}
+                      <span className="text-error-text">*</span>
                     </label>
                     <input
                       type="text"
@@ -257,7 +260,7 @@ export const ContractOverviewTab = ({
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-text-secondary mb-1">
-                      Last Name
+                      {t('overview.addPartyForm.lastName')}
                     </label>
                     <input
                       type="text"
@@ -274,7 +277,7 @@ export const ContractOverviewTab = ({
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-text-secondary mb-1">
-                      Email
+                      {t('overview.addPartyForm.email')}
                     </label>
                     <input
                       type="email"
@@ -291,7 +294,7 @@ export const ContractOverviewTab = ({
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-text-secondary mb-1">
-                      Phone
+                      {t('overview.addPartyForm.phone')}
                     </label>
                     <PhoneInput
                       value={newContactData.phone ?? null}
@@ -312,7 +315,7 @@ export const ContractOverviewTab = ({
                   onClick={() => setShowAddParty(false)}
                   className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
                 >
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </button>
                 <button
                   type="button"
@@ -324,7 +327,9 @@ export const ContractOverviewTab = ({
                   }
                   className="px-4 py-1.5 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {addPartyMutation.isPending ? 'Adding...' : 'Add'}
+                  {addPartyMutation.isPending
+                    ? t('overview.addPartyForm.adding')
+                    : t('overview.addPartyForm.add')}
                 </button>
               </div>
             </div>
@@ -335,9 +340,9 @@ export const ContractOverviewTab = ({
       {/* Remove Party Confirmation */}
       {removePartyTarget && (
         <ConfirmDialog
-          title="Remove Party"
-          message="Are you sure you want to remove this party from the contract?"
-          confirmLabel="Remove"
+          title={t('overview.removeParty.title')}
+          message={t('overview.removeParty.message')}
+          confirmLabel={t('overview.removeParty.confirm')}
           variant="danger"
           isLoading={removePartyMutation.isPending}
           onConfirm={() => {
@@ -353,7 +358,7 @@ export const ContractOverviewTab = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-text-primary">
-            Important Dates
+            {t('overview.importantDates')}
           </h2>
           {contract && (
             <CalendarFeedButton
@@ -366,7 +371,9 @@ export const ContractOverviewTab = ({
           <div className="flex items-center gap-3">
             <Calendar className="h-5 w-5 text-text-muted" />
             <div>
-              <p className="text-sm text-text-secondary">Start Date</p>
+              <p className="text-sm text-text-secondary">
+                {t('overview.startDate')}
+              </p>
               <p className="font-medium text-text-primary">
                 {formatDate(contract.startDate)}
               </p>
@@ -376,7 +383,9 @@ export const ContractOverviewTab = ({
             <div className="flex items-center gap-3">
               <Calendar className="h-5 w-5 text-text-muted" />
               <div>
-                <p className="text-sm text-text-secondary">Signed Date</p>
+                <p className="text-sm text-text-secondary">
+                  {t('overview.signedDate')}
+                </p>
                 <p className="font-medium text-text-primary">
                   {formatDate(contract.signedDate)}
                 </p>
@@ -388,7 +397,9 @@ export const ContractOverviewTab = ({
               <div className="flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-text-muted" />
                 <div>
-                  <p className="text-sm text-text-secondary">End Date</p>
+                  <p className="text-sm text-text-secondary">
+                    {t('overview.endDate')}
+                  </p>
                   <p className="font-medium text-text-primary">
                     {formatDate(
                       (contract.endDate ?? contract.effectiveEndDate) as string
@@ -402,9 +413,9 @@ export const ContractOverviewTab = ({
               <div className="flex items-center gap-2 mb-3">
                 <Calendar className="h-5 w-5 text-text-muted" />
                 <p className="text-sm text-text-secondary">
-                  End Date
+                  {t('overview.endDate')}
                   <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-info-bg text-info-text">
-                    Extended ({contract.extensionCount}x)
+                    {t('overview.extended', { count: contract.extensionCount })}
                   </span>
                 </p>
               </div>
@@ -417,7 +428,7 @@ export const ContractOverviewTab = ({
                   <div className="absolute left-[-13px] top-[5px] w-[7px] h-[7px] rounded-full border-2 border-border-strong bg-surface-card z-10" />
                   <div className="min-w-0">
                     <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
-                      Original
+                      {t('overview.original')}
                     </p>
                     <p className="text-sm font-medium text-text-secondary line-through decoration-text-muted/40">
                       {formatDate(contract.endDate)}
@@ -444,11 +455,13 @@ export const ContractOverviewTab = ({
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
-                            Extension #{ext.extensionNumber}
+                            {t('overview.extension', {
+                              number: ext.extensionNumber,
+                            })}
                           </span>
                           {ext.triggerType === 'AUTO' && (
                             <span className="inline-flex items-center px-1 py-px text-[9px] font-semibold uppercase tracking-wider rounded bg-info-bg text-info-text">
-                              Auto
+                              {t('overview.auto')}
                             </span>
                           )}
                         </div>
@@ -459,7 +472,9 @@ export const ContractOverviewTab = ({
                         </p>
                         {ext.activatedAt && (
                           <p className="text-[10px] text-text-muted mt-0.5">
-                            Activated {formatDate(ext.activatedAt)}
+                            {t('overview.activated', {
+                              date: formatDate(ext.activatedAt),
+                            })}
                           </p>
                         )}
                       </div>
@@ -475,7 +490,7 @@ export const ContractOverviewTab = ({
       {/* Financial Terms */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <h2 className="text-lg font-semibold text-text-primary mb-4">
-          Financial Terms
+          {t('overview.financialTerms')}
         </h2>
         <div className="space-y-4">
           <RentTimeline
@@ -491,7 +506,7 @@ export const ContractOverviewTab = ({
           {contract.rentComponents && contract.rentComponents.length > 0 && (
             <div>
               <h4 className="text-sm font-medium text-text-secondary mb-2">
-                Rent Breakdown
+                {t('overview.rentBreakdown')}
               </h4>
               <div className="bg-surface-secondary rounded-lg p-3 space-y-2">
                 {contract.rentComponents.map((comp) => (
@@ -513,7 +528,7 @@ export const ContractOverviewTab = ({
                   </div>
                 ))}
                 <div className="flex justify-between items-center text-sm font-semibold pt-2 border-t border-border-default">
-                  <span>Total</span>
+                  <span>{t('overview.total')}</span>
                   <span>
                     {contract.rentAmountCurrency}{' '}
                     {contract.rentAmount.toFixed(2)}
@@ -526,7 +541,9 @@ export const ContractOverviewTab = ({
             <div className="flex items-center gap-3">
               <DollarSign className="h-5 w-5 text-text-muted " />
               <div>
-                <p className="text-sm text-text-secondary">Deposit</p>
+                <p className="text-sm text-text-secondary">
+                  {t('overview.deposit')}
+                </p>
                 <p className="font-medium text-text-primary">
                   {contract.depositAmountCurrency ??
                     contract.rentAmountCurrency}{' '}
@@ -539,7 +556,9 @@ export const ContractOverviewTab = ({
             <div className="flex items-center gap-3">
               <DollarSign className="h-5 w-5 text-text-muted " />
               <div>
-                <p className="text-sm text-text-secondary">Security Deposit</p>
+                <p className="text-sm text-text-secondary">
+                  {t('overview.securityDeposit')}
+                </p>
                 <p className="font-medium text-text-primary">
                   {contract.securityDepositCurrency ??
                     contract.rentAmountCurrency}{' '}
@@ -550,9 +569,11 @@ export const ContractOverviewTab = ({
           )}
           {contract.paymentDueDay && (
             <div>
-              <p className="text-sm text-text-secondary">Payment Due Day</p>
+              <p className="text-sm text-text-secondary">
+                {t('overview.paymentDueDay')}
+              </p>
               <p className="font-medium text-text-primary">
-                Day {contract.paymentDueDay} of each period
+                {t('overview.dayOfPeriod', { day: contract.paymentDueDay })}
               </p>
             </div>
           )}
@@ -573,12 +594,14 @@ export const ContractOverviewTab = ({
           <div className="flex items-center gap-2 mb-4">
             <Repeat className="h-5 w-5 text-text-muted" />
             <h2 className="text-lg font-semibold text-text-primary">
-              Renewal Configuration
+              {t('overview.renewalConfig.title')}
             </h2>
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-text-secondary">Mode</p>
+              <p className="text-sm text-text-secondary">
+                {t('overview.renewalConfig.mode')}
+              </p>
               <span
                 className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${
                   contract.renewalMode === 'AUTOMATIC'
@@ -586,40 +609,56 @@ export const ContractOverviewTab = ({
                     : 'bg-info-bg text-info-text'
                 }`}
               >
-                {contract.renewalMode === 'AUTOMATIC' ? 'Automatic' : 'Manual'}
+                {contract.renewalMode === 'AUTOMATIC'
+                  ? t('overview.renewalConfig.automatic')
+                  : t('overview.renewalConfig.manual')}
               </span>
             </div>
             {contract.renewalTermMonths != null && (
               <div className="flex items-center justify-between">
-                <p className="text-sm text-text-secondary">Renewal Term</p>
+                <p className="text-sm text-text-secondary">
+                  {t('overview.renewalConfig.renewalTerm')}
+                </p>
                 <p className="text-sm font-medium text-text-primary">
-                  {contract.renewalTermMonths}{' '}
-                  {contract.renewalTermMonths === 1 ? 'month' : 'months'}
+                  {t('overview.renewalConfig.month', {
+                    count: contract.renewalTermMonths,
+                  })}
                 </p>
               </div>
             )}
             {contract.maxRenewals != null && (
               <div className="flex items-center justify-between">
-                <p className="text-sm text-text-secondary">Extensions</p>
+                <p className="text-sm text-text-secondary">
+                  {t('overview.renewalConfig.extensions')}
+                </p>
                 <p className="text-sm font-medium text-text-primary">
                   {contract.extensionsRemaining != null
-                    ? `${contract.extensionsRemaining} of ${contract.maxRenewals} remaining`
-                    : `${contract.maxRenewals} max`}
+                    ? t('overview.renewalConfig.remaining', {
+                        remaining: contract.extensionsRemaining,
+                        max: contract.maxRenewals,
+                      })
+                    : t('overview.renewalConfig.max', {
+                        max: contract.maxRenewals,
+                      })}
                 </p>
               </div>
             )}
             {!contract.maxRenewals && contract.extensionsRemaining == null && (
               <div className="flex items-center justify-between">
-                <p className="text-sm text-text-secondary">Extensions</p>
+                <p className="text-sm text-text-secondary">
+                  {t('overview.renewalConfig.extensions')}
+                </p>
                 <p className="text-sm font-medium text-text-primary">
-                  Unlimited
+                  {t('overview.renewalConfig.unlimited')}
                 </p>
               </div>
             )}
             {contract.rentAdjustmentType &&
               contract.rentAdjustmentType !== 'NONE' && (
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-text-secondary">Rent Adjustment</p>
+                  <p className="text-sm text-text-secondary">
+                    {t('overview.renewalConfig.rentAdjustment')}
+                  </p>
                   <p className="text-sm font-medium text-text-primary">
                     {contract.rentAdjustmentType === 'FIXED_PERCENTAGE' &&
                     contract.rentAdjustmentValue != null
@@ -628,7 +667,7 @@ export const ContractOverviewTab = ({
                           contract.rentAdjustmentValue != null
                         ? `+${contract.rentAmountCurrency} ${contract.rentAdjustmentValue.toFixed(2)}`
                         : contract.rentAdjustmentType === 'MANUAL'
-                          ? 'Manual'
+                          ? t('overview.renewalConfig.manual')
                           : '—'}
                   </p>
                 </div>
@@ -637,22 +676,30 @@ export const ContractOverviewTab = ({
               contract.contactNoticeDays != null) && (
               <div className="pt-2 border-t border-border-default">
                 <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-2">
-                  Notice Periods
+                  {t('overview.renewalConfig.noticePeriods')}
                 </p>
                 <div className="space-y-2">
                   {contract.landlordNoticeDays != null && (
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-text-secondary">Landlord</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('overview.renewalConfig.landlord')}
+                      </p>
                       <p className="text-sm font-medium text-text-primary">
-                        {contract.landlordNoticeDays} days
+                        {t('overview.renewalConfig.days', {
+                          count: contract.landlordNoticeDays,
+                        })}
                       </p>
                     </div>
                   )}
                   {contract.contactNoticeDays != null && (
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-text-secondary">Contact</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('overview.renewalConfig.contact')}
+                      </p>
                       <p className="text-sm font-medium text-text-primary">
-                        {contract.contactNoticeDays} days
+                        {t('overview.renewalConfig.days', {
+                          count: contract.contactNoticeDays,
+                        })}
                       </p>
                     </div>
                   )}
@@ -662,10 +709,10 @@ export const ContractOverviewTab = ({
             {contract.requiresContactConfirmation && (
               <div className="flex items-center justify-between pt-2 border-t border-border-default">
                 <p className="text-sm text-text-secondary">
-                  Contact Confirmation
+                  {t('overview.renewalConfig.contactConfirmation')}
                 </p>
                 <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
-                  Required
+                  {t('overview.renewalConfig.required')}
                 </span>
               </div>
             )}
@@ -677,22 +724,26 @@ export const ContractOverviewTab = ({
       {(contract.terminationNoticeDays || contract.lateFeePercentage) && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <h2 className="text-lg font-semibold text-text-primary mb-4">
-            Additional Terms
+            {t('overview.additionalTerms')}
           </h2>
           <div className="space-y-3">
             {contract.terminationNoticeDays && (
               <div>
                 <p className="text-sm text-text-secondary">
-                  Termination Notice
+                  {t('overview.terminationNotice')}
                 </p>
                 <p className="font-medium text-text-primary">
-                  {contract.terminationNoticeDays} days
+                  {t('overview.renewalConfig.days', {
+                    count: contract.terminationNoticeDays,
+                  })}
                 </p>
               </div>
             )}
             {contract.lateFeePercentage && (
               <div>
-                <p className="text-sm text-text-secondary">Late Fee</p>
+                <p className="text-sm text-text-secondary">
+                  {t('overview.lateFee')}
+                </p>
                 <p className="font-medium text-text-primary">
                   {contract.lateFeePercentage}%
                 </p>
@@ -706,7 +757,7 @@ export const ContractOverviewTab = ({
       {contract.termsAndConditions && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
           <h2 className="text-lg font-semibold text-text-primary mb-4">
-            Terms and Conditions
+            {t('overview.termsAndConditions')}
           </h2>
           <RichTextDisplay content={contract.termsAndConditions} />
         </div>
@@ -716,7 +767,7 @@ export const ContractOverviewTab = ({
       {contract.notes && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
           <h2 className="text-lg font-semibold text-text-primary mb-4">
-            Notes
+            {t('overview.notes')}
           </h2>
           <RichTextDisplay content={contract.notes} />
         </div>
@@ -729,8 +780,8 @@ export const ContractOverviewTab = ({
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
             <h2 className="text-lg font-semibold text-text-primary mb-4">
               {countryName
-                ? `${countryName} Rental Details`
-                : 'Country-Specific Details'}
+                ? t('overview.countryDetails', { country: countryName })
+                : t('overview.countrySpecificDetails')}
             </h2>
             <CountryMetadataForm
               countryCode={contract.countryCode}
@@ -748,7 +799,9 @@ export const ContractOverviewTab = ({
           onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
           className="w-full flex items-center justify-between text-left group"
         >
-          <h2 className="text-lg font-semibold text-text-primary">Metadata</h2>
+          <h2 className="text-lg font-semibold text-text-primary">
+            {t('overview.metadata.title')}
+          </h2>
           {isMetadataExpanded ? (
             <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
           ) : (
@@ -758,16 +811,20 @@ export const ContractOverviewTab = ({
         {isMetadataExpanded && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
             <div>
-              <span className="text-text-secondary">Created:</span>{' '}
+              <span className="text-text-secondary">
+                {t('overview.metadata.created')}
+              </span>{' '}
               <span className="text-text-primary">
-                {formatDate(contract.createdAt)} at{' '}
+                {formatDate(contract.createdAt)} {t('overview.metadata.at')}{' '}
                 {new Date(contract.createdAt).toLocaleTimeString()}
               </span>
             </div>
             <div>
-              <span className="text-text-secondary">Last Updated:</span>{' '}
+              <span className="text-text-secondary">
+                {t('overview.metadata.lastUpdated')}
+              </span>{' '}
               <span className="text-text-primary">
-                {formatDate(contract.updatedAt)} at{' '}
+                {formatDate(contract.updatedAt)} {t('overview.metadata.at')}{' '}
                 {new Date(contract.updatedAt).toLocaleTimeString()}
               </span>
             </div>

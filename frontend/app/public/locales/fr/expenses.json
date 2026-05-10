@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Dépenses",
+    "subtitle": "Suivi des dépenses et coûts immobiliers"
+  },
+  "actions": {
+    "addExpense": "Ajouter une dépense"
+  },
+  "stats": {
+    "totalExpenses": "Total des dépenses",
+    "categorySummary": "en {{category}}",
+    "categorySummaryAll": "dans {{count}} catégories",
+    "topCategories": "Catégories principales",
+    "noData": "Aucune donnée disponible",
+    "lastSixMonths": "6 derniers mois",
+    "tooltipExpenses": "Dépenses"
+  },
+  "filters": {
+    "title": "Filtres",
+    "property": "Bien",
+    "category": "Catégorie",
+    "allProperties": "Tous les biens",
+    "allCategories": "Toutes les catégories"
+  },
+  "category": {
+    "MAINTENANCE": "Maintenance",
+    "REPAIR": "Réparation",
+    "UTILITY": "Services publics",
+    "TAX": "Impôt",
+    "INSURANCE": "Assurance",
+    "LEGAL": "Juridique",
+    "MARKETING": "Marketing",
+    "CLEANING": "Nettoyage",
+    "LANDSCAPING": "Aménagement paysager",
+    "PROPERTY_MANAGEMENT": "Gestion immobilière",
+    "FEES": "Frais",
+    "PROPERTY_TAX": "Taxe foncière",
+    "OTHER": "Autre"
+  },
+  "table": {
+    "date": "Date",
+    "expenseNumber": "Dépense #",
+    "description": "Description",
+    "category": "Catégorie",
+    "property": "Bien",
+    "amount": "Montant"
+  },
+  "empty": {
+    "title": "Aucune dépense trouvée",
+    "filtered": "Essayez d'ajuster vos filtres",
+    "noData": "Commencez par enregistrer votre première dépense"
+  },
+  "card": {
+    "expenseId": "Dépense #{{id}}",
+    "property": "Bien",
+    "contact": "Contact",
+    "amount": "Montant",
+    "expenseDate": "Date de la dépense",
+    "documentsAttached": "{{count}} document(s) joint(s)"
+  },
+  "form": {
+    "property": "Bien",
+    "category": "Catégorie",
+    "contact": "Contact",
+    "amount": "Montant",
+    "expenseDate": "Date de la dépense",
+    "description": "Description",
+    "descriptionPlaceholder": "ex., Réparation plomberie salle de bain",
+    "notes": "Notes",
+    "notesPlaceholder": "Ajouter des notes supplémentaires sur cette dépense...",
+    "continueAdding": "Continuer à ajouter",
+    "today": "Aujourd'hui",
+    "updateExpense": "Mettre à jour",
+    "createExpense": "Créer",
+    "expenseSuffix": " Dépense",
+    "saving": "Enregistrement...",
+    "currency": "Devise"
+  },
+  "validation": {
+    "propertyRequired": "Le bien est obligatoire",
+    "amountRequired": "Le montant doit être supérieur à 0",
+    "currencyRequired": "La devise est obligatoire",
+    "expenseDateRequired": "La date de la dépense est obligatoire",
+    "descriptionRequired": "La description est obligatoire"
+  },
+  "create": {
+    "title": "Ajouter une nouvelle dépense",
+    "addedCount": "{{count}} dépense ajoutée cette session",
+    "addedCount_other": "{{count}} dépenses ajoutées cette session",
+    "single": "Individuelle",
+    "bulk": "En masse"
+  },
+  "detail": {
+    "titlePrefix": "Dépense #{{id}}",
+    "expenseDetails": "Détails de la dépense",
+    "propertyAndContact": "Bien et contact",
+    "amount": "Montant",
+    "expenseDate": "Date de la dépense",
+    "category": "Catégorie",
+    "description": "Description",
+    "property": "Bien",
+    "contact": "Contact",
+    "noContactLinked": "Aucun contact lié",
+    "notes": "Notes",
+    "metadata": "Métadonnées",
+    "created": "Créé :",
+    "lastUpdated": "Dernière mise à jour :",
+    "editExpense": "Modifier la dépense"
+  },
+  "tabs": {
+    "details": "Détails",
+    "documents": "Documents",
+    "history": "Historique"
+  },
+  "history": {
+    "title": "Historique des dépenses",
+    "empty": "Aucun historique disponible",
+    "emptySubtitle": "Les modifications de cette dépense apparaîtront ici",
+    "clickToView": "Cliquez pour voir les modifications",
+    "clickToHide": "Cliquez pour masquer les modifications",
+    "changedFields": "Champs modifiés",
+    "old": "Ancien :",
+    "new": "Nouveau :",
+    "impersonated": "Usurpé"
+  },
+  "deleteDialog": {
+    "title": "Supprimer la dépense",
+    "message": "Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action est irréversible.",
+    "messageWithRelated": "Êtes-vous sûr de vouloir supprimer cette dépense ? Tous les documents associés seront également supprimés. Cette action est irréversible."
+  },
+  "tooltips": {
+    "viewExpense": "Voir la dépense",
+    "deleteExpense": "Supprimer la dépense"
+  },
+  "errors": {
+    "loadFailed": "Échec du chargement des dépenses",
+    "loadExpenseFailed": "Échec du chargement de la dépense",
+    "loadHistoryFailed": "Échec du chargement de l'historique"
+  }
+}

@@ -8,7 +8,6 @@ import {
   ContractPartyRole,
   ContractPartyRequest,
   PaymentFrequency,
-  PARTY_ROLE_LABELS,
   RentComponentFormItem,
   RentComponentType,
 } from '@/types/contract';
@@ -31,6 +30,7 @@ import {
   useRemoveContractParty,
   useChangePrimaryContact,
 } from '@/hooks/useContractHooks';
+import { useTranslation } from 'react-i18next';
 
 interface ContractFormProps {
   contract?: ContractResponse;
@@ -76,17 +76,18 @@ function sanitizeContact(data: CreateContactRequest): CreateContactRequest {
 // Validate inline contact data, return errors keyed by prefix
 function validateInlineContact(
   data: CreateContactRequest,
-  prefix: string
+  prefix: string,
+  t: (key: string) => string
 ): Record<string, string> {
   const errs: Record<string, string> = {};
   if (!data.firstName?.trim()) {
-    errs[`${prefix}_firstName`] = 'Required';
+    errs[`${prefix}_firstName`] = t('form.validation.required');
   }
   if (
     data.email?.trim() &&
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email ?? '')
   ) {
-    errs[`${prefix}_email`] = 'Invalid email';
+    errs[`${prefix}_email`] = t('form.validation.invalidEmail');
   }
   if (data.phone) {
     const phoneErr = validatePhoneE164(data.phone);
@@ -104,6 +105,7 @@ export const ContractForm = ({
   prefilledPropertyId,
   prefilledContactId,
 }: ContractFormProps) => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -259,37 +261,38 @@ export const ContractForm = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.propertyIdentifier) {
-      newErrors.propertyIdentifier = 'Property is required';
+      newErrors.propertyIdentifier = t('form.validation.propertyRequired');
     }
 
     // Validate primary contact
     if (!isEditing) {
       if (primaryMode === 'select' && !primaryContactId) {
-        newErrors.primaryContact = 'Primary contact is required';
+        newErrors.primaryContact = t('form.validation.contactRequired');
       } else if (primaryMode === 'create') {
         Object.assign(
           newErrors,
-          validateInlineContact(newPrimaryContact, 'primary')
+          validateInlineContact(newPrimaryContact, 'primary', t)
         );
       }
     }
 
     if (!formData.startDate) {
-      newErrors.startDate = 'Start date is required';
+      newErrors.startDate = t('form.validation.startDateRequired');
     }
     if (formData.breakdownMode) {
       const hasBaseRent = formData.rentComponents.some(
         (c) => c.componentType === RentComponentType.BASE_RENT
       );
       if (!hasBaseRent) {
-        newErrors.rentComponents = 'Base rent component is required';
+        newErrors.rentComponents = t('form.validation.baseRentRequired');
       }
       const invalidAmounts = formData.rentComponents.some(
         (c) => typeof c.amount !== 'number' || c.amount <= 0
       );
       if (invalidAmounts) {
-        newErrors.rentComponents =
-          'All component amounts must be greater than 0';
+        newErrors.rentComponents = t(
+          'form.validation.componentAmountsPositive'
+        );
       }
       const missingOtherDesc = formData.rentComponents.some(
         (c) =>
@@ -297,8 +300,9 @@ export const ContractForm = ({
           (!c.description || !c.description.trim())
       );
       if (missingOtherDesc) {
-        newErrors.rentComponents =
-          'Custom label is required for "Other" components';
+        newErrors.rentComponents = t(
+          'form.validation.otherDescriptionRequired'
+        );
       }
       // Validate total > 0
       const total = formData.rentComponents.reduce(
@@ -306,42 +310,43 @@ export const ContractForm = ({
         0
       );
       if (total <= 0) {
-        newErrors.rentAmount = 'Rent amount must be greater than 0';
+        newErrors.rentAmount = t('form.validation.rentAmountPositive');
       }
     } else if (!formData.rentAmount || formData.rentAmount <= 0) {
-      newErrors.rentAmount = 'Rent amount must be greater than 0';
+      newErrors.rentAmount = t('form.validation.rentAmountPositive');
     }
     if (
       formData.rentAmount &&
       formData.rentAmount > 0 &&
       !(formData.rentAmountCurrency || defaultCurrency || '').trim()
     ) {
-      newErrors.rentAmountCurrency = 'Rent currency is required';
+      newErrors.rentAmountCurrency = t('form.validation.rentCurrencyRequired');
     }
     if (
       formData.depositAmount &&
       formData.depositAmount > 0 &&
       !(formData.depositAmountCurrency || defaultCurrency || '').trim()
-    )
-      newErrors.depositAmountCurrency = 'Deposit currency is required';
+    ) {
+      newErrors.depositAmountCurrency = t('form.validation.depositCurrencyRequired');
+    }
     if (
       formData.securityDeposit &&
       formData.securityDeposit > 0 &&
       !(formData.securityDepositCurrency || defaultCurrency || '').trim()
-    )
-      newErrors.securityDepositCurrency =
-        'Security deposit currency is required';
+    ) {
+      newErrors.securityDepositCurrency = t('form.validation.securityDepositCurrencyRequired');
+    }
 
     if (
       formData.contractType === ContractType.FIXED_TERM &&
       !formData.endDate
     ) {
-      newErrors.endDate = 'End date is required for fixed-term contracts';
+      newErrors.endDate = t('form.validation.endDateRequired');
     }
 
     if (formData.startDate && formData.endDate) {
       if (new Date(formData.endDate) < new Date(formData.startDate)) {
-        newErrors.endDate = 'End date must be on or after start date';
+        newErrors.endDate = t('form.validation.endDateAfterStart');
       }
     }
 
@@ -349,7 +354,7 @@ export const ContractForm = ({
       formData.paymentDueDay &&
       (formData.paymentDueDay < 1 || formData.paymentDueDay > 31)
     ) {
-      newErrors.paymentDueDay = 'Payment due day must be between 1 and 31';
+      newErrors.paymentDueDay = t('form.validation.paymentDueDayRange');
     }
 
     // Validate additional parties
@@ -357,11 +362,11 @@ export const ContractForm = ({
       for (let i = 0; i < additionalParties.length; i++) {
         const p = additionalParties[i];
         if (p.mode === 'select' && !p.contactIdentifier) {
-          newErrors[`party_${i}`] = 'Contact is required';
+          newErrors[`party_${i}`] = t('form.validation.contactRequired');
         } else if (p.mode === 'create') {
           Object.assign(
             newErrors,
-            validateInlineContact(p.newContact, `party_${i}`)
+            validateInlineContact(p.newContact, `party_${i}`, t)
           );
         }
       }
@@ -494,12 +499,12 @@ export const ContractForm = ({
       {/* Property Selection */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {isEditing ? 'Property' : 'Property & Parties'}
+          {isEditing ? t('form.property') : t('form.propertyAndParties')}
         </h3>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Property <span className="text-error-text">*</span>
+              {t('form.property')} <span className="text-error-text">*</span>
             </label>
             <PropertySelector
               value={formData.propertyIdentifier}
@@ -518,7 +523,7 @@ export const ContractForm = ({
             <>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Primary Contact <span className="text-error-text">*</span>
+                  {t('form.primaryContact')} <span className="text-error-text">*</span>
                 </label>
 
                 {primaryMode === 'select' ? (
@@ -557,7 +562,7 @@ export const ContractForm = ({
                       disabled={isLoading}
                     >
                       <UserPlus className="h-3 w-3" />
-                      Create new contact
+                      {t('form.createNewContact')}
                     </button>
                   </>
                 ) : (
@@ -618,7 +623,7 @@ export const ContractForm = ({
                         >
                           {ADDITIONAL_ROLES.map((role) => (
                             <option key={role} value={role}>
-                              {PARTY_ROLE_LABELS[role]}
+                              {t(`enums.partyRoles.${role}`, role)}
                             </option>
                           ))}
                         </select>
@@ -648,7 +653,7 @@ export const ContractForm = ({
                         disabled={isLoading}
                       >
                         <UserPlus className="h-3 w-3" />
-                        Create new contact
+                        {t('form.createNewContact')}
                       </button>
                     </div>
                   ) : (
@@ -666,7 +671,7 @@ export const ContractForm = ({
                         >
                           {ADDITIONAL_ROLES.map((role) => (
                             <option key={role} value={role}>
-                              {PARTY_ROLE_LABELS[role]}
+                              {t(`enums.partyRoles.${role}`, role)}
                             </option>
                           ))}
                         </select>
@@ -711,7 +716,8 @@ export const ContractForm = ({
                     disabled={isLoading}
                   >
                     <Plus className="h-4 w-4" />
-                    Add {PARTY_ROLE_LABELS[role]}
+                    {t('common:buttons.add')}{' '}
+                    {t(`enums.partyRoles.${role}`, role)}
                   </button>
                 ))}
               </div>
@@ -724,7 +730,7 @@ export const ContractForm = ({
       {isEditing && contract && (
         <div>
           <h3 className="text-lg font-semibold text-text-primary mb-4">
-            Contract Parties
+            {t('form.contractParties')}
           </h3>
           <ContractPartiesEditor contract={contract} isLoading={isLoading} />
         </div>
@@ -733,12 +739,12 @@ export const ContractForm = ({
       {/* Contract Details */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Contract Details
+          {t('form.contractDetails')}
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Contract Type <span className="text-error-text">*</span>
+              {t('form.contractType')} <span className="text-error-text">*</span>
             </label>
             <select
               value={formData.contractType}
@@ -748,14 +754,14 @@ export const ContractForm = ({
               className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               disabled={isLoading}
             >
-              <option value={ContractType.FIXED_TERM}>Fixed Term</option>
-              <option value={ContractType.INDEFINITE}>Indefinite</option>
+              <option value={ContractType.FIXED_TERM}>{t('enums.contractTypes.FIXED_TERM')}</option>
+              <option value={ContractType.INDEFINITE}>{t('enums.contractTypes.INDEFINITE')}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Start Date <span className="text-error-text">*</span>
+              {t('form.startDate')} <span className="text-error-text">*</span>
             </label>
             <div className="flex gap-2">
               <input
@@ -776,7 +782,7 @@ export const ContractForm = ({
                 className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
-                Today
+                {t('form.today')}
               </button>
             </div>
             {errors.startDate && (
@@ -786,7 +792,7 @@ export const ContractForm = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              End Date{' '}
+              {t('form.endDate')}{' '}
               {formData.contractType === ContractType.FIXED_TERM && (
                 <span className="text-error-text">*</span>
               )}
@@ -805,7 +811,7 @@ export const ContractForm = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Signed Date
+              {t('form.signedDate')}
             </label>
             <div className="flex gap-2">
               <input
@@ -826,7 +832,7 @@ export const ContractForm = ({
                 className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
-                Today
+                {t('form.today')}
               </button>
             </div>
           </div>
@@ -836,7 +842,7 @@ export const ContractForm = ({
       {/* Financial Terms */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Financial Terms
+          {t('form.financialTerms')}
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <RentBreakdown
@@ -869,7 +875,7 @@ export const ContractForm = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Deposit Amount
+              {t('form.depositAmount')}
             </label>
             <MoneyInput
               value={formData.depositAmount ?? undefined}
@@ -887,7 +893,7 @@ export const ContractForm = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Security Deposit
+              {t('form.securityDeposit')}
             </label>
             <MoneyInput
               value={formData.securityDeposit ?? undefined}
@@ -927,12 +933,12 @@ export const ContractForm = ({
       {/* Payment Terms */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Payment Terms
+          {t('form.paymentTerms')}
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Payment Frequency <span className="text-error-text">*</span>
+              {t('form.paymentFrequency')} <span className="text-error-text">*</span>
             </label>
             <select
               value={formData.paymentFrequency}
@@ -945,15 +951,15 @@ export const ContractForm = ({
               className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               disabled={isLoading}
             >
-              <option value={PaymentFrequency.MONTHLY}>Monthly</option>
-              <option value={PaymentFrequency.QUARTERLY}>Quarterly</option>
-              <option value={PaymentFrequency.ANNUALLY}>Annually</option>
+              <option value={PaymentFrequency.MONTHLY}>{t('enums.paymentFrequencies.MONTHLY')}</option>
+              <option value={PaymentFrequency.QUARTERLY}>{t('enums.paymentFrequencies.QUARTERLY')}</option>
+              <option value={PaymentFrequency.ANNUALLY}>{t('enums.paymentFrequencies.ANNUALLY')}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Payment Due Day (1-31)
+              {t('form.paymentDueDay')}
             </label>
             <input
               type="number"
@@ -979,7 +985,7 @@ export const ContractForm = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Late Fee Percentage
+              {t('form.lateFeePercentage')}
             </label>
             <input
               type="number"
@@ -1004,12 +1010,12 @@ export const ContractForm = ({
       {/* Termination */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Termination
+          {t('form.termination')}
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Termination Notice Days
+              {t('form.terminationNoticeDays')}
             </label>
             <input
               type="number"
@@ -1032,13 +1038,13 @@ export const ContractForm = ({
       {/* Terms and Conditions */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Terms and Conditions
+          {t('form.termsAndConditions')}
         </h3>
         <div>
           <RichTextEditor
             value={formData.termsAndConditions ?? ''}
             onChange={(value) => handleChange('termsAndConditions', value)}
-            placeholder="Enter contract terms and conditions"
+            placeholder={t('form.termsAndConditionsPlaceholder')}
             onSubmit={submitForm}
           />
         </div>
@@ -1046,12 +1052,12 @@ export const ContractForm = ({
 
       {/* Notes */}
       <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">Notes</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">{t('form.notes')}</h3>
         <div>
           <RichTextEditor
             value={formData.notes ?? ''}
             onChange={(value) => handleChange('notes', value)}
-            placeholder="Add any additional notes"
+            placeholder={t('form.notesPlaceholder')}
             onSubmit={submitForm}
           />
         </div>
@@ -1062,11 +1068,11 @@ export const ContractForm = ({
         <div>
           <h3 className="text-lg font-semibold text-text-primary mb-2">
             {countryName
-              ? `${countryName} Rental Details`
-              : 'Country-Specific Details'}
+              ? t('form.countryRentalDetails', { country: countryName })
+              : t('overview.countrySpecificDetails')}
           </h3>
           <p className="text-sm text-text-secondary mb-4">
-            Regulatory fields specific to {countryName || propertyCountryCode}
+            {t('form.countryRegulatoryFields', { country: countryName || propertyCountryCode })}
           </p>
           <CountryMetadataForm
             countryCode={propertyCountryCode}
@@ -1084,8 +1090,7 @@ export const ContractForm = ({
         </div>
       ) : formData.propertyIdentifier ? (
         <p className="text-sm text-text-muted italic">
-          Set a country on the selected property to see country-specific
-          regulatory fields.
+          {t('form.setCountryForFields')}
         </p>
       ) : null}
 
@@ -1098,7 +1103,7 @@ export const ContractForm = ({
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
-          Cancel
+          {t('common:buttons.cancel')}
         </button>
         <div className="relative group/submit">
           <button
@@ -1108,14 +1113,14 @@ export const ContractForm = ({
           >
             <Save className="h-4 w-4" />
             {isLoading
-              ? 'Saving...'
+              ? t('form.saving')
               : contract
-                ? 'Update Contract'
-                : 'Create Contract'}
+                ? t('form.updateContract')
+                : t('form.createContract')}
           </button>
           {anyDuplicateBlocking && (
             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
-              Review the duplicate warning above and dismiss it to continue
+              {t('form.dismissDuplicateWarning')}
               <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
             </div>
           )}
@@ -1134,6 +1139,7 @@ const ContractPartiesEditor = ({
   contract: ContractResponse;
   isLoading: boolean;
 }) => {
+  const { t } = useTranslation('contracts');
   const [showAddForm, setShowAddForm] = useState(false);
   const [addMode, setAddMode] = useState<'select' | 'create'>('select');
   const [changingPrimary, setChangingPrimary] = useState(false);
@@ -1182,7 +1188,8 @@ const ContractPartiesEditor = ({
       } else {
         const validationErrors = validateInlineContact(
           inlineNewContact,
-          'add_party'
+          'add_party',
+          t
         );
         if (Object.keys(validationErrors).length > 0) {
           setErrors(validationErrors);
@@ -1228,7 +1235,8 @@ const ContractPartiesEditor = ({
       } else {
         const validationErrors = validateInlineContact(
           inlineNewPrimary,
-          'change_primary'
+          'change_primary',
+          t
         );
         if (Object.keys(validationErrors).length > 0) {
           setErrors(validationErrors);
@@ -1272,7 +1280,7 @@ const ContractPartiesEditor = ({
               {party.contact.firstName} {party.contact.lastName}
             </span>
             <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-text-secondary">
-              {PARTY_ROLE_LABELS[party.role]}
+              {t(`enums.partyRoles.${party.role}`, party.role)}
             </span>
           </div>
           {party.role === ContractPartyRole.PRIMARY_TENANT ? (
@@ -1282,7 +1290,7 @@ const ContractPartiesEditor = ({
               className="text-xs text-primary-500 hover:text-primary-600 transition-colors whitespace-nowrap"
               disabled={isBusy}
             >
-              Change
+              {t('form.change')}
             </button>
           ) : (
             <button
@@ -1318,7 +1326,7 @@ const ContractPartiesEditor = ({
                   disabled={isBusy}
                 >
                   <UserPlus className="h-3 w-3" />
-                  Create new contact
+                  {t('form.createNewContact')}
                 </button>
               </div>
               <button
@@ -1327,7 +1335,7 @@ const ContractPartiesEditor = ({
                 className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm whitespace-nowrap"
                 disabled={isBusy || !newPrimaryContactId}
               >
-                Confirm
+                {t('common:buttons.confirm')}
               </button>
               <button
                 type="button"
@@ -1363,7 +1371,7 @@ const ContractPartiesEditor = ({
                   className="px-3 py-2 border border-border-strong rounded text-sm hover:bg-surface-inset transition-colors"
                   disabled={isBusy}
                 >
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </button>
                 <div className="relative group/confirm-primary">
                   <button
@@ -1372,11 +1380,11 @@ const ContractPartiesEditor = ({
                     className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isBusy || dupBlockers['change_primary']}
                   >
-                    Confirm
+                    {t('common:buttons.confirm')}
                   </button>
                   {dupBlockers['change_primary'] && (
                     <div className="absolute bottom-full right-0 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/confirm-primary:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
-                      Dismiss the duplicate warning first
+                      {t('form.dismissDuplicateFirst')}
                       <div className="absolute top-full right-4 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
                     </div>
                   )}
@@ -1410,7 +1418,7 @@ const ContractPartiesEditor = ({
                 >
                   {ADDITIONAL_ROLES.map((role) => (
                     <option key={role} value={role}>
-                      {PARTY_ROLE_LABELS[role]}
+                      {t(`enums.partyRoles.${role}`, role)}
                     </option>
                   ))}
                 </select>
@@ -1420,7 +1428,7 @@ const ContractPartiesEditor = ({
                   className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm whitespace-nowrap"
                   disabled={isBusy || !newContactId}
                 >
-                  Add
+                  {t('common:buttons.add')}
                 </button>
                 <button
                   type="button"
@@ -1441,7 +1449,7 @@ const ContractPartiesEditor = ({
                 disabled={isBusy}
               >
                 <UserPlus className="h-3 w-3" />
-                Create new contact
+                {t('form.createNewContact')}
               </button>
             </div>
           ) : (
@@ -1457,7 +1465,7 @@ const ContractPartiesEditor = ({
                 >
                   {ADDITIONAL_ROLES.map((role) => (
                     <option key={role} value={role}>
-                      {PARTY_ROLE_LABELS[role]}
+                      {t(`enums.partyRoles.${role}`, role)}
                     </option>
                   ))}
                 </select>
@@ -1494,7 +1502,7 @@ const ContractPartiesEditor = ({
                   className="px-3 py-2 border border-border-strong rounded text-sm hover:bg-surface-inset transition-colors"
                   disabled={isBusy}
                 >
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </button>
                 <div className="relative group/confirm-add">
                   <button
@@ -1503,11 +1511,11 @@ const ContractPartiesEditor = ({
                     className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isBusy || dupBlockers['add_party']}
                   >
-                    Add
+                    {t('common:buttons.add')}
                   </button>
                   {dupBlockers['add_party'] && (
                     <div className="absolute bottom-full right-0 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/confirm-add:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
-                      Dismiss the duplicate warning first
+                      {t('form.dismissDuplicateFirst')}
                       <div className="absolute top-full right-4 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
                     </div>
                   )}
@@ -1532,7 +1540,7 @@ const ContractPartiesEditor = ({
               disabled={isBusy}
             >
               <Plus className="h-4 w-4" />
-              Add {PARTY_ROLE_LABELS[role]}
+              {t('common:buttons.add')} {t(`enums.partyRoles.${role}`, role)}
             </button>
           ))}
         </div>

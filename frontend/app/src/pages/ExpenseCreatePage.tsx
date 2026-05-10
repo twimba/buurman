@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { bulkCreateExpenses } from '@/api/expenses';
@@ -12,54 +13,52 @@ import {
   type RowData,
 } from '@/components/common/BulkDataGrid';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
-import {
-  CreateExpenseRequest,
-  ExpenseCategory,
-  formatExpenseCategory,
-} from '@/types/expense';
+import { CreateExpenseRequest, ExpenseCategory } from '@/types/expense';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { getErrorMessage } from '@/utils/errorMessages';
 
 type Mode = 'single' | 'bulk';
 
-const CATEGORY_OPTIONS = Object.values(ExpenseCategory).map((cat) => ({
-  value: cat,
-  label: formatExpenseCategory(cat),
-}));
+const getCategoryOptions = (t: (key: string) => string) =>
+  Object.values(ExpenseCategory).map((cat) => ({
+    value: cat,
+    label: t(`category.${cat}`),
+  }));
 
-const BULK_COLUMNS: BulkColumnDef[] = [
+const getBulkColumns = (t: (key: string) => string): BulkColumnDef[] => [
   {
     key: 'date',
-    label: 'Date',
+    label: t('table.date'),
     type: 'date',
     required: true,
     placeholder: 'YYYY-MM-DD',
   },
   {
     key: 'amount',
-    label: 'Amount',
+    label: t('table.amount'),
     type: 'number',
     required: true,
     placeholder: '0.00',
   },
   {
     key: 'description',
-    label: 'Description',
+    label: t('table.description'),
     type: 'text',
     required: true,
-    placeholder: 'e.g., Plumbing repair',
+    placeholder: t('form.descriptionPlaceholder'),
   },
   {
     key: 'category',
-    label: 'Category',
+    label: t('table.category'),
     type: 'select',
     required: true,
-    options: CATEGORY_OPTIONS,
+    options: getCategoryOptions(t),
     defaultValue: ExpenseCategory.MAINTENANCE,
   },
 ];
 
 export const ExpenseCreatePage = () => {
+  const { t } = useTranslation('expenses');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
@@ -165,13 +164,12 @@ export const ExpenseCreatePage = () => {
           </button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-text-primary">
-              Add New Expense
+              {t('create.title')}
             </h1>
             {addedCount > 0 && (
               <p className="flex items-center gap-1.5 text-sm text-success-text mt-1">
                 <CheckCircle className="h-3.5 w-3.5" />
-                {addedCount} expense{addedCount !== 1 ? 's' : ''} added this
-                session
+                {t('create.addedCount', { count: addedCount })}
               </p>
             )}
           </div>
@@ -190,7 +188,7 @@ export const ExpenseCreatePage = () => {
                   : 'text-text-secondary hover:text-text-secondary'
               }`}
             >
-              {m === 'single' ? 'Single' : 'Bulk'}
+              {m === 'single' ? t('create.single') : t('create.bulk')}
             </button>
           ))}
         </div>
@@ -215,7 +213,8 @@ export const ExpenseCreatePage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-2">
-                    Property <span className="text-error-text">*</span>
+                    {t('form.property')}{' '}
+                    <span className="text-error-text">*</span>
                   </label>
                   <PropertySelector
                     value={bulkPropertyId}
@@ -225,7 +224,8 @@ export const ExpenseCreatePage = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-2">
-                    Currency <span className="text-error-text">*</span>
+                    {t('form.currency')}{' '}
+                    <span className="text-error-text">*</span>
                   </label>
                   <CurrencySelector
                     value={bulkCurrency || defaultCurrency || ''}
@@ -236,7 +236,7 @@ export const ExpenseCreatePage = () => {
               </div>
 
               <BulkDataGrid
-                columns={BULK_COLUMNS}
+                columns={getBulkColumns(t)}
                 onSubmit={handleBulkSubmit}
                 isSubmitting={bulkSubmitting}
                 disabled={!bulkPropertyId || !(bulkCurrency || defaultCurrency)}

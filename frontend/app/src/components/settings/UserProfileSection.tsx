@@ -19,6 +19,7 @@ import {
   useCancelPhoneVerification,
   usePhonePolicy,
 } from '../../hooks/useUserPreferencesHooks';
+import { useTranslation } from 'react-i18next';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import { parsePhoneNumber } from 'libphonenumber-js/max';
 import type { PhoneNumberPolicyResponse } from '@/api/users';
@@ -88,6 +89,7 @@ function validatePhoneAgainstPolicy(
 }
 
 export const UserProfileSection = () => {
+  const { t } = useTranslation('settings');
   const { data: currentUser, isLoading, isError, refetch } = useCurrentUser();
   const updateProfileMutation = useUpdateUserProfile();
   const verifyPhoneMutation = useVerifyPhone();
@@ -321,13 +323,13 @@ export const UserProfileSection = () => {
       <div className="flex flex-col items-center justify-center py-12 gap-4">
         <AlertTriangle className="h-8 w-8 text-warning-text" />
         <p className="text-sm text-text-secondary">
-          Failed to load profile data
+          {t('profile.failedToLoad')}
         </p>
         <button
           onClick={() => refetch()}
           className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm"
         >
-          Try Again
+          {t('profile.tryAgain')}
         </button>
       </div>
     );
@@ -341,10 +343,10 @@ export const UserProfileSection = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Profile Information
+                {t('profile.title')}
               </h2>
               <p className="text-sm text-text-secondary mt-1">
-                Update your personal information and avatar
+                {t('profile.subtitle')}
               </p>
             </div>
             {!isEditing && (
@@ -352,7 +354,7 @@ export const UserProfileSection = () => {
                 onClick={handleStartEdit}
                 className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
               >
-                Edit Profile
+                {t('profile.editProfile')}
               </button>
             )}
           </div>
@@ -402,7 +404,7 @@ export const UserProfileSection = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  First Name
+                  {t('profile.firstName')}
                 </label>
                 <input
                   type="text"
@@ -416,7 +418,7 @@ export const UserProfileSection = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Last Name
+                  {t('profile.lastName')}
                 </label>
                 <input
                   type="text"
@@ -432,7 +434,7 @@ export const UserProfileSection = () => {
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Email Address
+                {t('profile.emailAddress')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
@@ -444,27 +446,26 @@ export const UserProfileSection = () => {
                 />
               </div>
               <p className="text-xs text-text-secondary mt-1">
-                Email address cannot be changed. Contact support if you need to
-                update it.
+                {t('profile.emailChangeNote')}
               </p>
             </div>
 
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <label className="block text-sm font-medium text-text-secondary">
-                  Phone Number
+                  {t('profile.phoneNumber')}
                 </label>
                 {hasPhone &&
                   !isEditing &&
                   (phoneVerified ? (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-success-bg text-success-text">
                       <CheckCircle2 className="h-3 w-3" />
-                      Verified
+                      {t('profile.verified')}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-warning-bg text-warning-text">
                       <AlertTriangle className="h-3 w-3" />
-                      Unverified
+                      {t('profile.unverified')}
                     </span>
                   ))}
               </div>
@@ -490,7 +491,7 @@ export const UserProfileSection = () => {
                     <MessageSquare className="h-4 w-4 text-primary-500" />
                   </div>
                   <p className="text-sm font-semibold text-text-primary">
-                    Almost there! Enter the code sent to{' '}
+                    {t('profile.verification.enterCode')}{' '}
                     <span className="text-primary-500">
                       {currentUser?.phone}
                     </span>
@@ -514,7 +515,7 @@ export const UserProfileSection = () => {
                 </div>
                 {verifyPhoneMutation.isError && (
                   <p className="text-xs text-error-text mt-2 ml-11">
-                    Invalid or expired code. Please try again.
+                    {t('profile.verification.invalidCode')}
                   </p>
                 )}
                 <div className="mt-2 ml-11 flex items-center gap-3 text-xs">
@@ -524,10 +525,12 @@ export const UserProfileSection = () => {
                     className="font-medium text-primary-500 hover:text-primary-600 disabled:text-text-secondary disabled:cursor-not-allowed transition-colors"
                   >
                     {resendMutation.isPending
-                      ? 'Sending...'
+                      ? t('profile.verification.sending')
                       : cooldown > 0
-                        ? `Resend in ${cooldown}s`
-                        : 'Resend code'}
+                        ? t('profile.verification.resendIn', {
+                            seconds: cooldown,
+                          })
+                        : t('profile.verification.resendCode')}
                   </button>
                   <span className="text-text-disabled">|</span>
                   <button
@@ -544,8 +547,8 @@ export const UserProfileSection = () => {
                     className="font-medium text-text-secondary hover:text-text-secondary disabled:cursor-not-allowed transition-colors"
                   >
                     {cancelVerificationMutation.isPending
-                      ? 'Cancelling...'
-                      : 'Change number'}
+                      ? t('profile.verification.cancelling')
+                      : t('profile.verification.changeNumber')}
                   </button>
                 </div>
               </div>
@@ -558,7 +561,7 @@ export const UserProfileSection = () => {
                   className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors flex items-center gap-2"
                 >
                   <X className="h-4 w-4" />
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </button>
                 <button
                   onClick={handleSaveProfile}
@@ -570,7 +573,7 @@ export const UserProfileSection = () => {
                   ) : (
                     <Save className="h-4 w-4" />
                   )}
-                  Save Changes
+                  {t('common:buttons.saveChanges')}
                 </button>
               </div>
             )}
@@ -584,10 +587,10 @@ export const UserProfileSection = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Security Settings
+                {t('security.title')}
               </h2>
               <p className="text-sm text-text-secondary mt-1">
-                Manage your password and security preferences
+                {t('security.subtitle')}
               </p>
             </div>
           </div>
@@ -598,9 +601,11 @@ export const UserProfileSection = () => {
             <div className="flex items-center gap-3">
               <Lock className="h-5 w-5 text-text-secondary " />
               <div>
-                <p className="font-medium text-text-primary">Password</p>
+                <p className="font-medium text-text-primary">
+                  {t('security.password')}
+                </p>
                 <p className="text-sm text-text-secondary">
-                  Password changes are managed through your identity provider
+                  {t('security.passwordNote')}
                 </p>
               </div>
             </div>
@@ -608,7 +613,7 @@ export const UserProfileSection = () => {
               href="/auth/change-password"
               className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
             >
-              Change Password
+              {t('security.changePassword')}
             </a>
           </div>
         </div>

@@ -110,6 +110,13 @@ public class DemoContractGenerator {
       int contactIndex = 0;
       int totalContracts = 0;
 
+      // Batch record lists
+      List<Object[]> contractRecords = new ArrayList<>();
+      List<Object[]> partyRecords = new ArrayList<>();
+      List<Object[]> rentPeriodRecords = new ArrayList<>();
+      List<Object[]> componentRecords = new ArrayList<>();
+      List<UUID> occupiedPropertyIds = new ArrayList<>();
+
       for (int propIdx = 0; propIdx < sortedProperties.size(); propIdx++) {
         UUID propertyId = sortedProperties.get(propIdx);
         String propertyCategory = ctx.getPropertyCategory(propertyId);
@@ -263,93 +270,102 @@ public class DemoContractGenerator {
 
           // Mark property as occupied if last contract is ACTIVE
           if (isLastContract && "ACTIVE".equals(status)) {
-            dsl.update(PROPERTIES)
-                .set(PROPERTIES.STATUS, "OCCUPIED")
-                .where(PROPERTIES.ID.eq(propertyId))
-                .execute();
+            occupiedPropertyIds.add(propertyId);
           }
 
           UUID contractId = UUID.randomUUID();
           Sid contractIdentifier = newContractId();
-          dsl.insertInto(CONTRACTS)
-              .set(CONTRACTS.ID, contractId)
-              .set(CONTRACTS.IDENTIFIER, contractIdentifier)
-              .set(CONTRACTS.TEAM_ID, teamId)
-              .set(CONTRACTS.PROPERTY_ID, propertyId)
-              .set(CONTRACTS.CONTRACT_TYPE, contractType)
-              .set(CONTRACTS.START_DATE, startDate)
-              .set(CONTRACTS.END_DATE, endDate)
-              .set(CONTRACTS.SIGNED_DATE, signedDate)
-              .set(CONTRACTS.RENT_AMOUNT, rent)
-              .set(CONTRACTS.DEPOSIT_AMOUNT, deposit)
-              .set(CONTRACTS.SECURITY_DEPOSIT, rent)
-              .set(CONTRACTS.RENT_AMOUNT_CURRENCY, currency)
-              .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, currency)
-              .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
-              .set(CONTRACTS.PAYMENT_FREQUENCY, paymentFrequency)
-              .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
-              .set(field("renewal_mode", String.class), renewalMode)
-              .set(field("renewal_term_months", Integer.class), renewalTermMonths)
-              .set(field("max_renewals", Integer.class), maxRenewals)
-              .set(field("landlord_notice_days", Integer.class), landlordNoticeDays)
-              .set(field("tenant_notice_days", Integer.class), tenantNoticeDays)
-              .set(field("requires_tenant_confirmation", Boolean.class), requiresTenantConfirmation)
-              .set(field("rent_adjustment_type", String.class), rentAdjType)
-              .set(field("rent_adjustment_value", BigDecimal.class), rentAdjValue)
-              .set(CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeDays)
-              .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
-              .set(CONTRACTS.STATUS, status)
-              .set(
-                  CONTRACTS.NOTES,
-                  isLastContract
-                      ? "Demo contract for testing purposes"
-                      : "Historical contract (contract " + (c + 1) + " of " + chainLength + ")")
-              .set(field("country_code", String.class), countryCode)
-              .set(
-                  field("country_metadata", JSONB.class),
-                  metadata != null
-                      ? JSONB.jsonb(countryMetadataSerializer.serialize(metadata))
-                      : null)
-              .set(CONTRACTS.CREATED_AT, createdAt)
-              .set(CONTRACTS.UPDATED_AT, now)
-              .set(CONTRACTS.CREATED_BY, createdBy)
-              .set(CONTRACTS.UPDATED_BY, createdBy)
-              .execute();
+
+          String notesText =
+              isLastContract
+                  ? "Demo contract for testing purposes"
+                  : "Historical contract (contract " + (c + 1) + " of " + chainLength + ")";
+
+          JSONB metadataJsonb =
+              metadata != null ? JSONB.jsonb(countryMetadataSerializer.serialize(metadata)) : null;
+
+          contractRecords.add(
+              new Object[] {
+                contractId,
+                contractIdentifier,
+                teamId,
+                propertyId,
+                contractType,
+                startDate,
+                endDate,
+                signedDate,
+                rent,
+                deposit,
+                rent,
+                currency,
+                currency,
+                currency,
+                paymentFrequency,
+                1,
+                renewalMode,
+                renewalTermMonths,
+                maxRenewals,
+                landlordNoticeDays,
+                tenantNoticeDays,
+                requiresTenantConfirmation,
+                rentAdjType,
+                rentAdjValue,
+                terminationNoticeDays,
+                BigDecimal.valueOf(2),
+                status,
+                notesText,
+                countryCode,
+                metadataJsonb,
+                createdAt,
+                now,
+                createdBy,
+                createdBy
+              });
 
           // Insert primary contact into contract_parties
-          dsl.insertInto(table("contract_parties"))
-              .set(field("id", UUID.class), UUID.randomUUID())
-              .set(field("identifier", String.class), newContractPartyId().value())
-              .set(field("team_id", UUID.class), teamId)
-              .set(field("contract_id", UUID.class), contractId)
-              .set(field("contact_id", UUID.class), contactId)
-              .set(field("role", String.class), "PRIMARY_TENANT")
-              .set(field("created_at", LocalDateTime.class), now)
-              .set(field("updated_at", LocalDateTime.class), now)
-              .set(field("created_by", UUID.class), createdBy)
-              .set(field("updated_by", UUID.class), createdBy)
-              .execute();
+          partyRecords.add(
+              new Object[] {
+                UUID.randomUUID(),
+                newContractPartyId().value(),
+                teamId,
+                contractId,
+                contactId,
+                "PRIMARY_TENANT",
+                now,
+                now,
+                createdBy,
+                createdBy
+              });
 
           // Insert initial rent period
           UUID rentPeriodId = UUID.randomUUID();
-          dsl.insertInto(table("contract_rent_periods"))
-              .set(field("id", UUID.class), rentPeriodId)
-              .set(field("identifier", String.class), newContractRentPeriodId().value())
-              .set(field("team_id", UUID.class), teamId)
-              .set(field("contract_id", UUID.class), contractId)
-              .set(field("rent_amount", Long.class), rent.movePointRight(2).longValueExact())
-              .set(field("currency", String.class), currency)
-              .set(field("effective_from", java.sql.Date.class), java.sql.Date.valueOf(startDate))
-              .set(field("created_at", LocalDateTime.class), createdAt)
-              .set(field("updated_at", LocalDateTime.class), now)
-              .set(field("created_by", UUID.class), createdBy)
-              .set(field("updated_by", UUID.class), createdBy)
-              .execute();
+          rentPeriodRecords.add(
+              new Object[] {
+                rentPeriodId,
+                newContractRentPeriodId().value(),
+                teamId,
+                contractId,
+                rent.movePointRight(2).longValueExact(),
+                currency,
+                java.sql.Date.valueOf(startDate),
+                createdAt,
+                now,
+                createdBy,
+                createdBy
+              });
 
           // Insert rent components (~70% of contracts get a breakdown)
           if (totalContracts % 3 != 2) {
-            insertRentComponents(
-                contractId, rentPeriodId, teamId, createdBy, rent, currency, propertyCategory, now);
+            collectRentComponents(
+                componentRecords,
+                contractId,
+                rentPeriodId,
+                teamId,
+                createdBy,
+                rent,
+                currency,
+                propertyCategory,
+                now);
           }
 
           contractIds.add(contractId);
@@ -357,6 +373,206 @@ public class DemoContractGenerator {
           ctx.incrementContracts();
           totalContracts++;
         }
+      }
+
+      // Execute batch inserts
+
+      // 1. Contracts
+      if (!contractRecords.isEmpty()) {
+        var contractInsert =
+            dsl.insertInto(CONTRACTS)
+                .columns(
+                    CONTRACTS.ID,
+                    CONTRACTS.IDENTIFIER,
+                    CONTRACTS.TEAM_ID,
+                    CONTRACTS.PROPERTY_ID,
+                    CONTRACTS.CONTRACT_TYPE,
+                    CONTRACTS.START_DATE,
+                    CONTRACTS.END_DATE,
+                    CONTRACTS.SIGNED_DATE,
+                    CONTRACTS.RENT_AMOUNT,
+                    CONTRACTS.DEPOSIT_AMOUNT,
+                    CONTRACTS.SECURITY_DEPOSIT,
+                    CONTRACTS.RENT_AMOUNT_CURRENCY,
+                    CONTRACTS.DEPOSIT_AMOUNT_CURRENCY,
+                    CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
+                    CONTRACTS.PAYMENT_FREQUENCY,
+                    CONTRACTS.PAYMENT_DUE_DAY,
+                    field("renewal_mode", String.class),
+                    field("renewal_term_months", Integer.class),
+                    field("max_renewals", Integer.class),
+                    field("landlord_notice_days", Integer.class),
+                    field("tenant_notice_days", Integer.class),
+                    field("requires_tenant_confirmation", Boolean.class),
+                    field("rent_adjustment_type", String.class),
+                    field("rent_adjustment_value", BigDecimal.class),
+                    CONTRACTS.TERMINATION_NOTICE_DAYS,
+                    CONTRACTS.LATE_FEE_PERCENTAGE,
+                    CONTRACTS.STATUS,
+                    CONTRACTS.NOTES,
+                    field("country_code", String.class),
+                    field("country_metadata", JSONB.class),
+                    CONTRACTS.CREATED_AT,
+                    CONTRACTS.UPDATED_AT,
+                    CONTRACTS.CREATED_BY,
+                    CONTRACTS.UPDATED_BY)
+                .values(
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (LocalDate) null,
+                    (LocalDate) null,
+                    (LocalDate) null,
+                    (BigDecimal) null,
+                    (BigDecimal) null,
+                    (BigDecimal) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (Integer) null,
+                    (String) null,
+                    (Integer) null,
+                    (Integer) null,
+                    (Integer) null,
+                    (Integer) null,
+                    (Boolean) null,
+                    (String) null,
+                    (BigDecimal) null,
+                    (Integer) null,
+                    (BigDecimal) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (JSONB) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
+        var contractBatch = dsl.batch(contractInsert);
+        for (Object[] r : contractRecords) {
+          contractBatch = contractBatch.bind(r);
+        }
+        contractBatch.execute();
+      }
+
+      // 2. Contract parties
+      if (!partyRecords.isEmpty()) {
+        var partyInsert =
+            dsl.insertInto(table("contract_parties"))
+                .columns(
+                    field("id", UUID.class),
+                    field("identifier", String.class),
+                    field("team_id", UUID.class),
+                    field("contract_id", UUID.class),
+                    field("contact_id", UUID.class),
+                    field("role", String.class),
+                    field("created_at", LocalDateTime.class),
+                    field("updated_at", LocalDateTime.class),
+                    field("created_by", UUID.class),
+                    field("updated_by", UUID.class))
+                .values(
+                    (UUID) null,
+                    (String) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
+        var partyBatch = dsl.batch(partyInsert);
+        for (Object[] r : partyRecords) {
+          partyBatch = partyBatch.bind(r);
+        }
+        partyBatch.execute();
+      }
+
+      // 3. Rent periods
+      if (!rentPeriodRecords.isEmpty()) {
+        var rpInsert =
+            dsl.insertInto(table("contract_rent_periods"))
+                .columns(
+                    field("id", UUID.class),
+                    field("identifier", String.class),
+                    field("team_id", UUID.class),
+                    field("contract_id", UUID.class),
+                    field("rent_amount", Long.class),
+                    field("currency", String.class),
+                    field("effective_from", java.sql.Date.class),
+                    field("created_at", LocalDateTime.class),
+                    field("updated_at", LocalDateTime.class),
+                    field("created_by", UUID.class),
+                    field("updated_by", UUID.class))
+                .values(
+                    (UUID) null,
+                    (String) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (Long) null,
+                    (String) null,
+                    (java.sql.Date) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
+        var rpBatch = dsl.batch(rpInsert);
+        for (Object[] r : rentPeriodRecords) {
+          rpBatch = rpBatch.bind(r);
+        }
+        rpBatch.execute();
+      }
+
+      // 4. Rent components
+      if (!componentRecords.isEmpty()) {
+        var compInsert =
+            dsl.insertInto(table("contract_rent_components"))
+                .columns(
+                    field("id", UUID.class),
+                    field("identifier", String.class),
+                    field("team_id", UUID.class),
+                    field("contract_id", UUID.class),
+                    field("rent_period_id", UUID.class),
+                    field("component_type", String.class),
+                    field("amount", Long.class),
+                    field("currency", String.class),
+                    field("description", String.class),
+                    field("sort_order", Integer.class),
+                    field("created_at", LocalDateTime.class),
+                    field("updated_at", LocalDateTime.class),
+                    field("created_by", UUID.class),
+                    field("updated_by", UUID.class))
+                .values(
+                    (UUID) null,
+                    (String) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (Long) null,
+                    (String) null,
+                    (String) null,
+                    (Integer) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
+        var compBatch = dsl.batch(compInsert);
+        for (Object[] r : componentRecords) {
+          compBatch = compBatch.bind(r);
+        }
+        compBatch.execute();
+      }
+
+      // 5. Batch update property statuses
+      if (!occupiedPropertyIds.isEmpty()) {
+        dsl.update(PROPERTIES)
+            .set(PROPERTIES.STATUS, "OCCUPIED")
+            .where(PROPERTIES.ID.in(occupiedPropertyIds))
+            .execute();
       }
 
       ctx.getContractIdsByTeam().put(teamId, contractIds);
@@ -470,7 +686,8 @@ public class DemoContractGenerator {
   }
 
   @SuppressWarnings("NullAway")
-  private void insertRentComponents(
+  private void collectRentComponents(
+      List<Object[]> componentRecords,
       UUID contractId,
       UUID rentPeriodId,
       UUID teamId,
@@ -489,7 +706,8 @@ public class DemoContractGenerator {
     BigDecimal serviceCosts = rentAmount.subtract(baseRent).subtract(utilities);
 
     int sortOrder = 0;
-    insertComponent(
+    addComponent(
+        componentRecords,
         contractId,
         rentPeriodId,
         teamId,
@@ -500,7 +718,8 @@ public class DemoContractGenerator {
         null,
         sortOrder++,
         now);
-    insertComponent(
+    addComponent(
+        componentRecords,
         contractId,
         rentPeriodId,
         teamId,
@@ -511,7 +730,8 @@ public class DemoContractGenerator {
         null,
         sortOrder++,
         now);
-    insertComponent(
+    addComponent(
+        componentRecords,
         contractId,
         rentPeriodId,
         teamId,
@@ -528,7 +748,8 @@ public class DemoContractGenerator {
         || "INDUSTRIAL".equals(propertyCategory)
         || random.nextInt(10) == 0) {
       BigDecimal parking = BigDecimal.valueOf(random.nextInt(50, 200));
-      insertComponent(
+      addComponent(
+          componentRecords,
           contractId,
           rentPeriodId,
           teamId,
@@ -543,7 +764,8 @@ public class DemoContractGenerator {
   }
 
   @SuppressWarnings("NullAway")
-  private void insertComponent(
+  private void addComponent(
+      List<Object[]> componentRecords,
       UUID contractId,
       UUID rentPeriodId,
       UUID teamId,
@@ -556,22 +778,23 @@ public class DemoContractGenerator {
       LocalDateTime now) {
     int digits = com.buurman.util.CurrencyUtils.getFractionalDigits(currency);
     long minorUnits = amountMajor.movePointRight(digits).longValueExact();
-    dsl.insertInto(table("contract_rent_components"))
-        .set(field("id", UUID.class), UUID.randomUUID())
-        .set(field("identifier", String.class), newRentComponentId().value())
-        .set(field("team_id", UUID.class), teamId)
-        .set(field("contract_id", UUID.class), contractId)
-        .set(field("rent_period_id", UUID.class), rentPeriodId)
-        .set(field("component_type", String.class), componentType)
-        .set(field("amount", Long.class), minorUnits)
-        .set(field("currency", String.class), currency)
-        .set(field("description", String.class), description)
-        .set(field("sort_order", Integer.class), sortOrder)
-        .set(field("created_at", LocalDateTime.class), now)
-        .set(field("updated_at", LocalDateTime.class), now)
-        .set(field("created_by", UUID.class), createdBy)
-        .set(field("updated_by", UUID.class), createdBy)
-        .execute();
+    componentRecords.add(
+        new Object[] {
+          UUID.randomUUID(),
+          newRentComponentId().value(),
+          teamId,
+          contractId,
+          rentPeriodId,
+          componentType,
+          minorUnits,
+          currency,
+          description,
+          sortOrder,
+          now,
+          now,
+          createdBy,
+          createdBy
+        });
   }
 
   private int terminationNoticeForCategory(String category) {

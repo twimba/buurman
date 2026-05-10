@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FileText, FileDown, Languages, Shield, Globe } from 'lucide-react';
 import { useGenerateExtensionDocuments } from '@/hooks/useContractExtensionHooks';
 import type { GenerateExtensionDocumentsRequest } from '@/api/contractExtensions';
+import { useTranslation } from 'react-i18next';
 
 const SUPPORTED_LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -34,21 +35,6 @@ export const COUNTRY_OFFICIAL_LANGUAGES: Record<string, string[]> = {
   LU: ['fr', 'de'],
 };
 
-const DOCUMENT_TYPES = [
-  {
-    value: 'EXTENSION_ADDENDUM' as const,
-    label: 'Extension Addendum',
-    icon: FileText,
-    description: 'Formal contract extension agreement',
-  },
-  {
-    value: 'RENT_INCREASE_LETTER' as const,
-    label: 'Rent Increase Letter',
-    icon: FileDown,
-    description: 'Tenant notification of rent changes',
-  },
-];
-
 interface GenerateDocumentsModalProps {
   contractIdentifier: string;
   extensionIdentifier: string;
@@ -68,6 +54,25 @@ export const GenerateDocumentsModal = ({
   regenerate = false,
   onClose,
 }: GenerateDocumentsModalProps) => {
+  const { t } = useTranslation('contracts');
+
+  const DOCUMENT_TYPES = [
+    {
+      value: 'EXTENSION_ADDENDUM' as const,
+      label: t('generateDocuments.types.EXTENSION_ADDENDUM.label'),
+      icon: FileText,
+      description: t('generateDocuments.types.EXTENSION_ADDENDUM.description'),
+    },
+    {
+      value: 'RENT_INCREASE_LETTER' as const,
+      label: t('generateDocuments.types.RENT_INCREASE_LETTER.label'),
+      icon: FileDown,
+      description: t(
+        'generateDocuments.types.RENT_INCREASE_LETTER.description'
+      ),
+    },
+  ];
+
   const officialLanguages = countryCode
     ? (COUNTRY_OFFICIAL_LANGUAGES[countryCode.toUpperCase()] ?? [])
     : [];
@@ -134,13 +139,15 @@ export const GenerateDocumentsModal = ({
         {/* Header */}
         <div className="p-4 border-b border-border-default">
           <h3 className="text-lg font-semibold text-text-primary">
-            {regenerate ? 'Regenerate Documents' : 'Generate Documents'}
+            {regenerate
+              ? t('generateDocuments.regenerateTitle')
+              : t('generateDocuments.title')}
           </h3>
           <p className="text-sm text-text-secondary mt-1">
             Extension #{extensionNumber} —{' '}
             {regenerate
-              ? 'Existing documents will be replaced'
-              : 'Select document types and languages'}
+              ? t('generateDocuments.regenerateDescription')
+              : t('generateDocuments.selectDescription')}
           </p>
         </div>
 
@@ -148,7 +155,7 @@ export const GenerateDocumentsModal = ({
           {/* Document Types */}
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">
-              Document Types
+              {t('generateDocuments.documentTypes')}
             </label>
             <div className="space-y-2">
               {DOCUMENT_TYPES.map((type) => {
@@ -221,17 +228,17 @@ export const GenerateDocumentsModal = ({
           <div>
             <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
               <Languages className="h-4 w-4" />
-              Languages
+              {t('generateDocuments.languages')}
             </label>
             {officialLanguages.length > 0 && (
               <div className="flex items-center gap-4 mb-2 text-xs text-text-muted">
                 <span className="flex items-center gap-1">
                   <Shield className="h-3 w-3 text-amber-500" />
-                  Official language
+                  {t('generateDocuments.officialLanguage')}
                 </span>
                 <span className="flex items-center gap-1">
                   <Globe className="h-3 w-3 text-sky-500" />
-                  Translation
+                  {t('generateDocuments.translation')}
                 </span>
               </div>
             )}
@@ -296,12 +303,7 @@ export const GenerateDocumentsModal = ({
           {/* Summary */}
           {totalDocuments > 0 && (
             <div className="bg-surface-inset rounded-md px-3 py-2 text-sm text-text-secondary">
-              Will generate{' '}
-              <span className="font-medium text-text-primary">
-                {totalDocuments}
-              </span>{' '}
-              document{totalDocuments !== 1 ? 's' : ''} and save to contract
-              documents
+              {t('generateDocuments.willGenerate', { count: totalDocuments })}
             </div>
           )}
         </div>
@@ -314,7 +316,7 @@ export const GenerateDocumentsModal = ({
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
             disabled={generateDocs.isPending}
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             type="button"
@@ -324,9 +326,15 @@ export const GenerateDocumentsModal = ({
           >
             {generateDocs.isPending
               ? regenerate
-                ? 'Regenerating...'
-                : 'Generating...'
-              : `${regenerate ? 'Regenerate' : 'Generate'} ${totalDocuments} Document${totalDocuments !== 1 ? 's' : ''}`}
+                ? t('generateDocuments.regenerating')
+                : t('generateDocuments.generating')
+              : regenerate
+                ? t('generateDocuments.regenerateButton', {
+                    count: totalDocuments,
+                  })
+                : t('generateDocuments.generateButton', {
+                    count: totalDocuments,
+                  })}
           </button>
         </div>
       </div>

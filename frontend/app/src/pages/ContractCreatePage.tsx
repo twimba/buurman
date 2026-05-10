@@ -1,4 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCreateContract } from '@/hooks/useContractHooks';
 import { ContractForm } from '@/components/contracts/ContractForm';
 import { CreateContractRequest } from '@/types/contract';
@@ -6,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const ContractCreatePage = () => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const createContractMutation = useCreateContract();
@@ -29,7 +31,7 @@ export const ContractCreatePage = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-2xl font-bold text-text-primary">
-            Add New Contract
+            {t('create.title')}
           </h1>
         </div>
 
@@ -39,7 +41,7 @@ export const ContractCreatePage = () => {
             blockInReadOnly
             fallback={
               <div className="text-center py-8 text-text-secondary">
-                Creating contracts is not available in read-only mode.
+                {t('create.readOnlyMessage')}
               </div>
             }
           >

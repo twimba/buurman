@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronUp, ChevronDown } from 'lucide-react';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
-import { ContractPartyRole, PARTY_ROLE_LABELS } from '@/types/contract';
+import { ContractPartyRole } from '@/types/contract';
 import type { ContractResponse } from '@/types/contract';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { getCurrencySymbol } from '@/utils/currencies';
+import { useTranslation } from 'react-i18next';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.PRIMARY_TENANT]: 'bg-info-bg text-info-text',
@@ -14,11 +15,17 @@ const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
 };
 
-const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
+const RoleBadge = ({
+  role,
+  label,
+}: {
+  role: ContractPartyRole;
+  label: string;
+}) => (
   <span
     className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-surface-inset text-text-primary'}`}
   >
-    {PARTY_ROLE_LABELS[role] ?? role}
+    {label}
   </span>
 );
 
@@ -38,6 +45,7 @@ export const ContactContractsTable = ({
   contracts,
   contactIdentifier,
 }: ContactContractsTableProps) => {
+  const { t } = useTranslation('tenants');
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
 
@@ -119,14 +127,14 @@ export const ContactContractsTable = ({
     <div className="mt-6 pt-4 border-t border-border-default">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-text-secondary uppercase">
-          All Contracts ({contracts.length})
+          {t('contractsTable.allContracts')} ({contracts.length})
         </h3>
         {contracts.length > 5 && (
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t('contractsTable.search')}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -145,17 +153,17 @@ export const ContactContractsTable = ({
                 className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
                 onClick={() => handleSort('property')}
               >
-                Property
+                {t('contractsTable.property')}
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase">
-                Role
+                {t('contractsTable.role')}
               </th>
               <th
                 className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
                 onClick={() => handleSort('startDate')}
               >
                 <div className="flex items-center gap-1">
-                  Period
+                  {t('contractsTable.period')}
                   {sortField === 'startDate' &&
                     (sortOrder === 'asc' ? (
                       <ChevronUp className="h-3 w-3" />
@@ -168,13 +176,13 @@ export const ContactContractsTable = ({
                 className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
                 onClick={() => handleSort('rentAmount')}
               >
-                Rent
+                {t('contractsTable.rent')}
               </th>
               <th
                 className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
                 onClick={() => handleSort('status')}
               >
-                Status
+                {t('contractsTable.status')}
               </th>
             </tr>
           </thead>
@@ -192,7 +200,13 @@ export const ContactContractsTable = ({
                   <td className="px-4 py-3">{contract.property.street}</td>
                   <td className="px-4 py-3">
                     {party?.role ? (
-                      <RoleBadge role={party.role} />
+                      <RoleBadge
+                        role={party.role}
+                        label={t(
+                          `contracts:enums.partyRoles.${party.role}`,
+                          party.role
+                        )}
+                      />
                     ) : (
                       <span className="text-text-muted">-</span>
                     )}
@@ -205,7 +219,7 @@ export const ContactContractsTable = ({
                           (contract.effectiveEndDate ??
                             contract.endDate) as string
                         )
-                      : 'Ongoing'}
+                      : t('contractsTable.ongoing')}
                   </td>
                   <td className="px-4 py-3 font-medium">
                     {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
@@ -223,7 +237,10 @@ export const ContactContractsTable = ({
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-3 text-sm">
           <span className="text-text-secondary">
-            Page {currentPage} of {totalPages}
+            {t('contractsTable.page', {
+              current: currentPage,
+              total: totalPages,
+            })}
           </span>
           <div className="flex gap-2">
             <button
@@ -231,14 +248,14 @@ export const ContactContractsTable = ({
               disabled={currentPage === 1}
               className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
             >
-              Previous
+              {t('common:pagination.previous')}
             </button>
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
               className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
             >
-              Next
+              {t('common:pagination.next')}
             </button>
           </div>
         </div>

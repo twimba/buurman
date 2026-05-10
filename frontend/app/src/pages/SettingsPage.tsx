@@ -1,4 +1,5 @@
 import { User, Bell, Users, Settings as SettingsIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import { UserProfileSection } from '@/components/settings/UserProfileSection';
 import { UserPreferencesSection } from '@/components/settings/UserPreferencesSection';
@@ -7,18 +8,19 @@ import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 type SettingsTab = 'profile' | 'preferences' | 'teams';
 
-const tabs = [
-  { id: 'profile' as const, label: 'Profile & Security', icon: User },
-  { id: 'preferences' as const, label: 'My Preferences', icon: Bell },
-  { id: 'teams' as const, label: 'My Teams', icon: Users },
-];
-
 export const SettingsPage = () => {
+  const { t } = useTranslation('settings');
   const [activeTab, setActiveTab] = useTabState<SettingsTab>('profile', [
     'profile',
     'preferences',
     'teams',
   ] as const);
+
+  const tabs = [
+    { id: 'profile' as const, label: t('tabs.profile'), icon: User },
+    { id: 'preferences' as const, label: t('tabs.preferences'), icon: Bell },
+    { id: 'teams' as const, label: t('tabs.teams'), icon: Users },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -28,11 +30,11 @@ export const SettingsPage = () => {
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-1">
               <SettingsIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">Settings</h1>
+              <h1 className="text-3xl font-bold text-text-primary">
+                {t('page.title')}
+              </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              Manage your personal profile and preferences
-            </p>
+            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
           </div>
 
           {/* Tabs */}
@@ -75,7 +77,7 @@ export const SettingsPage = () => {
             blockAlways
             fallback={
               <div className="text-center py-12 text-text-secondary">
-                Settings cannot be modified during an impersonation session.
+                {t('page.impersonationBlocked')}
               </div>
             }
           >

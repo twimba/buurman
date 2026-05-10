@@ -11,6 +11,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +19,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -27,6 +31,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Document;
+import com.buurman.domain.Sid;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.service.S3StorageService;
 
@@ -48,6 +53,23 @@ public class DemoDocumentGenerator {
   private final Map<String, byte[]> pdfPool;
 
   private record DocTemplate(String title, String pdfResource, @Nullable String notes) {}
+
+  /** Describes an S3 upload to be executed in parallel. */
+  @SuppressWarnings("ArrayRecordComponent")
+  private record DocUploadTask(
+      byte[] data,
+      Sid teamIdentifier,
+      String entityType,
+      Sid entityIdentifier,
+      String fileName,
+      UUID teamId,
+      UUID entityId,
+      UUID uploadedBy,
+      String title,
+      @Nullable String notes) {}
+
+  /** Result of a successful S3 upload. */
+  private record DocUploadResult(DocUploadTask task, String fileKey) {}
 
   // --- Residential property documents ---
   private static final List<DocTemplate> RESIDENTIAL_PROPERTY_DOCS =
@@ -206,6 +228,23 @@ public class DemoDocumentGenerator {
       return;
     }
 
+    // Prefetch all needed data upfront to avoid N+1 queries
+    List<UUID> allPropertyIds =
+        ctx.getPropertyIdsByTeam().values().stream().flatMap(List::stream).toList();
+    Map<UUID, String> propertyStreets = prefetchPropertyStreets(allPropertyIds);
+    Map<UUID, LocalDate> acquisitionDates = prefetchAcquisitionDates(allPropertyIds);
+
+    List<UUID> allContactIds =
+        ctx.getContactIdsByTeam().values().stream().flatMap(List::stream).toList();
+    Map<UUID, String> contactNames = prefetchContactNames(allContactIds);
+
+    List<UUID> allContractIds =
+        ctx.getContractIdsByTeam().values().stream().flatMap(List::stream).toList();
+    Map<UUID, Record> contractRecords = prefetchContracts(allContractIds);
+
+    // Collect all upload tasks
+    List<DocUploadTask> uploadTasks = new ArrayList<>();
+
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
@@ -214,88 +253,97 @@ public class DemoDocumentGenerator {
         continue;
       }
       UUID uploadedBy = uploadedByOpt.get();
-      int teamDocuments = 0;
 
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().getOrDefault(teamId, List.of());
       List<UUID> contactIds = ctx.getContactIdsByTeam().getOrDefault(teamId, List.of());
       List<UUID> contractIds = ctx.getContractIdsByTeam().getOrDefault(teamId, List.of());
 
+      Sid teamIdentifier = ctx.getIdentifier(teamId);
+
       // Property documents (scaled by acquisition age — older properties accumulate more)
       for (UUID propertyId : propertyIds) {
-        String prefix = fetchPropertyStreet(propertyId).map(this::slugify).orElse("property");
+        String prefix =
+            Optional.ofNullable(propertyStreets.get(propertyId))
+                .map(this::slugify)
+                .orElse("property");
         String category = ctx.getPropertyCategory(propertyId);
         List<DocTemplate> templates = propertyDocsForCategory(category);
 
-        LocalDate acqDate = fetchAcquisitionDate(propertyId);
+        LocalDate acqDate = acquisitionDates.getOrDefault(propertyId, LocalDate.now(clock));
         int minDocs = acqDate.isBefore(LocalDate.of(2015, 1, 1)) ? 3 : 2;
         int maxDocs = acqDate.isBefore(LocalDate.of(2010, 1, 1)) ? 5 : 4;
         int docCount = random.nextInt(minDocs, maxDocs + 1);
 
+        Sid entityIdentifier = ctx.getIdentifier(propertyId);
         for (DocTemplate doc : pickRandom(templates, docCount)) {
-          if (uploadDocument(
+          collectUploadTask(
+              uploadTasks,
               ctx,
               teamId,
+              teamIdentifier,
               uploadedBy,
               "PROPERTY",
               propertyId,
+              entityIdentifier,
               doc.title,
               prefix + "-" + doc.pdfResource,
               doc.pdfResource,
-              doc.notes)) {
-            teamDocuments++;
-          }
+              doc.notes);
         }
       }
 
       // Contact documents (1-2 per contact, type-specific)
       for (UUID contactId : contactIds) {
-        String prefix = fetchContactName(contactId).map(this::slugify).orElse("contact");
+        String prefix =
+            Optional.ofNullable(contactNames.get(contactId)).map(this::slugify).orElse("contact");
         boolean isBusiness = ctx.isBusinessContact(contactId);
         List<DocTemplate> templates = isBusiness ? BUSINESS_CONTACT_DOCS : INDIVIDUAL_CONTACT_DOCS;
+        Sid entityIdentifier = ctx.getIdentifier(contactId);
         for (DocTemplate doc : pickRandom(templates, random.nextInt(1, 3))) {
-          if (uploadDocument(
+          collectUploadTask(
+              uploadTasks,
               ctx,
               teamId,
+              teamIdentifier,
               uploadedBy,
               "CONTACT",
               contactId,
+              entityIdentifier,
               doc.title,
               prefix + "-" + doc.pdfResource,
               doc.pdfResource,
-              doc.notes)) {
-            teamDocuments++;
-          }
+              doc.notes);
         }
       }
 
       // Contract documents (varies by status/age)
       LocalDate fiveYearsAgo = LocalDate.now(clock).minusYears(5);
       for (UUID contractId : contractIds) {
-        Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
+        Record contract = contractRecords.get(contractId);
         if (contract == null) {
           continue;
         }
 
         String status = contract.get(CONTRACTS.STATUS);
+        Sid entityIdentifier = ctx.getIdentifier(contractId);
 
         if ("DRAFT".equals(status)) {
-          // Draft: just the unsigned agreement
-          if (uploadDocument(
+          collectUploadTask(
+              uploadTasks,
               ctx,
               teamId,
+              teamIdentifier,
               uploadedBy,
               "CONTRACT",
               contractId,
+              entityIdentifier,
               "Draft rental agreement",
               "draft-rental-agreement.pdf",
               "hud-model-lease.pdf",
-              "Unsigned draft for review")) {
-            teamDocuments++;
-          }
+              "Unsigned draft for review");
           continue;
         }
 
-        // Expired contracts older than 5 years get only 1 doc
         LocalDate endDate = contract.get(CONTRACTS.END_DATE);
         boolean isOldExpired =
             "EXPIRED".equals(status) && endDate != null && endDate.isBefore(fiveYearsAgo);
@@ -303,18 +351,19 @@ public class DemoDocumentGenerator {
         int docCount = isOldExpired ? 1 : random.nextInt(2, 4);
 
         for (DocTemplate doc : pickRandom(CONTRACT_DOCS, docCount)) {
-          if (uploadDocument(
+          collectUploadTask(
+              uploadTasks,
               ctx,
               teamId,
+              teamIdentifier,
               uploadedBy,
               "CONTRACT",
               contractId,
+              entityIdentifier,
               doc.title,
               doc.pdfResource,
               doc.pdfResource,
-              doc.notes)) {
-            teamDocuments++;
-          }
+              doc.notes);
         }
       }
 
@@ -339,22 +388,128 @@ public class DemoDocumentGenerator {
         DocTemplate doc = EXPENSE_DOCS.get(random.nextInt(EXPENSE_DOCS.size()));
         String prefix = slugify(category.toLowerCase(Locale.ROOT));
 
-        if (uploadDocument(
+        collectUploadTask(
+            uploadTasks,
             ctx,
             teamId,
+            teamIdentifier,
             uploadedBy,
             "EXPENSE",
             expenseId,
+            ctx.getIdentifier(expenseId),
             doc.title + " — " + description,
             prefix + "-" + doc.pdfResource,
             doc.pdfResource,
-            doc.notes)) {
-          teamDocuments++;
+            doc.notes);
+      }
+    }
+
+    if (uploadTasks.isEmpty()) {
+      return;
+    }
+
+    // Execute parallel uploads
+    List<DocUploadResult> results = executeParallelUploads(uploadTasks);
+
+    // Batch-save all Document entities to DB and count per team
+    Map<UUID, Integer> teamDocCounts = new HashMap<>();
+    for (DocUploadResult result : results) {
+      DocUploadTask task = result.task();
+      Document document = new Document();
+      document.setTeamId(task.teamId());
+      document.setEntityType(task.entityType());
+      document.setEntityId(task.entityId());
+      document.setFileKey(result.fileKey());
+      document.setFileName(task.fileName());
+      document.setFileSize((long) task.data().length);
+      document.setMimeType("application/pdf");
+      document.setTitle(Optional.of(task.title()));
+      document.setNotes(Optional.ofNullable(task.notes()));
+      document.setUploadedBy(task.uploadedBy());
+      documentRepository.save(document);
+      teamDocCounts.merge(task.teamId(), 1, Integer::sum);
+    }
+
+    // Update context counters
+    teamDocCounts.forEach((teamId, count) -> ctx.incrementDocuments(count));
+
+    log.info(
+        "Total documents created: {} (from {} upload tasks)", results.size(), uploadTasks.size());
+  }
+
+  private void collectUploadTask(
+      List<DocUploadTask> tasks,
+      DemoDataContext ctx,
+      UUID teamId,
+      Sid teamIdentifier,
+      UUID uploadedBy,
+      String entityType,
+      UUID entityId,
+      Sid entityIdentifier,
+      String title,
+      String fileName,
+      String pdfResource,
+      @Nullable String notes) {
+    byte[] pdfData = pdfPool.getOrDefault(pdfResource, pdfPool.values().iterator().next());
+    tasks.add(
+        new DocUploadTask(
+            pdfData,
+            teamIdentifier,
+            entityType,
+            entityIdentifier,
+            fileName,
+            teamId,
+            entityId,
+            uploadedBy,
+            title,
+            notes));
+  }
+
+  @SuppressWarnings("NullAway")
+  private List<DocUploadResult> executeParallelUploads(List<DocUploadTask> tasks) {
+    Semaphore semaphore = new Semaphore(20);
+
+    try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+      List<CompletableFuture<DocUploadResult>> futures =
+          tasks.stream()
+              .map(
+                  task ->
+                      CompletableFuture.supplyAsync(
+                          () -> {
+                            try {
+                              semaphore.acquire();
+                              try {
+                                String fileKey =
+                                    s3StorageService.uploadFile(
+                                        task.data(),
+                                        "application/pdf",
+                                        task.teamIdentifier(),
+                                        task.entityType(),
+                                        task.entityIdentifier(),
+                                        task.fileName());
+                                return new DocUploadResult(task, fileKey);
+                              } finally {
+                                semaphore.release();
+                              }
+                            } catch (InterruptedException e) {
+                              Thread.currentThread().interrupt();
+                              throw new RuntimeException(e);
+                            }
+                          },
+                          executor))
+              .toList();
+
+      CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+
+      List<DocUploadResult> results = new ArrayList<>(futures.size());
+      for (CompletableFuture<DocUploadResult> future : futures) {
+        try {
+          results.add(future.join());
+        } catch (Exception e) {
+          log.warn("Document upload failed: {}", e.getMessage());
         }
       }
-
-      ctx.incrementDocuments(teamDocuments);
-      log.info("Created {} documents for team {}", teamDocuments, teamKey);
+      return results;
     }
   }
 
@@ -367,81 +522,53 @@ public class DemoDocumentGenerator {
     };
   }
 
-  private boolean uploadDocument(
-      DemoDataContext ctx,
-      UUID teamId,
-      UUID uploadedBy,
-      String entityType,
-      UUID entityId,
-      String title,
-      String fileName,
-      String pdfResource,
-      @Nullable String notes) {
-    byte[] pdfData = pdfPool.getOrDefault(pdfResource, pdfPool.values().iterator().next());
+  // --- batch prefetch helpers (eliminates N+1 queries) ---
 
-    try {
-      String fileKey =
-          s3StorageService.uploadFile(
-              pdfData,
-              "application/pdf",
-              ctx.getIdentifier(teamId),
-              entityType,
-              ctx.getIdentifier(entityId),
-              fileName);
-
-      Document document = new Document();
-      document.setTeamId(teamId);
-      document.setEntityType(entityType);
-      document.setEntityId(entityId);
-      document.setFileKey(fileKey);
-      document.setFileName(fileName);
-      document.setFileSize((long) pdfData.length);
-      document.setMimeType("application/pdf");
-      document.setTitle(Optional.of(title));
-      document.setNotes(Optional.ofNullable(notes));
-      document.setUploadedBy(uploadedBy);
-
-      documentRepository.save(document);
-      return true;
-    } catch (Exception e) {
-      log.warn(
-          "Failed to upload document '{}' for {} {}: {}",
-          title,
-          entityType,
-          entityId,
-          e.getMessage());
-      return false;
+  private Map<UUID, String> prefetchPropertyStreets(List<UUID> propertyIds) {
+    if (propertyIds.isEmpty()) {
+      return Map.of();
     }
+    return dsl.select(PROPERTIES.ID, PROPERTIES.STREET)
+        .from(PROPERTIES)
+        .where(PROPERTIES.ID.in(propertyIds))
+        .fetchMap(PROPERTIES.ID, PROPERTIES.STREET);
   }
 
-  // --- helpers ---
-
-  private Optional<String> fetchPropertyStreet(UUID propertyId) {
-    return Optional.ofNullable(
-        dsl.select(PROPERTIES.STREET)
-            .from(PROPERTIES)
-            .where(PROPERTIES.ID.eq(propertyId))
-            .fetchOne(PROPERTIES.STREET));
+  private Map<UUID, LocalDate> prefetchAcquisitionDates(List<UUID> propertyIds) {
+    if (propertyIds.isEmpty()) {
+      return Map.of();
+    }
+    return dsl.select(PROPERTY_ACQUISITIONS.PROPERTY_ID, PROPERTY_ACQUISITIONS.ACQUISITION_DATE)
+        .from(PROPERTY_ACQUISITIONS)
+        .where(PROPERTY_ACQUISITIONS.PROPERTY_ID.in(propertyIds))
+        .fetchMap(PROPERTY_ACQUISITIONS.PROPERTY_ID, PROPERTY_ACQUISITIONS.ACQUISITION_DATE);
   }
 
-  private LocalDate fetchAcquisitionDate(UUID propertyId) {
-    return Optional.ofNullable(
-            dsl.select(PROPERTY_ACQUISITIONS.ACQUISITION_DATE)
-                .from(PROPERTY_ACQUISITIONS)
-                .where(PROPERTY_ACQUISITIONS.PROPERTY_ID.eq(propertyId))
-                .fetchOne(PROPERTY_ACQUISITIONS.ACQUISITION_DATE))
-        .orElse(LocalDate.now(clock));
+  private Map<UUID, String> prefetchContactNames(List<UUID> contactIds) {
+    if (contactIds.isEmpty()) {
+      return Map.of();
+    }
+    Map<UUID, String> result = new HashMap<>();
+    dsl.select(CONTACTS.ID, CONTACTS.FIRST_NAME, CONTACTS.LAST_NAME)
+        .from(CONTACTS)
+        .where(CONTACTS.ID.in(contactIds))
+        .forEach(
+            r ->
+                result.put(
+                    r.get(CONTACTS.ID),
+                    r.get(CONTACTS.FIRST_NAME) + " " + r.get(CONTACTS.LAST_NAME)));
+    return result;
   }
 
-  private Optional<String> fetchContactName(UUID contactId) {
-    Record r =
-        dsl.select(CONTACTS.FIRST_NAME, CONTACTS.LAST_NAME)
-            .from(CONTACTS)
-            .where(CONTACTS.ID.eq(contactId))
-            .fetchOne();
-    return r != null
-        ? Optional.of(r.get(CONTACTS.FIRST_NAME) + " " + r.get(CONTACTS.LAST_NAME))
-        : Optional.empty();
+  private Map<UUID, Record> prefetchContracts(List<UUID> contractIds) {
+    if (contractIds.isEmpty()) {
+      return Map.of();
+    }
+    Map<UUID, Record> result = new HashMap<>();
+    dsl.selectFrom(CONTRACTS)
+        .where(CONTRACTS.ID.in(contractIds))
+        .forEach(r -> result.put(r.get(CONTRACTS.ID), r));
+    return result;
   }
 
   private List<DocTemplate> pickRandom(List<DocTemplate> templates, int count) {

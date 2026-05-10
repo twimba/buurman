@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Kostnader",
+    "subtitle": "Spara fastighetskostnader och utgifter"
+  },
+  "actions": {
+    "addExpense": "Lagg till kostnad"
+  },
+  "stats": {
+    "totalExpenses": "Totala kostnader",
+    "categorySummary": "i {{category}}",
+    "categorySummaryAll": "over {{count}} kategorier",
+    "topCategories": "Topkategorier",
+    "noData": "Ingen data tillganglig",
+    "lastSixMonths": "Senaste 6 manaderna",
+    "tooltipExpenses": "Kostnader"
+  },
+  "filters": {
+    "title": "Filter",
+    "property": "Fastighet",
+    "category": "Kategori",
+    "allProperties": "Alla fastigheter",
+    "allCategories": "Alla kategorier"
+  },
+  "category": {
+    "MAINTENANCE": "Underhall",
+    "REPAIR": "Reparation",
+    "UTILITY": "Drift",
+    "TAX": "Skatt",
+    "INSURANCE": "Forsakring",
+    "LEGAL": "Juridiskt",
+    "MARKETING": "Marknadsforing",
+    "CLEANING": "Stadning",
+    "LANDSCAPING": "Tradgardsarbete",
+    "PROPERTY_MANAGEMENT": "Fastighetsforvaltning",
+    "FEES": "Avgifter",
+    "PROPERTY_TAX": "Fastighetsskatt",
+    "OTHER": "Ovrigt"
+  },
+  "table": {
+    "date": "Datum",
+    "expenseNumber": "Kostnad #",
+    "description": "Beskrivning",
+    "category": "Kategori",
+    "property": "Fastighet",
+    "amount": "Belopp"
+  },
+  "empty": {
+    "title": "Inga kostnader hittades",
+    "filtered": "Forsok justera dina filter",
+    "noData": "Kom igang genom att registrera din forsta kostnad"
+  },
+  "card": {
+    "expenseId": "Kostnad #{{id}}",
+    "property": "Fastighet",
+    "contact": "Kontakt",
+    "amount": "Belopp",
+    "expenseDate": "Kostnadsdatum",
+    "documentsAttached": "{{count}} dokument bifogade"
+  },
+  "form": {
+    "property": "Fastighet",
+    "category": "Kategori",
+    "contact": "Kontakt",
+    "amount": "Belopp",
+    "expenseDate": "Kostnadsdatum",
+    "description": "Beskrivning",
+    "descriptionPlaceholder": "t.ex. VVS-reparation i badrum",
+    "notes": "Anteckningar",
+    "notesPlaceholder": "Lagg till ytterligare anteckningar om denna kostnad...",
+    "continueAdding": "Fortsatt lagga till fler",
+    "today": "Idag",
+    "updateExpense": "Uppdatera",
+    "createExpense": "Skapa",
+    "expenseSuffix": " kostnad",
+    "saving": "Sparar...",
+    "currency": "Valuta"
+  },
+  "validation": {
+    "propertyRequired": "Fastighet ar obligatorisk",
+    "amountRequired": "Beloppet maste vara storre an 0",
+    "currencyRequired": "Valuta ar obligatorisk",
+    "expenseDateRequired": "Kostnadsdatum ar obligatoriskt",
+    "descriptionRequired": "Beskrivning ar obligatorisk"
+  },
+  "create": {
+    "title": "Lagg till ny kostnad",
+    "addedCount": "{{count}} kostnad tillagd denna session",
+    "addedCount_other": "{{count}} kostnader tillagda denna session",
+    "single": "Enskild",
+    "bulk": "Flera"
+  },
+  "detail": {
+    "titlePrefix": "Kostnad #{{id}}",
+    "expenseDetails": "Kostnadsdetaljer",
+    "propertyAndContact": "Fastighet & Kontakt",
+    "amount": "Belopp",
+    "expenseDate": "Kostnadsdatum",
+    "category": "Kategori",
+    "description": "Beskrivning",
+    "property": "Fastighet",
+    "contact": "Kontakt",
+    "noContactLinked": "Ingen kontakt kopplad",
+    "notes": "Anteckningar",
+    "metadata": "Metadata",
+    "created": "Skapad:",
+    "lastUpdated": "Senast uppdaterad:",
+    "editExpense": "Redigera kostnad"
+  },
+  "tabs": {
+    "details": "Detaljer",
+    "documents": "Dokument",
+    "history": "Historik"
+  },
+  "history": {
+    "title": "Kostnadshistorik",
+    "empty": "Ingen historik tillganglig",
+    "emptySubtitle": "Andringar i denna kostnad visas har",
+    "clickToView": "Klicka for att visa andringar",
+    "clickToHide": "Klicka for att dolja andringar",
+    "changedFields": "Andrade falt",
+    "old": "Gammal:",
+    "new": "Ny:",
+    "impersonated": "Imiterad"
+  },
+  "deleteDialog": {
+    "title": "Ta bort kostnad",
+    "message": "Ar du saker pa att du vill ta bort denna kostnad? Denna atgard kan inte angras.",
+    "messageWithRelated": "Ar du saker pa att du vill ta bort denna kostnad? Alla relaterade dokument kommer ocksa att tas bort. Denna atgard kan inte angras."
+  },
+  "tooltips": {
+    "viewExpense": "Visa kostnad",
+    "deleteExpense": "Ta bort kostnad"
+  },
+  "errors": {
+    "loadFailed": "Det gick inte att ladda kostnader",
+    "loadExpenseFailed": "Det gick inte att ladda kostnad",
+    "loadHistoryFailed": "Det gick inte att ladda historik"
+  }
+}

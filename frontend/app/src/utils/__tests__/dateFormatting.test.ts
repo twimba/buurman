@@ -1,4 +1,8 @@
-import { formatAppDate, formatAppDateTime, formatAppRelativeDate } from '../dateFormatting';
+import {
+  formatAppDate,
+  formatAppDateTime,
+  formatAppRelativeDate,
+} from '../dateFormatting';
 
 describe('formatAppDate', () => {
   it('formats a date string with default DD/MM/YYYY format', () => {
@@ -6,11 +10,15 @@ describe('formatAppDate', () => {
   });
 
   it('formats with MM/DD/YYYY preference', () => {
-    expect(formatAppDate('2026-03-15T10:30:00Z', 'MM/DD/YYYY')).toBe('03/15/2026');
+    expect(formatAppDate('2026-03-15T10:30:00Z', 'MM/DD/YYYY')).toBe(
+      '03/15/2026'
+    );
   });
 
   it('formats with YYYY-MM-DD preference', () => {
-    expect(formatAppDate('2026-03-15T10:30:00Z', 'YYYY-MM-DD')).toBe('2026-03-15');
+    expect(formatAppDate('2026-03-15T10:30:00Z', 'YYYY-MM-DD')).toBe(
+      '2026-03-15'
+    );
   });
 
   it('accepts a Date object', () => {
@@ -36,12 +44,20 @@ describe('formatAppDate', () => {
 
 describe('formatAppDateTime', () => {
   it('includes time in HH:mm format', () => {
-    const result = formatAppDateTime('2026-06-20T14:45:00Z', 'DD/MM/YYYY', 'UTC');
+    const result = formatAppDateTime(
+      '2026-06-20T14:45:00Z',
+      'DD/MM/YYYY',
+      'UTC'
+    );
     expect(result).toBe('20/06/2026 14:45');
   });
 
   it('formats with MM/DD/YYYY preference including time', () => {
-    const result = formatAppDateTime('2026-06-20T08:05:00Z', 'MM/DD/YYYY', 'UTC');
+    const result = formatAppDateTime(
+      '2026-06-20T08:05:00Z',
+      'MM/DD/YYYY',
+      'UTC'
+    );
     expect(result).toBe('06/20/2026 08:05');
   });
 

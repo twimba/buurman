@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DOMPurify from 'dompurify';
 import { Lock } from 'lucide-react';
 import { useImpersonation } from '../context/ImpersonationContext';
@@ -11,6 +12,7 @@ function formatTime(seconds: number): string {
 }
 
 export function ImpersonationBanner() {
+  const { t } = useTranslation('common');
   const {
     active,
     adminEmail,
@@ -29,7 +31,7 @@ export function ImpersonationBanner() {
   if (ended) {
     return (
       <div className="fixed top-0 left-0 right-0 z-[9999] bg-emerald-500 text-white px-4 py-3 text-center text-sm font-medium shadow-md">
-        Impersonation session ended. You can close this tab.
+        {t('impersonation.sessionEnded')}
       </div>
     );
   }
@@ -50,15 +52,16 @@ export function ImpersonationBanner() {
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999] bg-amber-500 text-amber-950 px-4 py-2 text-center text-sm font-medium shadow-md">
       <span>
-        Impersonation active — admin: <strong>{displayName}</strong>
+        {t('impersonation.active')} — {t('impersonation.admin')}:{' '}
+        <strong>{displayName}</strong>
         {isReadOnly && (
           <span className="inline-flex items-center gap-1 ml-1">
-            <Lock className="inline h-3 w-3" />
-            (read-only)
+            <Lock className="inline h-3 w-3" />({t('impersonation.readOnly')})
           </span>
         )}
         {' · '}
-        Time remaining: <strong>{formatTime(remainingSeconds)}</strong>
+        {t('impersonation.timeRemaining')}:{' '}
+        <strong>{formatTime(remainingSeconds)}</strong>
       </span>
       {reason && (
         <span
@@ -71,7 +74,7 @@ export function ImpersonationBanner() {
         onClick={handleEnd}
         className="ml-4 px-3 py-1 bg-amber-700 text-white rounded text-xs font-semibold hover:bg-amber-800 transition-colors"
       >
-        End Session
+        {t('impersonation.endSession')}
       </button>
     </div>
   );

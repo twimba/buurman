@@ -9,7 +9,6 @@ import {
 } from '@/hooks/useContactHooks';
 import {
   InteractionType,
-  INTERACTION_TYPE_LABELS,
   CreateContactNoteRequest,
   UpdateContactNoteRequest,
   ContactNoteResponse,
@@ -45,6 +44,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const INTERACTION_TYPE_ICONS: Record<InteractionType, React.ReactNode> = {
   [InteractionType.PHONE_CALL]: <Phone className="h-4 w-4" />,
@@ -85,6 +85,7 @@ interface ContactNotesTabProps {
 }
 
 export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
+  const { t } = useTranslation('tenants');
   const { canEditData } = useTeam();
   const { formatDate, formatRelative } = useFormatDate();
   const { data: notes = [], isLoading } = useContactNotes(contactId);
@@ -178,7 +179,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-text-primary">
-          Notes ({notes.length})
+          {t('notes.title')} ({notes.length})
         </h2>
         {canEditData && (
           <Button
@@ -186,7 +187,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
             leftIcon={<Plus className="h-4 w-4" />}
             onClick={handleOpenCreate}
           >
-            Add Note
+            {t('notes.addNote')}
           </Button>
         )}
       </div>
@@ -194,8 +195,8 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
       {sortedNotes.length === 0 ? (
         <EmptyState
           icon={<StickyNote className="h-12 w-12" />}
-          title="No notes yet"
-          description="Add notes to track interactions and important details about this contact."
+          title={t('notes.empty')}
+          description={t('notes.emptyDescription')}
           variant="section"
           actions={
             canEditData ? (
@@ -204,7 +205,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                 leftIcon={<Plus className="h-4 w-4" />}
                 onClick={handleOpenCreate}
               >
-                Add First Note
+                {t('notes.addFirstNote')}
               </Button>
             ) : undefined
           }
@@ -228,18 +229,20 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-inset text-text-secondary">
-                        {INTERACTION_TYPE_LABELS[note.interactionType]}
+                        {t(`enums.interactionTypes.${note.interactionType}`)}
                       </span>
                       {note.pinned && (
                         <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300">
                           <Pin className="h-3 w-3 inline mr-1" />
-                          Pinned
+                          {t('notes.pinned')}
                         </span>
                       )}
                       {note.followUpDate && (
                         <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-warning-bg text-warning-text">
                           <Calendar className="h-3 w-3 inline mr-1" />
-                          Follow up: {formatDate(note.followUpDate)}
+                          {t('notes.followUp', {
+                            date: formatDate(note.followUpDate),
+                          })}
                         </span>
                       )}
                     </div>
@@ -267,7 +270,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                     <button
                       onClick={() => handleTogglePin(note)}
                       className="p-1.5 rounded hover:bg-surface-inset text-text-muted hover:text-text-primary transition-colors"
-                      title={note.pinned ? 'Unpin' : 'Pin'}
+                      title={note.pinned ? t('notes.unpin') : t('notes.pin')}
                     >
                       {note.pinned ? (
                         <PinOff className="h-4 w-4" />
@@ -278,14 +281,14 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                     <button
                       onClick={() => handleOpenEdit(note)}
                       className="p-1.5 rounded hover:bg-surface-inset text-text-muted hover:text-text-primary transition-colors"
-                      title="Edit"
+                      title={t('common:buttons.edit')}
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => setDeleteNoteId(note.identifier)}
                       className="p-1.5 rounded hover:bg-error-bg text-text-muted hover:text-error-text transition-colors"
-                      title="Delete"
+                      title={t('common:buttons.delete')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -301,12 +304,12 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
       <ModalWrapper
         open={showFormModal}
         onClose={handleCloseForm}
-        title={editingNote ? 'Edit Note' : 'Add Note'}
+        title={editingNote ? t('notes.editNote') : t('notes.addNote')}
         size="lg"
         footer={
           <div className="flex gap-3 justify-end">
             <Button variant="secondary" onClick={handleCloseForm}>
-              Cancel
+              {t('common:buttons.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -316,13 +319,13 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
               }
               disabled={!form.body.trim() || !form.occurredAt}
             >
-              {editingNote ? 'Save Changes' : 'Create Note'}
+              {editingNote ? t('notes.saveChanges') : t('notes.createNote')}
             </Button>
           </div>
         }
       >
         <div className="space-y-4">
-          <FormField label="Interaction Type" required>
+          <FormField label={t('notes.interactionType')} required>
             <Select
               value={form.interactionType}
               onChange={(e) =>
@@ -332,27 +335,27 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                 }))
               }
             >
-              {Object.entries(INTERACTION_TYPE_LABELS).map(([value, label]) => (
+              {Object.values(InteractionType).map((value) => (
                 <option key={value} value={value}>
-                  {label}
+                  {t(`enums.interactionTypes.${value}`)}
                 </option>
               ))}
             </Select>
           </FormField>
-          <FormField label="Subject">
+          <FormField label={t('notes.subject')}>
             <Input
               value={form.subject}
               onChange={(e) =>
                 setForm((f) => ({ ...f, subject: e.target.value }))
               }
-              placeholder="Brief summary..."
+              placeholder={t('notes.subjectPlaceholder')}
             />
           </FormField>
-          <FormField label="Body" required>
+          <FormField label={t('notes.body')} required>
             <RichTextEditor
               value={form.body}
               onChange={(value) => setForm((f) => ({ ...f, body: value }))}
-              placeholder="Write your note..."
+              placeholder={t('notes.placeholder')}
             />
           </FormField>
 
@@ -363,7 +366,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
             className="flex items-center gap-1.5 text-sm text-primary-500 hover:text-primary-600 transition-colors"
           >
             <Calendar className="h-4 w-4" />
-            Set date & follow-up
+            {t('notes.setDateFollowUp')}
             {showDateSection ? (
               <ChevronUp className="h-3.5 w-3.5" />
             ) : (
@@ -372,7 +375,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
           </button>
           {showDateSection && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-6 border-l-2 border-primary-200">
-              <FormField label="Date of interaction" required>
+              <FormField label={t('notes.dateOfInteraction')} required>
                 <Input
                   type="datetime-local"
                   value={form.occurredAt}
@@ -381,7 +384,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                   }
                 />
               </FormField>
-              <FormField label="Follow-up date">
+              <FormField label={t('notes.followUpDate')}>
                 <Input
                   type="date"
                   value={form.followUpDate}
@@ -398,10 +401,10 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
       {/* Delete Confirmation */}
       {deleteNoteId && (
         <ConfirmDialog
-          title="Delete Note"
-          message="Are you sure you want to delete this note? This action cannot be undone."
+          title={t('notes.deleteTitle')}
+          message={t('notes.deleteMessage')}
           variant="danger"
-          confirmLabel="Delete"
+          confirmLabel={t('common:buttons.delete')}
           isLoading={deleteMutation.isPending}
           onConfirm={handleDelete}
           onCancel={() => setDeleteNoteId(null)}

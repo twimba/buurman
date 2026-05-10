@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
 import type { RentIncreaseItem } from '@/types/rentIncrease';
+import { useTranslation } from 'react-i18next';
 
 interface ReviewStepProps {
   contracts: RentIncreaseContractPreview[];
@@ -19,6 +20,7 @@ export const ReviewStep = ({
   onApply,
   isApplying,
 }: ReviewStepProps) => {
+  const { t } = useTranslation('contracts');
   const changedIncreases = useMemo(
     () => increases.filter((inc) => inc.increasePercentage !== 0),
     [increases]
@@ -81,7 +83,7 @@ export const ReviewStep = ({
       {/* Portfolio Totals */}
       <div className="bg-surface-card rounded-lg border border-border-default p-6">
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Portfolio Totals for {year}
+          {t('rentIncrease.portfolioTotals', { year })}
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Object.entries(totalsByCurrency).map(([currency, totals]) => (
@@ -90,24 +92,33 @@ export const ReviewStep = ({
               className="p-4 rounded-lg bg-surface-page dark:bg-surface-card"
             >
               <p className="text-sm text-text-secondary mb-2">
-                {currency} ({totals.count}{' '}
-                {totals.count === 1 ? 'contract' : 'contracts'})
+                {currency} (
+                {t('rentIncrease.contract', {
+                  count: totals.count,
+                })}
+                )
               </p>
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-sm text-text-secondary">Previous</span>
+                  <span className="text-sm text-text-secondary">
+                    {t('rentIncrease.previous')}
+                  </span>
                   <span className="font-medium text-text-primary">
                     {formatMoney(totals.previousTotal, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-text-secondary">New</span>
+                  <span className="text-sm text-text-secondary">
+                    {t('rentIncrease.new')}
+                  </span>
                   <span className="font-semibold text-text-primary">
                     {formatMoney(totals.newTotal, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-border-default pt-1">
-                  <span className="text-sm text-text-secondary">Increase</span>
+                  <span className="text-sm text-text-secondary">
+                    {t('rentIncrease.increase')}
+                  </span>
                   <span
                     className={`font-semibold ${
                       totals.newTotal >= totals.previousTotal
@@ -132,7 +143,9 @@ export const ReviewStep = ({
       <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
         <div className="px-4 py-3 border-b border-border-default">
           <h3 className="font-semibold text-text-primary">
-            Contracts to Update ({changedIncreases.length})
+            {t('rentIncrease.contractsToUpdate', {
+              count: changedIncreases.length,
+            })}
           </h3>
         </div>
         <div className="overflow-x-auto">
@@ -140,19 +153,19 @@ export const ReviewStep = ({
             <thead>
               <tr className="border-b border-border-default">
                 <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                  Property
+                  {t('rentIncrease.tableHeaders.property')}
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-text-secondary">
-                  Current Rent
+                  {t('rentIncrease.tableHeaders.currentRent')}
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-text-secondary">
-                  Increase
+                  {t('rentIncrease.increase')}
                 </th>
                 <th className="text-right px-4 py-3 font-semibold text-text-secondary">
-                  New Rent
+                  {t('rentIncrease.tableHeaders.newRent')}
                 </th>
                 <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                  Effective Date
+                  {t('rentIncrease.tableHeaders.effectiveDate')}
                 </th>
               </tr>
             </thead>
@@ -213,7 +226,9 @@ export const ReviewStep = ({
       {unchangedContracts.length > 0 && (
         <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <h3 className="font-semibold text-text-primary mb-3">
-            Unchanged Contracts ({unchangedContracts.length})
+            {t('rentIncrease.unchangedContracts', {
+              count: unchangedContracts.length,
+            })}
           </h3>
           <div className="space-y-2">
             {unchangedContracts.map((contract) => (
@@ -244,7 +259,7 @@ export const ReviewStep = ({
           onClick={onBack}
           className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
         >
-          Back
+          {t('common:buttons.back')}
         </button>
         <button
           onClick={onApply}
@@ -252,8 +267,10 @@ export const ReviewStep = ({
           className="bg-success-text text-white px-6 py-2 rounded hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isApplying
-            ? 'Applying...'
-            : `Apply ${changedIncreases.length} Adjustment${changedIncreases.length !== 1 ? 's' : ''}`}
+            ? t('rentIncrease.applying')
+            : t('rentIncrease.applyAdjustments', {
+                count: changedIncreases.length,
+              })}
         </button>
       </div>
     </div>

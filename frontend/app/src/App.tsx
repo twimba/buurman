@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { TeamProvider } from './context/TeamContext';
 import { ImpersonationProvider } from './context/ImpersonationContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LocaleProvider } from './context/LocaleContext';
 import { FeatureFlagProvider } from './context/FeatureFlagContext';
 import { AnalyticsInitializer } from './components/AnalyticsInitializer';
 import { FeatureGate } from './components/FeatureGate';
@@ -214,246 +215,248 @@ function App() {
               <FeatureFlagProvider>
                 <ThemeProvider>
                   <ToastProvider>
-                    <ImpersonationBanner />
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <Routes>
-                        {/* Public routes (no auth required) */}
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                        <Route
-                          path="/impersonate"
-                          element={<ImpersonatePage />}
-                        />
-                        <Route
-                          path="/invitation/:token"
-                          element={<InvitationPage />}
-                        />
-
-                        {/* Verify email — auth required but no layout */}
-                        <Route
-                          element={
-                            <ProtectedRoute requireVerification={false} />
-                          }
-                        >
+                    <LocaleProvider>
+                      <ImpersonationBanner />
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <Routes>
+                          {/* Public routes (no auth required) */}
+                          <Route path="/login" element={<LoginPage />} />
+                          <Route path="/register" element={<RegisterPage />} />
                           <Route
-                            path="/verify-email"
-                            element={<VerifyEmailPage />}
+                            path="/impersonate"
+                            element={<ImpersonatePage />}
                           />
-                        </Route>
+                          <Route
+                            path="/invitation/:token"
+                            element={<InvitationPage />}
+                          />
 
-                        {/* All protected routes with layout */}
-                        <Route element={<ProtectedRoute />}>
-                          <Route element={<Layout />}>
-                            {/* Main pages */}
+                          {/* Verify email — auth required but no layout */}
+                          <Route
+                            element={
+                              <ProtectedRoute requireVerification={false} />
+                            }
+                          >
                             <Route
-                              path="/dashboard"
-                              element={<DashboardPage />}
-                            />
-                            <Route
-                              path="/properties"
-                              element={<PropertyListPage />}
-                            />
-                            <Route
-                              path="/properties/new"
-                              element={<PropertyCreatePage />}
-                            />
-                            <Route
-                              path="/properties/:id"
-                              element={<PropertyDetailPage />}
-                            />
-                            <Route
-                              path="/properties/:id/edit"
-                              element={<PropertyEditPage />}
-                            />
-                            <Route
-                              path="/contacts"
-                              element={<ContactListPage />}
-                            />
-                            <Route
-                              path="/contacts/imports"
-                              element={<ImportHistoryPage />}
-                            />
-                            <Route
-                              path="/contacts/new"
-                              element={<ContactCreatePage />}
-                            />
-                            <Route
-                              path="/contacts/:id"
-                              element={<ContactDetailPage />}
-                            />
-                            <Route
-                              path="/contacts/:id/edit"
-                              element={<ContactEditPage />}
-                            />
-                            <Route
-                              path="/contracts"
-                              element={<ContractsPage />}
-                            />
-                            <Route
-                              path="/contracts/new"
-                              element={<ContractCreatePage />}
-                            />
-                            <Route
-                              path="/contracts/:id"
-                              element={<ContractDetailPage />}
-                            />
-                            <Route
-                              path="/contracts/:id/edit"
-                              element={<ContractEditPage />}
-                            />
-                            <Route
-                              path="/rent-regulations"
-                              element={<RentRegulationsPage />}
-                            />
-                            <Route
-                              path="/rent-increases/apply"
-                              element={<RentIncreaseWizardPage />}
-                            />
-                            <Route
-                              path="/payments"
-                              element={<PaymentsPage />}
-                            />
-                            <Route
-                              path="/payments/new"
-                              element={<PaymentCreatePage />}
-                            />
-                            <Route
-                              path="/payments/:id"
-                              element={<PaymentDetailPage />}
-                            />
-                            <Route
-                              path="/expenses"
-                              element={<ExpensesPage />}
-                            />
-                            <Route
-                              path="/expenses/new"
-                              element={<ExpenseCreatePage />}
-                            />
-                            <Route
-                              path="/expenses/:id"
-                              element={<ExpenseDetailPage />}
-                            />
-                            <Route
-                              path="/documents"
-                              element={<DocumentsPage />}
-                            />
-                            <Route path="/photos" element={<PhotosPage />} />
-
-                            {/* Feature-gated routes */}
-                            <Route
-                              path="/reports"
-                              element={
-                                <FeatureGate
-                                  flag={FeatureFlags.REPORTS}
-                                  fallback={
-                                    <Navigate to="/dashboard" replace />
-                                  }
-                                >
-                                  <FinancialReportsPage />
-                                </FeatureGate>
-                              }
-                            />
-                            <Route
-                              path="/reports/transactions"
-                              element={
-                                <FeatureGate
-                                  flag={FeatureFlags.REPORTS}
-                                  fallback={
-                                    <Navigate to="/dashboard" replace />
-                                  }
-                                >
-                                  <TransactionHistoryPage />
-                                </FeatureGate>
-                              }
-                            />
-
-                            {/* Personal Settings */}
-                            <Route
-                              path="/settings"
-                              element={<SettingsPage />}
-                            />
-
-                            {/* Administration Pages (Admin Only) */}
-                            <Route
-                              path="/admin/team-members"
-                              element={<AdminTeamMembersPage />}
-                            />
-                            <Route
-                              path="/admin/preferences"
-                              element={<AdminPreferencesPage />}
-                            />
-                            <Route
-                              path="/admin/payment-instructions"
-                              element={<AdminPaymentInstructionsPage />}
-                            />
-                            <Route
-                              path="/admin/calendar-feeds"
-                              element={<AdminCalendarFeedsPage />}
-                            />
-                            <Route
-                              path="/admin/data-export"
-                              element={<AdminDataExportPage />}
-                            />
-                            <Route
-                              path="/admin/notifications"
-                              element={<AdminNotificationsPage />}
-                            />
-                            <Route
-                              path="/admin/billing"
-                              element={<AdminBillingPage />}
-                            />
-                            <Route
-                              path="/admin/activity-log"
-                              element={<AuditLogPage />}
-                            />
-                            <Route
-                              path="/admin/api-docs"
-                              element={
-                                <FeatureGate
-                                  flag={FeatureFlags.SWAGGER}
-                                  fallback={
-                                    <Navigate to="/dashboard" replace />
-                                  }
-                                >
-                                  <AdminApiDocsPage />
-                                </FeatureGate>
-                              }
+                              path="/verify-email"
+                              element={<VerifyEmailPage />}
                             />
                           </Route>
-                        </Route>
 
-                        {/* Backwards-compat redirects */}
-                        <Route
-                          path="/tenants/*"
-                          element={<Navigate to="/contacts" replace />}
-                        />
-                        <Route
-                          path="/team-settings"
-                          element={
-                            <Navigate to="/admin/team-members" replace />
-                          }
-                        />
-                        <Route
-                          path="/audit-log"
-                          element={
-                            <Navigate to="/admin/activity-log" replace />
-                          }
-                        />
-                        <Route
-                          path="/payment-instructions"
-                          element={
-                            <Navigate
-                              to="/admin/payment-instructions"
-                              replace
-                            />
-                          }
-                        />
-                        <Route
-                          path="/"
-                          element={<Navigate to="/dashboard" replace />}
-                        />
-                      </Routes>
-                    </Suspense>
+                          {/* All protected routes with layout */}
+                          <Route element={<ProtectedRoute />}>
+                            <Route element={<Layout />}>
+                              {/* Main pages */}
+                              <Route
+                                path="/dashboard"
+                                element={<DashboardPage />}
+                              />
+                              <Route
+                                path="/properties"
+                                element={<PropertyListPage />}
+                              />
+                              <Route
+                                path="/properties/new"
+                                element={<PropertyCreatePage />}
+                              />
+                              <Route
+                                path="/properties/:id"
+                                element={<PropertyDetailPage />}
+                              />
+                              <Route
+                                path="/properties/:id/edit"
+                                element={<PropertyEditPage />}
+                              />
+                              <Route
+                                path="/contacts"
+                                element={<ContactListPage />}
+                              />
+                              <Route
+                                path="/contacts/imports"
+                                element={<ImportHistoryPage />}
+                              />
+                              <Route
+                                path="/contacts/new"
+                                element={<ContactCreatePage />}
+                              />
+                              <Route
+                                path="/contacts/:id"
+                                element={<ContactDetailPage />}
+                              />
+                              <Route
+                                path="/contacts/:id/edit"
+                                element={<ContactEditPage />}
+                              />
+                              <Route
+                                path="/contracts"
+                                element={<ContractsPage />}
+                              />
+                              <Route
+                                path="/contracts/new"
+                                element={<ContractCreatePage />}
+                              />
+                              <Route
+                                path="/contracts/:id"
+                                element={<ContractDetailPage />}
+                              />
+                              <Route
+                                path="/contracts/:id/edit"
+                                element={<ContractEditPage />}
+                              />
+                              <Route
+                                path="/rent-regulations"
+                                element={<RentRegulationsPage />}
+                              />
+                              <Route
+                                path="/rent-increases/apply"
+                                element={<RentIncreaseWizardPage />}
+                              />
+                              <Route
+                                path="/payments"
+                                element={<PaymentsPage />}
+                              />
+                              <Route
+                                path="/payments/new"
+                                element={<PaymentCreatePage />}
+                              />
+                              <Route
+                                path="/payments/:id"
+                                element={<PaymentDetailPage />}
+                              />
+                              <Route
+                                path="/expenses"
+                                element={<ExpensesPage />}
+                              />
+                              <Route
+                                path="/expenses/new"
+                                element={<ExpenseCreatePage />}
+                              />
+                              <Route
+                                path="/expenses/:id"
+                                element={<ExpenseDetailPage />}
+                              />
+                              <Route
+                                path="/documents"
+                                element={<DocumentsPage />}
+                              />
+                              <Route path="/photos" element={<PhotosPage />} />
+
+                              {/* Feature-gated routes */}
+                              <Route
+                                path="/reports"
+                                element={
+                                  <FeatureGate
+                                    flag={FeatureFlags.REPORTS}
+                                    fallback={
+                                      <Navigate to="/dashboard" replace />
+                                    }
+                                  >
+                                    <FinancialReportsPage />
+                                  </FeatureGate>
+                                }
+                              />
+                              <Route
+                                path="/reports/transactions"
+                                element={
+                                  <FeatureGate
+                                    flag={FeatureFlags.REPORTS}
+                                    fallback={
+                                      <Navigate to="/dashboard" replace />
+                                    }
+                                  >
+                                    <TransactionHistoryPage />
+                                  </FeatureGate>
+                                }
+                              />
+
+                              {/* Personal Settings */}
+                              <Route
+                                path="/settings"
+                                element={<SettingsPage />}
+                              />
+
+                              {/* Administration Pages (Admin Only) */}
+                              <Route
+                                path="/admin/team-members"
+                                element={<AdminTeamMembersPage />}
+                              />
+                              <Route
+                                path="/admin/preferences"
+                                element={<AdminPreferencesPage />}
+                              />
+                              <Route
+                                path="/admin/payment-instructions"
+                                element={<AdminPaymentInstructionsPage />}
+                              />
+                              <Route
+                                path="/admin/calendar-feeds"
+                                element={<AdminCalendarFeedsPage />}
+                              />
+                              <Route
+                                path="/admin/data-export"
+                                element={<AdminDataExportPage />}
+                              />
+                              <Route
+                                path="/admin/notifications"
+                                element={<AdminNotificationsPage />}
+                              />
+                              <Route
+                                path="/admin/billing"
+                                element={<AdminBillingPage />}
+                              />
+                              <Route
+                                path="/admin/activity-log"
+                                element={<AuditLogPage />}
+                              />
+                              <Route
+                                path="/admin/api-docs"
+                                element={
+                                  <FeatureGate
+                                    flag={FeatureFlags.SWAGGER}
+                                    fallback={
+                                      <Navigate to="/dashboard" replace />
+                                    }
+                                  >
+                                    <AdminApiDocsPage />
+                                  </FeatureGate>
+                                }
+                              />
+                            </Route>
+                          </Route>
+
+                          {/* Backwards-compat redirects */}
+                          <Route
+                            path="/tenants/*"
+                            element={<Navigate to="/contacts" replace />}
+                          />
+                          <Route
+                            path="/team-settings"
+                            element={
+                              <Navigate to="/admin/team-members" replace />
+                            }
+                          />
+                          <Route
+                            path="/audit-log"
+                            element={
+                              <Navigate to="/admin/activity-log" replace />
+                            }
+                          />
+                          <Route
+                            path="/payment-instructions"
+                            element={
+                              <Navigate
+                                to="/admin/payment-instructions"
+                                replace
+                              />
+                            }
+                          />
+                          <Route
+                            path="/"
+                            element={<Navigate to="/dashboard" replace />}
+                          />
+                        </Routes>
+                      </Suspense>
+                    </LocaleProvider>
                   </ToastProvider>
                 </ThemeProvider>
               </FeatureFlagProvider>

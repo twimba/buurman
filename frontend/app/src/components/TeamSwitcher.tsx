@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { useTeam } from '@/context/TeamContext';
 import {
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 export const TeamSwitcher = () => {
+  const { t } = useTranslation('common');
   const { teams, activeTeam, defaultTeamId, switchTeam, setAsDefaultTeam } =
     useTeam();
   const [isOpen, setIsOpen] = useState(false);
@@ -48,11 +50,11 @@ export const TeamSwitcher = () => {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case 'TEAM_ADMIN':
-        return 'Admin';
+        return t('teamSwitcher.roles.admin');
       case 'TEAM_EDITOR':
-        return 'Editor';
+        return t('teamSwitcher.roles.editor');
       case 'TEAM_VIEWER':
-        return 'Viewer';
+        return t('teamSwitcher.roles.viewer');
       default:
         return role;
     }
@@ -122,7 +124,7 @@ export const TeamSwitcher = () => {
             >
               <div className="p-2 border-b border-border-default bg-surface-page">
                 <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide px-3 py-1">
-                  Your Teams ({teams.length})
+                  {t('teamSwitcher.yourTeams', { count: teams.length })}
                 </p>
               </div>
 
@@ -164,7 +166,11 @@ export const TeamSwitcher = () => {
                             </div>
                             <div className="flex items-center gap-1">
                               <Users className="h-3 w-3" />
-                              <span>{team.memberCount} members</span>
+                              <span>
+                                {t('teamSwitcher.members', {
+                                  count: team.memberCount,
+                                })}
+                              </span>
                             </div>
                           </div>
 
@@ -175,7 +181,7 @@ export const TeamSwitcher = () => {
                               }
                               className="mt-2 text-xs text-primary-500 dark:text-primary-300 hover:text-primary-600 dark:hover:text-primary-200 font-medium"
                             >
-                              Set as default
+                              {t('teamSwitcher.setAsDefault')}
                             </button>
                           )}
                         </div>
@@ -195,8 +201,8 @@ export const TeamSwitcher = () => {
                     <Star className="h-3.5 w-3.5 text-primary-500" />
                   </div>
                   <p>
-                    <strong>Default team</strong> is used when you log in and
-                    for email notifications
+                    <strong>{t('teamSwitcher.defaultTeam')}</strong>{' '}
+                    {t('teamSwitcher.defaultTeamDescription')}
                   </p>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ComposedChart,
   Bar,
@@ -93,6 +94,7 @@ export const PortfolioCashFlowChart = ({
   currency = 'EUR',
   isDark,
 }: PortfolioCashFlowChartProps) => {
+  const { t } = useTranslation('common');
   const chartData = useMemo(
     () =>
       data.map((d) => ({
@@ -135,7 +137,7 @@ export const PortfolioCashFlowChart = ({
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
-        No cash flow data available
+        {t('dashboard.cashFlow.noData')}
       </div>
     );
   }
@@ -161,10 +163,10 @@ export const PortfolioCashFlowChart = ({
           labelFormatter={(label) => formatMonthTick(String(label))}
           formatter={(value, name) => {
             const labels: Record<string, string> = {
-              income: 'Income',
-              negExpenses: 'Expenses',
-              negMortgage: 'Mortgage',
-              net: 'Net',
+              income: t('dashboard.cashFlow.income'),
+              negExpenses: t('dashboard.cashFlow.expenses'),
+              negMortgage: t('dashboard.cashFlow.mortgage'),
+              net: t('dashboard.cashFlow.net'),
             };
             const num = typeof value === 'number' ? value : Number(value);
             const display =
@@ -179,13 +181,13 @@ export const PortfolioCashFlowChart = ({
         />
         <Legend
           formatter={(value) => {
-            const labels: Record<string, string> = {
-              income: 'Income',
-              negExpenses: 'Expenses',
-              negMortgage: 'Mortgage',
-              net: 'Net',
+            const labels2: Record<string, string> = {
+              income: t('dashboard.cashFlow.income'),
+              negExpenses: t('dashboard.cashFlow.expenses'),
+              negMortgage: t('dashboard.cashFlow.mortgage'),
+              net: t('dashboard.cashFlow.net'),
             };
-            return labels[value] ?? value;
+            return labels2[value] ?? value;
           }}
         />
         <ReferenceLine y={0} stroke={isDark ? '#4a4e5f' : '#b0b5c8'} />

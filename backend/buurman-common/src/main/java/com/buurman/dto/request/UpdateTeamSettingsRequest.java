@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @SkipTestCoverage
@@ -27,5 +28,11 @@ public record UpdateTeamSettingsRequest(
       Optional<@Size(max = 20, message = "Date format must not exceed 20 characters") String>
           dateFormat,
       Optional<@Size(min = 2, max = 2, message = "Fiscal year start month must be 2 digits") String>
-          fiscalYearStartMonth) {}
+          fiscalYearStartMonth,
+      Optional<
+              @Pattern(
+                  regexp = "^(en|nl|pt|es|fr|de)$",
+                  message = "Language must be one of: en, nl, pt, es, fr, de")
+              String>
+          defaultLanguage) {}
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   Edit,
@@ -40,6 +41,7 @@ const emptyForm: CreatePaymentInstructionRequest = {
 };
 
 export const PaymentInstructionsSection = () => {
+  const { t } = useTranslation('settings');
   const { data: instructions = [], isLoading } = usePaymentInstructions();
   const createMutation = useCreatePaymentInstruction();
   const deleteMutation = useDeletePaymentInstruction();
@@ -117,7 +119,9 @@ export const PaymentInstructionsSection = () => {
     return (
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-12 text-center">
         <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary-500" />
-        <p className="mt-2 text-text-secondary">Loading...</p>
+        <p className="mt-2 text-text-secondary">
+          {t('paymentInstructions.loading')}
+        </p>
       </div>
     );
   }
@@ -128,15 +132,15 @@ export const PaymentInstructionsSection = () => {
         <div className="flex items-center gap-3 mb-2">
           <CreditCard className="h-6 w-6 text-primary-500 dark:text-primary-300" />
           <h2 className="text-xl font-semibold text-text-primary">
-            Payment Instructions
+            {t('paymentInstructions.title')}
           </h2>
         </div>
         <p className="text-sm text-text-secondary mb-4">
-          Define reusable payment instruction templates for your contracts
+          {t('paymentInstructions.subtitle')}
         </p>
         {canEditData && (
           <Button variant="primary" leftIcon={<Plus />} onClick={handleCreate}>
-            Add Instruction
+            {t('paymentInstructions.addInstruction')}
           </Button>
         )}
       </div>
@@ -145,7 +149,9 @@ export const PaymentInstructionsSection = () => {
       {showForm && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <h3 className="text-lg font-semibold text-text-primary mb-4">
-            {editingId ? 'Edit Payment Instruction' : 'New Payment Instruction'}
+            {editingId
+              ? t('paymentInstructions.editTitle')
+              : t('paymentInstructions.newTitle')}
           </h3>
           {editingId ? (
             <PaymentInstructionEditForm
@@ -165,7 +171,7 @@ export const PaymentInstructionsSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-1">
-                    Name *
+                    {t('paymentInstructions.name')}
                   </label>
                   <input
                     type="text"
@@ -175,12 +181,12 @@ export const PaymentInstructionsSection = () => {
                       setFormData({ ...formData, name: e.target.value })
                     }
                     className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
-                    placeholder="e.g., Main Bank Account"
+                    placeholder={t('paymentInstructions.namePlaceholder')}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-1">
-                    Payment Instruction *
+                    {t('paymentInstructions.paymentMethod')}
                   </label>
                   <select
                     required
@@ -204,14 +210,14 @@ export const PaymentInstructionsSection = () => {
 
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Description
+                  {t('paymentInstructions.description')}
                 </label>
                 <RichTextEditor
                   value={formData.description ?? ''}
                   onChange={(val) =>
                     setFormData({ ...formData, description: val })
                   }
-                  placeholder="Instructions for the contact..."
+                  placeholder={t('paymentInstructions.descriptionPlaceholder')}
                   onSubmit={submitForm}
                 />
               </div>
@@ -220,7 +226,7 @@ export const PaymentInstructionsSection = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1">
-                      Bank Name
+                      {t('paymentInstructions.bankName')}
                     </label>
                     <input
                       type="text"
@@ -233,7 +239,7 @@ export const PaymentInstructionsSection = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1">
-                      Account Holder
+                      {t('paymentInstructions.accountHolder')}
                     </label>
                     <input
                       type="text"
@@ -249,7 +255,7 @@ export const PaymentInstructionsSection = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1">
-                      IBAN
+                      {t('paymentInstructions.iban')}
                     </label>
                     <input
                       type="text"
@@ -263,7 +269,7 @@ export const PaymentInstructionsSection = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1">
-                      BIC / SWIFT
+                      {t('paymentInstructions.bicSwift')}
                     </label>
                     <input
                       type="text"
@@ -277,7 +283,7 @@ export const PaymentInstructionsSection = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1">
-                      Account Number
+                      {t('paymentInstructions.accountNumber')}
                     </label>
                     <input
                       type="text"
@@ -293,7 +299,7 @@ export const PaymentInstructionsSection = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1">
-                      Routing Number
+                      {t('paymentInstructions.routingNumber')}
                     </label>
                     <input
                       type="text"
@@ -312,7 +318,7 @@ export const PaymentInstructionsSection = () => {
 
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Payment Reference
+                  {t('paymentInstructions.paymentReference')}
                 </label>
                 <input
                   type="text"
@@ -324,7 +330,9 @@ export const PaymentInstructionsSection = () => {
                     })
                   }
                   className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
-                  placeholder="Reference to include with payment"
+                  placeholder={t(
+                    'paymentInstructions.paymentReferencePlaceholder'
+                  )}
                 />
               </div>
 
@@ -342,7 +350,7 @@ export const PaymentInstructionsSection = () => {
                   htmlFor="isDefault"
                   className="text-sm text-text-secondary"
                 >
-                  Set as default payment method
+                  {t('paymentInstructions.setAsDefault')}
                 </label>
               </div>
 
@@ -355,10 +363,12 @@ export const PaymentInstructionsSection = () => {
                     setFormData(emptyForm);
                   }}
                 >
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </Button>
                 <Button type="submit" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? 'Creating...' : 'Create'}
+                  {createMutation.isPending
+                    ? t('paymentInstructions.creating')
+                    : t('common:buttons.create')}
                 </Button>
               </div>
             </form>
@@ -371,10 +381,10 @@ export const PaymentInstructionsSection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-12 text-center">
           <CreditCard className="h-12 w-12 mx-auto text-text-muted mb-3" />
           <h3 className="text-lg font-semibold text-text-primary mb-1">
-            No Payment Instructions
+            {t('paymentInstructions.empty.title')}
           </h3>
           <p className="text-sm text-text-secondary mb-4">
-            Add your first payment method to use with contracts.
+            {t('paymentInstructions.empty.subtitle')}
           </p>
           {canEditData && (
             <Button
@@ -382,7 +392,7 @@ export const PaymentInstructionsSection = () => {
               leftIcon={<Plus />}
               onClick={handleCreate}
             >
-              Add Payment Instruction
+              {t('paymentInstructions.empty.addInstruction')}
             </Button>
           )}
         </div>
@@ -413,7 +423,7 @@ export const PaymentInstructionsSection = () => {
                       {pi.isDefault && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
                           <Star className="h-3 w-3" />
-                          Default
+                          {t('paymentInstructions.default')}
                         </span>
                       )}
                       <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
@@ -430,18 +440,20 @@ export const PaymentInstructionsSection = () => {
                     )}
                     {pi.iban && (
                       <p className="text-sm text-text-secondary mt-1 font-mono">
-                        IBAN: {pi.iban.replace(/(.{4})/g, '$1').trim()}
+                        {t('paymentInstructions.iban')}:{' '}
+                        {pi.iban.replace(/(.{4})/g, '$1').trim()}
                       </p>
                     )}
                     {pi.accountNumber && (
                       <p className="text-sm text-text-secondary mt-1 font-mono">
-                        Account: {pi.accountNumber}
-                        {pi.routingNumber && ` / Routing: ${pi.routingNumber}`}
+                        {t('paymentInstructions.account')} {pi.accountNumber}
+                        {pi.routingNumber &&
+                          ` / ${t('paymentInstructions.routing')} ${pi.routingNumber}`}
                       </p>
                     )}
                     {pi.accountHolderName && (
                       <p className="text-sm text-text-secondary">
-                        Holder: {pi.accountHolderName}
+                        {t('paymentInstructions.holder')} {pi.accountHolderName}
                       </p>
                     )}
                   </div>
@@ -461,13 +473,13 @@ export const PaymentInstructionsSection = () => {
                           className="px-2 py-1 text-xs font-medium text-error-text hover:bg-error-bg rounded"
                           disabled={deleteMutation.isPending}
                         >
-                          Confirm
+                          {t('common:buttons.confirm')}
                         </button>
                         <button
                           onClick={() => setConfirmDeleteId(null)}
                           className="px-2 py-1 text-xs text-text-secondary hover:bg-surface-inset rounded"
                         >
-                          Cancel
+                          {t('common:buttons.cancel')}
                         </button>
                       </div>
                     ) : (
@@ -499,6 +511,7 @@ const PaymentInstructionEditForm = ({
   initialData: CreatePaymentInstructionRequest;
   onCancel: () => void;
 }) => {
+  const { t } = useTranslation('settings');
   const updateMutation = useUpdatePaymentInstruction(identifier);
   const [formData, setFormData] =
     useState<UpdatePaymentInstructionRequest>(initialData);
@@ -534,7 +547,7 @@ const PaymentInstructionEditForm = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
-            Name
+            {t('paymentInstructions.name')}
           </label>
           <input
             type="text"
@@ -545,7 +558,7 @@ const PaymentInstructionEditForm = ({
         </div>
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
-            Payment Instruction
+            {t('paymentInstructions.paymentMethod')}
           </label>
           <select
             value={formData.paymentMethod ?? PaymentMethod.BANK_TRANSFER}
@@ -568,12 +581,12 @@ const PaymentInstructionEditForm = ({
 
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-1">
-          Description
+          {t('paymentInstructions.description')}
         </label>
         <RichTextEditor
           value={formData.description ?? ''}
           onChange={(val) => setFormData({ ...formData, description: val })}
-          placeholder="Instructions for the contact..."
+          placeholder={t('paymentInstructions.descriptionPlaceholder')}
           onSubmit={submitForm}
         />
       </div>
@@ -582,7 +595,7 @@ const PaymentInstructionEditForm = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Bank Name
+              {t('paymentInstructions.bankName')}
             </label>
             <input
               type="text"
@@ -595,7 +608,7 @@ const PaymentInstructionEditForm = ({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Account Holder
+              {t('paymentInstructions.accountHolder')}
             </label>
             <input
               type="text"
@@ -611,7 +624,7 @@ const PaymentInstructionEditForm = ({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              IBAN
+              {t('paymentInstructions.iban')}
             </label>
             <input
               type="text"
@@ -625,7 +638,7 @@ const PaymentInstructionEditForm = ({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              BIC / SWIFT
+              {t('paymentInstructions.bicSwift')}
             </label>
             <input
               type="text"
@@ -639,7 +652,7 @@ const PaymentInstructionEditForm = ({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Account Number
+              {t('paymentInstructions.accountNumber')}
             </label>
             <input
               type="text"
@@ -655,7 +668,7 @@ const PaymentInstructionEditForm = ({
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Routing Number
+              {t('paymentInstructions.routingNumber')}
             </label>
             <input
               type="text"
@@ -674,7 +687,7 @@ const PaymentInstructionEditForm = ({
 
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-1">
-          Payment Reference
+          {t('paymentInstructions.paymentReference')}
         </label>
         <input
           type="text"
@@ -697,16 +710,18 @@ const PaymentInstructionEditForm = ({
           className="rounded border-border-default"
         />
         <label htmlFor="editIsDefault" className="text-sm text-text-secondary">
-          Set as default
+          {t('paymentInstructions.setAsDefaultShort')}
         </label>
       </div>
 
       <div className="flex gap-2 justify-end">
         <Button type="button" variant="secondary" onClick={onCancel}>
-          Cancel
+          {t('common:buttons.cancel')}
         </Button>
         <Button type="submit" disabled={updateMutation.isPending}>
-          {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
+          {updateMutation.isPending
+            ? t('paymentInstructions.saving')
+            : t('common:buttons.saveChanges')}
         </Button>
       </div>
     </form>

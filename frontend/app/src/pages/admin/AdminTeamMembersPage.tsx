@@ -2,10 +2,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
+import { useTranslation } from 'react-i18next';
 import { TeamSettingsSection } from '@/components/settings/TeamSettingsSection';
 import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const AdminTeamMembersPage = () => {
+  const { t } = useTranslation('admin');
   const { canEditTeamSettings, isLoading } = useTeam();
   const navigate = useNavigate();
 
@@ -26,19 +28,18 @@ export const AdminTeamMembersPage = () => {
           <div className="flex items-center gap-3 mb-1">
             <Users className="h-8 w-8 text-primary-500 dark:text-primary-300" />
             <h1 className="text-3xl font-bold text-text-primary">
-              Team Members
+              {t('teamMembers.title')}
             </h1>
           </div>
           <p className="text-text-secondary ml-11">
-            Manage team members, roles, and invitations
+            {t('teamMembers.subtitle')}
           </p>
         </div>
         <ImpersonationGuard
           blockAlways
           fallback={
             <div className="text-center py-12 text-text-secondary">
-              Team membership changes are not available during an impersonation
-              session.
+              {t('teamMembers.impersonationBlocked')}
             </div>
           }
         >

@@ -2,9 +2,11 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Download } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
+import { useTranslation } from 'react-i18next';
 import { DataExportSection } from '@/components/settings/DataExportSection';
 
 export const AdminDataExportPage = () => {
+  const { t } = useTranslation('admin');
   const { canEditTeamSettings, isLoading } = useTeam();
   const navigate = useNavigate();
 
@@ -25,11 +27,11 @@ export const AdminDataExportPage = () => {
           <div className="flex items-center gap-3 mb-1">
             <Download className="h-8 w-8 text-primary-500 dark:text-primary-300" />
             <h1 className="text-3xl font-bold text-text-primary">
-              Data Export
+              {t('dataExport.title')}
             </h1>
           </div>
           <p className="text-text-secondary ml-11">
-            Export your team&apos;s data as a downloadable archive
+            {t('dataExport.pageSubtitle')}
           </p>
         </div>
         <DataExportSection />

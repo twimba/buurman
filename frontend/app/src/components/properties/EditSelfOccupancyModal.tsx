@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, RichTextEditor } from '@buurman/ui';
 import { useUpdateOccupancyPeriod } from '@/hooks/useOccupancyPeriodHooks';
 import {
   OccupancyType,
-  OCCUPANCY_TYPE_LABELS,
   OccupancyPeriodResponse,
 } from '@/types/occupancyPeriod';
 import { X } from 'lucide-react';
@@ -19,6 +19,7 @@ export const EditSelfOccupancyModal = ({
   period,
   onClose,
 }: EditSelfOccupancyModalProps) => {
+  const { t } = useTranslation('properties');
   const updateMutation = useUpdateOccupancyPeriod(propertyIdentifier);
 
   const [startDate, setStartDate] = useState(period.startDate);
@@ -55,7 +56,7 @@ export const EditSelfOccupancyModal = ({
       <div className="bg-surface-card rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-text-primary">
-            Edit Self-Occupancy
+            {t('selfOccupancy.editTitle')}
           </h3>
           <button
             onClick={onClose}
@@ -69,7 +70,7 @@ export const EditSelfOccupancyModal = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Start Date *
+                {t('selfOccupancy.form.startDate')}
               </label>
               <input
                 type="date"
@@ -81,7 +82,7 @@ export const EditSelfOccupancyModal = ({
             </div>
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                End Date
+                {t('selfOccupancy.form.endDate')}
               </label>
               <input
                 type="date"
@@ -95,7 +96,7 @@ export const EditSelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Occupancy Type *
+              {t('selfOccupancy.form.occupancyType')}
             </label>
             <select
               value={type}
@@ -103,9 +104,9 @@ export const EditSelfOccupancyModal = ({
               required
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              {Object.values(OccupancyType).map((t) => (
-                <option key={t} value={t}>
-                  {OCCUPANCY_TYPE_LABELS[t]}
+              {Object.values(OccupancyType).map((ot) => (
+                <option key={ot} value={ot}>
+                  {t(`selfOccupancy.occupancyTypes.${ot}`)}
                 </option>
               ))}
             </select>
@@ -113,13 +114,13 @@ export const EditSelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Occupant Name
+              {t('selfOccupancy.form.occupantName')}
             </label>
             <input
               type="text"
               value={occupantName}
               onChange={(e) => setOccupantName(e.target.value)}
-              placeholder="e.g. Owner, Family member"
+              placeholder={t('selfOccupancy.form.occupantNamePlaceholder')}
               maxLength={255}
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
@@ -127,7 +128,7 @@ export const EditSelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Monthly Imputed Rent
+              {t('selfOccupancy.form.monthlyImputedRent')}
             </label>
             <input
               type="number"
@@ -142,12 +143,12 @@ export const EditSelfOccupancyModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Notes
+              {t('selfOccupancy.form.notes')}
             </label>
             <RichTextEditor
               value={notes}
               onChange={setNotes}
-              placeholder="Additional notes..."
+              placeholder={t('selfOccupancy.form.notesPlaceholder')}
             />
           </div>
 
@@ -157,14 +158,14 @@ export const EditSelfOccupancyModal = ({
               onClick={onClose}
               disabled={updateMutation.isPending}
             >
-              Cancel
+              {t('buttons.cancel', { ns: 'common' })}
             </Button>
             <Button
               variant="primary"
               type="submit"
               isLoading={updateMutation.isPending}
             >
-              Save Changes
+              {t('buttons.saveChanges', { ns: 'common' })}
             </Button>
           </div>
         </form>

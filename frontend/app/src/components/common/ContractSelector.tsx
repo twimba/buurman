@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { getContracts } from '@/api/contracts';
 import { getCurrencySymbol } from '@/utils/currencies';
@@ -24,6 +25,7 @@ export const ContractSelector = ({
   clearable = false,
   placeholder,
 }: ContractSelectorProps) => {
+  const { t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -140,7 +142,9 @@ export const ContractSelector = ({
           onKeyDown={handleKeyDown}
           disabled={disabled}
           placeholder={
-            isOpen ? 'Type to search...' : (placeholder ?? 'Select a contract')
+            isOpen
+              ? t('selectors.typeToSearch')
+              : (placeholder ?? t('selectors.selectContract'))
           }
           autoComplete="off"
           className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-left text-sm text-text-primary"
@@ -157,13 +161,13 @@ export const ContractSelector = ({
         >
           {isLoading ? (
             <div className="px-3 py-8 text-center text-sm text-text-secondary">
-              Loading contracts...
+              {t('selectors.loadingContracts')}
             </div>
           ) : filtered.length === 0 ? (
             <div className="px-3 py-8 text-center text-sm text-text-secondary">
               {contracts.length === 0
-                ? 'No contracts available'
-                : 'No contracts found'}
+                ? t('selectors.noContractsAvailable')
+                : t('selectors.noContractsFound')}
             </div>
           ) : (
             <>
@@ -174,7 +178,7 @@ export const ContractSelector = ({
                   onClick={() => handleSelect('')}
                   className="w-full text-left px-3 py-2.5 text-sm text-text-secondary hover:bg-surface-inset border-b border-border-default"
                 >
-                  All Contracts
+                  {t('selectors.allContracts')}
                 </button>
               )}
               {filtered.map((contract, index) => (

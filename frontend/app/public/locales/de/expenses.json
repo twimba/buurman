@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Ausgaben",
+    "subtitle": "Immobilienausgaben und Kosten verfolgen"
+  },
+  "actions": {
+    "addExpense": "Ausgabe hinzufügen"
+  },
+  "stats": {
+    "totalExpenses": "Gesamtausgaben",
+    "categorySummary": "in {{category}}",
+    "categorySummaryAll": "über {{count}} Kategorien",
+    "topCategories": "Top-Kategorien",
+    "noData": "Keine Daten verfügbar",
+    "lastSixMonths": "Letzte 6 Monate",
+    "tooltipExpenses": "Ausgaben"
+  },
+  "filters": {
+    "title": "Filter",
+    "property": "Immobilie",
+    "category": "Kategorie",
+    "allProperties": "Alle Immobilien",
+    "allCategories": "Alle Kategorien"
+  },
+  "category": {
+    "MAINTENANCE": "Instandhaltung",
+    "REPAIR": "Reparatur",
+    "UTILITY": "Nebenkosten",
+    "TAX": "Steuer",
+    "INSURANCE": "Versicherung",
+    "LEGAL": "Rechtskosten",
+    "MARKETING": "Marketing",
+    "CLEANING": "Reinigung",
+    "LANDSCAPING": "Gartenpflege",
+    "PROPERTY_MANAGEMENT": "Hausverwaltung",
+    "FEES": "Gebühren",
+    "PROPERTY_TAX": "Grundsteuer",
+    "OTHER": "Sonstiges"
+  },
+  "table": {
+    "date": "Datum",
+    "expenseNumber": "Ausgabe #",
+    "description": "Beschreibung",
+    "category": "Kategorie",
+    "property": "Immobilie",
+    "amount": "Betrag"
+  },
+  "empty": {
+    "title": "Keine Ausgaben gefunden",
+    "filtered": "Versuchen Sie, Ihre Filter anzupassen",
+    "noData": "Beginnen Sie mit der Erfassung Ihrer ersten Ausgabe"
+  },
+  "card": {
+    "expenseId": "Ausgabe #{{id}}",
+    "property": "Immobilie",
+    "contact": "Kontakt",
+    "amount": "Betrag",
+    "expenseDate": "Ausgabedatum",
+    "documentsAttached": "{{count}} Dokument(e) angehängt"
+  },
+  "form": {
+    "property": "Immobilie",
+    "category": "Kategorie",
+    "contact": "Kontakt",
+    "amount": "Betrag",
+    "expenseDate": "Ausgabedatum",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "z.B. Sanitärreparatur im Badezimmer",
+    "notes": "Notizen",
+    "notesPlaceholder": "Zusätzliche Anmerkungen zu dieser Ausgabe hinzufügen...",
+    "continueAdding": "Weitere hinzufügen",
+    "today": "Heute",
+    "updateExpense": "Aktualisieren",
+    "createExpense": "Erstellen",
+    "expenseSuffix": " Ausgabe",
+    "saving": "Wird gespeichert...",
+    "currency": "Währung"
+  },
+  "validation": {
+    "propertyRequired": "Immobilie ist erforderlich",
+    "amountRequired": "Betrag muss größer als 0 sein",
+    "currencyRequired": "Währung ist erforderlich",
+    "expenseDateRequired": "Ausgabedatum ist erforderlich",
+    "descriptionRequired": "Beschreibung ist erforderlich"
+  },
+  "create": {
+    "title": "Neue Ausgabe hinzufügen",
+    "addedCount": "{{count}} Ausgabe in dieser Sitzung hinzugefügt",
+    "addedCount_other": "{{count}} Ausgaben in dieser Sitzung hinzugefügt",
+    "single": "Einzeln",
+    "bulk": "Mehrfach"
+  },
+  "detail": {
+    "titlePrefix": "Ausgabe #{{id}}",
+    "expenseDetails": "Ausgabendetails",
+    "propertyAndContact": "Immobilie & Kontakt",
+    "amount": "Betrag",
+    "expenseDate": "Ausgabedatum",
+    "category": "Kategorie",
+    "description": "Beschreibung",
+    "property": "Immobilie",
+    "contact": "Kontakt",
+    "noContactLinked": "Kein Kontakt verknüpft",
+    "notes": "Notizen",
+    "metadata": "Metadaten",
+    "created": "Erstellt:",
+    "lastUpdated": "Zuletzt aktualisiert:",
+    "editExpense": "Ausgabe bearbeiten"
+  },
+  "tabs": {
+    "details": "Details",
+    "documents": "Dokumente",
+    "history": "Verlauf"
+  },
+  "history": {
+    "title": "Ausgabenverlauf",
+    "empty": "Kein Verlauf verfügbar",
+    "emptySubtitle": "Änderungen an dieser Ausgabe werden hier angezeigt",
+    "clickToView": "Klicken zum Anzeigen der Änderungen",
+    "clickToHide": "Klicken zum Ausblenden der Änderungen",
+    "changedFields": "Geänderte Felder",
+    "old": "Alt:",
+    "new": "Neu:",
+    "impersonated": "Impersoniert"
+  },
+  "deleteDialog": {
+    "title": "Ausgabe löschen",
+    "message": "Sind Sie sicher, dass Sie diese Ausgabe löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "messageWithRelated": "Sind Sie sicher, dass Sie diese Ausgabe löschen möchten? Alle zugehörigen Dokumente werden ebenfalls gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
+  },
+  "tooltips": {
+    "viewExpense": "Ausgabe anzeigen",
+    "deleteExpense": "Ausgabe löschen"
+  },
+  "errors": {
+    "loadFailed": "Ausgaben konnten nicht geladen werden",
+    "loadExpenseFailed": "Ausgabe konnte nicht geladen werden",
+    "loadHistoryFailed": "Verlauf konnte nicht geladen werden"
+  }
+}

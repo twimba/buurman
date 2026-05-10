@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import {
   usePayment,
@@ -99,6 +100,7 @@ const ReceivalsTable = ({
   pageSize,
   onPageChange,
 }: ReceivalsTableProps) => {
+  const { t } = useTranslation('payments');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [editDate, setEditDate] = useState('');
@@ -164,7 +166,7 @@ const ReceivalsTable = ({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-muted " />
         <input
           type="text"
-          placeholder="Search by amount, date, or notes..."
+          placeholder={t('receivals.searchPlaceholder')}
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full pl-9 pr-4 py-2 text-sm border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
@@ -181,7 +183,7 @@ const ReceivalsTable = ({
                 onClick={() => onSort('date')}
               >
                 <div className="flex items-center gap-1">
-                  Date
+                  {t('receivals.date')}
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </th>
@@ -190,16 +192,16 @@ const ReceivalsTable = ({
                 onClick={() => onSort('amount')}
               >
                 <div className="flex items-center justify-end gap-1">
-                  Amount
+                  {t('receivals.amount')}
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Notes
+                {t('receivals.notes')}
               </th>
               {canEdit && (
                 <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider w-24">
-                  Actions
+                  {t('receivals.actions')}
                 </th>
               )}
             </tr>
@@ -230,20 +232,20 @@ const ReceivalsTable = ({
                     <RichTextEditor
                       value={editNotes}
                       onChange={setEditNotes}
-                      placeholder="Notes..."
+                      placeholder={t('receivals.notes') + '...'}
                     />
                     <div className="flex justify-end gap-1 mt-2">
                       <button
                         onClick={saveEdit}
                         className="p-1.5 text-success-text hover:bg-success-bg rounded transition-colors"
-                        title="Save"
+                        title={t('tooltips.save')}
                       >
                         <Check className="h-4 w-4" />
                       </button>
                       <button
                         onClick={cancelEdit}
                         className="p-1.5 text-text-secondary hover:bg-surface-inset rounded transition-colors"
-                        title="Cancel"
+                        title={t('common:buttons.cancel')}
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -277,14 +279,14 @@ const ReceivalsTable = ({
                         <button
                           onClick={() => startEdit(receival)}
                           className="p-1.5 text-primary-500 hover:bg-info-bg rounded transition-colors"
-                          title="Edit receival"
+                          title={t('tooltips.editReceival')}
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => onDelete(receival.identifier)}
                           className="p-1.5 text-error-text hover:bg-error-bg rounded transition-colors"
-                          title="Delete receival"
+                          title={t('tooltips.deleteReceival')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -302,9 +304,11 @@ const ReceivalsTable = ({
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4 text-sm">
           <span className="text-text-secondary">
-            Showing {(currentPage - 1) * pageSize + 1} to{' '}
-            {Math.min(currentPage * pageSize, filtered.length)} of{' '}
-            {filtered.length}
+            {t('receivals.showing', {
+              from: (currentPage - 1) * pageSize + 1,
+              to: Math.min(currentPage * pageSize, filtered.length),
+              total: filtered.length,
+            })}
           </span>
           <div className="flex gap-2">
             <button
@@ -313,14 +317,14 @@ const ReceivalsTable = ({
               className="px-3 py-1 border border-border-strong rounded hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-text-secondary"
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              {t('common:pagination.previous')}
             </button>
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className="px-3 py-1 border border-border-strong rounded hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-text-secondary"
             >
-              Next
+              {t('common:pagination.next')}
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -334,6 +338,7 @@ export const PaymentDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation('payments');
   const backTo = (location.state as { backTo?: string })?.backTo ?? '/payments';
   const { canEditData } = useTeam();
   const { formatDate, formatRelative } = useFormatDate();
@@ -465,7 +470,7 @@ export const PaymentDetailPage = () => {
   if (error || !payment) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load payment" />
+        <ErrorMessage message={t('errors.loadPaymentFailed')} />
       </div>
     );
   }
@@ -485,8 +490,10 @@ export const PaymentDetailPage = () => {
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
-          title={`Payment #${payment.identifier}`}
-          subtitle={`Contract #${payment.contract.identifier}`}
+          title={t('detail.titlePrefix', { id: payment.identifier })}
+          subtitle={t('detail.subtitlePrefix', {
+            id: payment.contract.identifier,
+          })}
           backTo={backTo}
           badge={<PaymentStatusBadge status={payment.status} />}
           actions={
@@ -498,7 +505,7 @@ export const PaymentDetailPage = () => {
                   onClick={() => setShowReceivalModal(true)}
                   disabled={!canEditData}
                 >
-                  Register Receival
+                  {t('actions.registerReceival')}
                 </Button>
               )}
               {canMarkPaid && (
@@ -508,7 +515,7 @@ export const PaymentDetailPage = () => {
                   onClick={() => setShowMarkPaidModal(true)}
                   disabled={!canEditData}
                 >
-                  Mark as Paid
+                  {t('actions.markAsPaid')}
                 </Button>
               )}
               {canEdit && !isEditing && (
@@ -521,7 +528,7 @@ export const PaymentDetailPage = () => {
                   }}
                   disabled={!canEditData}
                 >
-                  Edit
+                  {t('common:buttons.edit')}
                 </Button>
               )}
               {canDelete && (
@@ -531,7 +538,7 @@ export const PaymentDetailPage = () => {
                   onClick={() => setShowDeleteModal(true)}
                   disabled={!canEditData}
                 >
-                  Delete
+                  {t('common:buttons.delete')}
                 </Button>
               )}
             </>
@@ -549,7 +556,7 @@ export const PaymentDetailPage = () => {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              Details
+              {t('tabs.details')}
             </button>
             <button
               onClick={() => setActiveTab('receivals')}
@@ -560,7 +567,7 @@ export const PaymentDetailPage = () => {
               }`}
             >
               <ArrowDownCircle className="h-4 w-4" />
-              Receivals{' '}
+              {t('tabs.receivals')}{' '}
               {payment.receivals?.length > 0 && `(${payment.receivals.length})`}
             </button>
             <button
@@ -572,7 +579,8 @@ export const PaymentDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              Documents {documents.length > 0 && `(${documents.length})`}
+              {t('tabs.documents')}{' '}
+              {documents.length > 0 && `(${documents.length})`}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -583,7 +591,8 @@ export const PaymentDetailPage = () => {
               }`}
             >
               <History className="h-4 w-4" />
-              History {auditLog.length > 0 && `(${auditLog.length})`}
+              {t('tabs.history')}{' '}
+              {auditLog.length > 0 && `(${auditLog.length})`}
             </button>
           </div>
         </div>
@@ -593,7 +602,7 @@ export const PaymentDetailPage = () => {
           (isEditing ? (
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Edit Payment
+                {t('detail.editPayment')}
               </h2>
               <PaymentForm
                 payment={payment}
@@ -608,13 +617,15 @@ export const PaymentDetailPage = () => {
               {/* Payment Details */}
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h2 className="text-lg font-semibold text-text-primary mb-4">
-                  Payment Details
+                  {t('detail.paymentDetails')}
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-text-secondary">Amount</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.amount')}
+                      </p>
                       <p className="font-medium text-text-primary text-lg">
                         {symbol} {payment.amount.toFixed(2)}
                       </p>
@@ -628,7 +639,7 @@ export const PaymentDetailPage = () => {
                         <ArrowDownCircle className="h-5 w-5 text-success-text" />
                         <div>
                           <p className="text-sm text-text-secondary">
-                            Received
+                            {t('detail.received')}
                           </p>
                           <p className="font-medium text-success-text text-lg">
                             {symbol} {payment.receivedAmount.toFixed(2)}
@@ -638,7 +649,9 @@ export const PaymentDetailPage = () => {
                       <div className="flex items-center gap-3">
                         <DollarSign className="h-5 w-5 text-warning-text" />
                         <div>
-                          <p className="text-sm text-text-secondary">Balance</p>
+                          <p className="text-sm text-text-secondary">
+                            {t('detail.balance')}
+                          </p>
                           <p
                             className={`font-medium text-lg ${
                               payment.balance <= 0
@@ -656,7 +669,9 @@ export const PaymentDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-text-secondary">Due Date</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.dueDate')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {formatDate(payment.dueDate)}
                       </p>
@@ -667,7 +682,7 @@ export const PaymentDetailPage = () => {
                       <CheckCircle className="h-5 w-5 text-success-text" />
                       <div>
                         <p className="text-sm text-text-secondary">
-                          Payment Date
+                          {t('detail.paymentDate')}
                         </p>
                         <p className="font-medium text-success-text">
                           {formatDate(payment.paymentDate)}
@@ -681,27 +696,33 @@ export const PaymentDetailPage = () => {
               {/* Contract & Parties */}
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h2 className="text-lg font-semibold text-text-primary mb-4">
-                  Related Information
+                  {t('detail.relatedInformation')}
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <FileText className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">Contract</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.contract')}
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/contracts/${payment.contract.identifier}`)
                         }
                         className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                       >
-                        Contract #{payment.contract.identifier}
+                        {t('detail.contractId', {
+                          id: payment.contract.identifier,
+                        })}
                       </button>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Home className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">Property</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.property')}
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/properties/${payment.property.identifier}`)
@@ -715,7 +736,9 @@ export const PaymentDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <User className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">Contact</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.contact')}
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/contacts/${payment.contact.identifier}`)
@@ -733,7 +756,7 @@ export const PaymentDetailPage = () => {
               {payment.notes && (
                 <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
                   <h2 className="text-lg font-semibold text-text-primary mb-4">
-                    Notes
+                    {t('detail.notes')}
                   </h2>
                   <RichTextDisplay content={payment.notes} />
                 </div>
@@ -746,7 +769,7 @@ export const PaymentDetailPage = () => {
                   className="w-full flex items-center justify-between text-left group"
                 >
                   <h2 className="text-lg font-semibold text-text-primary">
-                    Metadata
+                    {t('detail.metadata')}
                   </h2>
                   {isMetadataExpanded ? (
                     <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
@@ -757,16 +780,20 @@ export const PaymentDetailPage = () => {
                 {isMetadataExpanded && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                     <div>
-                      <span className="text-text-secondary">Created:</span>{' '}
+                      <span className="text-text-secondary">
+                        {t('detail.created')}
+                      </span>{' '}
                       <span className="text-text-primary">
-                        {formatDate(payment.createdAt)} at{' '}
+                        {formatDate(payment.createdAt)}{' '}
                         {new Date(payment.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
                     <div>
-                      <span className="text-text-secondary">Last Updated:</span>{' '}
+                      <span className="text-text-secondary">
+                        {t('detail.lastUpdated')}
+                      </span>{' '}
                       <span className="text-text-primary">
-                        {formatDate(payment.updatedAt)} at{' '}
+                        {formatDate(payment.updatedAt)}{' '}
                         {new Date(payment.updatedAt).toLocaleTimeString()}
                       </span>
                     </div>
@@ -781,7 +808,9 @@ export const PaymentDetailPage = () => {
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-text-primary">
-                Receivals ({payment.receivals?.length ?? 0})
+                {t('receivals.title', {
+                  count: payment.receivals?.length ?? 0,
+                })}
               </h2>
               {canRegisterReceival && (
                 <Button
@@ -791,7 +820,7 @@ export const PaymentDetailPage = () => {
                   disabled={!canEditData}
                   size="sm"
                 >
-                  Register Receival
+                  {t('actions.registerReceival')}
                 </Button>
               )}
             </div>
@@ -799,19 +828,25 @@ export const PaymentDetailPage = () => {
             {/* Balance summary */}
             <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-surface-page rounded-lg">
               <div>
-                <p className="text-xs text-text-secondary">Total Amount</p>
+                <p className="text-xs text-text-secondary">
+                  {t('receivals.totalAmount')}
+                </p>
                 <p className="text-lg font-semibold text-text-primary">
                   {symbol} {payment.amount.toFixed(2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-text-secondary">Received</p>
+                <p className="text-xs text-text-secondary">
+                  {t('receivals.received')}
+                </p>
                 <p className="text-lg font-semibold text-success-text">
                   {symbol} {payment.receivedAmount.toFixed(2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-text-secondary">Balance</p>
+                <p className="text-xs text-text-secondary">
+                  {t('receivals.balance')}
+                </p>
                 <p
                   className={`text-lg font-semibold ${
                     payment.balance <= 0
@@ -859,9 +894,7 @@ export const PaymentDetailPage = () => {
             ) : (
               <div className="text-center py-8">
                 <ArrowDownCircle className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-                <p className="text-text-secondary">
-                  No receivals registered yet
-                </p>
+                <p className="text-text-secondary">{t('receivals.empty')}</p>
               </div>
             )}
           </div>
@@ -887,14 +920,14 @@ export const PaymentDetailPage = () => {
         {activeTab === 'history' && (
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <h2 className="text-xl font-semibold text-text-primary mb-4">
-              Payment History
+              {t('history.title')}
             </h2>
             {auditLoading ? (
               <div className="flex items-center justify-center py-8">
                 <LoadingSpinner />
               </div>
             ) : auditError ? (
-              <ErrorMessage message="Failed to load history" />
+              <ErrorMessage message={t('errors.loadHistoryFailed')} />
             ) : auditLog.length > 0 ? (
               <div className="space-y-4">
                 {auditLog.map((activity) => {
@@ -961,15 +994,15 @@ export const PaymentDetailPage = () => {
                             {activity.impersonatedBy && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
                                 <Eye className="h-3 w-3" />
-                                Impersonated
+                                {t('history.impersonated')}
                               </span>
                             )}
                           </div>
                           {hasChanges && (
                             <p className="text-xs text-primary-500 mt-1">
                               {isExpanded
-                                ? 'Click to hide changes'
-                                : 'Click to view changes'}
+                                ? t('history.clickToHide')
+                                : t('history.clickToView')}
                             </p>
                           )}
                         </div>
@@ -978,7 +1011,7 @@ export const PaymentDetailPage = () => {
                       {isExpanded && hasChanges && (
                         <div className="bg-surface-page px-4 py-3 border-t border-border-default">
                           <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
-                            Changed Fields
+                            {t('history.changedFields')}
                           </h4>
                           <div className="space-y-2">
                             {Object.entries(activity.changedFields ?? {}).map(
@@ -998,7 +1031,10 @@ export const PaymentDetailPage = () => {
                                   const date = r.receivalDate
                                     ? formatDate(String(r.receivalDate))
                                     : '';
-                                  return `${amt} on ${date}`;
+                                  return t('history.receivalOn', {
+                                    amount: amt,
+                                    date,
+                                  });
                                 };
 
                                 const renderVal = (
@@ -1011,7 +1047,7 @@ export const PaymentDetailPage = () => {
                                       <span
                                         className={`${color} ${extra ?? ''}`}
                                       >
-                                        N/A
+                                        {t('history.na')}
                                       </span>
                                     );
                                   }
@@ -1021,7 +1057,7 @@ export const PaymentDetailPage = () => {
                                         <span
                                           className={`${color} ${extra ?? ''}`}
                                         >
-                                          None
+                                          {t('history.none')}
                                         </span>
                                       );
                                     }
@@ -1153,7 +1189,7 @@ export const PaymentDetailPage = () => {
                                     <div className="grid grid-cols-2 gap-2">
                                       <div>
                                         <span className="text-text-secondary">
-                                          Old:{' '}
+                                          {t('history.old')}{' '}
                                         </span>
                                         {renderVal(
                                           oldVal,
@@ -1163,7 +1199,7 @@ export const PaymentDetailPage = () => {
                                       </div>
                                       <div>
                                         <span className="text-text-secondary">
-                                          New:{' '}
+                                          {t('history.new')}{' '}
                                         </span>
                                         {renderVal(
                                           newVal,
@@ -1186,9 +1222,9 @@ export const PaymentDetailPage = () => {
             ) : (
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-                <p className="text-text-secondary">No history available</p>
+                <p className="text-text-secondary">{t('history.empty')}</p>
                 <p className="text-sm text-text-muted mt-1">
-                  Changes to this payment will appear here
+                  {t('history.emptySubtitle')}
                 </p>
               </div>
             )}
@@ -1201,25 +1237,24 @@ export const PaymentDetailPage = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h2 className="text-lg font-semibold text-text-primary mb-4">
-              Delete Payment
+              {t('deleteDialog.title')}
             </h2>
             <p className="text-text-secondary mb-6">
-              Are you sure you want to delete this payment? This action cannot
-              be undone.
+              {t('deleteDialog.message')}
             </p>
             <div className="flex justify-end gap-3">
               <Button
                 variant="secondary"
                 onClick={() => setShowDeleteModal(false)}
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 variant="danger"
                 onClick={handleDelete}
                 isLoading={deletePaymentMutation.isPending}
               >
-                Delete
+                {t('common:buttons.delete')}
               </Button>
             </div>
           </div>
@@ -1239,21 +1274,20 @@ export const PaymentDetailPage = () => {
         >
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h2 className="text-lg font-semibold text-text-primary mb-4">
-              Mark Payment as Paid
+              {t('markPaidDialog.title')}
             </h2>
             {payment.balance > 0 && (
               <p className="text-sm text-text-secondary mb-4">
-                This will register a receival for the remaining balance of{' '}
-                <span className="font-semibold">
-                  {symbol} {payment.balance.toFixed(2)}
-                </span>{' '}
-                and mark the payment as fully paid.
+                {t('markPaidDialog.balanceMessage', {
+                  amount: `${symbol} ${payment.balance.toFixed(2)}`,
+                })}
               </p>
             )}
             <div className="space-y-4 mb-6">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Payment Date <span className="text-error-text">*</span>
+                  {t('markPaidDialog.paymentDate')}{' '}
+                  <span className="text-error-text">*</span>
                 </label>
                 <input
                   type="date"
@@ -1264,12 +1298,12 @@ export const PaymentDetailPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Notes (Optional)
+                  {t('markPaidDialog.notesOptional')}
                 </label>
                 <RichTextEditor
                   value={markPaidNotes}
                   onChange={setMarkPaidNotes}
-                  placeholder="Add any notes about this payment..."
+                  placeholder={t('markPaidDialog.notesPlaceholder')}
                   onSubmit={handleMarkPaid}
                 />
               </div>
@@ -1279,7 +1313,7 @@ export const PaymentDetailPage = () => {
                 variant="secondary"
                 onClick={() => setShowMarkPaidModal(false)}
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 variant="success"
@@ -1287,7 +1321,7 @@ export const PaymentDetailPage = () => {
                 onClick={handleMarkPaid}
                 isLoading={markPaidMutation.isPending}
               >
-                Mark as Paid
+                {t('actions.markAsPaid')}
               </Button>
             </div>
           </div>
@@ -1307,10 +1341,10 @@ export const PaymentDetailPage = () => {
         >
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h2 className="text-lg font-semibold text-text-primary mb-4">
-              Register Receival
+              {t('receivalDialog.title')}
             </h2>
             <p className="text-sm text-text-secondary mb-4">
-              Remaining balance:{' '}
+              {t('receivalDialog.remainingBalance')}{' '}
               <span className="font-semibold text-text-primary">
                 {symbol} {payment.balance.toFixed(2)}
               </span>
@@ -1318,7 +1352,8 @@ export const PaymentDetailPage = () => {
             <div className="space-y-4 mb-6">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Amount <span className="text-error-text">*</span>
+                  {t('receivalDialog.amount')}{' '}
+                  <span className="text-error-text">*</span>
                 </label>
                 <MoneyInput
                   value={
@@ -1334,7 +1369,8 @@ export const PaymentDetailPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Receival Date <span className="text-error-text">*</span>
+                  {t('receivalDialog.receivalDate')}{' '}
+                  <span className="text-error-text">*</span>
                 </label>
                 <input
                   type="date"
@@ -1345,12 +1381,12 @@ export const PaymentDetailPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Notes (Optional)
+                  {t('receivalDialog.notesOptional')}
                 </label>
                 <RichTextEditor
                   value={receivalNotes}
                   onChange={setReceivalNotes}
-                  placeholder="Add notes about this receival..."
+                  placeholder={t('receivalDialog.notesPlaceholder')}
                   onSubmit={handleRegisterReceival}
                 />
               </div>
@@ -1360,7 +1396,7 @@ export const PaymentDetailPage = () => {
                 variant="secondary"
                 onClick={() => setShowReceivalModal(false)}
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 variant="primary"
@@ -1369,7 +1405,7 @@ export const PaymentDetailPage = () => {
                 isLoading={registerReceivalMutation.isPending}
                 disabled={!receivalAmount || parseFloat(receivalAmount) <= 0}
               >
-                Register
+                {t('receivalDialog.register')}
               </Button>
             </div>
           </div>

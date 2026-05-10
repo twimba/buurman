@@ -1,14 +1,16 @@
 import { Construction } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface WorkInProgressProps {
   pageName?: string;
   message?: string;
 }
 
-export const WorkInProgress = ({
-  pageName,
-  message = "Rome wasn't built in a day... and neither was this page!",
-}: WorkInProgressProps) => {
+export const WorkInProgress = ({ pageName, message }: WorkInProgressProps) => {
+  const { t } = useTranslation('common');
+
+  const resolvedMessage = message ?? t('wip.message');
+
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
       <div className="text-center max-w-md px-6">
@@ -25,16 +27,16 @@ export const WorkInProgress = ({
 
         {/* Title */}
         <h1 className="text-3xl font-bold text-text-primary mb-4">
-          {pageName ? `${pageName} Coming Soon` : 'Coming Soon'}
+          {pageName
+            ? t('wip.titleWithPage', { page: pageName })
+            : t('wip.title')}
         </h1>
 
         {/* Message */}
-        <p className="text-lg text-text-secondary mb-2">{message}</p>
+        <p className="text-lg text-text-secondary mb-2">{resolvedMessage}</p>
 
         {/* Subtext */}
-        <p className="text-sm text-text-secondary">
-          We&apos;re working hard to bring you this feature. Stay tuned!
-        </p>
+        <p className="text-sm text-text-secondary">{t('wip.subtext')}</p>
 
         {/* Decorative dots */}
         <div className="mt-8 flex justify-center gap-2">

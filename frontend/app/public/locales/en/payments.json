@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Payments",
+    "subtitle": "Track rent payments and income"
+  },
+  "actions": {
+    "schedulePayment": "Schedule Payment",
+    "registerPayment": "Register Payment",
+    "registerReceival": "Register Receival",
+    "markAsPaid": "Mark as Paid"
+  },
+  "stats": {
+    "pendingPayments": "Pending Payments",
+    "pendingCount": "{{count}} payment",
+    "pendingCount_other": "{{count}} payments",
+    "overduePayments": "Overdue Payments",
+    "overdueCount": "{{count}} payment past due",
+    "overdueCount_other": "{{count}} payments past due",
+    "overdueAction": "Action required: Review overdue payments",
+    "allCaughtUp": "All caught up!",
+    "noOverdue": "No overdue payments. Keep up the great work!",
+    "lastSixMonths": "Last 6 Months",
+    "tooltipReceived": "Received"
+  },
+  "filters": {
+    "title": "Filters",
+    "property": "Property",
+    "contract": "Contract",
+    "status": "Status",
+    "allStatuses": "All Statuses",
+    "allProperties": "All Properties",
+    "allContracts": "All Contracts"
+  },
+  "status": {
+    "pending": "Pending",
+    "partiallyPaid": "Partial",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "late": "Late",
+    "cancelled": "Cancelled"
+  },
+  "table": {
+    "dueDate": "Due Date",
+    "paymentNumber": "Payment #",
+    "contract": "Contract",
+    "amount": "Amount",
+    "status": "Status",
+    "balance": "Balance: {{amount}}"
+  },
+  "empty": {
+    "title": "No payments found",
+    "filtered": "Try adjusting your filters",
+    "noData": "Get started by recording your first payment"
+  },
+  "card": {
+    "paymentId": "Payment #{{id}}",
+    "contractId": "Contract #{{id}}",
+    "property": "Property",
+    "contact": "Contact",
+    "amount": "Amount",
+    "balance": "Balance: {{amount}}",
+    "dueDate": "Due Date",
+    "paidOn": "Paid On"
+  },
+  "form": {
+    "amount": "Amount",
+    "dueDate": "Due Date",
+    "paymentDate": "Payment Date",
+    "contact": "Contact",
+    "notes": "Notes",
+    "notesPlaceholder": "Add any additional notes about this payment...",
+    "continueAdding": "Continue adding more",
+    "today": "Today",
+    "clear": "Clear",
+    "updatePayment": "Update Payment",
+    "saving": "Saving...",
+    "contract": "Contract",
+    "currency": "Currency",
+    "selectContractFirst": "Please select a contract first",
+    "rentPeriodNotice": "This date falls in a different rent period ({{amount}}/mo from {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " to {{date}}",
+    "rentPeriodCurrentRent": "Current rent is {{amount}}/mo.",
+    "rentPeriodWarning": "This date falls in a different rent period ({{currency}}{{amount}}/mo from {{from}}{{to}}).",
+    "rentPeriodTo": " to {{date}}",
+    "currentRentInfo": "Current rent is {{currency}}{{amount}}/mo."
+  },
+  "validation": {
+    "amountRequired": "Amount must be greater than 0",
+    "dueDateRequired": "Due date is required",
+    "currencyRequired": "Currency is required",
+    "paymentDateRequired": "Payment date is required"
+  },
+  "bulkColumns": {
+    "date": "Date",
+    "amount": "Amount"
+  },
+  "create": {
+    "titleRegister": "Register Payment",
+    "titleSchedule": "Schedule Payment",
+    "addedCount": "{{count}} payment {{action}} this session",
+    "addedCount_other": "{{count}} payments {{action}} this session",
+    "actionRegistered": "registered",
+    "actionScheduled": "scheduled",
+    "single": "Single",
+    "bulk": "Bulk",
+    "contractInactiveWarning": "The linked contract is not active. Please select an active contract."
+  },
+  "detail": {
+    "titlePrefix": "Payment #{{id}}",
+    "subtitlePrefix": "Contract #{{id}}",
+    "paymentDetails": "Payment Details",
+    "relatedInformation": "Related Information",
+    "amount": "Amount",
+    "received": "Received",
+    "balance": "Balance",
+    "dueDate": "Due Date",
+    "paymentDate": "Payment Date",
+    "contract": "Contract",
+    "contractId": "Contract #{{id}}",
+    "property": "Property",
+    "contact": "Contact",
+    "notes": "Notes",
+    "metadata": "Metadata",
+    "created": "Created:",
+    "lastUpdated": "Last Updated:",
+    "editPayment": "Edit Payment"
+  },
+  "tabs": {
+    "details": "Details",
+    "receivals": "Receivals",
+    "documents": "Documents",
+    "history": "History"
+  },
+  "receivals": {
+    "title": "Receivals ({{count}})",
+    "totalAmount": "Total Amount",
+    "received": "Received",
+    "balance": "Balance",
+    "empty": "No receivals registered yet",
+    "searchPlaceholder": "Search by amount, date, or notes...",
+    "date": "Date",
+    "amount": "Amount",
+    "notes": "Notes",
+    "actions": "Actions",
+    "showing": "Showing {{from}} to {{to}} of {{total}}",
+    "remainingBalance": "Remaining balance:",
+    "receivalDate": "Receival Date",
+    "notesOptional": "Notes (Optional)",
+    "notesPlaceholder": "Add notes about this receival...",
+    "register": "Register"
+  },
+  "history": {
+    "title": "Payment History",
+    "empty": "No history available",
+    "emptySubtitle": "Changes to this payment will appear here",
+    "clickToView": "Click to view changes",
+    "clickToHide": "Click to hide changes",
+    "changedFields": "Changed Fields",
+    "old": "Old:",
+    "new": "New:",
+    "impersonated": "Impersonated",
+    "na": "N/A",
+    "none": "None",
+    "receivalOn": "{{amount}} on {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Delete Payment",
+    "message": "Are you sure you want to delete this payment? This action cannot be undone.",
+    "messageWithRelated": "Are you sure you want to delete this payment? All related data (receivals, documents) will also be deleted. This action cannot be undone."
+  },
+  "markPaidDialog": {
+    "title": "Mark Payment as Paid",
+    "balanceMessage": "This will register a receival for the remaining balance of {{amount}} and mark the payment as fully paid.",
+    "paymentDate": "Payment Date",
+    "notesOptional": "Notes (Optional)",
+    "notesPlaceholder": "Add any notes about this payment..."
+  },
+  "receivalDialog": {
+    "title": "Register Receival",
+    "remainingBalance": "Remaining balance:",
+    "amount": "Amount",
+    "receivalDate": "Receival Date",
+    "notesOptional": "Notes (Optional)",
+    "notesPlaceholder": "Add notes about this receival...",
+    "register": "Register"
+  },
+  "tooltips": {
+    "viewPayment": "View payment",
+    "deletePayment": "Delete payment",
+    "editReceival": "Edit receival",
+    "deleteReceival": "Delete receival",
+    "save": "Save",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "errors": {
+    "loadFailed": "Failed to load payments",
+    "loadPaymentFailed": "Failed to load payment",
+    "loadHistoryFailed": "Failed to load history"
+  }
+}

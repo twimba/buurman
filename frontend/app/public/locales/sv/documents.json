@@ -1,0 +1,99 @@
+{
+  "documentsPage": {
+    "title": "Dokumentbibliotek",
+    "subtitle": "Sok och hantera alla dina dokument pa ett stalle",
+    "searchPlaceholder": "Sok dokument efter titel, filnamn eller anteckningar...",
+    "entityTypeFilter": {
+      "all": "Alla typer",
+      "property": "Fastigheter",
+      "contact": "Kontakter",
+      "contract": "Kontrakt",
+      "payment": "Betalningar",
+      "expense": "Kostnader"
+    },
+    "table": {
+      "document": "Dokument",
+      "type": "Typ",
+      "size": "Storlek",
+      "uploaded": "Uppladdad",
+      "actions": "Atgarder"
+    },
+    "selection": {
+      "selected": "{{selected}} av {{total}} markerade",
+      "count": "{{count}} dokument",
+      "count_other": "{{count}} dokument"
+    },
+    "empty": "Inga dokument hittades",
+    "editModal": "Redigera dokument"
+  },
+  "photosPage": {
+    "title": "Fotobibliotek",
+    "subtitle": "Blaeddra och hantera alla dina foton pa ett stalle",
+    "searchPlaceholder": "Sok foton efter titel, filnamn eller anteckningar...",
+    "entityTypeFilter": {
+      "all": "Alla typer",
+      "property": "Fastigheter",
+      "contact": "Kontakter",
+      "contract": "Kontrakt",
+      "payment": "Betalningar",
+      "expense": "Kostnader"
+    },
+    "empty": "Inga foton hittades",
+    "editModal": "Redigera foto"
+  },
+  "photoGrid": {
+    "noPhotos": "Inga foton annu",
+    "failedToLoad": "Det gick inte att ladda foton",
+    "failedToLoadImage": "Det gick inte att ladda",
+    "noUrl": "Ingen URL",
+    "main": "Huvud",
+    "selection": {
+      "selected": "{{selected}} av {{total}} markerade",
+      "count": "{{count}} foto",
+      "count_other": "{{count}} foton"
+    },
+    "downloading": "Laddar ner...",
+    "tooltips": {
+      "setAsMain": "Ange som huvudfoto",
+      "editTitleNotes": "Redigera titel och anteckningar",
+      "deletePhoto": "Ta bort foto"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Forhandsvisning ej tillganglig for denna filtyp ({{mimeType}})",
+    "downloadFile": "Ladda ner fil",
+    "notes": "Anteckningar:",
+    "tooltips": {
+      "editTitleNotes": "Redigera titel och anteckningar",
+      "download": "Ladda ner",
+      "openInNewTab": "Oppna i ny flik",
+      "close": "Stang",
+      "previous": "Foregaende",
+      "next": "Nasta"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Ta bort dokument",
+    "titlePlural": "Ta bort dokument",
+    "messageSingle": "Ar du saker pa att du vill ta bort detta dokument? Denna atgard kan inte angras.",
+    "messagePlural": "Du haller pa att ta bort {{count}} dokument. Denna atgard kan inte angras.",
+    "confirmSingle": "Ta bort",
+    "confirmPlural": "Ta bort {{count}} dokument"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Ta bort foto",
+    "titlePlural": "Ta bort foton",
+    "messageSingle": "Ar du saker pa att du vill ta bort detta foto? Denna atgard kan inte angras.",
+    "messagePlural": "Du haller pa att ta bort {{count}} foton. Denna atgard kan inte angras.",
+    "mainPhotoSingle": "Detta ar huvudfotot. Att ta bort det innebar att denna fastighet inte langre har ett huvudfoto. Denna atgard kan inte angras.",
+    "mainPhotoPlural": "Du haller pa att ta bort {{count}} foton, inklusive huvudfotot. Denna fastighet kommer inte langre att ha ett huvudfoto. Denna atgard kan inte angras.",
+    "confirmSingle": "Ta bort",
+    "confirmPlural": "Ta bort {{count}} foton"
+  },
+  "tooltips": {
+    "preview": "Forhandsvisning",
+    "editTitleNotes": "Redigera titel och anteckningar",
+    "delete": "Ta bort",
+    "download": "Ladda ned"
+  }
+}

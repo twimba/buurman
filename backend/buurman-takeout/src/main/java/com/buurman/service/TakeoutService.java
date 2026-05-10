@@ -220,7 +220,7 @@ public class TakeoutService {
           try {
             byte[] pdf =
                 exportService.generatePropertyBrochurePDF(
-                    PropertyIdentifier.of(identifier.value()), teamId);
+                    PropertyIdentifier.of(identifier.value()), teamId, java.util.Locale.getDefault());
             addZipEntry(zos, bookletFolder + "/properties/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate property booklet for {}: {}", identifier, e.getMessage());
@@ -232,7 +232,7 @@ public class TakeoutService {
           try {
             byte[] pdf =
                 exportService.generateContactReportPDF(
-                    ContactIdentifier.of(identifier.value()), teamId);
+                    ContactIdentifier.of(identifier.value()), teamId, java.util.Locale.getDefault());
             addZipEntry(zos, bookletFolder + "/contacts/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate contact booklet for {}: {}", identifier, e.getMessage());
@@ -244,7 +244,7 @@ public class TakeoutService {
           try {
             byte[] pdf =
                 exportService.generateContractReportPDF(
-                    ContractIdentifier.of(identifier.value()), teamId);
+                    ContractIdentifier.of(identifier.value()), teamId, java.util.Locale.getDefault());
             addZipEntry(zos, bookletFolder + "/contracts/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate contract booklet for {}: {}", identifier, e.getMessage());

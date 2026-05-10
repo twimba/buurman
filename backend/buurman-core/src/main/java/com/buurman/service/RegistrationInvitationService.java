@@ -232,7 +232,8 @@ public class RegistrationInvitationService {
             "registerUrl", registerUrl,
             "senderName", principal.getName());
 
-    RenderedContent rendered = emailSender.render("registration-invitation", variables);
+    RenderedContent rendered =
+        emailSender.render("registration-invitation", variables, java.util.Locale.ENGLISH);
     try {
       emailSender.send(
           new NotificationSendRequest(

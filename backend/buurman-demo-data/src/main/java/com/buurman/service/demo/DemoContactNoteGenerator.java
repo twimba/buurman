@@ -6,6 +6,7 @@ import static com.buurman.util.SidGenerator.newContactNoteId;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -15,6 +16,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.InteractionType;
+import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,6 +79,8 @@ public class DemoContactNoteGenerator {
 
       List<UUID> contactIds = ctx.getContactIdsByTeam().getOrDefault(teamId, List.of());
 
+      List<Object[]> records = new ArrayList<>();
+
       for (UUID contactId : contactIds) {
         int noteCount = random.nextInt(MIN_NOTES_PER_CONTACT, MAX_NOTES_PER_CONTACT + 1);
 
@@ -104,26 +108,71 @@ public class DemoContactNoteGenerator {
           boolean reminderSent =
               followUpDate != null && followUpDate.isBefore(LocalDate.now(clock));
 
-          dsl.insertInto(CONTACT_NOTES)
-              .set(CONTACT_NOTES.ID, UUID.randomUUID())
-              .set(CONTACT_NOTES.IDENTIFIER, newContactNoteId())
-              .set(CONTACT_NOTES.TEAM_ID, teamId)
-              .set(CONTACT_NOTES.CONTACT_ID, contactId)
-              .set(CONTACT_NOTES.INTERACTION_TYPE, interactionType.name())
-              .set(CONTACT_NOTES.SUBJECT, subject.orElse(null))
-              .set(CONTACT_NOTES.BODY, body)
-              .set(CONTACT_NOTES.OCCURRED_AT, occurredAt)
-              .set(CONTACT_NOTES.FOLLOW_UP_DATE, followUpDate)
-              .set(CONTACT_NOTES.FOLLOW_UP_REMINDER_SENT, reminderSent)
-              .set(CONTACT_NOTES.PINNED, pinned)
-              .set(CONTACT_NOTES.CREATED_AT, occurredAt)
-              .set(CONTACT_NOTES.UPDATED_AT, occurredAt)
-              .set(CONTACT_NOTES.CREATED_BY, createdBy)
-              .set(CONTACT_NOTES.UPDATED_BY, createdBy)
-              .execute();
+          Sid identifier = newContactNoteId();
+
+          records.add(
+              new Object[] {
+                UUID.randomUUID(),
+                identifier,
+                teamId,
+                contactId,
+                interactionType.name(),
+                subject.orElse(null),
+                body,
+                occurredAt,
+                followUpDate,
+                reminderSent,
+                pinned,
+                occurredAt,
+                occurredAt,
+                createdBy,
+                createdBy
+              });
 
           totalNotes++;
         }
+      }
+
+      if (!records.isEmpty()) {
+        var insert =
+            dsl.insertInto(CONTACT_NOTES)
+                .columns(
+                    CONTACT_NOTES.ID,
+                    CONTACT_NOTES.IDENTIFIER,
+                    CONTACT_NOTES.TEAM_ID,
+                    CONTACT_NOTES.CONTACT_ID,
+                    CONTACT_NOTES.INTERACTION_TYPE,
+                    CONTACT_NOTES.SUBJECT,
+                    CONTACT_NOTES.BODY,
+                    CONTACT_NOTES.OCCURRED_AT,
+                    CONTACT_NOTES.FOLLOW_UP_DATE,
+                    CONTACT_NOTES.FOLLOW_UP_REMINDER_SENT,
+                    CONTACT_NOTES.PINNED,
+                    CONTACT_NOTES.CREATED_AT,
+                    CONTACT_NOTES.UPDATED_AT,
+                    CONTACT_NOTES.CREATED_BY,
+                    CONTACT_NOTES.UPDATED_BY)
+                .values(
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (LocalDateTime) null,
+                    (LocalDate) null,
+                    (Boolean) null,
+                    (Boolean) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : records) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
       }
 
       log.info("Created contact notes for team {}", teamKey);

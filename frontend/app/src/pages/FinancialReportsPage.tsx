@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp,
@@ -46,6 +47,7 @@ import { ChevronDown, ChevronUp, Filter, Check, FileText } from 'lucide-react';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
 
 export const FinancialReportsPage = () => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
@@ -259,7 +261,7 @@ export const FinancialReportsPage = () => {
     return (
       <div className="px-4 py-8">
         <div className="bg-error-bg border border-error-border text-error-text px-4 py-3 rounded">
-          Failed to load financial reports
+          {t('reports.failedToLoad')}
         </div>
       </div>
     );
@@ -273,12 +275,10 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center gap-3 mb-1">
             <BarChart3 className="h-8 w-8 text-primary-500 dark:text-primary-300" />
             <h1 className="text-3xl font-bold text-text-primary">
-              Financial Reports
+              {t('reports.title')}
             </h1>
           </div>
-          <p className="text-text-secondary ml-11">
-            Comprehensive financial overview and analytics
-          </p>
+          <p className="text-text-secondary ml-11">{t('reports.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <ExportDropdown
@@ -342,7 +342,7 @@ export const FinancialReportsPage = () => {
               }
             }}
             className="flex items-center gap-2 px-3 py-2 text-text-secondary border border-border-strong rounded-md hover:bg-surface-inset transition-colors text-sm"
-            title="Download PDF"
+            title={t('reports.downloadPdf')}
           >
             <FileText className="h-4 w-4" />
             PDF
@@ -352,7 +352,7 @@ export const FinancialReportsPage = () => {
             className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors text-sm"
           >
             <List className="h-5 w-5" />
-            Transactions
+            {t('reports.transactions')}
           </button>
         </div>
       </div>
@@ -363,23 +363,29 @@ export const FinancialReportsPage = () => {
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-text-secondary " />
-              <span className="font-medium text-text-primary">Period:</span>
+              <span className="font-medium text-text-primary">
+                {t('reports.period')}
+              </span>
               <div className="flex gap-2 flex-wrap">
-                {['month', 'quarter', 'year', 'all', 'custom'].map((type) => (
+                {(
+                  [
+                    { key: 'month', label: t('reports.month') },
+                    { key: 'quarter', label: t('reports.quarter') },
+                    { key: 'year', label: t('reports.year') },
+                    { key: 'all', label: t('reports.allTime') },
+                    { key: 'custom', label: t('reports.custom') },
+                  ] as const
+                ).map(({ key, label }) => (
                   <button
-                    key={type}
-                    onClick={() =>
-                      handlePeriodChange(type as typeof periodType)
-                    }
+                    key={key}
+                    onClick={() => handlePeriodChange(key as typeof periodType)}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      periodType === type
+                      periodType === key
                         ? 'bg-primary-500 text-white'
                         : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                     }`}
                   >
-                    {type === 'all'
-                      ? 'All Time'
-                      : type.charAt(0).toUpperCase() + type.slice(1)}
+                    {label}
                   </button>
                 ))}
               </div>
@@ -395,7 +401,9 @@ export const FinancialReportsPage = () => {
                 }}
                 className="px-3 py-2 border border-border-strong rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
               />
-              <span className="text-text-secondary self-center">to</span>
+              <span className="text-text-secondary self-center">
+                {t('reports.to')}
+              </span>
               <input
                 type="date"
                 value={customEndDate || dateRange.endDate}
@@ -415,7 +423,7 @@ export const FinancialReportsPage = () => {
               className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-secondary transition-colors"
             >
               <Filter className="h-4 w-4" />
-              Advanced Filters
+              {t('reports.advancedFilters')}
               {selectedPropertyIds.length > 0 && (
                 <span className="bg-primary-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                   {selectedPropertyIds.length}
@@ -434,14 +442,14 @@ export const FinancialReportsPage = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-medium text-text-secondary">
-                      Properties
+                      {t('reports.properties')}
                     </label>
                     {selectedPropertyIds.length > 0 && (
                       <button
                         onClick={() => setSelectedPropertyIds([])}
                         className="text-xs text-primary-500 hover:underline"
                       >
-                        Clear all
+                        {t('reports.clearAll')}
                       </button>
                     )}
                   </div>
@@ -467,7 +475,7 @@ export const FinancialReportsPage = () => {
                     })}
                     {allProperties.length === 0 && (
                       <span className="text-xs text-text-secondary">
-                        No properties found
+                        {t('reports.noProperties')}
                       </span>
                     )}
                   </div>
@@ -493,7 +501,7 @@ export const FinancialReportsPage = () => {
               </div>
               <div className="text-right">
                 <p className="text-sm text-success-text font-medium">
-                  Total Income
+                  {t('reports.totalIncome')}
                 </p>
                 <p className="text-3xl font-bold text-success-text">
                   {formatCurrency(overview.income.total)}
@@ -510,7 +518,7 @@ export const FinancialReportsPage = () => {
               </div>
               <div className="text-right">
                 <p className="text-sm text-error-text font-medium">
-                  Total Expenses
+                  {t('reports.totalExpenses')}
                 </p>
                 <p className="text-3xl font-bold text-error-text">
                   {formatCurrency(overview.expenses.total)}
@@ -543,7 +551,7 @@ export const FinancialReportsPage = () => {
                       : 'text-warning-text'
                   }`}
                 >
-                  <MetricHint label="Net Profit" />
+                  <MetricHint label={t('reports.netProfit')} />
                 </p>
                 <p
                   className={`text-3xl font-bold ${
@@ -567,10 +575,10 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Income Trend
+                {t('reports.incomeTrend.title')}
               </h2>
               <p className="text-sm text-text-secondary">
-                Monthly income, expenses, and net profit
+                {t('reports.incomeTrend.subtitle')}
               </p>
             </div>
             <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
@@ -582,7 +590,7 @@ export const FinancialReportsPage = () => {
                     : 'text-text-secondary'
                 }`}
               >
-                Line
+                {t('reports.incomeTrend.line')}
               </button>
               <button
                 onClick={() => setIncomeChartType('bar')}
@@ -592,7 +600,7 @@ export const FinancialReportsPage = () => {
                     : 'text-text-secondary'
                 }`}
               >
-                Bar
+                {t('reports.incomeTrend.bar')}
               </button>
             </div>
           </div>
@@ -630,7 +638,7 @@ export const FinancialReportsPage = () => {
                     dataKey="income"
                     stroke="#10B981"
                     strokeWidth={2}
-                    name="Income"
+                    name={t('reports.income')}
                     dot={{ fill: '#10B981', r: 4 }}
                   />
                   <Line
@@ -638,7 +646,7 @@ export const FinancialReportsPage = () => {
                     dataKey="expenses"
                     stroke="#EF4444"
                     strokeWidth={2}
-                    name="Expenses"
+                    name={t('reports.expenses')}
                     dot={{ fill: '#EF4444', r: 4 }}
                   />
                   <Line
@@ -646,7 +654,7 @@ export const FinancialReportsPage = () => {
                     dataKey="netProfit"
                     stroke="#3B82F6"
                     strokeWidth={2}
-                    name="Net Profit"
+                    name={t('reports.netProfit')}
                     dot={{ fill: '#3B82F6', r: 4 }}
                   />
                 </LineChart>
@@ -676,19 +684,19 @@ export const FinancialReportsPage = () => {
                   <Bar
                     dataKey="income"
                     fill="#10B981"
-                    name="Income"
+                    name={t('reports.income')}
                     radius={[4, 4, 0, 0]}
                   />
                   <Bar
                     dataKey="expenses"
                     fill="#EF4444"
-                    name="Expenses"
+                    name={t('reports.expenses')}
                     radius={[4, 4, 0, 0]}
                   />
                   <Bar
                     dataKey="netProfit"
                     fill="#3B82F6"
-                    name="Net Profit"
+                    name={t('reports.netProfit')}
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>
@@ -702,10 +710,10 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Expense Breakdown
+                {t('reports.expenseBreakdown.title')}
               </h2>
               <p className="text-sm text-text-secondary">
-                By category for selected period
+                {t('reports.expenseBreakdown.subtitle')}
               </p>
             </div>
             <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
@@ -717,7 +725,7 @@ export const FinancialReportsPage = () => {
                     : 'text-text-secondary'
                 }`}
               >
-                Pie
+                {t('reports.expenseBreakdown.pie')}
               </button>
               <button
                 onClick={() => setExpenseChartType('bar')}
@@ -727,7 +735,7 @@ export const FinancialReportsPage = () => {
                     : 'text-text-secondary'
                 }`}
               >
-                Bar
+                {t('reports.expenseBreakdown.bar')}
               </button>
             </div>
           </div>
@@ -822,7 +830,11 @@ export const FinancialReportsPage = () => {
                     }
                     contentStyle={tooltipStyle}
                   />
-                  <Bar dataKey="value" name="Amount" radius={[0, 4, 4, 0]}>
+                  <Bar
+                    dataKey="value"
+                    name={t('reports.amount')}
+                    radius={[0, 4, 4, 0]}
+                  >
                     {expenseBreakdown.categories.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -832,7 +844,7 @@ export const FinancialReportsPage = () => {
             )
           ) : (
             <div className="text-center py-12 text-text-secondary">
-              No expense data for selected period
+              {t('reports.expenseBreakdown.noData')}
             </div>
           )}
         </div>
@@ -842,10 +854,10 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Property Performance
+                {t('reports.propertyPerformance.title')}
               </h2>
               <p className="text-sm text-text-secondary">
-                Income, expenses & net profit per property
+                {t('reports.propertyPerformance.subtitle')}
               </p>
             </div>
             <Building2 className="h-6 w-6 text-text-muted " />
@@ -860,19 +872,19 @@ export const FinancialReportsPage = () => {
                 <thead>
                   <tr className="border-b border-border-default">
                     <th className="text-left py-2 pr-4 font-medium text-text-secondary">
-                      Property
+                      {t('reports.propertyPerformance.property')}
                     </th>
                     <th className="text-right py-2 px-4 font-medium text-text-secondary">
-                      Income
+                      {t('reports.propertyPerformance.income')}
                     </th>
                     <th className="text-right py-2 px-4 font-medium text-text-secondary">
-                      Expenses
+                      {t('reports.propertyPerformance.expenses')}
                     </th>
                     <th className="text-right py-2 px-4 font-medium text-text-secondary">
-                      Net Profit
+                      {t('reports.propertyPerformance.netProfit')}
                     </th>
                     <th className="text-right py-2 pl-4 font-medium text-text-secondary">
-                      Margin
+                      {t('reports.propertyPerformance.margin')}
                     </th>
                   </tr>
                 </thead>
@@ -930,7 +942,7 @@ export const FinancialReportsPage = () => {
                   <tfoot>
                     <tr className="border-t-2 border-border-strong">
                       <td className="py-3 pr-4 font-semibold text-text-primary">
-                        Total
+                        {t('reports.propertyPerformance.total')}
                       </td>
                       <td className="py-3 px-4 text-right font-semibold text-success-text">
                         {formatCurrency(
@@ -964,7 +976,7 @@ export const FinancialReportsPage = () => {
             </div>
           ) : (
             <div className="text-center py-12 text-text-secondary">
-              No property data for selected period
+              {t('reports.propertyPerformance.noData')}
             </div>
           )}
         </div>
@@ -974,10 +986,10 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Occupancy Trend
+                {t('reports.occupancyTrend.title')}
               </h2>
               <p className="text-sm text-text-secondary">
-                Monthly occupancy rate percentage
+                {t('reports.occupancyTrend.subtitle')}
               </p>
             </div>
             <TrendingUp className="h-6 w-6 text-text-muted " />
@@ -1022,7 +1034,7 @@ export const FinancialReportsPage = () => {
                   dataKey="occupancyRate"
                   stroke="#8B5CF6"
                   strokeWidth={3}
-                  name="Occupancy Rate (%)"
+                  name={t('reports.occupancyTrend.occupancyRate')}
                   dot={{ fill: '#8B5CF6', r: 5 }}
                 />
               </LineChart>

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CalendarClock } from 'lucide-react';
 import { useUpcomingRenewals } from '@/hooks/useContractExtensionHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -22,6 +23,7 @@ function getDaysUntilColor(days: number): string {
 }
 
 export const UpcomingRenewalsPanel = () => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
   const { data: renewals, isLoading } = useUpcomingRenewals();
@@ -32,7 +34,7 @@ export const UpcomingRenewalsPanel = () => {
         <div className="flex items-center gap-3 mb-4">
           <CalendarClock className="h-5 w-5 text-primary-500" />
           <h2 className="text-lg font-semibold text-text-primary">
-            Upcoming Renewals
+            {t('dashboard.upcomingRenewals.title')}
           </h2>
         </div>
         <div className="flex justify-center py-4">
@@ -63,22 +65,22 @@ export const UpcomingRenewalsPanel = () => {
           <thead>
             <tr>
               <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Property
+                {t('dashboard.upcomingRenewals.property')}
               </th>
               <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Contact
+                {t('dashboard.upcomingRenewals.contact')}
               </th>
               <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                End Date
+                {t('dashboard.upcomingRenewals.endDate')}
               </th>
               <th className="px-3 py-2 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Days Left
+                {t('dashboard.upcomingRenewals.daysLeft')}
               </th>
               <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Mode
+                {t('dashboard.upcomingRenewals.mode')}
               </th>
               <th className="px-3 py-2 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Rent
+                {t('dashboard.upcomingRenewals.rent')}
               </th>
             </tr>
           </thead>

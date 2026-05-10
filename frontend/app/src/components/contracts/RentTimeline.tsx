@@ -32,6 +32,7 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { RichTextDisplay } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import type { DocumentResponse } from '@/types/property';
+import { useTranslation } from 'react-i18next';
 
 interface RentTimelineProps {
   contractIdentifier: string;
@@ -63,6 +64,7 @@ export const RentTimeline = ({
   documentLanguages,
   countryCode,
 }: RentTimelineProps) => {
+  const { t } = useTranslation('contracts');
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -113,7 +115,7 @@ export const RentTimeline = ({
   };
 
   const handleDeletePeriod = (periodIdentifier: string) => {
-    if (window.confirm('Are you sure you want to delete this rent period?')) {
+    if (window.confirm(t('rentPeriod.deleteConfirm'))) {
       deleteRentPeriod.mutate(periodIdentifier);
     }
   };
@@ -127,7 +129,9 @@ export const RentTimeline = ({
       <div className="flex items-center gap-3">
         <DollarSign className="h-5 w-5 text-text-muted " />
         <div className="flex-1">
-          <p className="text-sm text-text-secondary">Rent Amount</p>
+          <p className="text-sm text-text-secondary">
+            {t('overview.rentDetails')}
+          </p>
           <p className="font-medium text-text-primary">
             {currency} {currentRentAmount.toFixed(2)} /{' '}
             {paymentFrequency.toLowerCase()}
@@ -139,7 +143,7 @@ export const RentTimeline = ({
             className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary-500 bg-primary-500/10 rounded-md hover:bg-primary-500/20 transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
-            Adjust
+            {t('rentTimeline.adjustButton')}
           </button>
         )}
       </div>
@@ -156,14 +160,15 @@ export const RentTimeline = ({
             ) : (
               <ChevronDown className="h-4 w-4" />
             )}
-            Rent History ({periods.length} period
-            {periods.length !== 1 ? 's' : ''})
+            {t('rentPeriod.historyCount', { count: periods.length })}
           </button>
 
           {isExpanded && (
             <div className="mt-3 space-y-2">
               {isLoading ? (
-                <p className="text-sm text-text-muted">Loading...</p>
+                <p className="text-sm text-text-muted">
+                  {t('common:buttons.loading')}
+                </p>
               ) : (
                 periods.map((period) => (
                   <RentPeriodRow
@@ -173,6 +178,7 @@ export const RentTimeline = ({
                     countryCode={countryCode}
                     currency={currency}
                     formatDate={formatDate}
+                    t={t}
                     canEdit={canEditData}
                     onDelete={
                       canEditData && isFuturePeriod(period.effectiveFrom)
@@ -227,6 +233,7 @@ function RentPeriodRow({
   countryCode,
   currency,
   formatDate,
+  t,
   canEdit,
   onDelete,
   onGenerateDocuments,
@@ -237,6 +244,7 @@ function RentPeriodRow({
   countryCode?: string;
   currency: string;
   formatDate: (date: string) => string;
+  t: (key: string) => string;
   canEdit: boolean;
   onDelete?: () => void;
   onGenerateDocuments: () => void;
@@ -281,7 +289,7 @@ function RentPeriodRow({
           {formatDate(period.effectiveFrom)}
           {period.effectiveTo
             ? ` - ${formatDate(period.effectiveTo)}`
-            : ' - Present'}
+            : ` - ${t('rentPeriod.present')}`}
         </p>
         {period.notes && (
           <div className="mt-1 text-xs text-text-secondary">
@@ -294,7 +302,7 @@ function RentPeriodRow({
           <div className="mt-2 flex items-center gap-2 flex-wrap">
             <FileText className="h-3.5 w-3.5 text-primary-500 shrink-0" />
             <span className="text-[11px] font-medium text-text-secondary shrink-0">
-              Rent Change
+              {t('rentPeriod.rentChange')}
             </span>
             <div className="flex items-center gap-1 flex-wrap">
               {sortedDocs.map((doc) => {
@@ -324,7 +332,7 @@ function RentPeriodRow({
                 className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-text-muted rounded hover:text-primary-500 hover:bg-primary-500/5 transition-colors ml-auto"
               >
                 <RefreshCw className="h-3 w-3" />
-                Regenerate
+                {t('rentPeriod.regenerate')}
               </button>
             )}
           </div>
@@ -333,10 +341,10 @@ function RentPeriodRow({
             <button
               onClick={onGenerateDocuments}
               className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-primary-500 bg-primary-500/10 rounded hover:bg-primary-500/20 transition-colors"
-              title="Generate rent change document"
+              title={t('rentPeriod.generateDocumentTitle')}
             >
               <FolderDown className="h-3 w-3" />
-              Generate Document
+              {t('rentPeriod.generateDocument')}
             </button>
           </div>
         ) : null}

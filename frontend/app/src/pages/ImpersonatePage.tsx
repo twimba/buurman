@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { exchangeImpersonationToken } from '../generated/api/impersonation/impersonation';
 import { LoadingSpinner } from '@buurman/ui';
 
 export function ImpersonatePage() {
+  const { t } = useTranslation('admin');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { startImpersonation } = useImpersonation();
   const token = searchParams.get('token');
   const [error, setError] = useState<string | null>(
-    token ? null : 'Missing session token'
+    token ? null : t('common:impersonation.missingToken')
   );
 
   // Prevent the session token in the URL from leaking via the Referrer header
@@ -52,32 +54,34 @@ export function ImpersonatePage() {
         navigate('/dashboard', { replace: true });
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'Failed to exchange token'
+          err instanceof Error
+            ? err.message
+            : t('common:impersonation.failedToExchange')
         );
       }
     };
 
     exchange();
-  }, [token, startImpersonation, navigate]);
+  }, [token, startImpersonation, navigate, t]);
 
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-xl font-semibold text-text-primary mb-2">
-            Impersonation Failed
+            {t('common:impersonation.failed')}
           </h1>
           <p className="text-text-secondary">{error}</p>
           <button
             onClick={() => window.close()}
             className="mt-4 text-sm text-primary-500 hover:underline"
           >
-            Close this tab
+            {t('common:impersonation.closeTab')}
           </button>
         </div>
       </div>
     );
   }
 
-  return <LoadingSpinner message="Setting up impersonation session..." />;
+  return <LoadingSpinner message={t('common:impersonation.settingUp')} />;
 }

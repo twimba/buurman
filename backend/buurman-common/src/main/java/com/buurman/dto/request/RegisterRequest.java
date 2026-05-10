@@ -13,9 +13,11 @@ public record RegisterRequest(
     @NotBlank String lastName,
     @NotBlank @Size(min = 8) String password,
     Optional<String> invitationToken,
-    Optional<String> registrationInvitationCode) {
+    Optional<String> registrationInvitationCode,
+    String language) {
   public RegisterRequest {
     registrationInvitationCode =
         Objects.requireNonNullElse(registrationInvitationCode, Optional.empty());
+    language = Objects.requireNonNullElse(language, "en");
   }
 }

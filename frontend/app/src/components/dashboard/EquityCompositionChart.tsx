@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   BarChart,
   Bar,
@@ -47,6 +48,7 @@ export const EquityCompositionChart = ({
   currency = 'EUR',
   isDark,
 }: EquityCompositionChartProps) => {
+  const { t } = useTranslation('common');
   const tooltipStyle = useMemo(
     () => ({
       backgroundColor: isDark ? '#14161f' : '#fff',
@@ -73,7 +75,7 @@ export const EquityCompositionChart = ({
   if (chartData.length === 0) {
     return (
       <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
-        No equity data available
+        {t('dashboard.equity.noData')}
       </div>
     );
   }
@@ -115,11 +117,17 @@ export const EquityCompositionChart = ({
               typeof value === 'number' ? value : Number(value),
               currency
             ),
-            name === 'equity' ? 'Equity' : 'Mortgage',
+            name === 'equity'
+              ? t('dashboard.equity.equity')
+              : t('dashboard.equity.mortgage'),
           ]}
         />
         <Legend
-          formatter={(value) => (value === 'equity' ? 'Equity' : 'Mortgage')}
+          formatter={(value) =>
+            value === 'equity'
+              ? t('dashboard.equity.equity')
+              : t('dashboard.equity.mortgage')
+          }
         />
         <Bar
           dataKey="equity"

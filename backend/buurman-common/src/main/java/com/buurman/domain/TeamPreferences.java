@@ -29,6 +29,7 @@ public class TeamPreferences {
   @Builder.Default private String timezone = "Europe/Amsterdam";
   @Builder.Default private String dateFormat = "DD/MM/YYYY";
   @Builder.Default private String fiscalYearStartMonth = "01";
+  @Builder.Default private String defaultLanguage = "en";
 
   // Takeout settings
   @Builder.Default private int takeoutRetentionDays = 30;

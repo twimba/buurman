@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import {
   useContract,
@@ -9,8 +10,9 @@ import {
   useDuplicateContract,
 } from '@/hooks/useContractHooks';
 import { downloadContractBooklet } from '@/api/contracts';
+import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Button, PageHeader, Skeleton, useToast } from '@buurman/ui';
+import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
 import { ContractOverviewTab } from '@/components/contracts/ContractOverviewTab';
@@ -29,16 +31,15 @@ import {
   RefreshCw,
   RotateCcw,
   Copy,
-  Download,
   Repeat,
 } from 'lucide-react';
 import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 
 export const ContractDetailPage = () => {
+  const { t } = useTranslation('contracts');
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
-  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useTabState('overview', [
     'overview',
     'payments',
@@ -111,21 +112,16 @@ export const ContractDetailPage = () => {
     }
   };
 
-  const handleDownloadBooklet = async () => {
-    try {
-      const blob = await downloadContractBooklet(id);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'contract-booklet.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Failed to download booklet:', err);
-      showToast('Failed to download booklet. Please try again.', 'error');
-    }
+  const handleDownloadBooklet = async (lang: string) => {
+    const blob = await downloadContractBooklet(id, lang);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `contract-booklet-${lang}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
 
   if (isLoading) {
@@ -166,7 +162,7 @@ export const ContractDetailPage = () => {
   if (error || !contract) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load contract" />
+        <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
   }
@@ -186,19 +182,13 @@ export const ContractDetailPage = () => {
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
-          title={`Contract #${contract.identifier}`}
-          subtitle={contract.contractType.replace('_', '')}
+          title={t('detail.title', { id: contract.identifier })}
+          subtitle={t(`detail.contractTypes.${contract.contractType}`)}
           backTo="/contracts"
           badge={<ContractStatusBadge status={contract.status} />}
           actions={
             <>
-              <Button
-                variant="secondary"
-                leftIcon={<Download />}
-                onClick={handleDownloadBooklet}
-              >
-                Booklet
-              </Button>
+              <BookletDownloadButton onDownload={handleDownloadBooklet} />
               {!canReopen && (
                 <Button
                   variant="primary"
@@ -206,7 +196,7 @@ export const ContractDetailPage = () => {
                   onClick={() => setShowStatusModal(true)}
                   disabled={!canEditData}
                 >
-                  Change Status
+                  {t('detail.changeStatus')}
                 </Button>
               )}
               {canReopen && (
@@ -215,10 +205,10 @@ export const ContractDetailPage = () => {
                   leftIcon={<RotateCcw />}
                   onClick={handleReopen}
                   isLoading={reopenContractMutation.isPending}
-                  title="Reopen this contract to draft status"
+                  title={t('detail.reopenTitle')}
                   disabled={!canEditData}
                 >
-                  Re-open
+                  {t('detail.reopen')}
                 </Button>
               )}
               {canEdit && (
@@ -228,7 +218,7 @@ export const ContractDetailPage = () => {
                   onClick={() => navigate(`/contracts/${id}/edit`)}
                   disabled={!canEditData}
                 >
-                  Edit
+                  {t('detail.edit')}
                 </Button>
               )}
               <Button
@@ -236,10 +226,10 @@ export const ContractDetailPage = () => {
                 leftIcon={<Copy />}
                 onClick={handleDuplicate}
                 isLoading={duplicateContractMutation.isPending}
-                title="Create a copy of this contract in draft status"
+                title={t('detail.duplicateTitle')}
                 disabled={!canEditData}
               >
-                Duplicate
+                {t('detail.duplicate')}
               </Button>
               {canDelete && (
                 <Button
@@ -248,7 +238,7 @@ export const ContractDetailPage = () => {
                   onClick={() => setShowDeleteModal(true)}
                   disabled={!canEditData}
                 >
-                  Delete
+                  {t('detail.delete')}
                 </Button>
               )}
             </>
@@ -266,7 +256,7 @@ export const ContractDetailPage = () => {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              Overview
+              {t('detail.tabs.overview')}
             </button>
             <button
               onClick={() => setActiveTab('payments')}
@@ -277,7 +267,7 @@ export const ContractDetailPage = () => {
               }`}
             >
               <DollarSign className="h-4 w-4" />
-              Payments
+              {t('detail.tabs.payments')}
             </button>
             <button
               onClick={() => setActiveTab('extensions')}
@@ -288,7 +278,7 @@ export const ContractDetailPage = () => {
               }`}
             >
               <Repeat className="h-4 w-4" />
-              Extensions
+              {t('detail.tabs.extensions')}
               {contract.extensionCount != null &&
                 contract.extensionCount > 0 &&
                 ` (${contract.extensionCount})`}
@@ -302,7 +292,7 @@ export const ContractDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              Documents
+              {t('detail.tabs.documents')}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -312,7 +302,7 @@ export const ContractDetailPage = () => {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              History
+              {t('detail.tabs.history')}
             </button>
           </div>
         </div>
@@ -343,11 +333,10 @@ export const ContractDetailPage = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
             <h2 className="text-lg font-semibold text-text-primary mb-4">
-              Delete Contract
+              {t('detail.deleteTitle')}
             </h2>
             <p className="text-text-secondary mb-6">
-              Are you sure you want to delete this contract? This action cannot
-              be undone.
+              {t('detail.deleteMessage')}
             </p>
             <div className="flex justify-end gap-3">
               <Button

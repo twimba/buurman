@@ -1,0 +1,382 @@
+{
+  "page": {
+    "title": "Asetukset",
+    "subtitle": "Hallitse henkilokohtaista profiiliasi ja asetuksiasi",
+    "impersonationBlocked": "Asetuksia ei voi muokata toisena kayttajana toimiessa."
+  },
+  "tabs": {
+    "profile": "Profiili ja turvallisuus",
+    "preferences": "Omat asetukset",
+    "teams": "Omat tiimit"
+  },
+  "profile": {
+    "title": "Profiilin tiedot",
+    "subtitle": "Paivita henkilotietosi ja avatarisi",
+    "editProfile": "Muokkaa profiilia",
+    "firstName": "Etunimi",
+    "lastName": "Sukunimi",
+    "emailAddress": "Sahkopostiosoite",
+    "emailChangeNote": "Sahkopostiosoitetta ei voi muuttaa. Ota yhteytta tukeen, jos sinun taytyy paivittaa se.",
+    "phoneNumber": "Puhelinnumero",
+    "verified": "Vahvistettu",
+    "unverified": "Ei vahvistettu",
+    "phoneNotAllowed": "Puhelinnumerot tasta maasta eivat ole sallittuja",
+    "phoneTypeNotAllowed": "Tama puhelinnumerotyyppi ({{type}}) ei ole sallittu",
+    "verification": {
+      "enterCode": "Melkein valmis! Syota lahettetty koodi numeroon",
+      "invalidCode": "Virheellinen tai vanhentunut koodi. Yrita uudelleen.",
+      "sending": "Lahetetaan...",
+      "resendIn": "Laheta uudelleen {{seconds}} s kuluttua",
+      "resendCode": "Laheta koodi uudelleen",
+      "cancelling": "Peruutetaan...",
+      "changeNumber": "Vaihda numero"
+    },
+    "failedToLoad": "Profiilin tietojen lataus epaonnistui",
+    "tryAgain": "Yrita uudelleen"
+  },
+  "security": {
+    "title": "Turvallisuusasetukset",
+    "subtitle": "Hallitse salasanaasi ja turvallisuusasetuksiasi",
+    "password": "Salasana",
+    "passwordNote": "Salasanan vaihto tapahtuu identiteettipalveluntarjoajan kautta",
+    "changePassword": "Vaihda salasana",
+    "securityEmailNote": "Turvasahkopostit (salasanan vaihto, vahvistus, kutsut) lahetetaan aina tilaussuunnitelmasta riippumatta."
+  },
+  "preferences": {
+    "title": "Kayttajaasetukset",
+    "subtitle": "Mukauta henkilokohtaista kokemustasi",
+    "failedToLoad": "Asetusten lataus epaonnistui",
+    "tryAgain": "Yrita uudelleen",
+    "appearance": {
+      "title": "Ulkoasu",
+      "theme": "Teema",
+      "light": "Vaalea",
+      "dark": "Tumma",
+      "auto": "Automaattinen",
+      "autoDescription": "Automaattinen tila seuraa jarjestelmaasetuksiasi"
+    },
+    "languageRegion": {
+      "title": "Kieli ja alue",
+      "language": "Kieli",
+      "dateFormat": "Paivamaaramuoto"
+    },
+    "timezone": {
+      "title": "Aikazone"
+    },
+    "notifications": {
+      "title": "Ilmoitukset",
+      "email": "Sahkopostiilmoitukset",
+      "emailDescription": "Vastaanota ilmoitukset sahkopostilla",
+      "sms": "Tekstiviesti-ilmoitukset",
+      "smsDescription": "Vastaanota ilmoitukset tekstiviestilla (vaatii puhelinnumeron)",
+      "configurePerType": "Maarittele ilmoitukset tyypeittain",
+      "notificationType": "Ilmoitustyyppi",
+      "emailColumnDisabled": "Sahkopostisarake on pois kaytosta, koska sahkopostin paaasetus on pois paalta",
+      "smsColumnDisabled": "Tekstiviestisarake on pois kaytosta, koska tekstiviestin paaasetus on pois paalta"
+    }
+  },
+  "teamPreferences": {
+    "title": "Tiimin asetukset",
+    "subtitle": "Maarittele tiimin oletusasetukset",
+    "teamIdentity": {
+      "title": "Tiimin identiteetti",
+      "teamName": "Tiimin nimi",
+      "placeholder": "Syota tiimin nimi",
+      "description": "Tiimisi nayttonimi"
+    },
+    "currency": {
+      "title": "Valuutta-asetukset",
+      "teamCurrency": "Tiimin valuutta",
+      "change": "Vaihda",
+      "description": "Kaikki taloustiedot kayttavat tata valuuttaa. Vaihtaminen vaikuttaa kaikkiin olemassa oleviin tietueisiin."
+    },
+    "defaultCountry": {
+      "title": "Oletusmaa",
+      "label": "Oletusmaa",
+      "placeholder": "Ei oletusta (valitaan joka kerta)",
+      "description": "Tata maata kaytetaan oletuksena uusille kohteille ja yhteystietojen osoitteille"
+    },
+    "fiscalYear": {
+      "title": "Tilikausi",
+      "fiscalYearStart": "Tilikauden alku",
+      "description": "Tilikauden ensimmainen kuukausi talousraportteja varten"
+    },
+    "defaultLanguage": {
+      "title": "Oletuskieli",
+      "label": "Tiimin kieli",
+      "description": "Kaytetaan sahkopostiilmoituksissa tiimin jaseneille ja yhteystiedoille, jotka eivat ole asettaneet henkilokohtaista kieliasetusta"
+    }
+  },
+  "currencyChange": {
+    "title": "Vaihda tiimin valuutta",
+    "currentCurrency": "Nykyinen valuutta",
+    "newCurrency": "Uusi valuutta",
+    "changeMode": "Vaihtotapa",
+    "relabelOnly": "Vain uudelleennimea",
+    "relabelDescription": "Vaihda valuuttakoodit muuttamatta summia. Kayta, kun summat on jo syotetty kohdevaluutassa.",
+    "convertAtRate": "Muunna kiintealla kurssilla",
+    "convertDescription": "Kerro kaikki summat muuntokurssilla. Kaikki olemassa olevat taloustiedot lasketaan uudelleen.",
+    "conversionRate": "Muuntokurssi (1 {{from}} = {{rate}} {{to}})",
+    "irreversible": "Tama toiminto on peruuttamaton",
+    "relabelWarning": "Kaikki valuuttakoodit vaihdetaan {{from}} -> {{to}}. Summia ei muuteta.",
+    "convertWarning": "Kaikki summat kerrotaan kurssilla {{rate}} ja valuuttakoodit vaihdetaan {{from}} -> {{to}}.",
+    "understandCannotUndo": "Ymmarran, etta tata ei voi kumota",
+    "changing": "Vaihdetaan...",
+    "confirmChange": "Vahvista vaihto",
+    "changeCurrency": "Vaihda valuutta"
+  },
+  "teamMembers": {
+    "title": "Tiimin jasenet",
+    "memberCount": "{{count}} jasen",
+    "memberCount_other": "{{count}} jasenta",
+    "inviteMember": "Kutsu jasen",
+    "you": "Sina",
+    "owner": "Omistaja",
+    "joined": "Liittynyt {{date}}",
+    "changeRole": "Vaihda rooli",
+    "transferOwnership": "Siirraa omistajuus",
+    "removeMember": "Poista jasen",
+    "roles": {
+      "admin": "Yllapitaja",
+      "editor": "Muokkaaja",
+      "viewer": "Katselija",
+      "adminDescription": "Taysi paasy kaikkiin ominaisuuksiin ja asetuksiin",
+      "editorDescription": "Voi luoda ja muokata kohteita, yhteystietoja ja sopimuksia",
+      "viewerDescription": "Vain luku -oikeus kaikkiin tietoihin",
+      "label": "Roolit:"
+    },
+    "pendingInvitations": {
+      "title": "Odottavat kutsut",
+      "count": "{{count}} odottava kutsu",
+      "count_other": "{{count}} odottavaa kutsua",
+      "invitedBy": "Kutsuja: {{name}}",
+      "sent": "Lahetetty {{date}}",
+      "expires": "Vanhenee {{date}}",
+      "resend": "Laheta uudelleen"
+    },
+    "inviteModal": {
+      "title": "Kutsu tiimin jasen",
+      "subtitle": "Laheta kutsu liittya tiimiisi",
+      "emailAddress": "Sahkopostiosoite",
+      "role": "Rooli",
+      "sendInvitation": "Laheta kutsu"
+    },
+    "roleModal": {
+      "title": "Vaihda jasenen rooli",
+      "subtitle": "Paivita rooli kayttajalle {{name}}",
+      "newRole": "Uusi rooli",
+      "updateRole": "Paivita rooli"
+    },
+    "transferModal": {
+      "title": "Siirraa omistajuus",
+      "message": "Haluatko varmasti siirtaa tiimin omistajuuden kayttajalle <strong>{{name}}</strong>? Tata toimintoa et voi kumota itse. Uudella omistajalla on taysi hallinta tiimista.",
+      "confirm": "Siirraa omistajuus"
+    },
+    "removeModal": {
+      "title": "Poista tiimin jasen",
+      "message": "Haluatko varmasti poistaa kayttajan <strong>{{name}}</strong> tiimistasi? Tama henkilö menettaa paasyn kaikkiin tiimin tietoihin.",
+      "confirm": "Poista jasen"
+    }
+  },
+  "myTeams": {
+    "title": "Omat tiimit",
+    "active": "Aktiivinen",
+    "pending": "Odottaa",
+    "member": "{{count}} jasen",
+    "member_other": "{{count}} jasenta",
+    "accept": "Hyvaksy",
+    "pendingInvitations": "Odottavat kutsut",
+    "invitedBy": "Kutsuja: {{name}}",
+    "expires": "Vanhenee {{date}}",
+    "roles": {
+      "admin": "Yllapitaja",
+      "editor": "Muokkaaja",
+      "viewer": "Katselija"
+    }
+  },
+  "subscription": {
+    "earlyAccess": {
+      "title": "Kaikki on nyt ilmaista!",
+      "description": "Rakennamme Buurmania yha ja tama sivu on vain esikatseluversio tulevasta. Nauti toistaiseksi <strong>kaikista ominaisuuksista</strong> ilman rajoja ja kustannuksia. Anna menna!",
+      "noSurprises": "Ilmoitamme hyvissa ajoin ennen laskutuksen alkamista. Ei yllattyksia, lupaamme."
+    },
+    "currentPlan": {
+      "title": "Nykyinen tilaus",
+      "subtitle": "Hallitse tilaussuunnitelmaasi ja laskutusta",
+      "properties": "Kohteet",
+      "teamMembers": "Tiimin jasenet",
+      "nextRenewal": "Seuraava uusinta",
+      "autoRenews": "Uusiutuu automaattisesti",
+      "changePlan": "Vaihda suunnitelma",
+      "cancelSubscription": "Peru tilaus"
+    },
+    "plans": {
+      "title": "Saatavilla olevat suunnitelmat",
+      "subtitle": "Valitse tarpeisiisi parhaiten sopiva suunnitelma",
+      "monthly": "Kuukausittain",
+      "annual": "Vuosittain",
+      "save20": "Saasta 20 %",
+      "forever": "/ikuisesti",
+      "perMonth": "/kuukausi",
+      "billedAnnually": "Laskutetaan vuosittain {{amount}}",
+      "billedMonthly": "Laskutetaan kuukausittain, peru milloin tahansa",
+      "perfectToStart": "Taydellinen aloitukseen",
+      "currentPlan": "Nykyinen suunnitelma",
+      "downgradeToFree": "Vaihda ilmaiseen",
+      "downgrade": "Alenna",
+      "upgrade": "Paivita",
+      "mostPopular": "Suosituin",
+      "freeForever": "ILMAINEN IKUISESTI"
+    },
+    "confirmModal": {
+      "title": "Vahvista suunnitelman vaihto",
+      "message": "Haluatko varmasti vaihtaa <strong>{{plan}}</strong>-suunnitelmaan? Laskutuksesi mukautetaan vastaavasti.",
+      "billingNote": "Sinulta veloitetaan {{amount}}/kuukausi{{annual}} seuraavasta laskutusjaksosta alkaen.",
+      "billedAnnually": " ({{total}} laskutetaan vuosittain)",
+      "confirmChange": "Vahvista vaihto"
+    },
+    "paymentMethods": {
+      "title": "Maksutavat",
+      "subtitle": "Hallitse maksutapojasi",
+      "addPaymentMethod": "Lisaa maksutapa",
+      "default": "Oletus",
+      "expires": "Vanhenee {{month}}/{{year}}"
+    }
+  },
+  "paymentHistory": {
+    "nextPayment": "Seuraava maksu",
+    "totalPaid": "Maksettu yhteensa",
+    "allTime": "Koko ajalta",
+    "totalInvoices": "Laskut yhteensa",
+    "paid": "{{count}} maksettu",
+    "title": "Maksuhistoria",
+    "subtitle": "Nayta ja lataa laskusi",
+    "searchPlaceholder": "Hae laskunumerolla, suunnitelmalla tai maksutavalla...",
+    "statusFilter": "Tilasuodatin",
+    "allStatuses": "Kaikki tilat",
+    "invoice": "Lasku",
+    "date": "Paivamaara",
+    "plan": "Suunnitelma",
+    "paymentMethod": "Maksutapa",
+    "amount": "Summa",
+    "status": "Tila",
+    "actions": "Toiminnot",
+    "download": "Lataa",
+    "noInvoices": "Laskuja ei loytynyt",
+    "adjustFilters": "Kokeile muuttaa suodattimia tai hakua",
+    "historyWillAppear": "Maksuhistoriasi naytetaan taalla",
+    "statuses": {
+      "paid": "Maksettu",
+      "pending": "Odottaa",
+      "failed": "Epaonnistunut"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Maksuohjeet",
+    "subtitle": "Maarittele uudelleenkaytettavat maksuohjepohjat sopimuksiasi varten",
+    "addInstruction": "Lisaa ohje",
+    "editTitle": "Muokkaa maksuohjetta",
+    "newTitle": "Uusi maksuohje",
+    "name": "Nimi *",
+    "namePlaceholder": "esim. Paapankkitili",
+    "paymentMethod": "Maksuohje *",
+    "description": "Kuvaus",
+    "descriptionPlaceholder": "Ohjeet yhteystiedolle...",
+    "bankName": "Pankin nimi",
+    "accountHolder": "Tilinhaltija",
+    "iban": "IBAN",
+    "bicSwift": "BIC / SWIFT",
+    "accountNumber": "Tilinumero",
+    "routingNumber": "Reititystunnus",
+    "paymentReference": "Maksuviite",
+    "paymentReferencePlaceholder": "Maksuun liitettava viite",
+    "setAsDefault": "Aseta oletusmaksutavaksi",
+    "setAsDefaultShort": "Aseta oletukseksi",
+    "creating": "Luodaan...",
+    "saving": "Tallennetaan...",
+    "empty": {
+      "title": "Ei maksuohjeita",
+      "subtitle": "Lisaa ensimmainen maksutapa kaytettavaksi sopimuksissa.",
+      "addInstruction": "Lisaa maksuohje"
+    },
+    "default": "Oletus",
+    "holder": "Tilinhaltija:",
+    "account": "Tili:",
+    "routing": "Reititys:",
+    "loading": "Ladataan..."
+  },
+  "calendarFeeds": {
+    "title": "Kalenterisyotteet",
+    "subtitle": "Tilaa maksujen erapaivat Google Calendariin, Apple Calendariin tai mihin tahansa iCalendar-syotteita tukevaan sovellukseen. Jokaisella syotteella on yksilollinen URL, jonka voit lisata kalenteritilauksenasi.",
+    "createAllPayments": "Luo kaikkien maksujen syote",
+    "previewCalendar": "Esikatsele kalenteri",
+    "copyUrl": "Kopioi URL",
+    "regenerateUrl": "Luo URL uudelleen",
+    "deleteFeed": "Poista syote",
+    "regenerateWarning": "Uudelleenluonti mitaatoi nykyisen URL-osoitteen.",
+    "regenerate": "Luo uudelleen",
+    "deleteConfirm": "Poista tama kalenterisyote?",
+    "empty": "Ei kalenterisyotteita viela. Luo yksi aloittaaksesi.",
+    "copied": "Syotteen URL kopioitu leikepoyalle",
+    "copyFailed": "Linkin kopiointi epaonnistui",
+    "feedTypes": {
+      "allPayments": "Kaikki maksut",
+      "propertyPayments": "Kohteen maksut",
+      "contactPayments": "Yhteystiedon maksut",
+      "contract": "Sopimus"
+    },
+    "preview": {
+      "subtitle": "Kalenterisyotteen esikatselu",
+      "today": "Tanaan",
+      "errorMessage": "Kalenterisyotteen lataus epaonnistui. Syotteen URL voi olla virheellinen tai tavoittamattomissa.",
+      "emailPreview": "Sahkopostin esikatselu",
+      "smsMessage": "Tekstiviesti"
+    }
+  },
+  "onboarding": {
+    "welcome": "Tervetuloa Buurmaniin",
+    "subtitle": "Maaritetaan tiimisi asetukset",
+    "chooseLanguage": "Valitse kielesi",
+    "chooseLanguageDesc": "Valitse Buurman-kayttoliittyman kieli.",
+    "whereProperties": "Missa kiinteistosi sijaitsevat?",
+    "wherePropertiesDesc": "Tama maarittaa oletusvaluutan ja paivamaaramuodon.",
+    "searchCountries": "Hae maita...",
+    "teamCurrency": "Tiimin valuutta",
+    "teamCurrencyDesc": "Kaikki taloustiedot kayttavat tata valuuttaa. Voit vaihtaa sen myohemmin asetuksissa.",
+    "suggestedFor": "Ehdotettu maalle {{country}}",
+    "selected": "Valittu",
+    "dateFormat": "Paivamaaramuoto",
+    "dateFormatDesc": "Miten paivamaariet naytetaan?",
+    "summary": "Yhteenveto",
+    "summaryLanguage": "Kieli",
+    "summaryCountry": "Maa",
+    "summaryCurrency": "Valuutta",
+    "summaryDateFormat": "Paivamaaramuoto",
+    "skipForNow": "Ohita toistaiseksi",
+    "saving": "Tallennetaan...",
+    "completeSetup": "Viimeistele asetukset"
+  },
+  "dataExport": {
+    "title": "Tietojen vienti",
+    "subtitle": "Vie kaikki tiimisi tiedot ladattavana arkistona. Vienti sisaltaa kohteet, yhteystiedot, sopimukset, maksut, kulut ja asiakirjat.",
+    "requestExport": "Pyoda vientia",
+    "inProgress": "Vienti on jo kaynnissa. Odota sen valmistumista ennen uuden pyytamista.",
+    "failedToLoad": "Vientien lataus epaonnistui",
+    "tryAgain": "Yrita uudelleen",
+    "empty": "Ei vienteja viela. Pyoda ensimmainen tietojen vienti yllaa.",
+    "dataExportLabel": "Tietojen vienti",
+    "requested": "Pyydetty {{date}}",
+    "completed": "Valmistunut {{date}}",
+    "expires": "Vanhenee {{date}}",
+    "percentComplete": "{{percent}} % valmis",
+    "adminOnly": "Vain tiimin yllapitajat voivat vieda tietoja.",
+    "deleteTitle": "Poista vienti",
+    "deleteMessage": "Haluatko varmasti poistaa taman tietojen viennin? Viety tiedosto poistetaan pysyvasti. Tata toimintoa ei voi kumota.",
+    "statuses": {
+      "pending": "Odottaa",
+      "processing": "Kasittelyssa",
+      "completed": "Valmis",
+      "failed": "Epaonnistunut"
+    }
+  }
+}

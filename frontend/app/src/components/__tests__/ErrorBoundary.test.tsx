@@ -17,9 +17,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('shows error screen when a child throws', () => {
-    const consoleSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
       <ErrorBoundary>
@@ -36,9 +34,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('shows error details in DEV mode (vitest default)', () => {
-    const consoleSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
       <ErrorBoundary>
@@ -54,9 +50,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('shows "Reload Page" button', () => {
-    const consoleSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
       <ErrorBoundary>
@@ -72,9 +66,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('hides "contact support" message in DEV mode', () => {
-    const consoleSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
       <ErrorBoundary>

@@ -1,0 +1,99 @@
+{
+  "documentsPage": {
+    "title": "Archivio documenti",
+    "subtitle": "Cerchi e gestisca tutti i Suoi documenti in un unico posto",
+    "searchPlaceholder": "Cerca documenti per titolo, nome file o note...",
+    "entityTypeFilter": {
+      "all": "Tutti i tipi",
+      "property": "Immobili",
+      "contact": "Contatti",
+      "contract": "Contratti",
+      "payment": "Pagamenti",
+      "expense": "Spese"
+    },
+    "table": {
+      "document": "Documento",
+      "type": "Tipo",
+      "size": "Dimensione",
+      "uploaded": "Caricato",
+      "actions": "Azioni"
+    },
+    "selection": {
+      "selected": "{{selected}} di {{total}} selezionati",
+      "count": "{{count}} documento",
+      "count_other": "{{count}} documenti"
+    },
+    "empty": "Nessun documento trovato",
+    "editModal": "Modifica documento"
+  },
+  "photosPage": {
+    "title": "Archivio foto",
+    "subtitle": "Sfoglia e gestisca tutte le Sue foto in un unico posto",
+    "searchPlaceholder": "Cerca foto per titolo, nome file o note...",
+    "entityTypeFilter": {
+      "all": "Tutti i tipi",
+      "property": "Immobili",
+      "contact": "Contatti",
+      "contract": "Contratti",
+      "payment": "Pagamenti",
+      "expense": "Spese"
+    },
+    "empty": "Nessuna foto trovata",
+    "editModal": "Modifica foto"
+  },
+  "photoGrid": {
+    "noPhotos": "Nessuna foto",
+    "failedToLoad": "Impossibile caricare le foto",
+    "failedToLoadImage": "Caricamento non riuscito",
+    "noUrl": "Nessun URL",
+    "main": "Principale",
+    "selection": {
+      "selected": "{{selected}} di {{total}} selezionate",
+      "count": "{{count}} foto",
+      "count_other": "{{count}} foto"
+    },
+    "downloading": "Download...",
+    "tooltips": {
+      "setAsMain": "Imposta come foto principale",
+      "editTitleNotes": "Modifica titolo e note",
+      "deletePhoto": "Elimina foto"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Anteprima non disponibile per questo tipo di file ({{mimeType}})",
+    "downloadFile": "Scarica file",
+    "notes": "Note:",
+    "tooltips": {
+      "editTitleNotes": "Modifica titolo e note",
+      "download": "Scarica",
+      "openInNewTab": "Apri in una nuova scheda",
+      "close": "Chiudi",
+      "previous": "Precedente",
+      "next": "Successivo"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Elimina documento",
+    "titlePlural": "Elimina documenti",
+    "messageSingle": "Conferma l'eliminazione di questo documento? Questa azione non può essere annullata.",
+    "messagePlural": "Sta per eliminare {{count}} documenti. Questa azione non può essere annullata.",
+    "confirmSingle": "Elimina",
+    "confirmPlural": "Elimina {{count}} documenti"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Elimina foto",
+    "titlePlural": "Elimina foto",
+    "messageSingle": "Conferma l'eliminazione di questa foto? Questa azione non può essere annullata.",
+    "messagePlural": "Sta per eliminare {{count}} foto. Questa azione non può essere annullata.",
+    "mainPhotoSingle": "Questa è la foto principale. Eliminandola, questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
+    "mainPhotoPlural": "Sta per eliminare {{count}} foto, inclusa la foto principale. Questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
+    "confirmSingle": "Elimina",
+    "confirmPlural": "Elimina {{count}} foto"
+  },
+  "tooltips": {
+    "preview": "Anteprima",
+    "editTitleNotes": "Modifica titolo e note",
+    "delete": "Elimina",
+    "download": "Scarica"
+  }
+}

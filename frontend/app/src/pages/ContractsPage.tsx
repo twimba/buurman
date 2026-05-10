@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ContractStatus } from '@/types/contract';
 import { useContracts } from '@/hooks/useContractHooks';
 import { ContractCard } from '@/components/contracts/ContractCard';
@@ -9,18 +10,25 @@ import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { Pagination, RefreshButton, Skeleton } from '@buurman/ui';
 
-const statusFilters = [
-  { value: undefined, label: 'All Statuses' },
-  { value: ContractStatus.ACTIVE, label: 'Active' },
-  { value: ContractStatus.DRAFT, label: 'Draft' },
-  { value: ContractStatus.PENDING_SIGNATURE, label: 'Pending Signature' },
-  { value: ContractStatus.EXPIRED, label: 'Expired' },
-  { value: ContractStatus.TERMINATED, label: 'Terminated' },
-];
-
 export const ContractsPage = () => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+
+  const statusFilters = useMemo(
+    () => [
+      { value: undefined, label: t('list.allStatuses') },
+      { value: ContractStatus.ACTIVE, label: t('list.active') },
+      { value: ContractStatus.DRAFT, label: t('list.draft') },
+      {
+        value: ContractStatus.PENDING_SIGNATURE,
+        label: t('list.pendingSignature'),
+      },
+      { value: ContractStatus.EXPIRED, label: t('list.expired') },
+      { value: ContractStatus.TERMINATED, label: t('list.terminated') },
+    ],
+    [t]
+  );
   const [statusFilter, setStatusFilter] = useState<ContractStatus | undefined>(
     undefined
   );
@@ -86,7 +94,7 @@ export const ContractsPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load contracts" />
+        <ErrorMessage message={t('list.error')} />
       </div>
     );
   }
@@ -100,12 +108,10 @@ export const ContractsPage = () => {
             <div className="flex items-center gap-3 mb-1">
               <FileText className="h-8 w-8 text-primary-500 dark:text-primary-300" />
               <h1 className="text-3xl font-bold text-text-primary">
-                Contracts
+                {t('list.title')}
               </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              Manage rental agreements and lease terms
-            </p>
+            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton
@@ -118,7 +124,7 @@ export const ContractsPage = () => {
               className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <Plus className="h-5 w-5" />
-              Add Contract
+              {t('list.addButton')}
             </button>
           </div>
         </div>
@@ -127,12 +133,14 @@ export const ContractsPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h2 className="font-semibold text-text-primary">Filters</h2>
+            <h2 className="font-semibold text-text-primary">
+              {t('list.filters')}
+            </h2>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-2">
-              Status
+              {t('list.status')}
             </label>
             <div className="flex gap-2 flex-wrap">
               {statusFilters.map((filter) => (
@@ -157,8 +165,7 @@ export const ContractsPage = () => {
 
         {/* Contract Count */}
         <p className="text-sm text-text-secondary mb-4">
-          {contractsData?.totalElements ?? 0}{' '}
-          {contractsData?.totalElements === 1 ? 'contract' : 'contracts'}
+          {t('list.count', { count: contractsData?.totalElements ?? 0 })}
         </p>
 
         {/* Contracts Grid */}
@@ -187,10 +194,10 @@ export const ContractsPage = () => {
           <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg">
             <FileText className="h-16 w-16 text-text-disabled mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No contracts yet
+              {t('list.empty.title')}
             </h3>
             <p className="text-text-secondary mb-6">
-              Get started by creating your first rental agreement
+              {t('list.empty.description')}
             </p>
             <button
               onClick={() => navigate('/contracts/new')}
@@ -198,7 +205,7 @@ export const ContractsPage = () => {
               className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <Plus className="h-5 w-5" />
-              Add Contract
+              {t('list.addButton')}
             </button>
           </div>
         )}

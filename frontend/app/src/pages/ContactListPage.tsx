@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useContacts, useCreateContact } from '@/hooks/useContactHooks';
 import * as contactsApi from '@/api/contacts';
 import { ContactCard } from '@/components/contacts/ContactCard';
@@ -19,13 +20,7 @@ import {
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { EmptyState, Pagination, RefreshButton, Skeleton } from '@buurman/ui';
-import {
-  ContactType,
-  ContactTag,
-  CreateContactRequest,
-  CONTACT_TYPE_LABELS,
-  CONTACT_TAG_LABELS,
-} from '@/types/contact';
+import { ContactType, ContactTag, CreateContactRequest } from '@/types/contact';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import {
   useDuplicateCheck,
@@ -40,15 +35,20 @@ const CONTACT_TYPES: ContactType[] = [
   'SERVICE_PROVIDER',
 ];
 
-const SORT_OPTIONS = [
-  { value: 'createdAt', label: 'Date Created' },
-  { value: 'displayName', label: 'Name' },
-  { value: 'activeContractCount', label: 'Active Contracts' },
-] as const;
-
 export const ContactListPage = () => {
+  const { t } = useTranslation('tenants');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+
+  const SORT_OPTIONS = useMemo(
+    () =>
+      [
+        { value: 'createdAt', label: t('list.sort.dateCreated') },
+        { value: 'displayName', label: t('list.sort.name') },
+        { value: 'activeContractCount', label: t('list.sort.activeContracts') },
+      ] as const,
+    [t]
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [contactTypeFilter, setContactTypeFilter] = useState<
@@ -159,18 +159,18 @@ export const ContactListPage = () => {
     const errs: Record<string, string> = {};
     if (quickAdd.contactType === 'INDIVIDUAL') {
       if (!quickAdd.firstName?.trim()) {
-        errs.firstName = 'Required';
+        errs.firstName = t('common:errors.required');
       }
     } else {
       if (!quickAdd.companyName?.trim()) {
-        errs.companyName = 'Required';
+        errs.companyName = t('common:errors.required');
       }
     }
     if (
       quickAdd.email?.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(quickAdd.email)
     ) {
-      errs.email = 'Invalid email';
+      errs.email = t('common:errors.invalidEmail');
     }
     if (quickAdd.phone) {
       const phoneErr = validatePhoneE164(quickAdd.phone);
@@ -286,7 +286,7 @@ export const ContactListPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load contacts" />
+        <ErrorMessage message={t('list.error')} />
       </div>
     );
   }
@@ -299,11 +299,11 @@ export const ContactListPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Users className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">Contacts</h1>
+              <h1 className="text-3xl font-bold text-text-primary">
+                {t('list.title')}
+              </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              Manage your contacts and their information
-            </p>
+            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton
@@ -323,10 +323,10 @@ export const ContactListPage = () => {
               <button
                 onClick={() => setShowImportWizard(true)}
                 className="border border-border-strong bg-surface-card text-text-secondary px-3 py-2 rounded hover:border-primary-500 transition-colors flex items-center gap-1.5 text-sm"
-                title="Import contacts from file"
+                title={t('list.importTitle')}
               >
                 <Upload className="h-4 w-4" />
-                Import
+                {t('list.import')}
               </button>
             )}
             {canEditData && (
@@ -337,14 +337,14 @@ export const ContactListPage = () => {
                     ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
                     : 'border-border-strong bg-surface-card text-text-secondary hover:border-primary-500'
                 }`}
-                title="Quick add contact"
+                title={t('list.quickAdd')}
               >
                 {showQuickAdd ? (
                   <ChevronUp className="h-4 w-4" />
                 ) : (
                   <ChevronDown className="h-4 w-4" />
                 )}
-                Quick Add
+                {t('list.quickAdd')}
               </button>
             )}
             <button
@@ -353,7 +353,7 @@ export const ContactListPage = () => {
               className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <Plus className="h-5 w-5" />
-              Add Contact
+              {t('list.addButton')}
             </button>
           </div>
         </div>
@@ -366,8 +366,8 @@ export const ContactListPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search by name, email, or phone..."
-              aria-label="Search contacts"
+              placeholder={t('list.searchPlaceholder')}
+              aria-label={t('list.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
             />
           </div>
@@ -376,7 +376,7 @@ export const ContactListPage = () => {
             <select
               value={sort ?? 'createdAt'}
               onChange={(e) => handleSortChange(e.target.value)}
-              aria-label="Sort contacts by"
+              aria-label={t('list.sortLabel')}
               className="border border-border-strong rounded px-2 py-2 text-sm bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             >
               {SORT_OPTIONS.map((opt) => (
@@ -388,7 +388,9 @@ export const ContactListPage = () => {
             <button
               onClick={() => handleSortChange(sort ?? 'createdAt')}
               className="px-2 py-2 border border-border-strong rounded bg-surface-card text-text-secondary hover:border-primary-500 text-sm"
-              title={`Sort ${direction === 'asc' ? 'ascending' : 'descending'}`}
+              title={
+                direction === 'asc' ? t('list.sortAsc') : t('list.sortDesc')
+              }
             >
               {direction === 'asc' ? '↑' : '↓'}
             </button>
@@ -402,7 +404,7 @@ export const ContactListPage = () => {
             }`}
           >
             <Filter className="h-4 w-4" />
-            Filters
+            {t('list.filters')}
             {hasActiveFilters && (
               <span className="bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 {(contactTypeFilter ? 1 : 0) + tagFilters.length}
@@ -417,7 +419,7 @@ export const ContactListPage = () => {
             {/* Contact Type */}
             <div>
               <label className="text-sm font-medium text-text-secondary mb-2 block">
-                Contact Type
+                {t('list.contactType')}
               </label>
               <div className="flex flex-wrap gap-2">
                 {CONTACT_TYPES.map((type) => (
@@ -434,7 +436,7 @@ export const ContactListPage = () => {
                         : 'border-border-strong text-text-secondary hover:border-primary-400'
                     }`}
                   >
-                    {CONTACT_TYPE_LABELS[type]}
+                    {t(`enums.contactTypes.${type}`)}
                   </button>
                 ))}
               </div>
@@ -443,7 +445,7 @@ export const ContactListPage = () => {
             {/* Tags */}
             <div>
               <label className="text-sm font-medium text-text-secondary mb-2 block">
-                Tags
+                {t('list.tags')}
               </label>
               <div className="flex flex-wrap gap-2">
                 {Object.values(ContactTag).map((tag) => (
@@ -456,7 +458,7 @@ export const ContactListPage = () => {
                         : 'border-border-strong text-text-secondary hover:border-primary-400'
                     }`}
                   >
-                    {CONTACT_TAG_LABELS[tag]}
+                    {t(`enums.contactTags.${tag}`)}
                   </button>
                 ))}
               </div>
@@ -469,7 +471,7 @@ export const ContactListPage = () => {
                 className="text-sm text-primary-500 hover:text-primary-600 flex items-center gap-1"
               >
                 <X className="h-3.5 w-3.5" />
-                Clear all filters
+                {t('list.clearAllFilters')}
               </button>
             )}
           </div>
@@ -496,7 +498,7 @@ export const ContactListPage = () => {
                         : 'border-border-strong text-text-secondary hover:border-primary-400'
                     }`}
                   >
-                    {CONTACT_TYPE_LABELS[type]}
+                    {t(`enums.contactTypes.${type}`)}
                   </button>
                 ))}
               </div>
@@ -522,8 +524,8 @@ export const ContactListPage = () => {
                       }}
                       placeholder={
                         quickAdd.contactType === 'SERVICE_PROVIDER'
-                          ? 'Business name *'
-                          : 'Company name *'
+                          ? t('list.quickAddForm.businessName')
+                          : t('list.quickAddForm.companyName')
                       }
                       className={`w-full border rounded px-3 py-2 text-sm bg-surface-card text-text-primary ${
                         quickAddErrors.companyName
@@ -549,7 +551,11 @@ export const ContactListPage = () => {
                         }));
                       }
                     }}
-                    placeholder={`First name${quickAdd.contactType === 'INDIVIDUAL' ? ' *' : ''}`}
+                    placeholder={
+                      quickAdd.contactType === 'INDIVIDUAL'
+                        ? t('list.quickAddForm.firstNameRequired')
+                        : t('list.quickAddForm.firstName')
+                    }
                     className={`w-full border rounded px-3 py-2 text-sm bg-surface-card text-text-primary ${
                       quickAddErrors.firstName
                         ? 'border-error-text'
@@ -567,7 +573,7 @@ export const ContactListPage = () => {
                         lastName: e.target.value,
                       }))
                     }
-                    placeholder="Last name"
+                    placeholder={t('list.quickAddForm.lastName')}
                     className="w-full border border-border-strong rounded px-3 py-2 text-sm bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                   />
                 </div>
@@ -584,7 +590,7 @@ export const ContactListPage = () => {
                         setQuickAddErrors((prev) => ({ ...prev, email: '' }));
                       }
                     }}
-                    placeholder="Email"
+                    placeholder={t('list.quickAddForm.email')}
                     className={`w-full border rounded px-3 py-2 text-sm bg-surface-card text-text-primary ${
                       quickAddErrors.email
                         ? 'border-error-text'
@@ -625,7 +631,7 @@ export const ContactListPage = () => {
                   }}
                   className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
                 >
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </button>
                 <div className="relative group/submit">
                   <button
@@ -635,11 +641,13 @@ export const ContactListPage = () => {
                     className="bg-primary-500 text-white px-4 py-1.5 text-sm rounded hover:bg-primary-600 transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Save className="h-3.5 w-3.5" />
-                    {createMutation.isPending ? 'Creating...' : 'Create'}
+                    {createMutation.isPending
+                      ? t('list.quickAddForm.creating')
+                      : t('common:buttons.create')}
                   </button>
                   {quickAddDupBlocking && (
                     <div className="absolute bottom-full right-0 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
-                      Dismiss the duplicate warning first
+                      {t('list.quickAddForm.dismissDuplicate')}
                       <div className="absolute top-full right-4 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
                     </div>
                   )}
@@ -654,7 +662,7 @@ export const ContactListPage = () => {
           <div className="flex flex-wrap gap-2 mb-4">
             {contactTypeFilter && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
-                {CONTACT_TYPE_LABELS[contactTypeFilter]}
+                {t(`enums.contactTypes.${contactTypeFilter}`)}
                 <button
                   onClick={() => handleContactTypeChange(undefined)}
                   className="hover:text-primary-900"
@@ -668,7 +676,7 @@ export const ContactListPage = () => {
                 key={tag}
                 className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-surface-inset text-text-secondary"
               >
-                {CONTACT_TAG_LABELS[tag]}
+                {t(`enums.contactTags.${tag}`)}
                 <button
                   onClick={() => toggleTag(tag)}
                   className="hover:text-text-primary"
@@ -681,15 +689,14 @@ export const ContactListPage = () => {
               onClick={clearFilters}
               className="text-xs text-primary-500 hover:text-primary-600"
             >
-              Clear all
+              {t('list.clearAll')}
             </button>
           </div>
         )}
 
         {/* Contact Count */}
         <p className="text-sm text-text-secondary mb-4">
-          {contactsData?.totalElements ?? 0}{' '}
-          {contactsData?.totalElements === 1 ? 'contact' : 'contacts'}
+          {t('list.count', { count: contactsData?.totalElements ?? 0 })}
         </p>
 
         {/* Contacts Grid */}
@@ -719,13 +726,13 @@ export const ContactListPage = () => {
               icon={<Users className="h-12 w-12" />}
               title={
                 hasActiveFilters
-                  ? 'No contacts match your filters'
-                  : 'No contacts yet'
+                  ? t('list.empty.filtered')
+                  : t('list.empty.title')
               }
               description={
                 hasActiveFilters
-                  ? 'Try adjusting your filters or search term.'
-                  : 'Add your contacts — individuals, companies, and service providers — to keep everything organized.'
+                  ? t('list.empty.filteredDescription')
+                  : t('list.empty.description')
               }
               variant="page"
               actions={
@@ -734,7 +741,7 @@ export const ContactListPage = () => {
                     onClick={clearFilters}
                     className="text-primary-500 hover:text-primary-600 px-4 py-2 border border-primary-500 rounded transition-colors"
                   >
-                    Clear filters
+                    {t('list.clearFilters')}
                   </button>
                 ) : (
                   <button
@@ -743,7 +750,7 @@ export const ContactListPage = () => {
                     className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
                   >
                     <Plus className="h-5 w-5" />
-                    Add first contact
+                    {t('list.empty.addFirst')}
                   </button>
                 )
               }

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { getContacts } from '@/api/contacts';
 import { ChevronDown } from 'lucide-react';
@@ -15,6 +16,7 @@ export const ContactSelector = ({
   onChange,
   disabled = false,
 }: ContactSelectorProps) => {
+  const { t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -129,7 +131,9 @@ export const ContactSelector = ({
           }}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder={isOpen ? 'Type to search...' : 'Select a contact'}
+          placeholder={
+            isOpen ? t('selectors.typeToSearch') : t('selectors.selectContact')
+          }
           autoComplete="off"
           className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-left text-sm text-text-primary"
         />
@@ -145,11 +149,11 @@ export const ContactSelector = ({
         >
           {isLoading ? (
             <div className="px-3 py-8 text-center text-sm text-text-secondary">
-              Searching contacts...
+              {t('selectors.searchingContacts')}
             </div>
           ) : contacts.length === 0 ? (
             <div className="px-3 py-8 text-center text-sm text-text-secondary">
-              No contacts found
+              {t('selectors.noContactsFound')}
             </div>
           ) : (
             contacts.map((contact, index) => (

@@ -26,7 +26,8 @@ import {
   TrendingUp,
   FileCode,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SidebarTooltip } from '@buurman/ui';
 import { useAuth } from '@/context/AuthContext';
 import { useTeam } from '@/context/TeamContext';
@@ -50,56 +51,6 @@ interface NavChild {
   featureFlag?: string;
 }
 
-const navigation: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Properties', href: '/properties', icon: Home },
-  { name: 'Contacts', href: '/contacts', icon: Users },
-  {
-    name: 'Contracts',
-    href: '/contracts',
-    icon: FileText,
-    children: [
-      { name: 'Rent Regulations', href: '/rent-regulations', icon: Scale },
-      {
-        name: 'Rent Adjustments',
-        href: '/rent-increases/apply',
-        icon: TrendingUp,
-      },
-      {
-        name: 'Payment Instructions',
-        href: '/admin/payment-instructions',
-        icon: CreditCard,
-      },
-    ],
-  },
-  { name: 'Payments', href: '/payments', icon: DollarSign },
-  { name: 'Expenses', href: '/expenses', icon: Receipt },
-  { name: 'Documents', href: '/documents', icon: Folder },
-  { name: 'Photos', href: '/photos', icon: Image },
-  {
-    name: 'Reports',
-    href: '/reports',
-    icon: BarChart3,
-    featureFlag: FeatureFlags.REPORTS,
-  },
-];
-
-const administrationNavigation = [
-  { name: 'Preferences', href: '/admin/preferences', icon: Settings },
-  { name: 'Team Members', href: '/admin/team-members', icon: Users },
-  { name: 'Calendar Feeds', href: '/admin/calendar-feeds', icon: Calendar },
-  { name: 'Notifications', href: '/admin/notifications', icon: Bell },
-  { name: 'Data Export', href: '/admin/data-export', icon: Download },
-  { name: 'Subscription & Billing', href: '/admin/billing', icon: Receipt },
-  { name: 'Activity Log', href: '/admin/activity-log', icon: ClipboardList },
-  {
-    name: 'API Documentation',
-    href: '/admin/api-docs',
-    icon: FileCode,
-    featureFlag: FeatureFlags.SWAGGER,
-  },
-];
-
 const navLinkClass = (isActive: boolean, collapsed: boolean) => `
   flex items-center gap-3 px-3 py-2.5 rounded-lg
   transition-all duration-200
@@ -122,6 +73,95 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
   const { teams, canEditTeamSettings } = useTeam();
   const { isEnabled } = useFeatureFlags();
   const location = useLocation();
+  const { t } = useTranslation('navigation');
+
+  const navigation: NavItem[] = useMemo(
+    () => [
+      {
+        name: t('sidebar.dashboard'),
+        href: '/dashboard',
+        icon: LayoutDashboard,
+      },
+      { name: t('sidebar.properties'), href: '/properties', icon: Home },
+      { name: t('sidebar.contacts'), href: '/contacts', icon: Users },
+      {
+        name: t('sidebar.contracts'),
+        href: '/contracts',
+        icon: FileText,
+        children: [
+          {
+            name: t('sidebar.rentRegulations'),
+            href: '/rent-regulations',
+            icon: Scale,
+          },
+          {
+            name: t('sidebar.rentAdjustments'),
+            href: '/rent-increases/apply',
+            icon: TrendingUp,
+          },
+          {
+            name: t('sidebar.paymentInstructions'),
+            href: '/admin/payment-instructions',
+            icon: CreditCard,
+          },
+        ],
+      },
+      { name: t('sidebar.payments'), href: '/payments', icon: DollarSign },
+      { name: t('sidebar.expenses'), href: '/expenses', icon: Receipt },
+      { name: t('sidebar.documents'), href: '/documents', icon: Folder },
+      { name: t('sidebar.photos'), href: '/photos', icon: Image },
+      {
+        name: t('sidebar.reports'),
+        href: '/reports',
+        icon: BarChart3,
+        featureFlag: FeatureFlags.REPORTS,
+      },
+    ],
+    [t]
+  );
+
+  const administrationNavigation = useMemo(
+    () => [
+      {
+        name: t('admin.preferences'),
+        href: '/admin/preferences',
+        icon: Settings,
+      },
+      {
+        name: t('admin.teamMembers'),
+        href: '/admin/team-members',
+        icon: Users,
+      },
+      {
+        name: t('admin.calendarFeeds'),
+        href: '/admin/calendar-feeds',
+        icon: Calendar,
+      },
+      {
+        name: t('admin.notifications'),
+        href: '/admin/notifications',
+        icon: Bell,
+      },
+      {
+        name: t('admin.dataExport'),
+        href: '/admin/data-export',
+        icon: Download,
+      },
+      { name: t('admin.billing'), href: '/admin/billing', icon: Receipt },
+      {
+        name: t('admin.activityLog'),
+        href: '/admin/activity-log',
+        icon: ClipboardList,
+      },
+      {
+        name: t('admin.apiDocs'),
+        href: '/admin/api-docs',
+        icon: FileCode,
+        featureFlag: FeatureFlags.SWAGGER,
+      },
+    ],
+    [t]
+  );
 
   const isOnAdminPage = location.pathname.startsWith('/admin');
   const [isAdminOpen, setIsAdminOpen] = useState(isOnAdminPage);
@@ -135,19 +175,19 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
     const initial = new Set<string>();
     for (const item of navigation) {
       if (item.children && isChildActive(item)) {
-        initial.add(item.name);
+        initial.add(item.href);
       }
     }
     return initial;
   });
 
-  const toggleGroup = (name: string) => {
+  const toggleGroup = (href: string) => {
     setExpandedGroups((prev) => {
       const next = new Set(prev);
-      if (next.has(name)) {
-        next.delete(name);
+      if (next.has(href)) {
+        next.delete(href);
       } else {
-        next.add(name);
+        next.add(href);
       }
       return next;
     });
@@ -217,7 +257,11 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
             <button
               onClick={onToggleCollapse}
               className="hidden lg:flex flex-shrink-0 p-1 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
-              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              title={
+                collapsed
+                  ? t('common:sidebar.expand')
+                  : t('common:sidebar.collapse')
+              }
             >
               {collapsed ? (
                 <ChevronsRight className="h-4 w-4" />
@@ -236,8 +280,8 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
                     <NavGroup
                       item={item}
                       collapsed={collapsed}
-                      isExpanded={expandedGroups.has(item.name)}
-                      onToggle={() => toggleGroup(item.name)}
+                      isExpanded={expandedGroups.has(item.href)}
+                      onToggle={() => toggleGroup(item.href)}
                       onMobileClose={() => setMobileOpen(false)}
                     />
                   ) : (
@@ -272,7 +316,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
                     className="w-full flex items-center justify-between px-3 py-2 mb-1 rounded-lg text-xs font-semibold uppercase tracking-wider text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
                   >
                     <span className="flex items-center gap-2">
-                      Administration
+                      {t('admin.title')}
                       <Shield className="h-3.5 w-3.5 text-accent-600" />
                     </span>
                     <ChevronDown
@@ -328,7 +372,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
                 <TeamSwitcher />
               </div>
             )}
-            <SidebarTooltip label="Settings" show={collapsed}>
+            <SidebarTooltip label={t('settings')} show={collapsed}>
               <NavLink
                 to="/settings"
                 className={({ isActive }) => navLinkClass(isActive, collapsed)}
@@ -336,11 +380,11 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
               >
                 <Settings className="h-5 w-5 flex-shrink-0" />
                 <span className={`truncate ${collapsed ? 'lg:hidden' : ''}`}>
-                  Settings
+                  {t('settings')}
                 </span>
               </NavLink>
             </SidebarTooltip>
-            <SidebarTooltip label="Logout" show={collapsed}>
+            <SidebarTooltip label={t('signOut')} show={collapsed}>
               <button
                 onClick={logout}
                 className={`
@@ -352,7 +396,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
               >
                 <LogOut className="h-5 w-5 flex-shrink-0" />
                 <span className={`truncate ${collapsed ? 'lg:hidden' : ''}`}>
-                  Logout
+                  {t('signOut')}
                 </span>
               </button>
             </SidebarTooltip>

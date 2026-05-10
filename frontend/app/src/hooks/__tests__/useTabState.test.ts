@@ -49,10 +49,9 @@ describe('useTabState', () => {
       initialEntries: ['/page?tab=invalid'],
     });
     const validTabs = ['overview', 'settings', 'billing'] as const;
-    const { result } = renderHook(
-      () => useTabState('overview', validTabs),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useTabState('overview', validTabs), {
+      wrapper,
+    });
 
     expect(result.current[0]).toBe('overview');
   });

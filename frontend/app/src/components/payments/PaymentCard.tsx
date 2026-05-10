@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { PaymentResponse, PaymentStatus } from '@/types/payment';
 import { PaymentStatusBadge } from './PaymentStatusBadge';
 import { Receipt, Calendar, DollarSign, CheckCircle } from 'lucide-react';
@@ -12,6 +13,7 @@ interface PaymentCardProps {
 export const PaymentCard = ({ payment }: PaymentCardProps) => {
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
+  const { t } = useTranslation('payments');
 
   return (
     <div
@@ -25,10 +27,10 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
             <Receipt className="h-5 w-5 text-text-muted flex-shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
               <h3 className="text-lg font-semibold text-text-primary">
-                Payment #{payment.identifier}
+                {t('card.paymentId', { id: payment.identifier })}
               </h3>
               <p className="text-sm text-text-secondary">
-                Contract #{payment.contract?.identifier}
+                {t('card.contractId', { id: payment.contract?.identifier })}
               </p>
             </div>
           </div>
@@ -41,7 +43,9 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
         <div className="mb-3 space-y-2">
           {payment.property && (
             <div>
-              <p className="text-xs text-text-secondary">Property</p>
+              <p className="text-xs text-text-secondary">
+                {t('card.property')}
+              </p>
               <p className="text-sm font-medium text-text-primary">
                 {payment.property.street}, {payment.property.city}
               </p>
@@ -49,7 +53,7 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
           )}
           {payment.contact && (
             <div>
-              <p className="text-xs text-text-secondary">Contact</p>
+              <p className="text-xs text-text-secondary">{t('card.contact')}</p>
               <p className="text-sm font-medium text-text-primary">
                 {payment.contact.firstName} {payment.contact.lastName}
               </p>
@@ -62,7 +66,7 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-text-muted " />
             <div>
-              <p className="text-xs text-text-secondary">Amount</p>
+              <p className="text-xs text-text-secondary">{t('card.amount')}</p>
               <p className="text-sm font-medium text-text-primary">
                 {getCurrencySymbol(payment.currency)}{' '}
                 {payment.amount.toFixed(2)}
@@ -70,8 +74,9 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
               {payment.receivedAmount > 0 &&
                 payment.status !== PaymentStatus.PAID && (
                   <p className="text-xs text-text-secondary">
-                    Balance: {getCurrencySymbol(payment.currency)}{' '}
-                    {(payment.balance ?? 0).toFixed(2)}
+                    {t('card.balance', {
+                      amount: `${getCurrencySymbol(payment.currency)} ${(payment.balance ?? 0).toFixed(2)}`,
+                    })}
                   </p>
                 )}
             </div>
@@ -79,7 +84,7 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-text-muted " />
             <div>
-              <p className="text-xs text-text-secondary">Due Date</p>
+              <p className="text-xs text-text-secondary">{t('card.dueDate')}</p>
               <p className="text-sm font-medium text-text-primary">
                 {formatDate(payment.dueDate)}
               </p>
@@ -93,7 +98,9 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
             <div className="flex items-center gap-2 text-success-text">
               <CheckCircle className="h-4 w-4" />
               <div>
-                <p className="text-xs text-text-secondary">Paid On</p>
+                <p className="text-xs text-text-secondary">
+                  {t('card.paidOn')}
+                </p>
                 <p className="text-sm font-medium">
                   {formatDate(payment.paymentDate)}
                 </p>

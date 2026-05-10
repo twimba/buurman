@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StatusBadge, type BadgeColorVariant } from '@buurman/ui';
 import { PaymentStatus } from '@/types/payment';
 
@@ -6,27 +8,37 @@ interface PaymentStatusBadgeProps {
   className?: string;
 }
 
-const statusConfig: Record<
-  PaymentStatus,
-  { label: string; color: BadgeColorVariant }
-> = {
-  PENDING: { label: 'Pending', color: 'amber' },
-  PARTIALLY_PAID: { label: 'Partial', color: 'blue' },
-  PAID: { label: 'Paid', color: 'emerald' },
-  OVERDUE: { label: 'Overdue', color: 'red' },
-  LATE: { label: 'Late', color: 'orange' },
-  CANCELLED: { label: 'Cancelled', color: 'gray' },
+const statusColors: Record<PaymentStatus, BadgeColorVariant> = {
+  PENDING: 'amber',
+  PARTIALLY_PAID: 'blue',
+  PAID: 'emerald',
+  OVERDUE: 'red',
+  LATE: 'orange',
+  CANCELLED: 'gray',
 };
 
 export const PaymentStatusBadge = ({
   status,
   className = '',
 }: PaymentStatusBadgeProps) => {
-  const config = statusConfig[status];
+  const { t } = useTranslation('payments');
+
+  const statusLabels = useMemo(
+    (): Record<PaymentStatus, string> => ({
+      PENDING: t('status.pending'),
+      PARTIALLY_PAID: t('status.partiallyPaid'),
+      PAID: t('status.paid'),
+      OVERDUE: t('status.overdue'),
+      LATE: t('status.late'),
+      CANCELLED: t('status.cancelled'),
+    }),
+    [t]
+  );
+
   return (
     <StatusBadge
-      label={config.label}
-      color={config.color}
+      label={statusLabels[status]}
+      color={statusColors[status]}
       shape="pill"
       className={className}
     />

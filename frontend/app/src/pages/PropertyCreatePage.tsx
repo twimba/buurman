@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCreateProperty } from '@/hooks/usePropertyHooks';
 import { PropertyForm } from '@/components/properties/PropertyForm';
 import { CreatePropertyRequest } from '@/types/property';
@@ -6,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const PropertyCreatePage = () => {
+  const { t } = useTranslation('properties');
   const navigate = useNavigate();
   const createPropertyMutation = useCreateProperty();
 
@@ -25,7 +27,7 @@ export const PropertyCreatePage = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-2xl font-bold text-text-primary">
-            Add New Property
+            {t('create.title')}
           </h1>
         </div>
 
@@ -35,7 +37,7 @@ export const PropertyCreatePage = () => {
             blockInReadOnly
             fallback={
               <div className="text-center py-8 text-text-secondary">
-                Creating properties is not available in read-only mode.
+                {t('create.readOnlyMessage')}
               </div>
             }
           >

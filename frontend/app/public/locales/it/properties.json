@@ -1,0 +1,1112 @@
+{
+  "list": {
+    "title": "Immobili",
+    "subtitle": "Gestisca i Suoi immobili e le unità in affitto",
+    "addButton": "Aggiungi immobile",
+    "searchPlaceholder": "Cerca per indirizzo, città, CAP o tipo...",
+    "filters": "Filtri",
+    "category": "Categoria",
+    "allCategories": "Tutte le categorie",
+    "status": "Stato",
+    "allStatuses": "Tutti gli stati",
+    "count_one": "{{count}} immobile",
+    "count_other": "{{count}} immobili",
+    "empty": {
+      "title": "Nessun immobile trovato",
+      "filtered": "Provi a modificare i filtri o i termini di ricerca",
+      "noData": "Inizi aggiungendo il Suo primo immobile"
+    },
+    "error": "Impossibile caricare gli immobili"
+  },
+  "create": {
+    "title": "Aggiungi nuovo immobile",
+    "readOnlyMessage": "La creazione di immobili non è disponibile in modalità di sola lettura."
+  },
+  "edit": {
+    "title": "Modifica immobile",
+    "notFound": "Immobile non trovato"
+  },
+  "detail": {
+    "notFound": "Immobile non trovato",
+    "booklet": "Fascicolo",
+    "bookletDownloadFailed": "Impossibile scaricare il fascicolo. Riprovi.",
+    "tabs": {
+      "info": "Info",
+      "dashboard": "Dashboard",
+      "financials": "Finanze",
+      "photos": "Foto",
+      "documents": "Documenti",
+      "contracts": "Contratti",
+      "expenses": "Spese",
+      "history": "Cronologia"
+    },
+    "timeline": {
+      "title": "Cronologia dell'immobile",
+      "rentalContract": "Contratto di locazione",
+      "selfOccupied": "Uso proprio",
+      "financing": "Finanziamento"
+    },
+    "specs": {
+      "bedrooms": "Camere da letto",
+      "bathrooms": "Bagni",
+      "area": "Superficie",
+      "type": "Tipo",
+      "street": "Via",
+      "city": "Città",
+      "postalCode": "CAP",
+      "country": "Paese",
+      "location": "Posizione"
+    },
+    "characteristics": {
+      "title": "Caratteristiche dell'immobile"
+    },
+    "construction": {
+      "title": "Costruzione e struttura",
+      "yearBuilt": "Anno di costruzione",
+      "lastRenovated": "Ultima ristrutturazione",
+      "construction": "Costruzione",
+      "foundation": "Fondamenta",
+      "roof": "Tetto",
+      "wallConstruction": "Struttura delle pareti",
+      "flooring": "Pavimentazione",
+      "windows": "Finestre",
+      "floors": "Piani",
+      "structuralNotes": "Note strutturali"
+    },
+    "energy": {
+      "title": "Energia e clima",
+      "energyRating": "Classe energetica",
+      "certificateExpiry": "Scadenza certificato",
+      "heating": "Riscaldamento",
+      "cooling": "Climatizzazione",
+      "hotWater": "Acqua calda",
+      "insulationNotes": "Note sull'isolamento"
+    },
+    "utilities": {
+      "title": "Utenze e allacciamenti",
+      "electricity": "Elettricità",
+      "capacity": "Capacità",
+      "water": "Acqua",
+      "gasConnection": "Allacciamento gas",
+      "sewage": "Fognatura",
+      "internet": "Internet",
+      "internetSpeed": "Velocità internet",
+      "internetStatus": "Stato internet"
+    },
+    "parking": {
+      "title": "Parcheggio",
+      "parkingSpaces": "Posti auto",
+      "parkingType": "Tipo di parcheggio"
+    },
+    "outdoorAreas": {
+      "title": "Spazi esterni"
+    },
+    "amenities": {
+      "title": "Servizi"
+    },
+    "safety": {
+      "title": "Sicurezza e protezione",
+      "smokeDetectors": "Rilevatori di fumo",
+      "coDetectors": "Rilevatori di CO",
+      "fireExtinguisher": "Estintore",
+      "sprinklerSystem": "Sistema antincendio",
+      "alarmSystem": "Sistema di allarme",
+      "securityCameras": "Telecamere di sicurezza",
+      "secureEntry": "Ingresso protetto",
+      "safetyNotes": "Note sulla sicurezza"
+    },
+    "accessibility": {
+      "title": "Accessibilità",
+      "wheelchairAccessible": "Accessibile in sedia a rotelle",
+      "elevator": "Ascensore",
+      "stepFreeEntrance": "Ingresso senza gradini",
+      "adaptedBathroom": "Bagno attrezzato",
+      "accessibilityNotes": "Note sull'accessibilità"
+    },
+    "wws": {
+      "title": "Punti WWS",
+      "calculate": "Calcola",
+      "recalculate": "Ricalcola",
+      "points": "punti",
+      "regulated": "Regolamentato",
+      "midSegment": "Segmento medio",
+      "freeSector": "Settore libero",
+      "maxRent": "Canone massimo",
+      "calculated": "Calcolato",
+      "history": "Cronologia",
+      "noCalculation": "Nessun calcolo ancora",
+      "noCalculationDescription": "Calcoli i punti WWS per determinare il canone massimo regolamentato per questo immobile.",
+      "noPreviousCalculations": "Nessun calcolo precedente."
+    },
+    "metadata": {
+      "title": "Metadati",
+      "created": "Creato:",
+      "lastUpdated": "Ultimo aggiornamento:",
+      "at": "alle"
+    },
+    "yes": "Sì",
+    "no": "No",
+    "deleteProperty": "Elimina immobile",
+    "deletePropertyConfirm": "Conferma l'eliminazione di questo immobile?",
+    "cannotBeUndone": "Questa azione non può essere annullata.",
+    "deleteWwsConfirm": "Eliminare il calcolo WWS?",
+    "deleteWwsMessage": "Questa operazione rimuoverà definitivamente il calcolo salvato da questo immobile.",
+    "deleteWwsHistoryMessage": "Questa operazione rimuoverà definitivamente questo calcolo storico."
+  },
+  "enums": {
+    "characteristics": {
+      "constructionType": {
+        "BRICK": "Mattone",
+        "CONCRETE": "Calcestruzzo",
+        "WOOD": "Legno",
+        "STEEL": "Acciaio",
+        "MIXED": "Misto",
+        "OTHER": "Altro"
+      },
+      "foundationType": {
+        "CONCRETE_SLAB": "Platea in calcestruzzo",
+        "CRAWL_SPACE": "Vespaio",
+        "BASEMENT": "Cantina",
+        "PILE": "Pali",
+        "OTHER": "Altro"
+      },
+      "roofType": {
+        "FLAT": "Piano",
+        "PITCHED": "A falda",
+        "HIP": "A padiglione",
+        "GABLE": "A capanna",
+        "MANSARD": "Mansarda",
+        "OTHER": "Altro"
+      },
+      "flooringType": {
+        "HARDWOOD": "Parquet",
+        "LAMINATE": "Laminato",
+        "TILE": "Piastrelle",
+        "VINYL": "Vinile",
+        "CARPET": "Moquette",
+        "CONCRETE": "Calcestruzzo",
+        "MIXED": "Misto",
+        "OTHER": "Altro"
+      },
+      "windowType": {
+        "SINGLE_PANE": "Vetro singolo",
+        "DOUBLE_PANE": "Doppio vetro",
+        "TRIPLE_PANE": "Triplo vetro",
+        "OTHER": "Altro"
+      },
+      "heatingType": {
+        "CENTRAL": "Centralizzato",
+        "DISTRICT": "Teleriscaldamento",
+        "HEAT_PUMP": "Pompa di calore",
+        "ELECTRIC": "Elettrico",
+        "GAS": "Gas",
+        "NONE": "Nessuno",
+        "OTHER": "Altro"
+      },
+      "coolingType": {
+        "CENTRAL_AC": "Climatizzazione centrale",
+        "SPLIT_AC": "Split",
+        "EVAPORATIVE": "Raffreddamento evaporativo",
+        "NONE": "Nessuno",
+        "OTHER": "Altro"
+      },
+      "hotWaterSystem": {
+        "BOILER": "Caldaia",
+        "TANKLESS": "Scaldabagno istantaneo",
+        "HEAT_PUMP": "Pompa di calore",
+        "SOLAR": "Solare",
+        "ELECTRIC": "Elettrico",
+        "OTHER": "Altro"
+      },
+      "sewageType": {
+        "MUNICIPAL": "Comunale",
+        "SEPTIC": "Fossa settica",
+        "OTHER": "Altro"
+      },
+      "internetConnectionType": {
+        "FIBER": "Fibra",
+        "CABLE": "Cavo",
+        "DSL": "DSL",
+        "NONE": "Nessuno",
+        "OTHER": "Altro"
+      },
+      "internetStatus": {
+        "ACTIVE": "Attivo",
+        "AVAILABLE": "Disponibile",
+        "NOT_AVAILABLE": "Non disponibile",
+        "UNKNOWN": "Sconosciuto"
+      },
+      "electricityConnectionType": {
+        "SINGLE_PHASE": "Monofase",
+        "THREE_PHASE": "Trifase"
+      },
+      "waterConnectionType": {
+        "MUNICIPAL": "Comunale",
+        "WELL": "Pozzo",
+        "SHARED": "Condiviso",
+        "OTHER": "Altro"
+      },
+      "parkingType": {
+        "GARAGE": "Garage",
+        "CARPORT": "Tettoia auto",
+        "DRIVEWAY": "Vialetto",
+        "STREET": "Strada",
+        "UNDERGROUND": "Sotterraneo",
+        "NONE": "Nessuno",
+        "OTHER": "Altro"
+      },
+      "outdoorAreaType": {
+        "BALCONY": "Balcone",
+        "TERRACE": "Terrazza",
+        "GARDEN": "Giardino",
+        "ROOFTOP": "Terrazza sul tetto",
+        "PATIO": "Patio",
+        "YARD": "Cortile",
+        "OTHER": "Altro",
+        "PARKING_LOT": "Parcheggio",
+        "COURTYARD": "Cortile interno",
+        "LOADING_AREA": "Area carico",
+        "STORAGE_AREA": "Area deposito",
+        "PASTURE": "Pascolo",
+        "PADDOCK": "Paddock",
+        "ORCHARD_AREA": "Frutteto",
+        "GREENHOUSE_AREA": "Serra"
+      },
+      "petPolicy": {
+        "ALLOWED": "Ammessi",
+        "NOT_ALLOWED": "Non ammessi",
+        "NEGOTIABLE": "Negoziabile",
+        "SMALL_PETS_ONLY": "Solo animali piccoli"
+      },
+      "soilType": {
+        "CLAY": "Argilla",
+        "SANDY": "Sabbioso",
+        "LOAM": "Franco",
+        "SILT": "Limo",
+        "PEAT": "Torba",
+        "CHALK": "Gesso",
+        "MIXED": "Misto",
+        "OTHER": "Altro"
+      },
+      "irrigationType": {
+        "DRIP": "Goccia a goccia",
+        "SPRINKLER": "Aspersione",
+        "FLOOD": "Sommersione",
+        "CENTER_PIVOT": "Pivot centrale",
+        "NONE": "Nessuno",
+        "OTHER": "Altro"
+      },
+      "waterSource": {
+        "RIVER": "Fiume",
+        "WELL": "Pozzo",
+        "MUNICIPAL": "Comunale",
+        "RAINWATER": "Acqua piovana",
+        "CANAL": "Canale",
+        "NONE": "Nessuno",
+        "OTHER": "Altro"
+      },
+      "fencingType": {
+        "WIRE": "Filo",
+        "WOODEN": "Legno",
+        "ELECTRIC": "Elettrico",
+        "HEDGE": "Siepe",
+        "STONE": "Pietra",
+        "NONE": "Nessuno",
+        "OTHER": "Altro"
+      }
+    },
+    "categories": {
+      "RESIDENTIAL": "Residenziale",
+      "COMMERCIAL": "Commerciale",
+      "INDUSTRIAL": "Industriale",
+      "AGRICULTURAL": "Agricolo",
+      "MIXED_USE": "Uso misto"
+    },
+    "types": {
+      "APARTMENT": "Appartamento",
+      "HOUSE": "Casa",
+      "STUDIO": "Monolocale",
+      "ROOM": "Stanza",
+      "VILLA": "Villa",
+      "TOWNHOUSE": "Villetta a schiera",
+      "OTHER_RESIDENTIAL": "Altro",
+      "OFFICE": "Ufficio",
+      "RETAIL": "Negozio",
+      "RESTAURANT": "Ristorante",
+      "HOTEL": "Hotel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Concessionaria auto",
+      "SNACKBAR": "Snack bar",
+      "CAFE": "Caffetteria",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "B&B",
+      "OTHER_COMMERCIAL": "Altro",
+      "WAREHOUSE": "Magazzino",
+      "WORKSHOP": "Officina",
+      "FACTORY": "Fabbrica",
+      "DATA_CENTER": "Data Center",
+      "COLD_STORAGE": "Cella frigorifera",
+      "GARAGE": "Garage",
+      "OTHER_INDUSTRIAL": "Altro",
+      "FARMLAND": "Terreno agricolo",
+      "RANCH": "Ranch",
+      "GREENHOUSE": "Serra",
+      "ORCHARD": "Frutteto",
+      "VINEYARD": "Vigneto",
+      "OTHER_AGRICULTURAL": "Altro",
+      "MIXED_USE": "Uso misto",
+      "COMMERCIAL": "Commerciale"
+    },
+    "statuses": {
+      "VACANT": "Libero",
+      "OCCUPIED": "Occupato",
+      "SELF_OCCUPIED": "Uso proprio",
+      "MAINTENANCE": "Manutenzione",
+      "UNAVAILABLE": "Non disponibile",
+      "UNDER_RENOVATION": "In ristrutturazione",
+      "FALLOW": "Incolto",
+      "LISTED": "In vendita"
+    },
+    "amenities": {
+      "categories": {
+        "APPLIANCE": "Elettrodomestici",
+        "COMFORT": "Comfort",
+        "LEISURE": "Svago",
+        "PARKING": "Parcheggio",
+        "SERVICE": "Servizi",
+        "STORAGE": "Deposito"
+      },
+      "items": {
+        "SWIMMING_POOL": "Piscina",
+        "GYM": "Palestra",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Camino",
+        "BUILT_IN_VACUUM": "Aspirapolvere centralizzato",
+        "IN_UNIT_LAUNDRY": "Lavatrice nell'unità",
+        "SHARED_LAUNDRY": "Lavanderia condivisa",
+        "DISHWASHER": "Lavastoviglie",
+        "STORAGE_UNIT": "Ripostiglio",
+        "BIKE_STORAGE": "Deposito biciclette",
+        "FURNISHED": "Arredato",
+        "DOORMAN_CONCIERGE": "Portiere / Concierge",
+        "CONFERENCE_ROOM": "Sala riunioni",
+        "RECEPTION_AREA": "Reception",
+        "SERVER_ROOM": "Sala server",
+        "KITCHENETTE": "Angolo cottura",
+        "LOADING_BAY": "Baia di carico",
+        "COMPRESSED_AIR_SYSTEM": "Impianto aria compressa",
+        "CHEMICAL_STORAGE": "Deposito chimico",
+        "OVERHEAD_CRANE": "Carroponte",
+        "IRRIGATION_SYSTEM": "Sistema di irrigazione",
+        "GRAIN_SILO": "Silos per cereali",
+        "LIVESTOCK_SHELTER": "Stalla",
+        "COLD_STORAGE": "Cella frigorifera",
+        "SECURITY_BOOTH": "Guardiola"
+      }
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Impossibile caricare i dati della dashboard.",
+    "retry": "Riprova",
+    "exporting": "Esportazione...",
+    "allTime": "Tutto il periodo",
+    "custom": "Personalizzato",
+    "to": "a",
+    "resetZoom": "Reimposta zoom",
+    "charts": {
+      "monthlyCashFlow": "Flusso di cassa mensile",
+      "occupancyIncomeTrend": "Andamento occupazione e entrate",
+      "expenseBreakdown": "Ripartizione delle spese",
+      "sixMonthProjection": "Proiezione a 6 mesi",
+      "equityOverview": "Panoramica del patrimonio"
+    },
+    "summary": {
+      "totalRoi": "ROI totale",
+      "annualizedRoi": "ROI annualizzato",
+      "capRate": "Cap Rate",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Flusso di cassa mensile",
+      "annualNoi": "NOI annuale",
+      "totalEquity": "Patrimonio totale",
+      "equityGrowth": "Crescita del patrimonio",
+      "occupancy": "Occupazione",
+      "grossRentMultiplier": "Moltiplicatore del canone lordo"
+    },
+    "cashFlow": {
+      "income": "Entrate",
+      "expenses": "Uscite",
+      "mortgage": "Mutuo",
+      "net": "Netto",
+      "noData": "Nessun dato sulle transazioni"
+    },
+    "occupancy": {
+      "label": "Occupazione",
+      "contact": "Contatto",
+      "selfOccupied": "Uso proprio",
+      "vacant": "Libero",
+      "contactOccupied": "Occupato da contatto",
+      "netIncomeTrend": "Andamento del reddito netto",
+      "netIncome": "Reddito netto",
+      "noData": "Nessun dato sui contratti"
+    },
+    "expense": {
+      "noData": "Nessun dato sulle spese"
+    },
+    "equity": {
+      "purchasePrice": "Prezzo di acquisto",
+      "marketValue": "Valore di mercato",
+      "mortgage": "Mutuo",
+      "equity": "Patrimonio",
+      "noData": "Aggiunga prezzo di acquisto e valore di mercato per visualizzare il patrimonio"
+    },
+    "completeness": {
+      "title": "Completezza dati: {{percent}}%",
+      "purchasePrice": "Prezzo di acquisto",
+      "marketValue": "Valore di mercato",
+      "mortgageInfo": "Info mutuo",
+      "operatingCosts": "Costi operativi",
+      "contracts": "Contratti",
+      "payments": "Pagamenti",
+      "expenses": "Spese"
+    },
+    "projection": {
+      "description": "Entrate e uscite previste in base ai contratti attivi e ai costi operativi",
+      "expectedIncome": "Entrate previste",
+      "expectedExpenses": "Uscite previste",
+      "expectedNet": "Netto previsto"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Seleziona --",
+    "residential": {
+      "title": "Dettagli residenziali",
+      "bedrooms": "Camere da letto",
+      "bathrooms": "Bagni",
+      "furnished": "Arredato",
+      "petPolicy": "Politica animali"
+    },
+    "commercial": {
+      "title": "Dettagli commerciali",
+      "usableArea": "Superficie utile",
+      "commonArea": "Area comune",
+      "floorLevel": "Piano",
+      "ceilingHeight": "Altezza soffitto",
+      "maxOccupancy": "Capienza massima",
+      "restroomCount": "Numero bagni",
+      "zoningClassification": "Classificazione urbanistica",
+      "zoningPlaceholder": "es. C-2, Commerciale misto",
+      "hasStorefront": "Ha vetrina",
+      "signageRights": "Diritto di insegna",
+      "kitchenFacility": "Cucina attrezzata",
+      "accessibilityCompliant": "Conforme accessibilità"
+    },
+    "industrial": {
+      "title": "Dettagli industriali",
+      "clearHeight": "Altezza libera",
+      "loadingDocks": "Banchine di carico",
+      "driveInDoors": "Portoni carrabili",
+      "floorLoadCapacity": "Portata del pavimento",
+      "powerCapacity": "Capacità elettrica",
+      "craneCapacity": "Capacità gru",
+      "yardArea": "Area esterna",
+      "zoningClassification": "Classificazione urbanistica",
+      "zoningPlaceholder": "es. I-1, Industria leggera",
+      "threePhasePower": "Corrente trifase",
+      "craneAvailable": "Gru disponibile",
+      "hazmatCertified": "Certificato materiali pericolosi",
+      "ventilationSystem": "Sistema di ventilazione",
+      "climateControl": "Climatizzazione"
+    },
+    "agricultural": {
+      "title": "Dettagli agricoli",
+      "totalLandArea": "Superficie totale del terreno",
+      "arableArea": "Superficie coltivabile",
+      "soilType": "Tipo di terreno",
+      "waterSource": "Fonte idrica",
+      "irrigationType": "Tipo di irrigazione",
+      "fencingType": "Tipo di recinzione",
+      "currentUse": "Uso attuale",
+      "currentUsePlaceholder": "es. Agricoltura, Allevamento",
+      "zoningClassification": "Classificazione urbanistica",
+      "zoningPlaceholder": "es. A-1, Agricolo",
+      "waterRights": "Diritti idrici",
+      "hasOutbuildings": "Ha annessi",
+      "outbuildingDetails": "Dettagli annessi",
+      "outbuildingPlaceholder": "es. Fienile, Deposito, Rimessa"
+    },
+    "construction": {
+      "yearBuilt": "Anno di costruzione",
+      "yearLastRenovated": "Anno ultima ristrutturazione",
+      "constructionType": "Tipo di costruzione",
+      "foundationType": "Tipo di fondamenta",
+      "roofType": "Tipo di tetto",
+      "wallConstruction": "Struttura delle pareti",
+      "flooringType": "Tipo di pavimentazione",
+      "windowType": "Tipo di finestre",
+      "numberOfFloors": "Numero di piani",
+      "structuralNotes": "Note strutturali",
+      "structuralNotesTooltip": "Dettagli strutturali rilevanti, ristrutturazioni o problemi"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Classe di efficienza energetica",
+      "energyRatingTooltip": "Classe energetica ufficiale (A++ - G)",
+      "certificateExpiry": "Scadenza certificato energetico",
+      "certificateExpiryTooltip": "Data di scadenza del certificato energetico attuale",
+      "heatingType": "Tipo di riscaldamento",
+      "coolingType": "Tipo di climatizzazione",
+      "hotWaterSystem": "Impianto acqua calda",
+      "insulationNotes": "Note sull'isolamento",
+      "insulationTooltip": "Dettagli sull'isolamento di pareti, tetto e pavimento"
+    },
+    "utilities": {
+      "electricityConnection": "Allacciamento elettrico",
+      "electricityCapacity": "Capacità elettrica",
+      "electricityCapacityTooltip": "Capacità del contatore principale",
+      "waterConnection": "Allacciamento idrico",
+      "hasGasConnection": "Allacciamento gas",
+      "sewageType": "Tipo di fognatura",
+      "internetConnection": "Connessione internet",
+      "internetMaxSpeed": "Velocità massima internet",
+      "internetStatus": "Stato internet"
+    },
+    "parking": {
+      "parkingSpaces": "Posti auto",
+      "parkingType": "Tipo di parcheggio"
+    },
+    "safety": {
+      "smokeDetectors": "Rilevatori di fumo",
+      "coDetectors": "Rilevatori di CO",
+      "fireExtinguisher": "Estintore",
+      "sprinklerSystem": "Sistema antincendio",
+      "alarmSystem": "Sistema di allarme",
+      "securityCameras": "Telecamere di sicurezza",
+      "secureEntry": "Ingresso protetto",
+      "safetyNotes": "Note sulla sicurezza",
+      "safetyNotesTooltip": "Vie di fuga antincendio, data ultima ispezione, ecc."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Accessibile in sedia a rotelle",
+      "elevator": "Ascensore",
+      "stepFreeEntrance": "Ingresso senza gradini",
+      "adaptedBathroom": "Bagno attrezzato",
+      "accessibilityNotes": "Note sull'accessibilità",
+      "accessibilityNotesTooltip": "Larghezza porte, disponibilità rampe, ecc."
+    },
+    "outdoorAreas": {
+      "type": "Tipo",
+      "area": "Superficie",
+      "unit": "Unità",
+      "add": "Aggiungi",
+      "addOutdoorArea": "Aggiungi spazio esterno"
+    }
+  },
+  "form": {
+    "address": "Indirizzo",
+    "street": "Via",
+    "streetPlaceholder": "Via Roma 123",
+    "city": "Città",
+    "cityPlaceholder": "Milano",
+    "postalCode": "CAP",
+    "postalCodePlaceholder": "20100",
+    "country": "Paese",
+    "region": "Regione",
+    "regionOther": "Altro",
+    "locationPreview": "Anteprima posizione",
+    "specifications": "Specifiche",
+    "category": "Categoria",
+    "categoryCannotChange": "(non modificabile)",
+    "type": "Tipo",
+    "status": "Stato",
+    "area": "Superficie",
+    "areaPlaceholder": "75,5",
+    "saving": "Salvataggio...",
+    "updateProperty": "Aggiorna immobile",
+    "createProperty": "Crea immobile",
+    "validation": {
+      "streetRequired": "La via è obbligatoria",
+      "cityRequired": "La città è obbligatoria",
+      "postalCodeRequired": "Il CAP è obbligatorio",
+      "countryRequired": "Il paese è obbligatorio",
+      "areaPositive": "La superficie deve essere maggiore di 0"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} di {{total}} compilati"
+  },
+  "documents": {
+    "title": "Documenti",
+    "uploadButton": "Carica documento",
+    "empty": "Nessun documento caricato",
+    "failedToLoad": "Impossibile caricare i documenti",
+    "table": {
+      "document": "Documento",
+      "size": "Dimensione",
+      "uploaded": "Caricato",
+      "actions": "Azioni"
+    },
+    "selection": {
+      "selected": "{{selected}} di {{total}} selezionati",
+      "count_one": "{{count}} documento",
+      "count_other": "{{count}} documenti"
+    },
+    "preview": "Anteprima",
+    "editTitleNotes": "Modifica titolo e note",
+    "upload": {
+      "title_one": "Carica documento",
+      "title_other": "Carica documenti",
+      "files": "{{count}} file",
+      "titleLabel": "Titolo (facoltativo)",
+      "titlePlaceholder": "es. Planimetria",
+      "notesLabel": "Note (facoltativo)",
+      "notesPlaceholder": "Note aggiuntive su questo documento",
+      "uploading": "Caricamento {{current}} di {{total}}...",
+      "uploadCount": "Carica {{count}} documenti"
+    },
+    "delete": {
+      "title_one": "Elimina documento",
+      "title_other": "Elimina documenti",
+      "message_one": "Conferma l'eliminazione di questo documento? Questa azione non può essere annullata.",
+      "message_other": "Sta per eliminare {{count}} documenti. Questa azione non può essere annullata.",
+      "confirmLabel_other": "Elimina {{count}} documenti"
+    },
+    "editModal": "Modifica documento",
+    "downloading": "Download..."
+  },
+  "photos": {
+    "title": "Foto",
+    "uploadButton": "Carica foto",
+    "empty": "Nessuna foto",
+    "upload": {
+      "title_one": "Carica foto",
+      "title_other": "Carica foto",
+      "files": "{{count}} file",
+      "titleLabel": "Titolo (facoltativo)",
+      "titlePlaceholder": "es. Soggiorno",
+      "notesLabel": "Note (facoltativo)",
+      "notesPlaceholder": "Note aggiuntive su questa foto",
+      "uploading": "Caricamento {{current}} di {{total}}...",
+      "uploadCount": "Carica {{count}} foto"
+    },
+    "delete": {
+      "title_one": "Elimina foto",
+      "title_other": "Elimina foto",
+      "mainPhotoWarning_one": "Questa è la foto principale. Eliminandola, questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
+      "mainPhotoWarning_other": "Sta per eliminare {{count}} foto, inclusa la foto principale. Questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
+      "message_one": "Conferma l'eliminazione di questa foto? Questa azione non può essere annullata.",
+      "message_other": "Sta per eliminare {{count}} foto. Questa azione non può essere annullata.",
+      "confirmLabel_other": "Elimina {{count}} foto"
+    },
+    "editModal": "Modifica foto"
+  },
+  "contracts": {
+    "title": "Contratti",
+    "addContract": "Aggiungi contratto",
+    "empty": "Nessun contratto per questo immobile",
+    "createFirst": "Crea primo contratto",
+    "searchPlaceholder": "Cerca per contratto #, contatto, tipo...",
+    "noMatchingSearch": "Nessun contratto trovato corrispondente alla ricerca",
+    "table": {
+      "contractNumber": "Contratto #",
+      "contact": "Contatto",
+      "type": "Tipo",
+      "startDate": "Data di inizio",
+      "endDate": "Data di fine",
+      "rentAmount": "Importo del canone",
+      "status": "Stato"
+    },
+    "pagination": {
+      "showing": "{{from}} a {{to}} di {{total}} contratti"
+    },
+    "selfOccupancy": {
+      "title": "Periodi di uso proprio",
+      "addButton": "Aggiungi uso proprio",
+      "empty": "Nessun periodo di uso proprio registrato",
+      "recordPeriod": "Registri un periodo di uso proprio",
+      "table": {
+        "period": "Periodo",
+        "type": "Tipo",
+        "occupant": "Occupante",
+        "status": "Stato",
+        "actions": "Azioni"
+      },
+      "ongoing": "In corso",
+      "active": "Attivo",
+      "ended": "Terminato",
+      "endOccupancy": "Termina occupazione",
+      "deleteTitle": "Elimina periodo di uso proprio",
+      "deleteMessage": "Conferma l'eliminazione di questo periodo di uso proprio?",
+      "deleteWarning": "Questa azione non può essere annullata.",
+      "takenPeriods": {
+        "selfUse": "Uso proprio: {{period}}",
+        "contract": "Contratto {{identifier}}: {{period}}",
+        "ongoing": "In corso"
+      }
+    }
+  },
+  "expenses": {
+    "title": "Spese",
+    "addExpense": "Aggiungi spesa",
+    "empty": "Nessuna spesa per questo immobile",
+    "createFirst": "Crea prima spesa",
+    "failedToLoad": "Impossibile caricare le spese",
+    "searchPlaceholder": "Cerca per spesa #, descrizione, categoria...",
+    "noMatchingSearch": "Nessuna spesa trovata corrispondente alla ricerca",
+    "table": {
+      "expenseNumber": "Spesa #",
+      "date": "Data",
+      "description": "Descrizione",
+      "category": "Categoria",
+      "amount": "Importo"
+    },
+    "pagination": {
+      "showing": "{{from}} a {{to}} di {{total}} spese"
+    }
+  },
+  "audit": {
+    "title": "Cronologia dell'immobile",
+    "failedToLoad": "Impossibile caricare la cronologia",
+    "empty": {
+      "title": "Nessuna cronologia disponibile",
+      "description": "Le modifiche a questo immobile appariranno qui"
+    },
+    "impersonated": "Impersonificato",
+    "clickToHide": "Clicchi per nascondere le modifiche",
+    "clickToView": "Clicchi per visualizzare le modifiche",
+    "changedFields": "Campi modificati",
+    "old": "Precedente:",
+    "new": "Nuovo:",
+    "fileName": "Nome file",
+    "titleLabel": "Titolo",
+    "typeLabel": "Tipo",
+    "photo": "Foto",
+    "document": "Documento"
+  },
+  "selfOccupancy": {
+    "title": "Uso proprio",
+    "markTitle": "Contrassegna come uso proprio",
+    "editTitle": "Modifica uso proprio",
+    "endTitle": "Termina uso proprio",
+    "active": "Attivo",
+    "period": "Periodo",
+    "type": "Tipo",
+    "occupant": "Occupante",
+    "imputedRent": "Canone figurativo",
+    "perMonth": "/ mese",
+    "endReason": "Motivo della cessazione",
+    "notes": "Note",
+    "endOccupancy": "Termina occupazione",
+    "form": {
+      "startDate": "Data di inizio *",
+      "endDate": "Data di fine",
+      "endDateRequired": "Data di fine *",
+      "occupancyType": "Tipo di occupazione *",
+      "occupantName": "Nome dell'occupante",
+      "occupantNamePlaceholder": "es. Proprietario, Familiare",
+      "monthlyImputedRent": "Canone figurativo mensile",
+      "notes": "Note",
+      "notesPlaceholder": "Note aggiuntive...",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Selezioni un motivo...",
+      "alreadyTakenPeriods": "Periodi già occupati"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Personale",
+      "FAMILY": "Familiare",
+      "BUSINESS": "Commerciale"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Conversione in affitto",
+      "SELLING": "Vendita",
+      "RENOVATION": "Ristrutturazione",
+      "OTHER": "Altro"
+    }
+  },
+  "map": {
+    "unavailable": "Anteprima mappa non disponibile",
+    "configureApiKey": "Configuri VITE_GOOGLE_MAPS_API_KEY per abilitare le mappe",
+    "loading": "Caricamento mappa...",
+    "locationNotFound": "Posizione non trovata",
+    "couldNotFind": "Impossibile trovare questo indirizzo sulla mappa",
+    "apiKeyNotConfigured": "Chiave API di Google Maps non configurata",
+    "geocodeFailed": "Geocodifica dell'indirizzo non riuscita",
+    "locationNotFoundShort": "Posizione non trovata",
+    "findingLocation": "Ricerca posizione...",
+    "couldNotLoadMaps": "Impossibile caricare Google Maps in questo momento",
+    "clickToPlace": "Non siamo riusciti a localizzare l'indirizzo. Clicchi su un punto della mappa per posizionare il segnaposto del Suo immobile.",
+    "placePinManually": "Posiziona segnaposto manualmente",
+    "accuracy": {
+      "rooftop": "Trascini il segnaposto per perfezionare la posizione",
+      "manual": "Segnaposto posizionato manualmente — trascinare per regolare",
+      "approximate": "Abbiamo trovato il quartiere ma non la posizione esatta — trascini il segnaposto sul Suo immobile!",
+      "country": "Beh, abbiamo almeno trovato il paese! Trascini il segnaposto nella posizione corretta."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Uso proprio",
+    "contract": "Contratto",
+    "vacancy": "Sfitto",
+    "noEntries": "Nessuna voce nella cronologia",
+    "ongoing": "In corso"
+  },
+  "statusChart": {
+    "occupied": "Occupato",
+    "selfOccupied": "Uso proprio",
+    "vacant": "Libero",
+    "maintenance": "Manutenzione",
+    "unavailable": "Non disponibile",
+    "noProperties": "Nessun immobile da visualizzare"
+  },
+  "financials": {
+    "failedToLoad": "Impossibile caricare i dati finanziari.",
+    "saving": "Salvataggio...",
+    "deleting": "Eliminazione...",
+    "notSet": "Non impostato",
+    "latestValuation": "Ultima valutazione",
+    "valuationHistory": "Storico valutazioni",
+    "payments": "Pagamenti",
+    "bulkAdd": "Aggiunta multipla",
+    "sections": {
+      "acquisition": "Acquisizione",
+      "valuations": "Valutazioni",
+      "financings": "Finanziamenti",
+      "recurringCosts": "Costi ricorrenti"
+    },
+    "metrics": {
+      "netWorth": "Patrimonio netto",
+      "totalAnnualCosts": "Costi annuali totali",
+      "totalFinancingBalance": "Saldo finanziamenti totale",
+      "latestValuation": "Ultima valutazione"
+    },
+    "modals": {
+      "addTax": "Aggiungi imposta",
+      "editTax": "Modifica imposta",
+      "addFee": "Aggiungi commissione",
+      "editFee": "Modifica commissione",
+      "addFinancing": "Aggiungi finanziamento",
+      "editFinancing": "Modifica finanziamento",
+      "addInsurance": "Aggiungi assicurazione",
+      "editInsurance": "Modifica assicurazione",
+      "addValuation": "Aggiungi valutazione",
+      "editValuation": "Modifica valutazione",
+      "addAcquisition": "Aggiungi acquisizione",
+      "editAcquisition": "Modifica acquisizione",
+      "editPayment": "Modifica pagamento",
+      "recordPayment": "Registra pagamento",
+      "bulkAddPayments": "Aggiunta multipla pagamenti"
+    },
+    "labels": {
+      "taxType": "Tipo di imposta",
+      "authority": "Ente impositore",
+      "annualAmount": "Importo annuale",
+      "paymentFrequency": "Frequenza di pagamento",
+      "taxYear": "Anno fiscale",
+      "dueMonths": "Mesi di scadenza",
+      "startDate": "Data di inizio",
+      "endDate": "Data di fine",
+      "status": "Stato",
+      "notes": "Note",
+      "feeType": "Tipo di commissione",
+      "name": "Nome",
+      "financingType": "Tipo di finanziamento",
+      "rateType": "Tipo di tasso",
+      "lenderName": "Nome del finanziatore",
+      "loanNumber": "Numero del prestito",
+      "originalAmount": "Importo originale",
+      "currentBalance": "Saldo attuale",
+      "interestRate": "Tasso di interesse",
+      "monthlyPayment": "Rata mensile",
+      "variablePayment": "Rata variabile",
+      "termMonths": "Durata (mesi)",
+      "insuranceType": "Tipo di assicurazione",
+      "provider": "Compagnia",
+      "policyNumber": "Numero di polizza",
+      "coverageAmount": "Importo di copertura",
+      "annualPremium": "Premio annuale",
+      "valuationType": "Tipo di valutazione",
+      "valuationDate": "Data di valutazione",
+      "amount": "Importo",
+      "source": "Fonte",
+      "acquisitionType": "Tipo di acquisizione",
+      "acquisitionDate": "Data di acquisizione",
+      "purchasePrice": "Prezzo di acquisto",
+      "closingCosts": "Spese di chiusura",
+      "renovationCosts": "Costi di ristrutturazione",
+      "landValue": "Valore del terreno",
+      "depreciationMethod": "Metodo di ammortamento",
+      "depreciationYears": "Anni di ammortamento",
+      "paymentDate": "Data di pagamento",
+      "totalAmount": "Importo totale",
+      "principal": "Capitale",
+      "interest": "Interessi",
+      "escrow": "Deposito a garanzia",
+      "extraPayment": "Pagamento extra",
+      "deductFromBalance": "Dedurre il capitale dal saldo del finanziamento",
+      "documents": "Documenti",
+      "currency": "Valuta",
+      "type": "Tipo",
+      "date": "Data"
+    },
+    "placeholders": {
+      "addNotes": "Aggiunga note...",
+      "source": "es. Agente immobiliare, Strumento online"
+    },
+    "units": {
+      "years": "anni",
+      "months": "mesi",
+      "perYear": "/anno"
+    },
+    "recurringCosts": "Costi ricorrenti",
+    "insurances": "Assicurazioni",
+    "taxes": "Imposte",
+    "fees": "Commissioni",
+    "na": "N/D",
+    "all": "Tutti",
+    "term": "Durata",
+    "frequency": "Frequenza",
+    "actions": "Azioni",
+    "total": "Totale",
+    "empty": {
+      "noAcquisition": "Nessun dato di acquisizione registrato.",
+      "noValuation": "Nessun dato di valutazione registrato.",
+      "noFinancing": "Nessuno strumento di finanziamento registrato.",
+      "noPayments": "Nessun pagamento registrato.",
+      "noInsurances": "Nessuna assicurazione.",
+      "noTaxes": "Nessuna imposta.",
+      "noFees": "Nessuna commissione."
+    },
+    "delete": {
+      "title": "Eliminare {{label}}?",
+      "message": "Conferma l'eliminazione di questo/a {{label}}? Questa azione non può essere annullata.",
+      "valuation": "valutazione {{type}}",
+      "payment": "pagamento ({{date}})",
+      "insurance": "assicurazione {{type}}",
+      "tax": "imposta {{type}}",
+      "fee": "commissione {{type}}"
+    },
+    "toast": {
+      "paymentDeleted": "Pagamento eliminato con successo",
+      "paymentDeleteFailed": "Impossibile eliminare il pagamento",
+      "paymentsCreated_one": "{{count}} pagamento creato con successo",
+      "paymentsCreated_other": "{{count}} pagamenti creati con successo"
+    },
+    "months": {
+      "jan": "Gen",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "Mag",
+      "jun": "Giu",
+      "jul": "Lug",
+      "aug": "Ago",
+      "sep": "Set",
+      "oct": "Ott",
+      "nov": "Nov",
+      "dec": "Dic"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Acquisto",
+      "INHERITANCE": "Eredità",
+      "GIFT": "Donazione",
+      "FORECLOSURE": "Pignoramento",
+      "AUCTION": "Asta",
+      "OTHER": "Altro"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Lineare",
+      "DECLINING_BALANCE": "Saldo decrescente",
+      "NONE": "Nessuno"
+    },
+    "valuationTypes": {
+      "MARKET": "Mercato",
+      "APPRAISAL": "Perizia",
+      "TAX_ASSESSED": "Catastale",
+      "PURCHASE": "Acquisto",
+      "INSURANCE": "Assicurativa",
+      "USER_ESTIMATE": "Stima dell'utente"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Mutuo",
+      "LEASING": "Leasing",
+      "LOAN": "Prestito",
+      "LINE_OF_CREDIT": "Linea di credito",
+      "PRIVATE_FINANCING": "Finanziamento privato",
+      "OTHER": "Altro"
+    },
+    "rateTypes": {
+      "FIXED": "Fisso",
+      "VARIABLE": "Variabile",
+      "INTEREST_ONLY": "Solo interessi",
+      "HYBRID": "Ibrido"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Attivo",
+      "PAID_OFF": "Estinto",
+      "REFINANCED": "Rifinanziato",
+      "DEFAULTED": "In sofferenza"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Programmato",
+      "COMPLETED": "Completato",
+      "MISSED": "Mancato",
+      "LATE": "In ritardo"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Fabbricato",
+      "LIABILITY": "Responsabilità civile",
+      "CONTENTS": "Contenuto",
+      "FLOOD": "Alluvione",
+      "EARTHQUAKE": "Terremoto",
+      "UMBRELLA": "Ombrello",
+      "RENT_GUARANTEE": "Garanzia del canone",
+      "OTHER": "Altro"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Attiva",
+      "EXPIRED": "Scaduta",
+      "CANCELLED": "Annullata"
+    },
+    "taxTypes": {
+      "PROPERTY": "Immobiliare",
+      "MUNICIPAL": "Comunale",
+      "STATE": "Statale",
+      "LOCAL": "Locale",
+      "LAND": "Terreni",
+      "SPECIAL_ASSESSMENT": "Contributo speciale",
+      "OTHER": "Altro"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Attiva",
+      "EXPIRED": "Scaduta",
+      "EXEMPT": "Esente"
+    },
+    "feeTypes": {
+      "HOA": "Spese condominiali",
+      "MANAGEMENT": "Gestione",
+      "MAINTENANCE_RESERVE": "Fondo manutenzione",
+      "CLEANING": "Pulizia",
+      "GARDENING": "Giardinaggio",
+      "SECURITY": "Sicurezza",
+      "WASTE_MANAGEMENT": "Gestione rifiuti",
+      "WATER": "Acqua",
+      "UTILITIES": "Utenze",
+      "OTHER": "Altro"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Attiva",
+      "EXPIRED": "Scaduta",
+      "CANCELLED": "Annullata"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Mensile",
+      "QUARTERLY": "Trimestrale",
+      "SEMI_ANNUALLY": "Semestrale",
+      "ANNUALLY": "Annuale",
+      "CUSTOM": "Personalizzata"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Apri contratto",
+    "clickToEdit": "Clicca per modificare"
+  }
+}

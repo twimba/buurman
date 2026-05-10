@@ -4,7 +4,6 @@ import { X, Save } from 'lucide-react';
 import {
   ContactResponse,
   ContactType,
-  CONTACT_TYPE_LABELS,
   CreateContactRequest,
 } from '@/types/contact';
 import { ConfirmDialog, RichTextEditor } from '@buurman/ui';
@@ -15,6 +14,7 @@ import {
   useDuplicateCheck,
   DuplicateContactWarning,
 } from '@/components/contacts/DuplicateContactWarning';
+import { useTranslation } from 'react-i18next';
 
 interface ContactFormProps {
   contact?: ContactResponse;
@@ -53,6 +53,7 @@ export const ContactForm = ({
   onSubmit,
   isLoading,
 }: ContactFormProps) => {
+  const { t } = useTranslation('tenants');
   const navigate = useNavigate();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showTypeChangeDialog, setShowTypeChangeDialog] = useState(false);
@@ -168,14 +169,14 @@ export const ContactForm = ({
 
     if (isIndividual) {
       if (!formData.firstName?.trim()) {
-        newErrors.firstName = 'First name is required for individual contacts';
+        newErrors.firstName = t('form.validation.firstNameRequired');
       }
     } else {
       if (!formData.companyName?.trim()) {
         newErrors.companyName =
           formData.contactType === 'SERVICE_PROVIDER'
-            ? 'Business name is required'
-            : 'Company name is required';
+            ? t('form.validation.businessNameRequired')
+            : t('form.validation.companyNameRequired');
       }
     }
 
@@ -183,13 +184,13 @@ export const ContactForm = ({
       formData.email?.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email ?? '')
     ) {
-      newErrors.email = 'Email must be valid';
+      newErrors.email = t('form.validation.invalidEmail');
     }
     if (
       formData.invoiceEmail?.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.invoiceEmail ?? '')
     ) {
-      newErrors.invoiceEmail = 'Invoice email must be valid';
+      newErrors.invoiceEmail = t('form.validation.invalidInvoiceEmail');
     }
     if (formData.phone) {
       const phoneErr = validatePhoneE164(formData.phone);
@@ -283,7 +284,7 @@ export const ContactForm = ({
                     : 'border-border-strong bg-surface-card text-text-secondary hover:bg-surface-inset'
                 }`}
               >
-                {CONTACT_TYPE_LABELS[type]}
+                {t(`enums.contactTypes.${type}`)}
               </button>
             ))}
           </div>
@@ -299,15 +300,15 @@ export const ContactForm = ({
         {/* Name Fields */}
         <div>
           <h3 className="text-lg font-semibold text-text-primary mb-4">
-            {isIndividual ? 'Personal Information' : 'Company Information'}
+            {isIndividual ? t('form.personalInfo') : t('form.companyInfo')}
           </h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {isCompanyLike && (
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-text-secondary mb-1">
                   {formData.contactType === 'SERVICE_PROVIDER'
-                    ? 'Business Name'
-                    : 'Company Name'}{' '}
+                    ? t('form.businessName')
+                    : t('form.companyName')}{' '}
                   <span className="text-error-text">*</span>
                 </label>
                 <input
@@ -317,8 +318,8 @@ export const ContactForm = ({
                   className={inputClass}
                   placeholder={
                     formData.contactType === 'SERVICE_PROVIDER'
-                      ? 'Loodgietersbedrijf Smit'
-                      : 'Van der Berg Vastgoed B.V.'
+                      ? t('form.businessNamePlaceholder')
+                      : t('form.companyNamePlaceholder')
                   }
                 />
                 {errors.companyName && (
@@ -340,7 +341,7 @@ export const ContactForm = ({
                     value={formData.tradeName ?? ''}
                     onChange={(e) => handleChange('tradeName', e.target.value)}
                     className={inputClass}
-                    placeholder="VdB Vastgoed"
+                    placeholder={t('form.tradeNamePlaceholder')}
                   />
                 </div>
                 <div>
@@ -352,7 +353,7 @@ export const ContactForm = ({
                     value={formData.industry ?? ''}
                     onChange={(e) => handleChange('industry', e.target.value)}
                     className={inputClass}
-                    placeholder="Real Estate"
+                    placeholder={t('form.industryPlaceholder')}
                   />
                 </div>
               </>
@@ -360,7 +361,9 @@ export const ContactForm = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                {isCompanyLike ? 'Contact Person First Name' : 'First Name'}
+                {isCompanyLike
+                  ? t('form.contactPersonFirstName')
+                  : t('form.firstName')}
                 {isIndividual && <span className="text-error-text"> *</span>}
               </label>
               <input
@@ -368,7 +371,7 @@ export const ContactForm = ({
                 value={formData.firstName ?? ''}
                 onChange={(e) => handleChange('firstName', e.target.value)}
                 className={inputClass}
-                placeholder="Jan"
+                placeholder={t('form.firstNamePlaceholder')}
               />
               {errors.firstName && (
                 <p className="text-error-text text-sm mt-1">
@@ -379,14 +382,16 @@ export const ContactForm = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                {isCompanyLike ? 'Contact Person Last Name' : 'Last Name'}
+                {isCompanyLike
+                  ? t('form.contactPersonLastName')
+                  : t('form.lastName')}
               </label>
               <input
                 type="text"
                 value={formData.lastName ?? ''}
                 onChange={(e) => handleChange('lastName', e.target.value)}
                 className={inputClass}
-                placeholder="De Vries"
+                placeholder={t('form.lastNamePlaceholder')}
               />
             </div>
           </div>
@@ -407,7 +412,7 @@ export const ContactForm = ({
                 value={formData.email ?? ''}
                 onChange={(e) => handleChange('email', e.target.value)}
                 className={inputClass}
-                placeholder="jan@example.com"
+                placeholder={t('form.emailPlaceholder')}
               />
               {errors.email && (
                 <p className="text-error-text text-sm mt-1">{errors.email}</p>
@@ -438,7 +443,7 @@ export const ContactForm = ({
                       handleChange('invoiceEmail', e.target.value)
                     }
                     className={inputClass}
-                    placeholder="factuur@company.nl"
+                    placeholder={t('form.invoiceEmailPlaceholder')}
                   />
                   {errors.invoiceEmail && (
                     <p className="text-error-text text-sm mt-1">
@@ -455,7 +460,7 @@ export const ContactForm = ({
                     value={formData.website ?? ''}
                     onChange={(e) => handleChange('website', e.target.value)}
                     className={inputClass}
-                    placeholder="https://www.company.nl"
+                    placeholder={t('form.websitePlaceholder')}
                   />
                 </div>
               </>
@@ -478,7 +483,7 @@ export const ContactForm = ({
                 value={formData.taxNumber ?? ''}
                 onChange={(e) => handleChange('taxNumber', e.target.value)}
                 className={inputClass}
-                placeholder="123456789"
+                placeholder={t('form.taxNumberPlaceholder')}
               />
             </div>
 
@@ -493,7 +498,7 @@ export const ContactForm = ({
                     value={formData.idNumber ?? ''}
                     onChange={(e) => handleChange('idNumber', e.target.value)}
                     className={inputClass}
-                    placeholder="AB123456"
+                    placeholder={t('form.governmentIdPlaceholder')}
                   />
                 </div>
                 <div>
@@ -535,7 +540,7 @@ export const ContactForm = ({
           <RichTextEditor
             value={formData.notes ?? ''}
             onChange={(value) => handleChange('notes', value)}
-            placeholder="Add any additional information about the contact"
+            placeholder={t('form.notesPlaceholder')}
             onSubmit={submitForm}
           />
         </div>
@@ -559,14 +564,14 @@ export const ContactForm = ({
             >
               <Save className="h-4 w-4" />
               {isLoading
-                ? 'Saving...'
+                ? t('form.saving')
                 : contact
-                  ? 'Update Contact'
-                  : 'Create Contact'}
+                  ? t('form.updateContact')
+                  : t('form.createContact')}
             </button>
             {!contact && duplicateBlocking && (
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
-                Review the duplicate warning above and dismiss it to continue
+                {t('form.duplicateWarningTooltip')}
                 <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
               </div>
             )}
@@ -577,14 +582,21 @@ export const ContactForm = ({
       {/* Type Change Confirmation Dialog */}
       {showTypeChangeDialog && pendingType && (
         <ConfirmDialog
-          title="Change contact type?"
+          title={t('form.changeType.title')}
           message={
             fieldsCleared.length > 0
-              ? `Changing from ${CONTACT_TYPE_LABELS[originalType]} to ${CONTACT_TYPE_LABELS[pendingType]} will clear the following fields:\n\n${fieldsCleared.map((f) => `- ${f}`).join('\n')}\n\nThis cannot be undone after saving.`
-              : `Change contact type from ${CONTACT_TYPE_LABELS[originalType]} to ${CONTACT_TYPE_LABELS[pendingType]}?`
+              ? t('form.changeType.messageWithFields', {
+                  from: t(`enums.contactTypes.${originalType}`),
+                  to: t(`enums.contactTypes.${pendingType}`),
+                  fields: fieldsCleared.map((f) => `- ${f}`).join('\n'),
+                })
+              : t('form.changeType.messageSimple', {
+                  from: t(`enums.contactTypes.${originalType}`),
+                  to: t(`enums.contactTypes.${pendingType}`),
+                })
           }
           variant="default"
-          confirmLabel="Change Type"
+          confirmLabel={t('form.changeType.confirm')}
           onConfirm={confirmTypeChange}
           onCancel={() => {
             setShowTypeChangeDialog(false);

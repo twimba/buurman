@@ -11,5 +11,6 @@ public record TeamPreferencesResponse(PaymentSettings payments, RegionalSettings
       Optional<String> defaultCountryCode,
       Optional<String> timezone,
       Optional<String> dateFormat,
-      Optional<String> fiscalYearStartMonth) {}
+      Optional<String> fiscalYearStartMonth,
+      String defaultLanguage) {}
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, CalendarCheck } from 'lucide-react';
 import { CreatePaymentRequest } from '@/types/payment';
 import { MoneyInput } from '@/components/common/MoneyInput';
@@ -25,6 +26,7 @@ export const RegisterPaymentForm = ({
   continueAdding,
   onContinueAddingChange,
 }: RegisterPaymentFormProps) => {
+  const { t } = useTranslation('payments');
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -69,13 +71,13 @@ export const RegisterPaymentForm = ({
     const newErrors: Record<string, string> = {};
 
     if (formData.amount <= 0) {
-      newErrors.amount = 'Amount must be greater than 0';
+      newErrors.amount = t('validation.amountRequired');
     }
     if (formData.amount > 0 && !currency.trim()) {
-      newErrors.currency = 'Currency is required';
+      newErrors.currency = t('validation.currencyRequired');
     }
     if (!formData.paymentDate) {
-      newErrors.paymentDate = 'Payment date is required';
+      newErrors.paymentDate = t('validation.paymentDateRequired');
     }
 
     setErrors(newErrors);
@@ -119,7 +121,7 @@ export const RegisterPaymentForm = ({
       {/* Amount */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Amount <span className="text-error-text">*</span>
+          {t('form.amount')} <span className="text-error-text">*</span>
         </label>
         <MoneyInput
           value={formData.amount ?? undefined}
@@ -138,7 +140,7 @@ export const RegisterPaymentForm = ({
       {/* Payment Date */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Payment Date <span className="text-error-text">*</span>
+          {t('form.paymentDate')} <span className="text-error-text">*</span>
         </label>
         <div className="flex gap-2">
           <input
@@ -165,7 +167,7 @@ export const RegisterPaymentForm = ({
             className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors text-text-secondary"
             disabled={isLoading}
           >
-            Today
+            {t('form.today')}
           </button>
         </div>
         {errors.paymentDate && (
@@ -176,7 +178,7 @@ export const RegisterPaymentForm = ({
       {/* Contact (optional) */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Contact
+          {t('form.contact')}
         </label>
         <div className="flex gap-2">
           <div className="flex-1">
@@ -197,7 +199,7 @@ export const RegisterPaymentForm = ({
               className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
               disabled={isLoading}
             >
-              Clear
+              {t('form.clear')}
             </button>
           )}
         </div>
@@ -206,12 +208,12 @@ export const RegisterPaymentForm = ({
       {/* Notes */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Notes
+          {t('form.notes')}
         </label>
         <RichTextEditor
           value={formData.notes}
           onChange={(value) => setFormData({ ...formData, notes: value })}
-          placeholder="Add any additional notes about this payment..."
+          placeholder={t('form.notesPlaceholder')}
           readOnly={isLoading}
           onSubmit={submitForm}
         />
@@ -228,7 +230,7 @@ export const RegisterPaymentForm = ({
               className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500"
             />
             <span className="text-sm text-text-secondary">
-              Continue adding more
+              {t('form.continueAdding')}
             </span>
           </label>
         )}
@@ -239,7 +241,7 @@ export const RegisterPaymentForm = ({
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
-          Cancel
+          {t('common:buttons.cancel')}
         </button>
         <button
           type="submit"
@@ -247,7 +249,7 @@ export const RegisterPaymentForm = ({
           disabled={isLoading}
         >
           <CalendarCheck className="h-4 w-4" />
-          {isLoading ? 'Saving...' : 'Register Payment'}
+          {isLoading ? t('form.saving') : t('actions.registerPayment')}
         </button>
       </div>
     </form>

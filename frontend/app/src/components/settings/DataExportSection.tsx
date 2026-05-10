@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Download,
   Loader2,
@@ -35,33 +36,34 @@ const formatFileSize = (bytes: number | null): string => {
 };
 
 const StatusBadge = ({ status }: { status: TakeoutResponse['status'] }) => {
+  const { t } = useTranslation('settings');
   switch (status) {
     case 'PENDING':
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-warning-bg text-warning-text">
           <Clock className="h-3 w-3" />
-          Pending
+          {t('dataExport.statuses.pending')}
         </span>
       );
     case 'PROCESSING':
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-info-bg text-info-text">
           <Loader2 className="h-3 w-3 animate-spin" />
-          Processing
+          {t('dataExport.statuses.processing')}
         </span>
       );
     case 'COMPLETED':
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-success-bg text-success-text">
           <CheckCircle className="h-3 w-3" />
-          Completed
+          {t('dataExport.statuses.completed')}
         </span>
       );
     case 'FAILED':
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-error-bg text-error-text">
           <XCircle className="h-3 w-3" />
-          Failed
+          {t('dataExport.statuses.failed')}
         </span>
       );
   }
@@ -85,6 +87,7 @@ const TakeoutRow = ({
   onDelete: (identifier: string) => void;
   isDeleting: boolean;
 }) => {
+  const { t } = useTranslation('settings');
   const { formatDateTime } = useFormatDate();
   const isActive =
     takeout.status === 'PENDING' || takeout.status === 'PROCESSING';
@@ -99,28 +102,38 @@ const TakeoutRow = ({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-text-primary text-sm">
-                Data Export
+                {t('dataExport.dataExportLabel')}
               </span>
               <StatusBadge status={takeout.status} />
             </div>
             <div className="flex items-center gap-3 mt-1 text-xs text-text-secondary flex-wrap">
-              <span>Requested {formatDateTime(takeout.createdAt)}</span>
+              <span>
+                {t('dataExport.requested', {
+                  date: formatDateTime(takeout.createdAt),
+                })}
+              </span>
               {takeout.completedAt && (
-                <span>Completed {formatDateTime(takeout.completedAt)}</span>
+                <span>
+                  {t('dataExport.completed', {
+                    date: formatDateTime(takeout.completedAt),
+                  })}
+                </span>
               )}
               {takeout.fileSize !== null && (
                 <span>{formatFileSize(takeout.fileSize)}</span>
               )}
               {takeout.expiresAt && takeout.status === 'COMPLETED' && (
                 <span className="text-warning-text">
-                  Expires {formatDateTime(takeout.expiresAt)}
+                  {t('dataExport.expires', {
+                    date: formatDateTime(takeout.expiresAt),
+                  })}
                 </span>
               )}
             </div>
             {isActive && <ProgressBar progress={takeout.progress} />}
             {isActive && (
               <p className="text-xs text-text-secondary mt-1">
-                {takeout.progress}% complete
+                {t('dataExport.percentComplete', { percent: takeout.progress })}
               </p>
             )}
           </div>
@@ -133,14 +146,18 @@ const TakeoutRow = ({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
             >
               <Download className="h-4 w-4" />
-              Download
+              {t('common:buttons.download')}
             </a>
           )}
           <button
             onClick={() => onDelete(takeout.identifier)}
             disabled={isDeleting}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-error-bg hover:opacity-90 rounded-lg transition-colors disabled:opacity-50"
-            title={isActive ? 'Cancel export' : 'Delete export'}
+            title={
+              isActive
+                ? t('dataExport.deleteTitle')
+                : t('dataExport.deleteTitle')
+            }
           >
             {isDeleting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -155,6 +172,7 @@ const TakeoutRow = ({
 };
 
 export const DataExportSection = () => {
+  const { t } = useTranslation('settings');
   const { canEditTeamSettings } = useTeam();
   const { data: takeoutsPage, isLoading, isError, refetch } = useTakeouts();
   const requestMutation = useRequestTakeout();
@@ -171,7 +189,7 @@ export const DataExportSection = () => {
       <div className="bg-surface-card rounded-lg shadow-sm p-6">
         <div className="flex items-center gap-3 text-text-secondary">
           <ShieldAlert className="h-5 w-5" />
-          <p className="text-sm">Only team admins can export data.</p>
+          <p className="text-sm">{t('dataExport.adminOnly')}</p>
         </div>
       </div>
     );
@@ -185,12 +203,10 @@ export const DataExportSection = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Data Export
+                {t('dataExport.title')}
               </h2>
               <p className="text-sm text-text-secondary mt-1">
-                Export all your team data as a downloadable archive. Exports
-                include properties, contacts, contracts, payments, expenses, and
-                documents.
+                {t('dataExport.subtitle')}
               </p>
             </div>
             <button
@@ -203,13 +219,12 @@ export const DataExportSection = () => {
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              Request Export
+              {t('dataExport.requestExport')}
             </button>
           </div>
           {hasActiveTakeout && (
             <p className="text-xs text-warning-text mt-2">
-              An export is already in progress. Please wait for it to complete
-              before requesting another.
+              {t('dataExport.inProgress')}
             </p>
           )}
         </div>
@@ -226,13 +241,13 @@ export const DataExportSection = () => {
             <div className="flex flex-col items-center justify-center py-8 gap-3">
               <AlertTriangle className="h-6 w-6 text-warning-text" />
               <p className="text-sm text-text-secondary">
-                Failed to load exports
+                {t('dataExport.failedToLoad')}
               </p>
               <button
                 onClick={() => refetch()}
                 className="px-3 py-1.5 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
               >
-                Try Again
+                {t('dataExport.tryAgain')}
               </button>
             </div>
           )}
@@ -241,7 +256,7 @@ export const DataExportSection = () => {
             <div className="text-center py-8">
               <FileArchive className="h-10 w-10 text-text-muted mx-auto mb-3" />
               <p className="text-sm text-text-secondary">
-                No exports yet. Request your first data export above.
+                {t('dataExport.empty')}
               </p>
             </div>
           )}
@@ -266,9 +281,9 @@ export const DataExportSection = () => {
 
       {deleteTarget && (
         <ConfirmDialog
-          title="Delete Export"
-          message="Are you sure you want to delete this data export? The exported file will be permanently removed. This action cannot be undone."
-          confirmLabel="Delete"
+          title={t('dataExport.deleteTitle')}
+          message={t('dataExport.deleteMessage')}
+          confirmLabel={t('common:buttons.delete')}
           variant="danger"
           isLoading={deleteMutation.isPending}
           onConfirm={async () => {

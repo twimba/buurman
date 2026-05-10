@@ -1,4 +1,5 @@
 import { MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { RichTextDisplay } from '@buurman/ui';
 import type { RentRegulationRegionResponse } from '@/types/rentRegulation';
 
@@ -13,6 +14,8 @@ export const RegionSelector = ({
   selectedRegion,
   onSelect,
 }: RegionSelectorProps) => {
+  const { t } = useTranslation('contracts');
+
   if (regions.length === 0) {
     return null;
   }
@@ -24,7 +27,7 @@ export const RegionSelector = ({
       <div className="bg-surface-card rounded-lg border border-border-default p-4">
         <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">
           <MapPin className="h-3.5 w-3.5" />
-          Regions
+          {t('rentRegulations.regions')}
         </div>
         <div className="flex flex-wrap gap-1.5">
           <button
@@ -35,7 +38,7 @@ export const RegionSelector = ({
                 : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
             }`}
           >
-            National
+            {t('rentRegulations.national')}
           </button>
           {regions.map((region) => (
             <button

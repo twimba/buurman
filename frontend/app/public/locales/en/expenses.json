@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Expenses",
+    "subtitle": "Track property expenses and costs"
+  },
+  "actions": {
+    "addExpense": "Add Expense"
+  },
+  "stats": {
+    "totalExpenses": "Total Expenses",
+    "categorySummary": "in {{category}}",
+    "categorySummaryAll": "across {{count}} categories",
+    "topCategories": "Top Categories",
+    "noData": "No data available",
+    "lastSixMonths": "Last 6 Months",
+    "tooltipExpenses": "Expenses"
+  },
+  "filters": {
+    "title": "Filters",
+    "property": "Property",
+    "category": "Category",
+    "allProperties": "All Properties",
+    "allCategories": "All Categories"
+  },
+  "category": {
+    "MAINTENANCE": "Maintenance",
+    "REPAIR": "Repair",
+    "UTILITY": "Utility",
+    "TAX": "Tax",
+    "INSURANCE": "Insurance",
+    "LEGAL": "Legal",
+    "MARKETING": "Marketing",
+    "CLEANING": "Cleaning",
+    "LANDSCAPING": "Landscaping",
+    "PROPERTY_MANAGEMENT": "Property Management",
+    "FEES": "Fees",
+    "PROPERTY_TAX": "Property Taxes",
+    "OTHER": "Other"
+  },
+  "table": {
+    "date": "Date",
+    "expenseNumber": "Expense #",
+    "description": "Description",
+    "category": "Category",
+    "property": "Property",
+    "amount": "Amount"
+  },
+  "empty": {
+    "title": "No expenses found",
+    "filtered": "Try adjusting your filters",
+    "noData": "Get started by recording your first expense"
+  },
+  "card": {
+    "expenseId": "Expense #{{id}}",
+    "property": "Property",
+    "contact": "Contact",
+    "amount": "Amount",
+    "expenseDate": "Expense Date",
+    "documentsAttached": "{{count}} document(s) attached"
+  },
+  "form": {
+    "property": "Property",
+    "category": "Category",
+    "contact": "Contact",
+    "amount": "Amount",
+    "expenseDate": "Expense Date",
+    "description": "Description",
+    "descriptionPlaceholder": "e.g., Plumbing repair in bathroom",
+    "notes": "Notes",
+    "notesPlaceholder": "Add any additional notes about this expense...",
+    "continueAdding": "Continue adding more",
+    "today": "Today",
+    "updateExpense": "Update",
+    "createExpense": "Create",
+    "expenseSuffix": " Expense",
+    "saving": "Saving...",
+    "currency": "Currency"
+  },
+  "validation": {
+    "propertyRequired": "Property is required",
+    "amountRequired": "Amount must be greater than 0",
+    "currencyRequired": "Currency is required",
+    "expenseDateRequired": "Expense date is required",
+    "descriptionRequired": "Description is required"
+  },
+  "create": {
+    "title": "Add New Expense",
+    "addedCount": "{{count}} expense added this session",
+    "addedCount_other": "{{count}} expenses added this session",
+    "single": "Single",
+    "bulk": "Bulk"
+  },
+  "detail": {
+    "titlePrefix": "Expense #{{id}}",
+    "expenseDetails": "Expense Details",
+    "propertyAndContact": "Property & Contact",
+    "amount": "Amount",
+    "expenseDate": "Expense Date",
+    "category": "Category",
+    "description": "Description",
+    "property": "Property",
+    "contact": "Contact",
+    "noContactLinked": "No contact linked",
+    "notes": "Notes",
+    "metadata": "Metadata",
+    "created": "Created:",
+    "lastUpdated": "Last Updated:",
+    "editExpense": "Edit Expense"
+  },
+  "tabs": {
+    "details": "Details",
+    "documents": "Documents",
+    "history": "History"
+  },
+  "history": {
+    "title": "Expense History",
+    "empty": "No history available",
+    "emptySubtitle": "Changes to this expense will appear here",
+    "clickToView": "Click to view changes",
+    "clickToHide": "Click to hide changes",
+    "changedFields": "Changed Fields",
+    "old": "Old:",
+    "new": "New:",
+    "impersonated": "Impersonated"
+  },
+  "deleteDialog": {
+    "title": "Delete Expense",
+    "message": "Are you sure you want to delete this expense? This action cannot be undone.",
+    "messageWithRelated": "Are you sure you want to delete this expense? All related documents will also be deleted. This action cannot be undone."
+  },
+  "tooltips": {
+    "viewExpense": "View expense",
+    "deleteExpense": "Delete expense"
+  },
+  "errors": {
+    "loadFailed": "Failed to load expenses",
+    "loadExpenseFailed": "Failed to load expense",
+    "loadHistoryFailed": "Failed to load history"
+  }
+}

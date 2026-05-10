@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@buurman/ui';
@@ -26,6 +27,7 @@ export const ValuationFormModal = ({
   existing,
   onClose,
 }: ValuationFormModalProps) => {
+  const { t } = useTranslation('properties');
   const { defaultCurrency } = useTeamDefaults();
   const currency = defaultCurrency || 'EUR';
   const createMutation = useCreateValuation(propertyId);
@@ -97,7 +99,9 @@ export const ValuationFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4">
         <div className="flex items-center justify-between p-4 border-b border-border-strong">
           <h2 className="text-lg font-semibold text-text-primary">
-            {existing ? 'Edit Valuation' : 'Add Valuation'}
+            {existing
+              ? t('financials.modals.editValuation')
+              : t('financials.modals.addValuation')}
           </h2>
           <button
             type="button"
@@ -115,7 +119,7 @@ export const ValuationFormModal = ({
         >
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Valuation Type
+              {t('financials.labels.valuationType')}
             </label>
             <select
               value={formData.valuationType}
@@ -137,7 +141,8 @@ export const ValuationFormModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Valuation Date <span className="text-error-text">*</span>
+              {t('financials.labels.valuationDate')}{' '}
+              <span className="text-error-text">*</span>
             </label>
             <input
               type="date"
@@ -152,7 +157,8 @@ export const ValuationFormModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Amount <span className="text-error-text">*</span>
+              {t('financials.labels.amount')}{' '}
+              <span className="text-error-text">*</span>
             </label>
             <MoneyInput
               value={formData.amount ?? undefined}
@@ -163,7 +169,7 @@ export const ValuationFormModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Source
+              {t('financials.labels.source')}
             </label>
             <input
               type="text"
@@ -171,21 +177,21 @@ export const ValuationFormModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, source: e.target.value })
               }
-              placeholder="e.g. Real estate agent, Online tool"
+              placeholder={t('financials.placeholders.source')}
               className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Notes
+              {t('financials.labels.notes')}
             </label>
             <RichTextEditor
               value={formData.notes ?? ''}
               onChange={(value) =>
                 setFormData({ ...formData, notes: value || undefined })
               }
-              placeholder="Add notes..."
+              placeholder={t('financials.placeholders.addNotes')}
             />
           </div>
         </form>
@@ -196,7 +202,7 @@ export const ValuationFormModal = ({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             type="submit"
@@ -204,7 +210,7 @@ export const ValuationFormModal = ({
             disabled={isPending}
             className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
-            {isPending ? 'Saving...' : 'Save'}
+            {isPending ? t('financials.saving') : t('common:buttons.save')}
           </button>
         </div>
       </div>

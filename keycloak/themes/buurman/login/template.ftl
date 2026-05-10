@@ -37,6 +37,23 @@
             <script src="${script}" type="text/javascript"></script>
         </#list>
     </#if>
+    <#if locale.supported?has_content>
+    <#-- Resolve the current language tag from locale.current (which is the label, not the tag) -->
+    <#assign currentLangTag = "en">
+    <#list locale.supported as l>
+      <#if locale.current == l.label>
+        <#assign currentLangTag = l.languageTag>
+      </#if>
+    </#list>
+    <script>
+      (function() {
+        // Persist Keycloak's resolved locale so the dropdown stays in sync.
+        // The React app passes ui_locales via keycloak.login() — Keycloak resolves
+        // it into locale.current. We just store the result; no redirect needed.
+        localStorage.setItem('buurman-language', '${currentLangTag}');
+      })();
+    </script>
+    </#if>
 </head>
 
 <body>
@@ -48,7 +65,7 @@
           <img src="${url.resourcesPath}/img/logo_square.png" alt="Buurman" class="kc-branding-logo" />
           <h1 class="kc-branding-title">Buurman</h1>
         </div>
-        <p class="kc-branding-tagline">Property management made simple for small landlords</p>
+        <p class="kc-branding-tagline">${msg("brandingTagline")}</p>
 
         <!-- Features -->
         <div class="kc-features">
@@ -57,8 +74,8 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
             </div>
             <div class="kc-feature-text">
-              <h3>Manage Properties</h3>
-              <p>Keep track of all your rental properties in one place</p>
+              <h3>${msg("featureProperties")}</h3>
+              <p>${msg("featurePropertiesDesc")}</p>
             </div>
           </div>
 
@@ -67,8 +84,8 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
             </div>
             <div class="kc-feature-text">
-              <h3>Track Tenants</h3>
-              <p>Manage tenant information and lease agreements</p>
+              <h3>${msg("featureTenants")}</h3>
+              <p>${msg("featureTenantsDesc")}</p>
             </div>
           </div>
 
@@ -77,8 +94,8 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
             </div>
             <div class="kc-feature-text">
-              <h3>Handle Finances</h3>
-              <p>Monitor payments, expenses, and financial reports</p>
+              <h3>${msg("featureFinances")}</h3>
+              <p>${msg("featureFinancesDesc")}</p>
             </div>
           </div>
 
@@ -87,14 +104,14 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>
             </div>
             <div class="kc-feature-text">
-              <h3>Grow Your Business</h3>
-              <p>Scale your rental portfolio with confidence</p>
+              <h3>${msg("featureGrowth")}</h3>
+              <p>${msg("featureGrowthDesc")}</p>
             </div>
           </div>
         </div>
 
         <div class="kc-branding-footer">
-          © 2026 Buurman. Simple property management.
+          ${msg("brandingFooter")}
         </div>
       </div>
     </div>
@@ -106,7 +123,7 @@
         <div class="kc-mobile-logo">
           <img src="${url.resourcesPath}/img/logo_square.png" alt="Buurman" class="kc-mobile-logo-img" />
           <h1 class="kc-mobile-title">Buurman</h1>
-          <p class="kc-mobile-tagline">Property management for small landlords</p>
+          <p class="kc-mobile-tagline">${msg("brandingTagline")}</p>
         </div>
 
         <div class="kc-card">
@@ -128,16 +145,16 @@
           <#if realm.password>
               <div class="kc-registration">
                   <#if client?? && client.baseUrl?has_content>
-                      <span>Don't have an account? <a href="${client.baseUrl}/register" class="kc-link">Create one here</a></span>
+                      <span>${msg("noAccount")} <a href="${client.baseUrl}/register" class="kc-link">${msg("createAccount")}</a></span>
                   <#else>
-                      <span>Don't have an account? <a href="http://localhost:5173/register" class="kc-link">Create one here</a></span>
+                      <span>${msg("noAccount")} <a href="http://localhost:5173/register" class="kc-link">${msg("createAccount")}</a></span>
                   </#if>
               </div>
           </#if>
 
           <#-- Security note -->
           <div class="kc-security-note">
-            Secure authentication
+            ${msg("secureAuth")}
           </div>
 
           <#-- Info section -->
@@ -149,8 +166,26 @@
         </div>
 
         <!-- Additional Info -->
-        <div class="kc-help-link">
-          Need help? <a href="#" class="kc-link">Contact support</a>
+        <div class="kc-footer">
+          <div class="kc-help-link">
+            ${msg("needHelp")} <a href="https://www.buurman.io/support" class="kc-link">${msg("contactSupport")}</a>
+          </div>
+          <#if locale.supported?has_content>
+          <div class="kc-language-selector">
+            <svg class="kc-lang-globe" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            <select class="kc-lang-select" onchange="kcChangeLocale(this.value, this.options[this.selectedIndex].getAttribute('data-url'))">
+              <#list locale.supported as l>
+                <option value="${l.languageTag}" data-url="${l.url}" <#if locale.current == l.label>selected</#if>>${l.label}</option>
+              </#list>
+            </select>
+          </div>
+          <script>
+            function kcChangeLocale(lang, url) {
+              localStorage.setItem('buurman-language', lang);
+              window.location.href = url;
+            }
+          </script>
+          </#if>
         </div>
       </div>
     </div>

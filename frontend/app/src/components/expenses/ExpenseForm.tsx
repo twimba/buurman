@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Save } from 'lucide-react';
 import {
   ExpenseResponse,
   CreateExpenseRequest,
   ExpenseCategory,
-  formatExpenseCategory,
 } from '@/types/expense';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
@@ -33,6 +33,7 @@ export const ExpenseForm = ({
   continueAdding,
   onContinueAddingChange,
 }: ExpenseFormProps) => {
+  const { t } = useTranslation('expenses');
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -95,21 +96,21 @@ export const ExpenseForm = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.propertyIdentifier) {
-      newErrors.propertyIdentifier = 'Property is required';
+      newErrors.propertyIdentifier = t('validation.propertyRequired');
     }
     if (formData.amount <= 0) {
-      newErrors.amount = 'Amount must be greater than 0';
+      newErrors.amount = t('validation.amountRequired');
     }
     if (
       formData.amount > 0 &&
       !(formData.currency || defaultCurrency || '').trim()
     )
-      newErrors.currency = 'Currency is required';
+      newErrors.currency = t('validation.currencyRequired');
     if (!formData.expenseDate) {
-      newErrors.expenseDate = 'Expense date is required';
+      newErrors.expenseDate = t('validation.expenseDateRequired');
     }
     if (!formData.description || formData.description.trim().length === 0) {
-      newErrors.description = 'Description is required';
+      newErrors.description = t('validation.descriptionRequired');
     }
 
     setErrors(newErrors);
@@ -144,7 +145,7 @@ export const ExpenseForm = ({
       {/* Property */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Property <span className="text-error-text">*</span>
+          {t('form.property')} <span className="text-error-text">*</span>
         </label>
         <PropertySelector
           value={formData.propertyIdentifier ?? ''}
@@ -166,7 +167,7 @@ export const ExpenseForm = ({
       {/* Category */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Category <span className="text-error-text">*</span>
+          {t('form.category')} <span className="text-error-text">*</span>
         </label>
         <select
           value={formData.category}
@@ -181,7 +182,7 @@ export const ExpenseForm = ({
         >
           {Object.values(ExpenseCategory).map((cat) => (
             <option key={cat} value={cat}>
-              {formatExpenseCategory(cat)}
+              {t(`category.${cat}`)}
             </option>
           ))}
         </select>
@@ -190,7 +191,7 @@ export const ExpenseForm = ({
       {/* Contact (optional) */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Contact
+          {t('form.contact')}
         </label>
         <div className="flex gap-2 items-center">
           <div className="flex-1">
@@ -223,7 +224,7 @@ export const ExpenseForm = ({
       {/* Amount */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Amount <span className="text-error-text">*</span>
+          {t('form.amount')} <span className="text-error-text">*</span>
         </label>
         <MoneyInput
           value={formData.amount ?? undefined}
@@ -242,7 +243,7 @@ export const ExpenseForm = ({
       {/* Expense Date */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Expense Date <span className="text-error-text">*</span>
+          {t('form.expenseDate')} <span className="text-error-text">*</span>
         </label>
         <div className="flex gap-2">
           <input
@@ -269,7 +270,7 @@ export const ExpenseForm = ({
             className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
             disabled={isLoading}
           >
-            Today
+            {t('form.today')}
           </button>
         </div>
         {errors.expenseDate && (
@@ -280,7 +281,7 @@ export const ExpenseForm = ({
       {/* Description */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Description <span className="text-error-text">*</span>
+          {t('form.description')} <span className="text-error-text">*</span>
         </label>
         <input
           type="text"
@@ -292,7 +293,7 @@ export const ExpenseForm = ({
             errors.description ? 'border-error-border' : 'border-border-strong'
           }`}
           disabled={isLoading}
-          placeholder="e.g., Plumbing repair in bathroom"
+          placeholder={t('form.descriptionPlaceholder')}
         />
         {errors.description && (
           <p className="mt-1 text-sm text-error-text">{errors.description}</p>
@@ -302,12 +303,12 @@ export const ExpenseForm = ({
       {/* Notes */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Notes
+          {t('form.notes')}
         </label>
         <RichTextEditor
           value={formData.notes ?? ''}
           onChange={(value) => setFormData({ ...formData, notes: value })}
-          placeholder="Add any additional notes about this expense..."
+          placeholder={t('form.notesPlaceholder')}
           readOnly={isLoading}
           onSubmit={submitForm}
         />
@@ -324,7 +325,7 @@ export const ExpenseForm = ({
               className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500"
             />
             <span className="text-sm text-text-secondary">
-              Continue adding more
+              {t('form.continueAdding')}
             </span>
           </label>
         )}
@@ -335,7 +336,7 @@ export const ExpenseForm = ({
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
-          Cancel
+          {t('common:buttons.cancel')}
         </button>
         <button
           type="submit"
@@ -343,7 +344,12 @@ export const ExpenseForm = ({
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />
-          {isLoading ? 'Saving...' : expense ? 'Update' : 'Create'} Expense
+          {isLoading
+            ? t('form.saving')
+            : expense
+              ? t('form.updateExpense')
+              : t('form.createExpense')}
+          {t('form.expenseSuffix')}
         </button>
       </div>
     </form>

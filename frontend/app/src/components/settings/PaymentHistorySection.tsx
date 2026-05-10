@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Receipt,
   Download,
@@ -25,6 +26,7 @@ interface Invoice {
 }
 
 export const PaymentHistorySection = () => {
+  const { t } = useTranslation('settings');
   const { formatDate } = useFormatDate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(
@@ -82,33 +84,39 @@ export const PaymentHistorySection = () => {
     plan: 'Professional',
   };
 
-  const statusFilters = [
-    { value: undefined, label: 'All Statuses' },
-    { value: 'paid', label: 'Paid' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'failed', label: 'Failed' },
-  ];
+  const statusFilters = useMemo(
+    () => [
+      { value: undefined, label: t('paymentHistory.allStatuses') },
+      { value: 'paid', label: t('paymentHistory.statuses.paid') },
+      { value: 'pending', label: t('paymentHistory.statuses.pending') },
+      { value: 'failed', label: t('paymentHistory.statuses.failed') },
+    ],
+    [t]
+  );
 
-  const statusConfig = {
-    paid: {
-      label: 'Paid',
-      color: 'bg-success-bg text-success-text',
-      icon: CheckCircle,
-      iconColor: 'text-success-text',
-    },
-    pending: {
-      label: 'Pending',
-      color: 'bg-warning-bg text-warning-text',
-      icon: Clock,
-      iconColor: 'text-warning-text',
-    },
-    failed: {
-      label: 'Failed',
-      color: 'bg-error-bg text-error-text',
-      icon: XCircle,
-      iconColor: 'text-error-text',
-    },
-  };
+  const statusConfig = useMemo(
+    () => ({
+      paid: {
+        label: t('paymentHistory.statuses.paid'),
+        color: 'bg-success-bg text-success-text',
+        icon: CheckCircle,
+        iconColor: 'text-success-text',
+      },
+      pending: {
+        label: t('paymentHistory.statuses.pending'),
+        color: 'bg-warning-bg text-warning-text',
+        icon: Clock,
+        iconColor: 'text-warning-text',
+      },
+      failed: {
+        label: t('paymentHistory.statuses.failed'),
+        color: 'bg-error-bg text-error-text',
+        icon: XCircle,
+        iconColor: 'text-error-text',
+      },
+    }),
+    [t]
+  );
 
   const filteredInvoices = useMemo(() => {
     let filtered = invoices;
@@ -150,7 +158,9 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">Next Payment</p>
+              <p className="text-sm text-text-secondary">
+                {t('paymentHistory.nextPayment')}
+              </p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 {nextPayment.currency} {nextPayment.amount.toFixed(2)}
               </p>
@@ -165,11 +175,15 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">Total Paid</p>
+              <p className="text-sm text-text-secondary">
+                {t('paymentHistory.totalPaid')}
+              </p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 EUR {totalPaid.toFixed(2)}
               </p>
-              <p className="text-xs text-text-secondary mt-1">All time</p>
+              <p className="text-xs text-text-secondary mt-1">
+                {t('paymentHistory.allTime')}
+              </p>
             </div>
             <CreditCard className="h-12 w-12 text-success-text" />
           </div>
@@ -178,12 +192,16 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">Total Invoices</p>
+              <p className="text-sm text-text-secondary">
+                {t('paymentHistory.totalInvoices')}
+              </p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 {invoices.length}
               </p>
               <p className="text-xs text-text-secondary mt-1">
-                {invoices.filter((i) => i.status === 'paid').length} paid
+                {t('paymentHistory.paid', {
+                  count: invoices.filter((i) => i.status === 'paid').length,
+                })}
               </p>
             </div>
             <Receipt className="h-12 w-12 text-purple-600" />
@@ -195,10 +213,10 @@ export const PaymentHistorySection = () => {
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default">
         <div className="p-6 border-b border-border-default">
           <h2 className="text-xl font-semibold text-text-primary">
-            Payment History
+            {t('paymentHistory.title')}
           </h2>
           <p className="text-sm text-text-secondary mt-1">
-            View and download your invoices
+            {t('paymentHistory.subtitle')}
           </p>
         </div>
 
@@ -210,7 +228,7 @@ export const PaymentHistorySection = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by invoice number, plan, or payment method..."
+              placeholder={t('paymentHistory.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
@@ -218,7 +236,7 @@ export const PaymentHistorySection = () => {
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h3 className="font-semibold text-text-primary text-sm">
-              Status Filter
+              {t('paymentHistory.statusFilter')}
             </h3>
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -244,25 +262,25 @@ export const PaymentHistorySection = () => {
             <thead className="bg-surface-page">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Invoice
+                  {t('paymentHistory.invoice')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Date
+                  {t('paymentHistory.date')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Plan
+                  {t('paymentHistory.plan')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Payment Method
+                  {t('paymentHistory.paymentMethod')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Amount
+                  {t('paymentHistory.amount')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Status
+                  {t('paymentHistory.status')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Actions
+                  {t('paymentHistory.actions')}
                 </th>
               </tr>
             </thead>
@@ -314,7 +332,7 @@ export const PaymentHistorySection = () => {
                         }`}
                       >
                         <Download className="h-4 w-4" />
-                        Download
+                        {t('paymentHistory.download')}
                       </button>
                     </td>
                   </tr>
@@ -328,12 +346,12 @@ export const PaymentHistorySection = () => {
           <div className="p-12 text-center">
             <Receipt className="h-12 w-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No invoices found
+              {t('paymentHistory.noInvoices')}
             </h3>
             <p className="text-text-secondary">
               {statusFilter || searchTerm
-                ? 'Try adjusting your filters or search'
-                : 'Your payment history will appear here'}
+                ? t('paymentHistory.adjustFilters')
+                : t('paymentHistory.historyWillAppear')}
             </p>
           </div>
         )}

@@ -36,6 +36,7 @@ export interface TeamSettingsResponse {
     timezone: string;
     dateFormat: string;
     fiscalYearStartMonth: string;
+    defaultLanguage: string;
   };
 }
 
@@ -50,6 +51,7 @@ export interface UpdateTeamSettingsRequest {
     timezone?: string;
     dateFormat?: string;
     fiscalYearStartMonth?: string;
+    defaultLanguage?: string;
   };
 }
 

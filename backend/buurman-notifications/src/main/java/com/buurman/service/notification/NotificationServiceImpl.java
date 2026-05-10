@@ -16,6 +16,7 @@ import static com.buurman.util.FeatureFlags.SMS_NOTIFICATIONS;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,6 +39,7 @@ import com.buurman.exception.ExternalServiceException;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamMemberRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
@@ -54,6 +56,7 @@ public class NotificationServiceImpl implements NotificationService {
   private final NotificationRepository notificationRepository;
   private final NotificationOutboxRepository outboxRepository;
   private final TeamMemberRepository teamMemberRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final UserPreferencesRepository userPreferencesRepository;
   private final UserRepository userRepository;
   private final UserNotificationTypePreferenceRepository notifTypePrefRepository;
@@ -65,6 +68,7 @@ public class NotificationServiceImpl implements NotificationService {
       NotificationRepository notificationRepository,
       NotificationOutboxRepository outboxRepository,
       TeamMemberRepository teamMemberRepository,
+      TeamPreferencesRepository teamPreferencesRepository,
       UserPreferencesRepository userPreferencesRepository,
       UserRepository userRepository,
       UserNotificationTypePreferenceRepository notifTypePrefRepository,
@@ -74,6 +78,7 @@ public class NotificationServiceImpl implements NotificationService {
     this.notificationRepository = notificationRepository;
     this.outboxRepository = outboxRepository;
     this.teamMemberRepository = teamMemberRepository;
+    this.teamPreferencesRepository = teamPreferencesRepository;
     this.userPreferencesRepository = userPreferencesRepository;
     this.userRepository = userRepository;
     this.notifTypePrefRepository = notifTypePrefRepository;
@@ -110,7 +115,9 @@ public class NotificationServiceImpl implements NotificationService {
       boolean deliveryBlocked =
           request.teamId().map(teamId -> isDeliveryBlocked(channel, teamId)).orElse(false);
 
-      RenderedContent content = sender.render(request.templateName(), request.templateVariables());
+      Locale recipientLocale = resolveRecipientLocale(request);
+      RenderedContent content =
+          sender.render(request.templateName(), request.templateVariables(), recipientLocale);
 
       Notification notification = new Notification();
       notification.setTeamId(request.teamId());
@@ -223,7 +230,22 @@ public class NotificationServiceImpl implements NotificationService {
           "Cannot resend notification without content template and variables");
     }
 
-    RenderedContent content = sender.render(contentTemplate, contentVariables);
+    Optional<String> resentUserLang =
+        original
+            .getRecipientUserId()
+            .flatMap(userPreferencesRepository::findByUserId)
+            .map(UserPreferences::getLanguage);
+    Locale resentLocale =
+        resentUserLang
+            .map(Locale::forLanguageTag)
+            .orElseGet(
+                () ->
+                    original
+                        .getTeamId()
+                        .flatMap(teamPreferencesRepository::findByTeamId)
+                        .map(tp -> Locale.forLanguageTag(tp.getDefaultLanguage()))
+                        .orElse(Locale.ENGLISH));
+    RenderedContent content = sender.render(contentTemplate, contentVariables, resentLocale);
 
     Notification resent = new Notification();
     resent.setTeamId(original.getTeamId());
@@ -375,6 +397,24 @@ public class NotificationServiceImpl implements NotificationService {
       case EMAIL -> featureFlagService.isEnabled(BLOCK_EMAIL_NOTIFICATIONS, teamId);
       case SMS -> featureFlagService.isEnabled(BLOCK_SMS_NOTIFICATIONS, teamId);
     };
+  }
+
+  private Locale resolveRecipientLocale(SendNotificationRequest request) {
+    // 1. User preference (highest priority)
+    Optional<String> userLang =
+        request
+            .recipientUserId()
+            .flatMap(userPreferencesRepository::findByUserId)
+            .map(UserPreferences::getLanguage);
+    if (userLang.isPresent()) {
+      return Locale.forLanguageTag(userLang.get());
+    }
+    // 2. Team default (fallback)
+    return request
+        .teamId()
+        .flatMap(teamPreferencesRepository::findByTeamId)
+        .map(tp -> Locale.forLanguageTag(tp.getDefaultLanguage()))
+        .orElse(Locale.ENGLISH);
   }
 
   private boolean canSendViaChannel(NotificationChannel channel, SendNotificationRequest request) {

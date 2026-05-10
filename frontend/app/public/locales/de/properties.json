@@ -1,0 +1,1112 @@
+{
+  "list": {
+    "title": "Immobilien",
+    "subtitle": "Verwalten Sie Ihre Mietobjekte und Einheiten",
+    "addButton": "Immobilie hinzufügen",
+    "searchPlaceholder": "Suche nach Adresse, Stadt, Postleitzahl oder Typ...",
+    "filters": "Filter",
+    "category": "Kategorie",
+    "allCategories": "Alle Kategorien",
+    "status": "Status",
+    "allStatuses": "Alle Status",
+    "count_one": "{{count}} Immobilie",
+    "count_other": "{{count}} Immobilien",
+    "empty": {
+      "title": "Keine Immobilien gefunden",
+      "filtered": "Versuchen Sie, Ihre Filter oder Suchbegriffe anzupassen",
+      "noData": "Beginnen Sie, indem Sie Ihre erste Immobilie hinzufügen"
+    },
+    "error": "Immobilien konnten nicht geladen werden"
+  },
+  "create": {
+    "title": "Neue Immobilie hinzufügen",
+    "readOnlyMessage": "Das Erstellen von Immobilien ist im Nur-Lesen-Modus nicht verfügbar."
+  },
+  "edit": {
+    "title": "Immobilie bearbeiten",
+    "notFound": "Immobilie nicht gefunden"
+  },
+  "detail": {
+    "notFound": "Immobilie nicht gefunden",
+    "booklet": "Broschüre",
+    "bookletDownloadFailed": "Download der Broschüre fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "tabs": {
+      "info": "Info",
+      "dashboard": "Dashboard",
+      "financials": "Finanzen",
+      "photos": "Fotos",
+      "documents": "Dokumente",
+      "contracts": "Verträge",
+      "expenses": "Ausgaben",
+      "history": "Verlauf"
+    },
+    "timeline": {
+      "title": "Immobilien-Zeitstrahl",
+      "rentalContract": "Mietvertrag",
+      "selfOccupied": "Eigennutzung",
+      "financing": "Finanzierung"
+    },
+    "specs": {
+      "bedrooms": "Schlafzimmer",
+      "bathrooms": "Badezimmer",
+      "area": "Fläche",
+      "type": "Typ",
+      "street": "Straße",
+      "city": "Stadt",
+      "postalCode": "Postleitzahl",
+      "country": "Land",
+      "location": "Standort"
+    },
+    "characteristics": {
+      "title": "Immobilienmerkmale"
+    },
+    "construction": {
+      "title": "Bau & Struktur",
+      "yearBuilt": "Baujahr",
+      "lastRenovated": "Letzte Renovierung",
+      "construction": "Bauweise",
+      "foundation": "Fundament",
+      "roof": "Dach",
+      "wallConstruction": "Wandkonstruktion",
+      "flooring": "Bodenbelag",
+      "windows": "Fenster",
+      "floors": "Etagen",
+      "structuralNotes": "Strukturelle Anmerkungen"
+    },
+    "energy": {
+      "title": "Energie & Klima",
+      "energyRating": "Energieeffizienzklasse",
+      "certificateExpiry": "Zertifikat läuft ab",
+      "heating": "Heizung",
+      "cooling": "Kühlung",
+      "hotWater": "Warmwasser",
+      "insulationNotes": "Anmerkungen zur Dämmung"
+    },
+    "utilities": {
+      "title": "Versorgung & Anschlüsse",
+      "electricity": "Strom",
+      "capacity": "Kapazität",
+      "water": "Wasser",
+      "gasConnection": "Gasanschluss",
+      "sewage": "Abwasser",
+      "internet": "Internet",
+      "internetSpeed": "Internetgeschwindigkeit",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "title": "Parken",
+      "parkingSpaces": "Stellplätze",
+      "parkingType": "Stellplatzart"
+    },
+    "outdoorAreas": {
+      "title": "Außenbereiche"
+    },
+    "amenities": {
+      "title": "Ausstattung"
+    },
+    "safety": {
+      "title": "Sicherheit",
+      "smokeDetectors": "Rauchmelder",
+      "coDetectors": "CO-Melder",
+      "fireExtinguisher": "Feuerlöscher",
+      "sprinklerSystem": "Sprinkleranlage",
+      "alarmSystem": "Alarmanlage",
+      "securityCameras": "Überwachungskameras",
+      "secureEntry": "Gesicherter Eingang",
+      "safetyNotes": "Sicherheitshinweise"
+    },
+    "accessibility": {
+      "title": "Barrierefreiheit",
+      "wheelchairAccessible": "Rollstuhlgerecht",
+      "elevator": "Aufzug",
+      "stepFreeEntrance": "Stufenfreier Eingang",
+      "adaptedBathroom": "Angepasstes Badezimmer",
+      "accessibilityNotes": "Anmerkungen zur Barrierefreiheit"
+    },
+    "wws": {
+      "title": "WWS-Punkte",
+      "calculate": "Berechnen",
+      "recalculate": "Neu berechnen",
+      "points": "Punkte",
+      "regulated": "Reguliert",
+      "midSegment": "Mittelsegment",
+      "freeSector": "Freier Sektor",
+      "maxRent": "Maximale Miete",
+      "calculated": "Berechnet",
+      "history": "Verlauf",
+      "noCalculation": "Noch keine Berechnung",
+      "noCalculationDescription": "Berechnen Sie die WWS-Punkte, um die maximale regulierte Miete für diese Immobilie zu ermitteln.",
+      "noPreviousCalculations": "Keine früheren Berechnungen."
+    },
+    "metadata": {
+      "title": "Metadaten",
+      "created": "Erstellt:",
+      "lastUpdated": "Zuletzt aktualisiert:",
+      "at": "um"
+    },
+    "yes": "Ja",
+    "no": "Nein",
+    "deleteProperty": "Immobilie löschen",
+    "deletePropertyConfirm": "Sind Sie sicher, dass Sie diese Immobilie löschen möchten?",
+    "cannotBeUndone": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteWwsConfirm": "WWS-Berechnung löschen?",
+    "deleteWwsMessage": "Dadurch wird die gespeicherte Berechnung dauerhaft von dieser Immobilie entfernt.",
+    "deleteWwsHistoryMessage": "Dadurch wird diese historische Berechnung dauerhaft entfernt."
+  },
+  "form": {
+    "address": "Adresse",
+    "street": "Straße",
+    "streetPlaceholder": "Hauptstraße 123",
+    "city": "Stadt",
+    "cityPlaceholder": "Berlin",
+    "postalCode": "Postleitzahl",
+    "postalCodePlaceholder": "10115",
+    "country": "Land",
+    "region": "Region",
+    "regionOther": "Sonstige",
+    "locationPreview": "Standortvorschau",
+    "specifications": "Spezifikationen",
+    "category": "Kategorie",
+    "categoryCannotChange": "(kann nicht geändert werden)",
+    "type": "Typ",
+    "status": "Status",
+    "area": "Fläche",
+    "areaPlaceholder": "75,5",
+    "saving": "Wird gespeichert...",
+    "updateProperty": "Immobilie aktualisieren",
+    "createProperty": "Immobilie erstellen",
+    "validation": {
+      "streetRequired": "Straße ist erforderlich",
+      "cityRequired": "Stadt ist erforderlich",
+      "postalCodeRequired": "Postleitzahl ist erforderlich",
+      "countryRequired": "Land ist erforderlich",
+      "areaPositive": "Fläche muss größer als 0 sein"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} von {{total}} ausgefüllt"
+  },
+  "documents": {
+    "title": "Dokumente",
+    "uploadButton": "Dokument hochladen",
+    "empty": "Noch keine Dokumente hochgeladen",
+    "failedToLoad": "Dokumente konnten nicht geladen werden",
+    "table": {
+      "document": "Dokument",
+      "size": "Größe",
+      "uploaded": "Hochgeladen",
+      "actions": "Aktionen"
+    },
+    "selection": {
+      "selected": "{{selected}} von {{total}} ausgewählt",
+      "count_one": "{{count}} Dokument",
+      "count_other": "{{count}} Dokumente"
+    },
+    "preview": "Vorschau",
+    "editTitleNotes": "Titel & Notizen bearbeiten",
+    "upload": {
+      "title_one": "Dokument hochladen",
+      "title_other": "Dokumente hochladen",
+      "files": "{{count}} Dateien",
+      "titleLabel": "Titel (optional)",
+      "titlePlaceholder": "z.B. Grundriss",
+      "notesLabel": "Notizen (optional)",
+      "notesPlaceholder": "Zusätzliche Anmerkungen zu diesem Dokument",
+      "uploading": "{{current}} von {{total}} wird hochgeladen...",
+      "uploadCount": "{{count}} Dokumente hochladen"
+    },
+    "delete": {
+      "title_one": "Dokument löschen",
+      "title_other": "Dokumente löschen",
+      "message_one": "Sind Sie sicher, dass Sie dieses Dokument löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "message_other": "Sie sind dabei, {{count}} Dokumente zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmLabel_other": "{{count}} Dokumente löschen"
+    },
+    "editModal": "Dokument bearbeiten",
+    "downloading": "Wird heruntergeladen..."
+  },
+  "photos": {
+    "title": "Fotos",
+    "uploadButton": "Foto hochladen",
+    "empty": "Noch keine Fotos",
+    "upload": {
+      "title_one": "Foto hochladen",
+      "title_other": "Fotos hochladen",
+      "files": "{{count}} Dateien",
+      "titleLabel": "Titel (optional)",
+      "titlePlaceholder": "z.B. Wohnzimmer",
+      "notesLabel": "Notizen (optional)",
+      "notesPlaceholder": "Zusätzliche Anmerkungen zu diesem Foto",
+      "uploading": "{{current}} von {{total}} wird hochgeladen...",
+      "uploadCount": "{{count}} Fotos hochladen"
+    },
+    "delete": {
+      "title_one": "Foto löschen",
+      "title_other": "Fotos löschen",
+      "mainPhotoWarning_one": "Dies ist das Hauptfoto. Nach dem Löschen hat diese Immobilie kein Hauptfoto mehr. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "mainPhotoWarning_other": "Sie sind dabei, {{count}} Fotos zu löschen, einschließlich des Hauptfotos. Diese Immobilie wird kein Hauptfoto mehr haben. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "message_one": "Sind Sie sicher, dass Sie dieses Foto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "message_other": "Sie sind dabei, {{count}} Fotos zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmLabel_other": "{{count}} Fotos löschen"
+    },
+    "editModal": "Foto bearbeiten"
+  },
+  "contracts": {
+    "title": "Verträge",
+    "addContract": "Vertrag hinzufügen",
+    "empty": "Keine Verträge für diese Immobilie",
+    "createFirst": "Ersten Vertrag erstellen",
+    "searchPlaceholder": "Suche nach Vertrag #, Kontakt, Typ...",
+    "noMatchingSearch": "Keine Verträge für Ihre Suche gefunden",
+    "table": {
+      "contractNumber": "Vertrag #",
+      "contact": "Kontakt",
+      "type": "Typ",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "rentAmount": "Mietbetrag",
+      "status": "Status"
+    },
+    "pagination": {
+      "showing": "{{from}} bis {{to}} von {{total}} Verträgen angezeigt"
+    },
+    "selfOccupancy": {
+      "title": "Eigennutzungsperioden",
+      "addButton": "Eigennutzung hinzufügen",
+      "empty": "Keine Eigennutzungsperioden erfasst",
+      "recordPeriod": "Eigennutzungsperiode erfassen",
+      "table": {
+        "period": "Zeitraum",
+        "type": "Typ",
+        "occupant": "Bewohner",
+        "status": "Status",
+        "actions": "Aktionen"
+      },
+      "ongoing": "Laufend",
+      "active": "Aktiv",
+      "ended": "Beendet",
+      "endOccupancy": "Nutzung beenden",
+      "deleteTitle": "Eigennutzungsperiode löschen",
+      "deleteMessage": "Sind Sie sicher, dass Sie diese Eigennutzungsperiode löschen möchten?",
+      "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
+      "takenPeriods": {
+        "selfUse": "Eigennutzung: {{period}}",
+        "contract": "Vertrag {{identifier}}: {{period}}",
+        "ongoing": "Laufend"
+      }
+    }
+  },
+  "expenses": {
+    "title": "Ausgaben",
+    "addExpense": "Ausgabe hinzufügen",
+    "empty": "Keine Ausgaben für diese Immobilie",
+    "createFirst": "Erste Ausgabe erstellen",
+    "failedToLoad": "Ausgaben konnten nicht geladen werden",
+    "searchPlaceholder": "Suche nach Ausgabe #, Beschreibung, Kategorie...",
+    "noMatchingSearch": "Keine Ausgaben für Ihre Suche gefunden",
+    "table": {
+      "expenseNumber": "Ausgabe #",
+      "date": "Datum",
+      "description": "Beschreibung",
+      "category": "Kategorie",
+      "amount": "Betrag"
+    },
+    "pagination": {
+      "showing": "{{from}} bis {{to}} von {{total}} Ausgaben angezeigt"
+    }
+  },
+  "audit": {
+    "title": "Immobilienverlauf",
+    "failedToLoad": "Verlauf konnte nicht geladen werden",
+    "empty": {
+      "title": "Kein Verlauf verfügbar",
+      "description": "Änderungen an dieser Immobilie werden hier angezeigt"
+    },
+    "impersonated": "Impersoniert",
+    "clickToHide": "Klicken zum Ausblenden der Änderungen",
+    "clickToView": "Klicken zum Anzeigen der Änderungen",
+    "changedFields": "Geänderte Felder",
+    "old": "Alt:",
+    "new": "Neu:",
+    "fileName": "Dateiname",
+    "titleLabel": "Titel",
+    "typeLabel": "Typ",
+    "photo": "Foto",
+    "document": "Dokument"
+  },
+  "selfOccupancy": {
+    "title": "Eigennutzung",
+    "markTitle": "Als Eigennutzung markieren",
+    "editTitle": "Eigennutzung bearbeiten",
+    "endTitle": "Eigennutzung beenden",
+    "active": "Aktiv",
+    "period": "Zeitraum",
+    "type": "Typ",
+    "occupant": "Bewohner",
+    "imputedRent": "Kalkulatorische Miete",
+    "perMonth": "/ Monat",
+    "endReason": "Beendigungsgrund",
+    "notes": "Notizen",
+    "endOccupancy": "Nutzung beenden",
+    "form": {
+      "startDate": "Startdatum *",
+      "endDate": "Enddatum",
+      "endDateRequired": "Enddatum *",
+      "occupancyType": "Nutzungsart *",
+      "occupantName": "Name des Bewohners",
+      "occupantNamePlaceholder": "z.B. Eigentümer, Familienmitglied",
+      "monthlyImputedRent": "Monatliche kalkulatorische Miete",
+      "notes": "Notizen",
+      "notesPlaceholder": "Zusätzliche Anmerkungen...",
+      "reason": "Grund",
+      "reasonPlaceholder": "Grund auswählen...",
+      "alreadyTakenPeriods": "Bereits belegte Zeiträume"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Persönlich",
+      "FAMILY": "Familie",
+      "BUSINESS": "Geschäftlich"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Umwandlung in Vermietung",
+      "SELLING": "Verkauf",
+      "RENOVATION": "Renovierung",
+      "OTHER": "Sonstiges"
+    }
+  },
+  "map": {
+    "unavailable": "Kartenvorschau nicht verfügbar",
+    "configureApiKey": "Konfigurieren Sie VITE_GOOGLE_MAPS_API_KEY, um Karten zu aktivieren",
+    "loading": "Karte wird geladen...",
+    "locationNotFound": "Standort nicht gefunden",
+    "couldNotFind": "Diese Adresse konnte auf der Karte nicht gefunden werden",
+    "apiKeyNotConfigured": "Google Maps API-Schlüssel nicht konfiguriert",
+    "geocodeFailed": "Geokodierung der Adresse fehlgeschlagen",
+    "locationNotFoundShort": "Standort nicht gefunden",
+    "findingLocation": "Standort wird gesucht...",
+    "couldNotLoadMaps": "Google Maps konnte derzeit nicht geladen werden",
+    "clickToPlace": "Unsere Kartenkünste haben uns diesmal im Stich gelassen. Klicken Sie irgendwo auf die Karte, um Ihre Immobilie zu markieren.",
+    "placePinManually": "Pin manuell setzen",
+    "accuracy": {
+      "rooftop": "Ziehen Sie den Pin, um den Standort zu verfeinern",
+      "manual": "Pin manuell gesetzt — bei Bedarf ziehen zum Anpassen",
+      "approximate": "Wir haben die Gegend gefunden, aber nicht den genauen Standort — ziehen Sie den Pin zu Ihrer Immobilie!",
+      "country": "Immerhin haben wir das Land gefunden! Ziehen Sie den Pin zum richtigen Standort."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Eigennutzung",
+    "contract": "Vertrag",
+    "vacancy": "Leerstand",
+    "noEntries": "Noch keine Zeitstrahleinträge",
+    "ongoing": "Laufend"
+  },
+  "statusChart": {
+    "occupied": "Vermietet",
+    "selfOccupied": "Eigennutzung",
+    "vacant": "Leerstand",
+    "maintenance": "Instandhaltung",
+    "unavailable": "Nicht verfügbar",
+    "noProperties": "Keine Immobilien anzuzeigen"
+  },
+  "financials": {
+    "failedToLoad": "Finanzdaten konnten nicht geladen werden.",
+    "saving": "Wird gespeichert...",
+    "deleting": "Wird gelöscht...",
+    "notSet": "Nicht festgelegt",
+    "latestValuation": "Letzte Bewertung",
+    "valuationHistory": "Bewertungsverlauf",
+    "payments": "Zahlungen",
+    "bulkAdd": "Massenhinzufügen",
+    "sections": {
+      "acquisition": "Erwerb",
+      "valuations": "Bewertungen",
+      "financings": "Finanzierungen",
+      "recurringCosts": "Wiederkehrende Kosten"
+    },
+    "metrics": {
+      "netWorth": "Nettovermögen",
+      "totalAnnualCosts": "Jährliche Gesamtkosten",
+      "totalFinancingBalance": "Gesamter Finanzierungssaldo",
+      "latestValuation": "Letzte Bewertung"
+    },
+    "modals": {
+      "addTax": "Steuer hinzufügen",
+      "editTax": "Steuer bearbeiten",
+      "addFee": "Gebühr hinzufügen",
+      "editFee": "Gebühr bearbeiten",
+      "addFinancing": "Finanzierung hinzufügen",
+      "editFinancing": "Finanzierung bearbeiten",
+      "addInsurance": "Versicherung hinzufügen",
+      "editInsurance": "Versicherung bearbeiten",
+      "addValuation": "Bewertung hinzufügen",
+      "editValuation": "Bewertung bearbeiten",
+      "addAcquisition": "Erwerb hinzufügen",
+      "editAcquisition": "Erwerb bearbeiten",
+      "editPayment": "Zahlung bearbeiten",
+      "recordPayment": "Zahlung erfassen",
+      "bulkAddPayments": "Zahlungen massenhinzufügen"
+    },
+    "labels": {
+      "taxType": "Steuerart",
+      "authority": "Behörde",
+      "annualAmount": "Jahresbetrag",
+      "paymentFrequency": "Zahlungsfrequenz",
+      "taxYear": "Steuerjahr",
+      "dueMonths": "Fälligkeitsmonate",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "status": "Status",
+      "notes": "Notizen",
+      "feeType": "Gebührenart",
+      "name": "Name",
+      "financingType": "Finanzierungsart",
+      "rateType": "Zinsart",
+      "lenderName": "Name des Kreditgebers",
+      "loanNumber": "Darlehensnummer",
+      "originalAmount": "Ursprünglicher Betrag",
+      "currentBalance": "Aktueller Saldo",
+      "interestRate": "Zinssatz",
+      "monthlyPayment": "Monatliche Zahlung",
+      "variablePayment": "Variable Zahlung",
+      "termMonths": "Laufzeit (Monate)",
+      "insuranceType": "Versicherungsart",
+      "provider": "Anbieter",
+      "policyNumber": "Policennummer",
+      "coverageAmount": "Deckungssumme",
+      "annualPremium": "Jahresprämie",
+      "valuationType": "Bewertungsart",
+      "valuationDate": "Bewertungsdatum",
+      "amount": "Betrag",
+      "source": "Quelle",
+      "acquisitionType": "Erwerbsart",
+      "acquisitionDate": "Erwerbsdatum",
+      "purchasePrice": "Kaufpreis",
+      "closingCosts": "Abschlusskosten",
+      "renovationCosts": "Renovierungskosten",
+      "landValue": "Grundstückswert",
+      "depreciationMethod": "Abschreibungsmethode",
+      "depreciationYears": "Abschreibungsjahre",
+      "paymentDate": "Zahlungsdatum",
+      "totalAmount": "Gesamtbetrag",
+      "principal": "Tilgung",
+      "interest": "Zinsen",
+      "escrow": "Treuhandkonto",
+      "extraPayment": "Sonderzahlung",
+      "deductFromBalance": "Tilgung vom Finanzierungssaldo abziehen",
+      "documents": "Dokumente",
+      "currency": "Währung",
+      "type": "Typ",
+      "date": "Datum"
+    },
+    "placeholders": {
+      "addNotes": "Notizen hinzufügen...",
+      "source": "z.B. Immobilienmakler, Online-Tool"
+    },
+    "units": {
+      "years": "Jahre",
+      "months": "Monate",
+      "perYear": "/Jahr"
+    },
+    "recurringCosts": "Wiederkehrende Kosten",
+    "insurances": "Versicherungen",
+    "taxes": "Steuern",
+    "fees": "Gebühren",
+    "na": "K.A.",
+    "all": "Alle",
+    "term": "Laufzeit",
+    "frequency": "Häufigkeit",
+    "actions": "Aktionen",
+    "total": "Gesamt",
+    "empty": {
+      "noAcquisition": "Keine Erwerbsdaten erfasst.",
+      "noValuation": "Keine Bewertungsdaten erfasst.",
+      "noFinancing": "Keine Finanzierungsinstrumente erfasst.",
+      "noPayments": "Noch keine Zahlungen erfasst.",
+      "noInsurances": "Keine Versicherungen.",
+      "noTaxes": "Keine Steuern.",
+      "noFees": "Keine Gebühren."
+    },
+    "delete": {
+      "title": "{{label}} löschen?",
+      "message": "Sind Sie sicher, dass Sie diese(n) {{label}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "valuation": "{{type}}-Bewertung",
+      "payment": "Zahlung ({{date}})",
+      "insurance": "{{type}}-Versicherung",
+      "tax": "{{type}}-Steuer",
+      "fee": "{{type}}-Gebühr"
+    },
+    "toast": {
+      "paymentDeleted": "Zahlung erfolgreich gelöscht",
+      "paymentDeleteFailed": "Zahlung konnte nicht gelöscht werden",
+      "paymentsCreated_one": "{{count}} Zahlung erfolgreich erstellt",
+      "paymentsCreated_other": "{{count}} Zahlungen erfolgreich erstellt"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mär",
+      "apr": "Apr",
+      "may": "Mai",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Dez"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Kauf",
+      "INHERITANCE": "Erbschaft",
+      "GIFT": "Schenkung",
+      "FORECLOSURE": "Zwangsversteigerung",
+      "AUCTION": "Auktion",
+      "OTHER": "Sonstiges"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Linear",
+      "DECLINING_BALANCE": "Degressiv",
+      "NONE": "Keine"
+    },
+    "valuationTypes": {
+      "MARKET": "Marktwert",
+      "APPRAISAL": "Gutachten",
+      "TAX_ASSESSED": "Steuerlich bewertet",
+      "PURCHASE": "Kaufpreis",
+      "INSURANCE": "Versicherung",
+      "USER_ESTIMATE": "Eigene Schätzung"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Hypothek",
+      "LEASING": "Leasing",
+      "LOAN": "Darlehen",
+      "LINE_OF_CREDIT": "Kreditlinie",
+      "PRIVATE_FINANCING": "Privatfinanzierung",
+      "OTHER": "Sonstiges"
+    },
+    "rateTypes": {
+      "FIXED": "Fest",
+      "VARIABLE": "Variabel",
+      "INTEREST_ONLY": "Nur Zinsen",
+      "HYBRID": "Hybrid"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Aktiv",
+      "PAID_OFF": "Abbezahlt",
+      "REFINANCED": "Umfinanziert",
+      "DEFAULTED": "Ausgefallen"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Geplant",
+      "COMPLETED": "Abgeschlossen",
+      "MISSED": "Verpasst",
+      "LATE": "Verspätet"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Gebäude",
+      "LIABILITY": "Haftpflicht",
+      "CONTENTS": "Hausrat",
+      "FLOOD": "Hochwasser",
+      "EARTHQUAKE": "Erdbeben",
+      "UMBRELLA": "Dachversicherung",
+      "RENT_GUARANTEE": "Mietgarantie",
+      "OTHER": "Sonstiges"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Abgelaufen",
+      "CANCELLED": "Storniert"
+    },
+    "taxTypes": {
+      "PROPERTY": "Grundsteuer",
+      "MUNICIPAL": "Kommunal",
+      "STATE": "Landessteuer",
+      "LOCAL": "Lokal",
+      "LAND": "Grundstück",
+      "SPECIAL_ASSESSMENT": "Sonderbewertung",
+      "OTHER": "Sonstiges"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Abgelaufen",
+      "EXEMPT": "Befreit"
+    },
+    "feeTypes": {
+      "HOA": "Hausgeld",
+      "MANAGEMENT": "Verwaltung",
+      "MAINTENANCE_RESERVE": "Instandhaltungsrücklage",
+      "CLEANING": "Reinigung",
+      "GARDENING": "Gartenpflege",
+      "SECURITY": "Sicherheit",
+      "WASTE_MANAGEMENT": "Abfallentsorgung",
+      "WATER": "Wasser",
+      "UTILITIES": "Nebenkosten",
+      "OTHER": "Sonstiges"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Abgelaufen",
+      "CANCELLED": "Storniert"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Monatlich",
+      "QUARTERLY": "Vierteljährlich",
+      "SEMI_ANNUALLY": "Halbjährlich",
+      "ANNUALLY": "Jährlich",
+      "CUSTOM": "Benutzerdefiniert"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Vertrag öffnen",
+    "clickToEdit": "Klicken zum Bearbeiten"
+  },
+  "enums": {
+    "characteristics": {
+      "constructionType": {
+        "BRICK": "Ziegel",
+        "CONCRETE": "Beton",
+        "WOOD": "Holz",
+        "STEEL": "Stahl",
+        "MIXED": "Gemischt",
+        "OTHER": "Sonstiges"
+      },
+      "foundationType": {
+        "CONCRETE_SLAB": "Betonplatte",
+        "CRAWL_SPACE": "Kriechkeller",
+        "BASEMENT": "Keller",
+        "PILE": "Pfahlgründung",
+        "OTHER": "Sonstiges"
+      },
+      "roofType": {
+        "FLAT": "Flachdach",
+        "PITCHED": "Satteldach",
+        "HIP": "Walmdach",
+        "GABLE": "Giebeldach",
+        "MANSARD": "Mansarddach",
+        "OTHER": "Sonstiges"
+      },
+      "flooringType": {
+        "HARDWOOD": "Hartholz",
+        "LAMINATE": "Laminat",
+        "TILE": "Fliesen",
+        "VINYL": "Vinyl",
+        "CARPET": "Teppich",
+        "CONCRETE": "Beton",
+        "MIXED": "Gemischt",
+        "OTHER": "Sonstiges"
+      },
+      "windowType": {
+        "SINGLE_PANE": "Einfachverglasung",
+        "DOUBLE_PANE": "Doppelverglasung",
+        "TRIPLE_PANE": "Dreifachverglasung",
+        "OTHER": "Sonstiges"
+      },
+      "heatingType": {
+        "CENTRAL": "Zentralheizung",
+        "DISTRICT": "Fernwärme",
+        "HEAT_PUMP": "Wärmepumpe",
+        "ELECTRIC": "Elektrisch",
+        "GAS": "Gas",
+        "NONE": "Keine",
+        "OTHER": "Sonstiges"
+      },
+      "coolingType": {
+        "CENTRAL_AC": "Zentrale Klimaanlage",
+        "SPLIT_AC": "Split-Klimaanlage",
+        "EVAPORATIVE": "Verdunstungskühlung",
+        "NONE": "Keine",
+        "OTHER": "Sonstiges"
+      },
+      "hotWaterSystem": {
+        "BOILER": "Boiler",
+        "TANKLESS": "Durchlauferhitzer",
+        "HEAT_PUMP": "Wärmepumpe",
+        "SOLAR": "Solar",
+        "ELECTRIC": "Elektrisch",
+        "OTHER": "Sonstiges"
+      },
+      "sewageType": {
+        "MUNICIPAL": "Kommunal",
+        "SEPTIC": "Klärgrube",
+        "OTHER": "Sonstiges"
+      },
+      "internetConnectionType": {
+        "FIBER": "Glasfaser",
+        "CABLE": "Kabel",
+        "DSL": "DSL",
+        "NONE": "Keine",
+        "OTHER": "Sonstiges"
+      },
+      "internetStatus": {
+        "ACTIVE": "Aktiv",
+        "AVAILABLE": "Verfügbar",
+        "NOT_AVAILABLE": "Nicht verfügbar",
+        "UNKNOWN": "Unbekannt"
+      },
+      "electricityConnectionType": {
+        "SINGLE_PHASE": "Einphasig",
+        "THREE_PHASE": "Dreiphasig"
+      },
+      "waterConnectionType": {
+        "MUNICIPAL": "Kommunal",
+        "WELL": "Brunnen",
+        "SHARED": "Geteilt",
+        "OTHER": "Sonstiges"
+      },
+      "parkingType": {
+        "GARAGE": "Garage",
+        "CARPORT": "Carport",
+        "DRIVEWAY": "Einfahrt",
+        "STREET": "Straße",
+        "UNDERGROUND": "Tiefgarage",
+        "NONE": "Keine",
+        "OTHER": "Sonstiges"
+      },
+      "outdoorAreaType": {
+        "BALCONY": "Balkon",
+        "TERRACE": "Terrasse",
+        "GARDEN": "Garten",
+        "ROOFTOP": "Dachterrasse",
+        "PATIO": "Patio",
+        "YARD": "Hof",
+        "OTHER": "Sonstiges",
+        "PARKING_LOT": "Parkplatz",
+        "COURTYARD": "Innenhof",
+        "LOADING_AREA": "Ladebereich",
+        "STORAGE_AREA": "Lagerbereich",
+        "PASTURE": "Weide",
+        "PADDOCK": "Koppel",
+        "ORCHARD_AREA": "Obstgarten",
+        "GREENHOUSE_AREA": "Gewächshaus"
+      },
+      "petPolicy": {
+        "ALLOWED": "Erlaubt",
+        "NOT_ALLOWED": "Nicht erlaubt",
+        "NEGOTIABLE": "Verhandelbar",
+        "SMALL_PETS_ONLY": "Nur Kleintiere"
+      },
+      "soilType": {
+        "CLAY": "Ton",
+        "SANDY": "Sandig",
+        "LOAM": "Lehm",
+        "SILT": "Schluff",
+        "PEAT": "Torf",
+        "CHALK": "Kreide",
+        "MIXED": "Gemischt",
+        "OTHER": "Sonstiges"
+      },
+      "irrigationType": {
+        "DRIP": "Tröpfchenbewässerung",
+        "SPRINKLER": "Beregnung",
+        "FLOOD": "Überflutung",
+        "CENTER_PIVOT": "Kreisberegnung",
+        "NONE": "Keine",
+        "OTHER": "Sonstiges"
+      },
+      "waterSource": {
+        "RIVER": "Fluss",
+        "WELL": "Brunnen",
+        "MUNICIPAL": "Kommunal",
+        "RAINWATER": "Regenwasser",
+        "CANAL": "Kanal",
+        "NONE": "Keine",
+        "OTHER": "Sonstiges"
+      },
+      "fencingType": {
+        "WIRE": "Draht",
+        "WOODEN": "Holz",
+        "ELECTRIC": "Elektrisch",
+        "HEDGE": "Hecke",
+        "STONE": "Stein",
+        "NONE": "Keine",
+        "OTHER": "Sonstiges"
+      }
+    },
+    "categories": {
+      "RESIDENTIAL": "Wohnimmobilie",
+      "COMMERCIAL": "Gewerbe",
+      "INDUSTRIAL": "Industrie",
+      "AGRICULTURAL": "Landwirtschaft",
+      "MIXED_USE": "Mischnutzung"
+    },
+    "types": {
+      "APARTMENT": "Wohnung",
+      "HOUSE": "Haus",
+      "STUDIO": "Studio",
+      "ROOM": "Zimmer",
+      "VILLA": "Villa",
+      "TOWNHOUSE": "Reihenhaus",
+      "OTHER_RESIDENTIAL": "Sonstige",
+      "OFFICE": "Büro",
+      "RETAIL": "Einzelhandel",
+      "RESTAURANT": "Restaurant",
+      "HOTEL": "Hotel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Autohaus",
+      "SNACKBAR": "Imbiss",
+      "CAFE": "Café",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "Pension",
+      "OTHER_COMMERCIAL": "Sonstige",
+      "WAREHOUSE": "Lager",
+      "WORKSHOP": "Werkstatt",
+      "FACTORY": "Fabrik",
+      "DATA_CENTER": "Rechenzentrum",
+      "COLD_STORAGE": "Kühllager",
+      "GARAGE": "Garage",
+      "OTHER_INDUSTRIAL": "Sonstige",
+      "FARMLAND": "Ackerland",
+      "RANCH": "Bauernhof",
+      "GREENHOUSE": "Gewächshaus",
+      "ORCHARD": "Obstgarten",
+      "VINEYARD": "Weinberg",
+      "OTHER_AGRICULTURAL": "Sonstige",
+      "MIXED_USE": "Mischnutzung",
+      "COMMERCIAL": "Gewerbe"
+    },
+    "statuses": {
+      "VACANT": "Leer",
+      "OCCUPIED": "Vermietet",
+      "SELF_OCCUPIED": "Eigennutzung",
+      "MAINTENANCE": "Wartung",
+      "UNAVAILABLE": "Nicht Verfügbar",
+      "UNDER_RENOVATION": "In Renovierung",
+      "FALLOW": "Brach",
+      "LISTED": "Inseriert"
+    },
+    "amenities": {
+      "categories": {
+        "APPLIANCE": "Geräte",
+        "COMFORT": "Komfort",
+        "LEISURE": "Freizeit",
+        "PARKING": "Parken",
+        "SERVICE": "Services",
+        "STORAGE": "Lagerung"
+      },
+      "items": {
+        "SWIMMING_POOL": "Schwimmbad",
+        "GYM": "Fitnessraum",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Kamin",
+        "BUILT_IN_VACUUM": "Zentralstaubsauger",
+        "IN_UNIT_LAUNDRY": "Waschmaschine in Wohnung",
+        "SHARED_LAUNDRY": "Gemeinschaftswaschraum",
+        "DISHWASHER": "Geschirrspüler",
+        "STORAGE_UNIT": "Abstellraum",
+        "BIKE_STORAGE": "Fahrradstellplatz",
+        "FURNISHED": "Möbliert",
+        "DOORMAN_CONCIERGE": "Pförtner / Concierge",
+        "CONFERENCE_ROOM": "Konferenzraum",
+        "RECEPTION_AREA": "Empfangsbereich",
+        "SERVER_ROOM": "Serverraum",
+        "KITCHENETTE": "Teeküche",
+        "LOADING_BAY": "Laderampe",
+        "COMPRESSED_AIR_SYSTEM": "Druckluftanlage",
+        "CHEMICAL_STORAGE": "Chemikalienlager",
+        "OVERHEAD_CRANE": "Laufkran",
+        "IRRIGATION_SYSTEM": "Bewässerungssystem",
+        "GRAIN_SILO": "Getreidesilo",
+        "LIVESTOCK_SHELTER": "Viehstall",
+        "COLD_STORAGE": "Kühlraum",
+        "SECURITY_BOOTH": "Pförtnerloge"
+      }
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Dashboard-Daten konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "exporting": "Wird exportiert...",
+    "allTime": "Gesamter Zeitraum",
+    "custom": "Benutzerdefiniert",
+    "to": "bis",
+    "resetZoom": "Zoom zurücksetzen",
+    "charts": {
+      "monthlyCashFlow": "Monatlicher Cashflow",
+      "occupancyIncomeTrend": "Belegungs- & Einkommenstrend",
+      "expenseBreakdown": "Kostenaufschlüsselung",
+      "sixMonthProjection": "6-Monats-Prognose",
+      "equityOverview": "Eigenkapitalübersicht"
+    },
+    "summary": {
+      "totalRoi": "Gesamt-ROI",
+      "annualizedRoi": "Annualisierter ROI",
+      "capRate": "Kapitalisierungsrate",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Monatlicher Cashflow",
+      "annualNoi": "Jährlicher NOI",
+      "totalEquity": "Gesamteigenkapital",
+      "equityGrowth": "Eigenkapitalwachstum",
+      "occupancy": "Belegung",
+      "grossRentMultiplier": "Bruttomietmultiplikator"
+    },
+    "cashFlow": {
+      "income": "Einnahmen",
+      "expenses": "Ausgaben",
+      "mortgage": "Hypothek",
+      "net": "Netto",
+      "noData": "Keine Transaktionsdaten"
+    },
+    "occupancy": {
+      "label": "Belegung",
+      "contact": "Mieter",
+      "selfOccupied": "Eigennutzung",
+      "vacant": "Leerstand",
+      "contactOccupied": "Vermietet",
+      "netIncomeTrend": "Nettoeinkommenstrend",
+      "netIncome": "Nettoeinkommen",
+      "noData": "Keine Vertragsdaten"
+    },
+    "expense": {
+      "noData": "Keine Kostendaten"
+    },
+    "equity": {
+      "purchasePrice": "Kaufpreis",
+      "marketValue": "Marktwert",
+      "mortgage": "Hypothek",
+      "equity": "Eigenkapital",
+      "noData": "Kaufpreis und Marktwert eingeben, um das Eigenkapital zu sehen"
+    },
+    "completeness": {
+      "title": "Datenvollständigkeit: {{percent}}%",
+      "purchasePrice": "Kaufpreis",
+      "marketValue": "Marktwert",
+      "mortgageInfo": "Hypothekeninformationen",
+      "operatingCosts": "Betriebskosten",
+      "contracts": "Verträge",
+      "payments": "Zahlungen",
+      "expenses": "Ausgaben"
+    },
+    "projection": {
+      "description": "Prognostizierte Einnahmen & Ausgaben basierend auf aktiven Verträgen und Betriebskosten",
+      "expectedIncome": "Erwartete Einnahmen",
+      "expectedExpenses": "Erwartete Ausgaben",
+      "expectedNet": "Erwartetes Netto"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Auswählen --",
+    "residential": {
+      "title": "Wohnungsdetails",
+      "bedrooms": "Schlafzimmer",
+      "bathrooms": "Badezimmer",
+      "furnished": "Möbliert",
+      "petPolicy": "Haustierregelung"
+    },
+    "commercial": {
+      "title": "Gewerbliche Details",
+      "usableArea": "Nutzfläche",
+      "commonArea": "Gemeinschaftsfläche",
+      "floorLevel": "Stockwerk",
+      "ceilingHeight": "Deckenhöhe",
+      "maxOccupancy": "Maximale Belegung",
+      "restroomCount": "Anzahl Toiletten",
+      "zoningClassification": "Zonenklassifikation",
+      "zoningPlaceholder": "z.B. GE, Mischgebiet",
+      "hasStorefront": "Schaufenster vorhanden",
+      "signageRights": "Werberechte",
+      "kitchenFacility": "Kücheneinrichtung",
+      "accessibilityCompliant": "Barrierefreiheit"
+    },
+    "industrial": {
+      "title": "Industrielle Details",
+      "clearHeight": "Lichte Höhe",
+      "loadingDocks": "Laderampen",
+      "driveInDoors": "Einfahrttore",
+      "floorLoadCapacity": "Bodenbelastbarkeit",
+      "powerCapacity": "Stromanschlussleistung",
+      "craneCapacity": "Krankapazität",
+      "yardArea": "Hoffläche",
+      "zoningClassification": "Zonenklassifikation",
+      "zoningPlaceholder": "z.B. GI, Leichtindustrie",
+      "threePhasePower": "Dreiphasenstrom",
+      "craneAvailable": "Kran vorhanden",
+      "hazmatCertified": "Gefahrgut zertifiziert",
+      "ventilationSystem": "Belüftungsanlage",
+      "climateControl": "Klimaanlage"
+    },
+    "agricultural": {
+      "title": "Landwirtschaftliche Details",
+      "totalLandArea": "Gesamtfläche",
+      "arableArea": "Ackerfläche",
+      "soilType": "Bodenart",
+      "waterSource": "Wasserquelle",
+      "irrigationType": "Bewässerungsart",
+      "fencingType": "Einzäunungsart",
+      "currentUse": "Aktuelle Nutzung",
+      "currentUsePlaceholder": "z.B. Ackerbau, Viehzucht",
+      "zoningClassification": "Zonenklassifikation",
+      "zoningPlaceholder": "z.B. A-1, Landwirtschaft",
+      "waterRights": "Wasserrechte",
+      "hasOutbuildings": "Nebengebäude vorhanden",
+      "outbuildingDetails": "Details Nebengebäude",
+      "outbuildingPlaceholder": "z.B. Scheune, Lager, Maschinenhalle"
+    },
+    "construction": {
+      "yearBuilt": "Baujahr",
+      "yearLastRenovated": "Letzte Renovierung",
+      "constructionType": "Bauart",
+      "foundationType": "Fundamentart",
+      "roofType": "Dachform",
+      "wallConstruction": "Wandkonstruktion",
+      "flooringType": "Bodenbelag",
+      "windowType": "Fensterart",
+      "numberOfFloors": "Anzahl Stockwerke",
+      "structuralNotes": "Strukturelle Hinweise",
+      "structuralNotesTooltip": "Besondere Strukturmerkmale, Renovierungen oder Mängel"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Energieeffizienzklasse",
+      "energyRatingTooltip": "Offizielle Energieklasse (A++ bis G)",
+      "certificateExpiry": "Ablauf Energieausweis",
+      "certificateExpiryTooltip": "Ablaufdatum des aktuellen Energieausweises",
+      "heatingType": "Heizungsart",
+      "coolingType": "Kühlungsart",
+      "hotWaterSystem": "Warmwassersystem",
+      "insulationNotes": "Dämmung",
+      "insulationTooltip": "Details zur Wand-, Dach- und Bodendämmung"
+    },
+    "utilities": {
+      "electricityConnection": "Stromanschluss",
+      "electricityCapacity": "Stromanschlussleistung",
+      "electricityCapacityTooltip": "Hauptsicherungsleistung",
+      "waterConnection": "Wasseranschluss",
+      "hasGasConnection": "Gasanschluss",
+      "sewageType": "Abwasserart",
+      "internetConnection": "Internetanschluss",
+      "internetMaxSpeed": "Max. Internetgeschwindigkeit",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "parkingSpaces": "Stellplätze",
+      "parkingType": "Parkplatzart"
+    },
+    "safety": {
+      "smokeDetectors": "Rauchmelder",
+      "coDetectors": "CO-Melder",
+      "fireExtinguisher": "Feuerlöscher",
+      "sprinklerSystem": "Sprinkleranlage",
+      "alarmSystem": "Alarmanlage",
+      "securityCameras": "Überwachungskameras",
+      "secureEntry": "Gesicherter Eingang",
+      "safetyNotes": "Sicherheitshinweise",
+      "safetyNotesTooltip": "Fluchtwege, letztes Prüfdatum, etc."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Rollstuhlgerecht",
+      "elevator": "Aufzug",
+      "stepFreeEntrance": "Stufenloser Eingang",
+      "adaptedBathroom": "Behindertengerechtes Bad",
+      "accessibilityNotes": "Barrierefreiheitshinweise",
+      "accessibilityNotesTooltip": "Türbreiten, Rampen, etc."
+    },
+    "outdoorAreas": {
+      "type": "Typ",
+      "area": "Fläche",
+      "unit": "Einheit",
+      "add": "Hinzufügen",
+      "addOutdoorArea": "Außenbereich hinzufügen"
+    }
+  }
+}

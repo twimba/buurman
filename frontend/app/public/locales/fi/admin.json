@@ -1,0 +1,306 @@
+{
+  "apiDocs": {
+    "title": "API-dokumentaatio",
+    "subtitle": "Tutki ja testaa Buurman REST -rajapintaa"
+  },
+  "billing": {
+    "title": "Tilaus ja laskutus",
+    "subtitle": "Hallitse tilaussuunnitelmaasi ja katso laskutushistoria",
+    "impersonationBlocked": "Laskutustoiminnot eivat ole kaytettavissa toisena kayttajana toimiessa."
+  },
+  "calendarFeeds": {
+    "title": "Kalenterisyotteet",
+    "pageSubtitle": "Hallitse iCalendar-syotteita maksujen erapaivien ja sopimustapahtumienjako"
+  },
+  "dataExport": {
+    "title": "Tietojen vienti",
+    "pageSubtitle": "Vie tiimisi tiedot ladattavana arkistona"
+  },
+  "notifications": {
+    "title": "Ilmoitukset",
+    "subtitle": "Seuraa ja hallitse kaikkia tiimisi lahetettyja ilmoituksia",
+    "loading": "Ladataan ilmoituksia...",
+    "noResults": "Ilmoituksia ei loydy",
+    "view": "Nayta",
+    "viewDetails": "Nayta tiedot",
+    "resend": "Laheta uudelleen",
+    "resendNotification": "Laheta ilmoitus uudelleen",
+    "resendConfirm": {
+      "title": "Laheta ilmoitus uudelleen",
+      "message": "Tama luo uuden ilmoituksen ja yrittaa toimitusta uudelleen. Alkuperainen ilmoitus sailyy lokissa."
+    },
+    "demoBanner": {
+      "title": "Demotili - ilmoitukset ovat simuloituja",
+      "emailAndSms": "Sahkoposti- ja tekstiviesti-ilmoitukset kirjataan mutta niita ei toimiteta.",
+      "emailOnly": "Sahkopostiilmoitukset kirjataan mutta niita ei toimiteta.",
+      "smsOnly": "Tekstiviesti-ilmoitukset kirjataan mutta niita ei toimiteta."
+    },
+    "stats": {
+      "total": "Yhteensa",
+      "delivered": "Toimitettu",
+      "pending": "Odottaa",
+      "failed": "Epaonnistunut",
+      "byChannel": "Kanavan mukaan",
+      "demoBlocked": "Demo estetty"
+    },
+    "table": {
+      "type": "Tyyppi",
+      "channel": "Kanava",
+      "recipient": "Vastaanottaja",
+      "subjectBody": "Aihe / Sisalto",
+      "status": "Tila",
+      "date": "Paivamaara",
+      "actions": "Toiminnot"
+    },
+    "typeLabels": {
+      "welcome": "Tervetuloa",
+      "verification": "Vahvistus",
+      "invitation": "Kutsu",
+      "accepted": "Hyvaksytty",
+      "password": "Salasana",
+      "payment": "Maksu",
+      "contract": "Sopimus",
+      "property": "Kohde",
+      "newContract": "Uusi sopimus",
+      "statusChange": "Tilan muutos",
+      "reopened": "Avattu uudelleen",
+      "paid": "Maksettu",
+      "receival": "Vastaanotto",
+      "expense": "Kulu"
+    },
+    "details": {
+      "title": "Ilmoituksen tiedot",
+      "demoBlocked": "Tata ilmoitusta ei toimitettu, koska kyseessa on demotili. Oikealla tililla se lahetettaisiin kanavalla {{channel}}.",
+      "type": "Tyyppi",
+      "subject": "Aihe",
+      "content": "Sisalto",
+      "recipient": "Vastaanottaja",
+      "sentAt": "Lahetetty",
+      "statusUpdated": "Tila paivitetty",
+      "providerStatus": "Palveluntarjoajan tila",
+      "refresh": "Paivita",
+      "error": "Virhe",
+      "engagement": "Sitoutuminen",
+      "open": "{{count}} avaus",
+      "open_other": "{{count}} avausta",
+      "click": "{{count}} klikkaus",
+      "click_other": "{{count}} klikkausta",
+      "first": "ensimmainen: {{date}}",
+      "resentFrom": "Uudelleenlahetetty kohteesta",
+      "resendReason": "Uudelleenlahetyksen syy",
+      "resend": "Laheta uudelleen",
+      "emailPreview": "Sahkopostin esikatselu",
+      "smsMessage": "Tekstiviesti",
+      "delivered": "Toimitettu"
+    },
+    "filters": {
+      "searchByEmail": "Hae sahkopostilla...",
+      "allTypes": "Kaikki tyypit",
+      "allChannels": "Kaikki kanavat",
+      "allStatuses": "Kaikki tilat",
+      "fromDate": "Alkaen",
+      "toDate": "Paattyen"
+    },
+    "types": {
+      "welcome": "Tervetuloa",
+      "verificationCode": "Vahvistuskoodi",
+      "teamInvitation": "Tiimikutsu",
+      "invitationAccepted": "Kutsu hyvaksytty",
+      "passwordChanged": "Salasana vaihdettu",
+      "paymentReminder": "Maksumuistutus",
+      "contractExpiry": "Sopimus vanhenee",
+      "propertyCreated": "Kohde luotu",
+      "contractCreated": "Sopimus luotu",
+      "contractStatusChanged": "Sopimuksen tila muuttunut",
+      "contractReopened": "Sopimus avattu uudelleen",
+      "paymentPaid": "Maksu maksettu",
+      "paymentReceival": "Maksun vastaanotto",
+      "expenseCreated": "Kulu luotu"
+    },
+    "statuses": {
+      "pending": "Odottaa",
+      "queued": "Jonossa",
+      "sent": "Lahetetty",
+      "delivered": "Toimitettu",
+      "failed": "Epaonnistunut",
+      "bounced": "Palautunut",
+      "rejected": "Hylatty",
+      "demo": "Demo"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Maksuohjeet",
+    "pageSubtitle": "Hallitse tiimisi maksuohjepohjia"
+  },
+  "preferences": {
+    "title": "Asetukset",
+    "subtitle": "Maarittele tiimin laajuiset asetukset ja alueelliset maaritykset"
+  },
+  "teamMembers": {
+    "title": "Tiimin jasenet",
+    "subtitle": "Hallitse tiimin jasenia, rooleja ja kutsuja",
+    "impersonationBlocked": "Tiimin jasenyyksien muuttaminen ei ole kaytettavissa toisena kayttajana toimiessa."
+  },
+  "transactions": {
+    "title": "Tapahtumahistoria",
+    "subtitle": "Taysi historia tuloista ja kuluista",
+    "searchPlaceholder": "Hae tapahtumia...",
+    "allTypes": "Kaikki tyypit",
+    "incomeOnly": "Vain tulot",
+    "expensesOnly": "Vain kulut",
+    "totalIncome": "Tulot yhteensa",
+    "totalExpenses": "Kulut yhteensa",
+    "netTotal": "Netto yhteensa",
+    "noTransactions": "Tapahtumia ei loydy",
+    "downloadFailed": "Lataus epaonnistui. Yrita uudelleen.",
+    "table": {
+      "date": "Paivamaara",
+      "type": "Tyyppi",
+      "description": "Kuvaus",
+      "property": "Kohde",
+      "amount": "Summa"
+    }
+  },
+  "dashboard": {
+    "portfolioOverview": "Salkun yleiskatsaus",
+    "propertiesWithData": "{{withData}} / {{total}} kohteella on taloustietoja",
+    "addProperties": "Lisaa kohteita nahdaksesi salkkusi hallintapaneelin.",
+    "addFinancialData": "Lisaa taloustietoja kohteisiisi nahdaksesi salkun analytiikan.",
+    "propertiesNoData": "{{count}} kohdetta loytyi, mutta yhdelakaan ei ole taloustietoja.",
+    "exporting": "Viedaan...",
+    "disclaimer": "Mittarit ovat vain tiedoksi.",
+    "charts": {
+      "cashFlow": "Salkun kassavirta",
+      "allocation": "Salkun allokaatio",
+      "propertyComparison": "Kohteiden vertailu",
+      "equityComposition": "Oman paaoman koostumus",
+      "performance": "Kohteiden suorituskyky",
+      "occupancy": "Salkun kayttoaste"
+    },
+    "cashFlow": {
+      "noData": "Kassavirtatietoja ei ole saatavilla",
+      "income": "Tulot",
+      "expenses": "Kulut",
+      "mortgage": "Asuntolaina",
+      "net": "Netto"
+    },
+    "allocation": {
+      "noData": "Allokaatiotietoja ei ole saatavilla",
+      "byCategory": "Kategorian mukaan",
+      "byCountry": "Maan mukaan"
+    },
+    "comparison": {
+      "noData": "Kohteiden vertailutietoja ei ole saatavilla",
+      "monthlyCashFlow": "Kuukausittainen kassavirta"
+    },
+    "equity": {
+      "noData": "Oman paaoman tietoja ei ole saatavilla",
+      "equity": "Oma paaoma",
+      "mortgage": "Asuntolaina"
+    },
+    "performanceTable": {
+      "noData": "Kohteiden suorituskykytietoja ei ole saatavilla",
+      "property": "Kohde",
+      "category": "Kategoria",
+      "monthlyCF": "Kuukausi-KV",
+      "annualNOI": "Vuotuinen NOI",
+      "capRate": "Tuottoprosentti",
+      "coc": "CoC",
+      "occupancy": "Kayttoaste",
+      "dataPercent": "Data %"
+    },
+    "occupancy": {
+      "noData": "Kayttoastetietoja ei ole saatavilla",
+      "contactOccupancy": "Vuokralaisten kayttoaste",
+      "selfOccupancy": "Omakaytto"
+    },
+    "pendingExtensions": {
+      "title": "Odottavat jatkot",
+      "awaitingAction": "{{count}} jatko odottaa toimenpidetta",
+      "awaitingAction_other": "{{count}} jatkoa odottaa toimenpidetta",
+      "extensionNumber": "Jatko #{{number}}",
+      "contractNumber": "Sopimus #{{id}}",
+      "until": "{{date}} asti",
+      "activate": "Aktivoi",
+      "decline": "Hylkaa"
+    },
+    "pendingInvitations": {
+      "title": "Odottavat tiimikutsut",
+      "invitedToOne": "Sinut on kutsuttu liittymaan tiimiin",
+      "invitedToMany": "Sinut on kutsuttu liittymaan {{count}} tiimiin",
+      "invitedBy": "Kutsuja: {{name}}",
+      "expires": "Vanhenee {{date}}",
+      "accept": "Hyvaksy"
+    },
+    "upcomingRenewals": {
+      "title": "Tulevat uusinnat",
+      "property": "Kohde",
+      "contact": "Yhteystieto",
+      "endDate": "Paattymispaiva",
+      "daysLeft": "Paivat jaljella",
+      "mode": "Tapa",
+      "rent": "Vuokra",
+      "renewalModes": {
+        "none": "Ei mitaan",
+        "automatic": "Autom.",
+        "manual": "Manuaalinen"
+      }
+    }
+  },
+  "reports": {
+    "title": "Talousraportit",
+    "subtitle": "Kattava taloudellinen yleiskatsaus ja analytiikka",
+    "transactions": "Tapahtumat",
+    "failedToLoad": "Talousraporttien lataus epaonnistui",
+    "period": "Ajanjakso:",
+    "month": "Kuukausi",
+    "quarter": "Neljanneksvuosi",
+    "year": "Vuosi",
+    "allTime": "Koko aika",
+    "custom": "Mukautettu",
+    "to": "asti",
+    "advancedFilters": "Tarkennetut suodattimet",
+    "properties": "Kohteet",
+    "clearAll": "Tyhjenna kaikki",
+    "noProperties": "Kohteita ei loytynyt",
+    "totalIncome": "Tulot yhteensa",
+    "totalExpenses": "Kulut yhteensa",
+    "netProfit": "Nettotulos",
+    "income": "Tulot",
+    "expenses": "Kulut",
+    "amount": "Summa",
+    "downloadPdf": "Lataa PDF",
+    "incomeTrend": {
+      "title": "Tulotrendi",
+      "subtitle": "Kuukausittaiset tulot, kulut ja nettotulos",
+      "line": "Viiva",
+      "bar": "Pylvas"
+    },
+    "expenseBreakdown": {
+      "title": "Kuluerittely",
+      "subtitle": "Kategorioittain valitulta ajanjaksolta",
+      "pie": "Piirakka",
+      "bar": "Pylvas",
+      "noData": "Ei kulutietoja valitulta ajanjaksolta"
+    },
+    "propertyPerformance": {
+      "title": "Kohteiden suorituskyky",
+      "subtitle": "Tulot, kulut ja nettotulos kohteittain",
+      "property": "Kohde",
+      "income": "Tulot",
+      "expenses": "Kulut",
+      "netProfit": "Nettotulos",
+      "margin": "Marginaali",
+      "total": "Yhteensa",
+      "noData": "Ei kohdetietoja valitulta ajanjaksolta"
+    },
+    "occupancyTrend": {
+      "title": "Kayttoastetrendi",
+      "subtitle": "Kuukausittainen kayttoasteprosentti",
+      "occupancyRate": "Kayttoaste (%)"
+    }
+  },
+  "auditLog": {
+    "failedToLoad": "Toimintolokien lataus epaonnistui"
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Calendar, Save, Info } from 'lucide-react';
 import { PaymentResponse, CreatePaymentRequest } from '@/types/payment';
 import { MoneyInput } from '@/components/common/MoneyInput';
@@ -30,6 +31,7 @@ export const PaymentForm = ({
   continueAdding,
   onContinueAddingChange,
 }: PaymentFormProps) => {
+  const { t } = useTranslation('payments');
   const { defaultCurrency } = useTeamDefaults();
   const { data: currencies } = useCurrencies();
   const { data: rentPeriods } = useRentPeriods(contractIdentifier ?? undefined);
@@ -135,13 +137,13 @@ export const PaymentForm = ({
     const newErrors: Record<string, string> = {};
 
     if (formData.amount <= 0) {
-      newErrors.amount = 'Amount must be greater than 0';
+      newErrors.amount = t('validation.amountRequired');
     }
     if (!formData.dueDate) {
-      newErrors.dueDate = 'Due date is required';
+      newErrors.dueDate = t('validation.dueDateRequired');
     }
     if (formData.amount > 0 && !currency.trim()) {
-      newErrors.currency = 'Currency is required';
+      newErrors.currency = t('validation.currencyRequired');
     }
 
     setErrors(newErrors);
@@ -176,7 +178,7 @@ export const PaymentForm = ({
       {/* Amount */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Amount <span className="text-error-text">*</span>
+          {t('form.amount')} <span className="text-error-text">*</span>
         </label>
         <MoneyInput
           value={formData.amount ?? undefined}
@@ -195,7 +197,7 @@ export const PaymentForm = ({
       {/* Due Date */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Due Date <span className="text-error-text">*</span>
+          {t('form.dueDate')} <span className="text-error-text">*</span>
         </label>
         <div className="flex gap-2">
           <input
@@ -220,7 +222,7 @@ export const PaymentForm = ({
             className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
             disabled={isLoading}
           >
-            Today
+            {t('form.today')}
           </button>
         </div>
         {errors.dueDate && (
@@ -230,21 +232,20 @@ export const PaymentForm = ({
           <div className="mt-2 flex items-start gap-2 p-2 bg-warning-bg border border-warning-border rounded text-xs text-warning-text">
             <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
             <span>
-              This date falls in a different rent period (
-              {getCurrencySymbol(currency)}{' '}
-              {rentPeriodForDate.rentAmount.toFixed(fractionalDigits)}/mo from{' '}
-              {rentPeriodForDate.effectiveFrom}
-              {rentPeriodForDate.effectiveTo
-                ? ` to ${rentPeriodForDate.effectiveTo}`
-                : ''}
-              ).
-              {currentRentPeriod && (
-                <>
-                  {' '}
-                  Current rent is {getCurrencySymbol(currency)}{' '}
-                  {currentRentPeriod.rentAmount.toFixed(fractionalDigits)}/mo.
-                </>
-              )}
+              {t('form.rentPeriodNotice', {
+                amount: `${getCurrencySymbol(currency)} ${rentPeriodForDate.rentAmount.toFixed(fractionalDigits)}`,
+                from: rentPeriodForDate.effectiveFrom,
+                to: rentPeriodForDate.effectiveTo
+                  ? t('form.rentPeriodNoticeTo', {
+                      date: rentPeriodForDate.effectiveTo,
+                    })
+                  : '',
+                current: currentRentPeriod
+                  ? t('form.rentPeriodCurrentRent', {
+                      amount: `${getCurrencySymbol(currency)} ${currentRentPeriod.rentAmount.toFixed(fractionalDigits)}`,
+                    })
+                  : '',
+              })}
             </span>
           </div>
         )}
@@ -254,7 +255,7 @@ export const PaymentForm = ({
       {payment && (
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-2">
-            Payment Date
+            {t('form.paymentDate')}
           </label>
           <div className="flex gap-2">
             <input
@@ -273,7 +274,7 @@ export const PaymentForm = ({
                 className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
-                Clear
+                {t('form.clear')}
               </button>
             )}
           </div>
@@ -283,7 +284,7 @@ export const PaymentForm = ({
       {/* Contact (optional) */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Contact
+          {t('form.contact')}
         </label>
         <div className="flex gap-2">
           <div className="flex-1">
@@ -304,7 +305,7 @@ export const PaymentForm = ({
               className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
               disabled={isLoading}
             >
-              Clear
+              {t('form.clear')}
             </button>
           )}
         </div>
@@ -313,12 +314,12 @@ export const PaymentForm = ({
       {/* Notes */}
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-2">
-          Notes
+          {t('form.notes')}
         </label>
         <RichTextEditor
           value={formData.notes ?? ''}
           onChange={(value) => setFormData({ ...formData, notes: value })}
-          placeholder="Add any additional notes about this payment..."
+          placeholder={t('form.notesPlaceholder')}
           readOnly={isLoading}
           onSubmit={submitForm}
         />
@@ -335,7 +336,7 @@ export const PaymentForm = ({
               className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500"
             />
             <span className="text-sm text-text-secondary">
-              Continue adding more
+              {t('form.continueAdding')}
             </span>
           </label>
         )}
@@ -346,7 +347,7 @@ export const PaymentForm = ({
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
-          Cancel
+          {t('common:buttons.cancel')}
         </button>
         <button
           type="submit"
@@ -356,12 +357,12 @@ export const PaymentForm = ({
           {payment ? (
             <>
               <Save className="h-4 w-4" />
-              {isLoading ? 'Saving...' : 'Update Payment'}
+              {isLoading ? t('form.saving') : t('form.updatePayment')}
             </>
           ) : (
             <>
               <Calendar className="h-4 w-4" />
-              {isLoading ? 'Saving...' : 'Schedule Payment'}
+              {isLoading ? t('form.saving') : t('actions.schedulePayment')}
             </>
           )}
         </button>

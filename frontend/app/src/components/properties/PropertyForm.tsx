@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { X, Save } from 'lucide-react';
 import {
@@ -12,10 +13,8 @@ import {
   AmenityResponse,
   PropertyAmenityResponse,
   PROPERTY_TYPES_BY_CATEGORY,
-  PROPERTY_CATEGORY_LABELS,
-  PROPERTY_TYPE_LABELS,
-  PROPERTY_STATUS_LABELS,
 } from '@/types/property';
+import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
 import { CountrySelector } from '../common/CountrySelector';
@@ -64,8 +63,10 @@ export const PropertyForm = ({
   onAddAmenity,
   onRemoveAmenity,
 }: PropertyFormProps) => {
+  const { t } = useTranslation('properties');
   const navigate = useNavigate();
   const { defaultCountryCode } = useTeamDefaults();
+  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
   const [addressDirty, setAddressDirty] = useState(false);
@@ -189,20 +190,20 @@ export const PropertyForm = ({
     () =>
       Object.values(PropertyCategory).map((cat) => ({
         value: cat,
-        label: PROPERTY_CATEGORY_LABELS[cat],
+        label: categoryLabel(cat),
         Icon: PROPERTY_CATEGORY_ICONS[cat],
       })),
-    []
+    [categoryLabel]
   );
 
   const typeOptions = useMemo<IconSelectOption[]>(
     () =>
       availableTypes.map((type) => ({
         value: type,
-        label: PROPERTY_TYPE_LABELS[type] ?? type,
+        label: typeLabel(type),
         Icon: PROPERTY_TYPE_ICONS[type],
       })),
-    [availableTypes]
+    [availableTypes, typeLabel]
   );
 
   useEffect(() => {
@@ -366,20 +367,20 @@ export const PropertyForm = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.street.trim()) {
-      newErrors.street = 'Street is required';
+      newErrors.street = t('form.validation.streetRequired');
     }
     if (!formData.city.trim()) {
-      newErrors.city = 'City is required';
+      newErrors.city = t('form.validation.cityRequired');
     }
     if (!formData.postalCode.trim()) {
-      newErrors.postalCode = 'Postal code is required';
+      newErrors.postalCode = t('form.validation.postalCodeRequired');
     }
     if (!formData.countryCode.trim()) {
-      newErrors.countryCode = 'Country is required';
+      newErrors.countryCode = t('form.validation.countryRequired');
     }
 
     if (formData.areaValue != null && formData.areaValue <= 0) {
-      newErrors.areaValue = 'Area must be greater than 0';
+      newErrors.areaValue = t('form.validation.areaPositive');
     }
 
     setErrors(newErrors);
@@ -434,19 +435,19 @@ export const PropertyForm = ({
       {/* Address Section */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Address
+          {t('form.address')}
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className={labelCls}>
-              Street <span className="text-error-text">*</span>
+              {t('form.street')} <span className="text-error-text">*</span>
             </label>
             <input
               type="text"
               value={formData.street}
               onChange={(e) => handleChange('street', e.target.value)}
               className={inputCls}
-              placeholder="Main Street 123"
+              placeholder={t('form.streetPlaceholder')}
             />
             {errors.street && (
               <p className="text-error-text text-sm mt-1">{errors.street}</p>
@@ -455,14 +456,14 @@ export const PropertyForm = ({
 
           <div>
             <label className={labelCls}>
-              City <span className="text-error-text">*</span>
+              {t('form.city')} <span className="text-error-text">*</span>
             </label>
             <input
               type="text"
               value={formData.city}
               onChange={(e) => handleChange('city', e.target.value)}
               className={inputCls}
-              placeholder="Amsterdam"
+              placeholder={t('form.cityPlaceholder')}
             />
             {errors.city && (
               <p className="text-error-text text-sm mt-1">{errors.city}</p>
@@ -471,14 +472,14 @@ export const PropertyForm = ({
 
           <div>
             <label className={labelCls}>
-              Postal Code <span className="text-error-text">*</span>
+              {t('form.postalCode')} <span className="text-error-text">*</span>
             </label>
             <input
               type="text"
               value={formData.postalCode}
               onChange={(e) => handleChange('postalCode', e.target.value)}
               className={inputCls}
-              placeholder="1012 AB"
+              placeholder={t('form.postalCodePlaceholder')}
             />
             {errors.postalCode && (
               <p className="text-error-text text-sm mt-1">
@@ -489,7 +490,7 @@ export const PropertyForm = ({
 
           <div>
             <label className={labelCls}>
-              Country <span className="text-error-text">*</span>
+              {t('form.country')} <span className="text-error-text">*</span>
             </label>
             <CountrySelector
               value={formData.countryCode}
@@ -514,7 +515,7 @@ export const PropertyForm = ({
           {/* Region selector — only shown when country has regional regulations */}
           {hasRegions && availableRegions.length > 0 && (
             <div>
-              <label className={labelCls}>Region</label>
+              <label className={labelCls}>{t('form.region')}</label>
               <select
                 value={formData.regionCode ?? ''}
                 onChange={(e) =>
@@ -522,7 +523,7 @@ export const PropertyForm = ({
                 }
                 className={selectCls}
               >
-                <option value="">Other</option>
+                <option value="">{t('form.regionOther')}</option>
                 {availableRegions.map((r) => (
                   <option key={r.regionCode} value={r.regionCode}>
                     {r.regionName}
@@ -537,7 +538,7 @@ export const PropertyForm = ({
         {formData.street && formData.city && formData.countryCode && (
           <div className="mt-6">
             <h4 className="text-sm font-semibold text-text-secondary mb-3">
-              Location Preview
+              {t('form.locationPreview')}
             </h4>
             <InteractiveMap
               street={formData.street}
@@ -563,13 +564,13 @@ export const PropertyForm = ({
       {/* Specifications Section */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Specifications
+          {t('form.specifications')}
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Property Category */}
           <div>
             <label className={labelCls}>
-              Category <span className="text-error-text">*</span>
+              {t('form.category')} <span className="text-error-text">*</span>
             </label>
             {isEditMode ? (
               <div className="px-3 py-2 bg-surface-inset border border-border-strong rounded flex items-center gap-2 text-text-secondary">
@@ -581,13 +582,11 @@ export const PropertyForm = ({
                     <CatIcon size={14} className="text-text-muted" />
                   ) : null;
                 })()}
-                {
-                  PROPERTY_CATEGORY_LABELS[
-                    formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
-                  ]
-                }
+                {categoryLabel(
+                  formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
+                )}
                 <span className="text-xs text-text-muted ml-1">
-                  (cannot be changed)
+                  {t('form.categoryCannotChange')}
                 </span>
               </div>
             ) : (
@@ -602,7 +601,7 @@ export const PropertyForm = ({
           {/* Property Type (filtered by category) */}
           <div>
             <label className={labelCls}>
-              Type <span className="text-error-text">*</span>
+              {t('form.type')} <span className="text-error-text">*</span>
             </label>
             <IconSelect
               value={formData.propertyType ?? ''}
@@ -614,7 +613,7 @@ export const PropertyForm = ({
           {/* Status */}
           <div>
             <label className={labelCls}>
-              Status <span className="text-error-text">*</span>
+              {t('form.status')} <span className="text-error-text">*</span>
             </label>
             <select
               value={formData.status}
@@ -625,7 +624,7 @@ export const PropertyForm = ({
             >
               {Object.values(PropertyStatus).map((status) => (
                 <option key={status} value={status}>
-                  {PROPERTY_STATUS_LABELS[status]}
+                  {statusLabel(status)}
                 </option>
               ))}
             </select>
@@ -633,7 +632,7 @@ export const PropertyForm = ({
 
           {/* Area */}
           <div>
-            <label className={labelCls}>Area</label>
+            <label className={labelCls}>{t('form.area')}</label>
             <div className="flex gap-2">
               <input
                 type="number"
@@ -647,7 +646,7 @@ export const PropertyForm = ({
                   )
                 }
                 className={`flex-1 ${inputCls}`}
-                placeholder="75.5"
+                placeholder={t('form.areaPlaceholder')}
               />
               <select
                 value={formData.areaUnit ?? 'sqm'}
@@ -688,7 +687,7 @@ export const PropertyForm = ({
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
-          Cancel
+          {t('common:buttons.cancel')}
         </button>
         <button
           type="submit"
@@ -697,10 +696,10 @@ export const PropertyForm = ({
         >
           <Save className="h-4 w-4" />
           {isLoading
-            ? 'Saving...'
+            ? t('form.saving')
             : property
-              ? 'Update Property'
-              : 'Create Property'}
+              ? t('form.updateProperty')
+              : t('form.createProperty')}
         </button>
       </div>
     </form>

@@ -7,6 +7,7 @@ import java.net.URL;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -21,9 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.Delete;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -295,6 +299,59 @@ public class S3StorageService {
       log.error("Failed to delete file from S3: {}", fileKey, e);
       throw e;
     }
+  }
+
+  /**
+   * Batch-delete multiple S3 objects. Keys are partitioned into batches of 1000 (the S3 API limit
+   * per request). Empty lists are silently ignored.
+   */
+  public void deleteFiles(List<String> keys) {
+    if (keys.isEmpty()) {
+      return;
+    }
+
+    int batchSize = 1000;
+    int batchCount = (keys.size() + batchSize - 1) / batchSize;
+    int totalDeleted = 0;
+
+    Instant start = clock.instant();
+
+    for (int batchIndex = 0; batchIndex < batchCount; batchIndex++) {
+      int fromIndex = batchIndex * batchSize;
+      int toIndex = Math.min(fromIndex + batchSize, keys.size());
+      List<String> batch = keys.subList(fromIndex, toIndex);
+
+      List<ObjectIdentifier> objects =
+          batch.stream().map(key -> ObjectIdentifier.builder().key(key).build()).toList();
+
+      try {
+        s3Client.deleteObjects(
+            DeleteObjectsRequest.builder()
+                .bucket(bucketName)
+                .delete(Delete.builder().objects(objects).quiet(true).build())
+                .build());
+        totalDeleted += batch.size();
+      } catch (Exception e) {
+        log.warn(
+            "Failed to batch-delete {} S3 objects (batch {}/{}): {}",
+            batch.size(),
+            batchIndex + 1,
+            batchCount,
+            e.getMessage());
+      }
+    }
+
+    metricsService.recordTimer(
+        "s3.operation.seconds",
+        Duration.between(start, clock.instant()),
+        "operation",
+        "batch_delete",
+        "result",
+        "success");
+    metricsService.incrementCounterBy(
+        "s3.operation.total", totalDeleted, "operation", "delete", "result", "success");
+
+    log.info("Batch-deleted {}/{} S3 objects in {} batches", totalDeleted, keys.size(), batchCount);
   }
 
   /**

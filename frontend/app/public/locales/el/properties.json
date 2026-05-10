@@ -1,0 +1,1112 @@
+{
+  "list": {
+    "title": "Ακίνητα",
+    "subtitle": "Διαχειριστείτε τα ενοικιαζόμενα ακίνητα και τις μονάδες σας",
+    "addButton": "Προσθήκη Ακινήτου",
+    "searchPlaceholder": "Αναζήτηση ανά διεύθυνση, πόλη, ταχυδρομικό κώδικα ή τύπο...",
+    "filters": "Φίλτρα",
+    "category": "Κατηγορία",
+    "allCategories": "Όλες οι Κατηγορίες",
+    "status": "Κατάσταση",
+    "allStatuses": "Όλες οι Καταστάσεις",
+    "count_one": "{{count}} ακίνητο",
+    "count_other": "{{count}} ακίνητα",
+    "empty": {
+      "title": "Δεν βρέθηκαν ακίνητα",
+      "filtered": "Δοκιμάστε να προσαρμόσετε τα φίλτρα ή τους όρους αναζήτησης",
+      "noData": "Ξεκινήστε προσθέτοντας το πρώτο σας ακίνητο"
+    },
+    "error": "Αποτυχία φόρτωσης ακινήτων"
+  },
+  "create": {
+    "title": "Προσθήκη Νέου Ακινήτου",
+    "readOnlyMessage": "Η δημιουργία ακινήτων δεν είναι διαθέσιμη σε λειτουργία μόνο ανάγνωσης."
+  },
+  "edit": {
+    "title": "Επεξεργασία Ακινήτου",
+    "notFound": "Το ακίνητο δεν βρέθηκε"
+  },
+  "detail": {
+    "notFound": "Το ακίνητο δεν βρέθηκε",
+    "booklet": "Φυλλάδιο",
+    "bookletDownloadFailed": "Αποτυχία λήψης φυλλαδίου. Παρακαλώ δοκιμάστε ξανά.",
+    "tabs": {
+      "info": "Πληροφορίες",
+      "dashboard": "Πίνακας Ελέγχου",
+      "financials": "Οικονομικά",
+      "photos": "Φωτογραφίες",
+      "documents": "Έγγραφα",
+      "contracts": "Συμβόλαια",
+      "expenses": "Έξοδα",
+      "history": "Ιστορικό"
+    },
+    "timeline": {
+      "title": "Χρονοδιάγραμμα Ακινήτου",
+      "rentalContract": "Συμβόλαιο ενοικίασης",
+      "selfOccupied": "Ιδιοκατοικούμενο",
+      "financing": "Χρηματοδότηση"
+    },
+    "specs": {
+      "bedrooms": "Υπνοδωμάτια",
+      "bathrooms": "Μπάνια",
+      "area": "Εμβαδόν",
+      "type": "Τύπος",
+      "street": "Οδός",
+      "city": "Πόλη",
+      "postalCode": "Ταχ. Κώδικας",
+      "country": "Χώρα",
+      "location": "Τοποθεσία"
+    },
+    "characteristics": {
+      "title": "Χαρακτηριστικά Ακινήτου"
+    },
+    "construction": {
+      "title": "Κατασκευή & Δομή",
+      "yearBuilt": "Έτος Κατασκευής",
+      "lastRenovated": "Τελευταία Ανακαίνιση",
+      "construction": "Κατασκευή",
+      "foundation": "Θεμέλια",
+      "roof": "Στέγη",
+      "wallConstruction": "Τοιχοποιία",
+      "flooring": "Δάπεδο",
+      "windows": "Παράθυρα",
+      "floors": "Όροφοι",
+      "structuralNotes": "Δομικές Σημειώσεις"
+    },
+    "energy": {
+      "title": "Ενέργεια & Κλίμα",
+      "energyRating": "Ενεργειακή Κατάταξη",
+      "certificateExpiry": "Λήξη Πιστοποιητικού",
+      "heating": "Θέρμανση",
+      "cooling": "Ψύξη",
+      "hotWater": "Ζεστό Νερό",
+      "insulationNotes": "Σημειώσεις Μόνωσης"
+    },
+    "utilities": {
+      "title": "Παροχές & Συνδέσεις",
+      "electricity": "Ηλεκτρισμός",
+      "capacity": "Χωρητικότητα",
+      "water": "Νερό",
+      "gasConnection": "Σύνδεση Αερίου",
+      "sewage": "Αποχέτευση",
+      "internet": "Διαδίκτυο",
+      "internetSpeed": "Ταχύτητα Διαδικτύου",
+      "internetStatus": "Κατάσταση Διαδικτύου"
+    },
+    "parking": {
+      "title": "Στάθμευση",
+      "parkingSpaces": "Θέσεις Στάθμευσης",
+      "parkingType": "Τύπος Στάθμευσης"
+    },
+    "outdoorAreas": {
+      "title": "Εξωτερικοί Χώροι"
+    },
+    "amenities": {
+      "title": "Ανέσεις"
+    },
+    "safety": {
+      "title": "Ασφάλεια & Προστασία",
+      "smokeDetectors": "Ανιχνευτές Καπνού",
+      "coDetectors": "Ανιχνευτές CO",
+      "fireExtinguisher": "Πυροσβεστήρας",
+      "sprinklerSystem": "Σύστημα Πυρόσβεσης",
+      "alarmSystem": "Σύστημα Συναγερμού",
+      "securityCameras": "Κάμερες Ασφαλείας",
+      "secureEntry": "Ασφαλής Είσοδος",
+      "safetyNotes": "Σημειώσεις Ασφαλείας"
+    },
+    "accessibility": {
+      "title": "Προσβασιμότητα",
+      "wheelchairAccessible": "Πρόσβαση Αναπηρικού Αμαξιδίου",
+      "elevator": "Ασανσέρ",
+      "stepFreeEntrance": "Είσοδος Χωρίς Σκαλιά",
+      "adaptedBathroom": "Προσαρμοσμένο Μπάνιο",
+      "accessibilityNotes": "Σημειώσεις Προσβασιμότητας"
+    },
+    "wws": {
+      "title": "Μόρια WWS",
+      "calculate": "Υπολογισμός",
+      "recalculate": "Επανυπολογισμός",
+      "points": "μόρια",
+      "regulated": "Ρυθμιζόμενο",
+      "midSegment": "Μεσαίο Τμήμα",
+      "freeSector": "Ελεύθερος Τομέας",
+      "maxRent": "Μέγιστο Ενοίκιο",
+      "calculated": "Υπολογισμένο",
+      "history": "Ιστορικό",
+      "noCalculation": "Δεν υπάρχει υπολογισμός ακόμα",
+      "noCalculationDescription": "Υπολογίστε τα μόρια WWS για να προσδιορίσετε το μέγιστο ρυθμιζόμενο ενοίκιο για αυτό το ακίνητο.",
+      "noPreviousCalculations": "Δεν υπάρχουν προηγούμενοι υπολογισμοί."
+    },
+    "metadata": {
+      "title": "Μεταδεδομένα",
+      "created": "Δημιουργήθηκε:",
+      "lastUpdated": "Τελευταία Ενημέρωση:",
+      "at": "στις"
+    },
+    "yes": "Ναι",
+    "no": "Όχι",
+    "deleteProperty": "Διαγραφή Ακινήτου",
+    "deletePropertyConfirm": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το ακίνητο;",
+    "cannotBeUndone": "Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+    "deleteWwsConfirm": "Διαγραφή υπολογισμού WWS;",
+    "deleteWwsMessage": "Αυτό θα αφαιρέσει μόνιμα τον αποθηκευμένο υπολογισμό από αυτό το ακίνητο.",
+    "deleteWwsHistoryMessage": "Αυτό θα αφαιρέσει μόνιμα αυτόν τον ιστορικό υπολογισμό."
+  },
+  "enums": {
+    "characteristics": {
+      "constructionType": {
+        "BRICK": "Τούβλο",
+        "CONCRETE": "Σκυρόδεμα",
+        "WOOD": "Ξύλο",
+        "STEEL": "Ατσάλι",
+        "MIXED": "Μικτό",
+        "OTHER": "Άλλο"
+      },
+      "foundationType": {
+        "CONCRETE_SLAB": "Πλάκα σκυροδέματος",
+        "CRAWL_SPACE": "Υπόγεια κενή ζώνη",
+        "BASEMENT": "Υπόγειο",
+        "PILE": "Πάσσαλοι",
+        "OTHER": "Άλλο"
+      },
+      "roofType": {
+        "FLAT": "Επίπεδη",
+        "PITCHED": "Κεκλιμένη",
+        "HIP": "Τέσσερις κλίσεις",
+        "GABLE": "Δίκλινη",
+        "MANSARD": "Μανσάρδα",
+        "OTHER": "Άλλο"
+      },
+      "flooringType": {
+        "HARDWOOD": "Σκληρό ξύλο",
+        "LAMINATE": "Laminate",
+        "TILE": "Πλακάκια",
+        "VINYL": "Βινύλιο",
+        "CARPET": "Χαλί",
+        "CONCRETE": "Σκυρόδεμα",
+        "MIXED": "Μικτό",
+        "OTHER": "Άλλο"
+      },
+      "windowType": {
+        "SINGLE_PANE": "Μονό τζάμι",
+        "DOUBLE_PANE": "Διπλό τζάμι",
+        "TRIPLE_PANE": "Τριπλό τζάμι",
+        "OTHER": "Άλλο"
+      },
+      "heatingType": {
+        "CENTRAL": "Κεντρική",
+        "DISTRICT": "Τηλεθέρμανση",
+        "HEAT_PUMP": "Αντλία θερμότητας",
+        "ELECTRIC": "Ηλεκτρική",
+        "GAS": "Φυσικό αέριο",
+        "NONE": "Καμία",
+        "OTHER": "Άλλο"
+      },
+      "coolingType": {
+        "CENTRAL_AC": "Κεντρικό κλιματιστικό",
+        "SPLIT_AC": "Split κλιματιστικό",
+        "EVAPORATIVE": "Εξατμιστική ψύξη",
+        "NONE": "Καμία",
+        "OTHER": "Άλλο"
+      },
+      "hotWaterSystem": {
+        "BOILER": "Λέβητας",
+        "TANKLESS": "Αταντίστροφος θερμοσίφωνας",
+        "HEAT_PUMP": "Αντλία θερμότητας",
+        "SOLAR": "Ηλιακός",
+        "ELECTRIC": "Ηλεκτρικός",
+        "OTHER": "Άλλο"
+      },
+      "sewageType": {
+        "MUNICIPAL": "Δημοτικό",
+        "SEPTIC": "Σεπτικός βόθρος",
+        "OTHER": "Άλλο"
+      },
+      "internetConnectionType": {
+        "FIBER": "Οπτική ίνα",
+        "CABLE": "Καλώδιο",
+        "DSL": "DSL",
+        "NONE": "Καμία",
+        "OTHER": "Άλλο"
+      },
+      "internetStatus": {
+        "ACTIVE": "Ενεργό",
+        "AVAILABLE": "Διαθέσιμο",
+        "NOT_AVAILABLE": "Μη διαθέσιμο",
+        "UNKNOWN": "Άγνωστο"
+      },
+      "electricityConnectionType": {
+        "SINGLE_PHASE": "Μονοφασικό",
+        "THREE_PHASE": "Τριφασικό"
+      },
+      "waterConnectionType": {
+        "MUNICIPAL": "Δημοτικό",
+        "WELL": "Πηγάδι",
+        "SHARED": "Κοινόχρηστο",
+        "OTHER": "Άλλο"
+      },
+      "parkingType": {
+        "GARAGE": "Γκαράζ",
+        "CARPORT": "Στέγαστρο αυτοκινήτου",
+        "DRIVEWAY": "Δρόμος εισόδου",
+        "STREET": "Δρόμος",
+        "UNDERGROUND": "Υπόγεια",
+        "NONE": "Καμία",
+        "OTHER": "Άλλο"
+      },
+      "outdoorAreaType": {
+        "BALCONY": "Μπαλκόνι",
+        "TERRACE": "Ταράτσα",
+        "GARDEN": "Κήπος",
+        "ROOFTOP": "Δώμα",
+        "PATIO": "Αυλή",
+        "YARD": "Προαύλιο",
+        "OTHER": "Άλλο",
+        "PARKING_LOT": "Χώρος στάθμευσης",
+        "COURTYARD": "Εσωτερική αυλή",
+        "LOADING_AREA": "Χώρος φόρτωσης",
+        "STORAGE_AREA": "Χώρος αποθήκευσης",
+        "PASTURE": "Βοσκότοπος",
+        "PADDOCK": "Λιβάδι",
+        "ORCHARD_AREA": "Οπωρώνας",
+        "GREENHOUSE_AREA": "Θερμοκήπιο"
+      },
+      "petPolicy": {
+        "ALLOWED": "Επιτρέπεται",
+        "NOT_ALLOWED": "Δεν επιτρέπεται",
+        "NEGOTIABLE": "Διαπραγματεύσιμο",
+        "SMALL_PETS_ONLY": "Μόνο μικρά κατοικίδια"
+      },
+      "soilType": {
+        "CLAY": "Άργιλος",
+        "SANDY": "Αμμώδες",
+        "LOAM": "Χουμώδες",
+        "SILT": "Ιλύς",
+        "PEAT": "Τύρφη",
+        "CHALK": "Κιμωλία",
+        "MIXED": "Μικτό",
+        "OTHER": "Άλλο"
+      },
+      "irrigationType": {
+        "DRIP": "Στάγδην",
+        "SPRINKLER": "Καταιονισμός",
+        "FLOOD": "Κατάκλυση",
+        "CENTER_PIVOT": "Κεντρικός άξονας",
+        "NONE": "Καμία",
+        "OTHER": "Άλλο"
+      },
+      "waterSource": {
+        "RIVER": "Ποτάμι",
+        "WELL": "Πηγάδι",
+        "MUNICIPAL": "Δημοτικό",
+        "RAINWATER": "Βρόχινο νερό",
+        "CANAL": "Κανάλι",
+        "NONE": "Καμία",
+        "OTHER": "Άλλο"
+      },
+      "fencingType": {
+        "WIRE": "Σύρμα",
+        "WOODEN": "Ξύλινο",
+        "ELECTRIC": "Ηλεκτρικό",
+        "HEDGE": "Φράκτης",
+        "STONE": "Πέτρα",
+        "NONE": "Καμία",
+        "OTHER": "Άλλο"
+      }
+    },
+    "categories": {
+      "RESIDENTIAL": "Κατοικία",
+      "COMMERCIAL": "Εμπορικό",
+      "INDUSTRIAL": "Βιομηχανικό",
+      "AGRICULTURAL": "Αγροτικό",
+      "MIXED_USE": "Μικτής Χρήσης"
+    },
+    "types": {
+      "APARTMENT": "Διαμέρισμα",
+      "HOUSE": "Σπίτι",
+      "STUDIO": "Στούντιο",
+      "ROOM": "Δωμάτιο",
+      "VILLA": "Βίλα",
+      "TOWNHOUSE": "Μεζονέτα",
+      "OTHER_RESIDENTIAL": "Άλλο",
+      "OFFICE": "Γραφείο",
+      "RETAIL": "Κατάστημα",
+      "RESTAURANT": "Εστιατόριο",
+      "HOTEL": "Ξενοδοχείο",
+      "SHOWROOM": "Εκθεσιακός Χώρος",
+      "AUTO_DEALERSHIP": "Αντιπροσωπεία Αυτοκινήτων",
+      "SNACKBAR": "Σνακ Μπαρ",
+      "CAFE": "Καφετέρια",
+      "MOTEL": "Μοτέλ",
+      "BAR": "Μπαρ",
+      "BED_AND_BREAKFAST": "B&B",
+      "OTHER_COMMERCIAL": "Άλλο",
+      "WAREHOUSE": "Αποθήκη",
+      "WORKSHOP": "Εργαστήριο",
+      "FACTORY": "Εργοστάσιο",
+      "DATA_CENTER": "Κέντρο Δεδομένων",
+      "COLD_STORAGE": "Ψυκτικός Χώρος",
+      "GARAGE": "Γκαράζ",
+      "OTHER_INDUSTRIAL": "Άλλο",
+      "FARMLAND": "Αγροτική Γη",
+      "RANCH": "Αγρόκτημα",
+      "GREENHOUSE": "Θερμοκήπιο",
+      "ORCHARD": "Οπωρώνας",
+      "VINEYARD": "Αμπελώνας",
+      "OTHER_AGRICULTURAL": "Άλλο",
+      "MIXED_USE": "Μικτής Χρήσης",
+      "COMMERCIAL": "Εμπορικό"
+    },
+    "statuses": {
+      "VACANT": "Κενό",
+      "OCCUPIED": "Κατειλημμένο",
+      "SELF_OCCUPIED": "Ιδιοκατοικούμενο",
+      "MAINTENANCE": "Συντήρηση",
+      "UNAVAILABLE": "Μη Διαθέσιμο",
+      "UNDER_RENOVATION": "Υπό Ανακαίνιση",
+      "FALLOW": "Αδρανές",
+      "LISTED": "Καταχωρημένο"
+    },
+    "amenities": {
+      "categories": {
+        "APPLIANCE": "Συσκευές",
+        "COMFORT": "Άνεση",
+        "LEISURE": "Αναψυχή",
+        "PARKING": "Πάρκινγκ",
+        "SERVICE": "Υπηρεσίες",
+        "STORAGE": "Αποθήκευση"
+      },
+      "items": {
+        "SWIMMING_POOL": "Πισίνα",
+        "GYM": "Γυμναστήριο",
+        "SAUNA": "Σάουνα",
+        "FIREPLACE": "Τζάκι",
+        "BUILT_IN_VACUUM": "Κεντρική σκούπα",
+        "IN_UNIT_LAUNDRY": "Πλυντήριο εντός μονάδας",
+        "SHARED_LAUNDRY": "Κοινόχρηστο πλυντήριο",
+        "DISHWASHER": "Πλυντήριο πιάτων",
+        "STORAGE_UNIT": "Αποθήκη",
+        "BIKE_STORAGE": "Αποθήκη ποδηλάτων",
+        "FURNISHED": "Επιπλωμένο",
+        "DOORMAN_CONCIERGE": "Θυρωρός / Concierge",
+        "CONFERENCE_ROOM": "Αίθουσα συνεδριάσεων",
+        "RECEPTION_AREA": "Χώρος υποδοχής",
+        "SERVER_ROOM": "Αίθουσα διακομιστών",
+        "KITCHENETTE": "Μικρή κουζίνα",
+        "LOADING_BAY": "Ράμπα φόρτωσης",
+        "COMPRESSED_AIR_SYSTEM": "Σύστημα πεπιεσμένου αέρα",
+        "CHEMICAL_STORAGE": "Αποθήκη χημικών",
+        "OVERHEAD_CRANE": "Γερανογέφυρα",
+        "IRRIGATION_SYSTEM": "Σύστημα άρδευσης",
+        "GRAIN_SILO": "Σιλό σιτηρών",
+        "LIVESTOCK_SHELTER": "Στάβλος",
+        "COLD_STORAGE": "Ψυκτικός θάλαμος",
+        "SECURITY_BOOTH": "Φυλάκιο ασφαλείας"
+      }
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Αποτυχία φόρτωσης δεδομένων πίνακα ελέγχου.",
+    "retry": "Επανάληψη",
+    "exporting": "Εξαγωγή...",
+    "allTime": "Όλες οι Περίοδοι",
+    "custom": "Προσαρμοσμένη",
+    "to": "έως",
+    "resetZoom": "Επαναφορά ζουμ",
+    "charts": {
+      "monthlyCashFlow": "Μηνιαίες Ταμειακές Ροές",
+      "occupancyIncomeTrend": "Τάση Πληρότητας & Εσόδων",
+      "expenseBreakdown": "Ανάλυση Εξόδων",
+      "sixMonthProjection": "Πρόβλεψη 6 Μηνών",
+      "equityOverview": "Επισκόπηση Ιδίων Κεφαλαίων"
+    },
+    "summary": {
+      "totalRoi": "Συνολική Απόδοση",
+      "annualizedRoi": "Ετήσια Απόδοση",
+      "capRate": "Cap Rate",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Μηνιαίες Ταμ. Ροές",
+      "annualNoi": "Ετήσιο ΚΛΕ",
+      "totalEquity": "Συνολικά Ίδια Κεφάλαια",
+      "equityGrowth": "Αύξηση Ιδίων Κεφαλαίων",
+      "occupancy": "Πληρότητα",
+      "grossRentMultiplier": "Πολλαπλασιαστής Μικτού Ενοικίου"
+    },
+    "cashFlow": {
+      "income": "Έσοδα",
+      "expenses": "Έξοδα",
+      "mortgage": "Υποθήκη",
+      "net": "Καθαρά",
+      "noData": "Δεν υπάρχουν δεδομένα συναλλαγών"
+    },
+    "occupancy": {
+      "label": "Πληρότητα",
+      "contact": "Επαφή",
+      "selfOccupied": "Ιδιοκατοικούμενο",
+      "vacant": "Κενό",
+      "contactOccupied": "Κατειλημμένο από επαφή",
+      "netIncomeTrend": "Τάση Καθαρών Εσόδων",
+      "netIncome": "Καθαρά Έσοδα",
+      "noData": "Δεν υπάρχουν δεδομένα συμβολαίων"
+    },
+    "expense": {
+      "noData": "Δεν υπάρχουν δεδομένα εξόδων"
+    },
+    "equity": {
+      "purchasePrice": "Τιμή Αγοράς",
+      "marketValue": "Αγοραία Αξία",
+      "mortgage": "Υποθήκη",
+      "equity": "Ίδια Κεφάλαια",
+      "noData": "Προσθέστε τιμή αγοράς και αγοραία αξία για να δείτε τα ίδια κεφάλαια"
+    },
+    "completeness": {
+      "title": "Πληρότητα Δεδομένων: {{percent}}%",
+      "purchasePrice": "Τιμή αγοράς",
+      "marketValue": "Αγοραία αξία",
+      "mortgageInfo": "Στοιχεία υποθήκης",
+      "operatingCosts": "Λειτουργικά κόστη",
+      "contracts": "Συμβόλαια",
+      "payments": "Πληρωμές",
+      "expenses": "Έξοδα"
+    },
+    "projection": {
+      "description": "Προβλεπόμενα έσοδα & έξοδα βάσει ενεργών συμβολαίων και λειτουργικών κόστων",
+      "expectedIncome": "Αναμενόμενα Έσοδα",
+      "expectedExpenses": "Αναμενόμενα Έξοδα",
+      "expectedNet": "Αναμενόμενο Καθαρό"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Επιλέξτε --",
+    "residential": {
+      "title": "Λεπτομέρειες Κατοικίας",
+      "bedrooms": "Υπνοδωμάτια",
+      "bathrooms": "Μπάνια",
+      "furnished": "Επιπλωμένο",
+      "petPolicy": "Πολιτική Κατοικίδιων"
+    },
+    "commercial": {
+      "title": "Εμπορικές Λεπτομέρειες",
+      "usableArea": "Χρηστικό Εμβαδόν",
+      "commonArea": "Κοινόχρηστος Χώρος",
+      "floorLevel": "Όροφος",
+      "ceilingHeight": "Ύψος Οροφής",
+      "maxOccupancy": "Μέγιστη Χωρητικότητα",
+      "restroomCount": "Αριθμός Τουαλετών",
+      "zoningClassification": "Χωροταξική Κατάταξη",
+      "zoningPlaceholder": "π.χ. Γ-2, Μικτή Εμπορική",
+      "hasStorefront": "Βιτρίνα",
+      "signageRights": "Δικαιώματα Σήμανσης",
+      "kitchenFacility": "Εγκατάσταση Κουζίνας",
+      "accessibilityCompliant": "Συμμόρφωση Προσβασιμότητας"
+    },
+    "industrial": {
+      "title": "Βιομηχανικές Λεπτομέρειες",
+      "clearHeight": "Καθαρό Ύψος",
+      "loadingDocks": "Ράμπες Φόρτωσης",
+      "driveInDoors": "Πόρτες Εισόδου Οχημάτων",
+      "floorLoadCapacity": "Αντοχή Δαπέδου",
+      "powerCapacity": "Ηλεκτρική Ισχύς",
+      "craneCapacity": "Χωρητικότητα Γερανού",
+      "yardArea": "Αυλή",
+      "zoningClassification": "Χωροταξική Κατάταξη",
+      "zoningPlaceholder": "π.χ. Β-1, Ελαφριά Βιομηχανία",
+      "threePhasePower": "Τριφασικό Ρεύμα",
+      "craneAvailable": "Γερανός Διαθέσιμος",
+      "hazmatCertified": "Πιστοποίηση Επικίνδυνων Υλικών",
+      "ventilationSystem": "Σύστημα Εξαερισμού",
+      "climateControl": "Κλιματισμός"
+    },
+    "agricultural": {
+      "title": "Αγροτικές Λεπτομέρειες",
+      "totalLandArea": "Συνολικό Εμβαδόν Γης",
+      "arableArea": "Καλλιεργήσιμη Έκταση",
+      "soilType": "Τύπος Εδάφους",
+      "waterSource": "Πηγή Νερού",
+      "irrigationType": "Τύπος Άρδευσης",
+      "fencingType": "Τύπος Περίφραξης",
+      "currentUse": "Τρέχουσα Χρήση",
+      "currentUsePlaceholder": "π.χ. Καλλιέργεια, Κτηνοτροφία",
+      "zoningClassification": "Χωροταξική Κατάταξη",
+      "zoningPlaceholder": "π.χ. Α-1, Αγροτικό",
+      "waterRights": "Δικαιώματα Νερού",
+      "hasOutbuildings": "Βοηθητικά Κτίσματα",
+      "outbuildingDetails": "Λεπτομέρειες Βοηθ. Κτισμάτων",
+      "outbuildingPlaceholder": "π.χ. Αχυρώνας, Αποθήκη, Γκαράζ εξοπλισμού"
+    },
+    "construction": {
+      "yearBuilt": "Έτος Κατασκευής",
+      "yearLastRenovated": "Έτος Τελευταίας Ανακαίνισης",
+      "constructionType": "Τύπος Κατασκευής",
+      "foundationType": "Τύπος Θεμελίου",
+      "roofType": "Τύπος Στέγης",
+      "wallConstruction": "Τοιχοποιία",
+      "flooringType": "Τύπος Δαπέδου",
+      "windowType": "Τύπος Παραθύρων",
+      "numberOfFloors": "Αριθμός Ορόφων",
+      "structuralNotes": "Δομικές Σημειώσεις",
+      "structuralNotesTooltip": "Σημαντικές δομικές λεπτομέρειες, ανακαινίσεις ή ζητήματα"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Ενεργειακή Κατάταξη",
+      "energyRatingTooltip": "Επίσημη ενεργειακή ετικέτα (Α++ έως G)",
+      "certificateExpiry": "Λήξη Ενεργειακού Πιστοποιητικού",
+      "certificateExpiryTooltip": "Πότε λήγει το τρέχον ενεργειακό πιστοποιητικό",
+      "heatingType": "Τύπος Θέρμανσης",
+      "coolingType": "Τύπος Ψύξης",
+      "hotWaterSystem": "Σύστημα Ζεστού Νερού",
+      "insulationNotes": "Σημειώσεις Μόνωσης",
+      "insulationTooltip": "Λεπτομέρειες μόνωσης τοίχων, στέγης, δαπέδου"
+    },
+    "utilities": {
+      "electricityConnection": "Σύνδεση Ηλεκτρισμού",
+      "electricityCapacity": "Χωρητικότητα Ηλεκτρισμού",
+      "electricityCapacityTooltip": "Χωρητικότητα κεντρικής ασφάλειας",
+      "waterConnection": "Σύνδεση Νερού",
+      "hasGasConnection": "Σύνδεση Αερίου",
+      "sewageType": "Τύπος Αποχέτευσης",
+      "internetConnection": "Σύνδεση Διαδικτύου",
+      "internetMaxSpeed": "Μέγιστη Ταχύτητα Διαδικτύου",
+      "internetStatus": "Κατάσταση Διαδικτύου"
+    },
+    "parking": {
+      "parkingSpaces": "Θέσεις Στάθμευσης",
+      "parkingType": "Τύπος Στάθμευσης"
+    },
+    "safety": {
+      "smokeDetectors": "Ανιχνευτές Καπνού",
+      "coDetectors": "Ανιχνευτές CO",
+      "fireExtinguisher": "Πυροσβεστήρας",
+      "sprinklerSystem": "Σύστημα Πυρόσβεσης",
+      "alarmSystem": "Σύστημα Συναγερμού",
+      "securityCameras": "Κάμερες Ασφαλείας",
+      "secureEntry": "Ασφαλής Είσοδος",
+      "safetyNotes": "Σημειώσεις Ασφαλείας",
+      "safetyNotesTooltip": "Διαδρομές διαφυγής, τελευταίος έλεγχος κ.λπ."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Πρόσβαση Αναπηρικού Αμαξιδίου",
+      "elevator": "Ασανσέρ",
+      "stepFreeEntrance": "Είσοδος Χωρίς Σκαλιά",
+      "adaptedBathroom": "Προσαρμοσμένο Μπάνιο",
+      "accessibilityNotes": "Σημειώσεις Προσβασιμότητας",
+      "accessibilityNotesTooltip": "Πλάτη θυρών, διαθεσιμότητα ράμπας κ.λπ."
+    },
+    "outdoorAreas": {
+      "type": "Τύπος",
+      "area": "Εμβαδόν",
+      "unit": "Μονάδα",
+      "add": "Προσθήκη",
+      "addOutdoorArea": "Προσθήκη εξωτερικού χώρου"
+    }
+  },
+  "form": {
+    "address": "Διεύθυνση",
+    "street": "Οδός",
+    "streetPlaceholder": "Ερμού 123",
+    "city": "Πόλη",
+    "cityPlaceholder": "Αθήνα",
+    "postalCode": "Ταχυδρομικός Κώδικας",
+    "postalCodePlaceholder": "105 63",
+    "country": "Χώρα",
+    "region": "Περιφέρεια",
+    "regionOther": "Άλλη",
+    "locationPreview": "Προεπισκόπηση Τοποθεσίας",
+    "specifications": "Προδιαγραφές",
+    "category": "Κατηγορία",
+    "categoryCannotChange": "(δεν μπορεί να αλλάξει)",
+    "type": "Τύπος",
+    "status": "Κατάσταση",
+    "area": "Εμβαδόν",
+    "areaPlaceholder": "75,5",
+    "saving": "Αποθήκευση...",
+    "updateProperty": "Ενημέρωση Ακινήτου",
+    "createProperty": "Δημιουργία Ακινήτου",
+    "validation": {
+      "streetRequired": "Η οδός είναι υποχρεωτική",
+      "cityRequired": "Η πόλη είναι υποχρεωτική",
+      "postalCodeRequired": "Ο ταχυδρομικός κώδικας είναι υποχρεωτικός",
+      "countryRequired": "Η χώρα είναι υποχρεωτική",
+      "areaPositive": "Το εμβαδόν πρέπει να είναι μεγαλύτερο από 0"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} από {{total}} συμπληρωμένα"
+  },
+  "documents": {
+    "title": "Έγγραφα",
+    "uploadButton": "Μεταφόρτωση Εγγράφου",
+    "empty": "Δεν έχουν μεταφορτωθεί έγγραφα ακόμα",
+    "failedToLoad": "Αποτυχία φόρτωσης εγγράφων",
+    "table": {
+      "document": "Έγγραφο",
+      "size": "Μέγεθος",
+      "uploaded": "Μεταφορτώθηκε",
+      "actions": "Ενέργειες"
+    },
+    "selection": {
+      "selected": "{{selected}} από {{total}} επιλεγμένα",
+      "count_one": "{{count}} έγγραφο",
+      "count_other": "{{count}} έγγραφα"
+    },
+    "preview": "Προεπισκόπηση",
+    "editTitleNotes": "Επεξεργασία τίτλου & σημειώσεων",
+    "upload": {
+      "title_one": "Μεταφόρτωση Εγγράφου",
+      "title_other": "Μεταφόρτωση Εγγράφων",
+      "files": "{{count}} αρχεία",
+      "titleLabel": "Τίτλος (προαιρετικό)",
+      "titlePlaceholder": "π.χ. Κάτοψη",
+      "notesLabel": "Σημειώσεις (προαιρετικό)",
+      "notesPlaceholder": "Πρόσθετες σημειώσεις για αυτό το έγγραφο",
+      "uploading": "Μεταφόρτωση {{current}} από {{total}}...",
+      "uploadCount": "Μεταφόρτωση {{count}} Εγγράφων"
+    },
+    "delete": {
+      "title_one": "Διαγραφή εγγράφου",
+      "title_other": "Διαγραφή εγγράφων",
+      "message_one": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το έγγραφο; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      "message_other": "Πρόκειται να διαγράψετε {{count}} έγγραφα. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      "confirmLabel_other": "Διαγραφή {{count}} εγγράφων"
+    },
+    "editModal": "Επεξεργασία Εγγράφου",
+    "downloading": "Λήψη..."
+  },
+  "photos": {
+    "title": "Φωτογραφίες",
+    "uploadButton": "Μεταφόρτωση Φωτογραφίας",
+    "empty": "Δεν υπάρχουν φωτογραφίες ακόμα",
+    "upload": {
+      "title_one": "Μεταφόρτωση Φωτογραφίας",
+      "title_other": "Μεταφόρτωση Φωτογραφιών",
+      "files": "{{count}} αρχεία",
+      "titleLabel": "Τίτλος (προαιρετικό)",
+      "titlePlaceholder": "π.χ. Σαλόνι",
+      "notesLabel": "Σημειώσεις (προαιρετικό)",
+      "notesPlaceholder": "Πρόσθετες σημειώσεις για αυτή τη φωτογραφία",
+      "uploading": "Μεταφόρτωση {{current}} από {{total}}...",
+      "uploadCount": "Μεταφόρτωση {{count}} Φωτογραφιών"
+    },
+    "delete": {
+      "title_one": "Διαγραφή φωτογραφίας",
+      "title_other": "Διαγραφή φωτογραφιών",
+      "mainPhotoWarning_one": "Αυτή είναι η κύρια φωτογραφία. Η διαγραφή της σημαίνει ότι αυτό το ακίνητο δεν θα έχει πλέον κύρια φωτογραφία. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      "mainPhotoWarning_other": "Πρόκειται να διαγράψετε {{count}} φωτογραφίες, συμπεριλαμβανομένης της κύριας φωτογραφίας. Αυτό το ακίνητο δεν θα έχει πλέον κύρια φωτογραφία. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      "message_one": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή τη φωτογραφία; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      "message_other": "Πρόκειται να διαγράψετε {{count}} φωτογραφίες. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      "confirmLabel_other": "Διαγραφή {{count}} φωτογραφιών"
+    },
+    "editModal": "Επεξεργασία Φωτογραφίας"
+  },
+  "contracts": {
+    "title": "Συμβόλαια",
+    "addContract": "Προσθήκη Συμβολαίου",
+    "empty": "Δεν υπάρχουν συμβόλαια για αυτό το ακίνητο",
+    "createFirst": "Δημιουργία Πρώτου Συμβολαίου",
+    "searchPlaceholder": "Αναζήτηση ανά αριθμό συμβολαίου, επαφή, τύπο...",
+    "noMatchingSearch": "Δεν βρέθηκαν συμβόλαια που ταιριάζουν με την αναζήτησή σας",
+    "table": {
+      "contractNumber": "Συμβόλαιο #",
+      "contact": "Επαφή",
+      "type": "Τύπος",
+      "startDate": "Ημερομηνία Έναρξης",
+      "endDate": "Ημερομηνία Λήξης",
+      "rentAmount": "Ποσό Ενοικίου",
+      "status": "Κατάσταση"
+    },
+    "pagination": {
+      "showing": "Εμφάνιση {{from}} έως {{to}} από {{total}} συμβόλαια"
+    },
+    "selfOccupancy": {
+      "title": "Περίοδοι Ιδιοκατοίκησης",
+      "addButton": "Προσθήκη Ιδιοκατοίκησης",
+      "empty": "Δεν υπάρχουν καταγεγραμμένες περίοδοι ιδιοκατοίκησης",
+      "recordPeriod": "Καταγράψτε μια περίοδο ιδιοκατοίκησης",
+      "table": {
+        "period": "Περίοδος",
+        "type": "Τύπος",
+        "occupant": "Κάτοχος",
+        "status": "Κατάσταση",
+        "actions": "Ενέργειες"
+      },
+      "ongoing": "Σε εξέλιξη",
+      "active": "Ενεργή",
+      "ended": "Ολοκληρώθηκε",
+      "endOccupancy": "Τερματισμός κατοίκησης",
+      "deleteTitle": "Διαγραφή Περιόδου Ιδιοκατοίκησης",
+      "deleteMessage": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν την περίοδο ιδιοκατοίκησης;",
+      "deleteWarning": "Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      "takenPeriods": {
+        "selfUse": "Ιδιοχρήση: {{period}}",
+        "contract": "Συμβόλαιο {{identifier}}: {{period}}",
+        "ongoing": "Σε εξέλιξη"
+      }
+    }
+  },
+  "expenses": {
+    "title": "Έξοδα",
+    "addExpense": "Προσθήκη Εξόδου",
+    "empty": "Δεν υπάρχουν έξοδα για αυτό το ακίνητο",
+    "createFirst": "Δημιουργία Πρώτου Εξόδου",
+    "failedToLoad": "Αποτυχία φόρτωσης εξόδων",
+    "searchPlaceholder": "Αναζήτηση ανά αριθμό εξόδου, περιγραφή, κατηγορία...",
+    "noMatchingSearch": "Δεν βρέθηκαν έξοδα που ταιριάζουν με την αναζήτησή σας",
+    "table": {
+      "expenseNumber": "Έξοδο #",
+      "date": "Ημερομηνία",
+      "description": "Περιγραφή",
+      "category": "Κατηγορία",
+      "amount": "Ποσό"
+    },
+    "pagination": {
+      "showing": "Εμφάνιση {{from}} έως {{to}} από {{total}} έξοδα"
+    }
+  },
+  "audit": {
+    "title": "Ιστορικό Ακινήτου",
+    "failedToLoad": "Αποτυχία φόρτωσης ιστορικού",
+    "empty": {
+      "title": "Δεν υπάρχει διαθέσιμο ιστορικό",
+      "description": "Οι αλλαγές σε αυτό το ακίνητο θα εμφανιστούν εδώ"
+    },
+    "impersonated": "Πλαστοπροσωπία",
+    "clickToHide": "Κάντε κλικ για απόκρυψη αλλαγών",
+    "clickToView": "Κάντε κλικ για προβολή αλλαγών",
+    "changedFields": "Αλλαγμένα Πεδία",
+    "old": "Παλιό:",
+    "new": "Νέο:",
+    "fileName": "Όνομα Αρχείου",
+    "titleLabel": "Τίτλος",
+    "typeLabel": "Τύπος",
+    "photo": "Φωτογραφία",
+    "document": "Έγγραφο"
+  },
+  "selfOccupancy": {
+    "title": "Ιδιοκατοίκηση",
+    "markTitle": "Σήμανση ως Ιδιοκατοικούμενο",
+    "editTitle": "Επεξεργασία Ιδιοκατοίκησης",
+    "endTitle": "Τερματισμός Ιδιοκατοίκησης",
+    "active": "Ενεργή",
+    "period": "Περίοδος",
+    "type": "Τύπος",
+    "occupant": "Κάτοχος",
+    "imputedRent": "Τεκμαρτό Ενοίκιο",
+    "perMonth": "/ μήνα",
+    "endReason": "Λόγος Τερματισμού",
+    "notes": "Σημειώσεις",
+    "endOccupancy": "Τερματισμός Κατοίκησης",
+    "form": {
+      "startDate": "Ημερομηνία Έναρξης *",
+      "endDate": "Ημερομηνία Λήξης",
+      "endDateRequired": "Ημερομηνία Λήξης *",
+      "occupancyType": "Τύπος Κατοίκησης *",
+      "occupantName": "Όνομα Κατοίκου",
+      "occupantNamePlaceholder": "π.χ. Ιδιοκτήτης, Μέλος οικογένειας",
+      "monthlyImputedRent": "Μηνιαίο Τεκμαρτό Ενοίκιο",
+      "notes": "Σημειώσεις",
+      "notesPlaceholder": "Πρόσθετες σημειώσεις...",
+      "reason": "Λόγος",
+      "reasonPlaceholder": "Επιλέξτε λόγο...",
+      "alreadyTakenPeriods": "Ήδη κατειλημμένες περίοδοι"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Προσωπική",
+      "FAMILY": "Οικογενειακή",
+      "BUSINESS": "Επαγγελματική"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Μετατροπή σε Ενοικίαση",
+      "SELLING": "Πώληση",
+      "RENOVATION": "Ανακαίνιση",
+      "OTHER": "Άλλο"
+    }
+  },
+  "map": {
+    "unavailable": "Προεπισκόπηση Χάρτη Μη Διαθέσιμη",
+    "configureApiKey": "Ρυθμίστε το VITE_GOOGLE_MAPS_API_KEY για να ενεργοποιήσετε τους χάρτες",
+    "loading": "Φόρτωση χάρτη...",
+    "locationNotFound": "Η Τοποθεσία Δεν Βρέθηκε",
+    "couldNotFind": "Δεν ήταν δυνατή η εύρεση αυτής της διεύθυνσης στον χάρτη",
+    "apiKeyNotConfigured": "Το κλειδί API Google Maps δεν έχει ρυθμιστεί",
+    "geocodeFailed": "Αποτυχία γεωκωδικοποίησης διεύθυνσης",
+    "locationNotFoundShort": "Δεν ήταν δυνατή η εύρεση τοποθεσίας",
+    "findingLocation": "Εύρεση τοποθεσίας...",
+    "couldNotLoadMaps": "Δεν ήταν δυνατή η φόρτωση του Google Maps αυτήν τη στιγμή",
+    "clickToPlace": "Η εύρεση τοποθεσίας δεν ήταν επιτυχής αυτή τη φορά. Κάντε κλικ οπουδήποτε στον χάρτη για να τοποθετήσετε την πινέζα του ακινήτου σας.",
+    "placePinManually": "Τοποθέτηση πινέζας χειροκίνητα",
+    "accuracy": {
+      "rooftop": "Σύρετε την πινέζα για να ρυθμίσετε την ακριβή τοποθεσία",
+      "manual": "Η πινέζα τοποθετήθηκε χειροκίνητα — σύρετε για προσαρμογή αν χρειαστεί",
+      "approximate": "Βρήκαμε τη γειτονιά αλλά όχι την ακριβή τοποθεσία — σύρετε την πινέζα στο ακίνητό σας!",
+      "country": "Βρήκαμε τη χώρα τουλάχιστον! Σύρετε την πινέζα στη σωστή τοποθεσία."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Ιδιοκατοίκηση",
+    "contract": "Συμβόλαιο",
+    "vacancy": "Κενό",
+    "noEntries": "Δεν υπάρχουν εγγραφές χρονοδιαγράμματος ακόμα",
+    "ongoing": "Σε εξέλιξη"
+  },
+  "statusChart": {
+    "occupied": "Κατειλημμένο",
+    "selfOccupied": "Ιδιοκατοικούμενο",
+    "vacant": "Κενό",
+    "maintenance": "Συντήρηση",
+    "unavailable": "Μη Διαθέσιμο",
+    "noProperties": "Δεν υπάρχουν ακίνητα για εμφάνιση"
+  },
+  "financials": {
+    "failedToLoad": "Αποτυχία φόρτωσης οικονομικών δεδομένων.",
+    "saving": "Αποθήκευση...",
+    "deleting": "Διαγραφή...",
+    "notSet": "Δεν ορίστηκε",
+    "latestValuation": "Τελευταία Αποτίμηση",
+    "valuationHistory": "Ιστορικό Αποτιμήσεων",
+    "payments": "Πληρωμές",
+    "bulkAdd": "Μαζική Προσθήκη",
+    "sections": {
+      "acquisition": "Απόκτηση",
+      "valuations": "Αποτιμήσεις",
+      "financings": "Χρηματοδοτήσεις",
+      "recurringCosts": "Επαναλαμβανόμενα Κόστη"
+    },
+    "metrics": {
+      "netWorth": "Καθαρή Αξία",
+      "totalAnnualCosts": "Συνολικά Ετήσια Κόστη",
+      "totalFinancingBalance": "Συνολικό Υπόλοιπο Χρηματοδότησης",
+      "latestValuation": "Τελευταία Αποτίμηση"
+    },
+    "modals": {
+      "addTax": "Προσθήκη Φόρου",
+      "editTax": "Επεξεργασία Φόρου",
+      "addFee": "Προσθήκη Τέλους",
+      "editFee": "Επεξεργασία Τέλους",
+      "addFinancing": "Προσθήκη Χρηματοδότησης",
+      "editFinancing": "Επεξεργασία Χρηματοδότησης",
+      "addInsurance": "Προσθήκη Ασφάλειας",
+      "editInsurance": "Επεξεργασία Ασφάλειας",
+      "addValuation": "Προσθήκη Αποτίμησης",
+      "editValuation": "Επεξεργασία Αποτίμησης",
+      "addAcquisition": "Προσθήκη Απόκτησης",
+      "editAcquisition": "Επεξεργασία Απόκτησης",
+      "editPayment": "Επεξεργασία Πληρωμής",
+      "recordPayment": "Καταχώρηση Πληρωμής",
+      "bulkAddPayments": "Μαζική Προσθήκη Πληρωμών"
+    },
+    "labels": {
+      "taxType": "Τύπος Φόρου",
+      "authority": "Αρχή",
+      "annualAmount": "Ετήσιο Ποσό",
+      "paymentFrequency": "Συχνότητα Πληρωμής",
+      "taxYear": "Φορολογικό Έτος",
+      "dueMonths": "Μήνες Πληρωμής",
+      "startDate": "Ημερομηνία Έναρξης",
+      "endDate": "Ημερομηνία Λήξης",
+      "status": "Κατάσταση",
+      "notes": "Σημειώσεις",
+      "feeType": "Τύπος Τέλους",
+      "name": "Όνομα",
+      "financingType": "Τύπος Χρηματοδότησης",
+      "rateType": "Τύπος Επιτοκίου",
+      "lenderName": "Όνομα Δανειστή",
+      "loanNumber": "Αριθμός Δανείου",
+      "originalAmount": "Αρχικό Ποσό",
+      "currentBalance": "Τρέχον Υπόλοιπο",
+      "interestRate": "Επιτόκιο",
+      "monthlyPayment": "Μηνιαία Δόση",
+      "variablePayment": "Μεταβλητή δόση",
+      "termMonths": "Διάρκεια (μήνες)",
+      "insuranceType": "Τύπος Ασφάλειας",
+      "provider": "Πάροχος",
+      "policyNumber": "Αριθμός Ασφαλιστηρίου",
+      "coverageAmount": "Ποσό Κάλυψης",
+      "annualPremium": "Ετήσιο Ασφάλιστρο",
+      "valuationType": "Τύπος Αποτίμησης",
+      "valuationDate": "Ημερομηνία Αποτίμησης",
+      "amount": "Ποσό",
+      "source": "Πηγή",
+      "acquisitionType": "Τύπος Απόκτησης",
+      "acquisitionDate": "Ημερομηνία Απόκτησης",
+      "purchasePrice": "Τιμή Αγοράς",
+      "closingCosts": "Κόστη Κλεισίματος",
+      "renovationCosts": "Κόστη Ανακαίνισης",
+      "landValue": "Αξία Οικοπέδου",
+      "depreciationMethod": "Μέθοδος Απόσβεσης",
+      "depreciationYears": "Έτη Απόσβεσης",
+      "paymentDate": "Ημερομηνία Πληρωμής",
+      "totalAmount": "Συνολικό Ποσό",
+      "principal": "Κεφάλαιο",
+      "interest": "Τόκοι",
+      "escrow": "Λογαριασμός Μεσεγγύησης",
+      "extraPayment": "Πρόσθετη Πληρωμή",
+      "deductFromBalance": "Αφαίρεση κεφαλαίου από υπόλοιπο χρηματοδότησης",
+      "documents": "Έγγραφα",
+      "currency": "Νόμισμα",
+      "type": "Τύπος",
+      "date": "Ημερομηνία"
+    },
+    "placeholders": {
+      "addNotes": "Προσθέστε σημειώσεις...",
+      "source": "π.χ. Μεσιτικό γραφείο, Ηλεκτρονικό εργαλείο"
+    },
+    "units": {
+      "years": "έτη",
+      "months": "μήνες",
+      "perYear": "/έτος"
+    },
+    "recurringCosts": "Επαναλαμβανόμενα Κόστη",
+    "insurances": "Ασφάλειες",
+    "taxes": "Φόροι",
+    "fees": "Τέλη",
+    "na": "Δ/Ε",
+    "all": "Όλα",
+    "term": "Διάρκεια",
+    "frequency": "Συχνότητα",
+    "actions": "Ενέργειες",
+    "total": "Σύνολο",
+    "empty": {
+      "noAcquisition": "Δεν υπάρχουν δεδομένα απόκτησης.",
+      "noValuation": "Δεν υπάρχουν δεδομένα αποτίμησης.",
+      "noFinancing": "Δεν υπάρχουν χρηματοδοτικά μέσα.",
+      "noPayments": "Δεν υπάρχουν καταγεγραμμένες πληρωμές ακόμα.",
+      "noInsurances": "Δεν υπάρχουν ασφάλειες.",
+      "noTaxes": "Δεν υπάρχουν φόροι.",
+      "noFees": "Δεν υπάρχουν τέλη."
+    },
+    "delete": {
+      "title": "Διαγραφή {{label}};",
+      "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το {{label}}; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      "valuation": "αποτίμηση {{type}}",
+      "payment": "πληρωμή ({{date}})",
+      "insurance": "ασφάλεια {{type}}",
+      "tax": "φόρος {{type}}",
+      "fee": "τέλος {{type}}"
+    },
+    "toast": {
+      "paymentDeleted": "Η πληρωμή διαγράφηκε επιτυχώς",
+      "paymentDeleteFailed": "Αποτυχία διαγραφής πληρωμής",
+      "paymentsCreated_one": "{{count}} πληρωμή δημιουργήθηκε επιτυχώς",
+      "paymentsCreated_other": "{{count}} πληρωμές δημιουργήθηκαν επιτυχώς"
+    },
+    "months": {
+      "jan": "Ιαν",
+      "feb": "Φεβ",
+      "mar": "Μαρ",
+      "apr": "Απρ",
+      "may": "Μάι",
+      "jun": "Ιούν",
+      "jul": "Ιούλ",
+      "aug": "Αύγ",
+      "sep": "Σεπ",
+      "oct": "Οκτ",
+      "nov": "Νοέ",
+      "dec": "Δεκ"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Αγορά",
+      "INHERITANCE": "Κληρονομιά",
+      "GIFT": "Δωρεά",
+      "FORECLOSURE": "Κατάσχεση",
+      "AUCTION": "Πλειστηριασμός",
+      "OTHER": "Άλλο"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Σταθερή Μέθοδος",
+      "DECLINING_BALANCE": "Φθίνουσα Μέθοδος",
+      "NONE": "Καμία"
+    },
+    "valuationTypes": {
+      "MARKET": "Αγοράς",
+      "APPRAISAL": "Εκτίμηση",
+      "TAX_ASSESSED": "Φορολογική Εκτίμηση",
+      "PURCHASE": "Αγοράς",
+      "INSURANCE": "Ασφαλιστική",
+      "USER_ESTIMATE": "Εκτίμηση Χρήστη"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Υποθήκη",
+      "LEASING": "Χρηματοδοτική Μίσθωση",
+      "LOAN": "Δάνειο",
+      "LINE_OF_CREDIT": "Πιστωτική Γραμμή",
+      "PRIVATE_FINANCING": "Ιδιωτική Χρηματοδότηση",
+      "OTHER": "Άλλο"
+    },
+    "rateTypes": {
+      "FIXED": "Σταθερό",
+      "VARIABLE": "Μεταβλητό",
+      "INTEREST_ONLY": "Μόνο Τόκοι",
+      "HYBRID": "Υβριδικό"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Ενεργή",
+      "PAID_OFF": "Εξοφληθείσα",
+      "REFINANCED": "Αναχρηματοδοτηθείσα",
+      "DEFAULTED": "Σε Αθέτηση"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Προγραμματισμένη",
+      "COMPLETED": "Ολοκληρωμένη",
+      "MISSED": "Χαμένη",
+      "LATE": "Καθυστερημένη"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Κτιρίου",
+      "LIABILITY": "Αστικής Ευθύνης",
+      "CONTENTS": "Περιεχομένων",
+      "FLOOD": "Πλημμύρας",
+      "EARTHQUAKE": "Σεισμού",
+      "UMBRELLA": "Ομπρέλα",
+      "RENT_GUARANTEE": "Εγγύηση Ενοικίου",
+      "OTHER": "Άλλη"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Ενεργή",
+      "EXPIRED": "Ληγμένη",
+      "CANCELLED": "Ακυρωμένη"
+    },
+    "taxTypes": {
+      "PROPERTY": "Ακινήτου",
+      "MUNICIPAL": "Δημοτικός",
+      "STATE": "Κρατικός",
+      "LOCAL": "Τοπικός",
+      "LAND": "Γης",
+      "SPECIAL_ASSESSMENT": "Ειδική Εισφορά",
+      "OTHER": "Άλλος"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Ενεργός",
+      "EXPIRED": "Ληγμένος",
+      "EXEMPT": "Απαλλαγμένος"
+    },
+    "feeTypes": {
+      "HOA": "Κοινόχρηστα",
+      "MANAGEMENT": "Διαχείριση",
+      "MAINTENANCE_RESERVE": "Αποθεματικό Συντήρησης",
+      "CLEANING": "Καθαρισμός",
+      "GARDENING": "Κηπουρική",
+      "SECURITY": "Ασφάλεια",
+      "WASTE_MANAGEMENT": "Διαχείριση Απορριμμάτων",
+      "WATER": "Νερό",
+      "UTILITIES": "Πάγια",
+      "OTHER": "Άλλο"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Ενεργό",
+      "EXPIRED": "Ληγμένο",
+      "CANCELLED": "Ακυρωμένο"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Μηνιαία",
+      "QUARTERLY": "Τριμηνιαία",
+      "SEMI_ANNUALLY": "Εξαμηνιαία",
+      "ANNUALLY": "Ετήσια",
+      "CUSTOM": "Προσαρμοσμένη"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Άνοιγμα συμβολαίου",
+    "clickToEdit": "Κάντε κλικ για επεξεργασία"
+  }
+}

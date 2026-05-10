@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { addMonths, differenceInMonths, parseISO, format } from 'date-fns';
 import { MoneyInput } from '@/components/common/MoneyInput';
@@ -31,6 +32,7 @@ export const FinancingFormModal = ({
   existing,
   onClose,
 }: FinancingFormModalProps) => {
+  const { t } = useTranslation('properties');
   const { defaultCurrency } = useTeamDefaults();
   const createMutation = useCreateFinancing(propertyId);
   const updateMutation = useUpdateFinancing(propertyId);
@@ -169,7 +171,9 @@ export const FinancingFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
           <h2 className="text-lg font-semibold text-text-primary">
-            {existing ? 'Edit Financing' : 'Add Financing'}
+            {existing
+              ? t('financials.modals.editFinancing')
+              : t('financials.modals.addFinancing')}
           </h2>
           <button
             type="button"
@@ -187,7 +191,8 @@ export const FinancingFormModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>
-                Financing Type <span className="text-error-text">*</span>
+                {t('financials.labels.financingType')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <select
                 value={formData.financingType ?? ''}
@@ -204,7 +209,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Rate Type</label>
+              <label className={labelClass}>
+                {t('financials.labels.rateType')}
+              </label>
               <select
                 value={formData.rateType ?? ''}
                 onChange={(e) =>
@@ -212,7 +219,7 @@ export const FinancingFormModal = ({
                 }
                 className={inputClass}
               >
-                <option value="">Select...</option>
+                <option value="">{t('common:selectors.select')}...</option>
                 {Object.values(RateType).map((t) => (
                   <option key={t} value={t}>
                     {formatRateType(t)}
@@ -222,7 +229,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Lender Name</label>
+              <label className={labelClass}>
+                {t('financials.labels.lenderName')}
+              </label>
               <input
                 type="text"
                 value={formData.lenderName ?? ''}
@@ -234,7 +243,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Loan Number</label>
+              <label className={labelClass}>
+                {t('financials.labels.loanNumber')}
+              </label>
               <input
                 type="text"
                 value={formData.loanNumber ?? ''}
@@ -247,7 +258,8 @@ export const FinancingFormModal = ({
 
             <div className="min-w-0">
               <label className={labelClass}>
-                Original Amount <span className="text-error-text">*</span>
+                {t('financials.labels.originalAmount')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <MoneyInput
                 value={formData.originalAmount}
@@ -259,7 +271,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div className="min-w-0">
-              <label className={labelClass}>Current Balance</label>
+              <label className={labelClass}>
+                {t('financials.labels.currentBalance')}
+              </label>
               <MoneyInput
                 value={formData.currentBalance}
                 onChange={(v) => update('currentBalance', v)}
@@ -270,7 +284,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Interest Rate (%)</label>
+              <label className={labelClass}>
+                {t('financials.labels.interestRate')} (%)
+              </label>
               <div className="relative">
                 <input
                   type="number"
@@ -295,7 +311,9 @@ export const FinancingFormModal = ({
             <div
               className={`min-w-0 ${formData.paymentVariable ? 'opacity-50 pointer-events-none' : ''}`}
             >
-              <label className={labelClass}>Monthly Payment</label>
+              <label className={labelClass}>
+                {t('financials.labels.monthlyPayment')}
+              </label>
               <MoneyInput
                 value={formData.monthlyPayment}
                 onChange={(v) => update('monthlyPayment', v)}
@@ -314,14 +332,15 @@ export const FinancingFormModal = ({
                   className="rounded border-border-strong text-primary-500 focus:ring-primary-500"
                 />
                 <span className="text-sm text-text-secondary">
-                  Variable payment
+                  {t('financials.labels.variablePayment')}
                 </span>
               </label>
             </div>
 
             <div>
               <label className={labelClass}>
-                Start Date <span className="text-error-text">*</span>
+                {t('financials.labels.startDate')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <input
                 type="date"
@@ -333,7 +352,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>End Date</label>
+              <label className={labelClass}>
+                {t('financials.labels.endDate')}
+              </label>
               <input
                 type="date"
                 value={formData.endDate ?? ''}
@@ -343,7 +364,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Term (months)</label>
+              <label className={labelClass}>
+                {t('financials.labels.termMonths')}
+              </label>
               <input
                 type="number"
                 value={formData.termMonths ?? ''}
@@ -359,7 +382,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>Status</label>
+              <label className={labelClass}>
+                {t('financials.labels.status')}
+              </label>
               <select
                 value={formData.status ?? ''}
                 onChange={(e) => update('status', e.target.value || undefined)}
@@ -374,11 +399,13 @@ export const FinancingFormModal = ({
             </div>
 
             <div className="col-span-2">
-              <label className={labelClass}>Notes</label>
+              <label className={labelClass}>
+                {t('financials.labels.notes')}
+              </label>
               <RichTextEditor
                 value={formData.notes ?? ''}
                 onChange={(value) => update('notes', value || undefined)}
-                placeholder="Add notes..."
+                placeholder={t('financials.placeholders.addNotes')}
               />
             </div>
           </div>
@@ -390,7 +417,7 @@ export const FinancingFormModal = ({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             type="submit"
@@ -398,7 +425,11 @@ export const FinancingFormModal = ({
             disabled={isLoading}
             className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
-            {isLoading ? 'Saving...' : existing ? 'Save Changes' : 'Create'}
+            {isLoading
+              ? t('financials.saving')
+              : existing
+                ? t('common:buttons.saveChanges')
+                : t('common:buttons.create')}
           </button>
         </div>
       </div>

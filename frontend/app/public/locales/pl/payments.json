@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Płatności",
+    "subtitle": "Śledź płatności czynszu i przychody"
+  },
+  "actions": {
+    "schedulePayment": "Zaplanuj płatność",
+    "registerPayment": "Zarejestruj płatność",
+    "registerReceival": "Zarejestruj wpłatę",
+    "markAsPaid": "Oznacz jako opłacone"
+  },
+  "stats": {
+    "pendingPayments": "Oczekujące płatności",
+    "pendingCount": "{{count}} płatność",
+    "pendingCount_other": "{{count}} płatności",
+    "overduePayments": "Zaległe płatności",
+    "overdueCount": "{{count}} płatność po terminie",
+    "overdueCount_other": "{{count}} płatności po terminie",
+    "overdueAction": "Wymagane działanie: Sprawdź zaległe płatności",
+    "allCaughtUp": "Wszystko aktualne!",
+    "noOverdue": "Brak zaległych płatności. Tak trzymaj!",
+    "lastSixMonths": "Ostatnie 6 miesięcy",
+    "tooltipReceived": "Otrzymane"
+  },
+  "filters": {
+    "title": "Filtry",
+    "property": "Nieruchomość",
+    "contract": "Umowa",
+    "status": "Status",
+    "allStatuses": "Wszystkie statusy",
+    "allProperties": "Wszystkie nieruchomości",
+    "allContracts": "Wszystkie umowy"
+  },
+  "status": {
+    "pending": "Oczekująca",
+    "partiallyPaid": "Częściowa",
+    "paid": "Opłacona",
+    "overdue": "Zaległa",
+    "late": "Spóźniona",
+    "cancelled": "Anulowana"
+  },
+  "table": {
+    "dueDate": "Termin płatności",
+    "paymentNumber": "Płatność #",
+    "contract": "Umowa",
+    "amount": "Kwota",
+    "status": "Status",
+    "balance": "Saldo: {{amount}}"
+  },
+  "empty": {
+    "title": "Nie znaleziono płatności",
+    "filtered": "Spróbuj dostosować filtry",
+    "noData": "Zacznij od zarejestrowania pierwszej płatności"
+  },
+  "card": {
+    "paymentId": "Płatność #{{id}}",
+    "contractId": "Umowa #{{id}}",
+    "property": "Nieruchomość",
+    "contact": "Kontakt",
+    "amount": "Kwota",
+    "balance": "Saldo: {{amount}}",
+    "dueDate": "Termin płatności",
+    "paidOn": "Opłacono"
+  },
+  "form": {
+    "amount": "Kwota",
+    "dueDate": "Termin płatności",
+    "paymentDate": "Data płatności",
+    "contact": "Kontakt",
+    "notes": "Notatki",
+    "notesPlaceholder": "Dodaj dodatkowe uwagi dotyczące tej płatności...",
+    "continueAdding": "Kontynuuj dodawanie",
+    "today": "Dzisiaj",
+    "clear": "Wyczyść",
+    "updatePayment": "Zaktualizuj płatność",
+    "saving": "Zapisywanie...",
+    "contract": "Umowa",
+    "currency": "Waluta",
+    "selectContractFirst": "Najpierw wybierz umowę",
+    "rentPeriodNotice": "Ta data przypada w innym okresie czynszowym ({{amount}}/mies. od {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " do {{date}}",
+    "rentPeriodCurrentRent": "Aktualny czynsz to {{amount}}/mies.",
+    "rentPeriodWarning": "Ta data przypada w innym okresie czynszowym ({{currency}}{{amount}}/mies. od {{from}}{{to}}).",
+    "rentPeriodTo": " do {{date}}",
+    "currentRentInfo": "Aktualny czynsz to {{currency}}{{amount}}/mies."
+  },
+  "validation": {
+    "amountRequired": "Kwota musi być większa od 0",
+    "dueDateRequired": "Termin płatności jest wymagany",
+    "currencyRequired": "Waluta jest wymagana",
+    "paymentDateRequired": "Data płatności jest wymagana"
+  },
+  "bulkColumns": {
+    "date": "Data",
+    "amount": "Kwota"
+  },
+  "create": {
+    "titleRegister": "Zarejestruj płatność",
+    "titleSchedule": "Zaplanuj płatność",
+    "addedCount": "{{count}} płatność {{action}} w tej sesji",
+    "addedCount_other": "{{count}} płatności {{action}} w tej sesji",
+    "actionRegistered": "zarejestrowana",
+    "actionScheduled": "zaplanowana",
+    "single": "Pojedyncza",
+    "bulk": "Zbiorcza",
+    "contractInactiveWarning": "Powiązana umowa nie jest aktywna. Wybierz aktywną umowę."
+  },
+  "detail": {
+    "titlePrefix": "Płatność #{{id}}",
+    "subtitlePrefix": "Umowa #{{id}}",
+    "paymentDetails": "Szczegóły płatności",
+    "relatedInformation": "Powiązane informacje",
+    "amount": "Kwota",
+    "received": "Otrzymano",
+    "balance": "Saldo",
+    "dueDate": "Termin płatności",
+    "paymentDate": "Data płatności",
+    "contract": "Umowa",
+    "contractId": "Umowa #{{id}}",
+    "property": "Nieruchomość",
+    "contact": "Kontakt",
+    "notes": "Notatki",
+    "metadata": "Metadane",
+    "created": "Utworzono:",
+    "lastUpdated": "Ostatnia aktualizacja:",
+    "editPayment": "Edytuj płatność"
+  },
+  "tabs": {
+    "details": "Szczegóły",
+    "receivals": "Wpłaty",
+    "documents": "Dokumenty",
+    "history": "Historia"
+  },
+  "receivals": {
+    "title": "Wpłaty ({{count}})",
+    "totalAmount": "Łączna kwota",
+    "received": "Otrzymano",
+    "balance": "Saldo",
+    "empty": "Brak zarejestrowanych wpłat",
+    "searchPlaceholder": "Szukaj po kwocie, dacie lub notatkach...",
+    "date": "Data",
+    "amount": "Kwota",
+    "notes": "Notatki",
+    "actions": "Akcje",
+    "showing": "Wyświetlanie {{from}} do {{to}} z {{total}}",
+    "remainingBalance": "Pozostałe saldo:",
+    "receivalDate": "Data wpłaty",
+    "notesOptional": "Notatki (opcjonalne)",
+    "notesPlaceholder": "Dodaj uwagi dotyczące tej wpłaty...",
+    "register": "Zarejestruj"
+  },
+  "history": {
+    "title": "Historia płatności",
+    "empty": "Brak dostępnej historii",
+    "emptySubtitle": "Zmiany w tej płatności pojawią się tutaj",
+    "clickToView": "Kliknij, aby wyświetlić zmiany",
+    "clickToHide": "Kliknij, aby ukryć zmiany",
+    "changedFields": "Zmienione pola",
+    "old": "Poprzednia:",
+    "new": "Nowa:",
+    "impersonated": "Podszywany",
+    "na": "N/D",
+    "none": "Brak",
+    "receivalOn": "{{amount}} w dniu {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Usuń płatność",
+    "message": "Czy na pewno chcesz usunąć tę płatność? Tej akcji nie można cofnąć.",
+    "messageWithRelated": "Czy na pewno chcesz usunąć tę płatność? Wszystkie powiązane dane (wpłaty, dokumenty) również zostaną usunięte. Tej akcji nie można cofnąć."
+  },
+  "markPaidDialog": {
+    "title": "Oznacz płatność jako opłaconą",
+    "balanceMessage": "Spowoduje to zarejestrowanie wpłaty na pozostałe saldo {{amount}} i oznaczenie płatności jako w pełni opłaconej.",
+    "paymentDate": "Data płatności",
+    "notesOptional": "Notatki (opcjonalne)",
+    "notesPlaceholder": "Dodaj uwagi dotyczące tej płatności..."
+  },
+  "receivalDialog": {
+    "title": "Zarejestruj wpłatę",
+    "remainingBalance": "Pozostałe saldo:",
+    "amount": "Kwota",
+    "receivalDate": "Data wpłaty",
+    "notesOptional": "Notatki (opcjonalne)",
+    "notesPlaceholder": "Dodaj uwagi dotyczące tej wpłaty...",
+    "register": "Zarejestruj"
+  },
+  "tooltips": {
+    "viewPayment": "Wyświetl płatność",
+    "deletePayment": "Usuń płatność",
+    "editReceival": "Edytuj wpłatę",
+    "deleteReceival": "Usuń wpłatę",
+    "save": "Zapisz",
+    "previous": "Poprzednia",
+    "next": "Następna"
+  },
+  "errors": {
+    "loadFailed": "Nie udało się załadować płatności",
+    "loadPaymentFailed": "Nie udało się załadować płatności",
+    "loadHistoryFailed": "Nie udało się załadować historii"
+  }
+}

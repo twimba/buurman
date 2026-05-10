@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@buurman/ui';
@@ -133,6 +134,7 @@ export const TaxFormModal = ({
   existing,
   onClose,
 }: TaxFormModalProps) => {
+  const { t } = useTranslation('properties');
   const { defaultCurrency } = useTeamDefaults();
   const currency = defaultCurrency || 'EUR';
   const createMutation = useCreateTax(propertyId);
@@ -201,7 +203,9 @@ export const TaxFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
           <h2 className="text-lg font-semibold text-text-primary">
-            {isEdit ? 'Edit Tax' : 'Add Tax'}
+            {isEdit
+              ? t('financials.modals.editTax')
+              : t('financials.modals.addTax')}
           </h2>
           <button
             type="button"
@@ -220,7 +224,7 @@ export const TaxFormModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Tax Type *
+                {t('financials.labels.taxType')} *
               </label>
               <select
                 value={formData.taxType}
@@ -243,7 +247,7 @@ export const TaxFormModal = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Authority
+                {t('financials.labels.authority')}
               </label>
               <input
                 type="text"
@@ -257,7 +261,7 @@ export const TaxFormModal = ({
 
             <div className="col-span-2">
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Annual Amount *
+                {t('financials.labels.annualAmount')} *
               </label>
               <MoneyInput
                 value={formData.annualAmount}
@@ -270,7 +274,7 @@ export const TaxFormModal = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Payment Frequency
+                {t('financials.labels.paymentFrequency')}
               </label>
               <select
                 value={formData.paymentFrequency ?? PaymentFrequency.ANNUALLY}
@@ -298,7 +302,7 @@ export const TaxFormModal = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Tax Year
+                {t('financials.labels.taxYear')}
               </label>
               <input
                 type="number"
@@ -319,7 +323,7 @@ export const TaxFormModal = ({
 
             <div className="col-span-2">
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Due Months
+                {t('financials.labels.dueMonths')}
               </label>
               <MonthMultiSelect
                 value={formData.dueMonths}
@@ -342,7 +346,7 @@ export const TaxFormModal = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Start Date
+                {t('financials.labels.startDate')}
               </label>
               <input
                 type="date"
@@ -356,7 +360,7 @@ export const TaxFormModal = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                End Date
+                {t('financials.labels.endDate')}
               </label>
               <input
                 type="date"
@@ -370,7 +374,7 @@ export const TaxFormModal = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Status
+                {t('financials.labels.status')}
               </label>
               <select
                 value={formData.status ?? TaxStatus.ACTIVE}
@@ -392,14 +396,14 @@ export const TaxFormModal = ({
 
             <div className="col-span-2">
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Notes
+                {t('financials.labels.notes')}
               </label>
               <RichTextEditor
                 value={formData.notes ?? ''}
                 onChange={(value) =>
                   setFormData({ ...formData, notes: value || undefined })
                 }
-                placeholder="Add notes..."
+                placeholder={t('financials.placeholders.addNotes')}
               />
             </div>
           </div>
@@ -411,7 +415,7 @@ export const TaxFormModal = ({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             type="submit"
@@ -419,7 +423,7 @@ export const TaxFormModal = ({
             disabled={isPending}
             className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
-            {isPending ? 'Saving...' : 'Save'}
+            {isPending ? t('financials.saving') : t('common:buttons.save')}
           </button>
         </div>
       </div>

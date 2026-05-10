@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { usePropertyAuditLog } from '@/hooks/usePropertyHooks';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -43,6 +44,7 @@ const formatFieldName = (field: string): string => {
 };
 
 export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
+  const { t } = useTranslation('properties');
   const { formatRelative } = useFormatDate();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
@@ -65,7 +67,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
   return (
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
       <h2 className="text-xl font-semibold text-text-primary mb-4">
-        Property History
+        {t('audit.title')}
       </h2>
 
       {isLoading ? (
@@ -73,7 +75,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
           <LoadingSpinner />
         </div>
       ) : error ? (
-        <ErrorMessage message="Failed to load history" />
+        <ErrorMessage message={t('audit.failedToLoad')} />
       ) : auditLog.length > 0 ? (
         <div className="space-y-4">
           {auditLog.map((activity) => {
@@ -133,15 +135,15 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                       {activity.impersonatedBy && (
                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
                           <Eye className="h-3 w-3" />
-                          Impersonated
+                          {t('audit.impersonated')}
                         </span>
                       )}
                     </div>
                     {hasChanges && (
                       <p className="text-xs text-primary-500 mt-1">
                         {isExpanded
-                          ? 'Click to hide changes'
-                          : 'Click to view changes'}
+                          ? t('audit.clickToHide')
+                          : t('audit.clickToView')}
                       </p>
                     )}
                   </div>
@@ -151,7 +153,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                 {isExpanded && hasChanges && (
                   <div className="bg-surface-page px-4 py-3 border-t border-border-default">
                     <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
-                      Changed Fields
+                      {t('audit.changedFields')}
                     </h4>
                     <div className="space-y-2">
                       {Object.entries(activity.changedFields ?? {}).map(
@@ -194,7 +196,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                                 className="bg-surface-card rounded p-2 text-xs"
                               >
                                 <div className="font-semibold text-text-secondary mb-1">
-                                  File Name
+                                  {t('audit.fileName')}
                                 </div>
                                 <div className="text-text-primary">
                                   {String(value)}
@@ -202,7 +204,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                                 {title ? (
                                   <>
                                     <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                      Title
+                                      {t('audit.titleLabel')}
                                     </div>
                                     <div className="text-text-primary">
                                       {String(title)}
@@ -210,10 +212,12 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                                   </>
                                 ) : null}
                                 <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                  Type
+                                  {t('audit.typeLabel')}
                                 </div>
                                 <div className="text-text-primary">
-                                  {category === 'PHOTO' ? 'Photo' : 'Document'}
+                                  {category === 'PHOTO'
+                                    ? t('audit.photo')
+                                    : t('audit.document')}
                                 </div>
                               </div>
                             );
@@ -241,7 +245,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                               <div className="grid grid-cols-2 gap-2">
                                 <div>
                                   <span className="text-text-secondary">
-                                    Old:{' '}
+                                    {t('audit.old')}{' '}
                                   </span>
                                   {typeof activity.oldValues?.[field] ===
                                     'string' &&
@@ -262,7 +266,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                                 </div>
                                 <div>
                                   <span className="text-text-secondary">
-                                    New:{' '}
+                                    {t('audit.new')}{' '}
                                   </span>
                                   {typeof activity.newValues?.[field] ===
                                     'string' &&
@@ -296,9 +300,9 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
       ) : (
         <div className="text-center py-8">
           <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-          <p className="text-text-secondary">No history available</p>
+          <p className="text-text-secondary">{t('audit.empty.title')}</p>
           <p className="text-sm text-text-muted mt-1">
-            Changes to this property will appear here
+            {t('audit.empty.description')}
           </p>
         </div>
       )}

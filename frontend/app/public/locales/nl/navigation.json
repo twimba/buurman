@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "properties": "Panden",
+    "contacts": "Contacten",
+    "contracts": "Contracten",
+    "rentRegulations": "Huurregulering",
+    "rentAdjustments": "Huuraanpassingen",
+    "paymentInstructions": "Betaalinstructies",
+    "payments": "Betalingen",
+    "expenses": "Uitgaven",
+    "documents": "Documenten",
+    "photos": "Foto's",
+    "reports": "Rapportages"
+  },
+  "admin": {
+    "title": "Beheer",
+    "preferences": "Voorkeuren",
+    "teamMembers": "Teamleden",
+    "calendarFeeds": "Agendafeeds",
+    "notifications": "Notificaties",
+    "dataExport": "Gegevensexport",
+    "billing": "Abonnement & Facturering",
+    "activityLog": "Activiteitenlogboek",
+    "apiDocs": "API-documentatie"
+  },
+  "settings": "Instellingen",
+  "signOut": "Uitloggen"
+}

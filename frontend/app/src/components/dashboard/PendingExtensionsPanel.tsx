@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Check, XCircle, FileStack } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
@@ -20,6 +21,7 @@ export const PendingExtensionsPanel = ({
   onDecline,
   isActivating = false,
 }: PendingExtensionsPanelProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
   const { canEditData } = useTeam();
@@ -32,7 +34,7 @@ export const PendingExtensionsPanel = ({
         <div className="flex items-center gap-3 mb-4">
           <FileStack className="h-5 w-5 text-warning-text" />
           <h2 className="text-lg font-semibold text-text-primary">
-            Pending Extensions
+            {t('dashboard.pendingExtensions.title')}
           </h2>
         </div>
         <div className="flex justify-center py-4">
@@ -52,11 +54,12 @@ export const PendingExtensionsPanel = ({
         <FileStack className="h-5 w-5 text-warning-text" />
         <div>
           <h2 className="text-lg font-semibold text-text-primary">
-            Pending Extensions
+            {t('dashboard.pendingExtensions.title')}
           </h2>
           <p className="text-sm text-text-secondary">
-            {draftExtensions.length} extension
-            {draftExtensions.length !== 1 ? 's' : ''} awaiting action
+            {t('dashboard.pendingExtensions.awaitingAction', {
+              count: draftExtensions.length,
+            })}
           </p>
         </div>
       </div>
@@ -75,10 +78,14 @@ export const PendingExtensionsPanel = ({
             >
               <div className="flex items-center gap-2">
                 <span className="font-medium text-text-primary text-sm">
-                  Extension #{ext.extensionNumber}
+                  {t('dashboard.pendingExtensions.extensionNumber', {
+                    number: ext.extensionNumber,
+                  })}
                 </span>
                 <span className="text-xs text-text-muted">
-                  Contract #{ext.contractIdentifier}
+                  {t('dashboard.pendingExtensions.contractNumber', {
+                    id: ext.contractIdentifier,
+                  })}
                 </span>
               </div>
               <p className="text-xs text-text-secondary mt-0.5">
@@ -102,7 +109,7 @@ export const PendingExtensionsPanel = ({
                   title="Activate"
                 >
                   <Check className="h-3.5 w-3.5" />
-                  Activate
+                  {t('dashboard.pendingExtensions.activate')}
                 </button>
                 <button
                   onClick={() =>
@@ -112,7 +119,7 @@ export const PendingExtensionsPanel = ({
                   title="Decline"
                 >
                   <XCircle className="h-3.5 w-3.5" />
-                  Decline
+                  {t('dashboard.pendingExtensions.decline')}
                 </button>
               </div>
             )}

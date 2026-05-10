@@ -275,10 +275,12 @@ export const exportPropertyDashboardExcel = async (
 // --- Booklet ---
 
 export const downloadPropertyBooklet = async (
-  propertyId: string
+  propertyId: string,
+  lang?: string
 ): Promise<Blob> => {
   const response = await client.get(`/booklets/property/${propertyId}`, {
     responseType: 'blob',
+    params: lang ? { lang } : undefined,
   });
   return response.data;
 };

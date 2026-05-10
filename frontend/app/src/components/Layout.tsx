@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { AuthenticatedBroadcastBanner } from './common/BroadcastBanner';
@@ -12,6 +13,7 @@ interface LayoutProps {
 }
 
 export const Layout = ({ children }: LayoutProps) => {
+  const { t } = useTranslation('common');
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem(STORAGE_KEY) === 'true';
@@ -46,7 +48,7 @@ export const Layout = ({ children }: LayoutProps) => {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-surface-card focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-text-primary focus:shadow-lg focus-ring"
       >
-        Skip to main content
+        {t('accessibility.skipToContent')}
       </a>
       <Sidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
       <main

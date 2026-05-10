@@ -43,6 +43,7 @@ import type {
 } from '@/types/contractExtension';
 import type { ContractResponseStatus } from '@/generated/models';
 import type { DocumentResponse } from '@/types/property';
+import { useTranslation } from 'react-i18next';
 
 interface ExtensionTimelineProps {
   contractIdentifier: string;
@@ -69,6 +70,7 @@ export const ExtensionTimeline = ({
   documentLanguages,
   countryCode,
 }: ExtensionTimelineProps) => {
+  const { t } = useTranslation('contracts');
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -128,7 +130,7 @@ export const ExtensionTimeline = ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch {
-      alert('Failed to download document. Please try again.');
+      alert(t('extensions.downloadFailed'));
     }
   };
 
@@ -186,7 +188,7 @@ export const ExtensionTimeline = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-text-primary">
-          Extensions
+          {t('extensions.title')}
           {extensions.length > 0 && (
             <span className="ml-2 text-sm font-normal text-text-secondary">
               ({extensions.length})
@@ -199,7 +201,7 @@ export const ExtensionTimeline = ({
             className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary-500 bg-primary-500/10 rounded-md hover:bg-primary-500/20 transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
-            New Extension
+            {t('extensions.newExtension')}
           </button>
         )}
       </div>
@@ -211,9 +213,7 @@ export const ExtensionTimeline = ({
         </div>
       ) : extensions.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-sm text-text-secondary">
-            No extensions for this contract
-          </p>
+          <p className="text-sm text-text-secondary">{t('extensions.empty')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -283,7 +283,7 @@ export const ExtensionTimeline = ({
           <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-md w-full mx-4">
             <div className="p-4 border-b border-border-default">
               <h3 className="text-lg font-semibold text-text-primary">
-                Decline Extension
+                {t('extensions.declineTitle')}
               </h3>
             </div>
             <form
@@ -300,14 +300,14 @@ export const ExtensionTimeline = ({
             >
               <div className="p-4 space-y-3">
                 <p className="text-sm text-text-secondary">
-                  Are you sure you want to decline this extension?
+                  {t('detail.declineConfirmMessage')}
                 </p>
                 <div>
                   <label
                     htmlFor="declineReason"
                     className="block text-sm font-medium text-text-secondary mb-1"
                   >
-                    Reason (Optional)
+                    {t('extensions.reasonOptional')}
                   </label>
                   <input
                     id="declineReason"
@@ -315,7 +315,7 @@ export const ExtensionTimeline = ({
                     value={declineReason}
                     onChange={(e) => setDeclineReason(e.target.value)}
                     className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary"
-                    placeholder="Reason for declining..."
+                    placeholder={t('extensions.reasonPlaceholder')}
                     autoFocus
                   />
                 </div>
@@ -329,14 +329,16 @@ export const ExtensionTimeline = ({
                   }}
                   className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
                 >
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 text-sm font-medium text-white bg-error-bg-strong rounded-md hover:opacity-90 disabled:opacity-50"
                   disabled={declineExtension.isPending}
                 >
-                  {declineExtension.isPending ? 'Declining...' : 'Decline'}
+                  {declineExtension.isPending
+                    ? t('extensions.declining')
+                    : t('extensions.decline')}
                 </button>
               </div>
             </form>
@@ -350,13 +352,12 @@ export const ExtensionTimeline = ({
           <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-md w-full mx-4">
             <div className="p-4 border-b border-border-default">
               <h3 className="text-lg font-semibold text-text-primary">
-                Cancel Extension
+                {t('extensions.cancelTitle')}
               </h3>
             </div>
             <div className="p-4 space-y-3">
               <p className="text-sm text-text-secondary">
-                Are you sure you want to cancel this extension? This action
-                cannot be undone.
+                {t('detail.cancelConfirmMessage')}
               </p>
               <label className="flex items-start gap-2 p-3 rounded-md border border-border-default hover:border-border-strong cursor-pointer transition-colors">
                 <input
@@ -368,11 +369,10 @@ export const ExtensionTimeline = ({
                 <div className="flex-1 min-w-0">
                   <span className="flex items-center gap-1.5 text-sm font-medium text-text-primary">
                     <Trash2 className="h-3.5 w-3.5 text-error-text" />
-                    Delete generated documents
+                    {t('extensions.deleteGeneratedDocs')}
                   </span>
                   <p className="text-xs text-text-muted mt-0.5">
-                    Remove addendum and rent letter PDFs generated for this
-                    extension
+                    {t('extensions.deleteGeneratedDocsHelp')}
                   </p>
                 </div>
               </label>
@@ -387,7 +387,7 @@ export const ExtensionTimeline = ({
                 className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
                 disabled={cancelExtension.isPending}
               >
-                Keep Extension
+                {t('detail.keepExtension')}
               </button>
               <button
                 type="button"
@@ -396,8 +396,8 @@ export const ExtensionTimeline = ({
                 disabled={cancelExtension.isPending}
               >
                 {cancelExtension.isPending
-                  ? 'Cancelling...'
-                  : 'Cancel Extension'}
+                  ? t('common:buttons.loading')
+                  : t('detail.cancelExtension')}
               </button>
             </div>
           </div>
@@ -472,6 +472,7 @@ function ExtensionCard({
   isActivating: boolean;
   isConfirming: boolean;
 }) {
+  const { t } = useTranslation('contracts');
   const rentChange =
     extension.previousRentAmount > 0
       ? ((extension.newRentAmount - extension.previousRentAmount) /
@@ -494,18 +495,20 @@ function ExtensionCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-2">
             <span className="text-sm font-semibold text-text-primary">
-              Extension #{extension.extensionNumber}
+              {t('extensions.extensionNumber', {
+                number: extension.extensionNumber,
+              })}
             </span>
             <ExtensionStatusBadge status={extension.status} />
             {extension.triggerType === 'AUTO' ? (
               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-info-bg text-info-text">
                 <Zap className="h-2.5 w-2.5" />
-                Auto
+                {t('extensions.auto')}
               </span>
             ) : (
               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-surface-inset text-text-secondary">
                 <User className="h-2.5 w-2.5" />
-                Manual
+                {t('extensions.manual')}
               </span>
             )}
           </div>
@@ -547,17 +550,17 @@ function ExtensionCard({
           {/* Declined reason */}
           {extension.declinedReason && (
             <p className="text-xs text-error-text mt-1">
-              Declined: {extension.declinedReason}
+              {t('extensions.declined', { reason: extension.declinedReason })}
             </p>
           )}
 
           {/* Timestamps */}
           <p className="text-[11px] text-text-muted mt-2">
-            Created {formatDate(extension.createdAt)}
+            {t('extensions.created', { date: formatDate(extension.createdAt) })}
             {extension.activatedAt &&
-              ` \u00b7 Activated ${formatDate(extension.activatedAt)}`}
+              ` \u00b7 ${t('extensions.activated', { date: formatDate(extension.activatedAt) })}`}
             {extension.confirmedAt &&
-              ` \u00b7 Confirmed ${formatDate(extension.confirmedAt)}`}
+              ` \u00b7 ${t('extensions.confirmed', { date: formatDate(extension.confirmedAt) })}`}
           </p>
 
           {/* Generated documents — compact language badges per type */}
@@ -566,7 +569,7 @@ function ExtensionCard({
               {addendums.length > 0 && (
                 <DocTypeLangRow
                   icon={FileText}
-                  label="Addendum"
+                  label={t('extensions.addendum')}
                   accent="text-primary-500"
                   docs={addendums}
                   officialLangs={officialLangs}
@@ -576,7 +579,7 @@ function ExtensionCard({
               {letters.length > 0 && (
                 <DocTypeLangRow
                   icon={FileDown}
-                  label="Rent Letter"
+                  label={t('extensions.rentLetter')}
                   accent="text-amber-600 dark:text-amber-400"
                   docs={letters}
                   officialLangs={officialLangs}
@@ -588,7 +591,7 @@ function ExtensionCard({
                 className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-text-muted rounded hover:text-primary-500 hover:bg-primary-500/5 transition-colors ml-auto"
               >
                 <RefreshCw className="h-3 w-3" />
-                Regenerate
+                {t('extensions.regenerate')}
               </button>
             </div>
           ) : (
@@ -596,26 +599,26 @@ function ExtensionCard({
               <button
                 onClick={onDownloadAddendum}
                 className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-text-secondary bg-surface-inset rounded hover:bg-border-default transition-colors"
-                title="Download extension addendum PDF"
+                title={t('extensions.addendum')}
               >
                 <FileText className="h-3 w-3" />
-                Addendum
+                {t('extensions.addendum')}
               </button>
               <button
                 onClick={onDownloadLetter}
                 className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-text-secondary bg-surface-inset rounded hover:bg-border-default transition-colors"
-                title="Download rent increase letter PDF"
+                title={t('extensions.rentLetter')}
               >
                 <FileDown className="h-3 w-3" />
-                Rent Letter
+                {t('extensions.rentLetter')}
               </button>
               <button
                 onClick={onGenerateDocuments}
                 className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-primary-500 bg-primary-500/10 rounded hover:bg-primary-500/20 transition-colors"
-                title="Generate and save documents"
+                title={t('extensions.generateAndSave')}
               >
                 <FolderDown className="h-3 w-3" />
-                Generate &amp; Save
+                {t('extensions.generateAndSave')}
               </button>
             </div>
           )}
@@ -648,37 +651,37 @@ function ExtensionCard({
               onClick={onActivate}
               disabled={isActivating}
               className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-success-text bg-success-bg rounded-md hover:opacity-80 transition-colors disabled:opacity-50"
-              title="Activate this extension"
+              title={t('extensions.activate')}
             >
               <Check className="h-3.5 w-3.5" />
-              Activate
+              {t('extensions.activate')}
             </button>
             {!extension.confirmedAt && (
               <button
                 onClick={onConfirm}
                 disabled={isConfirming}
                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 rounded-md hover:opacity-80 transition-colors disabled:opacity-50 dark:text-indigo-300 dark:bg-indigo-500/10"
-                title="Confirm this extension"
+                title={t('extensions.confirm')}
               >
                 <CheckCircle className="h-3.5 w-3.5" />
-                Confirm
+                {t('extensions.confirm')}
               </button>
             )}
             <button
               onClick={onDecline}
               className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-warning-text bg-warning-bg rounded-md hover:opacity-80 transition-colors"
-              title="Decline this extension"
+              title={t('extensions.decline')}
             >
               <XCircle className="h-3.5 w-3.5" />
-              Decline
+              {t('extensions.decline')}
             </button>
             <button
               onClick={onCancel}
               className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-error-text bg-error-bg rounded-md hover:opacity-80 transition-colors"
-              title="Cancel this extension"
+              title={t('extensions.cancel')}
             >
               <Ban className="h-3.5 w-3.5" />
-              Cancel
+              {t('extensions.cancel')}
             </button>
           </div>
         )}

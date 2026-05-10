@@ -62,6 +62,9 @@ export default defineConfig({
           if (id.includes('node_modules/posthog-js/')) {
             return 'vendor-analytics';
           }
+          if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
+            return 'vendor-i18n';
+          }
           if (id.includes('node_modules/date-fns/') || id.includes('node_modules/keycloak-js/') || id.includes('node_modules/dompurify/') || id.includes('node_modules/libphonenumber-js/')) {
             return 'vendor-utils';
           }

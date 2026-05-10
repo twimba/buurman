@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AreaChart,
   Area,
@@ -44,6 +45,7 @@ export const PortfolioOccupancyChart = ({
   data,
   isDark,
 }: PortfolioOccupancyChartProps) => {
+  const { t } = useTranslation('common');
   const tooltipStyle = useMemo(
     () => ({
       backgroundColor: isDark ? '#14161f' : '#fff',
@@ -58,7 +60,7 @@ export const PortfolioOccupancyChart = ({
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
-        No occupancy data available
+        {t('dashboard.occupancy.noData')}
       </div>
     );
   }
@@ -95,8 +97,10 @@ export const PortfolioOccupancyChart = ({
           labelFormatter={(label) => formatMonthTick(String(label))}
           formatter={(value, name) => {
             const labels: Record<string, string> = {
-              contactOccupancyPercent: 'Contact Occupancy',
-              selfOccupancyPercent: 'Self Occupancy',
+              contactOccupancyPercent: t(
+                'dashboard.occupancy.contactOccupancy'
+              ),
+              selfOccupancyPercent: t('dashboard.occupancy.selfOccupancy'),
             };
             return [
               `${(typeof value === 'number' ? value : Number(value)).toFixed(1)}%`,
@@ -107,8 +111,10 @@ export const PortfolioOccupancyChart = ({
         <Legend
           formatter={(value) => {
             const labels: Record<string, string> = {
-              contactOccupancyPercent: 'Contact Occupancy',
-              selfOccupancyPercent: 'Self Occupancy',
+              contactOccupancyPercent: t(
+                'dashboard.occupancy.contactOccupancy'
+              ),
+              selfOccupancyPercent: t('dashboard.occupancy.selfOccupancy'),
             };
             return labels[value] ?? value;
           }}

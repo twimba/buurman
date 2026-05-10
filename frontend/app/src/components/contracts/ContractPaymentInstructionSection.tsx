@@ -28,6 +28,7 @@ import {
 import { useTeam } from '../../context/TeamContext';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { ContractStatus } from '../../types/contract';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   contractIdentifier: string;
@@ -64,6 +65,7 @@ export const ContractPaymentInstructionSection = ({
   contractStartDate,
   contractSignedDate,
 }: Props) => {
+  const { t } = useTranslation('contracts');
   const { canEditData } = useTeam();
   const canModify = canEditData && !readOnly;
   const { formatDate } = useFormatDate();
@@ -175,7 +177,7 @@ export const ContractPaymentInstructionSection = ({
   };
 
   const selectedTemplateData = templates.find(
-    (t) => t.identifier === selectedTemplate
+    (tpl) => tpl.identifier === selectedTemplate
   );
 
   if (loadingCurrent) {
@@ -184,7 +186,7 @@ export const ContractPaymentInstructionSection = ({
         <div className="flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
           <span className="text-sm text-text-secondary">
-            Loading payment instructions...
+            {t('overview.paymentInstructions.loading')}
           </span>
         </div>
       </div>
@@ -196,7 +198,7 @@ export const ContractPaymentInstructionSection = ({
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
           <CreditCard className="h-5 w-5 text-text-muted " />
-          Payment Instructions
+          {t('overview.paymentInstructions.title')}
         </h2>
         {canModify && !showForm && (
           <Button
@@ -204,7 +206,9 @@ export const ContractPaymentInstructionSection = ({
             leftIcon={current ? <Edit /> : <Plus />}
             onClick={current ? handleChange : () => setShowForm(true)}
           >
-            {current ? 'Change' : 'Set Instructions'}
+            {current
+              ? t('common:buttons.edit')
+              : t('overview.paymentInstruction')}
           </Button>
         )}
       </div>
@@ -226,7 +230,7 @@ export const ContractPaymentInstructionSection = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-medium text-text-primary">
-                  {current.name || 'Unnamed'}
+                  {current.name || t('overview.paymentInstructions.unnamed')}
                 </span>
                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
                   {PaymentMethodLabels[
@@ -235,12 +239,12 @@ export const ContractPaymentInstructionSection = ({
                 </span>
                 {!current.isCustom && current.paymentInstructionIdentifier && (
                   <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-info-bg text-info-text">
-                    Template
+                    {t('overview.paymentInstructions.template')}
                   </span>
                 )}
                 {current.isCustom && (
                   <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-info-bg text-info-text">
-                    Custom
+                    {t('overview.paymentInstructions.custom')}
                   </span>
                 )}
               </div>
@@ -251,28 +255,34 @@ export const ContractPaymentInstructionSection = ({
               )}
               {current.iban && (
                 <p className="text-sm text-text-secondary mt-1 font-mono">
-                  IBAN: {current.iban.replace(/(.{4})/g, '$1').trim()}
+                  {t('overview.paymentInstructions.iban')}:{' '}
+                  {current.iban.replace(/(.{4})/g, '$1').trim()}
                 </p>
               )}
               {current.accountNumber && (
                 <p className="text-sm text-text-secondary mt-1 font-mono">
-                  Account: {current.accountNumber}
+                  {t('overview.paymentInstructions.account')}:{' '}
+                  {current.accountNumber}
                   {current.routingNumber &&
-                    ` / Routing: ${current.routingNumber}`}
+                    ` / ${t('overview.paymentInstructions.routing')}: ${current.routingNumber}`}
                 </p>
               )}
               {current.accountHolderName && (
                 <p className="text-sm text-text-secondary">
-                  Holder: {current.accountHolderName}
+                  {t('overview.paymentInstructions.holder')}:{' '}
+                  {current.accountHolderName}
                 </p>
               )}
               {current.paymentReference && (
                 <p className="text-sm text-text-secondary">
-                  Ref: {current.paymentReference}
+                  {t('overview.paymentInstructions.ref')}:{' '}
+                  {current.paymentReference}
                 </p>
               )}
               <p className="text-xs text-text-muted mt-2">
-                Effective from {formatDate(current.effectiveFrom)}
+                {t('overview.paymentInstructions.effectiveFrom', {
+                  date: formatDate(current.effectiveFrom),
+                })}
               </p>
             </div>
           </div>
@@ -284,7 +294,12 @@ export const ContractPaymentInstructionSection = ({
               className="flex items-center gap-1 text-sm text-primary-500 dark:text-primary-300 hover:underline mt-2"
             >
               <Clock className="h-3.5 w-3.5" />
-              {showHistory ? 'Hide' : 'View'} History ({history.length} entries)
+              {showHistory
+                ? t('overview.paymentInstructions.hideHistory')
+                : t('overview.paymentInstructions.viewHistory')}{' '}
+              {t('overview.paymentInstructions.historyCount', {
+                count: history.length,
+              })}
               {showHistory ? (
                 <ChevronUp className="h-3.5 w-3.5" />
               ) : (
@@ -296,7 +311,7 @@ export const ContractPaymentInstructionSection = ({
       ) : (
         !showForm && (
           <p className="text-sm text-text-secondary">
-            No payment instructions configured for this contract.
+            {t('overview.noPaymentInstruction')}
           </p>
         )
       )}
@@ -305,7 +320,7 @@ export const ContractPaymentInstructionSection = ({
       {showHistory && !loadingHistory && (
         <div className="mt-4 border-t border-border-default pt-4">
           <h3 className="text-sm font-semibold text-text-secondary mb-3">
-            Payment Instruction History
+            {t('overview.paymentInstructions.historyTitle')}
           </h3>
           <div className="space-y-3">
             {history.map((entry, index) => (
@@ -336,8 +351,8 @@ export const ContractPaymentInstructionSection = ({
         <div className="mt-4 border-t border-border-default pt-4">
           <h3 className="text-sm font-semibold text-text-secondary mb-3">
             {editingId
-              ? 'Change Payment Instructions'
-              : 'Set Payment Instructions'}
+              ? t('overview.paymentInstructions.changeTitle')
+              : t('overview.paymentInstructions.setTitle')}
           </h3>
           <form
             onSubmit={handleSubmit}
@@ -355,7 +370,7 @@ export const ContractPaymentInstructionSection = ({
                 }`}
                 onClick={() => setUseTemplate(true)}
               >
-                Use Template
+                {t('overview.paymentInstructions.useTemplate')}
               </button>
               <button
                 type="button"
@@ -366,14 +381,14 @@ export const ContractPaymentInstructionSection = ({
                 }`}
                 onClick={() => setUseTemplate(false)}
               >
-                Custom
+                {t('overview.paymentInstructions.customOption')}
               </button>
             </div>
 
             {useTemplate ? (
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Select Template *
+                  {t('overview.paymentInstructions.selectTemplate')}
                 </label>
                 <select
                   required
@@ -381,13 +396,19 @@ export const ContractPaymentInstructionSection = ({
                   onChange={(e) => setSelectedTemplate(e.target.value)}
                   className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                 >
-                  <option value="">Choose a payment method...</option>
-                  {templates.map((t) => (
-                    <option key={t.identifier} value={t.identifier}>
-                      {t.name} (
-                      {PaymentMethodLabels[t.paymentMethod as PaymentMethod] ||
-                        t.paymentMethod}
-                      ){t.isDefault ? ' - Default' : ''}
+                  <option value="">
+                    {t('overview.paymentInstructions.choosePlaceholder')}
+                  </option>
+                  {templates.map((tpl) => (
+                    <option key={tpl.identifier} value={tpl.identifier}>
+                      {tpl.name} (
+                      {PaymentMethodLabels[
+                        tpl.paymentMethod as PaymentMethod
+                      ] || tpl.paymentMethod}
+                      )
+                      {tpl.isDefault
+                        ? ` - ${t('overview.paymentInstructions.default')}`
+                        : ''}
                     </option>
                   ))}
                 </select>
@@ -403,7 +424,8 @@ export const ContractPaymentInstructionSection = ({
                     )}
                     {selectedTemplateData.iban && (
                       <p className="text-text-secondary font-mono mt-1">
-                        IBAN: {selectedTemplateData.iban}
+                        {t('overview.paymentInstructions.iban')}:{' '}
+                        {selectedTemplateData.iban}
                       </p>
                     )}
                   </div>
@@ -414,7 +436,7 @@ export const ContractPaymentInstructionSection = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1">
-                      Name *
+                      {t('overview.paymentInstructions.name')}
                     </label>
                     <input
                       type="text"
@@ -426,7 +448,7 @@ export const ContractPaymentInstructionSection = ({
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-1">
-                      Method *
+                      {t('overview.paymentInstructions.method')}
                     </label>
                     <select
                       required
@@ -446,7 +468,7 @@ export const ContractPaymentInstructionSection = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-1">
-                    Description
+                    {t('overview.paymentInstructions.description')}
                   </label>
                   <textarea
                     value={customDescription}
@@ -462,7 +484,7 @@ export const ContractPaymentInstructionSection = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-text-secondary mb-1">
-                        Bank Name
+                        {t('overview.paymentInstructions.bankName')}
                       </label>
                       <input
                         type="text"
@@ -473,7 +495,7 @@ export const ContractPaymentInstructionSection = ({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-secondary mb-1">
-                        Account Holder
+                        {t('overview.paymentInstructions.accountHolder')}
                       </label>
                       <input
                         type="text"
@@ -486,7 +508,7 @@ export const ContractPaymentInstructionSection = ({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-secondary mb-1">
-                        IBAN
+                        {t('overview.paymentInstructions.ibanField')}
                       </label>
                       <input
                         type="text"
@@ -498,7 +520,7 @@ export const ContractPaymentInstructionSection = ({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-secondary mb-1">
-                        BIC / SWIFT
+                        {t('overview.paymentInstructions.bicSwift')}
                       </label>
                       <input
                         type="text"
@@ -510,7 +532,7 @@ export const ContractPaymentInstructionSection = ({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-secondary mb-1">
-                        Account Number
+                        {t('overview.paymentInstructions.accountNumber')}
                       </label>
                       <input
                         type="text"
@@ -521,7 +543,7 @@ export const ContractPaymentInstructionSection = ({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-secondary mb-1">
-                        Routing Number
+                        {t('overview.paymentInstructions.routingNumber')}
                       </label>
                       <input
                         type="text"
@@ -534,7 +556,7 @@ export const ContractPaymentInstructionSection = ({
                 )}
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-1">
-                    Payment Reference
+                    {t('overview.paymentInstructions.paymentReference')}
                   </label>
                   <input
                     type="text"
@@ -548,7 +570,7 @@ export const ContractPaymentInstructionSection = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Effective From *
+                {t('overview.paymentInstructions.effectiveFromField')}
               </label>
               <input
                 type="date"
@@ -561,29 +583,29 @@ export const ContractPaymentInstructionSection = ({
             </div>
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Notes (reason for change)
+                {t('overview.paymentInstructions.notesField')}
               </label>
               <RichTextEditor
                 value={notes}
                 onChange={setNotes}
-                placeholder="Optional reason..."
+                placeholder={t('overview.paymentInstructions.notesPlaceholder')}
                 onSubmit={submitForm}
               />
             </div>
 
             <div className="flex gap-2 justify-end">
               <Button type="button" variant="secondary" onClick={resetForm}>
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 type="submit"
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
                 {createMutation.isPending || updateMutation.isPending
-                  ? 'Saving...'
+                  ? t('overview.paymentInstructions.saving')
                   : editingId
-                    ? 'Change Instructions'
-                    : 'Set Instructions'}
+                    ? t('overview.paymentInstructions.changeInstructions')
+                    : t('overview.paymentInstructions.setInstructions')}
               </Button>
             </div>
           </form>
@@ -607,6 +629,7 @@ const HistoryEntry = ({
   canDelete: boolean;
   onDelete: () => void;
 }) => {
+  const { t } = useTranslation('contracts');
   return (
     <div
       className={`relative pl-6 pb-3 border-l-2 ${
@@ -630,7 +653,7 @@ const HistoryEntry = ({
                 isCurrent ? 'text-text-primary' : 'text-text-secondary'
               }`}
             >
-              {entry.name || 'Unnamed'}
+              {entry.name || t('overview.paymentInstructions.unnamed')}
             </span>
             <span className="px-1.5 py-0.5 text-xs rounded bg-surface-inset text-text-secondary">
               {PaymentMethodLabels[entry.paymentMethod as PaymentMethod] ||
@@ -638,7 +661,7 @@ const HistoryEntry = ({
             </span>
             {isCurrent && (
               <span className="px-1.5 py-0.5 text-xs rounded bg-success-bg text-success-text font-medium">
-                Current
+                {t('overview.paymentInstructions.current')}
               </span>
             )}
           </div>
@@ -646,7 +669,7 @@ const HistoryEntry = ({
             {formatDate(entry.effectiveFrom)}
             {entry.effectiveTo
               ? ` - ${formatDate(entry.effectiveTo)}`
-              : ' - Present'}
+              : ` - ${t('overview.paymentInstructions.present')}`}
           </p>
           {entry.notes && (
             <RichTextDisplay
