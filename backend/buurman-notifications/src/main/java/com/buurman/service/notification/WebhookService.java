@@ -8,14 +8,13 @@ import static com.buurman.domain.NotificationStatus.QUEUED;
 import static com.buurman.domain.NotificationStatus.REJECTED;
 import static com.buurman.domain.NotificationStatus.SENT;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.NotificationStatus;
 import com.buurman.repository.NotificationRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -39,53 +38,44 @@ public class WebhookService {
   private final NotificationRepository notificationRepository;
   private final ObjectMapper objectMapper;
 
-  public void processSendGridEvents(String rawPayload) {
+  public void processMailgunEvents(String rawPayload) {
     try {
-      List<Map<String, Object>> events =
-          objectMapper.readValue(rawPayload, new TypeReference<>() {});
+      JsonNode root = objectMapper.readTree(rawPayload);
+      JsonNode eventData = root.path("event-data");
 
-      for (Map<String, Object> event : events) {
-        String sgMessageId = (String) event.get("sg_message_id");
-        String eventType = (String) event.get("event");
+      String eventType = eventData.path("event").asText();
+      String messageId =
+          eventData.path("message").path("headers").path("message-id").asText();
 
-        if (sgMessageId == null || eventType == null) {
-          continue;
-        }
+      if (messageId.isEmpty() || eventType.isEmpty()) {
+        log.warn("Mailgun webhook missing event type or message-id");
+        return;
+      }
 
-        // SendGrid message IDs may have a filter suffix
-        String messageId =
-            sgMessageId.contains(".")
-                ? sgMessageId.substring(0, sgMessageId.indexOf("."))
-                : sgMessageId;
+      if ("opened".equals(eventType)) {
+        notificationRepository.incrementOpenCount(messageId);
+        log.debug("Mailgun open event for message {}", messageId);
+        return;
+      }
+      if ("clicked".equals(eventType)) {
+        notificationRepository.incrementClickCount(messageId);
+        log.debug("Mailgun click event for message {}", messageId);
+        return;
+      }
 
-        // Handle engagement events (open/click) separately from delivery status
-        if ("open".equals(eventType)) {
-          notificationRepository.incrementOpenCount(messageId);
-          log.debug("SendGrid open event for message {}", messageId);
-          continue;
-        }
-        if ("click".equals(eventType)) {
-          notificationRepository.incrementClickCount(messageId);
-          log.debug("SendGrid click event for message {}", messageId);
-          continue;
-        }
+      String severity = eventData.path("severity").asText(null);
+      NotificationStatus status = mapMailgunStatus(eventType, severity);
+      String reason = eventData.path("reason").asText(null);
 
-        NotificationStatus status = mapSendGridStatus(eventType);
-        String reason = (String) event.get("reason");
-
-        if (shouldUpdateStatus(messageId, status)) {
-          notificationRepository.updateStatusByProviderMessageId(
-              messageId, status, eventType, reason);
-          log.debug("SendGrid event: {} -> {} for message {}", eventType, status, messageId);
-        } else {
-          log.debug(
-              "SendGrid event skipped (status regression): {} for message {}",
-              eventType,
-              messageId);
-        }
+      if (shouldUpdateStatus(messageId, status)) {
+        notificationRepository.updateStatusByProviderMessageId(messageId, status, eventType, reason);
+        log.debug("Mailgun event: {} -> {} for message {}", eventType, status, messageId);
+      } else {
+        log.debug(
+            "Mailgun event skipped (status regression): {} for message {}", eventType, messageId);
       }
     } catch (Exception e) {
-      log.error("Failed to parse SendGrid events: {}", e.getMessage(), e);
+      log.error("Failed to parse Mailgun event: {}", e.getMessage(), e);
     }
   }
 
@@ -123,17 +113,16 @@ public class WebhookService {
               int newRank = STATUS_RANK.getOrDefault(newStatus, 0);
               return newRank > currentRank;
             })
-        .orElse(true); // If notification not found, allow the update (it may arrive before our DB
-    // write)
+        .orElse(true);
   }
 
-  private NotificationStatus mapSendGridStatus(String eventType) {
+  private NotificationStatus mapMailgunStatus(String eventType, @org.jspecify.annotations.Nullable String severity) {
     return switch (eventType) {
-      case "processed" -> QUEUED;
+      case "accepted" -> QUEUED;
       case "delivered" -> DELIVERED;
-      case "bounce", "blocked" -> BOUNCED;
-      case "dropped" -> REJECTED;
-      case "deferred" -> QUEUED;
+      case "failed" -> "permanent".equals(severity) ? BOUNCED : QUEUED;
+      case "rejected" -> REJECTED;
+      case "complained", "unsubscribed" -> FAILED;
       default -> SENT;
     };
   }

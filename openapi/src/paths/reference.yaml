@@ -52,26 +52,13 @@ webhooks-twilio-status:
             schema:
               $ref: '#/components/schemas/ProblemDetail'
 
-webhooks-sendgrid-events:
+webhooks-mailgun-events:
   post:
     tags:
       - Webhooks
-    summary: SendGrid event webhook
-    description: Receives delivery status events from SendGrid
-    operationId: handleSendGridEvents
-    parameters:
-      - name: X-Twilio-Email-Event-Webhook-Signature
-        in: header
-        description: SendGrid ECDSA signature
-        required: false
-        schema:
-          type: string
-      - name: X-Twilio-Email-Event-Webhook-Timestamp
-        in: header
-        description: SendGrid event timestamp
-        required: false
-        schema:
-          type: string
+    summary: Mailgun event webhook
+    description: Receives delivery status events from Mailgun
+    operationId: handleMailgunEvents
     requestBody:
       content:
         application/json:

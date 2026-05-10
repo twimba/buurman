@@ -55,11 +55,13 @@ app:
     allowed-origins: http://localhost:5173
     backoffice-allowed-origins: http://localhost:5174
 
-sendgrid:
+mailgun:
   api-key: test
+  domain: test.mailgun.org
   from-email: test@buurman.io
   from-name: Buurman Test
-  webhook-verification-key: test
+  webhook-signing-key: test
+  eu-region: false
 
 twilio:
   account-sid: test
