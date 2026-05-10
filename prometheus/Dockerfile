@@ -1,7 +1,10 @@
+FROM alpine:3.21 AS gettext
+RUN apk add --no-cache gettext
+
 FROM prom/prometheus:v3.11.3
 
 USER root
-RUN apk add --no-cache gettext
+COPY --from=gettext /usr/bin/envsubst /usr/local/bin/envsubst
 USER nobody
 
 COPY prometheus.yml.template /etc/prometheus/prometheus.yml.template
