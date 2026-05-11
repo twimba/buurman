@@ -38,7 +38,6 @@ import {
   MailpitIcon,
   PrometheusIcon,
   TraefikIcon,
-  SeaweedFSIcon,
   TwilioIcon,
   SendGridIcon,
   AwsIcon,
@@ -129,7 +128,7 @@ const getTools = (): ToolItem[] => {
         ]),
 
     ...(local
-      ? [{ name: 'SeaweedFS', href: '/tools/seaweedfs', icon: SeaweedFSIcon }]
+      ? []
       : [
           {
             name: 'AWS S3',

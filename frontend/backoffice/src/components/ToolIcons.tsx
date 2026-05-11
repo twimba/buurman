@@ -46,12 +46,6 @@ export const MailpitIcon = (props: IconProps) => (
   </Icon>
 );
 
-export const SeaweedFSIcon = (props: IconProps) => (
-  <Icon {...props}>
-    <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" />
-  </Icon>
-);
-
 export const TwilioIcon = (props: IconProps) => (
   <Icon {...props}>
     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 20.4a8.4 8.4 0 1 1 0-16.8 8.4 8.4 0 0 1 0 16.8zm4.2-11.4a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0zm0 6a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0zm-6 0a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0zm0-6a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0z" />

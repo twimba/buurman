@@ -305,8 +305,8 @@ export SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI=https://${HP}keycloak
 export SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_BACKOFFICE_ISSUERURI=https://${HP}keycloak.local.buurman.io${PORT_SUFFIX}/realms/buurman-backoffice
 export SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_BACKOFFICE_JWKSETURI=https://${HP}keycloak.local.buurman.io${PORT_SUFFIX}/realms/buurman-backoffice/protocol/openid-connect/certs
 export KEYCLOAK_ADMIN_SERVERURL=https://${HP}keycloak.local.buurman.io${PORT_SUFFIX}
-export AWS_S3_ENDPOINT=https://${HP}seaweedfs.local.buurman.io${PORT_SUFFIX}
-export AWS_S3_PUBLICENDPOINT=https://${HP}seaweedfs.local.buurman.io${PORT_SUFFIX}
+export AWS_S3_ENDPOINT=https://${HP}awrust.local.buurman.io${PORT_SUFFIX}
+export AWS_S3_PUBLICENDPOINT=https://${HP}awrust.local.buurman.io${PORT_SUFFIX}
 export SPRING_MAIL_PORT=${SMTP_HOST_PORT}
 export APP_PUBLICURL=https://${HP}app.local.buurman.io${PORT_SUFFIX}
 export APP_API_BASEURL=https://${HP}api.local.buurman.io${PORT_SUFFIX}
@@ -326,7 +326,7 @@ if [ ! -f "$CERT_FILE" ]; then
   bash "$SCRIPT_DIR/setup-local-certs.sh"
 fi
 
-DNS_HOSTS="${HP}app.local.buurman.io ${HP}api.local.buurman.io ${HP}keycloak.local.buurman.io ${HP}seaweedfs.local.buurman.io ${HP}seaweedfs-ui.local.buurman.io ${HP}mailpit.local.buurman.io ${HP}traefik.local.buurman.io ${HP}prometheus.local.buurman.io ${HP}grafana.local.buurman.io"
+DNS_HOSTS="${HP}app.local.buurman.io ${HP}api.local.buurman.io ${HP}keycloak.local.buurman.io ${HP}awrust.local.buurman.io ${HP}mailpit.local.buurman.io ${HP}traefik.local.buurman.io ${HP}prometheus.local.buurman.io ${HP}grafana.local.buurman.io"
 UNRESOLVED_HOSTS=""
 for h in $DNS_HOSTS; do
   if ! dscacheutil -q host -a name "$h" | grep -q 'ip_address'; then

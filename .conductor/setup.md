@@ -37,13 +37,13 @@ ping -c1 w<N>-app.local.buurman.io
 If not, add to `/etc/hosts`:
 
 ```
-127.0.0.1 w<N>-app.local.buurman.io w<N>-api.local.buurman.io w<N>-keycloak.local.buurman.io w<N>-seaweedfs.local.buurman.io w<N>-seaweedfs-ui.local.buurman.io w<N>-mailpit.local.buurman.io w<N>-traefik.local.buurman.io w<N>-prometheus.local.buurman.io w<N>-grafana.local.buurman.io
+127.0.0.1 w<N>-app.local.buurman.io w<N>-api.local.buurman.io w<N>-keycloak.local.buurman.io w<N>-awrust.local.buurman.io w<N>-mailpit.local.buurman.io w<N>-traefik.local.buurman.io w<N>-prometheus.local.buurman.io w<N>-grafana.local.buurman.io
 ```
 
 ### Step 4: Start services
 
 ```bash
-# Start Docker infrastructure (PostgreSQL, Keycloak, SeaweedFS, etc.)
+# Start Docker infrastructure (PostgreSQL, Keycloak, AWRust, etc.)
 make dev
 
 # Start backend (reads .env.backend automatically)
