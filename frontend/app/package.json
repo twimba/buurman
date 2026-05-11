@@ -44,7 +44,7 @@
     "keycloak-js": "26.2.4",
     "libphonenumber-js": "1.13.0",
     "lucide-react": "1.14.0",
-    "posthog-js": "1.372.10",
+    "posthog-js": "1.373.2",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "react-i18next": "17.0.7",
