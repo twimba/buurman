@@ -1,4 +1,4 @@
-FROM alpine:3.21 AS gettext
+FROM alpine:3.23 AS gettext
 RUN apk add --no-cache gettext
 
 FROM prom/prometheus:v3.11.3
