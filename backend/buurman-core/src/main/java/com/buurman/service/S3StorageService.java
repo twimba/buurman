@@ -169,7 +169,7 @@ public class S3StorageService {
 
   /**
    * Generate presigned URL for downloading a file. URL is valid for 15 minutes. For local dev
-   * (SeaweedFS), uses direct URLs without presigning to avoid CORS issues.
+   * (AWRust), uses direct URLs without presigning to avoid CORS issues.
    */
   public URL generatePresignedUrl(String fileKey) {
     Instant start = clock.instant();

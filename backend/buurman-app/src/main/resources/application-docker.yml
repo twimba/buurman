@@ -33,9 +33,9 @@ keycloak:
 
 aws:
   s3:
-    endpoint: http://seaweedfs:8333
+    endpoint: http://awrust:4566
     # Browser accesses S3 via Traefik hostname (HTTPS)
-    public-endpoint: https://seaweedfs.local.buurman.io
+    public-endpoint: https://awrust.local.buurman.io
     use-presigned-urls: false
 
 spring.mail:

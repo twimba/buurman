@@ -24,7 +24,6 @@ const getToolsConfig = (): Record<string, ToolConfig> => {
     ...(local
       ? {
           mailpit: { name: 'Mailpit', subdomain: 'mailpit' },
-          seaweedfs: { name: 'SeaweedFS', subdomain: 'seaweedfs-ui' },
         }
       : {
           twilio: { name: 'Twilio', url: 'https://console.twilio.com' },
