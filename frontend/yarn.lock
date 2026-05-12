@@ -1252,19 +1252,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:1.28.7":
-  version: 1.28.7
-  resolution: "@posthog/core@npm:1.28.7"
+"@posthog/core@npm:1.29.1":
+  version: 1.29.1
+  resolution: "@posthog/core@npm:1.29.1"
   dependencies:
-    "@posthog/types": "npm:1.373.2"
-  checksum: 10c0/648f8f87898a2f2389fa13bf12c4c4117ab9ab3e4ed68cade97c20de54ff4d152b30907244e03a2b94fc05348dffc2361d164abcbeee5b5a46ce7040d78c35c3
+    "@posthog/types": "npm:1.373.4"
+  checksum: 10c0/2349d1f1b6b41fdc920c9bbe073bf428d512d272d06c97a59c91f4952fa0845bf55ca83d5bb89a5f5bee9324e5edf2031eb8dd33d04061a8f09b5f0563b06697
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.373.2":
-  version: 1.373.2
-  resolution: "@posthog/types@npm:1.373.2"
-  checksum: 10c0/cb5ed669bfb95eaae177ff3b21031b319e7a1ff4d0435cb7e7d9962cf2873269dac5c44d998054cef93913983f7999082206e9689c287f2c0614516e0d60d507
+"@posthog/types@npm:1.373.4":
+  version: 1.373.4
+  resolution: "@posthog/types@npm:1.373.4"
+  checksum: 10c0/00b3c858bb56565caea027bef7d20a6543aae34f050c6fc8ac9b4a621873478e65e14ffc86c5a3871d790e16f01ab42cac70f2bd6686ef4fd907eb0a219db149
   languageName: node
   linkType: hard
 
@@ -4231,7 +4231,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.1"
     lucide-react: "npm:1.14.0"
-    posthog-js: "npm:1.373.2"
+    posthog-js: "npm:1.373.4"
     prettier: "npm:3.8.3"
     react: "npm:19.2.6"
     react-dom: "npm:19.2.6"
@@ -4239,7 +4239,7 @@ __metadata:
     react-is: "npm:19.2.6"
     react-router-dom: "npm:7.15.0"
     recharts: "npm:3.8.1"
-    swagger-ui-react: "npm:5.32.5"
+    swagger-ui-react: "npm:5.32.6"
     tailwindcss: "npm:4.3.0"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.59.3"
@@ -4280,7 +4280,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.14.0"
-    posthog-js: "npm:1.373.2"
+    posthog-js: "npm:1.373.4"
     prettier: "npm:3.8.3"
     react: "npm:19.2.6"
     react-dom: "npm:19.2.6"
@@ -7179,23 +7179,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-domexception@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "node-domexception@npm:1.0.0"
-  checksum: 10c0/5e5d63cda29856402df9472335af4bb13875e1927ad3be861dc5ebde38917aecbf9ae337923777af52a48c426b70148815e890a5d72760f1b4d758cc671b1a2b
-  languageName: node
-  linkType: hard
-
-"node-fetch-commonjs@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "node-fetch-commonjs@npm:3.3.2"
-  dependencies:
-    node-domexception: "npm:^1.0.0"
-    web-streams-polyfill: "npm:^3.0.3"
-  checksum: 10c0/87d36ed3e6dcb9dea96783700bc0becf0fdbcdc26c975e16b01a0d3a6e2f420c7e589e765bbfad461ae5377d4c5bd5f6937969a9dd34a0d736a81ac898f5c26a
-  languageName: node
-  linkType: hard
-
 "node-gyp-build@npm:^4.8.0, node-gyp-build@npm:^4.8.2, node-gyp-build@npm:^4.8.4":
   version: 4.8.4
   resolution: "node-gyp-build@npm:4.8.4"
@@ -7592,24 +7575,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.373.2":
-  version: 1.373.2
-  resolution: "posthog-js@npm:1.373.2"
+"posthog-js@npm:1.373.4":
+  version: 1.373.4
+  resolution: "posthog-js@npm:1.373.4"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
     "@opentelemetry/exporter-logs-otlp-http": "npm:^0.208.0"
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
-    "@posthog/core": "npm:1.28.7"
-    "@posthog/types": "npm:1.373.2"
+    "@posthog/core": "npm:1.29.1"
+    "@posthog/types": "npm:1.373.4"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/5a090dc39ecc4c4fed9552fa6aceefb8b1afa276a75e8df80d0fbe1271383a0daa4fb203f387b65e5460d377ff7e6202fbc0fe85bc5a5c5cbd9dab2552bcb9bc
+  checksum: 10c0/f673c8f4600717bb0578fb9a34f237ab9ee991bc42baa9e72e8f7ff8caff92571c75b128da48cea34db0f941aba467b292d5e7ac972599c8a79c99d47f104dbe
   languageName: node
   linkType: hard
 
@@ -8936,9 +8919,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-client@npm:^3.37.3":
-  version: 3.37.3
-  resolution: "swagger-client@npm:3.37.3"
+"swagger-client@npm:^3.37.4":
+  version: 3.37.4
+  resolution: "swagger-client@npm:3.37.4"
   dependencies:
     "@babel/runtime-corejs3": "npm:^7.22.15"
     "@scarf/scarf": "npm:=1.4.0"
@@ -8954,18 +8937,17 @@ __metadata:
     js-yaml: "npm:^4.1.0"
     neotraverse: "npm:=0.6.18"
     node-abort-controller: "npm:^3.1.1"
-    node-fetch-commonjs: "npm:^3.3.2"
     openapi-path-templating: "npm:^2.2.1"
     openapi-server-url-templating: "npm:^1.3.0"
     ramda: "npm:^0.30.1"
     ramda-adjunct: "npm:^5.1.0"
-  checksum: 10c0/50e6f4e9e4511a54f651608f14e727b30611c799ec62dca1c159f58dd9e5c1c2e46d7943947fc773ac773e8e7da39e7d5eeb2f7ae0a136f5ed589bb64b7a3f82
+  checksum: 10c0/1b39da162ad000ade2ef8b999edfdc066487bca22094b5302ec5623f3d536503c9a67c25916b00bcc6b2ffda53d4d74c3ceb456a5b50db831209b4725caa8152
   languageName: node
   linkType: hard
 
-"swagger-ui-react@npm:5.32.5":
-  version: 5.32.5
-  resolution: "swagger-ui-react@npm:5.32.5"
+"swagger-ui-react@npm:5.32.6":
+  version: 5.32.6
+  resolution: "swagger-ui-react@npm:5.32.6"
   dependencies:
     "@babel/runtime-corejs3": "npm:^7.27.1"
     "@scarf/scarf": "npm:=1.4.0"
@@ -8996,7 +8978,7 @@ __metadata:
     reselect: "npm:^5.1.1"
     serialize-error: "npm:^8.1.0"
     sha.js: "npm:^2.4.12"
-    swagger-client: "npm:^3.37.3"
+    swagger-client: "npm:^3.37.4"
     url-parse: "npm:^1.5.10"
     xml: "npm:=1.0.1"
     xml-but-prettier: "npm:^1.0.1"
@@ -9004,7 +8986,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <20"
     react-dom: ">=16.8.0 <20"
-  checksum: 10c0/b1270e2f5d1f3c6bdafce19ec3e40ced3562ae0c533d5d136ca3fec04fa64819446058d9015cd3c6d7c869103945512e21026f0c185f9ccb99cb533abb40a6d0
+  checksum: 10c0/1567001d4d11b4ed3d262ce5fa8423d57e63700ca22a708faa5442774b3e151650883b434230cb175a3f93c447cb12b5871a1bdde90716c89eee265c9fcae017
   languageName: node
   linkType: hard
 
@@ -9766,13 +9748,6 @@ __metadata:
   dependencies:
     xml-name-validator: "npm:^5.0.0"
   checksum: 10c0/8712774c1aeb62dec22928bf1cdfd11426c2c9383a1a63f2bcae18db87ca574165a0fbe96b312b73652149167ac6c7f4cf5409f2eb101d9c805efe0e4bae798b
-  languageName: node
-  linkType: hard
-
-"web-streams-polyfill@npm:^3.0.3":
-  version: 3.3.3
-  resolution: "web-streams-polyfill@npm:3.3.3"
-  checksum: 10c0/64e855c47f6c8330b5436147db1c75cb7e7474d924166800e8e2aab5eb6c76aac4981a84261dd2982b3e754490900b99791c80ae1407a9fa0dcff74f82ea3a7f
   languageName: node
   linkType: hard
 
