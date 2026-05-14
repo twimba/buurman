@@ -219,7 +219,7 @@ export const PaymentForm = ({
                 dueDate: new Date().toISOString().split('T')[0],
               })
             }
-            className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
+            className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
             disabled={isLoading}
           >
             {t('form.today')}
@@ -271,7 +271,7 @@ export const PaymentForm = ({
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, paymentDate: '' })}
-                className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
                 {t('form.clear')}
@@ -302,7 +302,7 @@ export const PaymentForm = ({
               onClick={() =>
                 setFormData({ ...formData, contactIdentifier: undefined })
               }
-              className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
+              className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
               disabled={isLoading}
             >
               {t('form.clear')}

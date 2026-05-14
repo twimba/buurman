@@ -35,7 +35,7 @@ export const RegionSelector = ({
             className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 ${
               !selectedRegion
                 ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/20'
-                : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+                : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
             }`}
           >
             {t('rentRegulations.national')}
@@ -47,7 +47,7 @@ export const RegionSelector = ({
               className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                 selectedRegion === region.regionCode
                   ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/20'
-                  : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+                  : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
               }`}
             >
               {region.regionName}

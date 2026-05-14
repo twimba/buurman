@@ -203,7 +203,7 @@ export const PropertySelector = ({
             loading="lazy"
           />
         ) : (
-          <div className="w-10 h-10 rounded bg-neutral-100 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded bg-surface-inset flex items-center justify-center flex-shrink-0">
             <Icon className="h-5 w-5 text-text-muted " />
           </div>
         )}

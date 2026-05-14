@@ -44,7 +44,7 @@ export const PageHeader = ({
                 'p-2 -ml-2',
                 'text-text-muted',
                 'hover:text-text-primary',
-                'hover:bg-neutral-50',
+                'hover:bg-surface-inset',
                 'rounded-lg',
                 'transition-colors'
               )}

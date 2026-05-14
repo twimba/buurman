@@ -255,7 +255,7 @@ export const PropertyDetailPage = () => {
           backTo="/properties"
           badge={
             <span
-              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status] ?? 'bg-gray-100 text-gray-800'}`}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status] ?? 'bg-surface-inset text-text-primary'}`}
             >
               {statusLabel(property.status)}
             </span>
@@ -457,7 +457,7 @@ export const PropertyDetailPage = () => {
                         FALLOW: 'bg-text-disabled',
                         LISTED: 'bg-info-text',
                         SELF_OCCUPIED: 'bg-info-text',
-                      }[property.status] ?? 'bg-gray-400'
+                      }[property.status] ?? 'bg-text-disabled'
                     }`}
                   />
                   <span className="font-semibold text-text-primary">
@@ -741,6 +741,8 @@ export const PropertyDetailPage = () => {
                           className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-white ${
                             (
                               {
+                                'A++++': 'bg-emerald-950',
+                                'A+++': 'bg-emerald-900',
                                 'A++': 'bg-green-900',
                                 'A+': 'bg-green-700',
                                 A: 'bg-green-500',
@@ -751,7 +753,7 @@ export const PropertyDetailPage = () => {
                                 F: 'bg-red-500',
                                 G: 'bg-red-800',
                               } as Record<string, string>
-                            )[property.energyEfficiencyRating] || 'bg-gray-500'
+                            )[property.energyEfficiencyRating] || 'bg-neutral-500'
                           }`}
                         >
                           {property.energyEfficiencyRating}

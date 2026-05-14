@@ -526,7 +526,7 @@ export const DocumentList = ({
                     {!uploadProgress && (
                       <button
                         onClick={() => handleRemoveFile(index)}
-                        className="p-1 hover:bg-neutral-50 rounded transition-colors shrink-0"
+                        className="p-1 hover:bg-surface-inset rounded transition-colors shrink-0"
                       >
                         <X className="h-3.5 w-3.5 text-text-secondary " />
                       </button>

@@ -170,7 +170,7 @@ export function PeriodFilter({
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
               activePreset === preset
                 ? 'bg-primary-500 text-white'
-                : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+                : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
             }`}
           >
             {t(PRESET_LABEL_KEYS[preset])}

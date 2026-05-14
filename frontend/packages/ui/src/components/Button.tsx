@@ -38,12 +38,12 @@ const variantStyles: Record<ButtonVariant, string> = {
     text-text-secondary
     border border-border-default
     shadow-sm
-    hover:bg-neutral-50 hover:border-border-strong hover:text-text-primary
+    hover:bg-surface-inset hover:border-border-strong hover:text-text-primary
     hover:shadow
-    active:bg-neutral-100
+    active:bg-surface-raised
     focus-visible:ring-2 focus-visible:ring-primary-500/30 focus-visible:ring-offset-2
     focus-visible:ring-offset-surface-card
-    disabled:bg-neutral-50 disabled:text-text-disabled disabled:border-border-default disabled:shadow-none
+    disabled:bg-surface-inset disabled:text-text-disabled disabled:border-border-default disabled:shadow-none
   `,
   danger: `
     bg-surface-card
@@ -55,14 +55,14 @@ const variantStyles: Record<ButtonVariant, string> = {
     active:bg-error-bg
     focus-visible:ring-2 focus-visible:ring-error/50 focus-visible:ring-offset-2
     focus-visible:ring-offset-surface-card
-    disabled:bg-neutral-50 disabled:text-text-disabled disabled:border-border-default disabled:shadow-none
+    disabled:bg-surface-inset disabled:text-text-disabled disabled:border-border-default disabled:shadow-none
   `,
   ghost: `
     bg-transparent
     text-text-secondary
     border border-transparent
-    hover:bg-neutral-50 hover:text-text-primary
-    active:bg-neutral-100
+    hover:bg-surface-inset hover:text-text-primary
+    active:bg-surface-raised
     focus-visible:ring-2 focus-visible:ring-primary-500/30 focus-visible:ring-offset-2
     focus-visible:ring-offset-surface-card
     disabled:text-text-disabled disabled:bg-transparent

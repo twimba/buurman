@@ -158,7 +158,7 @@ export const ExpenseCreatePage = () => {
         <div className="flex items-center gap-4 mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 hover:bg-neutral-100 rounded transition-colors"
+            className="p-2 hover:bg-surface-inset rounded transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -176,7 +176,7 @@ export const ExpenseCreatePage = () => {
         </div>
 
         {/* Mode toggle */}
-        <div className="flex gap-1 mb-4 p-1 bg-neutral-100 rounded-lg w-fit">
+        <div className="flex gap-1 mb-4 p-1 bg-surface-inset rounded-lg w-fit">
           {(['single', 'bulk'] as Mode[]).map((m) => (
             <button
               key={m}

@@ -95,7 +95,7 @@ export const Pagination = ({
             'p-1.5 rounded-md transition-colors',
             page === 0
               ? 'opacity-30 cursor-not-allowed text-text-muted'
-              : 'text-text-secondary hover:bg-neutral-50'
+              : 'text-text-secondary hover:bg-surface-inset'
           )}
           title="First page"
         >
@@ -108,7 +108,7 @@ export const Pagination = ({
             'p-1.5 rounded-md transition-colors',
             page === 0
               ? 'opacity-30 cursor-not-allowed text-text-muted'
-              : 'text-text-secondary hover:bg-neutral-50'
+              : 'text-text-secondary hover:bg-surface-inset'
           )}
           title="Previous page"
         >
@@ -134,7 +134,7 @@ export const Pagination = ({
                   'min-w-8 h-8 rounded-md text-sm font-medium inline-flex items-center justify-center transition-all',
                   p === page
                     ? 'bg-primary-500 text-white'
-                    : 'text-text-secondary hover:bg-neutral-50'
+                    : 'text-text-secondary hover:bg-surface-inset'
                 )}
               >
                 {(p as number) + 1}
@@ -150,7 +150,7 @@ export const Pagination = ({
             'p-1.5 rounded-md transition-colors',
             page >= totalPages - 1
               ? 'opacity-30 cursor-not-allowed text-text-muted'
-              : 'text-text-secondary hover:bg-neutral-50'
+              : 'text-text-secondary hover:bg-surface-inset'
           )}
           title="Next page"
         >
@@ -163,7 +163,7 @@ export const Pagination = ({
             'p-1.5 rounded-md transition-colors',
             page >= totalPages - 1
               ? 'opacity-30 cursor-not-allowed text-text-muted'
-              : 'text-text-secondary hover:bg-neutral-50'
+              : 'text-text-secondary hover:bg-surface-inset'
           )}
           title="Last page"
         >

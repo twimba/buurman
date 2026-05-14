@@ -27,7 +27,7 @@ interface StatusBadgeProps {
 }
 
 const colorStyles: Record<BadgeColorVariant, string> = {
-  gray: 'bg-neutral-100 text-neutral-700',
+  gray: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300',
   red: 'bg-red-50 text-red-700',
   orange: 'bg-orange-50 text-orange-700',
   amber: 'bg-amber-50 text-amber-700',
