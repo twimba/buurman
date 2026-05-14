@@ -33,7 +33,7 @@
         <div class="page">
             <div class="page-header">
                 <h1 class="page-title">Privacy Policy</h1>
-                <p class="page-meta">Last updated: February 14, 2026</p>
+                <p class="page-meta">Last updated: May 14, 2026</p>
             </div>
 
             <div class="tldr tldr-primary">
@@ -80,6 +80,18 @@
                 <li><strong>Withdraw consent</strong> at any time.</li>
             </ul>
             <p>To exercise any of these rights, email <a href="mailto:hello@buurman.io">hello@buurman.io</a>. We will respond within 30 days.</p>
+
+            <h2>Google Sheets Export (Optional Integration)</h2>
+            <p>If you choose to use the <strong>Export to Google Sheets</strong> feature (available on Big and Mega plans), the following applies:</p>
+            <ul>
+                <li><strong>You consent every time.</strong> Each export opens a Google sign-in popup where you explicitly authorize Buurman. We never store or reuse the authorization &mdash; the access token lives only for the duration of that one export and is then discarded.</li>
+                <li><strong>Minimum scope.</strong> Buurman requests only the <code>drive.file</code> scope, which Google classifies as <em>non-sensitive</em>. This scope <strong>only allows Buurman to read or modify files Buurman itself created</strong> in your Drive &mdash; we cannot see, list, or touch any of your other Google Drive content.</li>
+                <li><strong>Where the data goes.</strong> When you trigger an export, the team data you chose to export (e.g. contacts, transactions, dashboards, or your full takeout) is sent from our servers to <strong>Google's Sheets and Drive APIs</strong> over an encrypted connection, and the resulting spreadsheet is created in <em>your</em> Google Drive under a folder we create called &ldquo;Buurman exports&rdquo;. The file is owned by you, not by Buurman.</li>
+                <li><strong>Google's privacy policy applies</strong> to the data once it lives in your Drive. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a> for details on how Google handles data you store with them.</li>
+                <li><strong>We don't keep a copy.</strong> Buurman does not retain the exported spreadsheet, its id, or its contents server-side beyond the response of the export request itself. We log metrics about success/failure and duration but not the data.</li>
+                <li><strong>You stay in control.</strong> You can revoke Buurman's access to your Google account at any time at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>. The next export will simply re-prompt for consent.</li>
+            </ul>
+            <p>Buurman's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
 
             <h2>Cookies</h2>
             <p>We keep cookies to a minimum:</p>

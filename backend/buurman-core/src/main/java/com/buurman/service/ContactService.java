@@ -683,13 +683,13 @@ public class ContactService {
             c -> {
               ContactSummary summary = contactMapper.toSummary(c);
               String matchField =
-                  (companyName
+                  companyName
                           .filter(cn -> !cn.isBlank())
                           .flatMap(
                               cn ->
                                   c.getCompanyName()
                                       .filter(existing -> existing.equalsIgnoreCase(cn)))
-                          .isPresent())
+                          .isPresent()
                       ? "companyName"
                       : "name";
               matches.add(new DuplicateMatch(summary, matchField, "exact"));

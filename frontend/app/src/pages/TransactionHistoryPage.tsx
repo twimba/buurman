@@ -21,6 +21,10 @@ import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
+import { ExportOptionIcon } from '@/components/common/ExportOptionIcon';
+import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
+import { exportTransactionsGoogleSheet } from '@/api/googleSheetsExport';
+import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 
 type TransactionType = 'ALL' | 'INCOME' | 'EXPENSE';
 
@@ -40,6 +44,12 @@ export const TransactionHistoryPage = () => {
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
   const { isEnabled } = useFeatureFlags();
+  const {
+    triggerExport: triggerGoogleSheet,
+    isExporting: isGoogleExporting,
+    lastResult: lastGoogleSheet,
+    clearLastResult: clearLastGoogleSheet,
+  } = useGoogleSheetsExport();
   const { defaultCurrency } = useTeamDefaults();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<TransactionType>('ALL');
@@ -339,11 +349,45 @@ export const TransactionHistoryPage = () => {
           />
           {isEnabled(FeatureFlags.REPORTS) && (
             <>
+              <GoogleSheetExportPill
+                result={lastGoogleSheet}
+                onDismiss={clearLastGoogleSheet}
+              />
               <ExportDropdown
                 size="md"
+                exporting={isGoogleExporting}
+                disabled={isGoogleExporting}
                 options={[
-                  { label: 'CSV', onExport: handleDownloadCSV },
-                  { label: 'Excel', onExport: handleDownloadExcel },
+                  {
+                    label: 'CSV',
+                    icon: <ExportOptionIcon format="csv" />,
+                    onExport: handleDownloadCSV,
+                  },
+                  ...(isEnabled(FeatureFlags.EXCEL_EXPORT)
+                    ? [
+                        {
+                          label: 'Excel',
+                          icon: <ExportOptionIcon format="excel" />,
+                          onExport: handleDownloadExcel,
+                        },
+                      ]
+                    : []),
+                  ...(isEnabled(FeatureFlags.GOOGLE_SHEETS_EXPORT)
+                    ? [
+                        {
+                          label: 'Google Sheets',
+                          icon: <ExportOptionIcon format="google-sheets" />,
+                          onExport: () =>
+                            triggerGoogleSheet((token) =>
+                              exportTransactionsGoogleSheet(
+                                token,
+                                startDate || undefined,
+                                endDate || undefined
+                              )
+                            ),
+                        },
+                      ]
+                    : []),
                 ]}
               />
               <button

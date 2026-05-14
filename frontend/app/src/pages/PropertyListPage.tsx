@@ -11,6 +11,9 @@ import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Pagination, RefreshButton, Skeleton } from '@buurman/ui';
+import { EntityExportControls } from '@/components/common/EntityExportControls';
+import { exportPropertiesCsv, exportPropertiesXlsx } from '@/api/listExports';
+import { exportPropertiesGoogleSheet } from '@/api/googleSheetsExport';
 
 export const PropertyListPage = () => {
   const { t } = useTranslation('properties');
@@ -134,10 +137,16 @@ export const PropertyListPage = () => {
             </div>
             <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <RefreshButton
               onClick={() => refetch()}
               isRefreshing={isFetching}
+            />
+            <EntityExportControls
+              filenameStem="properties"
+              csv={exportPropertiesCsv}
+              xlsx={exportPropertiesXlsx}
+              googleSheet={exportPropertiesGoogleSheet}
             />
             <button
               onClick={() => navigate('/properties/new')}

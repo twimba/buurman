@@ -1,109 +1,21 @@
 package com.buurman.service.export;
 
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
 import org.springframework.stereotype.Component;
 
 import com.buurman.dto.response.PortfolioDashboardResponse;
-import com.buurman.dto.response.PortfolioDashboardResponse.PortfolioSummary;
-import com.buurman.dto.response.PortfolioDashboardResponse.PropertyPerformance;
-import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
-import com.buurman.exception.ExternalServiceException;
-import com.opencsv.CSVWriter;
+import com.buurman.service.export.tabular.CsvRenderer;
+import com.buurman.service.export.tabular.PortfolioDashboardTabularExportBuilder;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class PortfolioDashboardCsvExporter {
 
+  private final PortfolioDashboardTabularExportBuilder builder;
+  private final CsvRenderer renderer;
+
   public byte[] generate(PortfolioDashboardResponse dashboard) {
-    try (StringWriter sw = new StringWriter();
-        CSVWriter writer = new CSVWriter(sw)) {
-
-      PortfolioSummary s = dashboard.summary();
-
-      // Summary section
-      writer.writeNext(new String[] {"--- Portfolio Summary Metrics ---"});
-      writer.writeNext(new String[] {"Metric", "Value"});
-      writer.writeNext(new String[] {"Currency", dashboard.currency().orElse("N/A")});
-      writer.writeNext(
-          new String[] {
-            "Properties with Financial Data",
-            dashboard.propertiesWithFinancialData() + " / " + dashboard.totalProperties()
-          });
-      writer.writeNext(row("Total Portfolio Value", s.totalPortfolioValue()));
-      writer.writeNext(row("Total Equity", s.totalEquity()));
-      writer.writeNext(row("Monthly Cash Flow", s.monthlyCashFlow()));
-      writer.writeNext(row("Annual NOI", s.annualNoi()));
-      writer.writeNext(row("Weighted Cap Rate %", s.weightedCapRate()));
-      writer.writeNext(row("Weighted Cash-on-Cash %", s.weightedCashOnCash()));
-      writer.writeNext(row("Portfolio Occupancy %", s.portfolioOccupancy()));
-      writer.writeNext(row("Debt-to-Equity", s.debtToEquity()));
-      writer.writeNext(row("DSCR", s.portfolioDscr()));
-      writer.writeNext(row("Income Concentration %", s.incomeConcentration()));
-      writer.writeNext(row("Data Completeness %", s.dataCompleteness()));
-      writer.writeNext(new String[] {""});
-
-      // Monthly cash flow
-      writer.writeNext(new String[] {"--- Aggregated Monthly Cash Flow ---"});
-      writer.writeNext(new String[] {"Month", "Income", "Expenses", "Mortgage", "Net"});
-      for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
-        writer.writeNext(
-            new String[] {
-              m.month(),
-              m.income().toPlainString(),
-              m.expenses().toPlainString(),
-              m.mortgage().toPlainString(),
-              m.net().toPlainString()
-            });
-      }
-      writer.writeNext(new String[] {""});
-
-      // Property comparison
-      writer.writeNext(new String[] {"--- Property Comparison ---"});
-      writer.writeNext(
-          new String[] {
-            "Property",
-            "Category",
-            "Monthly Cash Flow",
-            "Annual NOI",
-            "Cap Rate %",
-            "Cash-on-Cash %",
-            "Occupancy %",
-            "Data Completeness %",
-            "Currency",
-            "Currency Mismatch"
-          });
-      for (PropertyPerformance pp : dashboard.propertyComparison()) {
-        writer.writeNext(
-            new String[] {
-              pp.address(),
-              pp.category(),
-              pp.monthlyCashFlow().map(BigDecimal::toPlainString).orElse("N/A"),
-              pp.annualNoi().map(BigDecimal::toPlainString).orElse("N/A"),
-              pp.capRate().map(BigDecimal::toPlainString).orElse("N/A"),
-              pp.cashOnCash().map(BigDecimal::toPlainString).orElse("N/A"),
-              pp.occupancyRate().map(BigDecimal::toPlainString).orElse("N/A"),
-              String.valueOf(pp.completenessPercent()),
-              pp.currency().orElse("N/A"),
-              String.valueOf(pp.currencyMismatch())
-            });
-      }
-
-      // UTF-8 BOM for Excel compatibility
-      byte[] bom = new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
-      byte[] csv = sw.toString().getBytes(StandardCharsets.UTF_8);
-      byte[] result = new byte[bom.length + csv.length];
-      System.arraycopy(bom, 0, result, 0, bom.length);
-      System.arraycopy(csv, 0, result, bom.length, csv.length);
-      return result;
-    } catch (Exception e) {
-      throw new ExternalServiceException("Failed to generate portfolio dashboard CSV", e);
-    }
-  }
-
-  private static String[] row(String label, Optional<BigDecimal> value) {
-    return new String[] {label, value.map(BigDecimal::toPlainString).orElse("N/A")};
+    return renderer.render(builder.build(dashboard));
   }
 }

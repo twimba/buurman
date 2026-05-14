@@ -589,6 +589,8 @@
                                 <importMapping>ImpersonationSessionInfo=com.buurman.dto.response.ImpersonationSessionInfo</importMapping>
                                 <importMapping>BroadcastMessageResponse=com.buurman.dto.response.BroadcastMessageResponse</importMapping>
                                 <importMapping>TakeoutResponse=com.buurman.dto.response.TakeoutResponse</importMapping>
+                                <importMapping>GoogleSheetExportRequest=com.buurman.dto.request.GoogleSheetExportRequest</importMapping>
+                                <importMapping>GoogleSheetExportResponse=com.buurman.dto.response.GoogleSheetExportResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

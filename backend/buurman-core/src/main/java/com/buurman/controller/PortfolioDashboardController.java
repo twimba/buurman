@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import static com.buurman.util.FeatureFlags.EXCEL_EXPORT;
+import static com.buurman.util.FeatureFlags.GOOGLE_SHEETS_EXPORT;
 import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
@@ -11,6 +12,10 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.GoogleAccessToken;
+import com.buurman.domain.GoogleSheetExport;
+import com.buurman.dto.request.GoogleSheetExportRequest;
+import com.buurman.dto.response.GoogleSheetExportResponse;
 import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.PortfolioDashboardApi;
@@ -18,6 +23,7 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.service.GoogleSheetTitleResolver;
 import com.buurman.service.PortfolioDashboardService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +36,7 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
   private final PortfolioDashboardService dashboardService;
   private final ExportService exportService;
   private final FeatureFlagService featureFlagService;
+  private final GoogleSheetTitleResolver titleResolver;
   private final HttpServletResponse httpServletResponse;
 
   @ModelAttribute
@@ -84,5 +91,25 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     return exportService.generatePortfolioDashboardExcel(dashboard);
+  }
+
+  @Override
+  public GoogleSheetExportResponse exportPortfolioGoogleSheet(
+      GoogleSheetExportRequest request,
+      Optional<Integer> months,
+      Optional<LocalDate> startDate,
+      Optional<LocalDate> endDate) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    if (featureFlagService.isDisabled(GOOGLE_SHEETS_EXPORT, principal)) {
+      throw new ForbiddenException("Google Sheets export feature is not available");
+    }
+    PortfolioDashboardResponse dashboard =
+        dashboardService.getPortfolioDashboard(months, startDate, endDate, principal);
+    GoogleSheetExport result =
+        exportService.generatePortfolioDashboardGoogleSheet(
+            new GoogleAccessToken(request.getAccessToken()),
+            dashboard,
+            titleResolver.resolve(principal, "Portfolio Dashboard"));
+    return new GoogleSheetExportResponse(result.spreadsheetId(), result.url());
   }
 }

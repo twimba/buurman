@@ -358,6 +358,71 @@ reports-export-transactions-excel:
     security:
       - bearer-jwt: []
 
+reports-export-transactions-google-sheet:
+  post:
+    tags:
+      - Reports
+    summary: Export transaction history to Google Sheets
+    description: |
+      Creates a new Google Sheet in the user's Drive (under "Buurman exports") containing the
+      team's transaction history (payments + expenses) for the optional date range. Requires a
+      user-supplied OAuth access token with the drive.file scope.
+    operationId: exportTransactionHistoryGoogleSheet
+    parameters:
+      - name: startDate
+        in: query
+        description: Start date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: End date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportResponse'
+      "400":
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - feature flag disabled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "502":
+        description: Bad Gateway - Google API error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 reports-date-range:
   get:
     tags:

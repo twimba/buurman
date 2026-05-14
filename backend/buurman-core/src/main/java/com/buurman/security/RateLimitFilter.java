@@ -80,7 +80,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
       if (probe.isConsumed()) {
         metricsService.incrementCounter("ratelimit.allowed.total", "endpoint", configKey);
         metricsService.recordHistogram(
-            "ratelimit.remaining_tokens", probe.getRemainingTokens(), "endpoint", configKey);
+            "ratelimit.remaining_tokens",
+            (double) probe.getRemainingTokens(),
+            "endpoint",
+            configKey);
         filterChain.doFilter(request, response);
         return;
       }
@@ -95,7 +98,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
           retryAfterSeconds);
       metricsService.incrementCounter("ratelimit.rejected.total", "endpoint", configKey);
       metricsService.recordHistogram(
-          "ratelimit.remaining_tokens", probe.getRemainingTokens(), "endpoint", configKey);
+          "ratelimit.remaining_tokens", (double) probe.getRemainingTokens(), "endpoint", configKey);
 
       response.setStatus(429);
       response.setContentType("application/json");

@@ -924,6 +924,56 @@ booklets-contacts-csv:
     security:
       - bearer-jwt: []
 
+booklets-contacts-google-sheet:
+  post:
+    tags:
+      - Booklets
+    summary: Export contacts list to Google Sheets
+    description: |
+      Creates a new Google Sheet in the user's Drive (under "Buurman exports") containing all
+      contacts for the team, formatted with rich styling. Requires a user-supplied OAuth access
+      token with the drive.file scope.
+    operationId: exportContactsGoogleSheet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportResponse'
+      "400":
+        description: Bad request - missing/invalid Google access token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - feature flag disabled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "502":
+        description: Bad Gateway - Google API error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 booklets-contacts-xlsx:
   get:
     tags:
@@ -957,6 +1007,250 @@ booklets-contacts-xlsx:
           application/json:
             schema:
               $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+booklets-properties-csv:
+  get:
+    tags:
+      - Booklets
+    summary: Export properties list to CSV
+    operationId: exportPropertiesCsv
+    responses:
+      "200":
+        description: OK
+        content:
+          "text/csv":
+            schema:
+              type: string
+              format: byte
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-properties-xlsx:
+  get:
+    tags:
+      - Booklets
+    summary: Export properties list to Excel
+    operationId: exportPropertiesXlsx
+    responses:
+      "200":
+        description: OK
+        content:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            schema:
+              type: string
+              format: byte
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-properties-google-sheet:
+  post:
+    tags:
+      - Booklets
+    summary: Export properties to Google Sheets
+    operationId: exportPropertiesGoogleSheet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-payments-csv:
+  get:
+    tags:
+      - Booklets
+    summary: Export payments list to CSV
+    operationId: exportPaymentsCsv
+    responses:
+      "200":
+        description: OK
+        content:
+          "text/csv":
+            schema:
+              type: string
+              format: byte
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-payments-xlsx:
+  get:
+    tags:
+      - Booklets
+    summary: Export payments list to Excel
+    operationId: exportPaymentsXlsx
+    responses:
+      "200":
+        description: OK
+        content:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            schema:
+              type: string
+              format: byte
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-payments-google-sheet:
+  post:
+    tags:
+      - Booklets
+    summary: Export payments to Google Sheets
+    operationId: exportPaymentsGoogleSheet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-expenses-csv:
+  get:
+    tags:
+      - Booklets
+    summary: Export expenses list to CSV
+    operationId: exportExpensesCsv
+    responses:
+      "200":
+        description: OK
+        content:
+          "text/csv":
+            schema:
+              type: string
+              format: byte
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-expenses-xlsx:
+  get:
+    tags:
+      - Booklets
+    summary: Export expenses list to Excel
+    operationId: exportExpensesXlsx
+    responses:
+      "200":
+        description: OK
+        content:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            schema:
+              type: string
+              format: byte
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-expenses-google-sheet:
+  post:
+    tags:
+      - Booklets
+    summary: Export expenses to Google Sheets
+    operationId: exportExpensesGoogleSheet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-contracts-csv:
+  get:
+    tags:
+      - Booklets
+    summary: Export contracts list to CSV
+    operationId: exportContractsCsv
+    responses:
+      "200":
+        description: OK
+        content:
+          "text/csv":
+            schema:
+              type: string
+              format: byte
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-contracts-xlsx:
+  get:
+    tags:
+      - Booklets
+    summary: Export contracts list to Excel
+    operationId: exportContractsXlsx
+    responses:
+      "200":
+        description: OK
+        content:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            schema:
+              type: string
+              format: byte
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-contracts-google-sheet:
+  post:
+    tags:
+      - Booklets
+    summary: Export contracts to Google Sheets
+    operationId: exportContractsGoogleSheet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
     security:
       - bearer-jwt: []
 

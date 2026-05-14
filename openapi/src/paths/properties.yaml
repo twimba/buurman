@@ -3757,6 +3757,77 @@ dashboard-export-excel:
     security:
       - bearer-jwt: []
 
+dashboard-export-google-sheet:
+  post:
+    tags:
+      - Property Dashboard
+    summary: Export property dashboard to Google Sheets
+    description: |
+      Creates a new Google Sheet in the user's Drive (under "Buurman exports") containing the
+      property dashboard (summary, monthly cash flow, expense breakdown) for the given property.
+      Requires a user-supplied OAuth access token with the drive.file scope.
+    operationId: exportPropertyDashboardGoogleSheet
+    parameters:
+      - name: identifier
+        in: path
+        description: Property identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/PropertyIdentifier'
+      - name: months
+        in: query
+        description: Number of months to include
+        required: false
+        schema:
+          type: integer
+          format: int32
+        example: 12
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportResponse'
+      "400":
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - feature flag disabled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Property not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "502":
+        description: Bad Gateway - Google API error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 audit-log:
   get:
     tags:

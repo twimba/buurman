@@ -30,6 +30,9 @@ import {
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { EntityExportControls } from '@/components/common/EntityExportControls';
+import { exportExpensesCsv, exportExpensesXlsx } from '@/api/listExports';
+import { exportExpensesGoogleSheet } from '@/api/googleSheetsExport';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import {
   PeriodFilter,
@@ -183,10 +186,16 @@ export const ExpensesPage = () => {
             </div>
             <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <RefreshButton
               onClick={() => refetch()}
               isRefreshing={isFetching}
+            />
+            <EntityExportControls
+              filenameStem="expenses"
+              csv={exportExpensesCsv}
+              xlsx={exportExpensesXlsx}
+              googleSheet={exportExpensesGoogleSheet}
             />
             <button
               onClick={() => navigate('/expenses/new')}

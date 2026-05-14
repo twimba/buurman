@@ -28,6 +28,12 @@ import {
 } from '@/components/contacts/DuplicateContactWarning';
 import { ImportWizard } from '@/components/contacts/ImportWizard';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
+import { ExportOptionIcon } from '@/components/common/ExportOptionIcon';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
+import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
+import { exportContactsGoogleSheet } from '@/api/googleSheetsExport';
+import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 
 const CONTACT_TYPES: ContactType[] = [
   'INDIVIDUAL',
@@ -204,6 +210,13 @@ export const ContactListPage = () => {
 
   const [isExporting, setIsExporting] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
+  const { isEnabled } = useFeatureFlags();
+  const {
+    triggerExport: triggerGoogleSheet,
+    isExporting: isGoogleExporting,
+    lastResult: lastGoogleSheet,
+    clearLastResult: clearLastGoogleSheet,
+  } = useGoogleSheetsExport();
 
   const downloadBlob = (blob: Blob, filename: string) => {
     const url = window.URL.createObjectURL(blob);
@@ -310,13 +323,41 @@ export const ContactListPage = () => {
               onClick={() => refetch()}
               isRefreshing={isFetching}
             />
+            <GoogleSheetExportPill
+              result={lastGoogleSheet}
+              onDismiss={clearLastGoogleSheet}
+            />
             <ExportDropdown
               size="md"
-              disabled={isExporting}
-              exporting={isExporting}
+              disabled={isExporting || isGoogleExporting}
+              exporting={isExporting || isGoogleExporting}
               options={[
-                { label: 'CSV', onExport: handleExportCsv },
-                { label: 'Excel', onExport: handleExportXlsx },
+                {
+                  label: 'CSV',
+                  icon: <ExportOptionIcon format="csv" />,
+                  onExport: handleExportCsv,
+                },
+                ...(isEnabled(FeatureFlags.EXCEL_EXPORT)
+                  ? [
+                      {
+                        label: 'Excel',
+                        icon: <ExportOptionIcon format="excel" />,
+                        onExport: handleExportXlsx,
+                      },
+                    ]
+                  : []),
+                ...(isEnabled(FeatureFlags.GOOGLE_SHEETS_EXPORT)
+                  ? [
+                      {
+                        label: 'Google Sheets',
+                        icon: <ExportOptionIcon format="google-sheets" />,
+                        onExport: () =>
+                          triggerGoogleSheet((token) =>
+                            exportContactsGoogleSheet(token)
+                          ),
+                      },
+                    ]
+                  : []),
               ]}
             />
             {canEditData && (

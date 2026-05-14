@@ -37,4 +37,13 @@
     <logger name="org.jooq" level="INFO"/>
     <logger name="org.jooq.tools.LoggerListener" level="INFO"/>
     <logger name="org.flywaydb" level="INFO"/>
+
+    <!--
+        Google API client must NEVER be raised to DEBUG/CONFIG: those levels log full HTTP
+        request/response bodies including the Authorization: Bearer <token> header used for
+        Google Sheets exports. Pinned to WARN to keep OAuth access tokens out of logs.
+    -->
+    <logger name="com.google.api.client.http" level="WARN"/>
+    <logger name="com.google.api.client.http.HttpTransport" level="WARN"/>
+    <logger name="com.google.auth" level="WARN"/>
 </configuration>

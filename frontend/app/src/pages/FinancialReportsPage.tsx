@@ -38,20 +38,7 @@ import { MetricHint } from '@/components/common/MetricHint';
 import { useTheme } from '@/context/ThemeContext';
 import { useQuery } from '@tanstack/react-query';
 import { getProperties } from '@/api/properties';
-import {
-  exportTransactionsCSV,
-  exportTransactionsPDF,
-  exportTransactionsExcel,
-} from '@/api/reports';
-import {
-  ChevronDown,
-  ChevronUp,
-  Filter,
-  Check,
-  FileText,
-  Maximize2,
-} from 'lucide-react';
-import { ExportDropdown } from '@/components/common/ExportDropdown';
+import { ChevronDown, ChevronUp, Filter, Check, Maximize2 } from 'lucide-react';
 import { ChartFullscreenModal } from '@/components/common/ChartFullscreenModal';
 
 export const FinancialReportsPage = () => {
@@ -292,72 +279,6 @@ export const FinancialReportsPage = () => {
           <p className="text-text-secondary ml-11">{t('reports.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <ExportDropdown
-            size="md"
-            options={[
-              {
-                label: 'CSV',
-                onExport: async () => {
-                  try {
-                    const blob = await exportTransactionsCSV(
-                      dateRange.startDate,
-                      dateRange.endDate
-                    );
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'transactions.csv';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  } catch {
-                    /* ignore */
-                  }
-                },
-              },
-              {
-                label: 'Excel',
-                onExport: async () => {
-                  try {
-                    const blob = await exportTransactionsExcel(
-                      dateRange.startDate,
-                      dateRange.endDate
-                    );
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'transactions.xlsx';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  } catch {
-                    /* ignore */
-                  }
-                },
-              },
-            ]}
-          />
-          <button
-            onClick={async () => {
-              try {
-                const blob = await exportTransactionsPDF(
-                  dateRange.startDate,
-                  dateRange.endDate
-                );
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'financial-report.pdf';
-                a.click();
-                URL.revokeObjectURL(url);
-              } catch {
-                /* ignore */
-              }
-            }}
-            className="flex items-center gap-2 px-3 py-2 text-text-secondary border border-border-strong rounded-md hover:bg-surface-inset transition-colors text-sm"
-            title={t('reports.downloadPdf')}
-          >
-            <FileText className="h-4 w-4" />
-            PDF
-          </button>
           <button
             onClick={() => navigate('/reports/transactions')}
             className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors text-sm"

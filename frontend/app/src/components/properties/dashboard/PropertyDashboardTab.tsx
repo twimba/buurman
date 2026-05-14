@@ -37,6 +37,12 @@ import {
 } from '@/api/properties';
 import { LoadingSpinner } from '@buurman/ui';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
+import { ExportOptionIcon } from '@/components/common/ExportOptionIcon';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
+import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
+import { exportPropertyDashboardGoogleSheet } from '@/api/googleSheetsExport';
+import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 import { MetricHint } from '@/components/common/MetricHint';
 import type {
   DashboardSummaryMetrics,
@@ -293,6 +299,13 @@ export const PropertyDashboardTab = ({
   const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
     null
   );
+  const { isEnabled } = useFeatureFlags();
+  const {
+    triggerExport: triggerGoogleSheet,
+    isExporting: isGoogleExporting,
+    lastResult: lastGoogleSheet,
+    clearLastResult: clearLastGoogleSheet,
+  } = useGoogleSheetsExport();
   const handlePeriodChange = useCallback((type: PeriodType) => {
     setPeriodType(type);
   }, []);
@@ -421,14 +434,49 @@ export const PropertyDashboardTab = ({
             </div>
           )}
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex items-center gap-2 flex-wrap shrink-0">
+          <GoogleSheetExportPill
+            result={lastGoogleSheet}
+            onDismiss={clearLastGoogleSheet}
+            size="sm"
+          />
           <ExportDropdown
             size="sm"
-            disabled={exporting !== null}
-            exporting={exporting === 'csv' || exporting === 'excel'}
+            disabled={exporting !== null || isGoogleExporting}
+            exporting={
+              exporting === 'csv' || exporting === 'excel' || isGoogleExporting
+            }
             options={[
-              { label: 'CSV', onExport: () => handleExport('csv') },
-              { label: 'Excel', onExport: () => handleExport('excel') },
+              {
+                label: 'CSV',
+                icon: <ExportOptionIcon format="csv" />,
+                onExport: () => handleExport('csv'),
+              },
+              ...(isEnabled(FeatureFlags.EXCEL_EXPORT)
+                ? [
+                    {
+                      label: 'Excel',
+                      icon: <ExportOptionIcon format="excel" />,
+                      onExport: () => handleExport('excel'),
+                    },
+                  ]
+                : []),
+              ...(isEnabled(FeatureFlags.GOOGLE_SHEETS_EXPORT)
+                ? [
+                    {
+                      label: 'Google Sheets',
+                      icon: <ExportOptionIcon format="google-sheets" />,
+                      onExport: () =>
+                        triggerGoogleSheet((token) =>
+                          exportPropertyDashboardGoogleSheet(
+                            propertyId,
+                            token,
+                            months
+                          )
+                        ),
+                    },
+                  ]
+                : []),
             ]}
           />
           <button
