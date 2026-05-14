@@ -426,6 +426,8 @@
     "notesPlaceholder": "Reason for adjustment (e.g., annual CPI increase)...",
     "saving": "Saving...",
     "adjustRentButton": "Adjust Rent",
+    "editTitle": "Edit Rent Adjustment",
+    "editRentButton": "Save Changes",
     "effectiveDate": "Effective Date",
     "reason": "Reason",
     "percentage": "Percentage"

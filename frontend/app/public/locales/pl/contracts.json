@@ -426,6 +426,8 @@
     "notesPlaceholder": "Powód korekty (np. roczna waloryzacja CPI)...",
     "saving": "Zapisywanie...",
     "adjustRentButton": "Zastosuj korektę czynszu",
+    "editTitle": "Edytuj korektę czynszu",
+    "editRentButton": "Zapisz zmiany",
     "effectiveDate": "Data obowiązywania",
     "reason": "Powód",
     "percentage": "Procent"

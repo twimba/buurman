@@ -426,6 +426,8 @@
     "notesPlaceholder": "Årsak til justering (f.eks. årlig KPI-økning)...",
     "saving": "Lagrer...",
     "adjustRentButton": "Juster leie",
+    "editTitle": "Rediger leiejustering",
+    "editRentButton": "Lagre endringer",
     "effectiveDate": "Ikrafttredelsesdato",
     "reason": "Årsak",
     "percentage": "Prosent"

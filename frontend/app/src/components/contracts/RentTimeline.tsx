@@ -6,6 +6,7 @@ import {
   TrendingDown,
   DollarSign,
   Plus,
+  Pencil,
   Trash2,
   FileText,
   FolderDown,
@@ -22,6 +23,7 @@ import {
   useRentPeriods,
   useDeleteRentPeriod,
   useAddRentPeriod,
+  useUpdateRentPeriod,
 } from '@/hooks/useRentPeriodHooks';
 import { useContractDocuments } from '@/hooks/useContractHooks';
 import { AdjustRentModal } from './AdjustRentModal';
@@ -69,6 +71,7 @@ export const RentTimeline = ({
   const { formatDate } = useFormatDate();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
+  const [editTarget, setEditTarget] = useState<RentPeriodResponse | null>(null);
   const [generateTarget, setGenerateTarget] = useState<{
     period: RentPeriodResponse;
     regenerate: boolean;
@@ -77,6 +80,7 @@ export const RentTimeline = ({
   const { data: periods = [], isLoading } = useRentPeriods(contractIdentifier);
   const { data: allDocuments } = useContractDocuments(contractIdentifier);
   const addRentPeriod = useAddRentPeriod(contractIdentifier);
+  const updateRentPeriod = useUpdateRentPeriod(contractIdentifier);
   const deleteRentPeriod = useDeleteRentPeriod(contractIdentifier);
 
   /** Map period identifier -> documents matching that period's filename pattern */
@@ -118,6 +122,24 @@ export const RentTimeline = ({
     if (window.confirm(t('rentPeriod.deleteConfirm'))) {
       deleteRentPeriod.mutate(periodIdentifier);
     }
+  };
+
+  const handleEditPeriod = (
+    rentAmount: number,
+    effectiveFrom: string,
+    notes?: string,
+    components?: RentComponentFormItem[]
+  ) => {
+    if (!editTarget) {
+      return;
+    }
+    updateRentPeriod.mutate(
+      {
+        periodIdentifier: editTarget.identifier,
+        data: { rentAmount, effectiveFrom, notes, components },
+      },
+      { onSuccess: () => setEditTarget(null) }
+    );
   };
 
   const canAdjustRent = canEditData && contractStatus === ContractStatus.ACTIVE;
@@ -180,6 +202,11 @@ export const RentTimeline = ({
                     formatDate={formatDate}
                     t={t}
                     canEdit={canEditData}
+                    onEdit={
+                      canEditData && isFuturePeriod(period.effectiveFrom)
+                        ? () => setEditTarget(period)
+                        : undefined
+                    }
                     onDelete={
                       canEditData && isFuturePeriod(period.effectiveFrom)
                         ? () => handleDeletePeriod(period.identifier)
@@ -212,6 +239,30 @@ export const RentTimeline = ({
         />
       )}
 
+      {/* Edit Rent Period Modal */}
+      {editTarget && (
+        <AdjustRentModal
+          currentRent={currentRentAmount}
+          currency={currency}
+          currentComponents={currentComponents}
+          rentPeriods={periods}
+          onClose={() => setEditTarget(null)}
+          onConfirm={handleEditPeriod}
+          isLoading={updateRentPeriod.isPending}
+          isEditing
+          initialValues={{
+            rentAmount: editTarget.rentAmount,
+            effectiveFrom: editTarget.effectiveFrom,
+            notes: editTarget.notes,
+            components: editTarget.components.map((c) => ({
+              componentType: c.componentType,
+              amount: c.amount,
+              description: c.description,
+            })),
+          }}
+        />
+      )}
+
       {/* Generate Documents Modal */}
       {generateTarget && (
         <GenerateRentChangeModal
@@ -235,6 +286,7 @@ function RentPeriodRow({
   formatDate,
   t,
   canEdit,
+  onEdit,
   onDelete,
   onGenerateDocuments,
   onRegenerateDocuments,
@@ -246,6 +298,7 @@ function RentPeriodRow({
   formatDate: (date: string) => string;
   t: (key: string) => string;
   canEdit: boolean;
+  onEdit?: () => void;
   onDelete?: () => void;
   onGenerateDocuments: () => void;
   onRegenerateDocuments: () => void;
@@ -369,6 +422,15 @@ function RentPeriodRow({
           />
         )}
       </div>
+      {onEdit && (
+        <button
+          onClick={onEdit}
+          className="p-1 text-text-muted hover:text-primary-500 transition-colors shrink-0"
+          title="Edit rent period"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+      )}
       {onDelete && (
         <button
           onClick={onDelete}

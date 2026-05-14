@@ -426,6 +426,8 @@
     "notesPlaceholder": "Motivo do ajuste (p. ex., aumento anual do IPC)...",
     "saving": "A guardar...",
     "adjustRentButton": "Ajustar Renda",
+    "editTitle": "Editar ajuste de renda",
+    "editRentButton": "Guardar alterações",
     "effectiveDate": "Data Efetiva",
     "reason": "Motivo",
     "percentage": "Percentagem"
