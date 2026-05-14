@@ -69,6 +69,7 @@
       "emailDescription": "Benachrichtigungen per E-Mail empfangen",
       "sms": "SMS-Benachrichtigungen",
       "smsDescription": "Benachrichtigungen per SMS empfangen (Telefonnummer erforderlich)",
+      "smsRequiresPhone": "Eine verifizierte Telefonnummer ist erforderlich, um SMS-Benachrichtigungen zu aktivieren. Gehen Sie zu Ihrem Profil, um eine hinzuzufügen und zu verifizieren.",
       "configurePerType": "Benachrichtigungen pro Typ konfigurieren",
       "notificationType": "Benachrichtigungstyp",
       "emailColumnDisabled": "E-Mail-Spalte ist deaktiviert, da der globale E-Mail-Schalter ausgeschaltet ist",

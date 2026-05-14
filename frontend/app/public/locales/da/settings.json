@@ -69,6 +69,7 @@
       "emailDescription": "Modtag notifikationer via e-mail",
       "sms": "SMS-notifikationer",
       "smsDescription": "Modtag notifikationer via sms (kraever telefonnummer)",
+      "smsRequiresPhone": "Et verificeret telefonnummer er påkrævet for at aktivere SMS-notifikationer. Gå til din profil for at tilføje og verificere et.",
       "configurePerType": "Konfigurer notifikationer per type",
       "notificationType": "Notifikationstype",
       "emailColumnDisabled": "E-mail-kolonnen er deaktiveret, fordi den globale e-mail-kontakt er slaaet fra",

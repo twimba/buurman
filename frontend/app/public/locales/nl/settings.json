@@ -69,6 +69,7 @@
       "emailDescription": "Ontvang notificaties via e-mail",
       "sms": "SMS-notificaties",
       "smsDescription": "Ontvang notificaties via sms (telefoonnummer vereist)",
+      "smsRequiresPhone": "Een geverifieerd telefoonnummer is vereist om SMS-notificaties in te schakelen. Ga naar uw profiel om er een toe te voegen en te verifiëren.",
       "configurePerType": "Notificaties per type configureren",
       "notificationType": "Notificatietype",
       "emailColumnDisabled": "E-mailkolom is uitgeschakeld omdat de algemene e-mailschakelaar uit staat",

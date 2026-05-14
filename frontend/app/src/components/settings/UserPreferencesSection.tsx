@@ -56,7 +56,9 @@ export const UserPreferencesSection = () => {
   const [hasNotifTypeChanges, setHasNotifTypeChanges] = useState(false);
 
   const smsAvailable = notifTypeData?.smsAvailable ?? false;
+  const smsFeatureEnabled = notifTypeData?.smsFeatureEnabled ?? false;
   const emailAvailable = notifTypeData?.emailAvailable ?? true;
+  const phoneVerified = notifTypeData?.phoneVerified ?? true;
 
   // Sync global preferences from server
   const [lastSyncedPreferences, setLastSyncedPreferences] =
@@ -439,30 +441,44 @@ export const UserPreferencesSection = () => {
                 </div>
               )}
 
-              {smsAvailable && (
-                <div className="flex items-center justify-between p-4 bg-surface-page rounded-lg">
+              {smsFeatureEnabled && (
+                <div
+                  className={`flex items-center justify-between p-4 bg-surface-page rounded-lg ${!phoneVerified ? 'opacity-60' : ''}`}
+                >
                   <div className="flex items-center gap-3">
-                    <MessageSquare className="h-5 w-5 text-text-secondary " />
+                    <MessageSquare className="h-5 w-5 text-text-secondary" />
                     <div>
                       <p className="font-medium text-text-primary">
                         {t('preferences.notifications.sms')}
                       </p>
                       <p className="text-sm text-text-secondary">
-                        {t('preferences.notifications.smsDescription')}
+                        {!phoneVerified
+                          ? t('preferences.notifications.smsRequiresPhone')
+                          : t('preferences.notifications.smsDescription')}
                       </p>
                     </div>
                   </div>
                   <button
-                    onClick={() => handleGlobalToggle('smsNotifications')}
+                    onClick={() =>
+                      smsAvailable && handleGlobalToggle('smsNotifications')
+                    }
+                    disabled={!smsAvailable}
+                    title={
+                      !phoneVerified
+                        ? t('preferences.notifications.smsRequiresPhone')
+                        : undefined
+                    }
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      preferences.smsNotifications
-                        ? 'bg-primary-500'
-                        : 'bg-neutral-200 dark:bg-neutral-700'
+                      !smsAvailable
+                        ? 'cursor-not-allowed bg-neutral-200 dark:bg-neutral-700'
+                        : preferences.smsNotifications
+                          ? 'bg-primary-500'
+                          : 'bg-neutral-200 dark:bg-neutral-700'
                     }`}
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-surface-card transition-transform ${
-                        preferences.smsNotifications
+                        preferences.smsNotifications && smsAvailable
                           ? 'translate-x-6'
                           : 'translate-x-1'
                       }`}

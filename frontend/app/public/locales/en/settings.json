@@ -69,6 +69,7 @@
       "emailDescription": "Receive notifications via email",
       "sms": "SMS Notifications",
       "smsDescription": "Receive notifications via text message (requires phone number)",
+      "smsRequiresPhone": "A verified phone number is required to enable SMS notifications. Go to your profile to add and verify one.",
       "configurePerType": "Configure notifications per type",
       "notificationType": "Notification Type",
       "emailColumnDisabled": "Email column is disabled because the global Email toggle is off",

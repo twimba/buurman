@@ -69,6 +69,7 @@
       "emailDescription": "Motta varsler via e-post",
       "sms": "SMS-varsler",
       "smsDescription": "Motta varsler via tekstmelding (krever telefonnummer)",
+      "smsRequiresPhone": "Et verifisert telefonnummer er nødvendig for å aktivere SMS-varsler. Gå til profilen din for å legge til og verifisere ett.",
       "configurePerType": "Konfigurer varsler per type",
       "notificationType": "Varslingstype",
       "emailColumnDisabled": "E-postkolonnen er deaktivert fordi den globale e-postbryteren er av",

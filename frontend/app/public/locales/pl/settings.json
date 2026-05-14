@@ -69,6 +69,7 @@
       "emailDescription": "Otrzymuj powiadomienia drogą e-mailową",
       "sms": "Powiadomienia SMS",
       "smsDescription": "Otrzymuj powiadomienia SMS (wymaga numeru telefonu)",
+      "smsRequiresPhone": "Zweryfikowany numer telefonu jest wymagany do włączenia powiadomień SMS. Przejdź do swojego profilu, aby dodać i zweryfikować numer.",
       "configurePerType": "Konfiguruj powiadomienia wg typu",
       "notificationType": "Typ powiadomienia",
       "emailColumnDisabled": "Kolumna e-mail jest wyłączona, ponieważ globalny przełącznik e-mail jest wyłączony",

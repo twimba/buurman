@@ -69,6 +69,7 @@
       "emailDescription": "Vastaanota ilmoitukset sahkopostilla",
       "sms": "Tekstiviesti-ilmoitukset",
       "smsDescription": "Vastaanota ilmoitukset tekstiviestilla (vaatii puhelinnumeron)",
+      "smsRequiresPhone": "Tekstiviesti-ilmoitusten aktivoiminen edellyttää vahvistettua puhelinnumeroa. Siirry profiiliisi lisätäksesi ja vahvistaaksesi puhelinnumeron.",
       "configurePerType": "Maarittele ilmoitukset tyypeittain",
       "notificationType": "Ilmoitustyyppi",
       "emailColumnDisabled": "Sahkopostisarake on pois kaytosta, koska sahkopostin paaasetus on pois paalta",

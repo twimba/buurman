@@ -69,6 +69,7 @@
       "emailDescription": "Riceva notifiche via email",
       "sms": "Notifiche SMS",
       "smsDescription": "Riceva notifiche via SMS (richiede numero di telefono)",
+      "smsRequiresPhone": "È necessario un numero di telefono verificato per abilitare le notifiche SMS. Vada al Suo profilo per aggiungerne e verificarne uno.",
       "configurePerType": "Configuri le notifiche per tipo",
       "notificationType": "Tipo di notifica",
       "emailColumnDisabled": "La colonna Email è disabilitata perché l'interruttore globale Email è spento",

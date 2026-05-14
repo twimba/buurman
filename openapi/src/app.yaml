@@ -699,7 +699,11 @@ components:
           type: boolean
         smsAvailable:
           type: boolean
+        smsFeatureEnabled:
+          type: boolean
         emailAvailable:
+          type: boolean
+        phoneVerified:
           type: boolean
         preferences:
           type: array
@@ -709,8 +713,10 @@ components:
         - emailAvailable
         - globalEmailEnabled
         - globalSmsEnabled
+        - phoneVerified
         - preferences
         - smsAvailable
+        - smsFeatureEnabled
     UpdateUserProfileRequest:
       type: object
       properties:

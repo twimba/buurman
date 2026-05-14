@@ -69,6 +69,7 @@
       "emailDescription": "Receber notificações por email",
       "sms": "Notificações por SMS",
       "smsDescription": "Receber notificações por mensagem de texto (requer número de telefone)",
+      "smsRequiresPhone": "É necessário um número de telefone verificado para ativar as notificações por SMS. Aceda ao seu perfil para adicionar e verificar um.",
       "configurePerType": "Configurar notificações por tipo",
       "notificationType": "Tipo de Notificação",
       "emailColumnDisabled": "A coluna de email está desativada porque o toggle global de Email está desligado",

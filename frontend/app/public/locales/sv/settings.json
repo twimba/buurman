@@ -69,6 +69,7 @@
       "emailDescription": "Ta emot aviseringar via e-post",
       "sms": "SMS-aviseringar",
       "smsDescription": "Ta emot aviseringar via SMS (kraver telefonnummer)",
+      "smsRequiresPhone": "Ett verifierat telefonnummer krävs för att aktivera SMS-aviseringar. Gå till din profil för att lägga till och verifiera ett.",
       "configurePerType": "Konfigurera aviseringar per typ",
       "notificationType": "Aviseringstyp",
       "emailColumnDisabled": "E-postkolumnen ar inaktiverad eftersom den globala e-postvaxeln ar avstangd",

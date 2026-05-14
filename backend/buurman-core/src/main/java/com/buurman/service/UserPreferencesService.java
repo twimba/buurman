@@ -75,10 +75,7 @@ public class UserPreferencesService {
         .ifPresent(
             enabled -> {
               boolean hasVerifiedPhone =
-                  userRepository
-                      .getById(principal.getUserId())
-                      .getPhoneVerifiedAt()
-                      .isPresent();
+                  userRepository.getById(principal.getUserId()).getPhoneVerifiedAt().isPresent();
               if (enabled
                   && (!featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal)
                       || !hasVerifiedPhone)) {
@@ -97,9 +94,11 @@ public class UserPreferencesService {
     UserPreferences globalPrefs =
         preferencesRepository.findByUserId(principal.getUserId()).orElseGet(UserPreferences::new);
 
-    boolean smsAvailable =
-        featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal)
+    boolean smsFeatureEnabled = featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal);
+    boolean phoneVerified =
+        smsFeatureEnabled
             && userRepository.getById(principal.getUserId()).getPhoneVerifiedAt().isPresent();
+    boolean smsAvailable = smsFeatureEnabled && phoneVerified;
     boolean emailAvailable = featureFlagService.isEnabled(EMAIL_NOTIFICATIONS, principal);
 
     List<UserNotificationTypePreference> saved =
@@ -123,7 +122,9 @@ public class UserPreferencesService {
         globalPrefs.isEmailNotifications(),
         globalPrefs.isSmsNotifications(),
         smsAvailable,
+        smsFeatureEnabled,
         emailAvailable,
+        phoneVerified,
         entries);
   }
 
