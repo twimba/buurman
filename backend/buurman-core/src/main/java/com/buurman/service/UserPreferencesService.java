@@ -22,6 +22,7 @@ import com.buurman.dto.response.NotificationTypePreferencesResponse;
 import com.buurman.dto.response.UserPreferencesResponse;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
+import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class UserPreferencesService {
 
   private final UserPreferencesRepository preferencesRepository;
   private final UserNotificationTypePreferenceRepository notifTypePrefRepository;
+  private final UserRepository userRepository;
   private final FeatureFlagService featureFlagService;
 
   public UserPreferencesResponse getPreferences(UserPrincipal principal) {
@@ -72,7 +74,14 @@ public class UserPreferencesService {
         .smsNotifications()
         .ifPresent(
             enabled -> {
-              if (enabled && !featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal)) {
+              boolean hasVerifiedPhone =
+                  userRepository
+                      .getById(principal.getUserId())
+                      .getPhoneVerifiedAt()
+                      .isPresent();
+              if (enabled
+                  && (!featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal)
+                      || !hasVerifiedPhone)) {
                 prefs.setSmsNotifications(false);
               } else {
                 prefs.setSmsNotifications(enabled);
@@ -88,7 +97,9 @@ public class UserPreferencesService {
     UserPreferences globalPrefs =
         preferencesRepository.findByUserId(principal.getUserId()).orElseGet(UserPreferences::new);
 
-    boolean smsAvailable = featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal);
+    boolean smsAvailable =
+        featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal)
+            && userRepository.getById(principal.getUserId()).getPhoneVerifiedAt().isPresent();
     boolean emailAvailable = featureFlagService.isEnabled(EMAIL_NOTIFICATIONS, principal);
 
     List<UserNotificationTypePreference> saved =
@@ -120,7 +131,9 @@ public class UserPreferencesService {
   public NotificationTypePreferencesResponse updateNotificationTypePreferences(
       UserPrincipal principal, UpdateNotificationTypePreferencesRequest request) {
 
-    boolean smsAvailable = featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal);
+    boolean smsAvailable =
+        featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal)
+            && userRepository.getById(principal.getUserId()).getPhoneVerifiedAt().isPresent();
     boolean emailAvailable = featureFlagService.isEnabled(EMAIL_NOTIFICATIONS, principal);
 
     List<UserNotificationTypePreference> prefs = new ArrayList<>();
