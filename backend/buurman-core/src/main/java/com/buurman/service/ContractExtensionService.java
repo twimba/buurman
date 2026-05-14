@@ -116,7 +116,17 @@ public class ContractExtensionService {
         .findActiveByContractId(contract.getId(), teamId)
         .ifPresent(
             existing -> {
-              throw new BusinessRuleException("Contract already has an active extension");
+              LocalDate today = LocalDate.now(clock);
+              boolean expired =
+                  existing.getNewEndDate().map(d -> !d.isAfter(today)).orElse(false);
+              if (expired) {
+                existing.setStatus(SUPERSEDED);
+                existing.setSupersededAt(Optional.of(Instant.now(clock)));
+                existing.setUpdatedBy(userId);
+                extensionRepository.save(existing);
+              } else {
+                throw new BusinessRuleException("Contract already has an active extension");
+              }
             });
 
     // BR-14: Max renewals check
