@@ -5,6 +5,7 @@ import static com.buurman.service.export.BookletHelper.escapeHtml;
 import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.dto.response.PortfolioDashboardResponse.PortfolioSummary;
 import com.buurman.dto.response.PortfolioDashboardResponse.PropertyPerformance;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -21,15 +23,17 @@ import lombok.RequiredArgsConstructor;
 public class PortfolioDashboardPdfExporter {
 
   private final PdfRenderer pdfRenderer;
+  private final TeamPreferencesRepository teamPreferencesRepository;
 
-  public byte[] generate(PortfolioDashboardResponse dashboard) {
-    String html = buildHtml(dashboard);
+  public byte[] generate(PortfolioDashboardResponse dashboard, UUID teamId) {
+    String teamCurrency = teamPreferencesRepository.getByTeamId(teamId).getDefaultCurrency();
+    String html = buildHtml(dashboard, teamCurrency);
     return pdfRenderer.renderHtml(html);
   }
 
-  private String buildHtml(PortfolioDashboardResponse dashboard) {
+  private String buildHtml(PortfolioDashboardResponse dashboard, String teamCurrency) {
     PortfolioSummary s = dashboard.summary();
-    String currency = dashboard.currency().orElse("EUR");
+    String currency = dashboard.currency().orElse(teamCurrency);
 
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/><style>");

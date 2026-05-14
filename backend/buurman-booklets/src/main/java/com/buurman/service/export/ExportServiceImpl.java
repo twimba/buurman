@@ -80,9 +80,9 @@ public class ExportServiceImpl implements ExportService {
   }
 
   @Override
-  public byte[] generatePropertyDashboardPDF(PropertyDashboardResponse dashboard) {
+  public byte[] generatePropertyDashboardPDF(PropertyDashboardResponse dashboard, UUID teamId) {
     return withMetrics(
-        "property_dashboard_pdf", () -> propertyDashboardPdfExporter.generate(dashboard));
+        "property_dashboard_pdf", () -> propertyDashboardPdfExporter.generate(dashboard, teamId));
   }
 
   @Override
@@ -92,9 +92,9 @@ public class ExportServiceImpl implements ExportService {
   }
 
   @Override
-  public byte[] generatePortfolioDashboardPDF(PortfolioDashboardResponse dashboard) {
+  public byte[] generatePortfolioDashboardPDF(PortfolioDashboardResponse dashboard, UUID teamId) {
     return withMetrics(
-        "portfolio_dashboard_pdf", () -> portfolioDashboardPdfExporter.generate(dashboard));
+        "portfolio_dashboard_pdf", () -> portfolioDashboardPdfExporter.generate(dashboard, teamId));
   }
 
   @Override

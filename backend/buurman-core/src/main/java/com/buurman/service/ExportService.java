@@ -27,11 +27,11 @@ public interface ExportService {
 
   byte[] generateContactReportPDF(ContactIdentifier contactIdentifier, UUID teamId, Locale locale);
 
-  byte[] generatePropertyDashboardPDF(PropertyDashboardResponse dashboard);
+  byte[] generatePropertyDashboardPDF(PropertyDashboardResponse dashboard, UUID teamId);
 
   byte[] generatePropertyDashboardCSV(PropertyDashboardResponse dashboard);
 
-  byte[] generatePortfolioDashboardPDF(PortfolioDashboardResponse dashboard);
+  byte[] generatePortfolioDashboardPDF(PortfolioDashboardResponse dashboard, UUID teamId);
 
   byte[] generatePortfolioDashboardCSV(PortfolioDashboardResponse dashboard);
 

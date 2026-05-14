@@ -55,7 +55,7 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generatePortfolioDashboardPDF(dashboard);
+    return exportService.generatePortfolioDashboardPDF(dashboard, principal.requireTeamId());
   }
 
   @Override

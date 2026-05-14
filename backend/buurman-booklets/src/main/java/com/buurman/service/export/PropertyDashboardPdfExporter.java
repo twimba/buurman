@@ -4,6 +4,7 @@ import static com.buurman.service.export.BookletHelper.escapeHtml;
 
 import java.math.BigDecimal;
 import java.util.Locale;
+import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -21,15 +23,17 @@ import lombok.RequiredArgsConstructor;
 public class PropertyDashboardPdfExporter {
 
   private final PdfRenderer pdfRenderer;
+  private final TeamPreferencesRepository teamPreferencesRepository;
 
-  public byte[] generate(PropertyDashboardResponse dashboard) {
-    String html = buildHtml(dashboard);
+  public byte[] generate(PropertyDashboardResponse dashboard, UUID teamId) {
+    String teamCurrency = teamPreferencesRepository.getByTeamId(teamId).getDefaultCurrency();
+    String html = buildHtml(dashboard, teamCurrency);
     return pdfRenderer.renderHtml(html);
   }
 
-  private String buildHtml(PropertyDashboardResponse dashboard) {
+  private String buildHtml(PropertyDashboardResponse dashboard, String teamCurrency) {
     SummaryMetrics s = dashboard.summary();
-    String currency = s.currency().orElse(null);
+    String currency = s.currency().orElse(teamCurrency);
 
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/><style>");
@@ -111,7 +115,7 @@ public class PropertyDashboardPdfExporter {
   }
 
   private void equityRow(
-      StringBuilder html, String label, @Nullable BigDecimal value, @Nullable String currency) {
+      StringBuilder html, String label, @Nullable BigDecimal value, String currency) {
     html.append("<tr><td>").append(escapeHtml(label)).append("</td>");
     html.append("<td class='right'>").append(fmtMoney(value, currency)).append("</td></tr>");
   }
@@ -120,8 +124,8 @@ public class PropertyDashboardPdfExporter {
     return value != null ? value.toPlainString() + "%" : "N/A";
   }
 
-  private static String fmtMoney(@Nullable BigDecimal value, @Nullable String currencyCode) {
-    return CurrencyUtils.formatCurrency(value, currencyCode != null ? currencyCode : "EUR");
+  private static String fmtMoney(@Nullable BigDecimal value, String currencyCode) {
+    return CurrencyUtils.formatCurrency(value, currencyCode);
   }
 
   private static String humanize(@Nullable String enumValue) {

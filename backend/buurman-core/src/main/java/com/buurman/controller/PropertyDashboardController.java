@@ -54,7 +54,7 @@ public class PropertyDashboardController implements PropertyDashboardApi {
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generatePropertyDashboardPDF(dashboard);
+    return exportService.generatePropertyDashboardPDF(dashboard, principal.requireTeamId());
   }
 
   @Override

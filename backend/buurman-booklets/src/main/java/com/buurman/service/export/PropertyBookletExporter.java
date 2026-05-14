@@ -326,7 +326,8 @@ public class PropertyBookletExporter {
     }
 
     appendPhotoGalleryPage(html, photos);
-    String currency = dashboard != null ? dashboard.summary().currency().orElse(teamCurrency) : teamCurrency;
+    String currency =
+        dashboard != null ? dashboard.summary().currency().orElse(teamCurrency) : teamCurrency;
     appendFinancialOverviewPage(html, yearSummaries, currency);
 
     if (dashboard != null) {
