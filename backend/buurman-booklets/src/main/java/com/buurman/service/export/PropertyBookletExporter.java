@@ -1454,7 +1454,7 @@ public class PropertyBookletExporter {
 
   private void appendDashboardPage(StringBuilder html, PropertyDashboardResponse dashboard) {
     SummaryMetrics s = dashboard.summary();
-    String currency = s.currency().map(BookletHelper::escapeHtml).orElse("");
+    String currency = s.currency().map(BookletHelper::escapeHtml).orElse("EUR");
 
     appendPageStart(html, "Investment Dashboard");
 
