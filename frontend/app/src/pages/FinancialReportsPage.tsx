@@ -43,8 +43,16 @@ import {
   exportTransactionsPDF,
   exportTransactionsExcel,
 } from '@/api/reports';
-import { ChevronDown, ChevronUp, Filter, Check, FileText } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  Check,
+  FileText,
+  Maximize2,
+} from 'lucide-react';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
+import { ChartFullscreenModal } from '@/components/common/ChartFullscreenModal';
 
 export const FinancialReportsPage = () => {
   const { t } = useTranslation('admin');
@@ -65,6 +73,9 @@ export const FinancialReportsPage = () => {
     'line'
   );
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [expandedReport, setExpandedReport] = useState<
+    'income' | 'expense' | 'performance' | 'occupancy' | null
+  >(null);
   const [selectedPropertyIds, setSelectedPropertyIds] = useState<string[]>([]);
   const { data: dateRangeData } = useDataDateRange();
 
@@ -581,6 +592,7 @@ export const FinancialReportsPage = () => {
                 {t('reports.incomeTrend.subtitle')}
               </p>
             </div>
+            <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
               <button
                 onClick={() => setIncomeChartType('line')}
@@ -602,6 +614,14 @@ export const FinancialReportsPage = () => {
               >
                 {t('reports.incomeTrend.bar')}
               </button>
+            </div>
+            <button
+              onClick={() => setExpandedReport('income')}
+              className="p-1.5 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
+              title="Expand chart"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </button>
             </div>
           </div>
           {trendLoading ? (
@@ -716,26 +736,35 @@ export const FinancialReportsPage = () => {
                 {t('reports.expenseBreakdown.subtitle')}
               </p>
             </div>
-            <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
+                <button
+                  onClick={() => setExpenseChartType('pie')}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                    expenseChartType === 'pie'
+                      ? 'bg-surface-card text-text-primary shadow-sm'
+                      : 'text-text-secondary'
+                  }`}
+                >
+                  {t('reports.expenseBreakdown.pie')}
+                </button>
+                <button
+                  onClick={() => setExpenseChartType('bar')}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                    expenseChartType === 'bar'
+                      ? 'bg-surface-card text-text-primary shadow-sm'
+                      : 'text-text-secondary'
+                  }`}
+                >
+                  {t('reports.expenseBreakdown.bar')}
+                </button>
+              </div>
               <button
-                onClick={() => setExpenseChartType('pie')}
-                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  expenseChartType === 'pie'
-                    ? 'bg-surface-card text-text-primary shadow-sm'
-                    : 'text-text-secondary'
-                }`}
+                onClick={() => setExpandedReport('expense')}
+                className="p-1.5 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
+                title="Expand chart"
               >
-                {t('reports.expenseBreakdown.pie')}
-              </button>
-              <button
-                onClick={() => setExpenseChartType('bar')}
-                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  expenseChartType === 'bar'
-                    ? 'bg-surface-card text-text-primary shadow-sm'
-                    : 'text-text-secondary'
-                }`}
-              >
-                {t('reports.expenseBreakdown.bar')}
+                <Maximize2 className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -860,7 +889,16 @@ export const FinancialReportsPage = () => {
                 {t('reports.propertyPerformance.subtitle')}
               </p>
             </div>
-            <Building2 className="h-6 w-6 text-text-muted " />
+            <div className="flex items-center gap-2">
+              <Building2 className="h-6 w-6 text-text-muted" />
+              <button
+                onClick={() => setExpandedReport('performance')}
+                className="p-1.5 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
+                title="Expand chart"
+              >
+                <Maximize2 className="h-4 w-4" />
+              </button>
+            </div>
           </div>
           {comparisonLoading ? (
             <div className="flex justify-center py-12">
@@ -992,7 +1030,16 @@ export const FinancialReportsPage = () => {
                 {t('reports.occupancyTrend.subtitle')}
               </p>
             </div>
-            <TrendingUp className="h-6 w-6 text-text-muted " />
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-6 w-6 text-text-muted" />
+              <button
+                onClick={() => setExpandedReport('occupancy')}
+                className="p-1.5 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
+                title="Expand chart"
+              >
+                <Maximize2 className="h-4 w-4" />
+              </button>
+            </div>
           </div>
           {occupancyLoading ? (
             <div className="flex justify-center py-12">
@@ -1042,6 +1089,802 @@ export const FinancialReportsPage = () => {
           ) : null}
         </div>
       </div>
+
+      {expandedReport && (
+        <FinancialReportFullscreen
+          chartType={expandedReport}
+          initialPeriodType={periodType}
+          initialStartDate={customStartDate || dateRange.startDate}
+          initialEndDate={customEndDate || dateRange.endDate}
+          initialPropertyIds={selectedPropertyIds}
+          allProperties={allProperties}
+          earliestDataDate={earliestDataDate}
+          onClose={() => setExpandedReport(null)}
+        />
+      )}
     </div>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Fullscreen component for Financial Reports charts
+// ---------------------------------------------------------------------------
+
+type ReportChartType = 'income' | 'expense' | 'performance' | 'occupancy';
+
+interface FinancialReportFullscreenProps {
+  chartType: ReportChartType;
+  initialPeriodType: 'month' | 'quarter' | 'year' | 'all' | 'custom';
+  initialStartDate: string;
+  initialEndDate: string;
+  initialPropertyIds: string[];
+  allProperties: { identifier: string; street: string; city: string }[];
+  earliestDataDate: string | null;
+  onClose: () => void;
+}
+
+const FinancialReportFullscreen = ({
+  chartType,
+  initialPeriodType,
+  initialStartDate,
+  initialEndDate,
+  initialPropertyIds,
+  allProperties,
+  earliestDataDate,
+  onClose,
+}: FinancialReportFullscreenProps) => {
+  const { t } = useTranslation('admin');
+  const navigate = useNavigate();
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === 'dark';
+
+  const [localPeriodType, setLocalPeriodType] = useState<
+    'month' | 'quarter' | 'year' | 'all' | 'custom'
+  >(initialPeriodType);
+  const [localStartDate, setLocalStartDate] = useState(initialStartDate);
+  const [localEndDate, setLocalEndDate] = useState(initialEndDate);
+  const [localPropertyIds, setLocalPropertyIds] =
+    useState<string[]>(initialPropertyIds);
+  const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
+
+  const tooltipStyle = {
+    backgroundColor: isDark ? '#14161f' : '#fff',
+    border: `1px solid ${isDark ? '#2a2e3f' : '#e2e6f0'}`,
+    borderRadius: '8px',
+    fontSize: '12px',
+    color: isDark ? '#eef0f6' : '#1a1d2e',
+  };
+
+  const localDateRange = useMemo(() => {
+    const today = new Date();
+    let startDate: Date = today;
+    let endDate = today;
+
+    switch (localPeriodType) {
+      case 'month':
+        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        break;
+      case 'quarter': {
+        const quarter = Math.floor(today.getMonth() / 3);
+        startDate = new Date(today.getFullYear(), quarter * 3, 1);
+        break;
+      }
+      case 'year':
+        startDate = new Date(today.getFullYear(), 0, 1);
+        break;
+      case 'all':
+        startDate = earliestDataDate
+          ? new Date(earliestDataDate + 'T00:00:00')
+          : new Date(today.getFullYear(), today.getMonth(), 1);
+        break;
+      case 'custom':
+        if (localStartDate && localEndDate) {
+          startDate = new Date(localStartDate);
+          endDate = new Date(localEndDate);
+        } else {
+          startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        }
+        break;
+    }
+
+    return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+    };
+  }, [localPeriodType, localStartDate, localEndDate, earliestDataDate]);
+
+  const handleLocalPeriodChange = (
+    type: 'month' | 'quarter' | 'year' | 'all' | 'custom'
+  ) => {
+    setLocalPeriodType(type);
+    if (type !== 'custom') {
+      const today = new Date();
+      let start: Date;
+      const end = today;
+      switch (type) {
+        case 'month':
+          start = new Date(today.getFullYear(), today.getMonth(), 1);
+          break;
+        case 'quarter': {
+          const quarter = Math.floor(today.getMonth() / 3);
+          start = new Date(today.getFullYear(), quarter * 3, 1);
+          break;
+        }
+        case 'year':
+          start = new Date(today.getFullYear(), 0, 1);
+          break;
+        case 'all':
+          start = earliestDataDate
+            ? new Date(earliestDataDate + 'T00:00:00')
+            : new Date(today.getFullYear(), today.getMonth(), 1);
+          break;
+        default:
+          start = new Date(today.getFullYear(), today.getMonth(), 1);
+      }
+      setLocalStartDate(start.toISOString().split('T')[0]);
+      setLocalEndDate(end.toISOString().split('T')[0]);
+    }
+  };
+
+  const toggleLocalProperty = (id: string) => {
+    setLocalPropertyIds((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
+  };
+
+  const enabled =
+    localPeriodType !== 'custom' || (!!localStartDate && !!localEndDate);
+
+  const { data: overview } = useFinancialOverview(
+    localDateRange.startDate,
+    localDateRange.endDate,
+    localPropertyIds.length > 0 ? localPropertyIds : undefined,
+    undefined,
+    enabled
+  );
+
+  const { data: incomeTrend, isLoading: trendLoading } = useIncomeTrend(
+    localDateRange.startDate,
+    localDateRange.endDate,
+    localPropertyIds.length > 0 ? localPropertyIds : undefined,
+    enabled && chartType === 'income'
+  );
+
+  const { data: expenseBreakdown, isLoading: breakdownLoading } =
+    useExpenseBreakdown(
+      localDateRange.startDate,
+      localDateRange.endDate,
+      localPropertyIds.length > 0 ? localPropertyIds : undefined,
+      enabled && chartType === 'expense'
+    );
+
+  const { data: propertyComparison, isLoading: comparisonLoading } =
+    usePropertyComparison(
+      localDateRange.startDate,
+      localDateRange.endDate,
+      localPropertyIds.length > 0 ? localPropertyIds : undefined,
+      enabled && chartType === 'performance'
+    );
+
+  const { data: occupancyTrend, isLoading: occupancyLoading } =
+    useOccupancyTrend(
+      localDateRange.startDate,
+      localDateRange.endDate,
+      enabled && chartType === 'occupancy'
+    );
+
+  const formatCurrency = (value: number) => {
+    const cur = overview?.currency;
+    if (!cur) {
+      return value.toLocaleString('nl-NL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+    return new Intl.NumberFormat('nl-NL', {
+      style: 'currency',
+      currency: cur,
+    }).format(value);
+  };
+
+  const formatYAxis = (value: number) => {
+    const cur = overview?.currency;
+    if (!cur) {
+      return new Intl.NumberFormat('nl-NL', {
+        notation: 'compact',
+        maximumFractionDigits: 1,
+      }).format(value);
+    }
+    return new Intl.NumberFormat('nl-NL', {
+      style: 'currency',
+      currency: cur,
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value);
+  };
+
+  const formatPercent = (value: number) => `${value.toFixed(1)}%`;
+
+  const [localIncomeChartType, setLocalIncomeChartType] = useState<
+    'line' | 'bar'
+  >('line');
+  const [localExpenseChartType, setLocalExpenseChartType] = useState<
+    'pie' | 'bar'
+  >('pie');
+
+  const chartTitle: Record<ReportChartType, string> = {
+    income: t('reports.incomeTrend.title'),
+    expense: t('reports.expenseBreakdown.title'),
+    performance: t('reports.propertyPerformance.title'),
+    occupancy: t('reports.occupancyTrend.title'),
+  };
+
+  const propertyFilterLabel =
+    localPropertyIds.length === 0
+      ? t('reports.allProperties') ?? 'All properties'
+      : `${localPropertyIds.length} / ${allProperties.length} ${t('reports.properties') ?? 'properties'}`;
+
+  const controls = (
+    <div className="flex items-center gap-2 flex-wrap justify-end">
+      {/* Period buttons */}
+      <div className="flex gap-1">
+        {(
+          [
+            { key: 'month', label: t('reports.month') },
+            { key: 'quarter', label: t('reports.quarter') },
+            { key: 'year', label: t('reports.year') },
+            { key: 'all', label: t('reports.allTime') },
+            { key: 'custom', label: t('reports.custom') },
+          ] as const
+        ).map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => handleLocalPeriodChange(key)}
+            className={`px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              localPeriodType === key
+                ? 'bg-primary-500 text-white'
+                : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Date inputs */}
+      <div className="flex items-center gap-1">
+        <input
+          type="date"
+          value={localStartDate}
+          onChange={(e) => {
+            setLocalStartDate(e.target.value);
+            setLocalPeriodType('custom');
+          }}
+          className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
+        />
+        <span className="text-text-secondary text-xs">–</span>
+        <input
+          type="date"
+          value={localEndDate}
+          onChange={(e) => {
+            setLocalEndDate(e.target.value);
+            setLocalPeriodType('custom');
+          }}
+          className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
+        />
+      </div>
+
+      {/* Property filter */}
+      {allProperties.length > 0 && (
+        <div className="relative">
+          <button
+            onClick={() => setShowPropertyDropdown((v) => !v)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border border-border-strong text-text-secondary hover:bg-surface-inset transition-colors"
+          >
+            <Filter className="h-3.5 w-3.5" />
+            {propertyFilterLabel}
+            <ChevronDown className="h-3 w-3" />
+          </button>
+          {showPropertyDropdown && (
+            <div className="absolute right-0 top-full mt-1 bg-surface-card border border-border-default rounded-lg shadow-lg z-10 min-w-48 p-2">
+              {localPropertyIds.length > 0 && (
+                <button
+                  onClick={() => setLocalPropertyIds([])}
+                  className="w-full text-left text-xs text-primary-500 hover:underline px-2 py-1 mb-1"
+                >
+                  {t('reports.clearAll')}
+                </button>
+              )}
+              {allProperties.map((p) => {
+                const isSelected = localPropertyIds.includes(p.identifier);
+                return (
+                  <button
+                    key={p.identifier}
+                    onClick={() => toggleLocalProperty(p.identifier)}
+                    className={`flex items-center gap-2 w-full text-left px-2 py-1.5 rounded text-xs transition-colors ${
+                      isSelected
+                        ? 'text-primary-500 bg-primary-500/10'
+                        : 'text-text-secondary hover:bg-surface-inset'
+                    }`}
+                  >
+                    {isSelected && <Check className="h-3 w-3 shrink-0" />}
+                    {!isSelected && <span className="w-3 shrink-0" />}
+                    {p.street}, {p.city}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Chart type toggle for income/expense */}
+      {chartType === 'income' && (
+        <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
+          <button
+            onClick={() => setLocalIncomeChartType('line')}
+            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+              localIncomeChartType === 'line'
+                ? 'bg-surface-card text-text-primary shadow-sm'
+                : 'text-text-secondary'
+            }`}
+          >
+            {t('reports.incomeTrend.line')}
+          </button>
+          <button
+            onClick={() => setLocalIncomeChartType('bar')}
+            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+              localIncomeChartType === 'bar'
+                ? 'bg-surface-card text-text-primary shadow-sm'
+                : 'text-text-secondary'
+            }`}
+          >
+            {t('reports.incomeTrend.bar')}
+          </button>
+        </div>
+      )}
+      {chartType === 'expense' && (
+        <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
+          <button
+            onClick={() => setLocalExpenseChartType('pie')}
+            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+              localExpenseChartType === 'pie'
+                ? 'bg-surface-card text-text-primary shadow-sm'
+                : 'text-text-secondary'
+            }`}
+          >
+            {t('reports.expenseBreakdown.pie')}
+          </button>
+          <button
+            onClick={() => setLocalExpenseChartType('bar')}
+            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+              localExpenseChartType === 'bar'
+                ? 'bg-surface-card text-text-primary shadow-sm'
+                : 'text-text-secondary'
+            }`}
+          >
+            {t('reports.expenseBreakdown.bar')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (chartType) {
+      case 'income':
+        if (trendLoading) {
+          return (
+            <div className="flex justify-center py-20">
+              <LoadingSpinner />
+            </div>
+          );
+        }
+        if (!incomeTrend) {
+          return null;
+        }
+        return (
+          <ResponsiveContainer width="100%" height={520}>
+            {localIncomeChartType === 'line' ? (
+              <LineChart data={incomeTrend.dataPoints}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                />
+                <XAxis
+                  dataKey="period"
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                  tickFormatter={formatYAxis}
+                />
+                <Tooltip
+                  formatter={(value) =>
+                    typeof value === 'number' ? formatCurrency(value) : 'N/A'
+                  }
+                  contentStyle={tooltipStyle}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="income"
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  name={t('reports.income')}
+                  dot={{ fill: '#10B981', r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="expenses"
+                  stroke="#EF4444"
+                  strokeWidth={2}
+                  name={t('reports.expenses')}
+                  dot={{ fill: '#EF4444', r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="netProfit"
+                  stroke="#3B82F6"
+                  strokeWidth={2}
+                  name={t('reports.netProfit')}
+                  dot={{ fill: '#3B82F6', r: 4 }}
+                />
+              </LineChart>
+            ) : (
+              <BarChart data={incomeTrend.dataPoints}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                />
+                <XAxis
+                  dataKey="period"
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                  tickFormatter={formatYAxis}
+                />
+                <Tooltip
+                  formatter={(value) =>
+                    typeof value === 'number' ? formatCurrency(value) : 'N/A'
+                  }
+                  contentStyle={tooltipStyle}
+                />
+                <Legend />
+                <Bar
+                  dataKey="income"
+                  fill="#10B981"
+                  name={t('reports.income')}
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="expenses"
+                  fill="#EF4444"
+                  name={t('reports.expenses')}
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="netProfit"
+                  fill="#3B82F6"
+                  name={t('reports.netProfit')}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            )}
+          </ResponsiveContainer>
+        );
+
+      case 'expense':
+        if (breakdownLoading) {
+          return (
+            <div className="flex justify-center py-20">
+              <LoadingSpinner />
+            </div>
+          );
+        }
+        if (!expenseBreakdown || expenseBreakdown.categories.length === 0) {
+          return (
+            <div className="text-center py-20 text-text-secondary">
+              {t('reports.expenseBreakdown.noData')}
+            </div>
+          );
+        }
+        if (localExpenseChartType === 'pie') {
+          return (
+            <div className="flex flex-col lg:flex-row items-center gap-6 h-full">
+              <ResponsiveContainer width="60%" height={520}>
+                <PieChart>
+                  <Pie
+                    data={expenseBreakdown.categories}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({
+                      name,
+                      percent,
+                    }: {
+                      name?: string;
+                      percent?: number;
+                    }) =>
+                      `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`
+                    }
+                    outerRadius={120}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {expenseBreakdown.categories.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value) =>
+                      typeof value === 'number' ? formatCurrency(value) : 'N/A'
+                    }
+                    contentStyle={tooltipStyle}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex-1 max-w-sm">
+                <div className="space-y-2">
+                  {expenseBreakdown.categories.map((category) => (
+                    <div
+                      key={category.name}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        <span className="text-text-secondary">
+                          {category.name}
+                        </span>
+                      </div>
+                      <span className="font-medium text-text-primary">
+                        {formatCurrency(category.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        }
+        return (
+          <ResponsiveContainer width="100%" height={520}>
+            <BarChart data={expenseBreakdown.categories} layout="vertical">
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+              />
+              <XAxis
+                type="number"
+                tick={{ fontSize: 12 }}
+                stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                tickFormatter={formatYAxis}
+              />
+              <YAxis
+                type="category"
+                dataKey="name"
+                tick={{ fontSize: 11 }}
+                stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                width={120}
+              />
+              <Tooltip
+                formatter={(value) =>
+                  typeof value === 'number' ? formatCurrency(value) : 'N/A'
+                }
+                contentStyle={tooltipStyle}
+              />
+              <Bar
+                dataKey="value"
+                name={t('reports.amount')}
+                radius={[0, 4, 4, 0]}
+              >
+                {expenseBreakdown.categories.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        );
+
+      case 'performance':
+        if (comparisonLoading) {
+          return (
+            <div className="flex justify-center py-20">
+              <LoadingSpinner />
+            </div>
+          );
+        }
+        if (!propertyComparison || propertyComparison.properties.length === 0) {
+          return (
+            <div className="text-center py-20 text-text-secondary">
+              {t('reports.propertyPerformance.noData')}
+            </div>
+          );
+        }
+        return (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-border-default">
+                  <th className="text-left py-2 pr-4 font-medium text-text-secondary">
+                    {t('reports.propertyPerformance.property')}
+                  </th>
+                  <th className="text-right py-2 px-4 font-medium text-text-secondary">
+                    {t('reports.propertyPerformance.income')}
+                  </th>
+                  <th className="text-right py-2 px-4 font-medium text-text-secondary">
+                    {t('reports.propertyPerformance.expenses')}
+                  </th>
+                  <th className="text-right py-2 px-4 font-medium text-text-secondary">
+                    {t('reports.propertyPerformance.netProfit')}
+                  </th>
+                  <th className="text-right py-2 pl-4 font-medium text-text-secondary">
+                    {t('reports.propertyPerformance.margin')}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {propertyComparison.properties.map((p) => {
+                  const margin =
+                    p.income > 0 ? (p.netProfit / p.income) * 100 : 0;
+                  return (
+                    <tr
+                      key={p.property.identifier}
+                      className="border-b border-border-default last:border-0 hover:bg-surface-page cursor-pointer"
+                      onClick={() =>
+                        navigate(`/properties/${p.property.identifier}`)
+                      }
+                    >
+                      <td className="py-3 pr-4">
+                        <div className="font-medium text-text-primary">
+                          {p.property.street}
+                        </div>
+                        <div className="text-xs text-text-secondary">
+                          {p.property.city}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-right font-medium text-success-text">
+                        {formatCurrency(p.income)}
+                      </td>
+                      <td className="py-3 px-4 text-right font-medium text-error-text">
+                        {formatCurrency(p.expenses)}
+                      </td>
+                      <td
+                        className={`py-3 px-4 text-right font-semibold ${p.netProfit >= 0 ? 'text-info-text' : 'text-error-text'}`}
+                      >
+                        {formatCurrency(p.netProfit)}
+                      </td>
+                      <td className="py-3 pl-4 text-right">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            margin >= 50
+                              ? 'bg-success-bg text-success-text'
+                              : margin >= 20
+                                ? 'bg-info-bg text-info-text'
+                                : margin >= 0
+                                  ? 'bg-warning-bg text-warning-text'
+                                  : 'bg-error-bg text-error-text'
+                          }`}
+                        >
+                          {margin.toFixed(1)}%
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              {propertyComparison.properties.length > 1 && (
+                <tfoot>
+                  <tr className="border-t-2 border-border-strong">
+                    <td className="py-3 pr-4 font-semibold text-text-primary">
+                      {t('reports.propertyPerformance.total')}
+                    </td>
+                    <td className="py-3 px-4 text-right font-semibold text-success-text">
+                      {formatCurrency(
+                        propertyComparison.properties.reduce(
+                          (s, p) => s + p.income,
+                          0
+                        )
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right font-semibold text-error-text">
+                      {formatCurrency(
+                        propertyComparison.properties.reduce(
+                          (s, p) => s + p.expenses,
+                          0
+                        )
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right font-semibold text-info-text">
+                      {formatCurrency(
+                        propertyComparison.properties.reduce(
+                          (s, p) => s + p.netProfit,
+                          0
+                        )
+                      )}
+                    </td>
+                    <td className="py-3 pl-4"></td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        );
+
+      case 'occupancy':
+        if (occupancyLoading) {
+          return (
+            <div className="flex justify-center py-20">
+              <LoadingSpinner />
+            </div>
+          );
+        }
+        if (!occupancyTrend) {
+          return null;
+        }
+        return (
+          <ResponsiveContainer width="100%" height={520}>
+            <LineChart data={occupancyTrend.dataPoints}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+              />
+              <XAxis
+                dataKey="period"
+                tick={{ fontSize: 12 }}
+                stroke={isDark ? '#5c6180' : '#9CA3AF'}
+              />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                domain={[0, 100]}
+                tickFormatter={formatPercent}
+              />
+              <Tooltip
+                formatter={(value, name) => {
+                  if (typeof value !== 'number') {
+                    return 'N/A';
+                  }
+                  if (name === 'occupancyRate') {
+                    return formatPercent(value);
+                  }
+                  return value;
+                }}
+                contentStyle={tooltipStyle}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="occupancyRate"
+                stroke="#8B5CF6"
+                strokeWidth={3}
+                name={t('reports.occupancyTrend.occupancyRate')}
+                dot={{ fill: '#8B5CF6', r: 5 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <ChartFullscreenModal
+      title={chartTitle[chartType]}
+      controls={controls}
+      onClose={onClose}
+    >
+      {renderContent()}
+    </ChartFullscreenModal>
   );
 };
