@@ -14,7 +14,7 @@
 
     <groupId>com.buurman</groupId>
     <artifactId>buurman-backend</artifactId>
-    <version>0.75.0</version>
+    <version>0.78.0</version>
     <packaging>pom</packaging>
     <name>Buurman Backend</name>
     <description>Property management backend for Buurman</description>
@@ -387,7 +387,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
+                    <version>3.1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
