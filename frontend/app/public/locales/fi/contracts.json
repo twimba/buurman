@@ -262,6 +262,7 @@
       "newEndDate": "Uusi paattymispaiva",
       "currentEndDate": "Nykyinen paattymispaiva:",
       "dateError": "Uuden paattymispaivan on oltava nykyisen paattymispaivan jalkeen",
+      "rentError": "Uusi vuokrasumma vaaditaan manuaalisille muutoksille",
       "rentAdjustmentType": "Vuokran muutostyyppi",
       "adjustmentTypes": {
         "none": "Ei muutosta",

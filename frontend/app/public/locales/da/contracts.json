@@ -262,6 +262,7 @@
       "newEndDate": "Ny slutdato",
       "currentEndDate": "Nuvaerende slutdato:",
       "dateError": "Den nye slutdato skal vaere efter den nuvaerende slutdato",
+      "rentError": "Nyt lejebeløb er påkrævet ved manuelle justeringer",
       "rentAdjustmentType": "Type lejejustering",
       "adjustmentTypes": {
         "none": "Ingen justering",

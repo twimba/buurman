@@ -105,6 +105,11 @@ export const getErrorMessage = (error: unknown, t?: TFunction): string => {
       return formatBusinessRuleError(data.detail, t);
     }
 
+    // 400 BAD REQUEST with detail = application validation error, always user-facing
+    if (error.response?.status === 400 && data?.detail) {
+      return data.detail;
+    }
+
     // Check for ProblemDetail format (RFC 7807)
     if (data?.detail) {
       return formatErrorMessage(data.detail, t);

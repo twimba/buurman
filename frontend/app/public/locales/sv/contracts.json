@@ -262,6 +262,7 @@
       "newEndDate": "Nytt slutdatum",
       "currentEndDate": "Aktuellt slutdatum:",
       "dateError": "Det nya slutdatumet maste vara efter det aktuella slutdatumet",
+      "rentError": "Nytt hyrbelopp kravs for manuella justeringar",
       "rentAdjustmentType": "Typ av hyresjustering",
       "adjustmentTypes": {
         "none": "Ingen justering",

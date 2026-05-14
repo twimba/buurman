@@ -88,6 +88,7 @@ export const CreateExtensionModal = ({
   );
   const [notes, setNotes] = useState('');
   const [dateError, setDateError] = useState('');
+  const [rentError, setRentError] = useState('');
 
   const parsedRent = useMemo(() => {
     const val = parseFloat(newRentAmount);
@@ -104,6 +105,7 @@ export const CreateExtensionModal = ({
   // Recompute rent when adjustment type/value changes
   const handleAdjustmentTypeChange = (type: RentAdjustmentType) => {
     setAdjustmentType(type);
+    setRentError('');
     const parsedVal = parseFloat(adjustmentValue);
     if (!isNaN(parsedVal)) {
       const computed = computeAdjustedRent(currentRentAmount, type, parsedVal);
@@ -129,12 +131,27 @@ export const CreateExtensionModal = ({
   };
 
   const submitForm = () => {
+    let hasError = false;
+
     // Validate new end date is after current end date
     if (newEndDate && currentEndDate && newEndDate <= currentEndDate) {
       setDateError(t('extensions.modal.dateError'));
+      hasError = true;
+    } else {
+      setDateError('');
+    }
+
+    // Validate rent is required for MANUAL adjustment
+    if (adjustmentType === 'MANUAL' && parsedRent === null) {
+      setRentError(t('extensions.modal.rentError'));
+      hasError = true;
+    } else {
+      setRentError('');
+    }
+
+    if (hasError) {
       return;
     }
-    setDateError('');
 
     const request: CreateContractExtensionRequest = {
       newEndDate: newEndDate || undefined,
@@ -295,13 +312,16 @@ export const CreateExtensionModal = ({
                 <MoneyInput
                   id="newRentAmount"
                   value={parsedRent ?? undefined}
-                  onChange={(val) =>
-                    setNewRentAmount(val !== undefined ? String(val) : '')
-                  }
+                  onChange={(val) => {
+                    setNewRentAmount(val !== undefined ? String(val) : '');
+                    if (val !== undefined) {
+                      setRentError('');
+                    }
+                  }}
                   currency={currency}
                   disabled={isLoading}
                   min={0.01}
-                  className="pr-20"
+                  className={`pr-20${rentError ? ' border-error-border' : ''}`}
                 />
                 {percentageChange !== null && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -325,7 +345,10 @@ export const CreateExtensionModal = ({
                   </div>
                 )}
               </div>
-              {adjustmentType !== 'NONE' && adjustmentType !== 'MANUAL' && (
+              {rentError && (
+                <p className="mt-1 text-xs text-error-text">{rentError}</p>
+              )}
+              {!rentError && adjustmentType !== 'NONE' && adjustmentType !== 'MANUAL' && (
                 <p className="mt-1 text-xs text-text-muted">
                   {t('extensions.modal.computedFromRent')}{' '}
                   {adjustmentType.toLowerCase().replace('_', ' ')}

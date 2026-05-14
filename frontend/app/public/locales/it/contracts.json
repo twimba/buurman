@@ -262,6 +262,7 @@
       "newEndDate": "Nuova data di fine",
       "currentEndDate": "Data di fine attuale:",
       "dateError": "La nuova data di fine deve essere successiva alla data di fine attuale",
+      "rentError": "L'importo del nuovo affitto è obbligatorio per le rettifiche manuali",
       "rentAdjustmentType": "Tipo di adeguamento del canone",
       "adjustmentTypes": {
         "none": "Nessun adeguamento",

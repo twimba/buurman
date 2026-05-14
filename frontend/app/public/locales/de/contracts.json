@@ -236,6 +236,7 @@
       "newEndDate": "Neues Enddatum",
       "currentEndDate": "Aktuelles Enddatum:",
       "dateError": "Das neue Enddatum muss nach dem aktuellen Enddatum liegen",
+      "rentError": "Neuer Mietbetrag ist bei manuellen Anpassungen erforderlich",
       "rentAdjustmentType": "Art der Mietanpassung",
       "adjustmentTypes": {
         "none": "Keine Anpassung",

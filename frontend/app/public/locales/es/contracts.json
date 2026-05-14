@@ -262,6 +262,7 @@
       "newEndDate": "Nueva Fecha de Fin",
       "currentEndDate": "Fecha de fin actual:",
       "dateError": "La nueva fecha de fin debe ser posterior a la fecha de fin actual",
+      "rentError": "Se requiere el nuevo importe del alquiler para los ajustes manuales",
       "rentAdjustmentType": "Tipo de Ajuste de Alquiler",
       "adjustmentTypes": {
         "none": "Sin ajuste",
