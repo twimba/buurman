@@ -1299,7 +1299,8 @@ public class PropertyBookletExporter {
         .append(photoEntries.size() != 1 ? "s" : "")
         .append("</p>");
 
-    html.append("<table style='width:100%;border-collapse:collapse;'>");
+    html.append(
+        "<table style='width:100%;border-collapse:collapse;table-layout:fixed;'>");
     for (int i = 0; i < photoEntries.size(); i++) {
       if (i % 3 == 0) {
         html.append("<tr>");
@@ -1307,13 +1308,16 @@ public class PropertyBookletExporter {
       String[] entry = photoEntries.get(i);
       boolean isMain = "1".equals(entry[2]);
 
-      html.append("<td style='width:33%;padding:6px;vertical-align:top;'>");
+      html.append(
+          "<td style='width:33.33%;padding:4px;vertical-align:top;"
+              + "box-sizing:border-box;overflow:hidden;'>");
       html.append(
           "<div style='border:1px solid #e7e5e4;border-radius:6px;overflow:hidden;"
               + "background-color:#fafaf9;'>");
       html.append("<img src='")
           .append(entry[0])
-          .append("' style='width:100%;height:140px;object-fit:cover;display:block;'/>");
+          .append(
+              "' style='width:100%;max-width:100%;height:140px;object-fit:cover;display:block;'/>");
       html.append("<div style='padding:6px 8px;font-size:11px;color:#44403c;'>");
       if (isMain) {
         html.append(
