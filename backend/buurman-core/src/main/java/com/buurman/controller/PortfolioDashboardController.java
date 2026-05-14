@@ -23,6 +23,7 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.service.GoogleSheetExportService;
 import com.buurman.service.GoogleSheetTitleResolver;
 import com.buurman.service.PortfolioDashboardService;
 
@@ -35,6 +36,7 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
 
   private final PortfolioDashboardService dashboardService;
   private final ExportService exportService;
+  private final GoogleSheetExportService googleSheetExportService;
   private final FeatureFlagService featureFlagService;
   private final GoogleSheetTitleResolver titleResolver;
   private final HttpServletResponse httpServletResponse;
@@ -106,7 +108,7 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
     PortfolioDashboardResponse dashboard =
         dashboardService.getPortfolioDashboard(months, startDate, endDate, principal);
     GoogleSheetExport result =
-        exportService.generatePortfolioDashboardGoogleSheet(
+        googleSheetExportService.generatePortfolioDashboardGoogleSheet(
             new GoogleAccessToken(request.getAccessToken()),
             dashboard,
             titleResolver.resolve(principal, "Portfolio Dashboard"));

@@ -35,6 +35,7 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.service.GoogleSheetExportService;
 import com.buurman.service.GoogleSheetTitleResolver;
 import com.buurman.service.export.ContractExtensionAddendumExporter;
 import com.buurman.service.export.ExtensionDocumentGenerationService;
@@ -54,6 +55,7 @@ public class BookletController implements BookletsApi {
       Set.of("en", "nl", "de", "es", "fr", "pt", "it", "sv", "fi", "el", "pl", "da", "nb");
 
   private final ExportService exportService;
+  private final GoogleSheetExportService googleSheetExportService;
   private final ContractExtensionAddendumExporter addendumExporter;
   private final RentIncreaseLetterExporter rentIncreaseLetterExporter;
   private final RentChangeDocumentExporter rentChangeDocumentExporter;
@@ -103,7 +105,7 @@ public class BookletController implements BookletsApi {
       throw new ForbiddenException("Google Sheets export feature is not available");
     }
     GoogleSheetExport result =
-        exportService.generateContactsGoogleSheet(
+        googleSheetExportService.generateContactsGoogleSheet(
             new GoogleAccessToken(request.getAccessToken()),
             principal.requireTeamId(),
             titleResolver.resolve(principal, "Contacts"));
@@ -144,7 +146,8 @@ public class BookletController implements BookletsApi {
         request,
         "Properties",
         (token, principal, title) ->
-            exportService.generatePropertiesGoogleSheet(token, principal.requireTeamId(), title));
+            googleSheetExportService.generatePropertiesGoogleSheet(
+                token, principal.requireTeamId(), title));
   }
 
   // ── Payments ────────────────────────────────────────────────────────────
@@ -171,7 +174,8 @@ public class BookletController implements BookletsApi {
         request,
         "Payments",
         (token, principal, title) ->
-            exportService.generatePaymentsGoogleSheet(token, principal.requireTeamId(), title));
+            googleSheetExportService.generatePaymentsGoogleSheet(
+                token, principal.requireTeamId(), title));
   }
 
   // ── Expenses ────────────────────────────────────────────────────────────
@@ -198,7 +202,8 @@ public class BookletController implements BookletsApi {
         request,
         "Expenses",
         (token, principal, title) ->
-            exportService.generateExpensesGoogleSheet(token, principal.requireTeamId(), title));
+            googleSheetExportService.generateExpensesGoogleSheet(
+                token, principal.requireTeamId(), title));
   }
 
   // ── Contracts ───────────────────────────────────────────────────────────
@@ -226,7 +231,8 @@ public class BookletController implements BookletsApi {
         request,
         "Contracts",
         (token, principal, title) ->
-            exportService.generateContractsGoogleSheet(token, principal.requireTeamId(), title));
+            googleSheetExportService.generateContractsGoogleSheet(
+                token, principal.requireTeamId(), title));
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────

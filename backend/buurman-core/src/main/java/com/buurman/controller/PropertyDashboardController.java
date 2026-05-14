@@ -23,6 +23,7 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.service.GoogleSheetExportService;
 import com.buurman.service.GoogleSheetTitleResolver;
 import com.buurman.service.PropertyDashboardService;
 
@@ -35,6 +36,7 @@ public class PropertyDashboardController implements PropertyDashboardApi {
 
   private final PropertyDashboardService dashboardService;
   private final ExportService exportService;
+  private final GoogleSheetExportService googleSheetExportService;
   private final FeatureFlagService featureFlagService;
   private final GoogleSheetTitleResolver titleResolver;
   private final HttpServletResponse httpServletResponse;
@@ -100,7 +102,7 @@ public class PropertyDashboardController implements PropertyDashboardApi {
     PropertyDashboardResponse dashboard =
         dashboardService.getDashboard(identifier, months.orElse(null), principal);
     GoogleSheetExport result =
-        exportService.generatePropertyDashboardGoogleSheet(
+        googleSheetExportService.generatePropertyDashboardGoogleSheet(
             new GoogleAccessToken(request.getAccessToken()),
             dashboard,
             titleResolver.resolve(principal, "Property Dashboard"));

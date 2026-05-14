@@ -31,6 +31,7 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.service.GoogleSheetExportService;
 import com.buurman.service.GoogleSheetTitleResolver;
 import com.buurman.service.ReportService;
 
@@ -43,6 +44,7 @@ public class ReportController implements ReportsApi {
 
   private final ReportService reportService;
   private final ExportService exportService;
+  private final GoogleSheetExportService googleSheetExportService;
   private final FeatureFlagService featureFlagService;
   private final GoogleSheetTitleResolver titleResolver;
   private final HttpServletResponse httpServletResponse;
@@ -172,7 +174,7 @@ public class ReportController implements ReportsApi {
       throw new ForbiddenException("Google Sheets export feature is not available");
     }
     GoogleSheetExport result =
-        exportService.generateTransactionHistoryGoogleSheet(
+        googleSheetExportService.generateTransactionHistoryGoogleSheet(
             new GoogleAccessToken(request.getAccessToken()),
             startDate,
             endDate,
