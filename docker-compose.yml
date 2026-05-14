@@ -256,6 +256,7 @@ services:
   # Traefik routes to host via docker/traefik/dynamic/local-dev.yml (priority 10)
   # --------------------------------------------------------------------------
   backend:
+    profiles: ["full"]
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -302,6 +303,7 @@ services:
       - buurman-network
 
   app:
+    profiles: ["full"]
     build:
       context: .
       dockerfile: frontend/Dockerfile
@@ -335,6 +337,7 @@ services:
       - buurman-network
 
   backoffice:
+    profiles: ["full"]
     build:
       context: .
       dockerfile: frontend/Dockerfile
