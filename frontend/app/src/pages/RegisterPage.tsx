@@ -27,9 +27,11 @@ import {
 } from 'lucide-react';
 import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
 import PublicLanguageSelector from '../components/common/PublicLanguageSelector';
+import { useForceLightMode } from '../hooks/useForceLightMode';
 
 const RegisterPage: React.FC = () => {
   const { t, i18n } = useTranslation('common');
+  useForceLightMode();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const invitationToken = searchParams.get('invitation') ?? undefined;
