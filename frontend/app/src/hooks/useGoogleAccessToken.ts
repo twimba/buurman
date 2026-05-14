@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react';
+import { env } from '@/config/env';
 
 /**
  * Google Identity Services token-client integration. On demand, opens a popup that asks the user
@@ -102,7 +103,7 @@ export function useGoogleAccessToken(): () => Promise<string> {
   const clientRef = useRef<GisTokenClient | undefined>(undefined);
 
   return useCallback(async () => {
-    const clientId = import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID;
+    const clientId = env('VITE_GOOGLE_OAUTH_CLIENT_ID');
     if (!clientId) {
       throw new GoogleAccessTokenError(
         'misconfigured',
