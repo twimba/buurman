@@ -283,7 +283,6 @@ public class RentIncreaseService {
         rule.getIdentifier().orElseThrow(),
         rule.getYear(),
         rule.getPropertyCategory(),
-        rule.getSector(),
         rule.getMaxIncreasePercentage(),
         rule.getMaxIncreaseType(),
         rule.getIndexName(),
@@ -293,7 +292,20 @@ public class RentIncreaseService {
         rule.getFrequency(),
         rule.getAdditionalConditions(),
         rule.getSourceUrl(),
-        rule.getNotes());
+        rule.getNotes(),
+        rule.getRegime(),
+        rule.getPropertyType(),
+        rule.getContractType(),
+        rule.getTaxRegime(),
+        rule.getTenancyPhase(),
+        rule.getBuildYearMin(),
+        rule.getBuildYearMax(),
+        rule.getEpcClassMin(),
+        rule.getEpcClassMax(),
+        rule.getContractSignedAfter(),
+        rule.getContractSignedBefore(),
+        rule.getLandlordMinProperties(),
+        rule.getAreaCode());
   }
 
   private record ContractWithProperty(Contract contract, Property property) {}

@@ -76,7 +76,6 @@ public class RentRegulationRepository {
   private static final Field<Integer> RL_YEAR = field("year", Integer.class);
   private static final Field<String> RL_PROPERTY_CATEGORY =
       field("property_category", String.class);
-  private static final Field<String> RL_SECTOR = field("sector", String.class);
   private static final Field<BigDecimal> RL_MAX_INCREASE_PERCENTAGE =
       field("max_increase_percentage", BigDecimal.class);
   private static final Field<String> RL_MAX_INCREASE_TYPE =
@@ -91,6 +90,23 @@ public class RentRegulationRepository {
       field("additional_conditions", String.class);
   private static final Field<String> RL_SOURCE_URL = field("source_url", String.class);
   private static final Field<String> RL_NOTES = field("notes", String.class);
+  // BUUR-93 dimensional columns (V055)
+  private static final Field<String> RL_REGIME = field("regime", String.class);
+  private static final Field<String> RL_PROPERTY_TYPE = field("property_type", String.class);
+  private static final Field<String> RL_CONTRACT_TYPE = field("contract_type", String.class);
+  private static final Field<String> RL_TAX_REGIME = field("tax_regime", String.class);
+  private static final Field<String> RL_TENANCY_PHASE = field("tenancy_phase", String.class);
+  private static final Field<Integer> RL_BUILD_YEAR_MIN = field("build_year_min", Integer.class);
+  private static final Field<Integer> RL_BUILD_YEAR_MAX = field("build_year_max", Integer.class);
+  private static final Field<String> RL_EPC_CLASS_MIN = field("epc_class_min", String.class);
+  private static final Field<String> RL_EPC_CLASS_MAX = field("epc_class_max", String.class);
+  private static final Field<Date> RL_CONTRACT_SIGNED_AFTER =
+      field("contract_signed_after", Date.class);
+  private static final Field<Date> RL_CONTRACT_SIGNED_BEFORE =
+      field("contract_signed_before", Date.class);
+  private static final Field<Integer> RL_LANDLORD_MIN_PROPERTIES =
+      field("landlord_min_properties", Integer.class);
+  private static final Field<String> RL_AREA_CODE = field("area_code", String.class);
   private static final Field<Timestamp> RL_CREATED_AT = field("created_at", Timestamp.class);
   private static final Field<Timestamp> RL_UPDATED_AT = field("updated_at", Timestamp.class);
   private static final Field<String> RL_CREATED_BY = field("created_by", String.class);
@@ -299,7 +315,6 @@ public class RentRegulationRepository {
           .set(RL_REGION_ID, rule.getRegionId().orElse(null))
           .set(RL_YEAR, rule.getYear())
           .set(RL_PROPERTY_CATEGORY, rule.getPropertyCategory())
-          .set(RL_SECTOR, rule.getSector().orElse(null))
           .set(RL_MAX_INCREASE_PERCENTAGE, rule.getMaxIncreasePercentage().orElse(null))
           .set(RL_MAX_INCREASE_TYPE, rule.getMaxIncreaseType().name())
           .set(RL_INDEX_NAME, rule.getIndexName().orElse(null))
@@ -310,6 +325,19 @@ public class RentRegulationRepository {
           .set(RL_ADDITIONAL_CONDITIONS, rule.getAdditionalConditions().orElse(null))
           .set(RL_SOURCE_URL, rule.getSourceUrl().orElse(null))
           .set(RL_NOTES, rule.getNotes().orElse(null))
+          .set(RL_REGIME, rule.getRegime().orElse(null))
+          .set(RL_PROPERTY_TYPE, rule.getPropertyType().orElse(null))
+          .set(RL_CONTRACT_TYPE, rule.getContractType().orElse(null))
+          .set(RL_TAX_REGIME, rule.getTaxRegime().orElse(null))
+          .set(RL_TENANCY_PHASE, rule.getTenancyPhase().orElse(null))
+          .set(RL_BUILD_YEAR_MIN, rule.getBuildYearMin().orElse(null))
+          .set(RL_BUILD_YEAR_MAX, rule.getBuildYearMax().orElse(null))
+          .set(RL_EPC_CLASS_MIN, rule.getEpcClassMin().orElse(null))
+          .set(RL_EPC_CLASS_MAX, rule.getEpcClassMax().orElse(null))
+          .set(RL_CONTRACT_SIGNED_AFTER, rule.getContractSignedAfter().map(Date::valueOf).orElse(null))
+          .set(RL_CONTRACT_SIGNED_BEFORE, rule.getContractSignedBefore().map(Date::valueOf).orElse(null))
+          .set(RL_LANDLORD_MIN_PROPERTIES, rule.getLandlordMinProperties().orElse(null))
+          .set(RL_AREA_CODE, rule.getAreaCode().orElse(null))
           .set(RL_CREATED_AT, now)
           .set(RL_UPDATED_AT, now)
           .set(RL_CREATED_BY, rule.getCreatedBy().orElse(null))
@@ -325,7 +353,6 @@ public class RentRegulationRepository {
           .set(RL_REGION_ID, rule.getRegionId().orElse(null))
           .set(RL_YEAR, rule.getYear())
           .set(RL_PROPERTY_CATEGORY, rule.getPropertyCategory())
-          .set(RL_SECTOR, rule.getSector().orElse(null))
           .set(RL_MAX_INCREASE_PERCENTAGE, rule.getMaxIncreasePercentage().orElse(null))
           .set(RL_MAX_INCREASE_TYPE, rule.getMaxIncreaseType().name())
           .set(RL_INDEX_NAME, rule.getIndexName().orElse(null))
@@ -336,6 +363,19 @@ public class RentRegulationRepository {
           .set(RL_ADDITIONAL_CONDITIONS, rule.getAdditionalConditions().orElse(null))
           .set(RL_SOURCE_URL, rule.getSourceUrl().orElse(null))
           .set(RL_NOTES, rule.getNotes().orElse(null))
+          .set(RL_REGIME, rule.getRegime().orElse(null))
+          .set(RL_PROPERTY_TYPE, rule.getPropertyType().orElse(null))
+          .set(RL_CONTRACT_TYPE, rule.getContractType().orElse(null))
+          .set(RL_TAX_REGIME, rule.getTaxRegime().orElse(null))
+          .set(RL_TENANCY_PHASE, rule.getTenancyPhase().orElse(null))
+          .set(RL_BUILD_YEAR_MIN, rule.getBuildYearMin().orElse(null))
+          .set(RL_BUILD_YEAR_MAX, rule.getBuildYearMax().orElse(null))
+          .set(RL_EPC_CLASS_MIN, rule.getEpcClassMin().orElse(null))
+          .set(RL_EPC_CLASS_MAX, rule.getEpcClassMax().orElse(null))
+          .set(RL_CONTRACT_SIGNED_AFTER, rule.getContractSignedAfter().map(Date::valueOf).orElse(null))
+          .set(RL_CONTRACT_SIGNED_BEFORE, rule.getContractSignedBefore().map(Date::valueOf).orElse(null))
+          .set(RL_LANDLORD_MIN_PROPERTIES, rule.getLandlordMinProperties().orElse(null))
+          .set(RL_AREA_CODE, rule.getAreaCode().orElse(null))
           .set(RL_UPDATED_AT, now)
           .set(RL_UPDATED_BY, rule.getUpdatedBy().orElse(null))
           .where(RL_ID.eq(rule.getId()))
@@ -551,7 +591,6 @@ public class RentRegulationRepository {
     rule.setRegionId(Optional.ofNullable(record.get(RL_REGION_ID)));
     rule.setYear(record.get(RL_YEAR));
     rule.setPropertyCategory(record.get(RL_PROPERTY_CATEGORY));
-    rule.setSector(Optional.ofNullable(record.get(RL_SECTOR)));
     rule.setMaxIncreasePercentage(Optional.ofNullable(record.get(RL_MAX_INCREASE_PERCENTAGE)));
     rule.setMaxIncreaseType(MaxIncreaseType.valueOf(record.get(RL_MAX_INCREASE_TYPE)));
     rule.setIndexName(Optional.ofNullable(record.get(RL_INDEX_NAME)));
@@ -563,6 +602,21 @@ public class RentRegulationRepository {
     rule.setAdditionalConditions(Optional.ofNullable(record.get(RL_ADDITIONAL_CONDITIONS)));
     rule.setSourceUrl(Optional.ofNullable(record.get(RL_SOURCE_URL)));
     rule.setNotes(Optional.ofNullable(record.get(RL_NOTES)));
+    rule.setRegime(Optional.ofNullable(record.get(RL_REGIME)));
+    rule.setPropertyType(Optional.ofNullable(record.get(RL_PROPERTY_TYPE)));
+    rule.setContractType(Optional.ofNullable(record.get(RL_CONTRACT_TYPE)));
+    rule.setTaxRegime(Optional.ofNullable(record.get(RL_TAX_REGIME)));
+    rule.setTenancyPhase(Optional.ofNullable(record.get(RL_TENANCY_PHASE)));
+    rule.setBuildYearMin(Optional.ofNullable(record.get(RL_BUILD_YEAR_MIN)));
+    rule.setBuildYearMax(Optional.ofNullable(record.get(RL_BUILD_YEAR_MAX)));
+    rule.setEpcClassMin(Optional.ofNullable(record.get(RL_EPC_CLASS_MIN)));
+    rule.setEpcClassMax(Optional.ofNullable(record.get(RL_EPC_CLASS_MAX)));
+    Date contractSignedAfter = record.get(RL_CONTRACT_SIGNED_AFTER);
+    rule.setContractSignedAfter(Optional.ofNullable(contractSignedAfter).map(Date::toLocalDate));
+    Date contractSignedBefore = record.get(RL_CONTRACT_SIGNED_BEFORE);
+    rule.setContractSignedBefore(Optional.ofNullable(contractSignedBefore).map(Date::toLocalDate));
+    rule.setLandlordMinProperties(Optional.ofNullable(record.get(RL_LANDLORD_MIN_PROPERTIES)));
+    rule.setAreaCode(Optional.ofNullable(record.get(RL_AREA_CODE)));
     Timestamp createdAt = record.get(RL_CREATED_AT);
     if (createdAt != null) {
       rule.setCreatedAt(createdAt.toInstant());

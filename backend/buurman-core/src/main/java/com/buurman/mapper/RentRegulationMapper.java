@@ -69,7 +69,6 @@ public class RentRegulationMapper {
         rule.getIdentifier().orElseThrow(),
         rule.getYear(),
         rule.getPropertyCategory(),
-        rule.getSector(),
         rule.getMaxIncreasePercentage(),
         rule.getMaxIncreaseType(),
         rule.getIndexName(),
@@ -79,7 +78,20 @@ public class RentRegulationMapper {
         rule.getFrequency(),
         rule.getAdditionalConditions(),
         rule.getSourceUrl(),
-        rule.getNotes());
+        rule.getNotes(),
+        rule.getRegime(),
+        rule.getPropertyType(),
+        rule.getContractType(),
+        rule.getTaxRegime(),
+        rule.getTenancyPhase(),
+        rule.getBuildYearMin(),
+        rule.getBuildYearMax(),
+        rule.getEpcClassMin(),
+        rule.getEpcClassMax(),
+        rule.getContractSignedAfter(),
+        rule.getContractSignedBefore(),
+        rule.getLandlordMinProperties(),
+        rule.getAreaCode());
   }
 
   // ==================== Request → Domain ====================
@@ -123,7 +135,6 @@ public class RentRegulationMapper {
         .countryId(countryId)
         .year(request.year())
         .propertyCategory(request.propertyCategory())
-        .sector(request.sector())
         .maxIncreasePercentage(request.maxIncreasePercentage())
         .maxIncreaseType(request.maxIncreaseType())
         .indexName(request.indexName())
@@ -134,13 +145,25 @@ public class RentRegulationMapper {
         .additionalConditions(request.additionalConditions())
         .sourceUrl(request.sourceUrl())
         .notes(request.notes())
+        .regime(request.regime())
+        .propertyType(request.propertyType())
+        .contractType(request.contractType())
+        .taxRegime(request.taxRegime())
+        .tenancyPhase(request.tenancyPhase())
+        .buildYearMin(request.buildYearMin())
+        .buildYearMax(request.buildYearMax())
+        .epcClassMin(request.epcClassMin())
+        .epcClassMax(request.epcClassMax())
+        .contractSignedAfter(request.contractSignedAfter())
+        .contractSignedBefore(request.contractSignedBefore())
+        .landlordMinProperties(request.landlordMinProperties())
+        .areaCode(request.areaCode())
         .build();
   }
 
   public void updateRule(RentRegulationRule existing, UpdateRentRegulationRuleRequest request) {
     existing.setYear(request.year());
     existing.setPropertyCategory(request.propertyCategory());
-    existing.setSector(request.sector());
     existing.setMaxIncreasePercentage(request.maxIncreasePercentage());
     existing.setMaxIncreaseType(request.maxIncreaseType());
     existing.setIndexName(request.indexName());
@@ -151,6 +174,19 @@ public class RentRegulationMapper {
     existing.setAdditionalConditions(request.additionalConditions());
     existing.setSourceUrl(request.sourceUrl());
     existing.setNotes(request.notes());
+    existing.setRegime(request.regime());
+    existing.setPropertyType(request.propertyType());
+    existing.setContractType(request.contractType());
+    existing.setTaxRegime(request.taxRegime());
+    existing.setTenancyPhase(request.tenancyPhase());
+    existing.setBuildYearMin(request.buildYearMin());
+    existing.setBuildYearMax(request.buildYearMax());
+    existing.setEpcClassMin(request.epcClassMin());
+    existing.setEpcClassMax(request.epcClassMax());
+    existing.setContractSignedAfter(request.contractSignedAfter());
+    existing.setContractSignedBefore(request.contractSignedBefore());
+    existing.setLandlordMinProperties(request.landlordMinProperties());
+    existing.setAreaCode(request.areaCode());
   }
 
   private boolean isStale(RentRegulationCountry country) {

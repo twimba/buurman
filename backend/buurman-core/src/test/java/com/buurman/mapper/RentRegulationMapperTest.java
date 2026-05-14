@@ -181,7 +181,7 @@ class RentRegulationMapperTest {
       assertThat(response.identifier()).isEqualTo(RULE_ID);
       assertThat(response.year()).isEqualTo(2026);
       assertThat(response.propertyCategory()).isEqualTo("RESIDENTIAL");
-      assertThat(response.sector()).contains("REGULATED");
+      assertThat(response.regime()).contains("REGULATED");
       assertThat(response.maxIncreasePercentage()).contains(new BigDecimal("4.10"));
       assertThat(response.maxIncreaseType()).isEqualTo(MaxIncreaseType.CPI_LINKED);
       assertThat(response.indexName()).contains("CPI");
@@ -206,7 +206,7 @@ class RentRegulationMapperTest {
 
       RentRegulationRuleResponse response = mapper.toRuleResponse(rule);
 
-      assertThat(response.sector()).isEmpty();
+      assertThat(response.regime()).isEmpty();
       assertThat(response.maxIncreasePercentage()).isEmpty();
       assertThat(response.indexName()).isEmpty();
       assertThat(response.indexValue()).isEmpty();
@@ -308,7 +308,6 @@ class RentRegulationMapperTest {
           new CreateRentRegulationRuleRequest(
               2026,
               "RESIDENTIAL",
-              Optional.of("FREE"),
               Optional.of(new BigDecimal("5.50")),
               MaxIncreaseType.FIXED_PERCENTAGE,
               Optional.empty(),
@@ -318,7 +317,20 @@ class RentRegulationMapperTest {
               Optional.of(RentFrequency.MONTHLY),
               Optional.empty(),
               Optional.empty(),
-              Optional.of("Test note"));
+              Optional.of("Test note"),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       RentRegulationRule rule = mapper.toRule(request, countryId);
 
@@ -337,8 +349,20 @@ class RentRegulationMapperTest {
               2026,
               "RESIDENTIAL",
               Optional.empty(),
-              Optional.empty(),
               MaxIncreaseType.FROZEN,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
               Optional.empty(),
               Optional.empty(),
               Optional.empty(),
@@ -366,7 +390,6 @@ class RentRegulationMapperTest {
           new UpdateRentRegulationRuleRequest(
               2027,
               "COMMERCIAL",
-              Optional.of("FREE"),
               Optional.of(new BigDecimal("6.00")),
               MaxIncreaseType.FIXED_PERCENTAGE,
               Optional.of("New Index"),
@@ -376,7 +399,20 @@ class RentRegulationMapperTest {
               Optional.of(RentFrequency.QUARTERLY),
               Optional.of("New conditions"),
               Optional.of("https://example.com"),
-              Optional.of("Updated note"));
+              Optional.of("Updated note"),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       mapper.updateRule(existing, request);
 
@@ -394,8 +430,20 @@ class RentRegulationMapperTest {
               2027,
               "RESIDENTIAL",
               Optional.empty(),
-              Optional.empty(),
               MaxIncreaseType.FROZEN,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
               Optional.empty(),
               Optional.empty(),
               Optional.empty(),
@@ -447,7 +495,7 @@ class RentRegulationMapperTest {
         .countryId(UUID.randomUUID())
         .year(2026)
         .propertyCategory("RESIDENTIAL")
-        .sector(Optional.of("REGULATED"))
+        .regime(Optional.of("REGULATED"))
         .maxIncreasePercentage(Optional.of(new BigDecimal("4.10")))
         .maxIncreaseType(MaxIncreaseType.CPI_LINKED)
         .indexName(Optional.of("CPI"))

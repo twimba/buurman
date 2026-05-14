@@ -24,7 +24,6 @@ public class RentRegulationRule {
   @Builder.Default private Optional<UUID> regionId = Optional.empty();
   private int year;
   private String propertyCategory;
-  @Builder.Default private Optional<String> sector = Optional.empty();
   @Builder.Default private Optional<BigDecimal> maxIncreasePercentage = Optional.empty();
   private MaxIncreaseType maxIncreaseType;
   @Builder.Default private Optional<String> indexName = Optional.empty();
@@ -35,6 +34,21 @@ public class RentRegulationRule {
   @Builder.Default private Optional<String> additionalConditions = Optional.empty();
   @Builder.Default private Optional<String> sourceUrl = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();
+  // BUUR-93: typed dimensional columns (V055). NULL = wildcard "applies to all".
+  @Builder.Default private Optional<String> regime = Optional.empty();
+  @Builder.Default private Optional<String> propertyType = Optional.empty();
+  @Builder.Default private Optional<String> contractType = Optional.empty();
+  @Builder.Default private Optional<String> taxRegime = Optional.empty();
+  @Builder.Default private Optional<String> tenancyPhase = Optional.empty();
+  @Builder.Default private Optional<Integer> buildYearMin = Optional.empty();
+  @Builder.Default private Optional<Integer> buildYearMax = Optional.empty();
+  @Builder.Default private Optional<String> epcClassMin = Optional.empty();
+  @Builder.Default private Optional<String> epcClassMax = Optional.empty();
+  @Builder.Default private Optional<LocalDate> contractSignedAfter = Optional.empty();
+  @Builder.Default private Optional<LocalDate> contractSignedBefore = Optional.empty();
+  @Builder.Default private Optional<Integer> landlordMinProperties = Optional.empty();
+  @Builder.Default private Optional<String> areaCode = Optional.empty();
+
   private Instant createdAt;
   private Instant updatedAt;
   @Builder.Default private Optional<String> createdBy = Optional.empty();

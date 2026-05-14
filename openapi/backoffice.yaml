@@ -7067,8 +7067,7 @@ components:
           format: int32
         propertyCategory:
           type: string
-        sector:
-          type: string
+          description: DEPRECATED (BUUR-93) — use typed dimensional fields instead.
         maxIncreasePercentage:
           type: number
         maxIncreaseType:
@@ -7090,6 +7089,37 @@ components:
         sourceUrl:
           type: string
         notes:
+          type: string
+        regime:
+          type: string
+        propertyType:
+          type: string
+        contractType:
+          type: string
+        taxRegime:
+          type: string
+        tenancyPhase:
+          type: string
+        buildYearMin:
+          type: integer
+          format: int32
+        buildYearMax:
+          type: integer
+          format: int32
+        epcClassMin:
+          type: string
+        epcClassMax:
+          type: string
+        contractSignedAfter:
+          type: string
+          format: date
+        contractSignedBefore:
+          type: string
+          format: date
+        landlordMinProperties:
+          type: integer
+          format: int32
+        areaCode:
           type: string
       required:
         - identifier
@@ -7167,8 +7197,6 @@ components:
         propertyCategory:
           type: string
           minLength: 1
-        sector:
-          type: string
         maxIncreasePercentage:
           type: number
         maxIncreaseType:
@@ -7190,6 +7218,37 @@ components:
         sourceUrl:
           type: string
         notes:
+          type: string
+        regime:
+          type: string
+        propertyType:
+          type: string
+        contractType:
+          type: string
+        taxRegime:
+          type: string
+        tenancyPhase:
+          type: string
+        buildYearMin:
+          type: integer
+          format: int32
+        buildYearMax:
+          type: integer
+          format: int32
+        epcClassMin:
+          type: string
+        epcClassMax:
+          type: string
+        contractSignedAfter:
+          type: string
+          format: date
+        contractSignedBefore:
+          type: string
+          format: date
+        landlordMinProperties:
+          type: integer
+          format: int32
+        areaCode:
           type: string
       required:
         - year
@@ -7205,8 +7264,6 @@ components:
         propertyCategory:
           type: string
           minLength: 1
-        sector:
-          type: string
         maxIncreasePercentage:
           type: number
         maxIncreaseType:
@@ -7228,6 +7285,37 @@ components:
         sourceUrl:
           type: string
         notes:
+          type: string
+        regime:
+          type: string
+        propertyType:
+          type: string
+        contractType:
+          type: string
+        taxRegime:
+          type: string
+        tenancyPhase:
+          type: string
+        buildYearMin:
+          type: integer
+          format: int32
+        buildYearMax:
+          type: integer
+          format: int32
+        epcClassMin:
+          type: string
+        epcClassMax:
+          type: string
+        contractSignedAfter:
+          type: string
+          format: date
+        contractSignedBefore:
+          type: string
+          format: date
+        landlordMinProperties:
+          type: integer
+          format: int32
+        areaCode:
           type: string
       required:
         - year
