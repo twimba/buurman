@@ -29,25 +29,28 @@ export const PropertyMap = ({
   onCoordinatesChange,
 }: PropertyMapProps) => {
   const { t } = useTranslation('properties');
-  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [geocodedCoords, setGeocodedCoords] = useState<Coordinates | null>(null);
+  const [geocodedLoading, setGeocodedLoading] = useState(true);
+  const [geocodedError, setGeocodedError] = useState<string | null>(null);
 
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
 
+  const hasProvidedCoords = latitude != null && longitude != null;
+  const coordinates = hasProvidedCoords
+    ? { lat: latitude as number, lng: longitude as number }
+    : geocodedCoords;
+  const loading = hasProvidedCoords ? false : geocodedLoading;
+  const error = hasProvidedCoords ? null : geocodedError;
+
   useEffect(() => {
-    // If coordinates are already provided, use them directly
-    if (latitude != null && longitude != null) {
-      setCoordinates({ lat: latitude, lng: longitude });
-      setLoading(false);
-      setError(null);
+    if (hasProvidedCoords) {
       return;
     }
 
     const geocodeAddress = async () => {
       if (!apiKey) {
-        setError(t('map.apiKeyNotConfigured'));
-        setLoading(false);
+        setGeocodedError(t('map.apiKeyNotConfigured'));
+        setGeocodedLoading(false);
         return;
       }
 
@@ -64,20 +67,20 @@ export const PropertyMap = ({
         if (data.status === 'OK' && data.results.length > 0) {
           const location = data.results[0].geometry.location;
           const newCoords = { lat: location.lat, lng: location.lng };
-          setCoordinates(newCoords);
-          setError(null);
+          setGeocodedCoords(newCoords);
+          setGeocodedError(null);
 
           // Notify parent component of new coordinates
           if (onCoordinatesChange) {
             onCoordinatesChange(newCoords.lat, newCoords.lng);
           }
         } else {
-          setError(t('map.locationNotFoundShort'));
+          setGeocodedError(t('map.locationNotFoundShort'));
         }
       } catch {
-        setError(t('map.geocodeFailed'));
+        setGeocodedError(t('map.geocodeFailed'));
       } finally {
-        setLoading(false);
+        setGeocodedLoading(false);
       }
     };
 

@@ -36,7 +36,11 @@ export const AddressForm = ({
   const { defaultCountryCode } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
-  const [addressDirty, setAddressDirty] = useState(false);
+  const [geocodedAddress, setGeocodedAddress] = useState(() =>
+    address
+      ? `${address.street}|${address.city}|${address.postalCode}|${address.countryCode}`
+      : ''
+  );
 
   const [formData, setFormData] = useState({
     street: address?.street ?? '',
@@ -50,21 +54,14 @@ export const AddressForm = ({
     geocodeAccuracy: address?.geocodeAccuracy ?? undefined,
   });
 
+  const currentAddressKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.countryCode}`;
+  const addressDirty =
+    !!(formData.street && formData.city && formData.countryCode) &&
+    currentAddressKey !== geocodedAddress;
+
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
-    if (formData.street && formData.city && formData.countryCode) {
-      const hasChanged = address
-        ? formData.street !== address.street ||
-          formData.city !== address.city ||
-          formData.postalCode !== address.postalCode ||
-          formData.countryCode !== address.countryCode
-        : true;
-
-      if (hasChanged) {
-        setAddressDirty(true);
-      }
-    }
-
+    const addrKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.countryCode}`;
     const timeoutId = setTimeout(() => {
       if (formData.street && formData.city && formData.countryCode) {
         const hasChanged = address
@@ -84,7 +81,7 @@ export const AddressForm = ({
             },
             {
               onSuccess: (result) => {
-                setAddressDirty(false);
+                setGeocodedAddress(addrKey);
                 if (result) {
                   setFormData((prev) => ({
                     ...prev,
@@ -102,7 +99,7 @@ export const AddressForm = ({
                 }
               },
               onError: () => {
-                setAddressDirty(false);
+                setGeocodedAddress(addrKey);
               },
             }
           );

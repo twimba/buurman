@@ -15,7 +15,18 @@ import adminEn from '../../public/locales/en/admin.json';
 i18n.use(initReactI18next).init({
   lng: 'en',
   fallbackLng: 'en',
-  ns: ['common', 'navigation', 'properties', 'tenants', 'contracts', 'payments', 'expenses', 'documents', 'settings', 'admin'],
+  ns: [
+    'common',
+    'navigation',
+    'properties',
+    'tenants',
+    'contracts',
+    'payments',
+    'expenses',
+    'documents',
+    'settings',
+    'admin',
+  ],
   defaultNS: 'common',
   resources: {
     en: {

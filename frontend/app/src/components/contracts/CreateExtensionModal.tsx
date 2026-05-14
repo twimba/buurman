@@ -348,12 +348,14 @@ export const CreateExtensionModal = ({
               {rentError && (
                 <p className="mt-1 text-xs text-error-text">{rentError}</p>
               )}
-              {!rentError && adjustmentType !== 'NONE' && adjustmentType !== 'MANUAL' && (
-                <p className="mt-1 text-xs text-text-muted">
-                  {t('extensions.modal.computedFromRent')}{' '}
-                  {adjustmentType.toLowerCase().replace('_', ' ')}
-                </p>
-              )}
+              {!rentError &&
+                adjustmentType !== 'NONE' &&
+                adjustmentType !== 'MANUAL' && (
+                  <p className="mt-1 text-xs text-text-muted">
+                    {t('extensions.modal.computedFromRent')}{' '}
+                    {adjustmentType.toLowerCase().replace('_', ' ')}
+                  </p>
+                )}
             </div>
 
             {/* Notes */}
