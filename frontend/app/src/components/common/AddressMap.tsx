@@ -31,7 +31,9 @@ export const AddressMap = ({
   height = 'h-96',
 }: AddressMapProps) => {
   const { t } = useTranslation('properties');
-  const [geocodedCoords, setGeocodedCoords] = useState<Coordinates | null>(null);
+  const [geocodedCoords, setGeocodedCoords] = useState<Coordinates | null>(
+    null
+  );
   const [geocodedLoading, setGeocodedLoading] = useState(true);
   const [geocodedError, setGeocodedError] = useState<string | null>(null);
 

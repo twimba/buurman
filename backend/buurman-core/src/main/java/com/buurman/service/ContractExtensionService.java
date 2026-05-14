@@ -632,12 +632,15 @@ public class ContractExtensionService {
     extension.setActivatedBy(Optional.of(activatedBy));
     extension.setUpdatedBy(activatedBy);
 
-    // BR-27: Close previous rent period's effective_to
+    // BR-27: Close the rent period that was active on previousEndDate (not necessarily the latest
+    // overall — the user may have already set up rent periods for the extension period).
     LocalDate previousEndDate = extension.getPreviousEndDate();
+    LocalDate extensionEffectiveFrom = previousEndDate.plusDays(1);
     List<ContractRentPeriod> existingPeriods =
         rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     existingPeriods.stream()
         .filter(p -> p.getDeletedAt().isEmpty())
+        .filter(p -> !p.getEffectiveFrom().isAfter(previousEndDate))
         .max(java.util.Comparator.comparing(ContractRentPeriod::getEffectiveFrom))
         .ifPresent(
             prev -> {
@@ -646,8 +649,15 @@ public class ContractExtensionService {
               rentPeriodRepository.save(prev);
             });
 
-    // BR-23: Create DRAFT rent period
-    UUID rentPeriodId = createDraftRentPeriod(extension, contract, teamId, activatedBy);
+    // BR-23: Create rent period for extension start — skip if user already set one up for that date
+    UUID rentPeriodId =
+        existingPeriods.stream()
+            .filter(p -> p.getDeletedAt().isEmpty())
+            .filter(p -> p.getEffectiveFrom().equals(extensionEffectiveFrom))
+            .findFirst()
+            .map(ContractRentPeriod::getId)
+            .orElseGet(
+                () -> createDraftRentPeriod(extension, contract, teamId, activatedBy));
     extension.setRentPeriodId(Optional.of(rentPeriodId));
 
     extension = extensionRepository.save(extension);
