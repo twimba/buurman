@@ -5,6 +5,7 @@ import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,16 +40,18 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
   }
 
   @Override
-  public PortfolioDashboardResponse getPortfolioDashboard(Optional<Integer> months) {
+  public PortfolioDashboardResponse getPortfolioDashboard(
+      Optional<Integer> months, Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return dashboardService.getPortfolioDashboard(months, principal);
+    return dashboardService.getPortfolioDashboard(months, startDate, endDate, principal);
   }
 
   @Override
-  public byte[] exportPortfolioPdf(Optional<Integer> months) {
+  public byte[] exportPortfolioPdf(
+      Optional<Integer> months, Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PortfolioDashboardResponse dashboard =
-        dashboardService.getPortfolioDashboard(months, principal);
+        dashboardService.getPortfolioDashboard(months, startDate, endDate, principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
@@ -56,10 +59,11 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
   }
 
   @Override
-  public byte[] exportPortfolioCsv(Optional<Integer> months) {
+  public byte[] exportPortfolioCsv(
+      Optional<Integer> months, Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PortfolioDashboardResponse dashboard =
-        dashboardService.getPortfolioDashboard(months, principal);
+        dashboardService.getPortfolioDashboard(months, startDate, endDate, principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.csv");
     httpServletResponse.setContentType("text/csv");
@@ -67,13 +71,14 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
   }
 
   @Override
-  public byte[] exportPortfolioExcel(Optional<Integer> months) {
+  public byte[] exportPortfolioExcel(
+      Optional<Integer> months, Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     if (featureFlagService.isDisabled(EXCEL_EXPORT, SecurityUtils.getCurrentPrincipal())) {
       throw new ForbiddenException("Excel export feature is not available");
     }
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PortfolioDashboardResponse dashboard =
-        dashboardService.getPortfolioDashboard(months, principal);
+        dashboardService.getPortfolioDashboard(months, startDate, endDate, principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.xlsx");
     httpServletResponse.setContentType(

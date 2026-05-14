@@ -43,12 +43,16 @@ const PERIOD_OPTIONS: PeriodOption[] = [
 interface Props {
   chartType: DashboardChartType;
   initialMonths: number | undefined;
+  initialStartDate?: string;
+  initialEndDate?: string;
   onClose: () => void;
 }
 
 export const PortfolioDashboardFullscreen = ({
   chartType,
   initialMonths,
+  initialStartDate,
+  initialEndDate,
   onClose,
 }: Props) => {
   const { t } = useTranslation('common');
@@ -58,8 +62,29 @@ export const PortfolioDashboardFullscreen = ({
   const [localMonths, setLocalMonths] = useState<number | undefined>(
     initialMonths
   );
+  const [localCustomStart, setLocalCustomStart] = useState<string>(
+    initialStartDate ?? (() => {
+      const d = new Date();
+      d.setFullYear(d.getFullYear() - 1);
+      return d.toISOString().split('T')[0];
+    })()
+  );
+  const [localCustomEnd, setLocalCustomEnd] = useState<string>(
+    initialEndDate ?? new Date().toISOString().split('T')[0]
+  );
+  const [localIsCustom, setLocalIsCustom] = useState<boolean>(
+    initialStartDate != null
+  );
 
-  const { data: dashboard, isLoading } = usePortfolioDashboard(localMonths);
+  const activeLocalMonths = localIsCustom ? undefined : localMonths;
+  const activeLocalStartDate = localIsCustom ? localCustomStart : undefined;
+  const activeLocalEndDate = localIsCustom ? localCustomEnd : undefined;
+
+  const { data: dashboard, isLoading } = usePortfolioDashboard(
+    activeLocalMonths,
+    activeLocalStartDate,
+    activeLocalEndDate
+  );
 
   const chartConfig: Record<
     DashboardChartType,
@@ -93,21 +118,60 @@ export const PortfolioDashboardFullscreen = ({
 
   const { title, icon } = chartConfig[chartType];
 
+  const handleLocalPeriodClick = (opt: PeriodOption) => {
+    setLocalIsCustom(false);
+    setLocalMonths(opt.value);
+    const today = new Date();
+    setLocalCustomEnd(today.toISOString().split('T')[0]);
+    if (opt.value === undefined) {
+      setLocalCustomStart('');
+    } else {
+      const start = new Date(today);
+      start.setMonth(start.getMonth() - opt.value);
+      setLocalCustomStart(start.toISOString().split('T')[0]);
+    }
+  };
+
   const periodControls = (
-    <div className="flex gap-1 flex-wrap">
-      {PERIOD_OPTIONS.map((opt) => (
-        <button
-          key={opt.label}
-          onClick={() => setLocalMonths(opt.value)}
-          className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-            localMonths === opt.value
-              ? 'bg-primary-500 text-white'
-              : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
-          }`}
-        >
-          {opt.label}
-        </button>
-      ))}
+    <div className="flex gap-2 flex-wrap items-center">
+      <div className="flex gap-1 flex-wrap">
+        {PERIOD_OPTIONS.map((opt) => (
+          <button
+            key={opt.label}
+            onClick={() => handleLocalPeriodClick(opt)}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              localMonths === opt.value && !localIsCustom
+                ? 'bg-primary-500 text-white'
+                : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+      <div className="flex gap-2 items-center">
+        <input
+          type="date"
+          value={localCustomStart}
+          onChange={(e) => {
+            setLocalCustomStart(e.target.value);
+            setLocalIsCustom(true);
+            setLocalMonths(undefined);
+          }}
+          className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        />
+        <span className="text-text-muted text-xs">–</span>
+        <input
+          type="date"
+          value={localCustomEnd}
+          onChange={(e) => {
+            setLocalCustomEnd(e.target.value);
+            setLocalIsCustom(true);
+            setLocalMonths(undefined);
+          }}
+          className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        />
+      </div>
     </div>
   );
 

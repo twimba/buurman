@@ -14,6 +14,20 @@ portfolio-dashboard:
           type: integer
           format: int32
         example: 12
+      - name: startDate
+        in: query
+        description: Start date for custom date range (ISO 8601, YYYY-MM-DD). Takes priority over months when provided.
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: End date for custom date range (ISO 8601, YYYY-MM-DD). Defaults to today when startDate is provided but endDate is omitted.
+        required: false
+        schema:
+          type: string
+          format: date
     responses:
       "200":
         description: OK
@@ -57,6 +71,20 @@ portfolio-dashboard-export-pdf:
           type: integer
           format: int32
         example: 12
+      - name: startDate
+        in: query
+        description: Start date for custom date range (ISO 8601, YYYY-MM-DD). Takes priority over months when provided.
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: End date for custom date range (ISO 8601, YYYY-MM-DD). Defaults to today when startDate is provided but endDate is omitted.
+        required: false
+        schema:
+          type: string
+          format: date
     responses:
       "200":
         description: OK
@@ -101,6 +129,20 @@ portfolio-dashboard-export-csv:
           type: integer
           format: int32
         example: 12
+      - name: startDate
+        in: query
+        description: Start date for custom date range (ISO 8601, YYYY-MM-DD). Takes priority over months when provided.
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: End date for custom date range (ISO 8601, YYYY-MM-DD). Defaults to today when startDate is provided but endDate is omitted.
+        required: false
+        schema:
+          type: string
+          format: date
     responses:
       "200":
         description: OK
@@ -145,6 +187,20 @@ portfolio-dashboard-export-excel:
           type: integer
           format: int32
         example: 12
+      - name: startDate
+        in: query
+        description: Start date for custom date range (ISO 8601, YYYY-MM-DD). Takes priority over months when provided.
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: endDate
+        in: query
+        description: End date for custom date range (ISO 8601, YYYY-MM-DD). Defaults to today when startDate is provided but endDate is omitted.
+        required: false
+        schema:
+          type: string
+          format: date
     responses:
       "200":
         description: OK

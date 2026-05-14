@@ -104,6 +104,18 @@ public class PropertyDashboardService {
   @Transactional(readOnly = true)
   public PropertyDashboardResponse getDashboardData(
       Sid propertyIdentifier, int months, UUID teamId) {
+    return getDashboardData(
+        propertyIdentifier, months, teamId, Optional.empty(), Optional.empty());
+  }
+
+  /** Internal method with explicit date range support (authorization handled by caller). */
+  @Transactional(readOnly = true)
+  public PropertyDashboardResponse getDashboardData(
+      Sid propertyIdentifier,
+      int months,
+      UUID teamId,
+      Optional<LocalDate> explicitStartDate,
+      Optional<LocalDate> explicitEndDate) {
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     UUID propertyId = property.getId();
 
@@ -120,23 +132,27 @@ public class PropertyDashboardService {
 
     String currency = financialData.purchasePriceCurrency().orElse(null);
     LocalDate now = LocalDate.now(clock);
+    LocalDate endDate = explicitEndDate.orElse(now);
 
     LocalDate startDate;
-    if (months <= 0) {
+    if (explicitStartDate.isPresent()) {
+      startDate = explicitStartDate.get();
+    } else if (months <= 0) {
       List<Payment> unfilteredPayments =
           paymentRepository
-              .findPaidByContractIdsAndDateRange(contractIds, teamId, LocalDate.of(1970, 1, 1), now)
+              .findPaidByContractIdsAndDateRange(
+                  contractIds, teamId, LocalDate.of(1970, 1, 1), endDate)
               .stream()
               .filter(p -> currency == null || currency.equals(p.getAmount().currency()))
               .toList();
 
       List<Expense> unfilteredExpenses =
           expenseRepository.findByPropertyId(propertyId, teamId).stream()
-              .filter(e -> e.getExpenseDate() != null && !e.getExpenseDate().isAfter(now))
+              .filter(e -> e.getExpenseDate() != null && !e.getExpenseDate().isAfter(endDate))
               .filter(e -> currency == null || currency.equals(e.getAmount().currency()))
               .toList();
 
-      LocalDate earliest = now;
+      LocalDate earliest = endDate;
       if (financialData.purchaseDate().isPresent()) {
         earliest = financialData.purchaseDate().get();
       }
@@ -159,7 +175,7 @@ public class PropertyDashboardService {
 
       List<FinancingPayment> unfilteredFinancingPayments =
           financingPaymentRepository.findByPropertyIdAndTeamId(propertyId, teamId).stream()
-              .filter(fp -> !fp.getPaymentDate().isAfter(now))
+              .filter(fp -> !fp.getPaymentDate().isAfter(endDate))
               .filter(fp -> currency == null || currency.equals(fp.getTotalAmount().currency()))
               .toList();
 
@@ -172,15 +188,15 @@ public class PropertyDashboardService {
           unfilteredExpenses,
           unfilteredFinancingPayments,
           startDate,
-          now,
+          endDate,
           effectiveEndDates);
     } else {
-      startDate = now.minusMonths(months);
+      startDate = endDate.minusMonths(months);
     }
 
     List<Payment> allPayments =
         paymentRepository
-            .findPaidByContractIdsAndDateRange(contractIds, teamId, startDate, now)
+            .findPaidByContractIdsAndDateRange(contractIds, teamId, startDate, endDate)
             .stream()
             .filter(p -> currency == null || currency.equals(p.getAmount().currency()))
             .toList();
@@ -191,14 +207,16 @@ public class PropertyDashboardService {
                 e ->
                     e.getExpenseDate() != null
                         && !e.getExpenseDate().isBefore(startDate)
-                        && !e.getExpenseDate().isAfter(now))
+                        && !e.getExpenseDate().isAfter(endDate))
             .filter(e -> currency == null || currency.equals(e.getAmount().currency()))
             .toList();
 
     List<FinancingPayment> allFinancingPayments =
         financingPaymentRepository.findByPropertyIdAndTeamId(propertyId, teamId).stream()
             .filter(
-                fp -> !fp.getPaymentDate().isBefore(startDate) && !fp.getPaymentDate().isAfter(now))
+                fp ->
+                    !fp.getPaymentDate().isBefore(startDate)
+                        && !fp.getPaymentDate().isAfter(endDate))
             .filter(fp -> currency == null || currency.equals(fp.getTotalAmount().currency()))
             .toList();
 
@@ -211,7 +229,7 @@ public class PropertyDashboardService {
         allExpenses,
         allFinancingPayments,
         startDate,
-        now,
+        endDate,
         effectiveEndDates);
   }
 

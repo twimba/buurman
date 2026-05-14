@@ -47,6 +47,15 @@ const PERIOD_OPTIONS: PeriodOption[] = [
 export const PortfolioDashboard = () => {
   const { t } = useTranslation('common');
   const [months, setMonths] = useState<number | undefined>(12);
+  const [customStart, setCustomStart] = useState(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 1);
+    return d.toISOString().split('T')[0];
+  });
+  const [customEnd, setCustomEnd] = useState(
+    () => new Date().toISOString().split('T')[0]
+  );
+  const [isCustom, setIsCustom] = useState(false);
   const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
     null
   );
@@ -55,7 +64,29 @@ export const PortfolioDashboard = () => {
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
 
-  const { data: dashboard, isLoading, error } = usePortfolioDashboard(months);
+  const activeMonths = isCustom ? undefined : months;
+  const activeStartDate = isCustom ? customStart : undefined;
+  const activeEndDate = isCustom ? customEnd : undefined;
+
+  const { data: dashboard, isLoading, error } = usePortfolioDashboard(
+    activeMonths,
+    activeStartDate,
+    activeEndDate
+  );
+
+  const handlePeriodClick = useCallback((opt: PeriodOption) => {
+    setIsCustom(false);
+    setMonths(opt.value);
+    const today = new Date();
+    setCustomEnd(today.toISOString().split('T')[0]);
+    if (opt.value === undefined) {
+      setCustomStart('');
+    } else {
+      const start = new Date(today);
+      start.setMonth(start.getMonth() - opt.value);
+      setCustomStart(start.toISOString().split('T')[0]);
+    }
+  }, []);
 
   const handleExport = useCallback(
     async (format: 'pdf' | 'csv' | 'excel') => {
@@ -65,16 +96,16 @@ export const PortfolioDashboard = () => {
         let mimeType: string;
         let filename: string;
         if (format === 'pdf') {
-          blob = await exportPortfolioDashboardPDF(months);
+          blob = await exportPortfolioDashboardPDF(activeMonths, activeStartDate, activeEndDate);
           mimeType = 'application/pdf';
           filename = 'portfolio-dashboard.pdf';
         } else if (format === 'excel') {
-          blob = await exportPortfolioDashboardExcel(months);
+          blob = await exportPortfolioDashboardExcel(activeMonths, activeStartDate, activeEndDate);
           mimeType =
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
           filename = 'portfolio-dashboard.xlsx';
         } else {
-          blob = await exportPortfolioDashboardCSV(months);
+          blob = await exportPortfolioDashboardCSV(activeMonths, activeStartDate, activeEndDate);
           mimeType = 'text/csv';
           filename = 'portfolio-dashboard.csv';
         }
@@ -93,7 +124,7 @@ export const PortfolioDashboard = () => {
         setExporting(null);
       }
     },
-    [months]
+    [activeMonths, activeStartDate, activeEndDate]
   );
 
   const is403 = useMemo(() => {
@@ -170,14 +201,14 @@ export const PortfolioDashboard = () => {
               })}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <div className="flex gap-1">
               {PERIOD_OPTIONS.map((opt) => (
                 <button
                   key={opt.label}
-                  onClick={() => setMonths(opt.value)}
+                  onClick={() => handlePeriodClick(opt)}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                    months === opt.value
+                    months === opt.value && !isCustom
                       ? 'bg-primary-500 text-white'
                       : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                   }`}
@@ -185,6 +216,29 @@ export const PortfolioDashboard = () => {
                   {opt.label}
                 </button>
               ))}
+            </div>
+            <div className="flex gap-2 items-center">
+              <input
+                type="date"
+                value={customStart}
+                onChange={(e) => {
+                  setCustomStart(e.target.value);
+                  setIsCustom(true);
+                  setMonths(undefined);
+                }}
+                className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+              <span className="text-text-muted text-xs">–</span>
+              <input
+                type="date"
+                value={customEnd}
+                onChange={(e) => {
+                  setCustomEnd(e.target.value);
+                  setIsCustom(true);
+                  setMonths(undefined);
+                }}
+                className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
             </div>
             <div className="flex gap-2">
               <ExportDropdown
@@ -300,7 +354,9 @@ export const PortfolioDashboard = () => {
       {expandedChart && (
         <PortfolioDashboardFullscreen
           chartType={expandedChart}
-          initialMonths={months}
+          initialMonths={activeMonths}
+          initialStartDate={activeStartDate}
+          initialEndDate={activeEndDate}
           onClose={() => setExpandedChart(null)}
         />
       )}

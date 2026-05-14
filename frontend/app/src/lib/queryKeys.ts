@@ -190,7 +190,8 @@ export const queryKeys = {
   dashboard: {
     stats: () => k('dashboard', 'stats'),
     auditLogs: (filters?: unknown) => k('auditLogs', filters),
-    portfolio: (months?: number) => k('portfolioDashboard', months),
+    portfolio: (months?: number, startDate?: string, endDate?: string) =>
+      k('portfolioDashboard', months, startDate, endDate),
     propertyDashboard: () => k('propertyDashboard'),
   },
 
