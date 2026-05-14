@@ -39,11 +39,13 @@ function formatMonthTick(v: string): string {
 interface PortfolioOccupancyChartProps {
   data: OccupancyDataPoint[];
   isDark: boolean;
+  height?: number;
 }
 
 export const PortfolioOccupancyChart = ({
   data,
   isDark,
+  height = 320,
 }: PortfolioOccupancyChartProps) => {
   const { t } = useTranslation('common');
   const tooltipStyle = useMemo(
@@ -66,7 +68,7 @@ export const PortfolioOccupancyChart = ({
   }
 
   return (
-    <ResponsiveContainer width="100%" height={320}>
+    <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data}>
         <defs>
           <linearGradient id="portfolioContactGrad" x1="0" y1="0" x2="0" y2="1">

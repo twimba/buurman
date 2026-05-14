@@ -34,11 +34,13 @@ function getColor(label: string, index: number, isCategory: boolean): string {
 interface PortfolioAllocationChartProps {
   data: AllocationData;
   isDark: boolean;
+  height?: number;
 }
 
 export const PortfolioAllocationChart = ({
   data,
   isDark,
+  height = 240,
 }: PortfolioAllocationChartProps) => {
   const { t } = useTranslation('common');
   const [view, setView] = useState<'category' | 'country'>('category');
@@ -90,7 +92,7 @@ export const PortfolioAllocationChart = ({
         </button>
       </div>
       <div className="flex items-center gap-6">
-        <ResponsiveContainer width="60%" height={240}>
+        <ResponsiveContainer width="60%" height={height}>
           <PieChart>
             <Pie
               data={slices}

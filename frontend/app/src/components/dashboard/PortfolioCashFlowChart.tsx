@@ -87,12 +87,14 @@ interface PortfolioCashFlowChartProps {
   data: MonthlyDataPoint[];
   currency?: string;
   isDark: boolean;
+  height?: number;
 }
 
 export const PortfolioCashFlowChart = ({
   data,
   currency = 'EUR',
   isDark,
+  height = 320,
 }: PortfolioCashFlowChartProps) => {
   const { t } = useTranslation('common');
   const chartData = useMemo(
@@ -143,7 +145,7 @@ export const PortfolioCashFlowChart = ({
   }
 
   return (
-    <ResponsiveContainer width="100%" height={320}>
+    <ResponsiveContainer width="100%" height={height}>
       <ComposedChart data={chartData} barGap={-barSize} barSize={barSize}>
         <CartesianGrid
           strokeDasharray="3 3"

@@ -8,6 +8,7 @@ import {
   Home,
   Table2,
   Activity,
+  Maximize2,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
@@ -25,6 +26,10 @@ import { PortfolioAllocationChart } from './PortfolioAllocationChart';
 import { EquityCompositionChart } from './EquityCompositionChart';
 import { PropertyPerformanceTable } from './PropertyPerformanceTable';
 import { PortfolioOccupancyChart } from './PortfolioOccupancyChart';
+import {
+  PortfolioDashboardFullscreen,
+  type DashboardChartType,
+} from './PortfolioDashboardFullscreen';
 
 type PeriodOption = { value: number | undefined; label: string };
 
@@ -45,6 +50,8 @@ export const PortfolioDashboard = () => {
   const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
     null
   );
+  const [expandedChart, setExpandedChart] =
+    useState<DashboardChartType | null>(null);
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
 
@@ -213,6 +220,7 @@ export const PortfolioDashboard = () => {
         <ChartCard
           title={t('dashboard.charts.cashFlow')}
           icon={<BarChart3 className="h-5 w-5" />}
+          onExpand={() => setExpandedChart('cashflow')}
         >
           <PortfolioCashFlowChart
             data={dashboard.cashFlow.months}
@@ -224,6 +232,7 @@ export const PortfolioDashboard = () => {
         <ChartCard
           title={t('dashboard.charts.allocation')}
           icon={<PieChart className="h-5 w-5" />}
+          onExpand={() => setExpandedChart('allocation')}
         >
           <PortfolioAllocationChart
             data={dashboard.allocation}
@@ -237,6 +246,7 @@ export const PortfolioDashboard = () => {
         <ChartCard
           title={t('dashboard.charts.propertyComparison')}
           icon={<TrendingUp className="h-5 w-5" />}
+          onExpand={() => setExpandedChart('comparison')}
         >
           <PropertyComparisonChart
             data={dashboard.propertyComparison}
@@ -248,6 +258,7 @@ export const PortfolioDashboard = () => {
         <ChartCard
           title={t('dashboard.charts.equityComposition')}
           icon={<Activity className="h-5 w-5" />}
+          onExpand={() => setExpandedChart('equity')}
         >
           <EquityCompositionChart
             data={dashboard.equityComposition.properties}
@@ -261,6 +272,7 @@ export const PortfolioDashboard = () => {
       <ChartCard
         title={t('dashboard.charts.performance')}
         icon={<Table2 className="h-5 w-5" />}
+        onExpand={() => setExpandedChart('performance')}
       >
         <PropertyPerformanceTable
           data={dashboard.propertyComparison}
@@ -272,6 +284,7 @@ export const PortfolioDashboard = () => {
       <ChartCard
         title={t('dashboard.charts.occupancy')}
         icon={<Home className="h-5 w-5" />}
+        onExpand={() => setExpandedChart('occupancy')}
       >
         <PortfolioOccupancyChart
           data={dashboard.occupancy.months}
@@ -283,6 +296,14 @@ export const PortfolioDashboard = () => {
       <p className="text-xs text-text-muted text-center">
         {t('dashboard.disclaimer')}
       </p>
+
+      {expandedChart && (
+        <PortfolioDashboardFullscreen
+          chartType={expandedChart}
+          initialMonths={months}
+          onClose={() => setExpandedChart(null)}
+        />
+      )}
     </div>
   );
 };
@@ -293,13 +314,25 @@ interface ChartCardProps {
   title: string;
   icon: React.ReactNode;
   children: React.ReactNode;
+  onExpand?: () => void;
 }
 
-const ChartCard = ({ title, icon, children }: ChartCardProps) => (
+const ChartCard = ({ title, icon, children, onExpand }: ChartCardProps) => (
   <Card>
-    <div className="flex items-center gap-2 mb-4">
-      <span className="text-text-secondary">{icon}</span>
-      <h3 className="text-base font-semibold text-text-primary">{title}</h3>
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-2">
+        <span className="text-text-secondary">{icon}</span>
+        <h3 className="text-base font-semibold text-text-primary">{title}</h3>
+      </div>
+      {onExpand && (
+        <button
+          onClick={onExpand}
+          className="p-1.5 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
+          title="Expand chart"
+        >
+          <Maximize2 className="h-4 w-4" />
+        </button>
+      )}
     </div>
     {children}
   </Card>
