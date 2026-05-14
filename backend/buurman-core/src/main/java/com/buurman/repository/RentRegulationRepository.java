@@ -334,8 +334,12 @@ public class RentRegulationRepository {
           .set(RL_BUILD_YEAR_MAX, rule.getBuildYearMax().orElse(null))
           .set(RL_EPC_CLASS_MIN, rule.getEpcClassMin().orElse(null))
           .set(RL_EPC_CLASS_MAX, rule.getEpcClassMax().orElse(null))
-          .set(RL_CONTRACT_SIGNED_AFTER, rule.getContractSignedAfter().map(Date::valueOf).orElse(null))
-          .set(RL_CONTRACT_SIGNED_BEFORE, rule.getContractSignedBefore().map(Date::valueOf).orElse(null))
+          .set(
+              RL_CONTRACT_SIGNED_AFTER,
+              rule.getContractSignedAfter().map(Date::valueOf).orElse(null))
+          .set(
+              RL_CONTRACT_SIGNED_BEFORE,
+              rule.getContractSignedBefore().map(Date::valueOf).orElse(null))
           .set(RL_LANDLORD_MIN_PROPERTIES, rule.getLandlordMinProperties().orElse(null))
           .set(RL_AREA_CODE, rule.getAreaCode().orElse(null))
           .set(RL_CREATED_AT, now)
@@ -372,8 +376,12 @@ public class RentRegulationRepository {
           .set(RL_BUILD_YEAR_MAX, rule.getBuildYearMax().orElse(null))
           .set(RL_EPC_CLASS_MIN, rule.getEpcClassMin().orElse(null))
           .set(RL_EPC_CLASS_MAX, rule.getEpcClassMax().orElse(null))
-          .set(RL_CONTRACT_SIGNED_AFTER, rule.getContractSignedAfter().map(Date::valueOf).orElse(null))
-          .set(RL_CONTRACT_SIGNED_BEFORE, rule.getContractSignedBefore().map(Date::valueOf).orElse(null))
+          .set(
+              RL_CONTRACT_SIGNED_AFTER,
+              rule.getContractSignedAfter().map(Date::valueOf).orElse(null))
+          .set(
+              RL_CONTRACT_SIGNED_BEFORE,
+              rule.getContractSignedBefore().map(Date::valueOf).orElse(null))
           .set(RL_LANDLORD_MIN_PROPERTIES, rule.getLandlordMinProperties().orElse(null))
           .set(RL_AREA_CODE, rule.getAreaCode().orElse(null))
           .set(RL_UPDATED_AT, now)
