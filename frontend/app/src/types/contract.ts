@@ -208,6 +208,7 @@ export interface UpdateRentPeriodRequest {
   rentAmount: number;
   effectiveFrom: string;
   notes?: string;
+  components?: RentComponentFormItem[];
 }
 
 export interface CountryMetadataSchema {
