@@ -650,14 +650,14 @@ public class ContractExtensionService {
             });
 
     // BR-23: Create rent period for extension start — skip if user already set one up for that date
+    ContractExtension extensionRef = extension;
     UUID rentPeriodId =
         existingPeriods.stream()
             .filter(p -> p.getDeletedAt().isEmpty())
             .filter(p -> p.getEffectiveFrom().equals(extensionEffectiveFrom))
             .findFirst()
             .map(ContractRentPeriod::getId)
-            .orElseGet(
-                () -> createDraftRentPeriod(extension, contract, teamId, activatedBy));
+            .orElseGet(() -> createDraftRentPeriod(extensionRef, contract, teamId, activatedBy));
     extension.setRentPeriodId(Optional.of(rentPeriodId));
 
     extension = extensionRepository.save(extension);
