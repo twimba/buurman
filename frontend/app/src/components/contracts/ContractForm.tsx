@@ -327,14 +327,18 @@ export const ContractForm = ({
       formData.depositAmount > 0 &&
       !(formData.depositAmountCurrency || defaultCurrency || '').trim()
     ) {
-      newErrors.depositAmountCurrency = t('form.validation.depositCurrencyRequired');
+      newErrors.depositAmountCurrency = t(
+        'form.validation.depositCurrencyRequired'
+      );
     }
     if (
       formData.securityDeposit &&
       formData.securityDeposit > 0 &&
       !(formData.securityDepositCurrency || defaultCurrency || '').trim()
     ) {
-      newErrors.securityDepositCurrency = t('form.validation.securityDepositCurrencyRequired');
+      newErrors.securityDepositCurrency = t(
+        'form.validation.securityDepositCurrencyRequired'
+      );
     }
 
     if (
@@ -524,7 +528,8 @@ export const ContractForm = ({
             <>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  {t('form.primaryContact')} <span className="text-error-text">*</span>
+                  {t('form.primaryContact')}{' '}
+                  <span className="text-error-text">*</span>
                 </label>
 
                 {primaryMode === 'select' ? (
@@ -745,7 +750,8 @@ export const ContractForm = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.contractType')} <span className="text-error-text">*</span>
+              {t('form.contractType')}{' '}
+              <span className="text-error-text">*</span>
             </label>
             <select
               value={formData.contractType}
@@ -755,8 +761,12 @@ export const ContractForm = ({
               className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               disabled={isLoading}
             >
-              <option value={ContractType.FIXED_TERM}>{t('enums.contractTypes.FIXED_TERM')}</option>
-              <option value={ContractType.INDEFINITE}>{t('enums.contractTypes.INDEFINITE')}</option>
+              <option value={ContractType.FIXED_TERM}>
+                {t('enums.contractTypes.FIXED_TERM')}
+              </option>
+              <option value={ContractType.INDEFINITE}>
+                {t('enums.contractTypes.INDEFINITE')}
+              </option>
             </select>
           </div>
 
@@ -939,7 +949,8 @@ export const ContractForm = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.paymentFrequency')} <span className="text-error-text">*</span>
+              {t('form.paymentFrequency')}{' '}
+              <span className="text-error-text">*</span>
             </label>
             <select
               value={formData.paymentFrequency}
@@ -952,9 +963,15 @@ export const ContractForm = ({
               className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               disabled={isLoading}
             >
-              <option value={PaymentFrequency.MONTHLY}>{t('enums.paymentFrequencies.MONTHLY')}</option>
-              <option value={PaymentFrequency.QUARTERLY}>{t('enums.paymentFrequencies.QUARTERLY')}</option>
-              <option value={PaymentFrequency.ANNUALLY}>{t('enums.paymentFrequencies.ANNUALLY')}</option>
+              <option value={PaymentFrequency.MONTHLY}>
+                {t('enums.paymentFrequencies.MONTHLY')}
+              </option>
+              <option value={PaymentFrequency.QUARTERLY}>
+                {t('enums.paymentFrequencies.QUARTERLY')}
+              </option>
+              <option value={PaymentFrequency.ANNUALLY}>
+                {t('enums.paymentFrequencies.ANNUALLY')}
+              </option>
             </select>
           </div>
 
@@ -1053,7 +1070,9 @@ export const ContractForm = ({
 
       {/* Notes */}
       <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">{t('form.notes')}</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
+          {t('form.notes')}
+        </h3>
         <div>
           <RichTextEditor
             value={formData.notes ?? ''}
@@ -1073,7 +1092,9 @@ export const ContractForm = ({
               : t('overview.countrySpecificDetails')}
           </h3>
           <p className="text-sm text-text-secondary mb-4">
-            {t('form.countryRegulatoryFields', { country: countryName || propertyCountryCode })}
+            {t('form.countryRegulatoryFields', {
+              country: countryName || propertyCountryCode,
+            })}
           </p>
           <CountryMetadataForm
             countryCode={propertyCountryCode}

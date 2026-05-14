@@ -211,23 +211,22 @@ const BUSINESS_RULE_KEYS: Record<string, string> = {
     'errors.businessRules.amenityAlreadyLinked',
   'A user with this email or username already exists':
     'errors.businessRules.userAlreadyExists',
-  'User already member of this team':
-    'errors.businessRules.userAlreadyMember',
+  'User already member of this team': 'errors.businessRules.userAlreadyMember',
   'Cannot remove yourself': 'errors.businessRules.cannotRemoveYourself',
   'Cannot change your own role': 'errors.businessRules.cannotChangeOwnRole',
   'Cannot transfer ownership to yourself':
     'errors.businessRules.cannotTransferToSelf',
   'Cannot leave team you own. Transfer ownership first.':
     'errors.businessRules.cannotLeaveOwnedTeam',
-  'Cannot send an invalid invitation':
-    'errors.businessRules.invalidInvitation',
+  'Cannot send an invalid invitation': 'errors.businessRules.invalidInvitation',
   'Invalid invitation code': 'errors.businessRules.invalidInvitationCode',
   'Invitation already accepted': 'errors.businessRules.invitationAccepted',
   'Invitation code is no longer valid':
     'errors.businessRules.invitationExpiredCode',
   'Invitation does not belong to this team':
     'errors.businessRules.invitationWrongTeam',
-  'Invitation email does not match': 'errors.businessRules.invitationEmailMismatch',
+  'Invitation email does not match':
+    'errors.businessRules.invitationEmailMismatch',
   'Invitation expired': 'errors.businessRules.invitationExpired',
   'Invitation is already revoked': 'errors.businessRules.invitationRevoked',
   'Email sending is not configured': 'errors.businessRules.emailNotConfigured',

@@ -65,11 +65,6 @@ echo "────────────────────────�
 echo ""
 
 # ---------------------------------------------------------------------------
-# Generate haiku (runs in background while we build the summary)
-# ---------------------------------------------------------------------------
-HAIKU=$(claude --model haiku -p "If a CLAUDE.md file exists, output an uplifting haiku centered in this project/repo; If it does not exist output a sad Haiku to encourage me to create one. Only output the bare text of the Haiku and a warning if the CLAUDE.md file does not exist (ie: ⚠️ <pointed message to the user to make sure the repo is setup properly>), nothing else." 2>/dev/null || echo "")
-
-# ---------------------------------------------------------------------------
 # Colors & formatting (using $'...' so variables hold actual escape bytes)
 # ---------------------------------------------------------------------------
 BOLD=$'\033[1m'
@@ -200,18 +195,6 @@ printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}
 printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make test-bdd-smoke"       "Run BDD smoke tests only (fast)"
 printf "  ${DIM}└%s┴%s┘${RESET}\n" "$QL_D" "$QR_D"
 echo ""
-
-# =========================================================================
-# Haiku + Footer
-# =========================================================================
-if [ -n "$HAIKU" ]; then
-  printf "  ${DIM}%s${RESET}\n" "$DIV"
-  echo ""
-  while IFS= read -r line; do
-    printf "  ${MAGENTA}%s${RESET}\n" "$line"
-  done <<< "$HAIKU"
-  echo ""
-fi
 
 printf "  ${DIM}%s${RESET}\n" "$DIV"
 printf "  ${GREEN}${BOLD}✅ All done!${RESET} ${DIM}Happy landlording 🏠${RESET}\n"

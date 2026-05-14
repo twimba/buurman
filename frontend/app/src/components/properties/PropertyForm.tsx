@@ -69,7 +69,11 @@ export const PropertyForm = ({
   const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
-  const [addressDirty, setAddressDirty] = useState(false);
+  const [geocodedAddress, setGeocodedAddress] = useState(() =>
+    property
+      ? `${property.street}|${property.city}|${property.postalCode}|${property.countryCode}`
+      : ''
+  );
   const isEditMode = !!property;
 
   const resolveCategory = (): PropertyCategory =>
@@ -206,94 +210,88 @@ export const PropertyForm = ({
     [availableTypes, typeLabel]
   );
 
-  useEffect(() => {
-    // Only update if property identifier changed (editing a different property)
-    if (property && property.identifier !== propertyIdentifier) {
-      setPropertyIdentifier(property.identifier);
-      setFormData({
-        propertyCategory:
-          (property.propertyCategory as PropertyCategory) ??
-          PropertyCategory.RESIDENTIAL,
-        propertyType: property.propertyType as PropertyType,
-        status: property.status as PropertyStatus,
-        street: property.street,
-        city: property.city,
-        postalCode: property.postalCode,
-        countryCode: property.countryCode,
-        regionCode: property.regionCode,
-        latitude: property.latitude,
-        longitude: property.longitude,
-        geocodeAccuracy: property.geocodeAccuracy,
-        areaValue: property.areaValue,
-        areaUnit: property.areaUnit ?? 'sqm',
-        yearBuilt: property.yearBuilt,
-        yearLastRenovated: property.yearLastRenovated,
-        constructionType: property.constructionType,
-        foundationType: property.foundationType,
-        roofType: property.roofType,
-        wallConstruction: property.wallConstruction,
-        flooringType: property.flooringType,
-        windowType: property.windowType,
-        numberOfFloors: property.numberOfFloors,
-        structuralNotes: property.structuralNotes,
-        energyEfficiencyRating: property.energyEfficiencyRating,
-        energyCertificateExpiryDate: property.energyCertificateExpiryDate,
-        heatingType: property.heatingType,
-        coolingType: property.coolingType,
-        hotWaterSystem: property.hotWaterSystem,
-        insulationNotes: property.insulationNotes,
-        electricityConnectionType: property.electricityConnectionType,
-        electricityCapacityValue: property.electricityCapacityValue,
-        electricityCapacityUnit: property.electricityCapacityUnit ?? 'a',
-        waterConnectionType: property.waterConnectionType,
-        hasGasConnection: property.hasGasConnection ?? false,
-        sewageType: property.sewageType,
-        internetConnectionType: property.internetConnectionType,
-        internetMaxSpeedValue: property.internetMaxSpeedValue,
-        internetMaxSpeedUnit: property.internetMaxSpeedUnit ?? 'mbps',
-        internetStatus: property.internetStatus,
-        parkingSpaces: property.parkingSpaces,
-        parkingType: property.parkingType,
-        hasSmokeDetectors: property.hasSmokeDetectors ?? false,
-        hasCoDetectors: property.hasCoDetectors ?? false,
-        hasFireExtinguisher: property.hasFireExtinguisher ?? false,
-        hasSprinklerSystem: property.hasSprinklerSystem ?? false,
-        hasAlarmSystem: property.hasAlarmSystem ?? false,
-        hasSecurityCameras: property.hasSecurityCameras ?? false,
-        hasSecureEntry: property.hasSecureEntry ?? false,
-        safetyNotes: property.safetyNotes,
-        isWheelchairAccessible: property.isWheelchairAccessible ?? false,
-        hasElevator: property.hasElevator ?? false,
-        hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
-        hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
-        accessibilityNotes: property.accessibilityNotes,
-        residentialDetails:
-          property.residentialDetails as CreatePropertyRequest['residentialDetails'],
-        commercialDetails:
-          property.commercialDetails as CreatePropertyRequest['commercialDetails'],
-        industrialDetails:
-          property.industrialDetails as CreatePropertyRequest['industrialDetails'],
-        agriculturalDetails:
-          property.agriculturalDetails as CreatePropertyRequest['agriculturalDetails'],
-      });
-    }
-  }, [property, propertyIdentifier]);
+  // Sync form state when a different property is loaded (render-time derived state update)
+  if (property && property.identifier !== propertyIdentifier) {
+    setPropertyIdentifier(property.identifier);
+    setGeocodedAddress(
+      `${property.street}|${property.city}|${property.postalCode}|${property.countryCode}`
+    );
+    setFormData({
+      propertyCategory:
+        (property.propertyCategory as PropertyCategory) ??
+        PropertyCategory.RESIDENTIAL,
+      propertyType: property.propertyType as PropertyType,
+      status: property.status as PropertyStatus,
+      street: property.street,
+      city: property.city,
+      postalCode: property.postalCode,
+      countryCode: property.countryCode,
+      regionCode: property.regionCode,
+      latitude: property.latitude,
+      longitude: property.longitude,
+      geocodeAccuracy: property.geocodeAccuracy,
+      areaValue: property.areaValue,
+      areaUnit: property.areaUnit ?? 'sqm',
+      yearBuilt: property.yearBuilt,
+      yearLastRenovated: property.yearLastRenovated,
+      constructionType: property.constructionType,
+      foundationType: property.foundationType,
+      roofType: property.roofType,
+      wallConstruction: property.wallConstruction,
+      flooringType: property.flooringType,
+      windowType: property.windowType,
+      numberOfFloors: property.numberOfFloors,
+      structuralNotes: property.structuralNotes,
+      energyEfficiencyRating: property.energyEfficiencyRating,
+      energyCertificateExpiryDate: property.energyCertificateExpiryDate,
+      heatingType: property.heatingType,
+      coolingType: property.coolingType,
+      hotWaterSystem: property.hotWaterSystem,
+      insulationNotes: property.insulationNotes,
+      electricityConnectionType: property.electricityConnectionType,
+      electricityCapacityValue: property.electricityCapacityValue,
+      electricityCapacityUnit: property.electricityCapacityUnit ?? 'a',
+      waterConnectionType: property.waterConnectionType,
+      hasGasConnection: property.hasGasConnection ?? false,
+      sewageType: property.sewageType,
+      internetConnectionType: property.internetConnectionType,
+      internetMaxSpeedValue: property.internetMaxSpeedValue,
+      internetMaxSpeedUnit: property.internetMaxSpeedUnit ?? 'mbps',
+      internetStatus: property.internetStatus,
+      parkingSpaces: property.parkingSpaces,
+      parkingType: property.parkingType,
+      hasSmokeDetectors: property.hasSmokeDetectors ?? false,
+      hasCoDetectors: property.hasCoDetectors ?? false,
+      hasFireExtinguisher: property.hasFireExtinguisher ?? false,
+      hasSprinklerSystem: property.hasSprinklerSystem ?? false,
+      hasAlarmSystem: property.hasAlarmSystem ?? false,
+      hasSecurityCameras: property.hasSecurityCameras ?? false,
+      hasSecureEntry: property.hasSecureEntry ?? false,
+      safetyNotes: property.safetyNotes,
+      isWheelchairAccessible: property.isWheelchairAccessible ?? false,
+      hasElevator: property.hasElevator ?? false,
+      hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
+      hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
+      accessibilityNotes: property.accessibilityNotes,
+      residentialDetails:
+        property.residentialDetails as CreatePropertyRequest['residentialDetails'],
+      commercialDetails:
+        property.commercialDetails as CreatePropertyRequest['commercialDetails'],
+      industrialDetails:
+        property.industrialDetails as CreatePropertyRequest['industrialDetails'],
+      agriculturalDetails:
+        property.agriculturalDetails as CreatePropertyRequest['agriculturalDetails'],
+    });
+  }
+
+  const currentAddressKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.countryCode}`;
+  const addressDirty =
+    !!(formData.street && formData.city && formData.countryCode) &&
+    currentAddressKey !== geocodedAddress;
 
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
-    if (formData.street && formData.city && formData.countryCode) {
-      const hasChanged = property
-        ? formData.street !== property.street ||
-          formData.city !== property.city ||
-          formData.postalCode !== property.postalCode ||
-          formData.countryCode !== property.countryCode
-        : true;
-
-      if (hasChanged) {
-        setAddressDirty(true);
-      }
-    }
-
+    const addrKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.countryCode}`;
     const timeoutId = setTimeout(() => {
       if (formData.street && formData.city && formData.countryCode) {
         const hasChanged = property
@@ -313,7 +311,7 @@ export const PropertyForm = ({
             },
             {
               onSuccess: (result) => {
-                setAddressDirty(false);
+                setGeocodedAddress(addrKey);
                 if (result) {
                   setFormData((prev) => ({
                     ...prev,
@@ -331,7 +329,7 @@ export const PropertyForm = ({
                 }
               },
               onError: () => {
-                setAddressDirty(false);
+                setGeocodedAddress(addrKey);
               },
             }
           );

@@ -280,9 +280,7 @@ export const RenewalConfigForm = ({
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  requiresTenantConfirmation
-                    ? 'translate-x-6'
-                    : 'translate-x-1'
+                  requiresTenantConfirmation ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
             </button>
