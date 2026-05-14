@@ -2,14 +2,14 @@
 
 ## Start everything in Docker (including backend + app containers)
 up:
-	docker compose up -d
+	docker compose --profile full up -d
 
 ## Start infrastructure only (for local backend/app development)
 dev:
-	docker compose up -d --scale backend=0 --scale app=0 --scale backoffice=0
+	docker compose up -d
 
 dev-fg:
-	docker compose up --scale backend=0 --scale app=0 --scale backoffice=0
+	docker compose up
 
 ## Stop all containers
 down:
