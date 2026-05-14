@@ -522,7 +522,7 @@ export interface OccupancyChartData {
 
 export interface OccupancyDataPoint {
   month: string;
-  contactOccupancyPercent: number;
+  tenantOccupancyPercent: number;
   selfOccupancyPercent: number;
 }
 
