@@ -827,7 +827,7 @@ function OccupancyAndTrendChart({
           </p>
           <div className="flex h-6 rounded overflow-hidden">
             {occupancy.months.map((m) => {
-              const contactPct = Number(m.contactOccupancyPercent);
+              const contactPct = Number(m.tenantOccupancyPercent);
               const selfPct = Number(m.selfOccupancyPercent);
               const totalPct = contactPct + selfPct;
               const contactShare = totalPct > 0 ? contactPct / totalPct : 0;
