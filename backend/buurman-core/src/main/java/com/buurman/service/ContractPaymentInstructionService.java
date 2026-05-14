@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -95,7 +94,6 @@ public class ContractPaymentInstructionService {
       UserPrincipal principal) {
 
     Contract contract = resolveContract(contractIdentifier, principal);
-    validateEffectiveFrom(request.effectiveFrom(), contract);
 
     // Auto-close or replace current entry if one exists
     cpiRepository
@@ -149,7 +147,6 @@ public class ContractPaymentInstructionService {
       UserPrincipal principal) {
 
     Contract contract = resolveContract(contractIdentifier, principal);
-    validateEffectiveFrom(request.effectiveFrom(), contract);
 
     ContractPaymentInstruction existing =
         cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.requireTeamId());
@@ -261,26 +258,6 @@ public class ContractPaymentInstructionService {
   private Contract resolveContract(ContractIdentifier contractIdentifier, UserPrincipal principal) {
     return contractRepository.getByIdentifierAndTeamId(
         contractIdentifier, principal.requireTeamId());
-  }
-
-  private void validateEffectiveFrom(LocalDate effectiveFrom, Contract contract) {
-    LocalDate minDate;
-    if (contract.getStatus() == Contract.ContractStatus.DRAFT) {
-      minDate =
-          Stream.of(
-                  Optional.of(LocalDate.now(clock)),
-                  Optional.of(contract.getStartDate()),
-                  contract.getSignedDate())
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .min(LocalDate::compareTo)
-              .orElse(LocalDate.now(clock));
-    } else {
-      minDate = LocalDate.now(clock);
-    }
-    if (effectiveFrom.isBefore(minDate)) {
-      throw new IllegalArgumentException("Effective from date must not be before " + minDate);
-    }
   }
 
   private ContractPaymentInstruction buildFromRequest(

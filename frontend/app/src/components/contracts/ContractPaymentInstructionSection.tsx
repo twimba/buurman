@@ -34,36 +34,12 @@ interface Props {
   contractIdentifier: string;
   readOnly?: boolean;
   contractStatus?: ContractStatus;
-  contractStartDate?: string;
-  contractSignedDate?: string;
 }
-
-const computeMinEffectiveDate = (
-  contractStatus?: ContractStatus,
-  contractStartDate?: string,
-  contractSignedDate?: string
-): string => {
-  const today = new Date().toISOString().split('T')[0];
-  if (contractStatus === ContractStatus.DRAFT) {
-    const candidates = [today];
-    if (contractStartDate) {
-      candidates.push(contractStartDate);
-    }
-    if (contractSignedDate) {
-      candidates.push(contractSignedDate);
-    }
-    candidates.sort();
-    return candidates[0];
-  }
-  return today;
-};
 
 export const ContractPaymentInstructionSection = ({
   contractIdentifier,
   readOnly = false,
   contractStatus,
-  contractStartDate,
-  contractSignedDate,
 }: Props) => {
   const { t } = useTranslation('contracts');
   const { canEditData } = useTeam();
@@ -86,12 +62,9 @@ export const ContractPaymentInstructionSection = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [useTemplate, setUseTemplate] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState('');
-  const minEffectiveDate = computeMinEffectiveDate(
-    contractStatus,
-    contractStartDate,
-    contractSignedDate
+  const [effectiveFrom, setEffectiveFrom] = useState(
+    () => new Date().toISOString().split('T')[0]
   );
-  const [effectiveFrom, setEffectiveFrom] = useState(minEffectiveDate);
   const [notes, setNotes] = useState('');
 
   // Custom fields
@@ -112,7 +85,7 @@ export const ContractPaymentInstructionSection = ({
     setEditingId(null);
     setUseTemplate(true);
     setSelectedTemplate('');
-    setEffectiveFrom(minEffectiveDate);
+    setEffectiveFrom(new Date().toISOString().split('T')[0]);
     setNotes('');
     setCustomName('');
     setCustomDescription('');
@@ -575,7 +548,6 @@ export const ContractPaymentInstructionSection = ({
               <input
                 type="date"
                 required
-                min={minEffectiveDate}
                 value={effectiveFrom}
                 onChange={(e) => setEffectiveFrom(e.target.value)}
                 className="w-full md:w-1/2 rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"

@@ -584,8 +584,6 @@ export const ContractOverviewTab = ({
       <ContractPaymentInstructionSection
         contractIdentifier={contractId}
         contractStatus={contract.status}
-        contractStartDate={contract.startDate}
-        contractSignedDate={contract.signedDate}
       />
 
       {/* Renewal Configuration */}
