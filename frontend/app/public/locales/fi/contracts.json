@@ -426,6 +426,8 @@
     "notesPlaceholder": "Tarkistuksen syy (esim. vuotuinen kuluttajahintaindeksikorotus)...",
     "saving": "Tallennetaan...",
     "adjustRentButton": "Tarkista vuokra",
+    "editTitle": "Muokkaa vuokramuutosta",
+    "editRentButton": "Tallenna muutokset",
     "effectiveDate": "Voimaantulopaiva",
     "reason": "Syy",
     "percentage": "Prosentti"

@@ -426,6 +426,8 @@
     "notesPlaceholder": "Anledning till justering (t.ex. arlig KPI-okning)...",
     "saving": "Sparar...",
     "adjustRentButton": "Justera hyra",
+    "editTitle": "Redigera hyresjustering",
+    "editRentButton": "Spara ändringar",
     "effectiveDate": "Ikraftradandedatum",
     "reason": "Anledning",
     "percentage": "Procent"

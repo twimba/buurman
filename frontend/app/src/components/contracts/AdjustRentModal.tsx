@@ -18,6 +18,13 @@ import {
   RentPeriodResponse,
 } from '@/types/contract';
 
+interface AdjustRentModalInitialValues {
+  rentAmount: number;
+  effectiveFrom: string;
+  notes?: string;
+  components: RentComponentFormItem[];
+}
+
 interface AdjustRentModalProps {
   currentRent: number;
   currency: string;
@@ -31,6 +38,8 @@ interface AdjustRentModalProps {
     components?: RentComponentFormItem[]
   ) => void;
   isLoading?: boolean;
+  isEditing?: boolean;
+  initialValues?: AdjustRentModalInitialValues;
 }
 
 function getFirstDayOfNextMonth(): string {
@@ -83,11 +92,17 @@ export const AdjustRentModal = ({
   onClose,
   onConfirm,
   isLoading = false,
+  isEditing = false,
+  initialValues,
 }: AdjustRentModalProps) => {
   const { t } = useTranslation('contracts');
-  const [rentAmount, setRentAmount] = useState('');
-  const [effectiveFrom, setEffectiveFrom] = useState(getFirstDayOfNextMonth());
-  const [notes, setNotes] = useState('');
+  const [rentAmount, setRentAmount] = useState(
+    initialValues ? String(initialValues.rentAmount) : ''
+  );
+  const [effectiveFrom, setEffectiveFrom] = useState(
+    initialValues?.effectiveFrom ?? getFirstDayOfNextMonth()
+  );
+  const [notes, setNotes] = useState(initialValues?.notes ?? '');
   const [adjustComponents, setAdjustComponents] = useState(false);
 
   // Resolve the period active at the selected date for reference rent + components
@@ -101,7 +116,7 @@ export const AdjustRentModal = ({
   );
 
   const [components, setComponents] = useState<RentComponentFormItem[]>(() =>
-    currentComponents.map((c) => ({
+    (initialValues?.components ?? currentComponents).map((c) => ({
       componentType: c.componentType,
       amount: c.amount,
       description: c.description,
@@ -275,7 +290,7 @@ export const AdjustRentModal = ({
     <ModalWrapper
       open
       onClose={onClose}
-      title={t('adjustRent.title')}
+      title={isEditing ? t('adjustRent.editTitle') : t('adjustRent.title')}
       size="lg"
       preventClose={isLoading}
       onSubmit={submitForm}
@@ -297,7 +312,9 @@ export const AdjustRentModal = ({
           >
             {isLoading
               ? t('adjustRent.saving')
-              : t('adjustRent.adjustRentButton')}
+              : isEditing
+                ? t('adjustRent.editRentButton')
+                : t('adjustRent.adjustRentButton')}
           </button>
         </>
       }

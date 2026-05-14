@@ -426,6 +426,8 @@
     "notesPlaceholder": "Reden voor aanpassing (bijv. jaarlijkse CPI-verhoging)...",
     "saving": "Opslaan...",
     "adjustRentButton": "Huur aanpassen",
+    "editTitle": "Huurverhoging bewerken",
+    "editRentButton": "Wijzigingen opslaan",
     "effectiveDate": "Ingangsdatum",
     "reason": "Reden",
     "percentage": "Percentage"

@@ -426,6 +426,8 @@
     "notesPlaceholder": "Motivo dell'adeguamento (es. aumento annuale IPC)...",
     "saving": "Salvataggio...",
     "adjustRentButton": "Adegua canone",
+    "editTitle": "Modifica adeguamento affitto",
+    "editRentButton": "Salva modifiche",
     "effectiveDate": "Data di decorrenza",
     "reason": "Motivo",
     "percentage": "Percentuale"

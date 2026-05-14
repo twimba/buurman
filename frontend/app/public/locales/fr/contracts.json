@@ -426,6 +426,8 @@
     "notesPlaceholder": "Motif de l'ajustement (ex., augmentation annuelle IRL)...",
     "saving": "Enregistrement...",
     "adjustRentButton": "Ajuster le loyer",
+    "editTitle": "Modifier l'ajustement de loyer",
+    "editRentButton": "Enregistrer les modifications",
     "effectiveDate": "Date d'effet",
     "reason": "Motif",
     "percentage": "Pourcentage"
