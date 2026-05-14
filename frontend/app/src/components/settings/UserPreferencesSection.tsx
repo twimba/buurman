@@ -413,7 +413,7 @@ export const UserPreferencesSection = () => {
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       preferences.emailNotifications
                         ? 'bg-primary-500'
-                        : 'bg-neutral-200'
+                        : 'bg-neutral-200 dark:bg-neutral-700'
                     }`}
                   >
                     <span
@@ -457,7 +457,7 @@ export const UserPreferencesSection = () => {
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       preferences.smsNotifications
                         ? 'bg-primary-500'
-                        : 'bg-neutral-200'
+                        : 'bg-neutral-200 dark:bg-neutral-700'
                     }`}
                   >
                     <span

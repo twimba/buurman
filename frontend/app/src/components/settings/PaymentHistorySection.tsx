@@ -247,7 +247,7 @@ export const PaymentHistorySection = () => {
                 className={`px-4 py-2 rounded transition-colors text-sm ${
                   statusFilter === filter.value
                     ? 'bg-primary-500 text-white'
-                    : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+                    : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
                 }`}
               >
                 {filter.label}

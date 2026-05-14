@@ -37,9 +37,7 @@ export const ChartFullscreenModal = ({
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 bg-surface-card border-b border-border-default shrink-0">
         <div className="flex items-center gap-3">
-          {icon && (
-            <span className="text-text-secondary">{icon}</span>
-          )}
+          {icon && <span className="text-text-secondary">{icon}</span>}
           <div>
             <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
             {subtitle && (
@@ -64,9 +62,7 @@ export const ChartFullscreenModal = ({
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-auto p-6">
-        {children}
-      </div>
+      <div className="flex-1 overflow-auto p-6">{children}</div>
     </div>
   );
 };

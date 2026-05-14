@@ -63,11 +63,12 @@ export const PortfolioDashboardFullscreen = ({
     initialMonths
   );
   const [localCustomStart, setLocalCustomStart] = useState<string>(
-    initialStartDate ?? (() => {
-      const d = new Date();
-      d.setFullYear(d.getFullYear() - 1);
-      return d.toISOString().split('T')[0];
-    })()
+    initialStartDate ??
+      (() => {
+        const d = new Date();
+        d.setFullYear(d.getFullYear() - 1);
+        return d.toISOString().split('T')[0];
+      })()
   );
   const [localCustomEnd, setLocalCustomEnd] = useState<string>(
     initialEndDate ?? new Date().toISOString().split('T')[0]

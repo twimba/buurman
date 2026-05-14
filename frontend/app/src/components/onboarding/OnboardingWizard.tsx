@@ -193,7 +193,7 @@ export const OnboardingWizard = ({
                       ? 'bg-success-text text-white'
                       : i === stepIndex
                         ? 'bg-primary-500 text-white'
-                        : 'bg-neutral-50 text-text-secondary'
+                        : 'bg-surface-inset text-text-secondary'
                   }`}
                 >
                   {i < stepIndex ? <Check className="h-4 w-4" /> : i + 1}
@@ -201,7 +201,7 @@ export const OnboardingWizard = ({
                 {i < STEPS.length - 1 && (
                   <div
                     className={`w-12 h-0.5 ${
-                      i < stepIndex ? 'bg-success-text' : 'bg-neutral-50'
+                      i < stepIndex ? 'bg-success-text' : 'bg-surface-inset'
                     }`}
                   />
                 )}

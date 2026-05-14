@@ -57,8 +57,8 @@ const navLinkClass = (isActive: boolean, collapsed: boolean) => `
   ${collapsed ? 'lg:justify-center' : ''}
   ${
     isActive
-      ? 'bg-primary-50 text-primary-700 font-semibold'
-      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
+      ? 'bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 font-semibold'
+      : 'text-text-secondary hover:bg-surface-inset hover:text-text-primary'
   }
 `;
 
@@ -234,23 +234,42 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
                 <img
                   src="/assets/logo/logo_horizontal.png"
                   alt="Buurman"
-                  className="h-10 w-auto"
+                  className="h-10 w-auto dark:hidden"
+                />
+                <img
+                  src="/assets/logo/logo_horizontal_dark.png"
+                  alt="Buurman"
+                  className="h-10 w-auto hidden dark:block"
                 />
               </div>
               {/* Desktop: depends on collapsed */}
               <div className="hidden lg:block">
                 {collapsed ? (
-                  <img
-                    src="/assets/logo/logo_square.png"
-                    alt="Buurman"
-                    className="h-10 w-10 rounded-lg"
-                  />
+                  <>
+                    <img
+                      src="/assets/logo/logo_square.png"
+                      alt="Buurman"
+                      className="h-10 w-10 rounded-lg dark:hidden"
+                    />
+                    <img
+                      src="/assets/logo/logo_square_dark.png"
+                      alt="Buurman"
+                      className="h-10 w-10 rounded-lg hidden dark:block"
+                    />
+                  </>
                 ) : (
-                  <img
-                    src="/assets/logo/logo_horizontal.png"
-                    alt="Buurman"
-                    className="h-10 w-auto"
-                  />
+                  <>
+                    <img
+                      src="/assets/logo/logo_horizontal.png"
+                      alt="Buurman"
+                      className="h-10 w-auto dark:hidden"
+                    />
+                    <img
+                      src="/assets/logo/logo_horizontal_dark.png"
+                      alt="Buurman"
+                      className="h-10 w-auto hidden dark:block"
+                    />
+                  </>
                 )}
               </div>
             </div>
@@ -463,10 +482,10 @@ function NavGroup({
           className={() =>
             `flex-1 flex items-center gap-3 px-3 py-2.5 rounded-l-lg transition-all duration-200 ${
               isParentActive
-                ? 'bg-primary-50 text-primary-700 font-semibold'
+                ? 'bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 font-semibold'
                 : isGroupActive
-                  ? 'text-primary-700 font-medium'
-                  : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
+                  ? 'text-primary-700 dark:text-primary-300 font-medium'
+                  : 'text-text-secondary hover:bg-surface-inset hover:text-text-primary'
             }`
           }
           onClick={onMobileClose}
@@ -478,9 +497,9 @@ function NavGroup({
           onClick={onToggle}
           className={`p-2 rounded-r-lg transition-colors ${
             isGroupActive
-              ? 'text-primary-700'
+              ? 'text-primary-700 dark:text-primary-300'
               : 'text-text-muted hover:text-text-secondary'
-          } hover:bg-neutral-50`}
+          } hover:bg-surface-inset`}
         >
           <ChevronDown
             className={`h-3.5 w-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
@@ -498,8 +517,8 @@ function NavGroup({
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary-50 text-primary-700 font-semibold'
-                      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-secondary'
+                      ? 'bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 font-semibold'
+                      : 'text-text-secondary hover:bg-surface-inset hover:text-text-secondary'
                   }`
                 }
                 onClick={onMobileClose}

@@ -216,7 +216,7 @@ export const SubscriptionSection = () => {
                 {currentSubscription.currentProperties} /{' '}
                 {currentSubscription.propertiesLimit}
               </p>
-              <div className="mt-2 w-full bg-neutral-100 rounded-full h-2">
+              <div className="mt-2 w-full bg-surface-inset dark:bg-neutral-700 rounded-full h-2">
                 <div
                   className="bg-primary-500 h-2 rounded-full"
                   style={{
@@ -233,7 +233,7 @@ export const SubscriptionSection = () => {
               <p className="text-2xl font-semibold text-text-primary mt-1">
                 3 / {currentSubscription.teamMembersLimit}
               </p>
-              <div className="mt-2 w-full bg-neutral-100 rounded-full h-2">
+              <div className="mt-2 w-full bg-surface-inset dark:bg-neutral-700 rounded-full h-2">
                 <div
                   className="bg-green-600 h-2 rounded-full"
                   style={{
@@ -293,7 +293,9 @@ export const SubscriptionSection = () => {
             <button
               onClick={() => setIsAnnual(!isAnnual)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isAnnual ? 'bg-primary-500' : 'bg-neutral-200'
+                isAnnual
+                  ? 'bg-primary-500'
+                  : 'bg-neutral-200 dark:bg-neutral-700'
               }`}
             >
               <span

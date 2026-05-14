@@ -6,7 +6,21 @@ import { getBuildDefines } from '../scripts/vite-build-info'
 const { defines } = getBuildDefines(process.env.npm_package_version || '0.0.0')
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'runtime-config-script',
+      transformIndexHtml: {
+        order: 'pre',
+        handler(html) {
+          return {
+            html: html.replace('<script src="/config.js"></script>', ''),
+            tags: [{ tag: 'script', attrs: { src: '/config.js' }, injectTo: 'body-prepend' }],
+          };
+        },
+      },
+    },
+  ],
   define: defines,
   server: {
     port: parseInt(process.env.VITE_DEV_PORT || '5174', 10),

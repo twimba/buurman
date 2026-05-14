@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
 import PublicLanguageSelector from '../components/common/PublicLanguageSelector';
+import { useForceLightMode } from '../hooks/useForceLightMode';
 
 import { env } from '../config/env';
 
@@ -51,6 +52,8 @@ const LoginPage: React.FC = () => {
       navigate(redirect || '/dashboard');
     }
   }, [isAuthenticated, navigate, redirect]);
+
+  useForceLightMode();
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-primary-50 via-white to-neutral-25">

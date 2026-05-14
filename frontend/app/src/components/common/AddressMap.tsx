@@ -94,11 +94,15 @@ export const AddressMap = ({
 
   if (!apiKey) {
     return (
-      <div className="bg-gray-50 rounded-lg p-8 text-center">
-        <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-600 font-medium mb-1">{t('map.unavailable')}</p>
-        <p className="text-sm text-gray-500">{t('map.configureApiKey')}</p>
-        <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
+      <div className="bg-surface-inset rounded-lg p-8 text-center">
+        <MapPin className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+        <p className="text-text-primary font-medium mb-1">
+          {t('map.unavailable')}
+        </p>
+        <p className="text-sm text-text-secondary">
+          {t('map.configureApiKey')}
+        </p>
+        <div className="mt-3 text-xs text-text-muted bg-surface-raised rounded p-2 font-mono">
           {street}, {city}, {postalCode}, {countryCode}
         </div>
       </div>
@@ -107,10 +111,10 @@ export const AddressMap = ({
 
   if (loading) {
     return (
-      <div className="bg-gray-50 rounded-lg p-8 text-center">
+      <div className="bg-surface-inset rounded-lg p-8 text-center">
         <div className="animate-pulse">
-          <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">{t('map.loading')}</p>
+          <MapPin className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+          <p className="text-text-secondary">{t('map.loading')}</p>
         </div>
       </div>
     );
@@ -118,15 +122,15 @@ export const AddressMap = ({
 
   if (error || !coordinates) {
     return (
-      <div className="bg-gray-50 rounded-lg p-8 text-center">
-        <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-600 font-medium mb-1">
+      <div className="bg-surface-inset rounded-lg p-8 text-center">
+        <MapPin className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+        <p className="text-text-primary font-medium mb-1">
           {t('map.locationNotFound')}
         </p>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-text-secondary">
           {error || t('map.couldNotFind')}
         </p>
-        <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
+        <div className="mt-3 text-xs text-text-muted bg-surface-raised rounded p-2 font-mono">
           {street}, {city}, {postalCode}, {countryCode}
         </div>
       </div>
@@ -135,7 +139,7 @@ export const AddressMap = ({
 
   return (
     <div
-      className={`w-full ${height} rounded-lg overflow-hidden border border-gray-200`}
+      className={`w-full ${height} rounded-lg overflow-hidden border border-border-default`}
     >
       <APIProvider apiKey={apiKey}>
         <Map

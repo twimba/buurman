@@ -85,7 +85,7 @@ const SmsBodyPreview = ({ body }: { body: string }) => {
         </div>
         {/* Message bubble */}
         <div className="flex justify-start">
-          <div className="relative max-w-[240px] bg-neutral-100 rounded-2xl rounded-bl-sm px-3.5 py-2.5">
+          <div className="relative max-w-[240px] bg-neutral-100 dark:bg-neutral-700 rounded-2xl rounded-bl-sm px-3.5 py-2.5">
             <p className="text-sm text-text-primary whitespace-pre-wrap break-words leading-relaxed">
               {body}
             </p>

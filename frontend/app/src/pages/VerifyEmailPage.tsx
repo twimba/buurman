@@ -9,11 +9,13 @@ import {
 } from '../hooks/useAuthHooks';
 import { useAuth } from '../context/AuthContext';
 import { Mail, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { useForceLightMode } from '../hooks/useForceLightMode';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
 export const VerifyEmailPage: React.FC = () => {
   const { t } = useTranslation('admin');
+  useForceLightMode();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');

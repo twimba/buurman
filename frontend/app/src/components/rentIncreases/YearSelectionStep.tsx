@@ -42,7 +42,7 @@ export const YearSelectionStep = ({
               className={`px-6 py-3 rounded-lg text-lg font-medium transition-colors ${
                 year === y
                   ? 'bg-primary-500 text-white'
-                  : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+                  : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
               }`}
             >
               {y}

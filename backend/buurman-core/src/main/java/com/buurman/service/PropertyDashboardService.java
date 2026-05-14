@@ -104,8 +104,7 @@ public class PropertyDashboardService {
   @Transactional(readOnly = true)
   public PropertyDashboardResponse getDashboardData(
       Sid propertyIdentifier, int months, UUID teamId) {
-    return getDashboardData(
-        propertyIdentifier, months, teamId, Optional.empty(), Optional.empty());
+    return getDashboardData(propertyIdentifier, months, teamId, Optional.empty(), Optional.empty());
   }
 
   /** Internal method with explicit date range support (authorization handled by caller). */

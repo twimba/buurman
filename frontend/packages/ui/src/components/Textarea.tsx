@@ -16,7 +16,8 @@ export function Textarea({ error, className, ref, ...props }: TextareaProps) {
         error
           ? 'border-error-border focus-visible:shadow-ring-error'
           : 'border-border-default',
-        props.disabled && 'cursor-not-allowed bg-neutral-50 text-text-disabled',
+        props.disabled &&
+          'cursor-not-allowed bg-surface-inset text-text-disabled',
         className
       )}
       {...props}

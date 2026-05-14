@@ -98,7 +98,7 @@ export function ModalWrapper({
               )}
             </div>
             {!preventClose && (
-              <Dialog.Close className="rounded-md p-1.5 text-text-muted hover:bg-neutral-50 hover:text-text-primary focus-ring">
+              <Dialog.Close className="rounded-md p-1.5 text-text-muted hover:bg-surface-inset hover:text-text-primary focus-ring">
                 <X className="h-5 w-5" />
                 <span className="sr-only">Close</span>
               </Dialog.Close>

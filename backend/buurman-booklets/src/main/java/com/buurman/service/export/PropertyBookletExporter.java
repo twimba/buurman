@@ -1299,8 +1299,7 @@ public class PropertyBookletExporter {
         .append(photoEntries.size() != 1 ? "s" : "")
         .append("</p>");
 
-    html.append(
-        "<table style='width:100%;border-collapse:collapse;table-layout:fixed;'>");
+    html.append("<table style='width:100%;border-collapse:collapse;table-layout:fixed;'>");
     for (int i = 0; i < photoEntries.size(); i++) {
       if (i % 3 == 0) {
         html.append("<tr>");
@@ -1642,6 +1641,8 @@ public class PropertyBookletExporter {
       return "#78716c";
     }
     return switch (rating) {
+      case "A++++" -> "#052e16";
+      case "A+++" -> "#064e3b";
       case "A++" -> "#065f46";
       case "A+" -> "#047857";
       case "A" -> "#059669";

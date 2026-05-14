@@ -373,7 +373,7 @@ export const ExpensesPage = () => {
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       categoryFilter === value
                         ? 'bg-primary-500 text-white'
-                        : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
                     }`}
                   >
                     {value
@@ -475,7 +475,7 @@ export const ExpensesPage = () => {
                               e.stopPropagation();
                               navigate(`/expenses/${expense.identifier}`);
                             }}
-                            className="p-1.5 rounded hover:bg-neutral-100 text-text-secondary hover:text-primary-500 transition-colors"
+                            className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
                             title={t('tooltips.viewExpense')}
                           >
                             <Eye className="h-4 w-4" />
