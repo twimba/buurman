@@ -58,7 +58,7 @@ const navLinkClass = (isActive: boolean, collapsed: boolean) => `
   ${
     isActive
       ? 'bg-primary-50 text-primary-700 font-semibold'
-      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
+      : 'text-text-secondary hover:bg-surface-inset hover:text-text-primary'
   }
 `;
 
@@ -466,7 +466,7 @@ function NavGroup({
                 ? 'bg-primary-50 text-primary-700 font-semibold'
                 : isGroupActive
                   ? 'text-primary-700 font-medium'
-                  : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
+                  : 'text-text-secondary hover:bg-surface-inset hover:text-text-primary'
             }`
           }
           onClick={onMobileClose}
@@ -480,7 +480,7 @@ function NavGroup({
             isGroupActive
               ? 'text-primary-700'
               : 'text-text-muted hover:text-text-secondary'
-          } hover:bg-neutral-50`}
+          } hover:bg-surface-inset`}
         >
           <ChevronDown
             className={`h-3.5 w-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
@@ -499,7 +499,7 @@ function NavGroup({
                   `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${
                     isActive
                       ? 'bg-primary-50 text-primary-700 font-semibold'
-                      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-secondary'
+                      : 'text-text-secondary hover:bg-surface-inset hover:text-text-secondary'
                   }`
                 }
                 onClick={onMobileClose}

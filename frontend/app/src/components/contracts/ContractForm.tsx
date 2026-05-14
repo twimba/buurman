@@ -780,7 +780,7 @@ export const ContractForm = ({
                     new Date().toISOString().split('T')[0]
                   )
                 }
-                className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
                 {t('form.today')}
@@ -830,7 +830,7 @@ export const ContractForm = ({
                     new Date().toISOString().split('T')[0]
                   )
                 }
-                className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
                 {t('form.today')}
@@ -1280,7 +1280,7 @@ const ContractPartiesEditor = ({
             <span className="font-medium text-text-primary">
               {party.contact.firstName} {party.contact.lastName}
             </span>
-            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-text-secondary">
+            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-surface-inset text-text-secondary">
               {t(`enums.partyRoles.${party.role}`, party.role)}
             </span>
           </div>

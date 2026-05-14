@@ -41,7 +41,7 @@ export const ContactEditPage = () => {
         <div className="flex items-center gap-4 mb-6">
           <button
             onClick={() => navigate(`/contacts/${id}`)}
-            className="p-2 hover:bg-neutral-100 rounded transition-colors"
+            className="p-2 hover:bg-surface-inset rounded transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>

@@ -388,7 +388,7 @@ export const PropertyDashboardTab = ({
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   periodType === opt.value
                     ? 'bg-primary-500 text-white'
-                    : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+                    : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
                 }`}
               >
                 {opt.label}

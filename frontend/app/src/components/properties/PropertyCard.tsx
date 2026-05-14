@@ -39,7 +39,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       onClick={() => navigate(`/properties/${property.identifier}`)}
     >
       {/* Property Image */}
-      <div className="relative bg-neutral-100 h-48 flex items-center justify-center overflow-hidden">
+      <div className="relative bg-surface-inset h-48 flex items-center justify-center overflow-hidden">
         {property.mainPhotoUrl ? (
           <img
             src={property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl}
@@ -53,7 +53,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         {/* Status Badge */}
         <div className="absolute top-3 right-3">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[property.status] ?? 'bg-gray-100 text-gray-800'}`}
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[property.status] ?? 'bg-surface-inset text-text-primary'}`}
           >
             {statusLabel(property.status)}
           </span>
@@ -100,7 +100,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
 
         {/* Category & Type badges */}
         <div className="flex gap-1.5 flex-wrap">
-          <span className="inline-flex items-center gap-1 text-xs bg-neutral-100 text-text-secondary px-2 py-1 rounded">
+          <span className="inline-flex items-center gap-1 text-xs bg-surface-inset text-text-secondary px-2 py-1 rounded">
             <PropertyTypeIcon
               category={property.propertyCategory}
               size={11}

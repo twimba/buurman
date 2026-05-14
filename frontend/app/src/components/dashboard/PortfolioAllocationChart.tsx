@@ -73,7 +73,7 @@ export const PortfolioAllocationChart = ({
           className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
             view === 'category'
               ? 'bg-primary-500 text-white'
-              : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+              : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
           }`}
         >
           {t('dashboard.allocation.byCategory')}
@@ -83,7 +83,7 @@ export const PortfolioAllocationChart = ({
           className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
             view === 'country'
               ? 'bg-primary-500 text-white'
-              : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
+              : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
           }`}
         >
           {t('dashboard.allocation.byCountry')}

@@ -94,7 +94,7 @@ export const PropertyCell = ({
         {/* Status indicator */}
         <div className="flex-shrink-0 pt-1">
           <div
-            className={`w-2 h-2 rounded-full ${statusColors[propertyStatus] ?? 'bg-gray-400'}`}
+            className={`w-2 h-2 rounded-full ${statusColors[propertyStatus] ?? 'bg-neutral-400'}`}
             title={statusLabel(propertyStatus)}
           />
         </div>

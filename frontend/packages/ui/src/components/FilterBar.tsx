@@ -111,7 +111,7 @@ export function FilterBar({
       {onReset && activeCount > 0 && (
         <button
           onClick={onReset}
-          className="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm text-text-secondary hover:bg-neutral-50 hover:text-text-primary"
+          className="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm text-text-secondary hover:bg-surface-inset hover:text-text-primary"
         >
           <X className="h-3.5 w-3.5" />
           Clear

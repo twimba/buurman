@@ -32,7 +32,7 @@ export function Input({
         error
           ? 'border-error-border focus-visible:shadow-ring-error'
           : 'border-border-default',
-        props.disabled && 'cursor-not-allowed bg-neutral-50 text-text-disabled',
+        props.disabled && 'cursor-not-allowed bg-surface-inset text-text-disabled',
         sizeMap[size],
         className
       )}
