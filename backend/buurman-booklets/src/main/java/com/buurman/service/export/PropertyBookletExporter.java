@@ -79,6 +79,7 @@ import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.PropertyResidentialDetailsRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.service.FeatureFlagService;
@@ -107,6 +108,7 @@ public class PropertyBookletExporter {
   private final S3StorageService s3StorageService;
   private final FeatureFlagService featureFlagService;
   private final PropertyDashboardService propertyDashboardService;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final PdfRenderer pdfRenderer;
   private final MessageSource messageSource;
   private final Clock clock;
@@ -129,6 +131,7 @@ public class PropertyBookletExporter {
       S3StorageService s3StorageService,
       FeatureFlagService featureFlagService,
       PropertyDashboardService propertyDashboardService,
+      TeamPreferencesRepository teamPreferencesRepository,
       PdfRenderer pdfRenderer,
       @Qualifier("bookletMessageSource") MessageSource messageSource,
       Clock clock) {
@@ -149,6 +152,7 @@ public class PropertyBookletExporter {
     this.s3StorageService = s3StorageService;
     this.featureFlagService = featureFlagService;
     this.propertyDashboardService = propertyDashboardService;
+    this.teamPreferencesRepository = teamPreferencesRepository;
     this.pdfRenderer = pdfRenderer;
     this.messageSource = messageSource;
     this.clock = clock;
@@ -215,6 +219,8 @@ public class PropertyBookletExporter {
 
     Map<Integer, FinancialYearSummary> yearSummaries = calculateYearSummaries(payments, expenses);
 
+    String teamCurrency = teamPreferencesRepository.getByTeamId(teamId).getDefaultCurrency();
+
     PropertyDashboardResponse dashboard = null;
     if (featureFlagService.isEnabled(FeatureFlags.REPORTS)) {
       try {
@@ -242,6 +248,7 @@ public class PropertyBookletExporter {
             allAmenities,
             photos,
             dashboard,
+            teamCurrency,
             locale);
     return pdfRenderer.renderHtml(html);
   }
@@ -265,6 +272,7 @@ public class PropertyBookletExporter {
       List<Amenity> allAmenities,
       List<Photo> photos,
       @Nullable PropertyDashboardResponse dashboard,
+      String teamCurrency,
       Locale locale) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
@@ -318,11 +326,11 @@ public class PropertyBookletExporter {
     }
 
     appendPhotoGalleryPage(html, photos);
-    String currency = dashboard != null ? dashboard.summary().currency().orElse(null) : null;
+    String currency = dashboard != null ? dashboard.summary().currency().orElse(teamCurrency) : teamCurrency;
     appendFinancialOverviewPage(html, yearSummaries, currency);
 
     if (dashboard != null) {
-      appendDashboardPage(html, dashboard);
+      appendDashboardPage(html, dashboard, teamCurrency);
     }
 
     appendContractsPage(html, contracts, teamId);
@@ -1452,9 +1460,10 @@ public class PropertyBookletExporter {
 
   // ── Page: Investment Dashboard ──────────────────────────────────
 
-  private void appendDashboardPage(StringBuilder html, PropertyDashboardResponse dashboard) {
+  private void appendDashboardPage(
+      StringBuilder html, PropertyDashboardResponse dashboard, String teamCurrency) {
     SummaryMetrics s = dashboard.summary();
-    String currency = s.currency().map(BookletHelper::escapeHtml).orElse("EUR");
+    String currency = s.currency().map(BookletHelper::escapeHtml).orElse(teamCurrency);
 
     appendPageStart(html, "Investment Dashboard");
 
