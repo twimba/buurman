@@ -18,8 +18,8 @@ public class MailgunConfig {
   public MailgunMessagesApi mailgunMessagesApi(MailgunProperties mailgunProperties) {
     String baseUrl =
         mailgunProperties.euRegion()
-            ? "https://api.eu.mailgun.net/v3"
-            : "https://api.mailgun.net/v3";
+            ? "https://api.eu.mailgun.net"
+            : "https://api.mailgun.net";
     return MailgunClient.config(baseUrl, mailgunProperties.apiKey())
         .createApi(MailgunMessagesApi.class);
   }
