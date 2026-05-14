@@ -236,6 +236,7 @@
       "newEndDate": "New End Date",
       "currentEndDate": "Current end date:",
       "dateError": "New end date must be after the current end date",
+      "rentError": "New rent amount is required for manual adjustments",
       "rentAdjustmentType": "Rent Adjustment Type",
       "adjustmentTypes": {
         "none": "No adjustment",

@@ -236,6 +236,7 @@
       "newEndDate": "Nieuwe einddatum",
       "currentEndDate": "Huidige einddatum:",
       "dateError": "Nieuwe einddatum moet na de huidige einddatum liggen",
+      "rentError": "Nieuw huurbedrag is vereist voor handmatige aanpassingen",
       "rentAdjustmentType": "Type huuraanpassing",
       "adjustmentTypes": {
         "none": "Geen aanpassing",

@@ -236,6 +236,7 @@
       "newEndDate": "Nova Data de Fim",
       "currentEndDate": "Data de fim atual:",
       "dateError": "A nova data de fim deve ser posterior à data de fim atual",
+      "rentError": "O novo valor do arrendamento é obrigatório para ajustes manuais",
       "rentAdjustmentType": "Tipo de Ajuste de Renda",
       "adjustmentTypes": {
         "none": "Sem ajuste",

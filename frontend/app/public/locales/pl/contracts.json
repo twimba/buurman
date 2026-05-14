@@ -262,6 +262,7 @@
       "newEndDate": "Nowa data zakończenia",
       "currentEndDate": "Bieżąca data zakończenia:",
       "dateError": "Nowa data zakończenia musi być późniejsza niż bieżąca data zakończenia",
+      "rentError": "Nowa kwota czynszu jest wymagana przy ręcznych korektach",
       "rentAdjustmentType": "Typ korekty czynszu",
       "adjustmentTypes": {
         "none": "Brak korekty",

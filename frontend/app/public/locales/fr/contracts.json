@@ -262,6 +262,7 @@
       "newEndDate": "Nouvelle date de fin",
       "currentEndDate": "Date de fin actuelle :",
       "dateError": "La nouvelle date de fin doit être postérieure à la date de fin actuelle",
+      "rentError": "Le nouveau montant du loyer est requis pour les ajustements manuels",
       "rentAdjustmentType": "Type d'ajustement de loyer",
       "adjustmentTypes": {
         "none": "Aucun ajustement",
