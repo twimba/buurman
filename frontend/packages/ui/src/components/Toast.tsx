@@ -12,12 +12,12 @@ export type ToastType = 'success' | 'error' | 'info';
 
 interface Toast {
   id: string;
-  message: string;
+  message: ReactNode;
   type: ToastType;
 }
 
 interface ToastContextType {
-  showToast: (message: string, type?: ToastType) => void;
+  showToast: (message: ReactNode, type?: ToastType) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -51,15 +51,18 @@ const toastStyles = {
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = 'info') => {
-    const id = Math.random().toString(36).substring(7);
+  const showToast = useCallback(
+    (message: ReactNode, type: ToastType = 'info') => {
+      const id = Math.random().toString(36).substring(7);
 
-    setToasts((prev) => [...prev, { id, message, type }]);
+      setToasts((prev) => [...prev, { id, message, type }]);
 
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 5000);
-  }, []);
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 5000);
+    },
+    []
+  );
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -87,7 +90,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <Icon
                 className={cn('h-5 w-5 shrink-0', iconStyles[toast.type])}
               />
-              <p className="flex-1 text-sm font-medium">{toast.message}</p>
+              <div className="flex-1 text-sm font-medium">{toast.message}</div>
               <button
                 onClick={() => dismissToast(toast.id)}
                 className="shrink-0 transition-opacity hover:opacity-70"

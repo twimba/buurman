@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import static com.buurman.util.FeatureFlags.EXCEL_EXPORT;
+import static com.buurman.util.FeatureFlags.GOOGLE_SHEETS_EXPORT;
 import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
@@ -13,9 +14,13 @@ import java.util.UUID;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.GoogleAccessToken;
+import com.buurman.domain.GoogleSheetExport;
+import com.buurman.dto.request.GoogleSheetExportRequest;
 import com.buurman.dto.response.DataDateRangeResponse;
 import com.buurman.dto.response.ExpenseBreakdownResponse;
 import com.buurman.dto.response.FinancialOverviewResponse;
+import com.buurman.dto.response.GoogleSheetExportResponse;
 import com.buurman.dto.response.IncomeTrendResponse;
 import com.buurman.dto.response.OccupancyTrendResponse;
 import com.buurman.dto.response.PropertyComparisonResponse;
@@ -26,6 +31,8 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.service.GoogleSheetExportService;
+import com.buurman.service.GoogleSheetTitleResolver;
 import com.buurman.service.ReportService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +44,9 @@ public class ReportController implements ReportsApi {
 
   private final ReportService reportService;
   private final ExportService exportService;
+  private final GoogleSheetExportService googleSheetExportService;
   private final FeatureFlagService featureFlagService;
+  private final GoogleSheetTitleResolver titleResolver;
   private final HttpServletResponse httpServletResponse;
 
   @ModelAttribute
@@ -153,5 +162,24 @@ public class ReportController implements ReportsApi {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     return exportService.generateTransactionHistoryExcel(
         startDate, endDate, principal.requireTeamId());
+  }
+
+  @Override
+  public GoogleSheetExportResponse exportTransactionHistoryGoogleSheet(
+      GoogleSheetExportRequest request,
+      Optional<LocalDate> startDate,
+      Optional<LocalDate> endDate) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    if (featureFlagService.isDisabled(GOOGLE_SHEETS_EXPORT, principal)) {
+      throw new ForbiddenException("Google Sheets export feature is not available");
+    }
+    GoogleSheetExport result =
+        googleSheetExportService.generateTransactionHistoryGoogleSheet(
+            new GoogleAccessToken(request.getAccessToken()),
+            startDate,
+            endDate,
+            principal.requireTeamId(),
+            titleResolver.resolve(principal, "Transactions"));
+    return new GoogleSheetExportResponse(result.spreadsheetId(), result.url());
   }
 }

@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import static com.buurman.util.FeatureFlags.EXCEL_EXPORT;
+import static com.buurman.util.FeatureFlags.GOOGLE_SHEETS_EXPORT;
 import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
@@ -10,7 +11,11 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.GoogleAccessToken;
+import com.buurman.domain.GoogleSheetExport;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.dto.request.GoogleSheetExportRequest;
+import com.buurman.dto.response.GoogleSheetExportResponse;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.PropertyDashboardApi;
@@ -18,6 +23,8 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.service.GoogleSheetExportService;
+import com.buurman.service.GoogleSheetTitleResolver;
 import com.buurman.service.PropertyDashboardService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,7 +36,9 @@ public class PropertyDashboardController implements PropertyDashboardApi {
 
   private final PropertyDashboardService dashboardService;
   private final ExportService exportService;
+  private final GoogleSheetExportService googleSheetExportService;
   private final FeatureFlagService featureFlagService;
+  private final GoogleSheetTitleResolver titleResolver;
   private final HttpServletResponse httpServletResponse;
 
   @ModelAttribute
@@ -81,5 +90,22 @@ public class PropertyDashboardController implements PropertyDashboardApi {
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     return exportService.generatePropertyDashboardExcel(dashboard);
+  }
+
+  @Override
+  public GoogleSheetExportResponse exportPropertyDashboardGoogleSheet(
+      PropertyIdentifier identifier, GoogleSheetExportRequest request, Optional<Integer> months) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    if (featureFlagService.isDisabled(GOOGLE_SHEETS_EXPORT, principal)) {
+      throw new ForbiddenException("Google Sheets export feature is not available");
+    }
+    PropertyDashboardResponse dashboard =
+        dashboardService.getDashboard(identifier, months.orElse(null), principal);
+    GoogleSheetExport result =
+        googleSheetExportService.generatePropertyDashboardGoogleSheet(
+            new GoogleAccessToken(request.getAccessToken()),
+            dashboard,
+            titleResolver.resolve(principal, "Property Dashboard"));
+    return new GoogleSheetExportResponse(result.spreadsheetId(), result.url());
   }
 }

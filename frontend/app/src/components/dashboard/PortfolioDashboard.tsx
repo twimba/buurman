@@ -19,6 +19,12 @@ import {
 } from '@/api/dashboard';
 import { Card, LoadingSpinner } from '@buurman/ui';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
+import { ExportOptionIcon } from '@/components/common/ExportOptionIcon';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
+import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
+import { exportPortfolioDashboardGoogleSheet } from '@/api/googleSheetsExport';
+import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 import { PortfolioSummaryCards } from './PortfolioSummaryCards';
 import { PortfolioCashFlowChart } from './PortfolioCashFlowChart';
 import { PropertyComparisonChart } from './PropertyComparisonChart';
@@ -56,6 +62,13 @@ export const PortfolioDashboard = () => {
     () => new Date().toISOString().split('T')[0]
   );
   const [isCustom, setIsCustom] = useState(false);
+  const { isEnabled } = useFeatureFlags();
+  const {
+    triggerExport: triggerGoogleSheet,
+    isExporting: isGoogleExporting,
+    lastResult: lastGoogleSheet,
+    clearLastResult: clearLastGoogleSheet,
+  } = useGoogleSheetsExport();
   const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
     null
   );
@@ -253,14 +266,51 @@ export const PortfolioDashboard = () => {
                 className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <GoogleSheetExportPill
+                result={lastGoogleSheet}
+                onDismiss={clearLastGoogleSheet}
+                size="sm"
+              />
               <ExportDropdown
                 size="sm"
-                disabled={exporting !== null}
-                exporting={exporting === 'csv' || exporting === 'excel'}
+                disabled={exporting !== null || isGoogleExporting}
+                exporting={
+                  exporting === 'csv' ||
+                  exporting === 'excel' ||
+                  isGoogleExporting
+                }
                 options={[
-                  { label: 'CSV', onExport: () => handleExport('csv') },
-                  { label: 'Excel', onExport: () => handleExport('excel') },
+                  {
+                    label: 'CSV',
+                    icon: <ExportOptionIcon format="csv" />,
+                    onExport: () => handleExport('csv'),
+                  },
+                  ...(isEnabled(FeatureFlags.EXCEL_EXPORT)
+                    ? [
+                        {
+                          label: 'Excel',
+                          icon: <ExportOptionIcon format="excel" />,
+                          onExport: () => handleExport('excel'),
+                        },
+                      ]
+                    : []),
+                  ...(isEnabled(FeatureFlags.GOOGLE_SHEETS_EXPORT)
+                    ? [
+                        {
+                          label: 'Google Sheets',
+                          icon: <ExportOptionIcon format="google-sheets" />,
+                          onExport: () =>
+                            triggerGoogleSheet((token) =>
+                              exportPortfolioDashboardGoogleSheet(token, {
+                                months: activeMonths,
+                                startDate: activeStartDate,
+                                endDate: activeEndDate,
+                              })
+                            ),
+                        },
+                      ]
+                    : []),
                 ]}
               />
               <button

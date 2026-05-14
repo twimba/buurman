@@ -47,6 +47,9 @@ import {
 } from 'recharts';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { EntityExportControls } from '@/components/common/EntityExportControls';
+import { exportPaymentsCsv, exportPaymentsXlsx } from '@/api/listExports';
+import { exportPaymentsGoogleSheet } from '@/api/googleSheetsExport';
 
 export const PaymentsPage = () => {
   const navigate = useNavigate();
@@ -189,10 +192,16 @@ export const PaymentsPage = () => {
             </div>
             <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <RefreshButton
               onClick={() => refetch()}
               isRefreshing={isFetching}
+            />
+            <EntityExportControls
+              filenameStem="payments"
+              csv={exportPaymentsCsv}
+              xlsx={exportPaymentsXlsx}
+              googleSheet={exportPaymentsGoogleSheet}
             />
             <button
               onClick={() => navigate('/payments/new')}

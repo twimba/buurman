@@ -11,6 +11,11 @@ import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse;
 
+/**
+ * Generates byte-array export artefacts (PDF, CSV, Excel) for every supported entity. The
+ * Drive-bound Google Sheets exports live in a sibling interface {@link GoogleSheetExportService} to
+ * keep this surface focused on file-download outputs.
+ */
 public interface ExportService {
 
   byte[] generateTransactionHistoryCSV(
@@ -45,4 +50,24 @@ public interface ExportService {
   byte[] generateContactsCSV(UUID teamId);
 
   byte[] generateContactsExcel(UUID teamId);
+
+  // Properties
+  byte[] generatePropertiesCSV(UUID teamId);
+
+  byte[] generatePropertiesExcel(UUID teamId);
+
+  // Payments
+  byte[] generatePaymentsCSV(UUID teamId);
+
+  byte[] generatePaymentsExcel(UUID teamId);
+
+  // Expenses
+  byte[] generateExpensesCSV(UUID teamId);
+
+  byte[] generateExpensesExcel(UUID teamId);
+
+  // Contracts
+  byte[] generateContractsCSV(UUID teamId);
+
+  byte[] generateContractsExcel(UUID teamId);
 }

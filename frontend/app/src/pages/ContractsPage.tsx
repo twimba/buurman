@@ -9,6 +9,9 @@ import { Plus, FileText, Filter } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { Pagination, RefreshButton, Skeleton } from '@buurman/ui';
+import { EntityExportControls } from '@/components/common/EntityExportControls';
+import { exportContractsCsv, exportContractsXlsx } from '@/api/listExports';
+import { exportContractsGoogleSheet } from '@/api/googleSheetsExport';
 
 export const ContractsPage = () => {
   const { t } = useTranslation('contracts');
@@ -113,10 +116,16 @@ export const ContractsPage = () => {
             </div>
             <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <RefreshButton
               onClick={() => refetch()}
               isRefreshing={isFetching}
+            />
+            <EntityExportControls
+              filenameStem="contracts"
+              csv={exportContractsCsv}
+              xlsx={exportContractsXlsx}
+              googleSheet={exportContractsGoogleSheet}
             />
             <button
               onClick={() => navigate('/contracts/new')}

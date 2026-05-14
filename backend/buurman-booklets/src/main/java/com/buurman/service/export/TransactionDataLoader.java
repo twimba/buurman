@@ -24,14 +24,14 @@ import lombok.RequiredArgsConstructor;
 /** Loads and merges payment + expense data into a unified transaction list. */
 @Component
 @RequiredArgsConstructor
-class TransactionDataLoader {
+public class TransactionDataLoader {
 
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
 
-  List<TransactionRecord> load(
+  public List<TransactionRecord> load(
       Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     List<TransactionRecord> transactions = new ArrayList<>();
 

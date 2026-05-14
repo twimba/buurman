@@ -65,6 +65,57 @@ collection:
     security:
       - bearer-jwt: []
 
+google-sheet:
+  post:
+    tags:
+      - Data Takeout
+    summary: Export all team data to one Google Sheet
+    description: |
+      Synchronously creates a new Google Sheet in the user's Drive (under "Buurman exports") with
+      one tab per entity containing all tabular team data (properties, contacts, contracts,
+      transactions, etc.). Excludes booklets, photos, documents and other binary artefacts. Requires
+      a user-supplied OAuth access token with the drive.file scope.
+    operationId: exportTakeoutGoogleSheet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportResponse'
+      "400":
+        description: Bad request - missing/invalid Google access token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - feature flag disabled or insufficient role
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "502":
+        description: Bad Gateway - Google API error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 item:
   get:
     tags:

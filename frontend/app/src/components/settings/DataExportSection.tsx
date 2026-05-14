@@ -10,6 +10,7 @@ import {
   XCircle,
   FileArchive,
   ShieldAlert,
+  Table2,
 } from 'lucide-react';
 import { ConfirmDialog } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
@@ -18,6 +19,11 @@ import {
   useRequestTakeout,
   useDeleteTakeout,
 } from '@/hooks/useTakeoutHooks';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
+import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
+import { exportTakeoutGoogleSheet } from '@/api/googleSheetsExport';
+import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import type { TakeoutResponse } from '@/api/takeouts';
 
@@ -178,6 +184,13 @@ export const DataExportSection = () => {
   const requestMutation = useRequestTakeout();
   const deleteMutation = useDeleteTakeout();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const { isEnabled } = useFeatureFlags();
+  const {
+    triggerExport: triggerGoogleSheet,
+    isExporting: isGoogleExporting,
+    lastResult: lastGoogleSheet,
+    clearLastResult: clearLastGoogleSheet,
+  } = useGoogleSheetsExport();
 
   const takeouts = takeoutsPage?.content ?? [];
   const hasActiveTakeout = takeouts.some(
@@ -209,18 +222,42 @@ export const DataExportSection = () => {
                 {t('dataExport.subtitle')}
               </p>
             </div>
-            <button
-              onClick={() => requestMutation.mutate()}
-              disabled={requestMutation.isPending || hasActiveTakeout}
-              className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {requestMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
+            <div className="flex-shrink-0 flex items-center gap-2 flex-wrap">
+              <GoogleSheetExportPill
+                result={lastGoogleSheet}
+                onDismiss={clearLastGoogleSheet}
+              />
+              {isEnabled(FeatureFlags.GOOGLE_SHEETS_EXPORT) && (
+                <button
+                  onClick={() =>
+                    triggerGoogleSheet((token) =>
+                      exportTakeoutGoogleSheet(token)
+                    )
+                  }
+                  disabled={isGoogleExporting}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-lg hover:bg-surface-inset transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isGoogleExporting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Table2 className="h-4 w-4" />
+                  )}
+                  Export to Google Sheets
+                </button>
               )}
-              {t('dataExport.requestExport')}
-            </button>
+              <button
+                onClick={() => requestMutation.mutate()}
+                disabled={requestMutation.isPending || hasActiveTakeout}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {requestMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                {t('dataExport.requestExport')}
+              </button>
+            </div>
           </div>
           {hasActiveTakeout && (
             <p className="text-xs text-warning-text mt-2">

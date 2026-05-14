@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
-record TransactionRecord(
+public record TransactionRecord(
     String id,
     LocalDate date,
     String type,

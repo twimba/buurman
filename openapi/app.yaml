@@ -11991,6 +11991,70 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /reports/export/transactions/google-sheet:
+    post:
+      tags:
+        - Reports
+      summary: Export transaction history to Google Sheets
+      description: |
+        Creates a new Google Sheet in the user's Drive (under "Buurman exports") containing the
+        team's transaction history (payments + expenses) for the optional date range. Requires a
+        user-supplied OAuth access token with the drive.file scope.
+      operationId: exportTransactionHistoryGoogleSheet
+      parameters:
+        - name: startDate
+          in: query
+          description: Start date filter (inclusive)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: End date filter (inclusive)
+          required: false
+          schema:
+            type: string
+            format: date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleSheetExportResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - feature flag disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "502":
+          description: Bad Gateway - Google API error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /reports/date-range:
     get:
       tags:
@@ -12998,6 +13062,76 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /properties/{identifier}/dashboard/export/google-sheet:
+    post:
+      tags:
+        - Property Dashboard
+      summary: Export property dashboard to Google Sheets
+      description: |
+        Creates a new Google Sheet in the user's Drive (under "Buurman exports") containing the
+        property dashboard (summary, monthly cash flow, expense breakdown) for the given property.
+        Requires a user-supplied OAuth access token with the drive.file scope.
+      operationId: exportPropertyDashboardGoogleSheet
+      parameters:
+        - name: identifier
+          in: path
+          description: Property identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PropertyIdentifier'
+        - name: months
+          in: query
+          description: Number of months to include
+          required: false
+          schema:
+            type: integer
+            format: int32
+          example: 12
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleSheetExportResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - feature flag disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "502":
+          description: Bad Gateway - Google API error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /portfolio/dashboard:
     get:
       tags:
@@ -13220,6 +13354,78 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
         "500":
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /portfolio/dashboard/export/google-sheet:
+    post:
+      tags:
+        - Portfolio Dashboard
+      summary: Export portfolio dashboard to Google Sheets
+      description: |
+        Creates a new Google Sheet in the user's Drive (under "Buurman exports") containing the
+        portfolio dashboard (summary, monthly cash flow, property comparison). Requires a
+        user-supplied OAuth access token with the drive.file scope.
+      operationId: exportPortfolioGoogleSheet
+      parameters:
+        - name: months
+          in: query
+          description: Number of months to include
+          required: false
+          schema:
+            type: integer
+            format: int32
+          example: 12
+        - name: startDate
+          in: query
+          description: Start date for custom date range
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: End date for custom date range
+          required: false
+          schema:
+            type: string
+            format: date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleSheetExportResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - feature flag disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "502":
+          description: Bad Gateway - Google API error
           content:
             application/json:
               schema:
@@ -15713,6 +15919,287 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /booklets/contacts/google-sheet:
+    post:
+      tags:
+        - Booklets
+      summary: Export contacts list to Google Sheets
+      description: |
+        Creates a new Google Sheet in the user's Drive (under "Buurman exports") containing all
+        contacts for the team, formatted with rich styling. Requires a user-supplied OAuth access
+        token with the drive.file scope.
+      operationId: exportContactsGoogleSheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleSheetExportResponse'
+        "400":
+          description: Bad request - missing/invalid Google access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - feature flag disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "502":
+          description: Bad Gateway - Google API error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /booklets/properties/csv:
+    get:
+      tags:
+        - Booklets
+      summary: Export properties list to CSV
+      operationId: exportPropertiesCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            "text/csv":
+              schema:
+                type: string
+                format: byte
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/properties/xlsx:
+    get:
+      tags:
+        - Booklets
+      summary: Export properties list to Excel
+      operationId: exportPropertiesXlsx
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+              schema:
+                type: string
+                format: byte
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/properties/google-sheet:
+    post:
+      tags:
+        - Booklets
+      summary: Export properties to Google Sheets
+      operationId: exportPropertiesGoogleSheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/payments/csv:
+    get:
+      tags:
+        - Booklets
+      summary: Export payments list to CSV
+      operationId: exportPaymentsCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            "text/csv":
+              schema:
+                type: string
+                format: byte
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/payments/xlsx:
+    get:
+      tags:
+        - Booklets
+      summary: Export payments list to Excel
+      operationId: exportPaymentsXlsx
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+              schema:
+                type: string
+                format: byte
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/payments/google-sheet:
+    post:
+      tags:
+        - Booklets
+      summary: Export payments to Google Sheets
+      operationId: exportPaymentsGoogleSheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/expenses/csv:
+    get:
+      tags:
+        - Booklets
+      summary: Export expenses list to CSV
+      operationId: exportExpensesCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            "text/csv":
+              schema:
+                type: string
+                format: byte
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/expenses/xlsx:
+    get:
+      tags:
+        - Booklets
+      summary: Export expenses list to Excel
+      operationId: exportExpensesXlsx
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+              schema:
+                type: string
+                format: byte
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/expenses/google-sheet:
+    post:
+      tags:
+        - Booklets
+      summary: Export expenses to Google Sheets
+      operationId: exportExpensesGoogleSheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/contracts/csv:
+    get:
+      tags:
+        - Booklets
+      summary: Export contracts list to CSV
+      operationId: exportContractsCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            "text/csv":
+              schema:
+                type: string
+                format: byte
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/contracts/xlsx:
+    get:
+      tags:
+        - Booklets
+      summary: Export contracts list to Excel
+      operationId: exportContractsXlsx
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+              schema:
+                type: string
+                format: byte
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/contracts/google-sheet:
+    post:
+      tags:
+        - Booklets
+      summary: Export contracts to Google Sheets
+      operationId: exportContractsGoogleSheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       security:
         - bearer-jwt: []
   /booklets/property/{propertyIdentifier}:
@@ -18495,6 +18982,56 @@ paths:
                 $ref: '#/components/schemas/PageResponseTakeoutResponse'
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /takeouts/google-sheet:
+    post:
+      tags:
+        - Data Takeout
+      summary: Export all team data to one Google Sheet
+      description: |
+        Synchronously creates a new Google Sheet in the user's Drive (under "Buurman exports") with
+        one tab per entity containing all tabular team data (properties, contacts, contracts,
+        transactions, etc.). Excludes booklets, photos, documents and other binary artefacts. Requires
+        a user-supplied OAuth access token with the drive.file scope.
+      operationId: exportTakeoutGoogleSheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleSheetExportResponse'
+        "400":
+          description: Bad request - missing/invalid Google access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - feature flag disabled or insufficient role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "502":
+          description: Bad Gateway - Google API error
           content:
             application/json:
               schema:
@@ -27080,6 +27617,33 @@ components:
         - totalPages
         - page
         - size
+    GoogleSheetExportRequest:
+      type: object
+      description: |
+        Request body for any Google Sheets export endpoint. Carries the user-supplied OAuth 2.0
+        access token (scope drive.file) that the backend uses for a single Sheet creation. The
+        token is never persisted.
+      properties:
+        accessToken:
+          type: string
+          description: Short-lived OAuth 2.0 access token with scope https://www.googleapis.com/auth/drive.file
+          minLength: 1
+      required:
+        - accessToken
+    GoogleSheetExportResponse:
+      type: object
+      description: Result of a successful Google Sheets export.
+      properties:
+        spreadsheetId:
+          type: string
+          description: Google Drive id of the newly created spreadsheet.
+        url:
+          type: string
+          format: uri
+          description: Web URL the user can open to view/edit the new spreadsheet.
+      required:
+        - spreadsheetId
+        - url
   securitySchemes:
     bearer-jwt:
       type: http

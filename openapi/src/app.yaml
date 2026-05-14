@@ -347,6 +347,8 @@ paths:
     $ref: 'paths/dashboard.yaml#/reports-export-transactions-csv'
   /reports/export/transactions/excel:
     $ref: 'paths/dashboard.yaml#/reports-export-transactions-excel'
+  /reports/export/transactions/google-sheet:
+    $ref: 'paths/dashboard.yaml#/reports-export-transactions-google-sheet'
   /reports/date-range:
     $ref: 'paths/dashboard.yaml#/reports-date-range'
   /reports/charts/property-comparison:
@@ -379,6 +381,8 @@ paths:
     $ref: 'paths/properties.yaml#/dashboard-export-csv'
   /properties/{identifier}/dashboard/export/excel:
     $ref: 'paths/properties.yaml#/dashboard-export-excel'
+  /properties/{identifier}/dashboard/export/google-sheet:
+    $ref: 'paths/properties.yaml#/dashboard-export-google-sheet'
   /portfolio/dashboard:
     $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard'
   /portfolio/dashboard/export/pdf:
@@ -387,6 +391,8 @@ paths:
     $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard-export-csv'
   /portfolio/dashboard/export/excel:
     $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard-export-excel'
+  /portfolio/dashboard/export/google-sheet:
+    $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard-export-google-sheet'
   /wws/calculate:
     $ref: 'paths/reference.yaml#/wws-calculate'
   /wws/calculate-and-save:
@@ -481,6 +487,32 @@ paths:
     $ref: 'paths/documents.yaml#/booklets-contacts-csv'
   /booklets/contacts/xlsx:
     $ref: 'paths/documents.yaml#/booklets-contacts-xlsx'
+  /booklets/contacts/google-sheet:
+    $ref: 'paths/documents.yaml#/booklets-contacts-google-sheet'
+  /booklets/properties/csv:
+    $ref: 'paths/documents.yaml#/booklets-properties-csv'
+  /booklets/properties/xlsx:
+    $ref: 'paths/documents.yaml#/booklets-properties-xlsx'
+  /booklets/properties/google-sheet:
+    $ref: 'paths/documents.yaml#/booklets-properties-google-sheet'
+  /booklets/payments/csv:
+    $ref: 'paths/documents.yaml#/booklets-payments-csv'
+  /booklets/payments/xlsx:
+    $ref: 'paths/documents.yaml#/booklets-payments-xlsx'
+  /booklets/payments/google-sheet:
+    $ref: 'paths/documents.yaml#/booklets-payments-google-sheet'
+  /booklets/expenses/csv:
+    $ref: 'paths/documents.yaml#/booklets-expenses-csv'
+  /booklets/expenses/xlsx:
+    $ref: 'paths/documents.yaml#/booklets-expenses-xlsx'
+  /booklets/expenses/google-sheet:
+    $ref: 'paths/documents.yaml#/booklets-expenses-google-sheet'
+  /booklets/contracts/csv:
+    $ref: 'paths/documents.yaml#/booklets-contracts-csv'
+  /booklets/contracts/xlsx:
+    $ref: 'paths/documents.yaml#/booklets-contracts-xlsx'
+  /booklets/contracts/google-sheet:
+    $ref: 'paths/documents.yaml#/booklets-contracts-google-sheet'
   /booklets/property/{propertyIdentifier}:
     $ref: 'paths/documents.yaml#/booklets-property-item'
   /booklets/contract/{contractIdentifier}:
@@ -567,6 +599,8 @@ paths:
     $ref: 'paths/broadcasts.yaml#/dismiss'
   /takeouts:
     $ref: 'paths/takeouts.yaml#/collection'
+  /takeouts/google-sheet:
+    $ref: 'paths/takeouts.yaml#/google-sheet'
   /takeouts/{identifier}:
     $ref: 'paths/takeouts.yaml#/item'
   /auth/impersonate/exchange:
@@ -9016,6 +9050,33 @@ components:
         - totalPages
         - page
         - size
+    GoogleSheetExportRequest:
+      type: object
+      description: |
+        Request body for any Google Sheets export endpoint. Carries the user-supplied OAuth 2.0
+        access token (scope drive.file) that the backend uses for a single Sheet creation. The
+        token is never persisted.
+      properties:
+        accessToken:
+          type: string
+          description: Short-lived OAuth 2.0 access token with scope https://www.googleapis.com/auth/drive.file
+          minLength: 1
+      required:
+        - accessToken
+    GoogleSheetExportResponse:
+      type: object
+      description: Result of a successful Google Sheets export.
+      properties:
+        spreadsheetId:
+          type: string
+          description: Google Drive id of the newly created spreadsheet.
+        url:
+          type: string
+          format: uri
+          description: Web URL the user can open to view/edit the new spreadsheet.
+      required:
+        - spreadsheetId
+        - url
   securitySchemes:
     bearer-jwt:
       type: http

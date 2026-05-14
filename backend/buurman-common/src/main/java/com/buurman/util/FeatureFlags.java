@@ -19,6 +19,7 @@ public final class FeatureFlags {
   public static final String BLOCK_SMS_NOTIFICATIONS = "block_sms_notifications";
   public static final String TAKEOUT_MAX_EXPORTS = "takeout_max_exports";
   public static final String EXCEL_EXPORT = "excel_export";
+  public static final String GOOGLE_SHEETS_EXPORT = "google_sheets_export";
   public static final String SWAGGER = "swagger";
 
   public static final List<String> ALL_KEYS =
@@ -31,20 +32,22 @@ public final class FeatureFlags {
           BLOCK_SMS_NOTIFICATIONS,
           TAKEOUT_MAX_EXPORTS,
           EXCEL_EXPORT,
+          GOOGLE_SHEETS_EXPORT,
           SWAGGER);
 
   /** Compile-time defaults — ultimate fallback when both cache and DB are unreachable. */
   public static final Map<String, Boolean> DEFAULTS =
-      Map.of(
-          REPORTS, true,
-          INVITATION_REQUIRED, true,
-          SMS_NOTIFICATIONS, false,
-          EMAIL_NOTIFICATIONS, true,
-          BLOCK_EMAIL_NOTIFICATIONS, false,
-          BLOCK_SMS_NOTIFICATIONS, false,
-          TAKEOUT_MAX_EXPORTS, true,
-          EXCEL_EXPORT, false,
-          SWAGGER, true);
+      Map.ofEntries(
+          Map.entry(REPORTS, true),
+          Map.entry(INVITATION_REQUIRED, true),
+          Map.entry(SMS_NOTIFICATIONS, false),
+          Map.entry(EMAIL_NOTIFICATIONS, true),
+          Map.entry(BLOCK_EMAIL_NOTIFICATIONS, false),
+          Map.entry(BLOCK_SMS_NOTIFICATIONS, false),
+          Map.entry(TAKEOUT_MAX_EXPORTS, true),
+          Map.entry(EXCEL_EXPORT, false),
+          Map.entry(GOOGLE_SHEETS_EXPORT, false),
+          Map.entry(SWAGGER, true));
 
   /** Returns the compile-time default for a flag key, or false for unknown keys. */
   public static boolean defaultEnabled(String flagKey) {

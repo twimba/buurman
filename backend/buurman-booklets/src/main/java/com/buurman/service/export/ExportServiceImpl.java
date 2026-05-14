@@ -39,6 +39,14 @@ public class ExportServiceImpl implements ExportService {
   private final PortfolioDashboardExcelExporter portfolioDashboardExcelExporter;
   private final ContactCsvExporter contactCsvExporter;
   private final ContactExcelExporter contactExcelExporter;
+  private final PropertyCsvExporter propertyCsvExporter;
+  private final PropertyExcelExporter propertyExcelExporter;
+  private final PaymentCsvExporter paymentCsvExporter;
+  private final PaymentExcelExporter paymentExcelExporter;
+  private final ExpenseCsvExporter expenseCsvExporter;
+  private final ExpenseExcelExporter expenseExcelExporter;
+  private final ContractCsvExporter contractCsvExporter;
+  private final ContractExcelExporter contractExcelExporter;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -130,6 +138,50 @@ public class ExportServiceImpl implements ExportService {
   @Override
   public byte[] generateContactsExcel(UUID teamId) {
     return withMetrics("contacts_excel", () -> contactExcelExporter.generate(teamId));
+  }
+
+  // ── Properties ──────────────────────────────────────────────────────────
+  @Override
+  public byte[] generatePropertiesCSV(UUID teamId) {
+    return withMetrics("properties_csv", () -> propertyCsvExporter.generate(teamId));
+  }
+
+  @Override
+  public byte[] generatePropertiesExcel(UUID teamId) {
+    return withMetrics("properties_excel", () -> propertyExcelExporter.generate(teamId));
+  }
+
+  // ── Payments ────────────────────────────────────────────────────────────
+  @Override
+  public byte[] generatePaymentsCSV(UUID teamId) {
+    return withMetrics("payments_csv", () -> paymentCsvExporter.generate(teamId));
+  }
+
+  @Override
+  public byte[] generatePaymentsExcel(UUID teamId) {
+    return withMetrics("payments_excel", () -> paymentExcelExporter.generate(teamId));
+  }
+
+  // ── Expenses ────────────────────────────────────────────────────────────
+  @Override
+  public byte[] generateExpensesCSV(UUID teamId) {
+    return withMetrics("expenses_csv", () -> expenseCsvExporter.generate(teamId));
+  }
+
+  @Override
+  public byte[] generateExpensesExcel(UUID teamId) {
+    return withMetrics("expenses_excel", () -> expenseExcelExporter.generate(teamId));
+  }
+
+  // ── Contracts ───────────────────────────────────────────────────────────
+  @Override
+  public byte[] generateContractsCSV(UUID teamId) {
+    return withMetrics("contracts_csv", () -> contractCsvExporter.generate(teamId));
+  }
+
+  @Override
+  public byte[] generateContractsExcel(UUID teamId) {
+    return withMetrics("contracts_excel", () -> contractExcelExporter.generate(teamId));
   }
 
   private byte[] withMetrics(String exportType, Supplier<byte[]> generator) {
