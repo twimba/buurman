@@ -756,6 +756,8 @@ export const OUTDOOR_AREA_TYPES = [
 ] as const;
 export const AREA_UNITS = ['sqm', 'sqft'] as const;
 export const ENERGY_EFFICIENCY_RATINGS = [
+  'A++++',
+  'A+++',
   'A++',
   'A+',
   'A',

@@ -1638,6 +1638,8 @@ public class PropertyBookletExporter {
       return "#78716c";
     }
     return switch (rating) {
+      case "A++++" -> "#052e16";
+      case "A+++" -> "#064e3b";
       case "A++" -> "#065f46";
       case "A+" -> "#047857";
       case "A" -> "#059669";

@@ -741,6 +741,8 @@ export const PropertyDetailPage = () => {
                           className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-white ${
                             (
                               {
+                                'A++++': 'bg-emerald-950',
+                                'A+++': 'bg-emerald-900',
                                 'A++': 'bg-green-900',
                                 'A+': 'bg-green-700',
                                 A: 'bg-green-500',
