@@ -117,8 +117,7 @@ public class ContractExtensionService {
         .ifPresent(
             existing -> {
               LocalDate today = LocalDate.now(clock);
-              boolean expired =
-                  existing.getNewEndDate().map(d -> !d.isAfter(today)).orElse(false);
+              boolean expired = existing.getNewEndDate().map(d -> !d.isAfter(today)).orElse(false);
               if (expired) {
                 existing.setStatus(SUPERSEDED);
                 existing.setSupersededAt(Optional.of(Instant.now(clock)));

@@ -258,12 +258,6 @@ public class ContractRentPeriodService {
     ContractRentPeriod period =
         rentPeriodRepository.getByIdentifierAndTeamId(periodIdentifier, teamId);
 
-    // Only allow editing future periods
-    LocalDate today = LocalDate.now(clock);
-    if (!period.getEffectiveFrom().isAfter(today)) {
-      throw new BusinessRuleException("Can only edit rent periods that have not yet taken effect");
-    }
-
     validateEffectiveFrom(contract, request.effectiveFrom(), teamId);
 
     // Store old values for audit
@@ -343,13 +337,6 @@ public class ContractRentPeriodService {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     ContractRentPeriod period =
         rentPeriodRepository.getByIdentifierAndTeamId(periodIdentifier, teamId);
-
-    // Only allow deleting future periods
-    LocalDate today = LocalDate.now(clock);
-    if (!period.getEffectiveFrom().isAfter(today)) {
-      throw new BusinessRuleException(
-          "Can only delete rent periods that have not yet taken effect");
-    }
 
     // Restore effective_to = NULL on the preceding period
     var previousPeriod =

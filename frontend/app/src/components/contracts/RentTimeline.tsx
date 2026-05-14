@@ -47,10 +47,6 @@ interface RentTimelineProps {
   countryCode?: string;
 }
 
-function isFuturePeriod(effectiveFrom: string): boolean {
-  return new Date(effectiveFrom) > new Date();
-}
-
 function extractLang(fileName: string): string {
   const match = fileName.match(/-([a-z]{2})\.pdf$/);
   return match ? match[1] : '??';
@@ -203,12 +199,10 @@ export const RentTimeline = ({
                     t={t}
                     canEdit={canEditData}
                     onEdit={
-                      canEditData && isFuturePeriod(period.effectiveFrom)
-                        ? () => setEditTarget(period)
-                        : undefined
+                      canEditData ? () => setEditTarget(period) : undefined
                     }
                     onDelete={
-                      canEditData && isFuturePeriod(period.effectiveFrom)
+                      canEditData
                         ? () => handleDeletePeriod(period.identifier)
                         : undefined
                     }
