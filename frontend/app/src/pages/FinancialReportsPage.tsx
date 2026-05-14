@@ -593,35 +593,35 @@ export const FinancialReportsPage = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
+              <div className="flex items-center gap-1 bg-surface-inset rounded-md p-0.5">
+                <button
+                  onClick={() => setIncomeChartType('line')}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                    incomeChartType === 'line'
+                      ? 'bg-surface-card text-text-primary shadow-sm'
+                      : 'text-text-secondary'
+                  }`}
+                >
+                  {t('reports.incomeTrend.line')}
+                </button>
+                <button
+                  onClick={() => setIncomeChartType('bar')}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                    incomeChartType === 'bar'
+                      ? 'bg-surface-card text-text-primary shadow-sm'
+                      : 'text-text-secondary'
+                  }`}
+                >
+                  {t('reports.incomeTrend.bar')}
+                </button>
+              </div>
               <button
-                onClick={() => setIncomeChartType('line')}
-                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  incomeChartType === 'line'
-                    ? 'bg-surface-card text-text-primary shadow-sm'
-                    : 'text-text-secondary'
-                }`}
+                onClick={() => setExpandedReport('income')}
+                className="p-1.5 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
+                title="Expand chart"
               >
-                {t('reports.incomeTrend.line')}
+                <Maximize2 className="h-4 w-4" />
               </button>
-              <button
-                onClick={() => setIncomeChartType('bar')}
-                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  incomeChartType === 'bar'
-                    ? 'bg-surface-card text-text-primary shadow-sm'
-                    : 'text-text-secondary'
-                }`}
-              >
-                {t('reports.incomeTrend.bar')}
-              </button>
-            </div>
-            <button
-              onClick={() => setExpandedReport('income')}
-              className="p-1.5 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
-              title="Expand chart"
-            >
-              <Maximize2 className="h-4 w-4" />
-            </button>
             </div>
           </div>
           {trendLoading ? (
@@ -1321,7 +1321,7 @@ const FinancialReportFullscreen = ({
 
   const propertyFilterLabel =
     localPropertyIds.length === 0
-      ? t('reports.allProperties') ?? 'All properties'
+      ? (t('reports.allProperties') ?? 'All properties')
       : `${localPropertyIds.length} / ${allProperties.length} ${t('reports.properties') ?? 'properties'}`;
 
   const controls = (
@@ -1610,9 +1610,7 @@ const FinancialReportFullscreen = ({
                     }: {
                       name?: string;
                       percent?: number;
-                    }) =>
-                      `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`
-                    }
+                    }) => `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`}
                     outerRadius={120}
                     fill="#8884d8"
                     dataKey="value"

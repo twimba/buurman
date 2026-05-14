@@ -99,9 +99,7 @@ export const PortfolioOccupancyChart = ({
           labelFormatter={(label) => formatMonthTick(String(label))}
           formatter={(value, name) => {
             const labels: Record<string, string> = {
-              tenantOccupancyPercent: t(
-                'dashboard.occupancy.contactOccupancy'
-              ),
+              tenantOccupancyPercent: t('dashboard.occupancy.contactOccupancy'),
               selfOccupancyPercent: t('dashboard.occupancy.selfOccupancy'),
             };
             return [
@@ -113,9 +111,7 @@ export const PortfolioOccupancyChart = ({
         <Legend
           formatter={(value) => {
             const labels: Record<string, string> = {
-              tenantOccupancyPercent: t(
-                'dashboard.occupancy.contactOccupancy'
-              ),
+              tenantOccupancyPercent: t('dashboard.occupancy.contactOccupancy'),
               selfOccupancyPercent: t('dashboard.occupancy.selfOccupancy'),
             };
             return labels[value] ?? value;

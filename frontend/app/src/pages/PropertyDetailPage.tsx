@@ -753,7 +753,8 @@ export const PropertyDetailPage = () => {
                                 F: 'bg-red-500',
                                 G: 'bg-red-800',
                               } as Record<string, string>
-                            )[property.energyEfficiencyRating] || 'bg-neutral-500'
+                            )[property.energyEfficiencyRating] ||
+                            'bg-neutral-500'
                           }`}
                         >
                           {property.energyEfficiencyRating}

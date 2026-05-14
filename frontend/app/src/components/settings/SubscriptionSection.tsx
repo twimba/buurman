@@ -293,7 +293,9 @@ export const SubscriptionSection = () => {
             <button
               onClick={() => setIsAnnual(!isAnnual)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isAnnual ? 'bg-primary-500' : 'bg-neutral-200 dark:bg-neutral-700'
+                isAnnual
+                  ? 'bg-primary-500'
+                  : 'bg-neutral-200 dark:bg-neutral-700'
               }`}
             >
               <span

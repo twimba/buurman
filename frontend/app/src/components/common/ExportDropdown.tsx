@@ -106,12 +106,12 @@ export const ExportDropdown = ({
                     option.onExport();
                   }}
                   className={`flex w-full items-center gap-2 text-text-secondary hover:bg-surface-inset transition-colors ${
-                    size === 'sm'
-                      ? 'px-3 py-2 text-xs'
-                      : 'px-4 py-2 text-sm'
+                    size === 'sm' ? 'px-3 py-2 text-xs' : 'px-4 py-2 text-sm'
                   }`}
                 >
-                  <Download className={size === 'sm' ? 'h-3.5 w-3.5' : 'h-3.5 w-3.5'} />
+                  <Download
+                    className={size === 'sm' ? 'h-3.5 w-3.5' : 'h-3.5 w-3.5'}
+                  />
                   {option.label}
                 </button>
               ))}

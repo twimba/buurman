@@ -94,8 +94,12 @@ export const PropertyMap = ({
     return (
       <div className="bg-surface-inset rounded-lg p-8 text-center">
         <MapPin className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-        <p className="text-text-primary font-medium mb-1">{t('map.unavailable')}</p>
-        <p className="text-sm text-text-secondary">{t('map.configureApiKey')}</p>
+        <p className="text-text-primary font-medium mb-1">
+          {t('map.unavailable')}
+        </p>
+        <p className="text-sm text-text-secondary">
+          {t('map.configureApiKey')}
+        </p>
         <div className="mt-3 text-xs text-text-muted bg-surface-raised rounded p-2 font-mono">
           {street}, {city}, {postalCode}, {countryCode}
         </div>

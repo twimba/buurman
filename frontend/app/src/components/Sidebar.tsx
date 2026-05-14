@@ -231,20 +231,44 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
             <div style={{ minWidth: 0 }}>
               {/* Mobile: always show full logo */}
               <div className="lg:hidden">
-                <img src="/assets/logo/logo_horizontal.png" alt="Buurman" className="h-10 w-auto dark:hidden" />
-                <img src="/assets/logo/logo_horizontal_dark.png" alt="Buurman" className="h-10 w-auto hidden dark:block" />
+                <img
+                  src="/assets/logo/logo_horizontal.png"
+                  alt="Buurman"
+                  className="h-10 w-auto dark:hidden"
+                />
+                <img
+                  src="/assets/logo/logo_horizontal_dark.png"
+                  alt="Buurman"
+                  className="h-10 w-auto hidden dark:block"
+                />
               </div>
               {/* Desktop: depends on collapsed */}
               <div className="hidden lg:block">
                 {collapsed ? (
                   <>
-                    <img src="/assets/logo/logo_square.png" alt="Buurman" className="h-10 w-10 rounded-lg dark:hidden" />
-                    <img src="/assets/logo/logo_square_dark.png" alt="Buurman" className="h-10 w-10 rounded-lg hidden dark:block" />
+                    <img
+                      src="/assets/logo/logo_square.png"
+                      alt="Buurman"
+                      className="h-10 w-10 rounded-lg dark:hidden"
+                    />
+                    <img
+                      src="/assets/logo/logo_square_dark.png"
+                      alt="Buurman"
+                      className="h-10 w-10 rounded-lg hidden dark:block"
+                    />
                   </>
                 ) : (
                   <>
-                    <img src="/assets/logo/logo_horizontal.png" alt="Buurman" className="h-10 w-auto dark:hidden" />
-                    <img src="/assets/logo/logo_horizontal_dark.png" alt="Buurman" className="h-10 w-auto hidden dark:block" />
+                    <img
+                      src="/assets/logo/logo_horizontal.png"
+                      alt="Buurman"
+                      className="h-10 w-auto dark:hidden"
+                    />
+                    <img
+                      src="/assets/logo/logo_horizontal_dark.png"
+                      alt="Buurman"
+                      className="h-10 w-auto hidden dark:block"
+                    />
                   </>
                 )}
               </div>

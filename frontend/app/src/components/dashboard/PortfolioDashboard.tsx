@@ -59,8 +59,9 @@ export const PortfolioDashboard = () => {
   const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
     null
   );
-  const [expandedChart, setExpandedChart] =
-    useState<DashboardChartType | null>(null);
+  const [expandedChart, setExpandedChart] = useState<DashboardChartType | null>(
+    null
+  );
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
 
@@ -68,11 +69,11 @@ export const PortfolioDashboard = () => {
   const activeStartDate = isCustom ? customStart : undefined;
   const activeEndDate = isCustom ? customEnd : undefined;
 
-  const { data: dashboard, isLoading, error } = usePortfolioDashboard(
-    activeMonths,
-    activeStartDate,
-    activeEndDate
-  );
+  const {
+    data: dashboard,
+    isLoading,
+    error,
+  } = usePortfolioDashboard(activeMonths, activeStartDate, activeEndDate);
 
   const handlePeriodClick = useCallback((opt: PeriodOption) => {
     setIsCustom(false);
@@ -96,16 +97,28 @@ export const PortfolioDashboard = () => {
         let mimeType: string;
         let filename: string;
         if (format === 'pdf') {
-          blob = await exportPortfolioDashboardPDF(activeMonths, activeStartDate, activeEndDate);
+          blob = await exportPortfolioDashboardPDF(
+            activeMonths,
+            activeStartDate,
+            activeEndDate
+          );
           mimeType = 'application/pdf';
           filename = 'portfolio-dashboard.pdf';
         } else if (format === 'excel') {
-          blob = await exportPortfolioDashboardExcel(activeMonths, activeStartDate, activeEndDate);
+          blob = await exportPortfolioDashboardExcel(
+            activeMonths,
+            activeStartDate,
+            activeEndDate
+          );
           mimeType =
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
           filename = 'portfolio-dashboard.xlsx';
         } else {
-          blob = await exportPortfolioDashboardCSV(activeMonths, activeStartDate, activeEndDate);
+          blob = await exportPortfolioDashboardCSV(
+            activeMonths,
+            activeStartDate,
+            activeEndDate
+          );
           mimeType = 'text/csv';
           filename = 'portfolio-dashboard.csv';
         }

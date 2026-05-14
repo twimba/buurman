@@ -34,7 +34,10 @@ export const BookletDownloadButton = ({
 
   const currentLang = i18n.language.split('-')[0];
   const triggerRef = useRef<HTMLDivElement>(null);
-  const [popoverPos, setPopoverPos] = useState<{ top: number; right: number } | null>(null);
+  const [popoverPos, setPopoverPos] = useState<{
+    top: number;
+    right: number;
+  } | null>(null);
 
   useEffect(() => {
     if (!showPopover || !triggerRef.current) {
