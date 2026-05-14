@@ -100,19 +100,16 @@ export const getErrorMessage = (error: unknown, t?: TFunction): string => {
       );
     }
 
-    // 409 CONFLICT = BusinessRuleException: always user-facing, translate or show as-is
-    if (error.response?.status === 409 && data?.detail) {
-      return formatBusinessRuleError(data.detail, t);
-    }
-
-    // 400 BAD REQUEST with detail = application validation error, always user-facing
-    if (error.response?.status === 400 && data?.detail) {
-      return data.detail;
-    }
-
-    // Check for ProblemDetail format (RFC 7807)
+    // RFC 7807 detail is always user-facing — backend is responsible for safe messages.
+    // For 409 (BusinessRuleException), try a translation first; fall back to showing as-is.
     if (data?.detail) {
-      return formatErrorMessage(data.detail, t);
+      if (error.response?.status === 409 && t) {
+        const key = BUSINESS_RULE_KEYS[data.detail];
+        if (key) {
+          return t(key);
+        }
+      }
+      return data.detail;
     }
 
     // Check for general error message
@@ -231,16 +228,6 @@ const BUSINESS_RULE_KEYS: Record<string, string> = {
   'Invitation is already revoked': 'errors.businessRules.invitationRevoked',
   'Email sending is not configured': 'errors.businessRules.emailNotConfigured',
   'SMS sending is not configured': 'errors.businessRules.smsNotConfigured',
-};
-
-const formatBusinessRuleError = (message: string, t?: TFunction): string => {
-  if (t) {
-    const key = BUSINESS_RULE_KEYS[message];
-    if (key) {
-      return t(key);
-    }
-  }
-  return formatErrorMessage(message, t);
 };
 
 const ERROR_MAPPING_KEYS: Record<string, string> = {
