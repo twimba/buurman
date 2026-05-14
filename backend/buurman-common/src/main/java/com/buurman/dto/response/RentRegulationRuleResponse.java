@@ -14,7 +14,6 @@ public record RentRegulationRuleResponse(
     Sid identifier,
     int year,
     String propertyCategory,
-    Optional<String> sector,
     Optional<BigDecimal> maxIncreasePercentage,
     MaxIncreaseType maxIncreaseType,
     Optional<String> indexName,
@@ -24,4 +23,18 @@ public record RentRegulationRuleResponse(
     RentFrequency frequency,
     Optional<String> additionalConditions,
     Optional<String> sourceUrl,
-    Optional<String> notes) {}
+    Optional<String> notes,
+    // BUUR-93 dimensional fields
+    Optional<String> regime,
+    Optional<String> propertyType,
+    Optional<String> contractType,
+    Optional<String> taxRegime,
+    Optional<String> tenancyPhase,
+    Optional<Integer> buildYearMin,
+    Optional<Integer> buildYearMax,
+    Optional<String> epcClassMin,
+    Optional<String> epcClassMax,
+    Optional<LocalDate> contractSignedAfter,
+    Optional<LocalDate> contractSignedBefore,
+    Optional<Integer> landlordMinProperties,
+    Optional<String> areaCode) {}

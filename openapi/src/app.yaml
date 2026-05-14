@@ -7996,8 +7996,10 @@ components:
           format: int32
         propertyCategory:
           type: string
-        sector:
-          type: string
+          description: |
+            DEPRECATED (BUUR-93): use the typed dimensional fields (regime, propertyType,
+            contractType, taxRegime, tenancyPhase, buildYearMin/Max, epcClassMin/Max,
+            contractSignedAfter/Before, landlordMinProperties, areaCode) instead.
         maxIncreasePercentage:
           type: number
         maxIncreaseType:
@@ -8020,6 +8022,50 @@ components:
           type: string
         notes:
           type: string
+        regime:
+          type: string
+          description: Regulatory regime — REGULATED, FREE_SECTOR, MIDDLE_RENT, CEILING_RENT, KAPPUNGSGRENZE, MIETPREISBREMSE, ZONA_TENSIONADA, COST_BASED, RICHTWERT, SMÅHUSE, FREE_MARKET, RENT_STABILIZED, etc.
+        propertyType:
+          type: string
+          description: RESIDENTIAL, COMMERCIAL, STUDENT, SOCIAL, MIXED, SEASONAL
+        contractType:
+          type: string
+          description: CANONE_LIBERO, CANONE_CONCORDATO, INSTITUTIONAL, OCCASIONAL, STANDARD_AST, ASSURED_PERIODIC, etc.
+        taxRegime:
+          type: string
+          description: CEDOLARE_SECCA, ORDINARY, NON_CEDOLARE_SECCA, etc.
+        tenancyPhase:
+          type: string
+          description: EXISTING_LEASE, NEW_LEASE, RENEWAL, RELET, MODERNISATION
+        buildYearMin:
+          type: integer
+          format: int32
+          description: Inclusive lower bound on building year (e.g. AT post-1953 = 1953).
+        buildYearMax:
+          type: integer
+          format: int32
+          description: Inclusive upper bound on building year (e.g. DK pre-1992 = 1991).
+        epcClassMin:
+          type: string
+          description: EPC class lower bound (A best, G worst).
+        epcClassMax:
+          type: string
+          description: EPC class upper bound (e.g. FR DPE freeze applies F-G).
+        contractSignedAfter:
+          type: string
+          format: date
+          description: Rule applies to contracts signed on/after this date (e.g. ES Ley 12/2023 → 2023-05-26).
+        contractSignedBefore:
+          type: string
+          format: date
+          description: Rule applies to contracts signed before this date.
+        landlordMinProperties:
+          type: integer
+          format: int32
+          description: Minimum number of properties owned for the rule to apply (e.g. ES gran tenedor = 5+ in Catalan zona tensionada).
+        areaCode:
+          type: string
+          description: Region-internal area sub-code (e.g. FR DOM, FR CORSE).
       required:
         - identifier
         - year
