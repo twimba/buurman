@@ -10,6 +10,21 @@ export default defineConfig({
   plugins: [
     react(),
     {
+      // config.js is a runtime-injected Docker config — not a Vite module.
+      // Remove it before Vite's HTML processor sees it (which warns about non-module
+      // scripts), then inject it back via the tags API so Vite leaves it alone.
+      name: 'runtime-config-script',
+      transformIndexHtml: {
+        order: 'pre',
+        handler(html) {
+          return {
+            html: html.replace('<script src="/config.js"></script>', ''),
+            tags: [{ tag: 'script', attrs: { src: '/config.js' }, injectTo: 'body-prepend' }],
+          };
+        },
+      },
+    },
+    {
       name: 'generate-build-info',
       configureServer(server) {
         server.middlewares.use('/build-info.json', (_req, res) => {
