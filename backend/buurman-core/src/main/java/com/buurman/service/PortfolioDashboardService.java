@@ -4,6 +4,7 @@ import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_UP;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,7 +58,10 @@ public class PortfolioDashboardService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PortfolioDashboardResponse getPortfolioDashboard(
-      Optional<Integer> months, UserPrincipal principal) {
+      Optional<Integer> months,
+      Optional<LocalDate> startDate,
+      Optional<LocalDate> endDate,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     int effectiveMonths = months.orElse(0);
     String defaultCurrency = teamService.getDefaultCurrency(teamId);
@@ -73,7 +77,8 @@ public class PortfolioDashboardService {
       Sid identifier = property.getIdentifier().get();
       try {
         PropertyDashboardResponse dashboard =
-            propertyDashboardService.getDashboardData(identifier, effectiveMonths, teamId);
+            propertyDashboardService.getDashboardData(
+                identifier, effectiveMonths, teamId, startDate, endDate);
         propertyDataList.add(new PropertyData(property, dashboard));
       } catch (Exception e) {
         log.warn("Failed to load dashboard data for property {}: {}", identifier, e.getMessage());

@@ -56,39 +56,63 @@ export const getAllAuditLogs = async (
 };
 
 export const getPortfolioDashboard = async (
-  months?: number
+  months?: number,
+  startDate?: string,
+  endDate?: string
 ): Promise<PortfolioDashboardResponse> => {
   const response = await client.get('/portfolio/dashboard', {
-    params: months != null ? { months } : undefined,
+    params: {
+      ...(months != null ? { months } : {}),
+      ...(startDate ? { startDate } : {}),
+      ...(endDate ? { endDate } : {}),
+    },
   });
   return response.data;
 };
 
 export const exportPortfolioDashboardPDF = async (
-  months?: number
+  months?: number,
+  startDate?: string,
+  endDate?: string
 ): Promise<Blob> => {
   const response = await client.get('/portfolio/dashboard/export/pdf', {
-    params: months != null ? { months } : undefined,
+    params: {
+      ...(months != null ? { months } : {}),
+      ...(startDate ? { startDate } : {}),
+      ...(endDate ? { endDate } : {}),
+    },
     responseType: 'blob',
   });
   return response.data;
 };
 
 export const exportPortfolioDashboardCSV = async (
-  months?: number
+  months?: number,
+  startDate?: string,
+  endDate?: string
 ): Promise<Blob> => {
   const response = await client.get('/portfolio/dashboard/export/csv', {
-    params: months != null ? { months } : undefined,
+    params: {
+      ...(months != null ? { months } : {}),
+      ...(startDate ? { startDate } : {}),
+      ...(endDate ? { endDate } : {}),
+    },
     responseType: 'blob',
   });
   return response.data;
 };
 
 export const exportPortfolioDashboardExcel = async (
-  months?: number
+  months?: number,
+  startDate?: string,
+  endDate?: string
 ): Promise<Blob> => {
   const response = await client.get('/portfolio/dashboard/export/excel', {
-    params: months != null ? { months } : undefined,
+    params: {
+      ...(months != null ? { months } : {}),
+      ...(startDate ? { startDate } : {}),
+      ...(endDate ? { endDate } : {}),
+    },
     responseType: 'blob',
   });
   return response.data;
