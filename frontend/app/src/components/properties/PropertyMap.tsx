@@ -29,7 +29,9 @@ export const PropertyMap = ({
   onCoordinatesChange,
 }: PropertyMapProps) => {
   const { t } = useTranslation('properties');
-  const [geocodedCoords, setGeocodedCoords] = useState<Coordinates | null>(null);
+  const [geocodedCoords, setGeocodedCoords] = useState<Coordinates | null>(
+    null
+  );
   const [geocodedLoading, setGeocodedLoading] = useState(true);
   const [geocodedError, setGeocodedError] = useState<string | null>(null);
 
