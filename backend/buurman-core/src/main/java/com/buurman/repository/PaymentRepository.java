@@ -129,6 +129,10 @@ public class PaymentRepository {
         .toList();
   }
 
+  /**
+   * Cash-basis lookup: paid rent whose {@code payment_date} fell in the window. Use for cash-flow
+   * charts that bucket actual cash movement by month.
+   */
   public List<Payment> findPaidByContractIdsAndDateRange(
       Collection<UUID> contractIds, UUID teamId, LocalDate from, LocalDate to) {
     if (contractIds.isEmpty()) {
@@ -146,6 +150,34 @@ public class PaymentRepository {
                 .and(PAYMENTS.PAYMENT_DATE.between(from, to))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.PAYMENT_DATE.asc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  /**
+   * Accrual-basis lookup: paid rent whose {@code due_date} (rental period) fell in the window. Use
+   * for averages that divide by calendar months — prevents prepaid future rent from inflating the
+   * numerator while the calendar denominator stays flat.
+   */
+  public List<Payment> findPaidByContractIdsAndDueDateRange(
+      Collection<UUID> contractIds, UUID teamId, LocalDate from, LocalDate to) {
+    if (contractIds.isEmpty()) {
+      return List.of();
+    }
+    return dsl
+        .selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS
+                .CONTRACT_ID
+                .in(contractIds)
+                .and(PAYMENTS.TEAM_ID.eq(teamId))
+                .and(PAYMENTS.STATUS.eq(PAID.name()))
+                .and(PAYMENTS.DUE_DATE.between(from, to))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .orderBy(PAYMENTS.DUE_DATE.asc())
         .fetch()
         .stream()
         .map(mapper::toDomain)
