@@ -26,7 +26,6 @@ import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -66,41 +65,281 @@ public class DemoPropertyGenerator {
   private static final String[] PARKING_TYPES = {"GARAGE", "STREET", "UNDERGROUND", "NONE"};
   private static final String[] OUTDOOR_TYPES = {"BALCONY", "TERRACE", "GARDEN"};
 
-  // Country-specific providers (indexed by property i, 12 countries)
-  private static final String[] INSURANCE_PROVIDERS = {
-    "Nationale-Nederlanden", "Allianz", "Aviva", "AXA France",
-    "Mapfre", "Fidelidade", "AG Insurance", "Generali",
-    "Wiener Städtische", "Helvetia", "State Farm", "Zurich Ireland"
-  };
-  private static final String[] TAX_AUTHORITIES = {
-    "Gemeente Amsterdam",
-    "Finanzamt Berlin",
-    "HM Revenue & Customs",
-    "Centre des Impôts",
-    "Hacienda Pública",
-    "Autoridade Tributária",
-    "SPF Finances",
-    "Agenzia delle Entrate",
-    "Finanzamt Wien",
-    "Kantonale Steuerverwaltung",
-    "County Assessor's Office",
-    "Revenue Commissioners"
-  };
-  private static final String[] APPRAISER_NAMES = {
-    "Makelaardij Van der Berg", "Immobilienbewertung Schmidt",
-    "RICS Chartered Surveyors", "Cabinet d'Expertise Dupont",
-    "Sociedad de Tasación", "Avaliadores Certificados",
-    "Expertise Immobilière", "Perizie Immobiliari",
-    "Immobilienbewertung Wien", "Schweizer Immobiliengutachter",
-    "National Appraisal Group", "Irish Property Valuers"
-  };
-  private static final String[] LENDER_NAMES = {
-    "ABN AMRO", "Deutsche Bank", "Barclays", "BNP Paribas",
-    "Banco Santander", "Millennium BCP", "KBC Bank", "UniCredit",
-    "Erste Bank", "Credit Suisse", "JPMorgan Chase", "Bank of Ireland"
-  };
+  /** Country-keyed provider names — picked off the property's actual country, not the index. */
+  private static final Map<String, String> INSURANCE_PROVIDERS =
+      Map.of(
+          "Netherlands", "Nationale-Nederlanden",
+          "Germany", "Allianz",
+          "France", "AXA France",
+          "Spain", "Mapfre",
+          "Portugal", "Fidelidade",
+          "Italy", "Generali");
 
-  public static final int PROPERTIES_PER_TEAM = 30;
+  private static final Map<String, String> TAX_AUTHORITIES =
+      Map.of(
+          "Netherlands", "Belastingdienst",
+          "Germany", "Finanzamt Berlin",
+          "France", "Centre des Impôts",
+          "Spain", "Hacienda Pública",
+          "Portugal", "Autoridade Tributária",
+          "Italy", "Agenzia delle Entrate");
+
+  private static final Map<String, String> APPRAISER_NAMES =
+      Map.of(
+          "Netherlands", "Makelaardij Van der Berg",
+          "Germany", "Immobilienbewertung Schmidt",
+          "France", "Cabinet d'Expertise Dupont",
+          "Spain", "Sociedad de Tasación",
+          "Portugal", "Avaliadores Certificados",
+          "Italy", "Perizie Immobiliari");
+
+  private static final Map<String, String> LENDER_NAMES =
+      Map.of(
+          "Netherlands", "ABN AMRO",
+          "Germany", "Deutsche Bank",
+          "France", "BNP Paribas",
+          "Spain", "Banco Santander",
+          "Portugal", "Millennium BCP",
+          "Italy", "UniCredit");
+
+  public static final int PROPERTIES_PER_TEAM = PortfolioCatalog.ENTRIES.size();
+
+  /**
+   * Curated portfolio of a small Western/Southern European landlord.
+   *
+   * <p>10 units across NL/PT/ES/IT/DE: 9 residential + 1 commercial. Prices, rents, and mortgage
+   * terms are tuned so aggregate cash flow is modestly positive — the two oldest NL assets are
+   * paid-off and subsidise the more recent leveraged purchases.
+   */
+  private record PortfolioEntry(
+      String countryName,
+      String city,
+      String street,
+      int houseNumber,
+      String postalCode,
+      double latitude,
+      double longitude,
+      String category,
+      String propertyType,
+      int areaSqm,
+      int bedrooms,
+      int yearBuilt,
+      LocalDate acquisitionDate,
+      long purchasePriceEuros,
+      long monthlyRentEuros,
+      boolean hasMortgage,
+      long mortgageOriginalEuros,
+      double mortgageInterestRate,
+      int mortgageTermYears) {}
+
+  private static final class PortfolioCatalog {
+    static final List<PortfolioEntry> ENTRIES =
+        List.of(
+            new PortfolioEntry(
+                "Netherlands",
+                "Amsterdam",
+                "Keizersgracht",
+                142,
+                "1015 CW",
+                52.3676,
+                4.8884,
+                "RESIDENTIAL",
+                "APARTMENT",
+                75,
+                2,
+                1898,
+                LocalDate.of(2003, 4, 12),
+                280_000L,
+                1_950L,
+                false,
+                0L,
+                0.0,
+                0),
+            new PortfolioEntry(
+                "Netherlands",
+                "Amsterdam",
+                "Vondelstraat",
+                88,
+                "1054 GR",
+                52.3580,
+                4.8689,
+                "RESIDENTIAL",
+                "STUDIO",
+                38,
+                1,
+                1925,
+                LocalDate.of(2008, 9, 20),
+                210_000L,
+                1_250L,
+                false,
+                0L,
+                0.0,
+                0),
+            new PortfolioEntry(
+                "Netherlands",
+                "Rotterdam",
+                "Coolsingel",
+                64,
+                "3012 AD",
+                51.9225,
+                4.4791,
+                "RESIDENTIAL",
+                "APARTMENT",
+                82,
+                2,
+                1980,
+                LocalDate.of(2014, 6, 10),
+                245_000L,
+                1_750L,
+                true,
+                140_000L,
+                3.0,
+                25),
+            new PortfolioEntry(
+                "Netherlands",
+                "Utrecht",
+                "Oudegracht",
+                312,
+                "3511 PB",
+                52.0907,
+                5.1214,
+                "RESIDENTIAL",
+                "TOWNHOUSE",
+                110,
+                3,
+                1965,
+                LocalDate.of(2018, 3, 15),
+                410_000L,
+                2_100L,
+                true,
+                240_000L,
+                2.0,
+                30),
+            new PortfolioEntry(
+                "Netherlands",
+                "Haarlem",
+                "Generaal Cronjéstraat",
+                24,
+                "2021 JC",
+                52.3874,
+                4.6462,
+                "RESIDENTIAL",
+                "HOUSE",
+                145,
+                4,
+                1955,
+                LocalDate.of(2021, 11, 8),
+                575_000L,
+                2_600L,
+                true,
+                340_000L,
+                1.8,
+                30),
+            new PortfolioEntry(
+                "Portugal",
+                "Lisbon",
+                "Rua da Madalena",
+                78,
+                "1100-321",
+                38.7100,
+                -9.1357,
+                "RESIDENTIAL",
+                "APARTMENT",
+                70,
+                2,
+                1948,
+                LocalDate.of(2016, 9, 22),
+                195_000L,
+                1_300L,
+                true,
+                115_000L,
+                2.5,
+                25),
+            new PortfolioEntry(
+                "Portugal",
+                "Porto",
+                "Rua de Cedofeita",
+                233,
+                "4050-178",
+                41.1500,
+                -8.6175,
+                "RESIDENTIAL",
+                "STUDIO",
+                42,
+                1,
+                1932,
+                LocalDate.of(2020, 5, 18),
+                145_000L,
+                900L,
+                true,
+                85_000L,
+                1.5,
+                25),
+            new PortfolioEntry(
+                "Spain",
+                "Valencia",
+                "Carrer de Colón",
+                18,
+                "46004",
+                39.4699,
+                -0.3763,
+                "RESIDENTIAL",
+                "APARTMENT",
+                85,
+                2,
+                1970,
+                LocalDate.of(2019, 7, 30),
+                215_000L,
+                1_400L,
+                true,
+                125_000L,
+                2.5,
+                25),
+            new PortfolioEntry(
+                "Italy",
+                "Milan",
+                "Via Tortona",
+                27,
+                "20144",
+                45.4525,
+                9.1700,
+                "RESIDENTIAL",
+                "APARTMENT",
+                55,
+                1,
+                1962,
+                LocalDate.of(2022, 1, 12),
+                340_000L,
+                1_800L,
+                true,
+                200_000L,
+                3.5,
+                25),
+            new PortfolioEntry(
+                "Germany",
+                "Berlin",
+                "Schliemannstraße",
+                9,
+                "10437",
+                52.5410,
+                13.4180,
+                "COMMERCIAL",
+                "RETAIL",
+                60,
+                0,
+                1928,
+                LocalDate.of(2017, 4, 5),
+                280_000L,
+                2_800L,
+                true,
+                165_000L,
+                2.0,
+                25));
+
+    static PortfolioEntry get(int i) {
+      return ENTRIES.get(i);
+    }
+  }
 
   // Country data with category-specific street pools
   private static final List<CountryData> COUNTRIES =
@@ -520,6 +759,15 @@ public class DemoPropertyGenerator {
               -5.9,
               Map.of()));
 
+  private static CountryData countryByName(String name) {
+    for (CountryData c : COUNTRIES) {
+      if (c.name().equals(name)) {
+        return c;
+      }
+    }
+    throw new IllegalStateException("Unknown country in portfolio: " + name);
+  }
+
   record CountryData(
       String name,
       List<String> residentialStreets,
@@ -535,16 +783,6 @@ public class DemoPropertyGenerator {
       Map<String, String> cityToRegion) {}
 
   private final Clock clock;
-
-  // Property type cycling arrays per category
-  private static final String[] RESIDENTIAL_TYPES = {
-    "APARTMENT", "HOUSE", "STUDIO", "TOWNHOUSE", "VILLA", "APARTMENT", "HOUSE", "APARTMENT"
-  };
-  private static final String[] COMMERCIAL_TYPES = {
-    "OFFICE", "RETAIL", "RESTAURANT", "OFFICE", "RETAIL", "OFFICE"
-  };
-  private static final String[] INDUSTRIAL_TYPES = {"WAREHOUSE", "FACTORY", "WORKSHOP"};
-  private static final String[] AGRICULTURAL_TYPES = {"FARMLAND", "GREENHOUSE", "FARMLAND"};
 
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
@@ -571,43 +809,30 @@ public class DemoPropertyGenerator {
       List<Object[]> agriculturalRecords = new ArrayList<>();
 
       for (int i = 0; i < PROPERTIES_PER_TEAM; i++) {
+        PortfolioEntry entry = PortfolioCatalog.get(i);
         UUID propertyId = UUID.randomUUID();
 
-        // Category distribution
-        String propertyCategory = categoryForIndex(i);
-
-        // Property type cycling within category
-        String propertyType = typeForIndex(propertyCategory, i);
+        String propertyCategory = entry.category();
+        String propertyType = entry.propertyType();
 
         // Default to VACANT; contract generator sets OCCUPIED for properties with ACTIVE contracts
         String status = "VACANT";
 
-        // Country distribution: cycle through 12 countries
-        CountryData country = COUNTRIES.get(i % COUNTRIES.size());
-        List<String> streets = streetsForCategory(country, propertyCategory);
+        CountryData country = countryByName(entry.countryName());
+        String street = entry.street() + " " + entry.houseNumber();
+        String city = entry.city();
+        String postalCode = entry.postalCode();
 
-        int houseNumber = random.nextInt(1, 200);
-        String street = pick(streets) + " " + houseNumber;
-        String city = pick(country.cities());
-        String postalCode = generatePostalCode(country.postalFormat());
+        double lat = entry.latitude();
+        double lon = entry.longitude();
 
-        double lat = country.latMin() + random.nextDouble() * (country.latMax() - country.latMin());
-        double lon = country.lonMin() + random.nextDouble() * (country.lonMax() - country.lonMin());
+        LocalDate acquisitionDate = entry.acquisitionDate();
 
-        // Acquisition date based on index band
-        LocalDate acquisitionDate = acquisitionDateForIndex(i);
+        int yearBuilt = entry.yearBuilt();
+        BigDecimal area = BigDecimal.valueOf(entry.areaSqm());
 
-        int yearBuilt = random.nextInt(1920, 2020);
-        BigDecimal area = areaForCategory(propertyCategory);
-
-        int bedrooms =
-            switch (propertyType) {
-              case "STUDIO" -> 1;
-              case "APARTMENT" -> random.nextInt(1, 4);
-              case "HOUSE", "VILLA", "TOWNHOUSE" -> random.nextInt(2, 6);
-              default -> 0;
-            };
-        int bathrooms = Math.max(1, bedrooms / 2 + 1);
+        int bedrooms = entry.bedrooms();
+        int bathrooms = bedrooms == 0 ? 0 : Math.max(1, bedrooms / 2 + 1);
 
         // Category-specific construction attributes
         String constructionType = constructionTypeForCategory(propertyCategory);
@@ -621,9 +846,7 @@ public class DemoPropertyGenerator {
         // created_at is around the acquisition date (property was "added" when acquired)
         LocalDateTime createdAt = acquisitionDate.atStartOfDay().plusDays(random.nextInt(0, 30));
 
-        // Rent baseline for this property
-        BigDecimal rentBaseline =
-            rentBaselineForProperty(country.name(), propertyType, propertyCategory);
+        BigDecimal rentBaseline = BigDecimal.valueOf(entry.monthlyRentEuros());
 
         Sid propertyIdentifier = newPropertyId();
         propertyRecords.add(
@@ -719,7 +942,8 @@ public class DemoPropertyGenerator {
             acquisitionDate,
             rentBaseline,
             now,
-            ctx);
+            ctx,
+            entry);
 
         propertyIds.add(propertyId);
         ctx.putIdentifier(propertyId, propertyIdentifier);
@@ -1476,99 +1700,6 @@ public class DemoPropertyGenerator {
     batch.execute();
   }
 
-  // --- Category and type distribution ---
-
-  private String categoryForIndex(int i) {
-    if (i <= 17) {
-      return "RESIDENTIAL";
-    } else if (i <= 23) {
-      return "COMMERCIAL";
-    } else if (i <= 26) {
-      return "INDUSTRIAL";
-    } else {
-      return "AGRICULTURAL";
-    }
-  }
-
-  private String typeForIndex(String category, int i) {
-    return switch (category) {
-      case "RESIDENTIAL" -> RESIDENTIAL_TYPES[i % RESIDENTIAL_TYPES.length];
-      case "COMMERCIAL" -> COMMERCIAL_TYPES[(i - 18) % COMMERCIAL_TYPES.length];
-      case "INDUSTRIAL" -> INDUSTRIAL_TYPES[(i - 24) % INDUSTRIAL_TYPES.length];
-      case "AGRICULTURAL" -> AGRICULTURAL_TYPES[(i - 27) % AGRICULTURAL_TYPES.length];
-      default -> "APARTMENT";
-    };
-  }
-
-  // --- Acquisition date based on index band ---
-
-  private LocalDate acquisitionDateForIndex(int i) {
-    int startYear;
-    int endYear;
-    int endMonth;
-    int endDay;
-    if (i <= 4) {
-      startYear = 2000;
-      endYear = 2004;
-      endMonth = 12;
-      endDay = 31;
-    } else if (i <= 9) {
-      startYear = 2005;
-      endYear = 2009;
-      endMonth = 12;
-      endDay = 31;
-    } else if (i <= 14) {
-      startYear = 2010;
-      endYear = 2014;
-      endMonth = 12;
-      endDay = 31;
-    } else if (i <= 19) {
-      startYear = 2015;
-      endYear = 2019;
-      endMonth = 12;
-      endDay = 31;
-    } else if (i <= 24) {
-      startYear = 2020;
-      endYear = 2023;
-      endMonth = 12;
-      endDay = 31;
-    } else {
-      startYear = 2024;
-      endYear = 2025;
-      endMonth = 6;
-      endDay = 30;
-    }
-    LocalDate rangeStart = LocalDate.of(startYear, 1, 1);
-    LocalDate rangeEnd = LocalDate.of(endYear, endMonth, endDay);
-    long daysBetween = ChronoUnit.DAYS.between(rangeStart, rangeEnd);
-    return rangeStart.plusDays(random.nextLong(0, daysBetween + 1));
-  }
-
-  // --- Category-specific addresses ---
-
-  private List<String> streetsForCategory(CountryData country, String category) {
-    return switch (category) {
-      case "COMMERCIAL", "MIXED_USE" -> country.commercialStreets();
-      case "INDUSTRIAL" -> country.industrialStreets();
-      case "AGRICULTURAL" -> country.agriculturalStreets();
-      default -> country.residentialStreets();
-    };
-  }
-
-  // --- Category-specific area ---
-
-  private BigDecimal areaForCategory(String category) {
-    return BigDecimal.valueOf(
-        switch (category) {
-          case "RESIDENTIAL" -> random.nextInt(25, 250);
-          case "COMMERCIAL" -> random.nextInt(50, 500);
-          case "INDUSTRIAL" -> random.nextInt(200, 5000);
-          case "AGRICULTURAL" -> random.nextInt(5000, 50000);
-          case "MIXED_USE" -> random.nextInt(100, 800);
-          default -> 75;
-        });
-  }
-
   // --- Category-specific construction ---
 
   private String constructionTypeForCategory(String category) {
@@ -1627,104 +1758,25 @@ public class DemoPropertyGenerator {
     };
   }
 
-  // --- Category-specific financial (era-aware) ---
-
-  private long acquisitionPriceFromRent(BigDecimal monthlyRent, int i, int acquisitionYear) {
-    double targetYield = 0.050 + (i % 10) * 0.0025;
-    long annualRent = monthlyRent.longValue() * 12;
-    long baseline2024 = Math.round(annualRent / targetYield);
-    int yearsBack = 2024 - acquisitionYear;
-    double deflator = Math.pow(1.0 / 1.03, yearsBack);
-    return Math.round(baseline2024 * deflator);
-  }
+  // --- Property valuation ---
 
   private long currentMarketValue(long acquisitionPriceMinor, int acquisitionYear) {
-    int yearsSince = 2025 - acquisitionYear;
+    int yearsSince = LocalDate.now(clock).getYear() - acquisitionYear;
     double appreciation = Math.pow(1.03, yearsSince);
     return Math.round(acquisitionPriceMinor * appreciation);
   }
 
-  // --- Rent baseline calculation ---
-
-  private BigDecimal rentBaselineForProperty(
-      String countryName, String propertyType, String category) {
-    double base = 1200.0;
-    double countryMul = countryRentMultiplier(countryName);
-    double typeMul = typeRentMultiplier(propertyType, category);
-    return BigDecimal.valueOf(base * countryMul * typeMul).setScale(0, RoundingMode.HALF_UP);
-  }
-
+  /** Country rent multiplier, exposed for the expense generator's country scaling. */
   private double countryRentMultiplier(String countryName) {
     return switch (countryName) {
       case "Netherlands" -> 1.0;
       case "Germany" -> 0.85;
-      case "United Kingdom" -> 1.4;
       case "France" -> 0.95;
       case "Spain" -> 0.65;
       case "Portugal" -> 0.55;
-      case "Belgium" -> 0.9;
       case "Italy" -> 0.8;
-      case "Austria" -> 0.9;
-      case "Switzerland" -> 1.5;
-      case "United States" -> 1.3;
-      case "Ireland" -> 1.2;
       default -> 1.0;
     };
-  }
-
-  private double typeRentMultiplier(String propertyType, String category) {
-    return switch (category) {
-      case "RESIDENTIAL" ->
-          switch (propertyType) {
-            case "STUDIO" -> 0.65;
-            case "APARTMENT" -> 1.0;
-            case "HOUSE" -> 1.3;
-            case "TOWNHOUSE" -> 1.1;
-            case "VILLA" -> 2.0;
-            default -> 1.0;
-          };
-      case "COMMERCIAL" ->
-          switch (propertyType) {
-            case "OFFICE" -> 1.8;
-            case "RETAIL" -> 2.2;
-            case "RESTAURANT" -> 2.5;
-            default -> 1.8;
-          };
-      case "INDUSTRIAL" ->
-          switch (propertyType) {
-            case "WAREHOUSE" -> 2.5;
-            case "FACTORY" -> 3.5;
-            case "WORKSHOP" -> 2.0;
-            default -> 2.5;
-          };
-      case "AGRICULTURAL" ->
-          switch (propertyType) {
-            case "FARMLAND" -> 1.5;
-            case "GREENHOUSE" -> 2.0;
-            default -> 1.5;
-          };
-      default -> 1.0;
-    };
-  }
-
-  // --- Historical interest rate by acquisition year ---
-
-  private BigDecimal historicalInterestRate(int acquisitionYear) {
-    if (acquisitionYear <= 2005) {
-      return BigDecimal.valueOf(4.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
-    } else if (acquisitionYear <= 2010) {
-      return BigDecimal.valueOf(3.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
-    } else if (acquisitionYear <= 2015) {
-      return BigDecimal.valueOf(2.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
-    } else if (acquisitionYear <= 2019) {
-      return BigDecimal.valueOf(1.5 + random.nextDouble() * 1.0).setScale(2, RoundingMode.HALF_UP);
-    } else if (acquisitionYear <= 2021) {
-      return BigDecimal.valueOf(1.2 + random.nextDouble() * 0.8).setScale(2, RoundingMode.HALF_UP);
-    } else if (acquisitionYear == 2022) {
-      return BigDecimal.valueOf(2.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
-    } else {
-      return BigDecimal.valueOf(3.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
-    }
   }
 
   // --- Category-specific details collection ---
@@ -1884,10 +1936,11 @@ public class DemoPropertyGenerator {
       LocalDate acquisitionDate,
       BigDecimal rentBaseline,
       LocalDateTime now,
-      DemoDataContext ctx) {
+      DemoDataContext ctx,
+      PortfolioEntry entry) {
 
     int acquisitionYear = acquisitionDate.getYear();
-    long purchasePrice = acquisitionPriceFromRent(rentBaseline, i, acquisitionYear);
+    long purchasePrice = entry.purchasePriceEuros();
     long marketValue = currentMarketValue(purchasePrice, acquisitionYear);
 
     // === ACQUISITION ===
@@ -1966,7 +2019,7 @@ public class DemoPropertyGenerator {
           LocalDate.now(clock).minusMonths(random.nextInt(1, 24)),
           BigDecimal.valueOf(marketValue),
           currency,
-          APPRAISER_NAMES[i % APPRAISER_NAMES.length],
+          APPRAISER_NAMES.get(entry.countryName()),
           random.nextInt(4) == 0 ? "Annual market assessment" : null,
           now,
           now,
@@ -1986,7 +2039,7 @@ public class DemoPropertyGenerator {
           LocalDate.now(clock).minusMonths(random.nextInt(4, 10)),
           BigDecimal.valueOf(taxAssessedValue),
           currency,
-          TAX_AUTHORITIES[i % TAX_AUTHORITIES.length],
+          TAX_AUTHORITIES.get(entry.countryName()),
           null,
           now,
           now,
@@ -2007,7 +2060,7 @@ public class DemoPropertyGenerator {
             LocalDate.now(clock).minusMonths(random.nextInt(12, 24)),
             BigDecimal.valueOf(appraisalValue),
             currency,
-            APPRAISER_NAMES[i % APPRAISER_NAMES.length],
+            APPRAISER_NAMES.get(entry.countryName()),
             "Independent appraisal for refinancing",
             now,
             now,
@@ -2017,56 +2070,30 @@ public class DemoPropertyGenerator {
     }
 
     // === FINANCING ===
-    boolean hasFinancing =
-        (i >= 1 && i <= 24)
-            && !"INHERITANCE".equals(acquisitionType)
-            && !"AUCTION".equals(acquisitionType);
-    if (hasFinancing) {
-      String rateType;
-      int rateRoll = random.nextInt(10);
-      if (rateRoll < 7) {
-        rateType = "FIXED";
-      } else if (rateRoll < 9) {
-        rateType = "VARIABLE";
-      } else {
-        rateType = "HYBRID";
-      }
-
-      BigDecimal interestRate = historicalInterestRate(acquisitionYear);
-      int termYears = 25 + random.nextInt(0, 6);
+    if (entry.hasMortgage()) {
+      String rateType = "FIXED";
+      BigDecimal interestRate =
+          BigDecimal.valueOf(entry.mortgageInterestRate()).setScale(2, RoundingMode.HALF_UP);
+      int termYears = entry.mortgageTermYears();
       int termMonths = termYears * 12;
-
-      double ltv = 0.55 + random.nextDouble() * 0.20;
-      long originalAmount = Math.round(purchasePrice * ltv);
+      long originalAmount = entry.mortgageOriginalEuros();
 
       long monthlyPayment =
           calculateMonthlyPayment(originalAmount, interestRate.doubleValue(), termMonths);
 
-      int yearsElapsed = 2025 - acquisitionYear;
-      int totalYears = termYears;
-      double remainingFraction = Math.max(0.0, 1.0 - ((double) yearsElapsed / totalYears));
+      int yearsElapsed = LocalDate.now(clock).getYear() - acquisitionYear;
+      double remainingFraction =
+          Math.max(0.0, 1.0 - ((double) yearsElapsed / Math.max(1, termYears)));
+      // Front-loaded interest curve: remaining principal decays slower than time elapses
       remainingFraction = Math.pow(remainingFraction, 0.7);
       long currentBalance = Math.round(originalAmount * remainingFraction);
 
-      String loanNumber =
-          "MTG-" + acquisitionYear + "-" + String.format("%04d", random.nextInt(1000, 9999));
-      String financingNotes = null;
-      if (random.nextInt(10) < 3) {
-        financingNotes = "Fixed rate locked until " + (acquisitionYear + random.nextInt(5, 15));
-      }
+      String loanNumber = "MTG-" + acquisitionYear + "-" + String.format("%04d", 1000 + i * 137);
+      String financingNotes = "Fixed-rate mortgage, repayment schedule per amortization table";
 
       UUID financingId = UUID.randomUUID();
-      boolean isRefinanced = (i == 5);
-
       LocalDate loanEndDate = acquisitionDate.plusMonths(termMonths);
-      String financingStatus;
-      if (isRefinanced) {
-        financingStatus = "REFINANCED";
-      } else if (loanEndDate.isBefore(LocalDate.now(clock))) {
-        financingStatus = "COMPLETED";
-      } else {
-        financingStatus = "ACTIVE";
-      }
+      String financingStatus = loanEndDate.isBefore(LocalDate.now(clock)) ? "COMPLETED" : "ACTIVE";
 
       financingRecords.add(
           new Object[] {
@@ -2076,7 +2103,7 @@ public class DemoPropertyGenerator {
             teamId,
             "MORTGAGE",
             rateType,
-            LENDER_NAMES[i % LENDER_NAMES.length],
+            LENDER_NAMES.get(entry.countryName()),
             loanNumber,
             BigDecimal.valueOf(originalAmount),
             currency,
@@ -2098,50 +2125,10 @@ public class DemoPropertyGenerator {
           });
 
       ctx.getFinancingIdsByTeam().computeIfAbsent(teamId, k -> new ArrayList<>()).add(financingId);
-
-      // Prop 5: refinanced
-      if (isRefinanced) {
-        UUID refinancedId = UUID.randomUUID();
-        BigDecimal lowerRate =
-            interestRate.subtract(BigDecimal.ONE).max(BigDecimal.valueOf(150, 2));
-        long refinancedPayment =
-            calculateMonthlyPayment(currentBalance, lowerRate.doubleValue(), 300);
-
-        financingRecords.add(
-            new Object[] {
-              refinancedId,
-              newFinancingId(),
-              propertyId,
-              teamId,
-              "MORTGAGE",
-              "FIXED",
-              LENDER_NAMES[(i + 1) % LENDER_NAMES.length],
-              "MTG-REFI-" + String.format("%04d", random.nextInt(1000, 9999)),
-              BigDecimal.valueOf(currentBalance),
-              currency,
-              BigDecimal.valueOf(Math.round(currentBalance * 0.95)),
-              currency,
-              lowerRate,
-              BigDecimal.valueOf(refinancedPayment),
-              currency,
-              false,
-              LocalDate.now(clock).minusYears(1),
-              LocalDate.now(clock).minusYears(1).plusMonths(300),
-              300,
-              "ACTIVE",
-              "Refinanced at lower rate",
-              now,
-              now,
-              createdBy,
-              createdBy
-            });
-
-        ctx.getFinancingIdsByTeam().get(teamId).add(refinancedId);
-      }
     }
 
     // === INSURANCE ===
-    String provider = INSURANCE_PROVIDERS[i % INSURANCE_PROVIDERS.length];
+    String provider = INSURANCE_PROVIDERS.get(entry.countryName());
     long buildingPremium = (long) (marketValue * 0.002) + random.nextInt(100, 300);
     long coverageAmount = (long) (marketValue * (0.80 + random.nextDouble() * 0.20));
 
@@ -2225,10 +2212,13 @@ public class DemoPropertyGenerator {
     }
 
     // === TAXES ===
-    String authority = TAX_AUTHORITIES[i % TAX_AUTHORITIES.length];
+    String authority = TAX_AUTHORITIES.get(entry.countryName());
     String taxFrequency;
     String dueMonths;
-    if (i % 3 == 0) {
+    if ("COMMERCIAL".equals(propertyCategory) || "AGRICULTURAL".equals(propertyCategory)) {
+      taxFrequency = "ANNUALLY";
+      dueMonths = "3";
+    } else if (i % 3 == 0) {
       taxFrequency = "QUARTERLY";
       dueMonths = "3,6,9,12";
     } else if (i % 3 == 1) {
@@ -2240,12 +2230,13 @@ public class DemoPropertyGenerator {
     }
     double taxRatePct =
         switch (propertyCategory) {
-          case "COMMERCIAL" -> 0.006 + random.nextDouble() * 0.006;
+          case "COMMERCIAL" -> 0.003 + random.nextDouble() * 0.003;
           case "INDUSTRIAL" -> 0.008 + random.nextDouble() * 0.007;
           case "AGRICULTURAL" -> 0.002 + random.nextDouble() * 0.003;
-          default -> 0.004 + random.nextDouble() * 0.006;
+          // Residential: ~0.1-0.2% of value (NL OZB realism, similar across PT/ES/IT/FR/DE)
+          default -> 0.001 + random.nextDouble() * 0.001;
         };
-    long taxAmount = Math.max(300, Math.round(marketValue * taxRatePct));
+    long taxAmount = Math.max(150, Math.round(marketValue * taxRatePct));
 
     taxRecords.add(
         new Object[] {
@@ -2294,7 +2285,7 @@ public class DemoPropertyGenerator {
             createdBy,
             createdBy
           });
-    } else if (i % 3 == 0) {
+    } else if ("RESIDENTIAL".equals(propertyCategory) && i % 3 == 0) {
       taxRecords.add(
           new Object[] {
             UUID.randomUUID(),
@@ -2323,7 +2314,13 @@ public class DemoPropertyGenerator {
     long annualRent = rentBaseline.longValue() * 12;
     switch (propertyCategory) {
       case "RESIDENTIAL" -> {
-        if (random.nextInt(3) < 2) {
+        // HOA / VvE is apartment-block specific — skip for standalone houses/townhouses/villas
+        String propertyType = entry.propertyType();
+        boolean inSharedBuilding =
+            "APARTMENT".equals(propertyType)
+                || "STUDIO".equals(propertyType)
+                || "ROOM".equals(propertyType);
+        if (inSharedBuilding && random.nextInt(3) < 2) {
           addFee(
               feeRecords,
               propertyId,
@@ -2372,48 +2369,9 @@ public class DemoPropertyGenerator {
             teamId,
             createdBy,
             currency,
-            "MANAGEMENT",
-            "Commercial Property Management",
-            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)),
-            "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12",
-            acquisitionDate,
-            now);
-        addFee(
-            feeRecords,
-            propertyId,
-            teamId,
-            createdBy,
-            currency,
-            "SECURITY",
-            "Security Service",
-            Math.round(annualRent * (0.03 + random.nextDouble() * 0.03)),
-            "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12",
-            acquisitionDate,
-            now);
-        addFee(
-            feeRecords,
-            propertyId,
-            teamId,
-            createdBy,
-            currency,
-            "CLEANING",
-            "Professional Cleaning",
-            Math.round(annualRent * (0.04 + random.nextDouble() * 0.04)),
-            "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12",
-            acquisitionDate,
-            now);
-        addFee(
-            feeRecords,
-            propertyId,
-            teamId,
-            createdBy,
-            currency,
             "WASTE_MANAGEMENT",
             "Commercial Waste Disposal",
-            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
+            Math.round(annualRent * (0.015 + random.nextDouble() * 0.015)),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -2609,27 +2567,6 @@ public class DemoPropertyGenerator {
   }
 
   // --- Helpers ---
-
-  private String generatePostalCode(String format) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < format.length(); i++) {
-      char c = format.charAt(i);
-      if (c == '#') {
-        sb.append(random.nextInt(0, 10));
-      } else if (c == 'A') {
-        sb.append((char) ('A' + random.nextInt(26)));
-      } else if (c == '_') {
-        sb.append(' ');
-      } else {
-        sb.append(c);
-      }
-    }
-    return sb.toString();
-  }
-
-  private String pick(List<String> list) {
-    return list.get(random.nextInt(list.size()));
-  }
 
   private String pick(String[] array) {
     return array[random.nextInt(array.length)];

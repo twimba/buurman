@@ -137,10 +137,16 @@ public class PropertyDashboardService {
     if (explicitStartDate.isPresent()) {
       startDate = explicitStartDate.get();
     } else if (months <= 0) {
+      LocalDate epoch = LocalDate.of(1970, 1, 1);
       List<Payment> unfilteredPayments =
           paymentRepository
-              .findPaidByContractIdsAndDateRange(
-                  contractIds, teamId, LocalDate.of(1970, 1, 1), endDate)
+              .findPaidByContractIdsAndDateRange(contractIds, teamId, epoch, endDate)
+              .stream()
+              .filter(p -> currency == null || currency.equals(p.getAmount().currency()))
+              .toList();
+      List<Payment> unfilteredAccrualPayments =
+          paymentRepository
+              .findPaidByContractIdsAndDueDateRange(contractIds, teamId, epoch, endDate)
               .stream()
               .filter(p -> currency == null || currency.equals(p.getAmount().currency()))
               .toList();
@@ -184,6 +190,7 @@ public class PropertyDashboardService {
           contracts,
           occupancyPeriods,
           unfilteredPayments,
+          unfilteredAccrualPayments,
           unfilteredExpenses,
           unfilteredFinancingPayments,
           startDate,
@@ -196,6 +203,13 @@ public class PropertyDashboardService {
     List<Payment> allPayments =
         paymentRepository
             .findPaidByContractIdsAndDateRange(contractIds, teamId, startDate, endDate)
+            .stream()
+            .filter(p -> currency == null || currency.equals(p.getAmount().currency()))
+            .toList();
+
+    List<Payment> accrualPayments =
+        paymentRepository
+            .findPaidByContractIdsAndDueDateRange(contractIds, teamId, startDate, endDate)
             .stream()
             .filter(p -> currency == null || currency.equals(p.getAmount().currency()))
             .toList();
@@ -225,6 +239,7 @@ public class PropertyDashboardService {
         contracts,
         occupancyPeriods,
         allPayments,
+        accrualPayments,
         allExpenses,
         allFinancingPayments,
         startDate,
@@ -280,6 +295,7 @@ public class PropertyDashboardService {
       List<Contract> contracts,
       List<PropertyOccupancyPeriod> occupancyPeriods,
       List<Payment> payments,
+      List<Payment> accrualPayments,
       List<Expense> expenses,
       List<FinancingPayment> financingPayments,
       LocalDate startDate,
@@ -290,7 +306,12 @@ public class PropertyDashboardService {
 
     SummaryMetrics summary =
         buildSummaryMetrics(
-            financialData, contracts, payments, expenses, effectiveMonths, effectiveEndDates);
+            financialData,
+            contracts,
+            accrualPayments,
+            expenses,
+            effectiveMonths,
+            effectiveEndDates);
     CashFlowChartData cashFlow =
         buildCashFlowChart(
             payments, expenses, financingPayments, financialData, now, effectiveMonths);
