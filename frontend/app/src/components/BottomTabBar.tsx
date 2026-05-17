@@ -68,6 +68,7 @@ export const BottomTabBar = () => {
             <NavLink
               key={tab.label}
               to={tab.to}
+              viewTransition
               className="flex-1 inline-flex items-stretch focus-ring"
             >
               {({ isActive }) => content(isActive)}
