@@ -37,6 +37,15 @@ jobs:
         working-directory: frontend/app
         run: npx playwright install --with-deps chromium webkit
 
+      # Generate API client TypeScript from the OpenAPI spec. The
+      # `frontend/{app,backoffice}/src/generated/` directories are
+      # gitignored and regenerated at build time by orval; without this
+      # step the `yarn build` below fails with TS2307 on every `@/generated/*`
+      # import.
+      - name: Generate API clients
+        working-directory: frontend
+        run: yarn generate:api
+
       - name: Build app
         working-directory: frontend/app
         run: yarn build

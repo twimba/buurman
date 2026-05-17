@@ -161,7 +161,7 @@ export const DashboardPage = () => {
   }
 
   const overdueCount = unpaidPayments.filter(
-    (p) => p.status === 'OVERDUE' || p.status === 'LATE'
+    (p) => p.status === 'OVERDUE'
   ).length;
 
   return (
