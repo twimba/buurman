@@ -81,9 +81,11 @@ const variantStyles: Record<ButtonVariant, string> = {
   `,
 };
 
+// Visual heights stay sm/md/lg — but on coarse-pointer (touch) screens the
+// invisible hit area expands to 44 px via min-h-touch so it meets WCAG 2.5.5.
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-xs gap-1.5',
-  md: 'h-9 px-4 text-sm gap-2',
+  sm: 'h-8 px-3 text-xs gap-1.5 [@media(pointer:coarse)]:min-h-touch',
+  md: 'h-9 px-4 text-sm gap-2 [@media(pointer:coarse)]:min-h-touch',
   lg: 'h-11 px-5 text-base gap-2.5',
 };
 
