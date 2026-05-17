@@ -1048,8 +1048,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Scheduled",
       "COMPLETED": "Completed",
-      "MISSED": "Missed",
-      "LATE": "Late"
+      "MISSED": "Missed"
     },
     "insuranceTypes": {
       "BUILDING": "Building",

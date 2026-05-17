@@ -1048,8 +1048,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Προγραμματισμένη",
       "COMPLETED": "Ολοκληρωμένη",
-      "MISSED": "Χαμένη",
-      "LATE": "Καθυστερημένη"
+      "MISSED": "Χαμένη"
     },
     "insuranceTypes": {
       "BUILDING": "Κτιρίου",

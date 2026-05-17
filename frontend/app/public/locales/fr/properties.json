@@ -600,8 +600,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Planifié",
       "COMPLETED": "Complété",
-      "MISSED": "Manqué",
-      "LATE": "En retard"
+      "MISSED": "Manqué"
     },
     "insuranceTypes": {
       "BUILDING": "Bâtiment",

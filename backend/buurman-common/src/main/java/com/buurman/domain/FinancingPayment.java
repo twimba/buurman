@@ -23,8 +23,7 @@ public class FinancingPayment {
   public enum PaymentStatus {
     SCHEDULED,
     COMPLETED,
-    MISSED,
-    LATE
+    MISSED
   }
 
   private UUID id;

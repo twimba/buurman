@@ -36,7 +36,6 @@
     "partiallyPaid": "Częściowa",
     "paid": "Opłacona",
     "overdue": "Zaległa",
-    "late": "Spóźniona",
     "cancelled": "Anulowana"
   },
   "table": {

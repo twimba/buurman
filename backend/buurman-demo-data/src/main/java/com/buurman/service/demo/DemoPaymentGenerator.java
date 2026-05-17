@@ -109,8 +109,8 @@ public class DemoPaymentGenerator {
             int roll = random.nextInt(100);
             if (monthsAgo > 60) {
               // > 5 years: nearly all paid
-              paymentStatus = roll < 98 ? "PAID" : "LATE";
-              if ("LATE".equals(paymentStatus)) {
+              paymentStatus = "PAID";
+              if (roll >= 98) {
                 paymentDate = dueDate.plusDays(random.nextInt(5, 30));
               }
             } else if (monthsAgo > 12) {
@@ -118,7 +118,7 @@ public class DemoPaymentGenerator {
               if (roll < 92) {
                 paymentStatus = "PAID";
               } else if (roll < 97) {
-                paymentStatus = "LATE";
+                paymentStatus = "PAID";
                 paymentDate = dueDate.plusDays(random.nextInt(5, 30));
               } else if (roll < 99) {
                 paymentStatus = "OVERDUE";
@@ -130,7 +130,7 @@ public class DemoPaymentGenerator {
               if (roll < 85) {
                 paymentStatus = "PAID";
               } else if (roll < 93) {
-                paymentStatus = "LATE";
+                paymentStatus = "PAID";
                 paymentDate = dueDate.plusDays(random.nextInt(3, 15));
               } else if (roll < 98) {
                 paymentStatus = "OVERDUE";
@@ -186,7 +186,7 @@ public class DemoPaymentGenerator {
           ctx.incrementPayments();
           teamPayments++;
 
-          // Collect payment receival for PAID, PARTIALLY_PAID, or LATE payments
+          // Collect payment receival for PAID or PARTIALLY_PAID payments
           if ("PAID".equals(paymentStatus)) {
             receivalRecords.add(
                 new Object[] {
@@ -212,21 +212,6 @@ public class DemoPaymentGenerator {
                   teamId,
                   paymentId,
                   partialAmount,
-                  currency,
-                  paymentDate,
-                  now,
-                  now,
-                  createdBy,
-                  createdBy
-                });
-          } else if ("LATE".equals(paymentStatus) && paymentDate != null) {
-            receivalRecords.add(
-                new Object[] {
-                  UUID.randomUUID(),
-                  newPaymentReceivalId(),
-                  teamId,
-                  paymentId,
-                  rentAmount,
                   currency,
                   paymentDate,
                   now,

@@ -126,7 +126,7 @@ public class DemoFinancingPaymentGenerator {
               balanceDeducted = true;
               balance = Math.max(0, balance - principalAmount);
             } else if (roll < 98) {
-              paymentStatus = "LATE";
+              paymentStatus = "COMPLETED";
               balanceDeducted = true;
               balance = Math.max(0, balance - principalAmount);
               notes = "Payment received " + (5 + random.nextInt(11)) + " days late";

@@ -7762,7 +7762,6 @@ paths:
               - PARTIALLY_PAID
               - PAID
               - OVERDUE
-              - LATE
               - CANCELLED
         - name: contractIdentifier
           in: query
@@ -20516,7 +20515,6 @@ components:
             - SCHEDULED
             - COMPLETED
             - MISSED
-            - LATE
         notes:
           type: string
         deductFromBalance:
@@ -20550,7 +20548,6 @@ components:
             - SCHEDULED
             - COMPLETED
             - MISSED
-            - LATE
         notes:
           type: string
         balanceDeducted:
@@ -21442,7 +21439,6 @@ components:
             - PARTIALLY_PAID
             - PAID
             - OVERDUE
-            - LATE
             - CANCELLED
         notes:
           type: string
@@ -21577,7 +21573,6 @@ components:
             - PARTIALLY_PAID
             - PAID
             - OVERDUE
-            - LATE
             - CANCELLED
         notes:
           type: string
@@ -23867,7 +23862,6 @@ components:
             - SCHEDULED
             - COMPLETED
             - MISSED
-            - LATE
         notes:
           type: string
         deductFromBalance:

@@ -36,7 +36,6 @@
     "partiallyPaid": "Osittainen",
     "paid": "Maksettu",
     "overdue": "Myohassa",
-    "late": "Myohassa",
     "cancelled": "Peruutettu"
   },
   "table": {

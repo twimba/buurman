@@ -480,8 +480,7 @@ export const PaymentDetailPage = () => {
   const canMarkPaid =
     payment.status === PaymentStatus.PENDING ||
     payment.status === PaymentStatus.PARTIALLY_PAID ||
-    payment.status === PaymentStatus.OVERDUE ||
-    payment.status === PaymentStatus.LATE;
+    payment.status === PaymentStatus.OVERDUE;
   const canRegisterReceival = canMarkPaid;
   const symbol = getCurrencySymbol(payment.currency);
 

@@ -1048,8 +1048,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Schemalaged",
       "COMPLETED": "Slutford",
-      "MISSED": "Missad",
-      "LATE": "Sen"
+      "MISSED": "Missad"
     },
     "insuranceTypes": {
       "BUILDING": "Byggnad",

@@ -1,5 +1,6 @@
 package com.buurman.service.export;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -139,7 +140,7 @@ class DocumentTemplateServiceTest {
           service.renderToPdf(
               "test-doc", Locale.ENGLISH, Map.of("name", "Test", "showExtra", false));
       assertThat(pdf).isNotEmpty();
-      assertThat(new String(pdf, 0, 4)).isEqualTo("%PDF");
+      assertThat(new String(pdf, 0, 4, UTF_8)).isEqualTo("%PDF");
     }
 
     @Test
@@ -160,7 +161,7 @@ class DocumentTemplateServiceTest {
       byte[] pdf =
           service.renderToPdf("test-doc", locale, Map.of("name", "Test", "showExtra", false));
       assertThat(pdf).isNotEmpty();
-      assertThat(new String(pdf, 0, 4)).isEqualTo("%PDF");
+      assertThat(new String(pdf, 0, 4, UTF_8)).isEqualTo("%PDF");
     }
   }
 

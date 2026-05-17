@@ -600,8 +600,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Gepland",
       "COMPLETED": "Voltooid",
-      "MISSED": "Gemist",
-      "LATE": "Te laat"
+      "MISSED": "Gemist"
     },
     "insuranceTypes": {
       "BUILDING": "Opstal",
