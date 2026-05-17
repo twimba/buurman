@@ -284,185 +284,187 @@ export const DocumentsPage = () => {
             </div>
 
             <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-border-default">
-              <thead className="bg-surface-page">
-                <tr>
-                  <th className="w-12 px-6 py-3" />
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                    onClick={() => handleSortChange('title')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t('documentsPage.table.document')}
-                      {getSortIcon('title')}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                    onClick={() => handleSortChange('entityType')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t('documentsPage.table.type')}
-                      {getSortIcon('entityType')}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                    onClick={() => handleSortChange('fileSize')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t('documentsPage.table.size')}
-                      {getSortIcon('fileSize')}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                    onClick={() => handleSortChange('uploadedAt')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t('documentsPage.table.uploaded')}
-                      {getSortIcon('uploadedAt')}
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    {t('documentsPage.table.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-surface-card divide-y divide-border-default">
-                {documents.map((doc) => {
-                  const isSelected = selectedDocuments.has(doc.identifier);
-                  return (
-                    <tr
-                      key={doc.identifier}
-                      className={`hover:bg-surface-inset cursor-pointer ${
-                        isSelected ? 'bg-info-bg' : ''
-                      }`}
-                      onClick={() => setPreviewIndex(documents.indexOf(doc))}
+              <table className="min-w-full divide-y divide-border-default">
+                <thead className="bg-surface-page">
+                  <tr>
+                    <th className="w-12 px-6 py-3" />
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSortChange('title')}
                     >
-                      <td
-                        className="px-6 py-4"
-                        onClick={(e) => e.stopPropagation()}
+                      <div className="flex items-center gap-1">
+                        {t('documentsPage.table.document')}
+                        {getSortIcon('title')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSortChange('entityType')}
+                    >
+                      <div className="flex items-center gap-1">
+                        {t('documentsPage.table.type')}
+                        {getSortIcon('entityType')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSortChange('fileSize')}
+                    >
+                      <div className="flex items-center gap-1">
+                        {t('documentsPage.table.size')}
+                        {getSortIcon('fileSize')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSortChange('uploadedAt')}
+                    >
+                      <div className="flex items-center gap-1">
+                        {t('documentsPage.table.uploaded')}
+                        {getSortIcon('uploadedAt')}
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+                      {t('documentsPage.table.actions')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-surface-card divide-y divide-border-default">
+                  {documents.map((doc) => {
+                    const isSelected = selectedDocuments.has(doc.identifier);
+                    return (
+                      <tr
+                        key={doc.identifier}
+                        className={`hover:bg-surface-inset cursor-pointer ${
+                          isSelected ? 'bg-info-bg' : ''
+                        }`}
+                        onClick={() => setPreviewIndex(documents.indexOf(doc))}
                       >
-                        <button
-                          onClick={(e) =>
-                            handleSelectDocument(doc.identifier, e.shiftKey)
-                          }
-                          className="text-text-secondary hover:text-text-secondary"
-                        >
-                          {isSelected ? (
-                            <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
-                              <Check
-                                className="h-3.5 w-3.5 text-white"
-                                strokeWidth={3}
-                              />
-                            </div>
-                          ) : (
-                            <Square className="h-5 w-5" />
-                          )}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          {getFileIcon(doc.mimeType)}
-                          <div>
-                            <div className="text-sm font-medium text-text-primary">
-                              {doc.title ?? doc.fileName}
-                            </div>
-                            {doc.title && doc.title !== doc.fileName ? (
-                              <div className="text-xs text-text-secondary">
-                                {doc.fileName}
-                              </div>
-                            ) : null}
-                            {doc.notes ? (
-                              <RichTextDisplay
-                                html={doc.notes}
-                                className="text-xs text-text-secondary mt-1"
-                              />
-                            ) : null}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const entityPath =
-                              doc.entityType.toLowerCase() === 'property'
-                                ? `/properties/${doc.entityIdentifier}`
-                                : doc.entityType.toLowerCase() === 'contact'
-                                  ? `/contacts/${doc.entityIdentifier}`
-                                  : doc.entityType.toLowerCase() === 'contract'
-                                    ? `/contracts/${doc.entityIdentifier}`
-                                    : doc.entityType.toLowerCase() === 'payment'
-                                      ? `/payments/${doc.entityIdentifier}`
-                                      : doc.entityType.toLowerCase() ===
-                                          'expense'
-                                        ? `/expenses/${doc.entityIdentifier}`
-                                        : '#';
-                            if (entityPath !== '#') {
-                              navigate(entityPath);
-                            }
-                          }}
-                          className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-surface-inset text-text-primary hover:bg-info-bg hover:text-info-text transition-colors"
-                        >
-                          {doc.entityType}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                        {formatFileSize(doc.fileSize)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                        {formatDate(doc.uploadedAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div
-                          className="flex justify-end gap-1.5"
+                        <td
+                          className="px-6 py-4"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <button
-                            onClick={() =>
-                              setPreviewIndex(documents.indexOf(doc))
+                            onClick={(e) =>
+                              handleSelectDocument(doc.identifier, e.shiftKey)
                             }
-                            className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                            title={t('tooltips.preview')}
+                            className="text-text-secondary hover:text-text-secondary"
                           >
-                            <Eye className="h-4 w-4" />
+                            {isSelected ? (
+                              <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
+                                <Check
+                                  className="h-3.5 w-3.5 text-white"
+                                  strokeWidth={3}
+                                />
+                              </div>
+                            ) : (
+                              <Square className="h-5 w-5" />
+                            )}
                           </button>
-                          {canEditData && (
-                            <button
-                              onClick={() => setEditingDocument(doc)}
-                              className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                              title={t('tooltips.editTitleNotes')}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </button>
-                          )}
-                          <a
-                            href={doc.downloadUrl ?? undefined}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1.5 text-primary-500 hover:bg-info-bg rounded-md transition-colors"
-                            title={t('tooltips.download')}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            {getFileIcon(doc.mimeType)}
+                            <div>
+                              <div className="text-sm font-medium text-text-primary">
+                                {doc.title ?? doc.fileName}
+                              </div>
+                              {doc.title && doc.title !== doc.fileName ? (
+                                <div className="text-xs text-text-secondary">
+                                  {doc.fileName}
+                                </div>
+                              ) : null}
+                              {doc.notes ? (
+                                <RichTextDisplay
+                                  html={doc.notes}
+                                  className="text-xs text-text-secondary mt-1"
+                                />
+                              ) : null}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const entityPath =
+                                doc.entityType.toLowerCase() === 'property'
+                                  ? `/properties/${doc.entityIdentifier}`
+                                  : doc.entityType.toLowerCase() === 'contact'
+                                    ? `/contacts/${doc.entityIdentifier}`
+                                    : doc.entityType.toLowerCase() ===
+                                        'contract'
+                                      ? `/contracts/${doc.entityIdentifier}`
+                                      : doc.entityType.toLowerCase() ===
+                                          'payment'
+                                        ? `/payments/${doc.entityIdentifier}`
+                                        : doc.entityType.toLowerCase() ===
+                                            'expense'
+                                          ? `/expenses/${doc.entityIdentifier}`
+                                          : '#';
+                              if (entityPath !== '#') {
+                                navigate(entityPath);
+                              }
+                            }}
+                            className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-surface-inset text-text-primary hover:bg-info-bg hover:text-info-text transition-colors"
                           >
-                            <Download className="h-4 w-4" />
-                          </a>
-                          {canEditData && (
+                            {doc.entityType}
+                          </button>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                          {formatFileSize(doc.fileSize)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                          {formatDate(doc.uploadedAt)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div
+                            className="flex justify-end gap-1.5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <button
-                              onClick={() => handleDelete(doc.identifier)}
-                              className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
-                              title={t('tooltips.delete')}
+                              onClick={() =>
+                                setPreviewIndex(documents.indexOf(doc))
+                              }
+                              className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
+                              title={t('tooltips.preview')}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            {canEditData && (
+                              <button
+                                onClick={() => setEditingDocument(doc)}
+                                className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
+                                title={t('tooltips.editTitleNotes')}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                            )}
+                            <a
+                              href={doc.downloadUrl ?? undefined}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 text-primary-500 hover:bg-info-bg rounded-md transition-colors"
+                              title={t('tooltips.download')}
+                            >
+                              <Download className="h-4 w-4" />
+                            </a>
+                            {canEditData && (
+                              <button
+                                onClick={() => handleDelete(doc.identifier)}
+                                className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
+                                title={t('tooltips.delete')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
 

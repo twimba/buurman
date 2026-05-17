@@ -59,7 +59,9 @@ export function formatMoney(
 export function formatMoneyCompact(
   amount: number,
   currency: string,
-  locale: string = typeof navigator !== 'undefined' ? navigator.language : 'en-US'
+  locale: string = typeof navigator !== 'undefined'
+    ? navigator.language
+    : 'en-US'
 ): string {
   const abs = Math.abs(amount);
   const sign = amount < 0 ? '-' : '';

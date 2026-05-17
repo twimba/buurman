@@ -109,7 +109,9 @@ export const ListPageHeader = ({
         </div>
 
         {/* Primary CTA — visible on both. */}
-        {primaryAction && <ActionRenderer action={primaryAction} compact={false} />}
+        {primaryAction && (
+          <ActionRenderer action={primaryAction} compact={false} />
+        )}
 
         {/* Mobile overflow menu. */}
         {mobileOverflow.length > 0 && (
@@ -205,11 +207,7 @@ const OverflowMenu = ({ actions, className }: OverflowMenuProps) => {
           className="absolute right-0 top-full mt-1 z-30 min-w-56 max-w-xs rounded-lg border border-border-default bg-surface-card shadow-lg overflow-hidden"
         >
           {actions.map((a, i) => (
-            <OverflowItem
-              key={i}
-              action={a}
-              onAfter={() => setOpen(false)}
-            />
+            <OverflowItem key={i} action={a} onAfter={() => setOpen(false)} />
           ))}
         </div>
       )}

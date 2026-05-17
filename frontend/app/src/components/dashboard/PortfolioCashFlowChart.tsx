@@ -188,17 +188,17 @@ export const PortfolioCashFlowChart = ({
           }}
         />
         {!isMobile && (
-        <Legend
-          formatter={(value) => {
-            const labels2: Record<string, string> = {
-              income: t('dashboard.cashFlow.income'),
-              negExpenses: t('dashboard.cashFlow.expenses'),
-              negMortgage: t('dashboard.cashFlow.mortgage'),
-              net: t('dashboard.cashFlow.net'),
-            };
-            return labels2[value] ?? value;
-          }}
-        />
+          <Legend
+            formatter={(value) => {
+              const labels2: Record<string, string> = {
+                income: t('dashboard.cashFlow.income'),
+                negExpenses: t('dashboard.cashFlow.expenses'),
+                negMortgage: t('dashboard.cashFlow.mortgage'),
+                net: t('dashboard.cashFlow.net'),
+              };
+              return labels2[value] ?? value;
+            }}
+          />
         )}
         <ReferenceLine y={0} stroke={isDark ? '#4a4e5f' : '#b0b5c8'} />
         <Bar

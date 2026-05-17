@@ -425,126 +425,128 @@ export const PaymentsPage = () => {
         {paymentsData?.content && paymentsData.content.length > 0 ? (
           <>
             <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
-              <div className="overflow-x-auto"><table className="min-w-full divide-y divide-border-default">
-                <thead className="bg-surface-page">
-                  <tr>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('dueDate')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('table.dueDate')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('table.paymentNumber')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[280px]">
-                      {t('table.contract')}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('amount')}
-                    >
-                      <div className="flex items-center justify-end gap-1">
-                        {t('table.amount')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('status')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('table.status')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
-                  </tr>
-                </thead>
-                <tbody className="bg-surface-card divide-y divide-border-default">
-                  {paymentsData.content.map((payment) => (
-                    <tr
-                      key={payment.identifier}
-                      className="hover:bg-primary-50 cursor-pointer"
-                      onClick={() =>
-                        navigate(`/payments/${payment.identifier}`)
-                      }
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
-                        {formatDate(payment.dueDate)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-text-primary">
-                          #{payment.identifier}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3">
-                        <ContractCell
-                          contractIdentifier={payment.contract.identifier}
-                          contractStatus={payment.contract.status}
-                          propertyStreet={payment.property.street}
-                          propertyCity={payment.property.city}
-                          contactFirstName={
-                            payment.contact.firstName ??
-                            payment.contact.displayName
-                          }
-                          contactLastName={payment.contact.lastName}
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div>
-                          <span className="text-sm font-semibold text-text-primary">
-                            {fmtMoney(payment.amount, payment.currency)}
-                          </span>
-                          {payment.receivedAmount > 0 &&
-                            payment.status !== PaymentStatus.PAID && (
-                              <p className="text-xs text-text-secondary">
-                                {t('table.balance', {
-                                  amount: fmtMoney(
-                                    payment.balance ?? 0,
-                                    payment.currency
-                                  ),
-                                })}
-                              </p>
-                            )}
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-border-default">
+                  <thead className="bg-surface-page">
+                    <tr>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('dueDate')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('table.dueDate')}
+                          <ArrowUpDown className="h-4 w-4" />
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <PaymentStatusBadge status={payment.status} />
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-right">
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('table.paymentNumber')}
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[280px]">
+                        {t('table.contract')}
+                      </th>
+                      <th
+                        className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('amount')}
+                      >
                         <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/payments/${payment.identifier}`);
-                            }}
-                            className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
-                            title={t('tooltips.viewPayment')}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          {canEditData && (
+                          {t('table.amount')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('status')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('table.status')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-surface-card divide-y divide-border-default">
+                    {paymentsData.content.map((payment) => (
+                      <tr
+                        key={payment.identifier}
+                        className="hover:bg-primary-50 cursor-pointer"
+                        onClick={() =>
+                          navigate(`/payments/${payment.identifier}`)
+                        }
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                          {formatDate(payment.dueDate)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-text-primary">
+                            #{payment.identifier}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3">
+                          <ContractCell
+                            contractIdentifier={payment.contract.identifier}
+                            contractStatus={payment.contract.status}
+                            propertyStreet={payment.property.street}
+                            propertyCity={payment.property.city}
+                            contactFirstName={
+                              payment.contact.firstName ??
+                              payment.contact.displayName
+                            }
+                            contactLastName={payment.contact.lastName}
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <div>
+                            <span className="text-sm font-semibold text-text-primary">
+                              {fmtMoney(payment.amount, payment.currency)}
+                            </span>
+                            {payment.receivedAmount > 0 &&
+                              payment.status !== PaymentStatus.PAID && (
+                                <p className="text-xs text-text-secondary">
+                                  {t('table.balance', {
+                                    amount: fmtMoney(
+                                      payment.balance ?? 0,
+                                      payment.currency
+                                    ),
+                                  })}
+                                </p>
+                              )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <PaymentStatusBadge status={payment.status} />
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-right">
+                          <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDeleteTarget(payment.identifier);
+                                navigate(`/payments/${payment.identifier}`);
                               }}
-                              className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title={t('tooltips.deletePayment')}
+                              className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
+                              title={t('tooltips.viewPayment')}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table></div>
+                            {canEditData && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeleteTarget(payment.identifier);
+                                }}
+                                className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
+                                title={t('tooltips.deletePayment')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {paymentsData && (

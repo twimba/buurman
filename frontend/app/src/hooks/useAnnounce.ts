@@ -41,10 +41,7 @@ export function useAnnounce(): (
 ) => void {
   return useCallback((message, options) => {
     const el = ensureLiveRegion();
-    el.setAttribute(
-      'aria-live',
-      options?.assertive ? 'assertive' : 'polite'
-    );
+    el.setAttribute('aria-live', options?.assertive ? 'assertive' : 'polite');
     // Clear and rewrite — SRs only fire on content change.
     el.textContent = '';
     window.requestAnimationFrame(() => {

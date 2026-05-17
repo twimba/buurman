@@ -207,83 +207,83 @@ export const PropertyListPage = () => {
             id="property-filter-body"
             className={`space-y-4 ${mobileFiltersOpen ? 'block' : 'hidden'} md:block`}
           >
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                resetPage();
-              }}
-              placeholder={t('list.searchPlaceholder')}
-              className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => {
-                  setSearchQuery('');
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
                   resetPage();
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
-                {t('list.category')}
-              </label>
-              <div className="flex gap-2 flex-wrap">
-                {categoryFilters.map((filter) => (
-                  <button
-                    key={filter.label}
-                    onClick={() => {
-                      setCategoryFilter(filter.value);
-                      resetPage();
-                    }}
-                    className={`px-4 py-2 rounded transition-colors text-sm ${
-                      categoryFilter === filter.value
-                        ? 'bg-primary-500 text-white'
-                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                    }`}
-                  >
-                    {filter.label}
-                  </button>
-                ))}
-              </div>
+                placeholder={t('list.searchPlaceholder')}
+                className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    resetPage();
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
 
-            {/* Status Filter */}
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
-                {t('list.status')}
-              </label>
-              <div className="flex gap-2 flex-wrap">
-                {statusFilters.map((filter) => (
-                  <button
-                    key={filter.label}
-                    onClick={() => {
-                      setStatusFilter(filter.value);
-                      resetPage();
-                    }}
-                    className={`px-4 py-2 rounded transition-colors text-sm ${
-                      statusFilter === filter.value
-                        ? 'bg-primary-500 text-white'
-                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                    }`}
-                  >
-                    {filter.label}
-                  </button>
-                ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  {t('list.category')}
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {categoryFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setCategoryFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm ${
+                        categoryFilter === filter.value
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status Filter */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  {t('list.status')}
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {statusFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setStatusFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm ${
+                        statusFilter === filter.value
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
           </div>
         </div>
 

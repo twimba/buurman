@@ -88,9 +88,11 @@ export const Layout = ({ children }: LayoutProps) => {
         <main
           id="main-content"
           className={`flex-1 overflow-auto transition-[margin] duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}
-          style={{
-            // Reserve space for the iPhone bottom tab bar; collapses to 0 on md+ via md:pb-0
-          }}
+          style={
+            {
+              // Reserve space for the iPhone bottom tab bar; collapses to 0 on md+ via md:pb-0
+            }
+          }
         >
           <div className="max-w-screen-2xl mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 pl-safe pr-safe pb-[calc(var(--bottomnav-h)+var(--safe-bottom,0px))] md:pb-0">
             <AuthenticatedBroadcastBanner />

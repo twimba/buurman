@@ -497,79 +497,81 @@ export const UserPreferencesSection = () => {
                     {t('preferences.notifications.configurePerType')}
                   </p>
                   <div className="border border-border-default rounded-lg overflow-hidden">
-                    <div className="overflow-x-auto"><table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-surface-page dark:bg-surface-card border-b border-border-default">
-                          <th className="text-left px-4 py-3 font-medium text-text-secondary">
-                            {t('preferences.notifications.notificationType')}
-                          </th>
-                          {emailAvailable && (
-                            <th className="text-center px-4 py-3 font-medium text-text-secondary w-20">
-                              <div className="flex items-center justify-center gap-1">
-                                <Mail className="h-3.5 w-3.5" />
-                                {t('common:labels.email')}
-                              </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-surface-page dark:bg-surface-card border-b border-border-default">
+                            <th className="text-left px-4 py-3 font-medium text-text-secondary">
+                              {t('preferences.notifications.notificationType')}
                             </th>
-                          )}
-                          {smsAvailable && (
-                            <th className="text-center px-4 py-3 font-medium text-text-secondary w-20">
-                              <div className="flex items-center justify-center gap-1">
-                                <MessageSquare className="h-3.5 w-3.5" />
-                                SMS
-                              </div>
-                            </th>
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {typePrefs.map((pref, index) => (
-                          <tr
-                            key={pref.notificationType}
-                            className={
-                              index < typePrefs.length - 1
-                                ? 'border-b border-border-default'
-                                : ''
-                            }
-                          >
-                            <td className="px-4 py-3 text-text-primary">
-                              {pref.displayName}
-                            </td>
                             {emailAvailable && (
-                              <td className="px-4 py-3 text-center">
-                                <input
-                                  type="checkbox"
-                                  checked={pref.emailEnabled}
-                                  disabled={!preferences.emailNotifications}
-                                  onChange={() =>
-                                    handleTypeToggle(
-                                      pref.notificationType,
-                                      'emailEnabled'
-                                    )
-                                  }
-                                  className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500 disabled:opacity-40 disabled:cursor-not-allowed"
-                                />
-                              </td>
+                              <th className="text-center px-4 py-3 font-medium text-text-secondary w-20">
+                                <div className="flex items-center justify-center gap-1">
+                                  <Mail className="h-3.5 w-3.5" />
+                                  {t('common:labels.email')}
+                                </div>
+                              </th>
                             )}
                             {smsAvailable && (
-                              <td className="px-4 py-3 text-center">
-                                <input
-                                  type="checkbox"
-                                  checked={pref.smsEnabled}
-                                  disabled={!preferences.smsNotifications}
-                                  onChange={() =>
-                                    handleTypeToggle(
-                                      pref.notificationType,
-                                      'smsEnabled'
-                                    )
-                                  }
-                                  className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500 disabled:opacity-40 disabled:cursor-not-allowed"
-                                />
-                              </td>
+                              <th className="text-center px-4 py-3 font-medium text-text-secondary w-20">
+                                <div className="flex items-center justify-center gap-1">
+                                  <MessageSquare className="h-3.5 w-3.5" />
+                                  SMS
+                                </div>
+                              </th>
                             )}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table></div>
+                        </thead>
+                        <tbody>
+                          {typePrefs.map((pref, index) => (
+                            <tr
+                              key={pref.notificationType}
+                              className={
+                                index < typePrefs.length - 1
+                                  ? 'border-b border-border-default'
+                                  : ''
+                              }
+                            >
+                              <td className="px-4 py-3 text-text-primary">
+                                {pref.displayName}
+                              </td>
+                              {emailAvailable && (
+                                <td className="px-4 py-3 text-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={pref.emailEnabled}
+                                    disabled={!preferences.emailNotifications}
+                                    onChange={() =>
+                                      handleTypeToggle(
+                                        pref.notificationType,
+                                        'emailEnabled'
+                                      )
+                                    }
+                                    className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                                  />
+                                </td>
+                              )}
+                              {smsAvailable && (
+                                <td className="px-4 py-3 text-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={pref.smsEnabled}
+                                    disabled={!preferences.smsNotifications}
+                                    onChange={() =>
+                                      handleTypeToggle(
+                                        pref.notificationType,
+                                        'smsEnabled'
+                                      )
+                                    }
+                                    className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                                  />
+                                </td>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                   {emailAvailable &&
                     !preferences.emailNotifications &&

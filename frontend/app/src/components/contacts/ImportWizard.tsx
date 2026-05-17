@@ -720,62 +720,67 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
           {/* Items table */}
           <div className="border border-border-default rounded-lg overflow-hidden">
             <div className="max-h-72 overflow-y-auto">
-              <div className="overflow-x-auto"><table className="w-full text-sm">
-                <thead className="sticky top-0">
-                  <tr className="bg-surface-inset border-b border-border-default">
-                    <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider w-16">
-                      Row
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider w-20">
-                      Status
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                      Details
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-default">
-                  {previewResponse.items.map((item) => (
-                    <tr key={item.rowNumber} className="hover:bg-surface-inset">
-                      <td className="px-3 py-2 text-text-muted">
-                        {item.rowNumber}
-                      </td>
-                      <td className="px-3 py-2">
-                        <span className={STATUS_BADGE_CLASSES[item.status]}>
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-text-primary">
-                        {item.displayName}
-                      </td>
-                      <td className="px-3 py-2 text-text-secondary">
-                        {item.email ?? '-'}
-                      </td>
-                      <td className="px-3 py-2 text-text-secondary text-xs">
-                        {item.status === 'ERROR' && item.errorMessage && (
-                          <span className="text-red-600 dark:text-red-400">
-                            {item.errorMessage}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0">
+                    <tr className="bg-surface-inset border-b border-border-default">
+                      <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider w-16">
+                        Row
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider w-20">
+                        Status
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                        Details
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border-default">
+                    {previewResponse.items.map((item) => (
+                      <tr
+                        key={item.rowNumber}
+                        className="hover:bg-surface-inset"
+                      >
+                        <td className="px-3 py-2 text-text-muted">
+                          {item.rowNumber}
+                        </td>
+                        <td className="px-3 py-2">
+                          <span className={STATUS_BADGE_CLASSES[item.status]}>
+                            {item.status}
                           </span>
-                        )}
-                        {item.status === 'SKIP' &&
-                          item.duplicateOfDisplayName && (
-                            <span className="text-yellow-700 dark:text-yellow-300">
-                              {t('import.duplicateOf', {
-                                name: item.duplicateOfDisplayName,
-                              })}
+                        </td>
+                        <td className="px-3 py-2 text-text-primary">
+                          {item.displayName}
+                        </td>
+                        <td className="px-3 py-2 text-text-secondary">
+                          {item.email ?? '-'}
+                        </td>
+                        <td className="px-3 py-2 text-text-secondary text-xs">
+                          {item.status === 'ERROR' && item.errorMessage && (
+                            <span className="text-red-600 dark:text-red-400">
+                              {item.errorMessage}
                             </span>
                           )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table></div>
+                          {item.status === 'SKIP' &&
+                            item.duplicateOfDisplayName && (
+                              <span className="text-yellow-700 dark:text-yellow-300">
+                                {t('import.duplicateOf', {
+                                  name: item.duplicateOfDisplayName,
+                                })}
+                              </span>
+                            )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 

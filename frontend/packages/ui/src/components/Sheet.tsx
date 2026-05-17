@@ -1,11 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { cn } from '../utils/cn';
 
 export interface SheetProps {

@@ -283,253 +283,257 @@ export const AuditLogPage = () => {
         {activitiesData?.content && activitiesData.content.length > 0 ? (
           <>
             <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
-              <div className="overflow-x-auto"><table className="min-w-full divide-y divide-border-default">
-                <thead className="bg-surface-page">
-                  <tr>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('timestamp')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('common:auditLog.table.time')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('entityType')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('common:auditLog.table.type')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('action')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('common:auditLog.table.action')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('common:auditLog.table.description')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('common:auditLog.table.user')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('common:auditLog.table.details')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-surface-card divide-y divide-border-default">
-                  {activitiesData.content.map((activity) => {
-                    const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
-                    const isExpanded = expandedItems.has(activityKey);
-                    const hasChanges =
-                      activity.action === 'UPDATE' &&
-                      activity.changedFields &&
-                      Object.keys(activity.changedFields).length > 0;
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-border-default">
+                  <thead className="bg-surface-page">
+                    <tr>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('timestamp')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('common:auditLog.table.time')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('entityType')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('common:auditLog.table.type')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('action')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('common:auditLog.table.action')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('common:auditLog.table.description')}
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('common:auditLog.table.user')}
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('common:auditLog.table.details')}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-surface-card divide-y divide-border-default">
+                    {activitiesData.content.map((activity) => {
+                      const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
+                      const isExpanded = expandedItems.has(activityKey);
+                      const hasChanges =
+                        activity.action === 'UPDATE' &&
+                        activity.changedFields &&
+                        Object.keys(activity.changedFields).length > 0;
 
-                    return (
-                      <>
-                        <tr
-                          key={activityKey}
-                          className="hover:bg-primary-50 cursor-pointer"
-                        >
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm text-text-primary"
-                            onClick={() => handleRowClick(activity)}
+                      return (
+                        <>
+                          <tr
+                            key={activityKey}
+                            className="hover:bg-primary-50 cursor-pointer"
                           >
-                            <div>{formatDate(activity.timestamp)}</div>
-                            <div className="flex items-center gap-2">
-                              <div className="text-xs text-text-secondary">
-                                {format(
-                                  new Date(activity.timestamp),
-                                  'HH:mm:ss'
+                            <td
+                              className="px-6 py-4 whitespace-nowrap text-sm text-text-primary"
+                              onClick={() => handleRowClick(activity)}
+                            >
+                              <div>{formatDate(activity.timestamp)}</div>
+                              <div className="flex items-center gap-2">
+                                <div className="text-xs text-text-secondary">
+                                  {format(
+                                    new Date(activity.timestamp),
+                                    'HH:mm:ss'
+                                  )}
+                                </div>
+                                {activity.impersonatedBy && (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
+                                    <Eye className="h-3 w-3" />
+                                    {t('common:auditLog.table.impersonated')}
+                                  </span>
                                 )}
                               </div>
-                              {activity.impersonatedBy && (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
-                                  <Eye className="h-3 w-3" />
-                                  {t('common:auditLog.table.impersonated')}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            onClick={() => handleRowClick(activity)}
-                          >
-                            <span
-                              className={`px-2 py-1 text-xs font-semibold rounded ${getEntityTypeColor(activity.entityType)}`}
-                            >
-                              {t(
-                                `common:auditLog.entityTypes.${activity.entityType.toLowerCase()}`,
-                                { defaultValue: activity.entityType }
-                              )}
-                            </span>
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap"
-                            onClick={() => handleRowClick(activity)}
-                          >
-                            <span
-                              className={`px-2 py-1 text-xs font-semibold rounded ${getActionColor(activity.action)}`}
-                            >
-                              {t(
-                                `common:auditLog.actions.${activity.action.toLowerCase()}d`,
-                                { defaultValue: activity.action }
-                              )}
-                            </span>
-                          </td>
-                          <td
-                            className="px-6 py-4 text-sm text-text-primary"
-                            onClick={() => handleRowClick(activity)}
-                          >
-                            {activity.description}
-                          </td>
-                          <td
-                            className="px-6 py-4 whitespace-nowrap text-sm text-text-primary"
-                            onClick={() => handleRowClick(activity)}
-                          >
-                            {activity.userName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                            {hasChanges && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleExpanded(activityKey);
-                                }}
-                                className="text-primary-500 hover:text-primary-600 flex items-center gap-1"
-                              >
-                                {isExpanded ? (
-                                  <>
-                                    <ChevronUp className="h-4 w-4" />
-                                    {t('common:auditLog.table.hide')}
-                                  </>
-                                ) : (
-                                  <>
-                                    <ChevronDown className="h-4 w-4" />
-                                    {t('common:auditLog.table.show')}
-                                  </>
-                                )}
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                        {isExpanded && hasChanges && (
-                          <tr key={`${activityKey}-details`}>
+                            </td>
                             <td
-                              colSpan={6}
-                              className="px-6 py-4 bg-surface-page"
+                              className="px-6 py-4 whitespace-nowrap"
+                              onClick={() => handleRowClick(activity)}
                             >
-                              <div className="space-y-2">
-                                <h4 className="text-xs font-semibold text-text-secondary uppercase mb-2">
-                                  {t('common:auditLog.changedFields')}
-                                </h4>
-                                {Object.entries(
-                                  activity.changedFields ?? {}
-                                ).map(([field, value]) => {
-                                  // Skip internal fields
-                                  if (field === 'documentCount') {
-                                    return null;
-                                  }
+                              <span
+                                className={`px-2 py-1 text-xs font-semibold rounded ${getEntityTypeColor(activity.entityType)}`}
+                              >
+                                {t(
+                                  `common:auditLog.entityTypes.${activity.entityType.toLowerCase()}`,
+                                  { defaultValue: activity.entityType }
+                                )}
+                              </span>
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap"
+                              onClick={() => handleRowClick(activity)}
+                            >
+                              <span
+                                className={`px-2 py-1 text-xs font-semibold rounded ${getActionColor(activity.action)}`}
+                              >
+                                {t(
+                                  `common:auditLog.actions.${activity.action.toLowerCase()}d`,
+                                  { defaultValue: activity.action }
+                                )}
+                              </span>
+                            </td>
+                            <td
+                              className="px-6 py-4 text-sm text-text-primary"
+                              onClick={() => handleRowClick(activity)}
+                            >
+                              {activity.description}
+                            </td>
+                            <td
+                              className="px-6 py-4 whitespace-nowrap text-sm text-text-primary"
+                              onClick={() => handleRowClick(activity)}
+                            >
+                              {activity.userName}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                              {hasChanges && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleExpanded(activityKey);
+                                  }}
+                                  className="text-primary-500 hover:text-primary-600 flex items-center gap-1"
+                                >
+                                  {isExpanded ? (
+                                    <>
+                                      <ChevronUp className="h-4 w-4" />
+                                      {t('common:auditLog.table.hide')}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ChevronDown className="h-4 w-4" />
+                                      {t('common:auditLog.table.show')}
+                                    </>
+                                  )}
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                          {isExpanded && hasChanges && (
+                            <tr key={`${activityKey}-details`}>
+                              <td
+                                colSpan={6}
+                                className="px-6 py-4 bg-surface-page"
+                              >
+                                <div className="space-y-2">
+                                  <h4 className="text-xs font-semibold text-text-secondary uppercase mb-2">
+                                    {t('common:auditLog.changedFields')}
+                                  </h4>
+                                  {Object.entries(
+                                    activity.changedFields ?? {}
+                                  ).map(([field, value]) => {
+                                    // Skip internal fields
+                                    if (field === 'documentCount') {
+                                      return null;
+                                    }
 
-                                  // Special handling for document operations
-                                  if (
-                                    field === 'documentAdded' ||
-                                    field === 'documentRemoved'
-                                  ) {
+                                    // Special handling for document operations
+                                    if (
+                                      field === 'documentAdded' ||
+                                      field === 'documentRemoved'
+                                    ) {
+                                      return (
+                                        <div
+                                          key={field}
+                                          className="bg-surface-card rounded p-3 text-xs"
+                                        >
+                                          <div className="font-semibold text-text-secondary mb-1">
+                                            {t('common:auditLog.fileName')}
+                                          </div>
+                                          <div className="text-text-primary">
+                                            {formatAuditValue(value)}
+                                          </div>
+                                        </div>
+                                      );
+                                    }
+
+                                    const oldValue =
+                                      activity.oldValues?.[field];
+                                    const newValue =
+                                      activity.newValues?.[field];
+
                                     return (
                                       <div
                                         key={field}
                                         className="bg-surface-card rounded p-3 text-xs"
                                       >
-                                        <div className="font-semibold text-text-secondary mb-1">
-                                          {t('common:auditLog.fileName')}
+                                        <div className="font-semibold text-text-secondary mb-1 capitalize">
+                                          {field.replace(/([A-Z])/g, ' $1')}
                                         </div>
-                                        <div className="text-text-primary">
-                                          {formatAuditValue(value)}
+                                        <div className="grid grid-cols-2 gap-4">
+                                          <div>
+                                            <div className="text-text-secondary mb-1">
+                                              {t('common:auditLog.before')}
+                                            </div>
+                                            <div className="text-text-primary">
+                                              {oldValue !== null &&
+                                              oldValue !== undefined ? (
+                                                typeof oldValue === 'string' &&
+                                                /<[a-z][\s\S]*>/i.test(
+                                                  oldValue
+                                                ) ? (
+                                                  <RichTextDisplay
+                                                    content={oldValue}
+                                                    className="text-xs [&_p]:m-0"
+                                                  />
+                                                ) : (
+                                                  formatAuditValue(oldValue)
+                                                )
+                                              ) : (
+                                                '\u2014'
+                                              )}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <div className="text-text-secondary mb-1">
+                                              {t('common:auditLog.after')}
+                                            </div>
+                                            <div className="text-text-primary font-semibold">
+                                              {newValue !== null &&
+                                              newValue !== undefined ? (
+                                                typeof newValue === 'string' &&
+                                                /<[a-z][\s\S]*>/i.test(
+                                                  newValue
+                                                ) ? (
+                                                  <RichTextDisplay
+                                                    content={newValue}
+                                                    className="text-xs [&_p]:m-0"
+                                                  />
+                                                ) : (
+                                                  formatAuditValue(newValue)
+                                                )
+                                              ) : (
+                                                '\u2014'
+                                              )}
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
                                     );
-                                  }
-
-                                  const oldValue = activity.oldValues?.[field];
-                                  const newValue = activity.newValues?.[field];
-
-                                  return (
-                                    <div
-                                      key={field}
-                                      className="bg-surface-card rounded p-3 text-xs"
-                                    >
-                                      <div className="font-semibold text-text-secondary mb-1 capitalize">
-                                        {field.replace(/([A-Z])/g, ' $1')}
-                                      </div>
-                                      <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                          <div className="text-text-secondary mb-1">
-                                            {t('common:auditLog.before')}
-                                          </div>
-                                          <div className="text-text-primary">
-                                            {oldValue !== null &&
-                                            oldValue !== undefined ? (
-                                              typeof oldValue === 'string' &&
-                                              /<[a-z][\s\S]*>/i.test(
-                                                oldValue
-                                              ) ? (
-                                                <RichTextDisplay
-                                                  content={oldValue}
-                                                  className="text-xs [&_p]:m-0"
-                                                />
-                                              ) : (
-                                                formatAuditValue(oldValue)
-                                              )
-                                            ) : (
-                                              '\u2014'
-                                            )}
-                                          </div>
-                                        </div>
-                                        <div>
-                                          <div className="text-text-secondary mb-1">
-                                            {t('common:auditLog.after')}
-                                          </div>
-                                          <div className="text-text-primary font-semibold">
-                                            {newValue !== null &&
-                                            newValue !== undefined ? (
-                                              typeof newValue === 'string' &&
-                                              /<[a-z][\s\S]*>/i.test(
-                                                newValue
-                                              ) ? (
-                                                <RichTextDisplay
-                                                  content={newValue}
-                                                  className="text-xs [&_p]:m-0"
-                                                />
-                                              ) : (
-                                                formatAuditValue(newValue)
-                                              )
-                                            ) : (
-                                              '\u2014'
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </>
-                    );
-                  })}
-                </tbody>
-              </table></div>
+                                  })}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {activitiesData && (

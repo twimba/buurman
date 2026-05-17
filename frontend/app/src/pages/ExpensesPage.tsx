@@ -399,114 +399,116 @@ export const ExpensesPage = () => {
         {expensesData?.content && expensesData.content.length > 0 ? (
           <>
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default overflow-hidden mb-4">
-              <div className="overflow-x-auto"><table className="min-w-full divide-y divide-border-default">
-                <thead className="bg-surface-page">
-                  <tr>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('expenseDate')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('table.date')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('table.expenseNumber')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('table.description')}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('category')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('table.category')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[220px]">
-                      {t('table.property')}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('amount')}
-                    >
-                      <div className="flex items-center justify-end gap-1">
-                        {t('table.amount')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
-                  </tr>
-                </thead>
-                <tbody className="bg-surface-card divide-y divide-border-default">
-                  {expensesData.content.map((expense) => (
-                    <tr
-                      key={expense.identifier}
-                      className="hover:bg-primary-50 cursor-pointer"
-                      onClick={() =>
-                        navigate(`/expenses/${expense.identifier}`)
-                      }
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
-                        {formatDate(expense.expenseDate)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
-                        {expense.identifier}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-text-primary">
-                        {expense.description}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <ExpenseCategoryBadge category={expense.category} />
-                      </td>
-                      <td className="px-6 py-3">
-                        <PropertyCell
-                          propertyIdentifier={expense.property.identifier}
-                          propertyStatus={expense.property.status}
-                          propertyType={expense.property.propertyType}
-                          street={expense.property.street}
-                          city={expense.property.city}
-                          postalCode={expense.property.postalCode}
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <span className="text-sm font-semibold text-text-primary">
-                          {fmtMoney(expense.amount, expense.currency)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-right">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-border-default">
+                  <thead className="bg-surface-page">
+                    <tr>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('expenseDate')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('table.date')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('table.expenseNumber')}
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('table.description')}
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('category')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('table.category')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[220px]">
+                        {t('table.property')}
+                      </th>
+                      <th
+                        className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('amount')}
+                      >
                         <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/expenses/${expense.identifier}`);
-                            }}
-                            className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
-                            title={t('tooltips.viewExpense')}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          {canEditData && (
+                          {t('table.amount')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-surface-card divide-y divide-border-default">
+                    {expensesData.content.map((expense) => (
+                      <tr
+                        key={expense.identifier}
+                        className="hover:bg-primary-50 cursor-pointer"
+                        onClick={() =>
+                          navigate(`/expenses/${expense.identifier}`)
+                        }
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                          {formatDate(expense.expenseDate)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
+                          {expense.identifier}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-text-primary">
+                          {expense.description}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <ExpenseCategoryBadge category={expense.category} />
+                        </td>
+                        <td className="px-6 py-3">
+                          <PropertyCell
+                            propertyIdentifier={expense.property.identifier}
+                            propertyStatus={expense.property.status}
+                            propertyType={expense.property.propertyType}
+                            street={expense.property.street}
+                            city={expense.property.city}
+                            postalCode={expense.property.postalCode}
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <span className="text-sm font-semibold text-text-primary">
+                            {fmtMoney(expense.amount, expense.currency)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-right">
+                          <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDeleteTarget(expense.identifier);
+                                navigate(`/expenses/${expense.identifier}`);
                               }}
-                              className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title={t('tooltips.deleteExpense')}
+                              className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
+                              title={t('tooltips.viewExpense')}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table></div>
+                            {canEditData && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeleteTarget(expense.identifier);
+                                }}
+                                className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
+                                title={t('tooltips.deleteExpense')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {expensesData && (
