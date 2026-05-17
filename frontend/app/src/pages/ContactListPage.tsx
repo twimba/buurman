@@ -266,7 +266,7 @@ export const ContactListPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
@@ -307,7 +307,7 @@ export const ContactListPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('list.error')} />
       </div>
     );
@@ -397,7 +397,7 @@ export const ContactListPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       <div className="px-4 py-4 md:py-8">
         <ListPageHeader
           title={t('list.title')}

@@ -155,7 +155,7 @@ export const PaymentCreatePage = () => {
   const showWarning = isPrefillInvalid && !dismissedWarning;
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="min-h-[100dvh] bg-surface-page">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">

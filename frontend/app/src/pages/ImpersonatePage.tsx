@@ -66,7 +66,7 @@ export function ImpersonatePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[100dvh] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-xl font-semibold text-text-primary mb-2">
             {t('common:impersonation.failed')}

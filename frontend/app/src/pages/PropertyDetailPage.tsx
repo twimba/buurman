@@ -214,7 +214,7 @@ export const PropertyDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex items-center gap-4">
@@ -254,7 +254,7 @@ export const PropertyDetailPage = () => {
 
   if (error || !property) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
@@ -264,7 +264,7 @@ export const PropertyDetailPage = () => {
   const sanitize = DOMPurify.sanitize;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader

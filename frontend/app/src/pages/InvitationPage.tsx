@@ -108,7 +108,7 @@ export const InvitationPage = () => {
 
   if (isLoading || authLoading) {
     return (
-      <div className="min-h-screen bg-surface-inset flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-surface-inset flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary-500 mx-auto" />
           <p className="mt-4 text-text-secondary">
@@ -121,7 +121,7 @@ export const InvitationPage = () => {
 
   if (error || !invitation) {
     return (
-      <div className="min-h-screen bg-surface-inset flex items-center justify-center p-4">
+      <div className="min-h-[100dvh] bg-surface-inset flex items-center justify-center p-4">
         <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <XCircle className="h-16 w-16 text-error-text mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-text-primary mb-2">
@@ -143,7 +143,7 @@ export const InvitationPage = () => {
 
   if (invitation.isAccepted) {
     return (
-      <div className="min-h-screen bg-surface-inset flex items-center justify-center p-4">
+      <div className="min-h-[100dvh] bg-surface-inset flex items-center justify-center p-4">
         <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <CheckCircle className="h-16 w-16 text-success-text mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-text-primary mb-2">
@@ -165,7 +165,7 @@ export const InvitationPage = () => {
 
   if (invitation.isExpired) {
     return (
-      <div className="min-h-screen bg-surface-inset flex items-center justify-center p-4">
+      <div className="min-h-[100dvh] bg-surface-inset flex items-center justify-center p-4">
         <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <Clock className="h-16 w-16 text-warning-text mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-text-primary mb-2">
@@ -186,7 +186,7 @@ export const InvitationPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-surface-inset flex items-center justify-center p-4">
+    <div className="min-h-[100dvh] bg-surface-inset flex items-center justify-center p-4">
       <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full">
         <div className="text-center mb-6">
           <div className="h-16 w-16 bg-info-bg rounded-full flex items-center justify-center mx-auto mb-4">

@@ -24,7 +24,7 @@ export const ContractEditPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-surface-page flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-surface-page flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -32,14 +32,14 @@ export const ContractEditPage = () => {
 
   if (error || !contract) {
     return (
-      <div className="min-h-screen bg-surface-page p-8">
+      <div className="min-h-[100dvh] bg-surface-page p-8">
         <ErrorMessage message={t('edit.failedToLoad')} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface-page">
+    <div className="min-h-[100dvh] bg-surface-page">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">

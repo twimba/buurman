@@ -103,7 +103,7 @@ export const DocumentPreviewModal = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onClose}>
-      <div className="flex items-center justify-center min-h-screen md:px-4 md:py-8">
+      <div className="flex items-center justify-center min-h-[100dvh] md:px-4 md:py-8">
         {/* Background overlay — opaque on phone for true lightbox feel */}
         <div className="fixed inset-0 bg-black md:bg-opacity-60" />
 
@@ -137,7 +137,7 @@ export const DocumentPreviewModal = ({
 
         {/* Modal panel — full-bleed on phone, centered card on md+ */}
         <div
-          className="relative bg-surface-card md:rounded-lg text-left overflow-hidden md:shadow-xl dark:md:shadow-black/20 w-full md:max-w-4xl min-h-screen md:min-h-0"
+          className="relative bg-surface-card md:rounded-lg text-left overflow-hidden md:shadow-xl dark:md:shadow-black/20 w-full md:max-w-4xl min-h-[100dvh] md:min-h-0"
           onClick={(e) => e.stopPropagation()}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}

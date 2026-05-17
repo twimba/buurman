@@ -34,7 +34,7 @@ class ErrorBoundary extends Component<Props, State> {
       const t = (key: string) => i18n.t(key, { ns: 'common' });
 
       return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex items-center justify-center min-h-[100dvh] bg-background">
           <div className="bg-surface-card p-8 rounded-lg shadow-md max-w-md">
             <h1 className="text-2xl font-bold mb-4 text-error-text">
               {t('errorBoundary.title')}

@@ -126,7 +126,7 @@ export const ContractDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex items-center gap-4">
@@ -161,7 +161,7 @@ export const ContractDetailPage = () => {
 
   if (error || !contract) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
@@ -178,7 +178,7 @@ export const ContractDetailPage = () => {
     contract.status === ContractStatus.EXPIRED;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
