@@ -31,8 +31,10 @@ import {
   Pagination,
   RefreshButton,
   RichTextDisplay,
+  SelectionBar,
   Skeleton,
   type ListPageHeaderAction,
+  type SelectionBarAction,
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { RefreshCw } from 'lucide-react';
@@ -252,6 +254,43 @@ export const DocumentsPage = () => {
         </div>
       ) : (
         <>
+          {/* Phone-only sticky selection bar (overlays bottom tab bar) */}
+          <SelectionBar
+            open={selectedDocuments.size > 0}
+            count={selectedDocuments.size}
+            label={t('documentsPage.selection.selected', {
+              selected: selectedDocuments.size,
+              total: documentsData?.totalElements ?? documents.length,
+              defaultValue: '{{count}} selected',
+            }).replace(
+              String(selectedDocuments.size),
+              '{{count}}'
+            )}
+            onCancel={clearSelection}
+            actions={
+              [
+                {
+                  label: t('buttons.download', {
+                    ns: 'common',
+                    defaultValue: 'Download',
+                  }),
+                  icon: Download,
+                  onClick: handleBulkDownload,
+                  disabled: bulkDownloadMutation.isPending,
+                },
+                {
+                  label: t('buttons.delete', {
+                    ns: 'common',
+                    defaultValue: 'Delete',
+                  }),
+                  icon: Trash2,
+                  tone: 'danger' as const,
+                  onClick: handleBulkDelete,
+                },
+              ] as SelectionBarAction[]
+            }
+          />
+
           <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
             {/* Selection bar */}
             <div className="px-6 py-3 border-b border-border-default flex items-center justify-between">
