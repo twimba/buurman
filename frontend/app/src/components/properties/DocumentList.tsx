@@ -22,6 +22,8 @@ import {
   LoadingSpinner,
   RichTextDisplay,
   RichTextEditor,
+  SwipeAction,
+  type SwipeActionItem,
 } from '@buurman/ui';
 import { EditMetadataModal } from '../ui/EditMetadataModal';
 import { useDocumentSelection } from '@/hooks/useDocumentSelection';
@@ -286,25 +288,39 @@ export const DocumentList = ({
           <ul className="md:hidden space-y-3">
             {documents.map((doc, i) => {
               const isSelected = selectedDocuments.has(doc.identifier);
+              const leftActions: SwipeActionItem[] = [];
+              if (!readOnly) {
+                leftActions.push({
+                  label: t('buttons.delete', { ns: 'common' }),
+                  icon: Trash2,
+                  tone: 'danger',
+                  onAction: () => handleDeleteSingle(doc.identifier),
+                });
+              }
+              leftActions.push({
+                label: t('buttons.download', { ns: 'common' }),
+                icon: Download,
+                tone: 'success',
+                onAction: () => handleDownload(doc.identifier),
+              });
               return (
                 <li key={`m-${doc.identifier}`}>
-                  <div
-                    className={`bg-surface-card rounded-lg border p-3 ${
-                      isSelected
-                        ? 'border-primary-500 bg-info-bg'
-                        : 'border-border-default'
-                    }`}
+                  <SwipeAction
+                    leftActions={leftActions}
+                    onClick={() => setPreviewIndex(i)}
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 mt-0.5">
-                        {getFileIcon(doc.mimeType)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <button
-                          type="button"
-                          onClick={() => setPreviewIndex(i)}
-                          className="block w-full text-left min-h-touch focus-ring rounded"
-                        >
+                    <div
+                      className={`border p-3 ${
+                        isSelected
+                          ? 'border-primary-500 bg-info-bg'
+                          : 'border-border-default bg-surface-card'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-0.5">
+                          {getFileIcon(doc.mimeType)}
+                        </div>
+                        <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium text-text-primary truncate">
                             {doc.title ?? doc.fileName}
                           </div>
@@ -313,18 +329,21 @@ export const DocumentList = ({
                             <span aria-hidden>·</span>
                             <span>{formatDate(doc.uploadedAt)}</span>
                           </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(doc.identifier);
+                          }}
+                          aria-label={t('buttons.download', { ns: 'common' })}
+                          className="flex-shrink-0 min-h-touch min-w-touch inline-flex items-center justify-center p-2 rounded text-primary-500 hover:bg-primary-50 focus-ring"
+                        >
+                          <Download className="h-5 w-5" />
                         </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleDownload(doc.identifier)}
-                        aria-label={t('buttons.download', { ns: 'common' })}
-                        className="flex-shrink-0 min-h-touch min-w-touch inline-flex items-center justify-center p-2 rounded text-primary-500 hover:bg-primary-50 focus-ring"
-                      >
-                        <Download className="h-5 w-5" />
-                      </button>
                     </div>
-                  </div>
+                  </SwipeAction>
                 </li>
               );
             })}

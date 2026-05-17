@@ -6,6 +6,7 @@ import {
   usePayments,
   usePaymentStats,
   useDeletePayment,
+  useMarkPaymentAsPaid,
 } from '@/hooks/usePaymentHooks';
 import {
   ConfirmDialog,
@@ -14,7 +15,9 @@ import {
   Pagination,
   RefreshButton,
   Skeleton,
+  SwipeAction,
   type ListPageHeaderAction,
+  type SwipeActionItem,
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { RefreshCw } from 'lucide-react';
@@ -62,6 +65,7 @@ export const PaymentsPage = () => {
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const deletePaymentMutation = useDeletePayment();
+  const markPaidMutation = useMarkPaymentAsPaid();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>(
     undefined
@@ -441,44 +445,77 @@ export const PaymentsPage = () => {
         {/* Payments — Mobile card list (<md). md+ shows the existing table below. */}
         {paymentsData?.content && paymentsData.content.length > 0 && (
           <ul className="md:hidden space-y-3 mb-4">
-            {paymentsData.content.map((payment) => (
-              <li key={`m-${payment.identifier}`}>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/payments/${payment.identifier}`)}
-                  className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
-                >
-                  <DataList
-                    title={`${payment.property.street}`}
-                    trailing={<PaymentStatusBadge status={payment.status} />}
-                    items={[
-                      {
-                        label: t('table.dueDate'),
-                        value: formatDate(payment.dueDate),
+            {paymentsData.content.map((payment) => {
+              const isUnpaid =
+                payment.status !== PaymentStatus.PAID &&
+                payment.status !== PaymentStatus.CANCELLED;
+              const leftActions: SwipeActionItem[] = [];
+              if (canEditData && isUnpaid) {
+                leftActions.push({
+                  label: t('actions.markPaid', { defaultValue: 'Mark Paid' }),
+                  icon: CheckCircle,
+                  tone: 'success',
+                  onAction: () =>
+                    markPaidMutation.mutate({
+                      id: payment.identifier,
+                      data: {
+                        paymentDate: new Date().toISOString().split('T')[0],
                       },
-                      {
-                        label: 'Contact',
-                        value:
-                          (payment.contact.firstName ??
-                            payment.contact.displayName) +
-                          (payment.contact.lastName
-                            ? ' ' + payment.contact.lastName
-                            : ''),
-                      },
-                      {
-                        label: t('table.amount'),
-                        value: (
-                          <span className="font-semibold text-text-primary">
-                            {fmtMoney(payment.amount, payment.currency)}
-                          </span>
-                        ),
-                        align: 'right',
-                      },
-                    ]}
-                  />
-                </button>
-              </li>
-            ))}
+                    }),
+                });
+              }
+              if (canEditData) {
+                leftActions.push({
+                  label: t('actions.delete', { defaultValue: 'Delete' }),
+                  icon: Trash2,
+                  tone: 'danger',
+                  onAction: () => setDeleteTarget(payment.identifier),
+                });
+              }
+              return (
+                <li key={`m-${payment.identifier}`}>
+                  <SwipeAction
+                    leftActions={leftActions}
+                    onClick={() =>
+                      navigate(`/payments/${payment.identifier}`)
+                    }
+                  >
+                    <div className="bg-surface-card border border-border-default p-4 min-h-touch">
+                      <DataList
+                        title={`${payment.property.street}`}
+                        trailing={
+                          <PaymentStatusBadge status={payment.status} />
+                        }
+                        items={[
+                          {
+                            label: t('table.dueDate'),
+                            value: formatDate(payment.dueDate),
+                          },
+                          {
+                            label: 'Contact',
+                            value:
+                              (payment.contact.firstName ??
+                                payment.contact.displayName) +
+                              (payment.contact.lastName
+                                ? ' ' + payment.contact.lastName
+                                : ''),
+                          },
+                          {
+                            label: t('table.amount'),
+                            value: (
+                              <span className="font-semibold text-text-primary">
+                                {fmtMoney(payment.amount, payment.currency)}
+                              </span>
+                            ),
+                            align: 'right',
+                          },
+                        ]}
+                      />
+                    </div>
+                  </SwipeAction>
+                </li>
+              );
+            })}
           </ul>
         )}
 

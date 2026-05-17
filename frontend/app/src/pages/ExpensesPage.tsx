@@ -14,7 +14,9 @@ import {
   Pagination,
   RefreshButton,
   Skeleton,
+  SwipeAction,
   type ListPageHeaderAction,
+  type SwipeActionItem,
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { RefreshCw } from 'lucide-react';
@@ -408,39 +410,56 @@ export const ExpensesPage = () => {
         {/* Expenses — Mobile card list (<md). md+ shows the existing table below. */}
         {expensesData?.content && expensesData.content.length > 0 && (
           <ul className="md:hidden space-y-3 mb-4">
-            {expensesData.content.map((expense) => (
-              <li key={`m-${expense.identifier}`}>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/expenses/${expense.identifier}`)}
-                  className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
-                >
-                  <DataList
-                    title={expense.description}
-                    trailing={<ExpenseCategoryBadge category={expense.category} />}
-                    items={[
-                      {
-                        label: t('table.date'),
-                        value: formatDate(expense.expenseDate),
-                      },
-                      {
-                        label: t('table.property'),
-                        value: `${expense.property.street}, ${expense.property.city}`,
-                      },
-                      {
-                        label: t('table.amount'),
-                        value: (
-                          <span className="font-semibold text-text-primary">
-                            {fmtMoney(expense.amount, expense.currency)}
-                          </span>
-                        ),
-                        align: 'right',
-                      },
-                    ]}
-                  />
-                </button>
-              </li>
-            ))}
+            {expensesData.content.map((expense) => {
+              const leftActions: SwipeActionItem[] = canEditData
+                ? [
+                    {
+                      label: t('actions.delete', { defaultValue: 'Delete' }),
+                      icon: Trash2,
+                      tone: 'danger',
+                      onAction: () => setDeleteTarget(expense.identifier),
+                    },
+                  ]
+                : [];
+              return (
+                <li key={`m-${expense.identifier}`}>
+                  <SwipeAction
+                    leftActions={leftActions}
+                    onClick={() =>
+                      navigate(`/expenses/${expense.identifier}`)
+                    }
+                  >
+                    <div className="bg-surface-card border border-border-default p-4 min-h-touch">
+                      <DataList
+                        title={expense.description}
+                        trailing={
+                          <ExpenseCategoryBadge category={expense.category} />
+                        }
+                        items={[
+                          {
+                            label: t('table.date'),
+                            value: formatDate(expense.expenseDate),
+                          },
+                          {
+                            label: t('table.property'),
+                            value: `${expense.property.street}, ${expense.property.city}`,
+                          },
+                          {
+                            label: t('table.amount'),
+                            value: (
+                              <span className="font-semibold text-text-primary">
+                                {fmtMoney(expense.amount, expense.currency)}
+                              </span>
+                            ),
+                            align: 'right',
+                          },
+                        ]}
+                      />
+                    </div>
+                  </SwipeAction>
+                </li>
+              );
+            })}
           </ul>
         )}
 

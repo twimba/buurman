@@ -33,6 +33,11 @@ export type {
 } from './components/ResponsiveTable';
 export { DataList } from './components/DataList';
 export type { DataListItem, DataListProps } from './components/DataList';
+export { SwipeAction } from './components/SwipeAction';
+export type {
+  SwipeActionItem,
+  SwipeActionProps,
+} from './components/SwipeAction';
 export { StatusBadge } from './components/StatusBadge';
 export type { BadgeColorVariant } from './components/StatusBadge';
 export { EmptyState } from './components/EmptyState';
