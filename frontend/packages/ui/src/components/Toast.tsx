@@ -73,7 +73,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
 
       <div
-        className="fixed top-4 right-4 z-50 max-w-md space-y-2"
+        className="fixed z-50 space-y-2 inset-x-2 max-w-none md:inset-auto md:right-4 md:max-w-md"
+        style={{
+          top: 'calc(var(--env-banner-height, 0px) + env(safe-area-inset-top, 0px) + 0.5rem)',
+        }}
         aria-live="polite"
         role="status"
       >
