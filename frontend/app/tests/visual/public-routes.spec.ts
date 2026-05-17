@@ -16,15 +16,21 @@ const PUBLIC_ROUTES = [
 
 for (const { name, path } of PUBLIC_ROUTES) {
   test(`${name} matches baseline`, async ({ page }) => {
-    await page.goto(path);
+    await page.goto(path, { waitUntil: 'networkidle' });
     // Disable Satoshi font swapping flicker by waiting for fonts to be ready.
     await page.evaluate(() => document.fonts.ready);
-    // Give animations a moment to settle.
-    await page.waitForTimeout(300);
+    // Drop focus rings / cursor-blink from any auto-focused input (login form).
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    // Let async render passes (Keycloak iframe, hydration) settle.
+    await page.waitForTimeout(1000);
     await expect(page).toHaveScreenshot(`${name}.png`, {
       fullPage: true,
       animations: 'disabled',
+      caret: 'hide',
       maxDiffPixelRatio: 0.02,
+      // `toHaveScreenshot` polls until two consecutive screenshots match;
+      // the default 5s budget is too tight when the page has async content.
+      timeout: 15_000,
     });
   });
 }

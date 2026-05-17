@@ -60,12 +60,17 @@ jobs:
         run: yarn build
 
       - name: Run Playwright visual tests
+        id: playwright
         working-directory: frontend/app
-        # `--update-snapshots=missing` auto-writes baselines that don't
-        # exist yet (first-time bootstrap on this branch) so missing-file
-        # errors don't block. Existing baselines still compare normally;
-        # diffs fail the run.
+        # `--update-snapshots=missing` writes baselines that don't exist
+        # yet, but Playwright still reports those tests as failed on the
+        # write run. `continue-on-error` lets the auto-commit step below
+        # push the new baselines back to the branch; the final
+        # `Assert regressions` step then decides whether the failure was
+        # a real diff (fail the job) or just missing-baseline writes
+        # (pass the job, next CI run will re-assert clean).
         run: npx playwright test --reporter=github --update-snapshots=missing
+        continue-on-error: true
 
       - name: Upload Playwright report
         if: always()
@@ -79,7 +84,8 @@ jobs:
       # PR branch so the next CI run (and human reviewers) have them.
       # No-op when the snapshots directory is unchanged.
       - name: Commit any new baselines back to the PR branch
-        if: github.event_name == 'pull_request'
+        id: seed_baselines
+        if: always() && github.event_name == 'pull_request'
         run: |
           if [[ -n "$(git status --porcelain frontend/app/tests/visual)" ]]; then
             git config user.name "github-actions[bot]"
@@ -87,6 +93,26 @@ jobs:
             git add frontend/app/tests/visual
             git commit -m "ci(visual): seed Playwright baseline screenshots [skip ci]"
             git push origin HEAD:${{ github.head_ref }}
+            echo "seeded=true" >> "$GITHUB_OUTPUT"
           else
             echo "No new baselines to commit."
+            echo "seeded=false" >> "$GITHUB_OUTPUT"
           fi
+
+      # Translate the Playwright step's outcome into the job's outcome:
+      # - test passed                                 → pass
+      # - test failed AND new baselines were seeded   → pass (CI re-runs after auto-commit re-asserts cleanly)
+      # - test failed AND no baselines were seeded    → fail (real visual regression)
+      - name: Assert regressions
+        if: always()
+        run: |
+          if [[ "${{ steps.playwright.outcome }}" == "success" ]]; then
+            echo "Playwright passed."
+            exit 0
+          fi
+          if [[ "${{ steps.seed_baselines.outputs.seeded }}" == "true" ]]; then
+            echo "Playwright failed but new baselines were seeded — next CI run will re-assert."
+            exit 0
+          fi
+          echo "Playwright failed with no new baselines — real visual regression."
+          exit 1
