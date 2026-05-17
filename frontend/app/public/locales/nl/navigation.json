@@ -25,5 +25,10 @@
     "apiDocs": "API-documentatie"
   },
   "settings": "Instellingen",
-  "signOut": "Uitloggen"
+  "signOut": "Uitloggen",
+  "accessibility": {
+    "openMenu": "Menu openen",
+    "closeMenu": "Menu sluiten",
+    "primaryNav": "Hoofdnavigatie"
+  }
 }

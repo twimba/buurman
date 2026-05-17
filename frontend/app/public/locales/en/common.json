@@ -227,6 +227,7 @@
     "noContractsAvailable": "No contracts available",
     "allContracts": "All Contracts",
     "selectCurrency": "Select currency",
+    "selectCountry": "Select a country",
     "select": "Select...",
     "phoneNumber": "Phone number",
     "searchCountryOrCode": "Search country or code...",

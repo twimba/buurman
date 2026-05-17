@@ -25,5 +25,10 @@
     "apiDocs": "API-dokumentaatio"
   },
   "settings": "Asetukset",
-  "signOut": "Kirjaudu ulos"
+  "signOut": "Kirjaudu ulos",
+  "accessibility": {
+    "openMenu": "Avaa valikko",
+    "closeMenu": "Sulje valikko",
+    "primaryNav": "Päänavigointi"
+  }
 }

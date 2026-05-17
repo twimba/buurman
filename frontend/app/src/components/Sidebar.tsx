@@ -26,7 +26,7 @@ import {
   TrendingUp,
   FileCode,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SidebarTooltip } from '@buurman/ui';
 import { useAuth } from '@/context/AuthContext';
@@ -197,19 +197,71 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
     (item) => !item.featureFlag || isEnabled(item.featureFlag)
   );
 
+  // Below lg (1024px), the sidebar is an off-canvas drawer. When closed, its content
+  // remains in the DOM (so the open transition can animate from translate-x-full → 0)
+  // but should be removed from the tab order and hidden from screen readers.
+  // Above lg, the sidebar is always visible and interactive.
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(max-width: 1023px)').matches
+      : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobileViewport(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  const shouldBeInert = isMobileViewport && !mobileOpen;
+
+  // Close drawer on Escape (mobile only)
+  useEffect(() => {
+    if (!mobileOpen) {
+      return;
+    }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [mobileOpen]);
+
   return (
     <>
-      {/* Mobile menu button */}
+      {/* Mobile menu button — min-h/w 44px for AAA touch target */}
       <button
+        type="button"
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed left-4 z-50 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset"
+        aria-label={
+          mobileOpen
+            ? t('accessibility.closeMenu', 'Close menu')
+            : t('accessibility.openMenu', 'Open menu')
+        }
+        aria-expanded={mobileOpen}
+        aria-controls="primary-sidebar"
+        className="lg:hidden fixed left-4 z-50 inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset focus-ring"
         style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
       >
         {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
       </button>
 
-      {/* Sidebar */}
+      {/* Backdrop scrim — closes drawer on tap, only visible on mobile when open */}
+      {mobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-30 bg-black/40"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar — `inert` when closed on mobile removes children from tab order */}
       <aside
+        id="primary-sidebar"
+        aria-label={t('accessibility.primaryNav', 'Primary navigation')}
+        {...(shouldBeInert ? { inert: '' as unknown as boolean } : {})}
+        aria-hidden={shouldBeInert || undefined}
         className={`
           fixed left-0 bg-surface-card/95 backdrop-blur-xl border-r border-border-default z-40
           transition-all duration-300 ease-in-out
@@ -219,7 +271,9 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
         `}
         style={{
           top: 'var(--env-banner-height, 0px)',
-          height: 'calc(100vh - var(--env-banner-height, 0px))',
+          height: 'calc(100dvh - var(--env-banner-height, 0px))',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          paddingLeft: 'env(safe-area-inset-left, 0px)',
         }}
       >
         <div className="flex flex-col h-full overflow-hidden">

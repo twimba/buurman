@@ -25,5 +25,10 @@
     "apiDocs": "Documentación de la API"
   },
   "settings": "Ajustes",
-  "signOut": "Cerrar Sesión"
+  "signOut": "Cerrar Sesión",
+  "accessibility": {
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "primaryNav": "Navegación principal"
+  }
 }

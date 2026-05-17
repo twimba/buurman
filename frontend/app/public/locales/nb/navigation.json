@@ -25,5 +25,10 @@
     "apiDocs": "API-dokumentasjon"
   },
   "settings": "Innstillinger",
-  "signOut": "Logg ut"
+  "signOut": "Logg ut",
+  "accessibility": {
+    "openMenu": "Åpne meny",
+    "closeMenu": "Lukk meny",
+    "primaryNav": "Hovednavigasjon"
+  }
 }

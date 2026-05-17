@@ -25,5 +25,10 @@
     "apiDocs": "API Documentation"
   },
   "settings": "Settings",
-  "signOut": "Sign Out"
+  "signOut": "Sign Out",
+  "accessibility": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "primaryNav": "Primary navigation"
+  }
 }

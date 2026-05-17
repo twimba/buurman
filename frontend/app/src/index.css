@@ -35,6 +35,26 @@ body {
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh; /* iOS Safari URL-bar fix; falls back to 100vh on older browsers */
+}
+
+/* Phase 0: kill iOS focus-zoom on inputs by enforcing 16px minimum on mobile */
+@media (max-width: 767px) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Phase 0: 300ms tap-delay + grey-tap-highlight off on touch */
+button,
+[role='button'],
+a,
+summary,
+label {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 @keyframes slide-in {

@@ -25,5 +25,10 @@
     "apiDocs": "Τεκμηρίωση API"
   },
   "settings": "Ρυθμίσεις",
-  "signOut": "Αποσύνδεση"
+  "signOut": "Αποσύνδεση",
+  "accessibility": {
+    "openMenu": "Άνοιγμα μενού",
+    "closeMenu": "Κλείσιμο μενού",
+    "primaryNav": "Κύρια πλοήγηση"
+  }
 }

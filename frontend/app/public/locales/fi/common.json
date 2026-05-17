@@ -227,6 +227,7 @@
     "noContractsAvailable": "Sopimuksia ei saatavilla",
     "allContracts": "Kaikki sopimukset",
     "selectCurrency": "Valitse valuutta",
+    "selectCountry": "Valitse maa",
     "select": "Valitse...",
     "phoneNumber": "Puhelinnumero",
     "searchCountryOrCode": "Hae maata tai suuntanumeroa...",

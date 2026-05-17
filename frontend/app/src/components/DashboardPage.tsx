@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { formatMoney } from '@/utils/formatMoney';
 
 export const DashboardPage = () => {
   const { t } = useTranslation('common');
@@ -395,11 +396,7 @@ export const DashboardPage = () => {
                   {t('dashboard.totalPending')}
                 </div>
                 <div className="text-lg font-bold text-warning-text">
-                  {pendingCurrency}
-                  {totalPending.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatMoney(totalPending, pendingCurrency)}
                 </div>
               </div>
             )}
@@ -473,11 +470,7 @@ export const DashboardPage = () => {
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <span className="text-sm font-semibold text-text-primary">
-                      {payment.currency}
-                      {payment.amount.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {formatMoney(payment.amount, payment.currency)}
                     </span>
                     {canEditData && (
                       <button

@@ -40,7 +40,7 @@ export const Layout = ({ children }: LayoutProps) => {
     <div
       className="flex overflow-hidden bg-surface-page"
       style={{
-        height: 'calc(100vh - var(--env-banner-height, 0px))',
+        height: 'calc(100dvh - var(--env-banner-height, 0px))',
         marginTop: 'var(--env-banner-height, 0px)',
       }}
     >

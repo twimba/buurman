@@ -25,5 +25,10 @@
     "apiDocs": "Documentation de l'API"
   },
   "settings": "Paramètres",
-  "signOut": "Déconnexion"
+  "signOut": "Déconnexion",
+  "accessibility": {
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "primaryNav": "Navigation principale"
+  }
 }
