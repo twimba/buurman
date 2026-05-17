@@ -238,7 +238,7 @@ export const PaymentsPage = () => {
           actions={headerActions}
           primaryAction={{
             label: t('actions.registerPayment'),
-            icon: CalendarCheck,
+            icon: Plus,
             onClick: () => navigate('/payments/new?register=true'),
             disabled: !canEditData,
           }}
