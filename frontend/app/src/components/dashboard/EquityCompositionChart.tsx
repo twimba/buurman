@@ -51,15 +51,24 @@ export const EquityCompositionChart = ({
 }: EquityCompositionChartProps) => {
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
+  // Theme-aligned palette — matches packages/ui/src/styles/theme.css. The
+  // previous values (#14161f / #2a2e3f / #eef0f6 / #1a1d2e) were off-theme
+  // (a custom blue-grey not in the Buurman palette), creating a visible
+  // seam between charts and Card backgrounds.
+  const surfaceCard = isDark ? '#1c1917' : '#ffffff';
+  const borderDefault = isDark ? '#1c1917' : '#e7e5e4';
+  const textPrimary = isDark ? '#fafaf9' : '#0c0a09';
+  const textMuted = isDark ? '#a8a29e' : '#78716c';
+
   const tooltipStyle = useMemo(
     () => ({
-      backgroundColor: isDark ? '#14161f' : '#fff',
-      border: `1px solid ${isDark ? '#2a2e3f' : '#e2e6f0'}`,
+      backgroundColor: surfaceCard,
+      border: `1px solid ${borderDefault}`,
       borderRadius: '8px',
       fontSize: '12px',
-      color: isDark ? '#eef0f6' : '#1a1d2e',
+      color: textPrimary,
     }),
-    [isDark]
+    [surfaceCard, borderDefault, textPrimary]
   );
 
   const chartData = useMemo(
@@ -94,13 +103,13 @@ export const EquityCompositionChart = ({
         {!isMobile && (
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
+            stroke={borderDefault}
           />
         )}
         <XAxis
           type="number"
           hide={isMobile}
-          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+          tick={{ fontSize: 11, fill: textMuted }}
           tickFormatter={(v: number) => {
             const symbol = getCurrencySymbol(currency);
             const abs = Math.abs(v);
@@ -119,7 +128,7 @@ export const EquityCompositionChart = ({
           width={isMobile ? 110 : 140}
           tick={{
             fontSize: isMobile ? 10 : 11,
-            fill: isDark ? '#8b90a8' : '#6b7194',
+            fill: textMuted,
           }}
         />
         <Tooltip
