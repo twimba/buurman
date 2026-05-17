@@ -66,7 +66,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         <h3 className="text-lg font-semibold text-text-primary mb-1">
           {property.street}
         </h3>
-        <p className="text-sm text-text-secondary mb-1">
+        <p className="hidden md:block text-sm text-text-secondary mb-1">
           #{property.identifier}
         </p>
         <p className="text-sm text-text-secondary mb-3">
