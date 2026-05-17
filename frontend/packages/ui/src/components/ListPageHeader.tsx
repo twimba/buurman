@@ -139,15 +139,19 @@ const ActionRenderer = ({ action, compact }: ActionRendererProps) => {
       type="button"
       onClick={action.onClick}
       disabled={action.disabled}
+      aria-label={action.label}
       className={cn(
-        'inline-flex items-center gap-2 px-4 py-2 rounded transition-colors',
-        'min-h-touch',
+        'inline-flex items-center justify-center gap-2 rounded transition-colors',
+        'min-h-touch min-w-touch',
+        // Mobile: icon-only square button. Tablet+: pill with label.
+        'px-3 py-2 sm:px-4',
         'bg-primary-500 text-white hover:bg-primary-600',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500'
       )}
     >
       {Icon && <Icon className="h-5 w-5" />}
-      <span>{action.label}</span>
+      {/* Hide label below `sm` to keep the button compact next to a truncating title. */}
+      <span className="hidden sm:inline">{action.label}</span>
     </button>
   );
 };
