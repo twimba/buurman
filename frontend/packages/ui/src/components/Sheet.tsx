@@ -113,9 +113,12 @@ export function Sheet({
           }
         >
           {renderAsSheet && (
-            <div
-              aria-hidden
-              className="mx-auto my-2 h-1.5 w-10 rounded-full bg-border-strong"
+            <DragHandle
+              onDismiss={() => {
+                if (!preventClose) {
+                  onClose();
+                }
+              }}
             />
           )}
 
@@ -157,6 +160,81 @@ export function Sheet({
 }
 
 Sheet.displayName = 'Sheet';
+
+/**
+ * Drag handle that listens to pointer events on the visual grabber so the
+ * user can flick the sheet down to dismiss. Threshold: 25% of the parent
+ * sheet height OR pointer velocity > 0.6 px/ms (matches iOS native feel).
+ *
+ * Built on native pointer events (no @use-gesture dep in the ui package).
+ */
+function DragHandle({ onDismiss }: { onDismiss: () => void }) {
+  const startRef = useRef<{ y: number; t: number; sheet: HTMLElement } | null>(
+    null
+  );
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const sheet = e.currentTarget.closest(
+      '[role="dialog"]'
+    ) as HTMLElement | null;
+    if (!sheet) {
+      return;
+    }
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    startRef.current = { y: e.clientY, t: e.timeStamp, sheet };
+    sheet.style.transition = 'none';
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const start = startRef.current;
+    if (!start) {
+      return;
+    }
+    const dy = Math.max(0, e.clientY - start.y);
+    start.sheet.style.transform = `translateY(${dy}px)`;
+  };
+
+  const handlePointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const start = startRef.current;
+    if (!start) {
+      return;
+    }
+    startRef.current = null;
+    const dy = Math.max(0, e.clientY - start.y);
+    const dt = Math.max(1, e.timeStamp - start.t);
+    const velocity = dy / dt;
+    const sheetHeight = start.sheet.getBoundingClientRect().height;
+    const shouldDismiss = dy > sheetHeight * 0.25 || velocity > 0.6;
+    if (shouldDismiss) {
+      // Let the close animation take over from the dragged position.
+      start.sheet.style.transition = '';
+      start.sheet.style.transform = '';
+      onDismiss();
+    } else {
+      // Snap back with a quick eased return.
+      start.sheet.style.transition = 'transform 180ms ease-out';
+      start.sheet.style.transform = '';
+    }
+  };
+
+  return (
+    <div
+      role="button"
+      aria-label="Drag to dismiss"
+      tabIndex={-1}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
+      className="mx-auto my-2 py-1.5 px-6 touch-none"
+    >
+      <div
+        aria-hidden
+        className="mx-auto h-1.5 w-10 rounded-full bg-border-strong"
+      />
+    </div>
+  );
+}
 
 /**
  * Sheet body wrapper that auto-scrolls the focused input into view when
