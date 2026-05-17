@@ -74,6 +74,7 @@ export type { PageParams } from './hooks/usePagination';
 export { useTabState } from './hooks/useTabState';
 export { useHaptic } from './hooks/useHaptic';
 export type { HapticPattern } from './hooks/useHaptic';
+export { useLongPress } from './hooks/useLongPress';
 
 // Rich text
 export { RichTextEditor } from './components/RichTextEditor';
