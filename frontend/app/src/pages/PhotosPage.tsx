@@ -8,7 +8,17 @@ import {
   useUpdatePhoto,
 } from '@/hooks/usePhotoHooks';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination, ConfirmDialog, RefreshButton } from '@buurman/ui';
+import {
+  ConfirmDialog,
+  ListPageHeader,
+  Pagination,
+  RefreshButton,
+  SelectionBar,
+  type ListPageHeaderAction,
+  type SelectionBarAction,
+} from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { Download, RefreshCw, Trash2 } from 'lucide-react';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { EditMetadataModal } from '@/components/ui/EditMetadataModal';
 import { PhotoResponse } from '@/types/property';
@@ -76,22 +86,31 @@ export const PhotosPage = () => {
     }
   };
 
-  return (
-    <div className="px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <ImageIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-text-primary">
-              {t('photosPage.title')}
-            </h1>
-          </div>
-          <p className="text-text-secondary ml-11">
-            {t('photosPage.subtitle')}
-          </p>
-        </div>
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      icon: RefreshCw,
+      onClick: () => refetch(),
+      showOn: 'mobile',
+    },
+    {
+      label: 'desktop-actions',
+      showOn: 'desktop',
+      render: () => (
         <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
-      </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="px-4 py-4 md:py-8">
+      <ListPageHeader
+        title={t('photosPage.title')}
+        subtitle={t('photosPage.subtitle')}
+        icon={ImageIcon}
+        mobileLeading={<MobileMenuButton />}
+        actions={headerActions}
+      />
 
       {/* Search and Filter Bar */}
       <div className="bg-surface-card rounded-lg shadow-sm p-4 mb-6">
@@ -140,6 +159,42 @@ export const PhotosPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Phone-only sticky selection bar (overlays bottom tab bar) */}
+      <SelectionBar
+        open={selectedPhotos.size > 0}
+        count={selectedPhotos.size}
+        label={t('photosPage.selectedCount', {
+          count: selectedPhotos.size,
+          defaultValue: '{{count}} selected',
+        })}
+        onCancel={clearSelection}
+        actions={
+          [
+            {
+              label: t('buttons.download', {
+                ns: 'common',
+                defaultValue: 'Download',
+              }),
+              icon: Download,
+              onClick: () => handleBulkDownload(Array.from(selectedPhotos)),
+            },
+            ...(canEditData
+              ? [
+                  {
+                    label: t('buttons.delete', {
+                      ns: 'common',
+                      defaultValue: 'Delete',
+                    }),
+                    icon: Trash2,
+                    tone: 'danger' as const,
+                    onClick: () => handleBulkDelete(Array.from(selectedPhotos)),
+                  },
+                ]
+              : []),
+          ] as SelectionBarAction[]
+        }
+      />
 
       {/* Photo Grid */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">

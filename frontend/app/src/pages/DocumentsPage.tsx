@@ -7,7 +7,6 @@ import {
   Trash2,
   FileText,
   Image as ImageIcon,
-  Filter,
   CheckSquare,
   Square,
   ChevronUp,
@@ -27,11 +26,18 @@ import {
 import { usePagination } from '@/hooks/usePagination';
 import {
   ConfirmDialog,
-  LoadingSpinner,
+  FilterSheet,
+  ListPageHeader,
   Pagination,
   RefreshButton,
   RichTextDisplay,
+  SelectionBar,
+  Skeleton,
+  type ListPageHeaderAction,
+  type SelectionBarAction,
 } from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { RefreshCw } from 'lucide-react';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { EditMetadataModal } from '@/components/ui/EditMetadataModal';
 import { DocumentResponse } from '@/types/property';
@@ -145,29 +151,40 @@ export const DocumentsPage = () => {
 
   const hasSelection = selectedDocuments.size > 0;
 
-  return (
-    <div className="px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <Folder className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-text-primary">
-              {t('documentsPage.title')}
-            </h1>
-          </div>
-          <p className="text-text-secondary ml-11">
-            {t('documentsPage.subtitle')}
-          </p>
-        </div>
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      icon: RefreshCw,
+      onClick: () => refetch(),
+      showOn: 'mobile',
+    },
+    {
+      label: 'desktop-actions',
+      showOn: 'desktop',
+      render: () => (
         <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
-      </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="px-4 py-4 md:py-8">
+      <ListPageHeader
+        title={t('documentsPage.titleShort', {
+          defaultValue: 'Documents',
+        })}
+        subtitle={t('documentsPage.subtitle')}
+        icon={Folder}
+        mobileLeading={<MobileMenuButton />}
+        actions={headerActions}
+      />
 
       {/* Search and Filter Bar */}
       <div className="bg-surface-card rounded-lg shadow-sm p-4 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex items-stretch gap-3">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted" />
             <input
               type="text"
               placeholder={t('documentsPage.searchPlaceholder')}
@@ -180,45 +197,50 @@ export const DocumentsPage = () => {
             />
           </div>
 
-          {/* Entity Type Filter */}
-          <div className="w-full md:w-48 relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
-            <select
-              value={entityTypeFilter}
-              onChange={(e) => {
-                setEntityTypeFilter(e.target.value);
+          {/* Entity Type Filter — uses FilterSheet so phone gets the
+              bottom-sheet drawer pattern (matches Payments/Expenses/
+              Properties/Contracts/Contacts); lg+ shows inline radio list. */}
+          <FilterSheet
+            activeCount={entityTypeFilter ? 1 : 0}
+            onClear={() => {
+              setEntityTypeFilter('');
+              resetPage();
+            }}
+            triggerLabel={t('documentsPage.entityTypeFilter.label', {
+              defaultValue: 'Type',
+            })}
+            collapseBelow="lg"
+          >
+            <DocumentsFilterContent
+              t={t}
+              entityTypeFilter={entityTypeFilter}
+              onChange={(next) => {
+                setEntityTypeFilter(next);
                 resetPage();
               }}
-              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
-            >
-              <option value="">
-                {t('documentsPage.entityTypeFilter.all')}
-              </option>
-              <option value="PROPERTY">
-                {t('documentsPage.entityTypeFilter.property')}
-              </option>
-              <option value="CONTACT">
-                {t('documentsPage.entityTypeFilter.contact')}
-              </option>
-              <option value="CONTRACT">
-                {t('documentsPage.entityTypeFilter.contract')}
-              </option>
-              <option value="PAYMENT">
-                {t('documentsPage.entityTypeFilter.payment')}
-              </option>
-              <option value="EXPENSE">
-                {t('documentsPage.entityTypeFilter.expense')}
-              </option>
-            </select>
-          </div>
+            />
+          </FilterSheet>
         </div>
       </div>
 
       {/* Document List */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <LoadingSpinner />
-        </div>
+        <ul className="space-y-3" aria-label="Loading documents">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <li
+              key={i}
+              className="bg-surface-card rounded-lg border border-border-default p-4 flex items-start gap-3"
+            >
+              <Skeleton className="h-10 w-10 rounded shrink-0" />
+              <div className="flex-1 space-y-2 min-w-0">
+                <Skeleton className="h-4 w-3/4 rounded" />
+                <Skeleton className="h-3 w-1/2 rounded" />
+                <Skeleton className="h-3 w-1/3 rounded" />
+              </div>
+              <Skeleton className="h-10 w-10 rounded shrink-0" />
+            </li>
+          ))}
+        </ul>
       ) : !documents || documents.length === 0 ? (
         <div className="text-center py-12 bg-surface-card rounded-lg shadow-sm">
           <FileText className="h-12 w-12 text-text-muted mx-auto mb-4" />
@@ -226,6 +248,40 @@ export const DocumentsPage = () => {
         </div>
       ) : (
         <>
+          {/* Phone-only sticky selection bar (overlays bottom tab bar) */}
+          <SelectionBar
+            open={selectedDocuments.size > 0}
+            count={selectedDocuments.size}
+            label={t('documentsPage.selection.selected', {
+              selected: selectedDocuments.size,
+              total: documentsData?.totalElements ?? documents.length,
+              defaultValue: '{{count}} selected',
+            }).replace(String(selectedDocuments.size), '{{count}}')}
+            onCancel={clearSelection}
+            actions={
+              [
+                {
+                  label: t('buttons.download', {
+                    ns: 'common',
+                    defaultValue: 'Download',
+                  }),
+                  icon: Download,
+                  onClick: handleBulkDownload,
+                  disabled: bulkDownloadMutation.isPending,
+                },
+                {
+                  label: t('buttons.delete', {
+                    ns: 'common',
+                    defaultValue: 'Delete',
+                  }),
+                  icon: Trash2,
+                  tone: 'danger' as const,
+                  onClick: handleBulkDelete,
+                },
+              ] as SelectionBarAction[]
+            }
+          />
+
           <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
             {/* Selection bar */}
             <div className="px-6 py-3 border-b border-border-default flex items-center justify-between">
@@ -283,185 +339,283 @@ export const DocumentsPage = () => {
               )}
             </div>
 
-            <table className="min-w-full divide-y divide-border-default">
-              <thead className="bg-surface-page">
-                <tr>
-                  <th className="w-12 px-6 py-3" />
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                    onClick={() => handleSortChange('title')}
+            {/* Phone-only card list — desktop keeps the data-dense table.
+                Each card is a tap-to-preview row with a leading checkbox for
+                selection, file icon, title/filename, entity-type chip,
+                size · date meta, and trailing download/edit/delete actions
+                in a compact icon-cluster (≥44px hit targets). */}
+            <ul className="md:hidden divide-y divide-border-default border-y border-border-default">
+              {documents.map((doc) => {
+                const isSelected = selectedDocuments.has(doc.identifier);
+                return (
+                  <li
+                    key={doc.identifier}
+                    className={`flex items-start gap-3 px-3 py-3 ${
+                      isSelected ? 'bg-info-bg' : ''
+                    }`}
                   >
-                    <div className="flex items-center gap-1">
-                      {t('documentsPage.table.document')}
-                      {getSortIcon('title')}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                    onClick={() => handleSortChange('entityType')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t('documentsPage.table.type')}
-                      {getSortIcon('entityType')}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                    onClick={() => handleSortChange('fileSize')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t('documentsPage.table.size')}
-                      {getSortIcon('fileSize')}
-                    </div>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                    onClick={() => handleSortChange('uploadedAt')}
-                  >
-                    <div className="flex items-center gap-1">
-                      {t('documentsPage.table.uploaded')}
-                      {getSortIcon('uploadedAt')}
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    {t('documentsPage.table.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-surface-card divide-y divide-border-default">
-                {documents.map((doc) => {
-                  const isSelected = selectedDocuments.has(doc.identifier);
-                  return (
-                    <tr
-                      key={doc.identifier}
-                      className={`hover:bg-surface-inset cursor-pointer ${
-                        isSelected ? 'bg-info-bg' : ''
-                      }`}
-                      onClick={() => setPreviewIndex(documents.indexOf(doc))}
+                    <button
+                      type="button"
+                      onClick={(e) =>
+                        handleSelectDocument(doc.identifier, e.shiftKey)
+                      }
+                      aria-label={
+                        isSelected
+                          ? t('common:buttons.deselect', 'Deselect')
+                          : t('common:buttons.select', 'Select')
+                      }
+                      className="mt-1 min-h-touch min-w-touch -m-2 p-2 inline-flex items-center justify-center text-text-secondary"
                     >
-                      <td
-                        className="px-6 py-4"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <button
-                          onClick={(e) =>
-                            handleSelectDocument(doc.identifier, e.shiftKey)
-                          }
-                          className="text-text-secondary hover:text-text-secondary"
-                        >
-                          {isSelected ? (
-                            <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
-                              <Check
-                                className="h-3.5 w-3.5 text-white"
-                                strokeWidth={3}
-                              />
-                            </div>
-                          ) : (
-                            <Square className="h-5 w-5" />
-                          )}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          {getFileIcon(doc.mimeType)}
-                          <div>
-                            <div className="text-sm font-medium text-text-primary">
-                              {doc.title ?? doc.fileName}
-                            </div>
-                            {doc.title && doc.title !== doc.fileName ? (
-                              <div className="text-xs text-text-secondary">
-                                {doc.fileName}
-                              </div>
-                            ) : null}
-                            {doc.notes ? (
-                              <RichTextDisplay
-                                html={doc.notes}
-                                className="text-xs text-text-secondary mt-1"
-                              />
-                            ) : null}
-                          </div>
+                      {isSelected ? (
+                        <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
+                          <Check
+                            className="h-3.5 w-3.5 text-white"
+                            strokeWidth={3}
+                          />
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      ) : (
+                        <Square className="h-5 w-5" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewIndex(documents.indexOf(doc))}
+                      className="flex-1 min-w-0 flex items-start gap-3 text-left focus-ring rounded-md"
+                    >
+                      <div className="flex-shrink-0 mt-0.5">
+                        {getFileIcon(doc.mimeType)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-text-primary truncate">
+                          {doc.title ?? doc.fileName}
+                        </div>
+                        {doc.title && doc.title !== doc.fileName ? (
+                          <div className="text-xs text-text-secondary truncate">
+                            {doc.fileName}
+                          </div>
+                        ) : null}
+                        <div className="mt-1 flex items-center gap-2 text-xs text-text-secondary">
+                          <span className="px-1.5 py-0.5 rounded-full bg-surface-inset text-[10px] uppercase tracking-wider">
+                            {doc.entityType}
+                          </span>
+                          <span>·</span>
+                          <span className="tabular-nums">
+                            {formatFileSize(doc.fileSize)}
+                          </span>
+                          <span>·</span>
+                          <span>{formatDate(doc.uploadedAt)}</span>
+                        </div>
+                      </div>
+                    </button>
+                    <div className="flex flex-col gap-1">
+                      <a
+                        href={doc.downloadUrl ?? undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="min-h-touch min-w-touch -m-1 p-1 inline-flex items-center justify-center text-primary-500 rounded-md"
+                        aria-label={t('tooltips.download')}
+                      >
+                        <Download className="h-5 w-5" />
+                      </a>
+                      {canEditData && (
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const entityPath =
-                              doc.entityType.toLowerCase() === 'property'
-                                ? `/properties/${doc.entityIdentifier}`
-                                : doc.entityType.toLowerCase() === 'contact'
-                                  ? `/contacts/${doc.entityIdentifier}`
-                                  : doc.entityType.toLowerCase() === 'contract'
-                                    ? `/contracts/${doc.entityIdentifier}`
-                                    : doc.entityType.toLowerCase() === 'payment'
-                                      ? `/payments/${doc.entityIdentifier}`
-                                      : doc.entityType.toLowerCase() ===
-                                          'expense'
-                                        ? `/expenses/${doc.entityIdentifier}`
-                                        : '#';
-                            if (entityPath !== '#') {
-                              navigate(entityPath);
-                            }
-                          }}
-                          className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-surface-inset text-text-primary hover:bg-info-bg hover:text-info-text transition-colors"
+                          type="button"
+                          onClick={() => handleDelete(doc.identifier)}
+                          className="min-h-touch min-w-touch -m-1 p-1 inline-flex items-center justify-center text-error-text rounded-md"
+                          aria-label={t('tooltips.delete')}
                         >
-                          {doc.entityType}
+                          <Trash2 className="h-5 w-5" />
                         </button>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                        {formatFileSize(doc.fileSize)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                        {formatDate(doc.uploadedAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div
-                          className="flex justify-end gap-1.5"
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-border-default">
+                <thead className="bg-surface-page">
+                  <tr>
+                    <th className="w-12 px-6 py-3" />
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSortChange('title')}
+                    >
+                      <div className="flex items-center gap-1">
+                        {t('documentsPage.table.document')}
+                        {getSortIcon('title')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSortChange('entityType')}
+                    >
+                      <div className="flex items-center gap-1">
+                        {t('documentsPage.table.type')}
+                        {getSortIcon('entityType')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSortChange('fileSize')}
+                    >
+                      <div className="flex items-center gap-1">
+                        {t('documentsPage.table.size')}
+                        {getSortIcon('fileSize')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSortChange('uploadedAt')}
+                    >
+                      <div className="flex items-center gap-1">
+                        {t('documentsPage.table.uploaded')}
+                        {getSortIcon('uploadedAt')}
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+                      {t('documentsPage.table.actions')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-surface-card divide-y divide-border-default">
+                  {documents.map((doc) => {
+                    const isSelected = selectedDocuments.has(doc.identifier);
+                    return (
+                      <tr
+                        key={doc.identifier}
+                        className={`hover:bg-surface-inset cursor-pointer ${
+                          isSelected ? 'bg-info-bg' : ''
+                        }`}
+                        onClick={() => setPreviewIndex(documents.indexOf(doc))}
+                      >
+                        <td
+                          className="px-6 py-4"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <button
-                            onClick={() =>
-                              setPreviewIndex(documents.indexOf(doc))
+                            onClick={(e) =>
+                              handleSelectDocument(doc.identifier, e.shiftKey)
                             }
-                            className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                            title={t('tooltips.preview')}
+                            className="text-text-secondary hover:text-text-secondary"
                           >
-                            <Eye className="h-4 w-4" />
+                            {isSelected ? (
+                              <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
+                                <Check
+                                  className="h-3.5 w-3.5 text-white"
+                                  strokeWidth={3}
+                                />
+                              </div>
+                            ) : (
+                              <Square className="h-5 w-5" />
+                            )}
                           </button>
-                          {canEditData && (
-                            <button
-                              onClick={() => setEditingDocument(doc)}
-                              className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                              title={t('tooltips.editTitleNotes')}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </button>
-                          )}
-                          <a
-                            href={doc.downloadUrl ?? undefined}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-1.5 text-primary-500 hover:bg-info-bg rounded-md transition-colors"
-                            title={t('tooltips.download')}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            {getFileIcon(doc.mimeType)}
+                            <div>
+                              <div className="text-sm font-medium text-text-primary">
+                                {doc.title ?? doc.fileName}
+                              </div>
+                              {doc.title && doc.title !== doc.fileName ? (
+                                <div className="text-xs text-text-secondary">
+                                  {doc.fileName}
+                                </div>
+                              ) : null}
+                              {doc.notes ? (
+                                <RichTextDisplay
+                                  html={doc.notes}
+                                  className="text-xs text-text-secondary mt-1"
+                                />
+                              ) : null}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const entityPath =
+                                doc.entityType.toLowerCase() === 'property'
+                                  ? `/properties/${doc.entityIdentifier}`
+                                  : doc.entityType.toLowerCase() === 'contact'
+                                    ? `/contacts/${doc.entityIdentifier}`
+                                    : doc.entityType.toLowerCase() ===
+                                        'contract'
+                                      ? `/contracts/${doc.entityIdentifier}`
+                                      : doc.entityType.toLowerCase() ===
+                                          'payment'
+                                        ? `/payments/${doc.entityIdentifier}`
+                                        : doc.entityType.toLowerCase() ===
+                                            'expense'
+                                          ? `/expenses/${doc.entityIdentifier}`
+                                          : '#';
+                              if (entityPath !== '#') {
+                                navigate(entityPath);
+                              }
+                            }}
+                            className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-surface-inset text-text-primary hover:bg-info-bg hover:text-info-text transition-colors"
                           >
-                            <Download className="h-4 w-4" />
-                          </a>
-                          {canEditData && (
+                            {doc.entityType}
+                          </button>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                          {formatFileSize(doc.fileSize)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+                          {formatDate(doc.uploadedAt)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div
+                            className="flex justify-end gap-1.5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <button
-                              onClick={() => handleDelete(doc.identifier)}
-                              className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
-                              title={t('tooltips.delete')}
+                              onClick={() =>
+                                setPreviewIndex(documents.indexOf(doc))
+                              }
+                              className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
+                              title={t('tooltips.preview')}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            {canEditData && (
+                              <button
+                                onClick={() => setEditingDocument(doc)}
+                                className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
+                                title={t('tooltips.editTitleNotes')}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                            )}
+                            <a
+                              href={doc.downloadUrl ?? undefined}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 text-primary-500 hover:bg-info-bg rounded-md transition-colors"
+                              title={t('tooltips.download')}
+                            >
+                              <Download className="h-4 w-4" />
+                            </a>
+                            {canEditData && (
+                              <button
+                                onClick={() => handleDelete(doc.identifier)}
+                                className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
+                                title={t('tooltips.delete')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {documentsData && (
@@ -549,3 +703,59 @@ export const DocumentsPage = () => {
     </div>
   );
 };
+
+const ENTITY_TYPES = [
+  '',
+  'PROPERTY',
+  'CONTACT',
+  'CONTRACT',
+  'PAYMENT',
+  'EXPENSE',
+] as const;
+
+interface DocumentsFilterContentProps {
+  t: ReturnType<typeof useTranslation>['t'];
+  entityTypeFilter: string;
+  onChange: (next: string) => void;
+}
+
+/**
+ * Filter body for DocumentsPage's FilterSheet. Renders the entity-type
+ * choices as tap-chips (44 px touch targets) instead of a native <select>
+ * — keeps the affordance consistent with the other 5 list pages.
+ */
+const DocumentsFilterContent = ({
+  t,
+  entityTypeFilter,
+  onChange,
+}: DocumentsFilterContentProps) => (
+  <div className="space-y-4">
+    <div>
+      <label className="text-sm font-medium text-text-secondary mb-2 block">
+        {t('documentsPage.entityTypeFilter.label', {
+          defaultValue: 'Type',
+        })}
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {ENTITY_TYPES.map((type) => {
+          const key = type === '' ? 'all' : type.toLowerCase();
+          const active = entityTypeFilter === type;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onChange(type)}
+              className={`min-h-touch px-3 py-1.5 text-sm rounded-full border transition-colors ${
+                active
+                  ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
+                  : 'border-border-strong text-text-secondary hover:border-primary-400'
+              }`}
+            >
+              {t(`documentsPage.entityTypeFilter.${key}`)}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+);

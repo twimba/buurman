@@ -228,7 +228,7 @@ export const PortfolioDashboard = () => {
             </span>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-wrap">
               {PERIOD_OPTIONS.map((opt) => (
                 <button
                   key={opt.label}
@@ -243,7 +243,7 @@ export const PortfolioDashboard = () => {
                 </button>
               ))}
             </div>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center flex-wrap min-w-0">
               <input
                 type="date"
                 value={customStart}
@@ -252,7 +252,7 @@ export const PortfolioDashboard = () => {
                   setIsCustom(true);
                   setMonths(undefined);
                 }}
-                className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="px-3 py-1.5 border border-border-strong rounded-md text-base md:text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
               <span className="text-text-muted text-xs">–</span>
               <input
@@ -263,7 +263,7 @@ export const PortfolioDashboard = () => {
                   setIsCustom(true);
                   setMonths(undefined);
                 }}
-                className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="px-3 py-1.5 border border-border-strong rounded-md text-base md:text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -333,7 +333,7 @@ export const PortfolioDashboard = () => {
       />
 
       {/* Cash Flow + Allocation */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ChartCard
           title={t('dashboard.charts.cashFlow')}
           icon={<BarChart3 className="h-5 w-5" />}
@@ -359,7 +359,7 @@ export const PortfolioDashboard = () => {
       </div>
 
       {/* Comparison + Equity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ChartCard
           title={t('dashboard.charts.propertyComparison')}
           icon={<TrendingUp className="h-5 w-5" />}

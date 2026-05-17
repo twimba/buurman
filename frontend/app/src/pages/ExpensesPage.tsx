@@ -9,10 +9,19 @@ import {
 } from '@/hooks/useExpenseHooks';
 import {
   ConfirmDialog,
+  DataList,
+  EmptyState,
+  FilterSheet,
+  ListPageHeader,
   Pagination,
   RefreshButton,
   Skeleton,
+  SwipeAction,
+  type ListPageHeaderAction,
+  type SwipeActionItem,
 } from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { RefreshCw } from 'lucide-react';
 import { usePagination } from '@/hooks/usePagination';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { PropertyCell } from '@/components/properties/PropertyCell';
@@ -124,7 +133,7 @@ export const ExpensesPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
@@ -166,53 +175,59 @@ export const ExpensesPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('errors.loadFailed')} />
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <Receipt className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">
-                {t('page.title')}
-              </h1>
-            </div>
-            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <RefreshButton
-              onClick={() => refetch()}
-              isRefreshing={isFetching}
-            />
-            <EntityExportControls
-              filenameStem="expenses"
-              csv={exportExpensesCsv}
-              xlsx={exportExpensesXlsx}
-              googleSheet={exportExpensesGoogleSheet}
-            />
-            <button
-              onClick={() => navigate('/expenses/new')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-5 w-5" />
-              {t('actions.addExpense')}
-            </button>
-          </div>
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      icon: RefreshCw,
+      onClick: () => refetch(),
+      showOn: 'mobile',
+    },
+    {
+      label: 'desktop-actions',
+      showOn: 'desktop',
+      render: () => (
+        <div className="flex items-center gap-2 flex-wrap">
+          <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
+          <EntityExportControls
+            filenameStem="expenses"
+            csv={exportExpensesCsv}
+            xlsx={exportExpensesXlsx}
+            googleSheet={exportExpensesGoogleSheet}
+          />
         </div>
+      ),
+    },
+  ];
 
-        {/* Metrics Dashboard */}
+  return (
+    <div className="min-h-[100dvh] bg-background">
+      <div className="px-4 py-4 md:py-8">
+        <ListPageHeader
+          title={t('page.title')}
+          subtitle={t('page.subtitle')}
+          icon={Receipt}
+          mobileLeading={<MobileMenuButton />}
+          actions={headerActions}
+          primaryAction={{
+            label: t('actions.addExpense'),
+            icon: Plus,
+            onClick: () => navigate('/expenses/new'),
+            disabled: !canEditData,
+          }}
+        />
+
+        {/* Metrics Dashboard — phone shows Total + Top Categories
+            stacked single-col; the 6-month sparkline collapses to lg+. */}
         {expenseStats && (
-          <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {/* Total Expenses */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 flex flex-col">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-3 md:p-6 flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-text-secondary">
                   {t('stats.totalExpenses')}
@@ -220,7 +235,7 @@ export const ExpensesPage = () => {
                 <DollarSign className="h-5 w-5 text-error-text" />
               </div>
               <div className="flex-1 flex flex-col justify-center">
-                <p className="text-3xl font-bold text-text-primary">
+                <p className="text-xl md:text-3xl font-bold text-text-primary tabular-nums">
                   {fmtMoney(expenseStats.totalAmount, statsCurrency)}
                 </p>
                 <p className="text-sm text-text-secondary mt-1">
@@ -236,7 +251,7 @@ export const ExpensesPage = () => {
             </div>
 
             {/* Top Categories */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-3 md:p-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-medium text-text-secondary">
                   {t('stats.topCategories')}
@@ -276,8 +291,9 @@ export const ExpensesPage = () => {
               </div>
             </div>
 
-            {/* 6-Month Expenses Chart */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            {/* 6-Month Expenses Chart — lg+ only, sparkline at phone width
+                isn't readable; deeper trend lives in /reports. */}
+            <div className="hidden lg:block bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-text-secondary">
                   {t('stats.lastSixMonths')}
@@ -328,8 +344,34 @@ export const ExpensesPage = () => {
           </div>
         )}
 
-        {/* Filter Bar */}
-        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
+        {/* Phone: filter trigger + sheet */}
+        <div className="md:hidden mb-4 flex justify-end">
+          <FilterSheet
+            activeCount={(propertyFilter ? 1 : 0) + (categoryFilter ? 1 : 0)}
+            onClear={() => {
+              setPropertyFilter(undefined);
+              setCategoryFilter(undefined);
+              setPeriodRange(null);
+              resetPage();
+            }}
+            triggerLabel={t('filters.title')}
+            collapseBelow="lg"
+          >
+            <ExpensesFilterContent
+              categoryFilterValues={categoryFilterValues}
+              categoryFilter={categoryFilter}
+              setCategoryFilter={setCategoryFilter}
+              propertyFilter={propertyFilter}
+              setPropertyFilter={setPropertyFilter}
+              setPeriodRange={setPeriodRange}
+              resetPage={resetPage}
+              t={t}
+            />
+          </FilterSheet>
+        </div>
+
+        {/* Filter Bar (md+) */}
+        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h3 className="font-semibold text-text-primary">
@@ -395,118 +437,174 @@ export const ExpensesPage = () => {
           </div>
         </div>
 
-        {/* Expenses Table */}
+        {/* Expenses — Mobile card list (<md). md+ shows the existing table below. */}
+        {expensesData?.content && expensesData.content.length > 0 && (
+          <ul className="md:hidden space-y-3 mb-4">
+            {expensesData.content.map((expense) => {
+              const leftActions: SwipeActionItem[] = canEditData
+                ? [
+                    {
+                      label: t('actions.delete', { defaultValue: 'Delete' }),
+                      icon: Trash2,
+                      tone: 'danger',
+                      onAction: () => setDeleteTarget(expense.identifier),
+                    },
+                  ]
+                : [];
+              return (
+                <li key={`m-${expense.identifier}`}>
+                  <SwipeAction
+                    leftActions={leftActions}
+                    onClick={() => navigate(`/expenses/${expense.identifier}`)}
+                  >
+                    <div className="bg-surface-card border border-border-default p-4 min-h-touch">
+                      <DataList
+                        title={expense.description}
+                        trailing={
+                          <ExpenseCategoryBadge category={expense.category} />
+                        }
+                        items={[
+                          {
+                            label: t('table.date'),
+                            value: formatDate(expense.expenseDate),
+                          },
+                          {
+                            label: t('table.property'),
+                            value: `${expense.property.street}, ${expense.property.city}`,
+                          },
+                          {
+                            label: t('table.amount'),
+                            value: (
+                              <span className="font-semibold text-text-primary">
+                                {fmtMoney(expense.amount, expense.currency)}
+                              </span>
+                            ),
+                            align: 'right',
+                          },
+                        ]}
+                      />
+                    </div>
+                  </SwipeAction>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {/* Expenses Table — md+ */}
         {expensesData?.content && expensesData.content.length > 0 ? (
           <>
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default overflow-hidden mb-4">
-              <table className="min-w-full divide-y divide-border-default">
-                <thead className="bg-surface-page">
-                  <tr>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('expenseDate')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('table.date')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('table.expenseNumber')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('table.description')}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('category')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('table.category')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[220px]">
-                      {t('table.property')}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('amount')}
-                    >
-                      <div className="flex items-center justify-end gap-1">
-                        {t('table.amount')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
-                  </tr>
-                </thead>
-                <tbody className="bg-surface-card divide-y divide-border-default">
-                  {expensesData.content.map((expense) => (
-                    <tr
-                      key={expense.identifier}
-                      className="hover:bg-primary-50 cursor-pointer"
-                      onClick={() =>
-                        navigate(`/expenses/${expense.identifier}`)
-                      }
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
-                        {formatDate(expense.expenseDate)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
-                        {expense.identifier}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-text-primary">
-                        {expense.description}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <ExpenseCategoryBadge category={expense.category} />
-                      </td>
-                      <td className="px-6 py-3">
-                        <PropertyCell
-                          propertyIdentifier={expense.property.identifier}
-                          propertyStatus={expense.property.status}
-                          propertyType={expense.property.propertyType}
-                          street={expense.property.street}
-                          city={expense.property.city}
-                          postalCode={expense.property.postalCode}
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <span className="text-sm font-semibold text-text-primary">
-                          {fmtMoney(expense.amount, expense.currency)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-right">
+            <div className="hidden md:block bg-surface-card rounded-lg shadow-sm border border-border-default overflow-hidden mb-4">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-border-default">
+                  <thead className="bg-surface-page">
+                    <tr>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('expenseDate')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('table.date')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('table.expenseNumber')}
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('table.description')}
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('category')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('table.category')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[220px]">
+                        {t('table.property')}
+                      </th>
+                      <th
+                        className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('amount')}
+                      >
                         <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/expenses/${expense.identifier}`);
-                            }}
-                            className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
-                            title={t('tooltips.viewExpense')}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          {canEditData && (
+                          {t('table.amount')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-surface-card divide-y divide-border-default">
+                    {expensesData.content.map((expense) => (
+                      <tr
+                        key={expense.identifier}
+                        className="hover:bg-primary-50 cursor-pointer"
+                        onClick={() =>
+                          navigate(`/expenses/${expense.identifier}`)
+                        }
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                          {formatDate(expense.expenseDate)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
+                          {expense.identifier}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-text-primary">
+                          {expense.description}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <ExpenseCategoryBadge category={expense.category} />
+                        </td>
+                        <td className="px-6 py-3">
+                          <PropertyCell
+                            propertyIdentifier={expense.property.identifier}
+                            propertyStatus={expense.property.status}
+                            propertyType={expense.property.propertyType}
+                            street={expense.property.street}
+                            city={expense.property.city}
+                            postalCode={expense.property.postalCode}
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <span className="text-sm font-semibold text-text-primary">
+                            {fmtMoney(expense.amount, expense.currency)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-right">
+                          <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDeleteTarget(expense.identifier);
+                                navigate(`/expenses/${expense.identifier}`);
                               }}
-                              className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title={t('tooltips.deleteExpense')}
+                              className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
+                              title={t('tooltips.viewExpense')}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                            {canEditData && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeleteTarget(expense.identifier);
+                                }}
+                                className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
+                                title={t('tooltips.deleteExpense')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {expensesData && (
@@ -521,26 +619,29 @@ export const ExpensesPage = () => {
             )}
           </>
         ) : (
-          <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
-            <Receipt className="h-12 w-12 text-text-muted mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
-              {t('empty.title')}
-            </h3>
-            <p className="text-text-secondary mb-6">
-              {categoryFilter || propertyFilter
-                ? t('empty.filtered')
-                : t('empty.noData')}
-            </p>
-            {!categoryFilter && !propertyFilter && (
-              <button
-                onClick={() => navigate('/expenses/new')}
-                disabled={!canEditData}
-                className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-              >
-                <Plus className="h-5 w-5" />
-                {t('actions.addExpense')}
-              </button>
-            )}
+          <div className="bg-surface-card rounded-lg border border-border-default">
+            <EmptyState
+              variant="page"
+              icon={<Receipt className="h-12 w-12" />}
+              title={t('empty.title')}
+              description={
+                categoryFilter || propertyFilter
+                  ? t('empty.filtered')
+                  : t('empty.noData')
+              }
+              actions={
+                !categoryFilter && !propertyFilter ? (
+                  <button
+                    onClick={() => navigate('/expenses/new')}
+                    disabled={!canEditData}
+                    className="bg-primary-500 text-white px-4 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+                  >
+                    <Plus className="h-5 w-5" />
+                    {t('actions.addExpense')}
+                  </button>
+                ) : undefined
+              }
+            />
           </div>
         )}
       </div>
@@ -562,3 +663,73 @@ export const ExpensesPage = () => {
     </div>
   );
 };
+
+interface ExpensesFilterContentProps {
+  categoryFilterValues: (ExpenseCategory | undefined)[];
+  categoryFilter: ExpenseCategory | undefined;
+  setCategoryFilter: (v: ExpenseCategory | undefined) => void;
+  propertyFilter: string | undefined;
+  setPropertyFilter: (v: string | undefined) => void;
+  setPeriodRange: (range: PeriodDateRange | null) => void;
+  resetPage: () => void;
+  t: (key: string) => string;
+}
+
+const ExpensesFilterContent = ({
+  categoryFilterValues,
+  categoryFilter,
+  setCategoryFilter,
+  propertyFilter,
+  setPropertyFilter,
+  setPeriodRange,
+  resetPage,
+  t,
+}: ExpensesFilterContentProps) => (
+  <div className="flex flex-col gap-4">
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.property')}
+      </label>
+      <PropertySelector
+        value={propertyFilter ?? ''}
+        onChange={(id) => {
+          setPropertyFilter(id || undefined);
+          resetPage();
+        }}
+        clearable
+        placeholder={t('filters.allProperties')}
+      />
+    </div>
+    <PeriodFilter
+      presets={['month', 'quarter', 'year', 'all', 'custom']}
+      defaultPreset="all"
+      onChange={(range) => {
+        setPeriodRange(range);
+        resetPage();
+      }}
+    />
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.category')}
+      </label>
+      <div className="flex gap-2 flex-wrap">
+        {categoryFilterValues.map((value) => (
+          <button
+            key={value ?? 'all'}
+            onClick={() => {
+              setCategoryFilter(value);
+              resetPage();
+            }}
+            className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+              categoryFilter === value
+                ? 'bg-primary-500 text-white'
+                : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+            }`}
+          >
+            {value ? t(`category.${value}`) : t('filters.allCategories')}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);

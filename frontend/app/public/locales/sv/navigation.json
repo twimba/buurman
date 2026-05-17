@@ -11,7 +11,8 @@
     "expenses": "Kostnader",
     "documents": "Dokument",
     "photos": "Foton",
-    "reports": "Rapporter"
+    "reports": "Rapporter",
+    "more": "Mer"
   },
   "admin": {
     "title": "Administration",
@@ -25,5 +26,11 @@
     "apiDocs": "API-dokumentation"
   },
   "settings": "Installningar",
-  "signOut": "Logga ut"
+  "signOut": "Logga ut",
+  "accessibility": {
+    "openMenu": "Öppna meny",
+    "closeMenu": "Stäng meny",
+    "primaryNav": "Huvudnavigation",
+    "bottomNav": "Bottennavigation"
+  }
 }

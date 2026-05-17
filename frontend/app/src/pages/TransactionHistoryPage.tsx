@@ -13,7 +13,12 @@ import {
 } from 'lucide-react';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useExpenses } from '@/hooks/useExpenseHooks';
-import { LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
+import {
+  DataList,
+  LoadingSpinner,
+  Pagination,
+  RefreshButton,
+} from '@buurman/ui';
 import { PaymentStatus } from '@/types/payment';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -542,105 +547,175 @@ export const TransactionHistoryPage = () => {
           </p>
         </div>
       ) : (
-        <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden">
-          <table className="min-w-full divide-y divide-border-default">
-            <thead className="bg-surface-page">
-              <tr>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                  onClick={() => handleSort('date')}
-                >
-                  <div className="flex items-center gap-1">
-                    {t('transactions.table.date')}
-                    {sortField === 'date' && (
-                      <ArrowUpDown className="h-4 w-4" />
-                    )}
-                  </div>
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  {t('transactions.table.type')}
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  {t('transactions.table.description')}
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  {t('transactions.table.property')}
-                </th>
-                <th
-                  className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                  onClick={() => handleSort('amount')}
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    {t('transactions.table.amount')}
-                    {sortField === 'amount' && (
-                      <ArrowUpDown className="h-4 w-4" />
-                    )}
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-surface-card divide-y divide-border-default">
-              {paginatedTransactions.map((transaction) => (
-                <tr
-                  key={`${transaction.type}-${transaction.id}`}
-                  className="hover:bg-primary-50 cursor-pointer transition-colors"
+        <>
+          {/* Mobile card list (<md). */}
+          <ul className="md:hidden space-y-3 mb-4">
+            {paginatedTransactions.map((transaction) => (
+              <li key={`m-${transaction.type}-${transaction.id}`}>
+                <button
+                  type="button"
                   onClick={() => handleRowClick(transaction)}
+                  className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
-                    {formatDate(transaction.date)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        transaction.type === 'INCOME'
-                          ? 'bg-success-bg text-success-text'
-                          : 'bg-error-bg text-error-text'
-                      }`}
-                    >
-                      {transaction.type === 'INCOME' ? (
-                        <TrendingUp className="h-3 w-3" />
-                      ) : (
-                        <TrendingDown className="h-3 w-3" />
-                      )}
-                      {transaction.type}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-text-primary">
-                    {transaction.description}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-text-secondary">
-                    {transaction.property}
-                  </td>
-                  <td
-                    className={`px-6 py-4 whitespace-nowrap text-sm font-semibold text-right ${
-                      transaction.type === 'INCOME'
-                        ? 'text-success-text'
-                        : 'text-error-text'
-                    }`}
-                  >
-                    {transaction.type === 'INCOME' ? '+' : '-'}
-                    {formatCurrency(transaction.amount, transaction.currency)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  <DataList
+                    title={transaction.description}
+                    trailing={
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          transaction.type === 'INCOME'
+                            ? 'bg-success-bg text-success-text'
+                            : 'bg-error-bg text-error-text'
+                        }`}
+                      >
+                        {transaction.type === 'INCOME' ? (
+                          <TrendingUp className="h-3 w-3" />
+                        ) : (
+                          <TrendingDown className="h-3 w-3" />
+                        )}
+                        {transaction.type}
+                      </span>
+                    }
+                    items={[
+                      {
+                        label: t('transactions.table.date'),
+                        value: formatDate(transaction.date),
+                      },
+                      {
+                        label: t('transactions.table.property'),
+                        value: transaction.property,
+                      },
+                      {
+                        label: t('transactions.table.amount'),
+                        value: (
+                          <span
+                            className={`font-semibold ${
+                              transaction.type === 'INCOME'
+                                ? 'text-success-text'
+                                : 'text-error-text'
+                            }`}
+                          >
+                            {transaction.type === 'INCOME' ? '+' : '-'}
+                            {formatCurrency(
+                              transaction.amount,
+                              transaction.currency
+                            )}
+                          </span>
+                        ),
+                        align: 'right',
+                      },
+                    ]}
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
 
-          {/* Pagination */}
-          <div className="mt-4">
-            <Pagination
-              page={currentPage}
-              totalPages={totalPages}
-              totalElements={filteredAndSortedTransactions.length}
-              size={pageSize}
-              onPageChange={setCurrentPage}
-              onSizeChange={(s) => {
-                setPageSize(s);
-                setCurrentPage(0);
-              }}
-            />
+          {/* md+ table */}
+          <div className="hidden md:block bg-surface-card rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-border-default">
+                <thead className="bg-surface-page">
+                  <tr>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSort('date')}
+                    >
+                      <div className="flex items-center gap-1">
+                        {t('transactions.table.date')}
+                        {sortField === 'date' && (
+                          <ArrowUpDown className="h-4 w-4" />
+                        )}
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                      {t('transactions.table.type')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                      {t('transactions.table.description')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                      {t('transactions.table.property')}
+                    </th>
+                    <th
+                      className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                      onClick={() => handleSort('amount')}
+                    >
+                      <div className="flex items-center justify-end gap-1">
+                        {t('transactions.table.amount')}
+                        {sortField === 'amount' && (
+                          <ArrowUpDown className="h-4 w-4" />
+                        )}
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-surface-card divide-y divide-border-default">
+                  {paginatedTransactions.map((transaction) => (
+                    <tr
+                      key={`${transaction.type}-${transaction.id}`}
+                      className="hover:bg-primary-50 cursor-pointer transition-colors"
+                      onClick={() => handleRowClick(transaction)}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                        {formatDate(transaction.date)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            transaction.type === 'INCOME'
+                              ? 'bg-success-bg text-success-text'
+                              : 'bg-error-bg text-error-text'
+                          }`}
+                        >
+                          {transaction.type === 'INCOME' ? (
+                            <TrendingUp className="h-3 w-3" />
+                          ) : (
+                            <TrendingDown className="h-3 w-3" />
+                          )}
+                          {transaction.type}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-text-primary">
+                        {transaction.description}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-text-secondary">
+                        {transaction.property}
+                      </td>
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm font-semibold text-right ${
+                          transaction.type === 'INCOME'
+                            ? 'text-success-text'
+                            : 'text-error-text'
+                        }`}
+                      >
+                        {transaction.type === 'INCOME' ? '+' : '-'}
+                        {formatCurrency(
+                          transaction.amount,
+                          transaction.currency
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="mt-4">
+              <Pagination
+                page={currentPage}
+                totalPages={totalPages}
+                totalElements={filteredAndSortedTransactions.length}
+                size={pageSize}
+                onPageChange={setCurrentPage}
+                onSizeChange={(s) => {
+                  setPageSize(s);
+                  setCurrentPage(0);
+                }}
+              />
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

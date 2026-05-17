@@ -26,9 +26,10 @@ import {
   TrendingUp,
   FileCode,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SidebarTooltip } from '@buurman/ui';
+import { useMobileNav } from '@/context/MobileNavContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTeam } from '@/context/TeamContext';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
@@ -65,10 +66,32 @@ const navLinkClass = (isActive: boolean, collapsed: boolean) => `
 interface SidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
+  /** Controlled mobile-drawer state. If omitted, the Sidebar manages its own state. */
+  mobileOpen?: boolean;
+  onMobileOpenChange?: (next: boolean) => void;
 }
 
-export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+export const Sidebar = ({
+  collapsed: userCollapsed,
+  onToggleCollapse,
+  mobileOpen: controlledMobileOpen,
+  onMobileOpenChange,
+}: SidebarProps) => {
+  const [uncontrolledMobileOpen, setUncontrolledMobileOpen] = useState(false);
+  const isControlled = controlledMobileOpen !== undefined;
+  const mobileOpen = isControlled
+    ? controlledMobileOpen
+    : uncontrolledMobileOpen;
+  const setMobileOpen = useCallback(
+    (next: boolean) => {
+      if (isControlled) {
+        onMobileOpenChange?.(next);
+      } else {
+        setUncontrolledMobileOpen(next);
+      }
+    },
+    [isControlled, onMobileOpenChange]
+  );
   const { logout } = useAuth();
   const { teams, canEditTeamSettings } = useTeam();
   const { isEnabled } = useFeatureFlags();
@@ -197,29 +220,146 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
     (item) => !item.featureFlag || isEnabled(item.featureFlag)
   );
 
+  // Viewport detection. Three states matter:
+  //   `phone`  (<md, <768)        — off-canvas drawer + floating hamburger
+  //   `rail`   (md → lg, 768–1023) — persistent 64-px icon-only rail (if flag enabled)
+  //   `desktop`(lg+, ≥1024)       — full expanded sidebar (user-collapsible to 20)
+  const [isPhoneViewport, setIsPhoneViewport] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(max-width: 767px)').matches
+      : false
+  );
+  const [isRailViewport, setIsRailViewport] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(min-width: 768px) and (max-width: 1023px)').matches
+      : false
+  );
+  useEffect(() => {
+    const mqPhone = window.matchMedia('(max-width: 767px)');
+    const mqRail = window.matchMedia(
+      '(min-width: 768px) and (max-width: 1023px)'
+    );
+    const onPhone = (e: MediaQueryListEvent) => setIsPhoneViewport(e.matches);
+    const onRail = (e: MediaQueryListEvent) => setIsRailViewport(e.matches);
+    mqPhone.addEventListener('change', onPhone);
+    mqRail.addEventListener('change', onRail);
+    return () => {
+      mqPhone.removeEventListener('change', onPhone);
+      mqRail.removeEventListener('change', onRail);
+    };
+  }, []);
+
+  // Feature flag: localStorage 'buurman.mobile.sidebarRail' ∈ { 'true','false' }.
+  // Defaults to enabled. Read once at mount.
+  const [railEnabled] = useState(() => {
+    try {
+      const v = localStorage.getItem('buurman.mobile.sidebarRail');
+      return v !== 'false';
+    } catch {
+      return true;
+    }
+  });
+  const railModeActive = isRailViewport && railEnabled;
+
+  // Effective collapsed: rail mode forces collapsed visuals regardless of the
+  // user's `collapsed` preference (which only applies at lg+).
+  // Shadowing the prop as `collapsed` makes the rest of the JSX
+  // automatically render in rail-collapsed style at md→lg.
+  const collapsed = railModeActive || userCollapsed;
+
+  // Drawer inert: only when phone-viewport AND closed. Rail and desktop always
+  // remain in tab order.
+  const shouldBeInert = isPhoneViewport && !mobileOpen;
+
+  // Whether a page-level header (ListPageHeader) is providing its own menu trigger.
+  const { hasOwnMenuButton } = useMobileNav();
+
+  // Close drawer on Escape (mobile only)
+  useEffect(() => {
+    if (!mobileOpen) {
+      return;
+    }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [mobileOpen, setMobileOpen]);
+
+  // Body scroll lock while the mobile drawer is open. Native-feel: the page
+  // underneath must not be scrollable while a drawer overlays it. We toggle
+  // `overflow: hidden` on <body> rather than wrapping in Radix Dialog (the
+  // drawer is an `<aside>` with bespoke transitions, not a modal).
+  useEffect(() => {
+    if (!mobileOpen) {
+      return;
+    }
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileOpen]);
+
   return (
     <>
-      {/* Mobile menu button */}
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed left-4 z-50 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset"
-        style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
-      >
-        {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-      </button>
+      {/* Floating mobile menu button — phone only (`<md`). At md→lg the rail
+          provides persistent nav; at lg+ the sidebar is always visible.
+          Also hidden when a page-level header provides its own trigger
+          (ListPageHeader + MobileMenuButton). Always min-h/w 44px touch target. */}
+      {!hasOwnMenuButton && (
+        <button
+          type="button"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={
+            mobileOpen
+              ? t('accessibility.closeMenu', 'Close menu')
+              : t('accessibility.openMenu', 'Open menu')
+          }
+          aria-expanded={mobileOpen}
+          aria-controls="primary-sidebar"
+          className={`${railEnabled ? 'md:hidden' : 'lg:hidden'} fixed left-4 z-50 inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset focus-ring`}
+          style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
+        >
+          {mobileOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
+        </button>
+      )}
 
-      {/* Sidebar */}
+      {/* Backdrop scrim — closes drawer on tap, only visible on mobile when open */}
+      {mobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-30 bg-black/40"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar — `inert` when closed on mobile removes children from tab order */}
       <aside
+        id="primary-sidebar"
+        aria-label={t('accessibility.primaryNav', 'Primary navigation')}
+        {...(shouldBeInert ? { inert: '' as unknown as boolean } : {})}
+        aria-hidden={shouldBeInert || undefined}
         className={`
           fixed left-0 bg-surface-card/95 backdrop-blur-xl border-r border-border-default z-40
           transition-all duration-300 ease-in-out
           ${mobileOpen ? 'w-64 translate-x-0' : '-translate-x-full'}
+          ${railEnabled ? 'md:translate-x-0 md:w-16' : ''}
           ${collapsed ? 'lg:w-20' : 'lg:w-64'}
           lg:translate-x-0
         `}
         style={{
           top: 'var(--env-banner-height, 0px)',
-          height: 'calc(100vh - var(--env-banner-height, 0px))',
+          height: 'calc(100dvh - var(--env-banner-height, 0px))',
+          paddingTop: 'var(--safe-top, 0px)',
+          paddingBottom: 'var(--safe-bottom, 0px)',
+          paddingLeft: 'var(--safe-left, 0px)',
         }}
       >
         <div className="flex flex-col h-full overflow-hidden">

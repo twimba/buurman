@@ -323,7 +323,9 @@ export const FinancialReportsPage = () => {
               </div>
             </div>
 
-            <div className="flex gap-3">
+            {/* Date inputs — stack vertically on phone (two ~140px native
+                date inputs + "to" don't fit in 330px); inline at sm+. */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <input
                 type="date"
                 value={customStartDate || dateRange.startDate}
@@ -331,9 +333,9 @@ export const FinancialReportsPage = () => {
                   setCustomStartDate(e.target.value);
                   setPeriodType('custom');
                 }}
-                className="px-3 py-2 border border-border-strong rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
+                className="w-full sm:w-auto px-3 py-2 border border-border-strong rounded-md text-base sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
               />
-              <span className="text-text-secondary self-center">
+              <span className="text-text-secondary text-xs sm:text-sm sm:self-center">
                 {t('reports.to')}
               </span>
               <input
@@ -343,7 +345,7 @@ export const FinancialReportsPage = () => {
                   setCustomEndDate(e.target.value);
                   setPeriodType('custom');
                 }}
-                className="px-3 py-2 border border-border-strong rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
+                className="w-full sm:w-auto px-3 py-2 border border-border-strong rounded-md text-base sm:text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
               />
             </div>
           </div>
@@ -1272,8 +1274,9 @@ const FinancialReportFullscreen = ({
         ))}
       </div>
 
-      {/* Date inputs */}
-      <div className="flex items-center gap-1">
+      {/* Date inputs — stack vertically on phone; inline at sm+. text-base
+          on phone defeats iOS zoom-on-focus (text-xs at desktop). */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-1">
         <input
           type="date"
           value={localStartDate}
@@ -1281,9 +1284,9 @@ const FinancialReportFullscreen = ({
             setLocalStartDate(e.target.value);
             setLocalPeriodType('custom');
           }}
-          className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
+          className="w-full sm:w-auto px-2 py-1.5 border border-border-strong rounded-md text-base sm:text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
         />
-        <span className="text-text-secondary text-xs">–</span>
+        <span className="text-text-secondary text-xs hidden sm:inline">–</span>
         <input
           type="date"
           value={localEndDate}
@@ -1291,7 +1294,7 @@ const FinancialReportFullscreen = ({
             setLocalEndDate(e.target.value);
             setLocalPeriodType('custom');
           }}
-          className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
+          className="w-full sm:w-auto px-2 py-1.5 border border-border-strong rounded-md text-base sm:text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
         />
       </div>
 

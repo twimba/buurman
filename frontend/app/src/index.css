@@ -35,6 +35,26 @@ body {
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh; /* iOS Safari URL-bar fix; falls back to 100vh on older browsers */
+}
+
+/* Phase 0: kill iOS focus-zoom on inputs by enforcing 16px minimum on mobile */
+@media (max-width: 767px) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Phase 0: 300ms tap-delay + grey-tap-highlight off on touch */
+button,
+[role='button'],
+a,
+summary,
+label {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 @keyframes slide-in {
@@ -61,13 +81,92 @@ body {
   }
 }
 
+@keyframes slide-down {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
 .animate-slide-up {
   animation: slide-up 0.25s ease-out;
 }
 
+.animate-slide-down {
+  animation: slide-down 0.2s ease-in;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-slide-in,
-  .animate-slide-up {
+  .animate-slide-up,
+  .animate-slide-down {
+    animation: none;
+  }
+  /* Disable active-scale press feedback under reduce-motion. Targets the
+     Button's active:scale-[0.97] (P2-4) and any future active-scale opts-in. */
+  *:active {
+    transform: none !important;
+  }
+}
+
+/* ── View Transitions (Chrome/Safari/Edge — native cross-document) ──
+   React-router-dom v7 calls `document.startViewTransition()` when a Link
+   has `viewTransition`. The browser snapshots the page, swaps DOM, and
+   animates between the snapshots using these `::view-transition-*` rules.
+   Phone slides left/right; desktop cross-fades (less jarring on wide
+   viewports). Skipped entirely under prefers-reduced-motion. */
+@keyframes vt-slide-from-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes vt-slide-to-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-20%);
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 767px) {
+  ::view-transition-old(root) {
+    animation: vt-slide-to-left 220ms ease-in;
+  }
+  ::view-transition-new(root) {
+    animation: vt-slide-from-right 220ms ease-out;
+  }
+}
+
+@media (min-width: 768px) {
+  ::view-transition-old(root) {
+    animation: fade-out 160ms ease-out;
+  }
+  ::view-transition-new(root) {
+    animation: fade-in 160ms ease-in;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
     animation: none;
   }
 }

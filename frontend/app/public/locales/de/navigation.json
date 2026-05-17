@@ -11,7 +11,8 @@
     "expenses": "Ausgaben",
     "documents": "Dokumente",
     "photos": "Fotos",
-    "reports": "Berichte"
+    "reports": "Berichte",
+    "more": "Mehr"
   },
   "admin": {
     "title": "Verwaltung",
@@ -25,5 +26,11 @@
     "apiDocs": "API-Dokumentation"
   },
   "settings": "Einstellungen",
-  "signOut": "Abmelden"
+  "signOut": "Abmelden",
+  "accessibility": {
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "primaryNav": "Hauptnavigation",
+    "bottomNav": "Untere Navigation"
+  }
 }

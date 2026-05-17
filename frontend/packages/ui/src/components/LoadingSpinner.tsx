@@ -18,7 +18,7 @@ export function LoadingSpinner({
     <div
       className={cn(
         'flex flex-col items-center justify-center gap-3',
-        fullScreen ? 'min-h-screen' : 'p-8',
+        fullScreen ? 'min-h-[100dvh]' : 'p-8',
         className
       )}
     >

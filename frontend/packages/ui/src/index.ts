@@ -3,6 +3,11 @@ export { Button } from './components/Button';
 export type { ButtonVariant, ButtonSize } from './components/Button';
 export { Pagination } from './components/Pagination';
 export { PageHeader } from './components/PageHeader';
+export { ListPageHeader } from './components/ListPageHeader';
+export type {
+  ListPageHeaderAction,
+  ListPageHeaderProps,
+} from './components/ListPageHeader';
 export { ConfirmDialog } from './components/ConfirmDialog';
 export { RefreshButton } from './components/RefreshButton';
 export { SidebarTooltip } from './components/SidebarTooltip';
@@ -17,6 +22,31 @@ export { FormField } from './components/FormField';
 
 // New components — Batch 2 (Interactive)
 export { ModalWrapper } from './components/ModalWrapper';
+export { Sheet } from './components/Sheet';
+export type { SheetProps, SheetSnapPoint } from './components/Sheet';
+export { FilterSheet } from './components/FilterSheet';
+export type { FilterSheetProps } from './components/FilterSheet';
+export { PullToRefresh } from './components/PullToRefresh';
+export type { PullToRefreshProps } from './components/PullToRefresh';
+export { ResponsiveTable } from './components/ResponsiveTable';
+export type {
+  ResponsiveTableColumn,
+  ResponsiveTableProps,
+} from './components/ResponsiveTable';
+export { DataList } from './components/DataList';
+export type { DataListItem, DataListProps } from './components/DataList';
+export { SwipeAction } from './components/SwipeAction';
+export type {
+  SwipeActionItem,
+  SwipeActionProps,
+} from './components/SwipeAction';
+export { SelectionBar } from './components/SelectionBar';
+export type {
+  SelectionBarAction,
+  SelectionBarProps,
+} from './components/SelectionBar';
+export { useSelectionMode } from './hooks/useSelectionMode';
+export type { UseSelectionModeResult } from './hooks/useSelectionMode';
 export { StatusBadge } from './components/StatusBadge';
 export type { BadgeColorVariant } from './components/StatusBadge';
 export { EmptyState } from './components/EmptyState';
@@ -31,6 +61,8 @@ export { FilterBar } from './components/FilterBar';
 export type { FilterDef } from './components/FilterBar';
 
 // Promoted shared components
+export { LazyImage } from './components/LazyImage';
+export type { LazyImageProps } from './components/LazyImage';
 export { LoadingSpinner } from './components/LoadingSpinner';
 export { EnvironmentBanner } from './components/EnvironmentBanner';
 export type { Environment } from './components/EnvironmentBanner';
@@ -40,6 +72,9 @@ export { useFilterState } from './hooks/useFilterState';
 export { usePagination } from './hooks/usePagination';
 export type { PageParams } from './hooks/usePagination';
 export { useTabState } from './hooks/useTabState';
+export { useHaptic } from './hooks/useHaptic';
+export type { HapticPattern } from './hooks/useHaptic';
+export { useLongPress } from './hooks/useLongPress';
 
 // Rich text
 export { RichTextEditor } from './components/RichTextEditor';

@@ -7,23 +7,17 @@ import { usePendingExtensions } from '@/hooks/useContractExtensionHooks';
 import * as extensionsApi from '@/api/contractExtensions';
 import { useTeam } from '@/context/TeamContext';
 import { Skeleton, useToast } from '@buurman/ui';
-import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
 import { PendingExtensionsPanel } from './dashboard/PendingExtensionsPanel';
 import { PortfolioDashboard } from './dashboard/PortfolioDashboard';
-import {
-  Home,
-  Users,
-  DollarSign,
-  TrendingUp,
-  ArrowRight,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-} from 'lucide-react';
+import { PropertyPerformanceTable } from './dashboard/PropertyPerformanceTable';
+import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
+import { DashboardKpiStrip } from './dashboard/DashboardKpiStrip';
+import { ArrowRight, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { formatMoney } from '@/utils/formatMoney';
 
 export const DashboardPage = () => {
   const { t } = useTranslation('common');
@@ -166,217 +160,171 @@ export const DashboardPage = () => {
     );
   }
 
+  const overdueCount = unpaidPayments.filter(
+    (p) => p.status === 'OVERDUE'
+  ).length;
+
   return (
-    <div className="space-y-8">
+    // Phone uses flex+gap so we can `order-` the unpaid-payments section to
+    // appear right after DashboardKpiStrip (the #1 question for landlords
+    // is "did money show up?"). Desktop falls back to block + space-y so
+    // DOM order is the visual order and pixel parity is preserved.
+    <div className="flex flex-col gap-8 md:block md:space-y-8 md:gap-0">
       {/* Pending Invitations */}
-      <PendingInvitationsPanel />
+      <div className="order-3 md:order-none">
+        <PendingInvitationsPanel />
+      </div>
 
       {/* Pending Extensions */}
-      <PendingExtensionsPanel
-        extensions={pendingExtensions ?? []}
-        isLoading={extensionsLoading}
-        onActivate={(contractId, extensionId) =>
-          activateExtensionMutation.mutate({ contractId, extensionId })
-        }
-        onDecline={(contractId, extensionId) =>
-          declineExtensionMutation.mutate({ contractId, extensionId })
-        }
-        isActivating={activateExtensionMutation.isPending}
-      />
+      <div className="order-4 md:order-none">
+        <PendingExtensionsPanel
+          extensions={pendingExtensions ?? []}
+          isLoading={extensionsLoading}
+          onActivate={(contractId, extensionId) =>
+            activateExtensionMutation.mutate({ contractId, extensionId })
+          }
+          onDecline={(contractId, extensionId) =>
+            declineExtensionMutation.mutate({ contractId, extensionId })
+          }
+          isActivating={activateExtensionMutation.isPending}
+        />
+      </div>
 
-      {/* Portfolio Dashboard */}
-      <PortfolioDashboard />
+      {/* Portfolio Dashboard — desktop only. Phone gets DashboardKpiStrip
+          at the top instead. The portfolio block has wide period chip rows +
+          native date inputs + a 6-card grid not designed for &lt; md widths. */}
+      <div className="hidden md:block">
+        <PortfolioDashboard />
+      </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Total Properties */}
-        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-info-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              {t('dashboard.totalProperties')}
-            </h3>
-            <div className="p-2 bg-primary-100 rounded-lg">
-              <Home className="h-5 w-5 text-primary-500" />
-            </div>
-          </div>
-          <div className="text-3xl font-bold text-text-primary">
-            {stats?.totalProperties ?? 0}
-          </div>
-          <div className="text-sm text-text-secondary mt-2">
-            {t('dashboard.activeProperties')}
-          </div>
-        </div>
+      {/* Phone-only Top/Bottom performers — PropertyPerformanceTable's
+          md:hidden variant. Surfaced separately because the full
+          PortfolioDashboard (which normally hosts it) is hidden on phone. */}
+      <div className="order-6 md:hidden">
+        <PhonePropertyPerformance />
+      </div>
 
-        {/* Occupied Units */}
-        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              {t('dashboard.occupied')}
-            </h3>
-            <div className="p-2 bg-success-bg rounded-lg">
-              <Users className="h-5 w-5 text-success-text" />
-            </div>
-          </div>
-          <div className="text-3xl font-bold text-text-primary">
-            {stats?.occupiedUnits ?? 0}
-          </div>
-          <div className="text-sm text-text-secondary mt-2">
-            {stats?.selfOccupiedUnits
-              ? `${stats.selfOccupiedUnits} ${t('dashboard.selfOccupied')},`
-              : ''}
-            {stats?.vacantUnits ?? 0} {t('dashboard.vacant')},{' '}
-            {stats?.maintenanceUnits ?? 0} {t('dashboard.inMaintenance')}
-          </div>
-        </div>
-
-        {/* Occupancy Rate */}
-        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-primary-200">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              <MetricHint label={t('dashboard.occupancyRate')} />
-            </h3>
-            <div className="p-2 bg-primary-50 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-primary-700" />
-            </div>
-          </div>
-          <div className="text-3xl font-bold text-text-primary">
-            {stats?.occupancyRate?.toFixed(1) ?? 0}%
-          </div>
-          <div className="text-sm text-text-secondary mt-2">
-            {t('dashboard.currentOccupancy')}
-          </div>
-        </div>
-
-        {/* Monthly Income */}
-        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              {t('dashboard.monthlyIncome')}
-            </h3>
-            <div className="p-2 bg-success-bg rounded-lg">
-              <DollarSign className="h-5 w-5 text-success-text" />
-            </div>
-          </div>
-          <div className="text-3xl font-bold text-text-primary">
-            {stats?.monthlyIncome?.currency
-              ? new Intl.NumberFormat('nl-NL', {
-                  style: 'currency',
-                  currency: stats.monthlyIncome.currency,
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                }).format(stats?.monthlyIncome?.amount ?? 0)
-              : (stats?.monthlyIncome?.amount ?? 0).toLocaleString('nl-NL', {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                })}
-          </div>
-          <div className="text-sm text-text-secondary mt-2">
-            {t('dashboard.expectedRevenue')}
-          </div>
-        </div>
+      {/* Dashboard KPI Strip — unified owner of the at-a-glance KPIs.
+          Phone variant: alerts + sign-colored cash-flow hero + KPI rail
+          + Portfolio analytics CTA. Desktop variant: 4-card grid (Total
+          Properties / Occupied / Occupancy Rate / Monthly Income).
+          Phone position is forced to top via order-1; desktop position is
+          this DOM location (between PortfolioDashboard and Property
+          Status), preserving pre-unification desktop ordering. */}
+      <div className="order-1 md:order-none">
+        <DashboardKpiStrip
+          stats={stats}
+          overdueCount={overdueCount}
+          pendingExtensionsCount={pendingExtensions?.length ?? 0}
+        />
       </div>
 
       {/* Property Status Breakdown */}
-      {stats &&
-        stats.totalProperties > 0 &&
-        (() => {
-          const statuses = [
-            {
-              label: t('dashboard.occupied'),
-              count: stats.occupiedUnits,
-              color: 'bg-success',
-              dotColor: 'bg-success',
-              textColor: 'text-success-text',
-            },
-            ...(stats.selfOccupiedUnits > 0
-              ? [
-                  {
-                    label: t('dashboard.selfOccupied'),
-                    count: stats.selfOccupiedUnits,
-                    color: 'bg-info',
-                    dotColor: 'bg-info',
-                    textColor: 'text-info-text',
-                  },
-                ]
-              : []),
-            {
-              label: t('dashboard.vacant'),
-              count: stats.vacantUnits,
-              color: 'bg-warning',
-              dotColor: 'bg-warning',
-              textColor: 'text-warning-text',
-            },
-            {
-              label: t('dashboard.maintenance'),
-              count: stats.maintenanceUnits,
-              color: 'bg-amber-500',
-              dotColor: 'bg-amber-500',
-              textColor: 'text-text-secondary',
-            },
-            {
-              label: t('dashboard.unavailable'),
-              count: stats.unavailableUnits,
-              color: 'bg-neutral-300',
-              dotColor: 'bg-neutral-400',
-              textColor: 'text-text-muted',
-            },
-          ];
+      <div className="order-5 md:order-none">
+        {stats &&
+          stats.totalProperties > 0 &&
+          (() => {
+            const statuses = [
+              {
+                label: t('dashboard.occupied'),
+                count: stats.occupiedUnits,
+                color: 'bg-success',
+                dotColor: 'bg-success',
+                textColor: 'text-success-text',
+              },
+              ...(stats.selfOccupiedUnits > 0
+                ? [
+                    {
+                      label: t('dashboard.selfOccupied'),
+                      count: stats.selfOccupiedUnits,
+                      color: 'bg-info',
+                      dotColor: 'bg-info',
+                      textColor: 'text-info-text',
+                    },
+                  ]
+                : []),
+              {
+                label: t('dashboard.vacant'),
+                count: stats.vacantUnits,
+                color: 'bg-warning',
+                dotColor: 'bg-warning',
+                textColor: 'text-warning-text',
+              },
+              {
+                label: t('dashboard.maintenance'),
+                count: stats.maintenanceUnits,
+                color: 'bg-amber-500',
+                dotColor: 'bg-amber-500',
+                textColor: 'text-text-secondary',
+              },
+              {
+                label: t('dashboard.unavailable'),
+                count: stats.unavailableUnits,
+                color: 'bg-neutral-300',
+                dotColor: 'bg-neutral-400',
+                textColor: 'text-text-muted',
+              },
+            ];
 
-          return (
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-base font-semibold text-text-primary mb-5">
-                {t('dashboard.propertyStatus')}
-              </h2>
+            return (
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-base font-semibold text-text-primary mb-5">
+                  {t('dashboard.propertyStatus')}
+                </h2>
 
-              {/* Stacked horizontal bar */}
-              <div className="flex h-3 rounded-full overflow-hidden mb-6">
-                {statuses.map((s) =>
-                  s.count > 0 ? (
-                    <div
-                      key={s.label}
-                      className={`${s.color} first:rounded-l-full last:rounded-r-full`}
-                      style={{
-                        width: `${(s.count / stats.totalProperties) * 100}%`,
-                      }}
-                    />
-                  ) : null
-                )}
-              </div>
+                {/* Stacked horizontal bar */}
+                <div className="flex h-3 rounded-full overflow-hidden mb-6">
+                  {statuses.map((s) =>
+                    s.count > 0 ? (
+                      <div
+                        key={s.label}
+                        className={`${s.color} first:rounded-l-full last:rounded-r-full`}
+                        style={{
+                          width: `${(s.count / stats.totalProperties) * 100}%`,
+                        }}
+                      />
+                    ) : null
+                  )}
+                </div>
 
-              {/* Legend rows */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {statuses.map((s) => {
-                  const pct = ((s.count / stats.totalProperties) * 100).toFixed(
-                    0
-                  );
-                  return (
-                    <div key={s.label} className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`h-2.5 w-2.5 rounded-full ${s.dotColor} shrink-0`}
-                        />
-                        <span className="text-xs font-medium text-text-secondary">
-                          {s.label}
-                        </span>
+                {/* Legend rows */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                  {statuses.map((s) => {
+                    const pct = (
+                      (s.count / stats.totalProperties) *
+                      100
+                    ).toFixed(0);
+                    return (
+                      <div key={s.label} className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`h-2.5 w-2.5 rounded-full ${s.dotColor} shrink-0`}
+                          />
+                          <span className="text-xs font-medium text-text-secondary">
+                            {s.label}
+                          </span>
+                        </div>
+                        <div className="pl-[18px]">
+                          <span className="text-lg font-bold text-text-primary tabular-nums">
+                            {s.count}
+                          </span>
+                          <span className="text-xs text-text-muted ml-1.5">
+                            {pct}%
+                          </span>
+                        </div>
                       </div>
-                      <div className="pl-[18px]">
-                        <span className="text-lg font-bold text-text-primary tabular-nums">
-                          {s.count}
-                        </span>
-                        <span className="text-xs text-text-muted ml-1.5">
-                          {pct}%
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
+      </div>
 
-      {/* Unpaid Payments */}
-      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+      {/* Unpaid Payments — hoisted to phone position 2 (right after the
+          DashboardKpiStrip) because for a property manager, the
+          first question on opening the dashboard is "did money show up?". */}
+      <div className="order-2 md:order-none bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold text-text-primary">
@@ -395,11 +343,7 @@ export const DashboardPage = () => {
                   {t('dashboard.totalPending')}
                 </div>
                 <div className="text-lg font-bold text-warning-text">
-                  {pendingCurrency}
-                  {totalPending.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatMoney(totalPending, pendingCurrency)}
                 </div>
               </div>
             )}
@@ -473,11 +417,7 @@ export const DashboardPage = () => {
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <span className="text-sm font-semibold text-text-primary">
-                      {payment.currency}
-                      {payment.amount.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {formatMoney(payment.amount, payment.currency)}
                     </span>
                     {canEditData && (
                       <button
@@ -520,3 +460,22 @@ export const DashboardPage = () => {
 };
 
 DashboardPage.displayName = 'DashboardPage';
+
+/**
+ * Phone-only Top/Bottom-performers section. Mounts the
+ * PropertyPerformanceTable, which already has an md:hidden phone variant —
+ * we just need to feed it from the portfolio query and wrap it so it's
+ * visible on phone where the parent PortfolioDashboard is hidden.
+ */
+const PhonePropertyPerformance = () => {
+  const { data: portfolio, isLoading } = usePortfolioDashboard(6);
+  if (isLoading || !portfolio) {
+    return null;
+  }
+  return (
+    <PropertyPerformanceTable
+      data={portfolio.propertyComparison}
+      currency={portfolio.currency}
+    />
+  );
+};

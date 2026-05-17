@@ -14,7 +14,7 @@ import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupanc
 import { FinancingFormModal } from '@/components/properties/financials/modals/FinancingFormModal';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Button, LoadingSpinner } from '@buurman/ui';
+import { Button, DataList, EmptyState, LoadingSpinner } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
@@ -145,20 +145,23 @@ export const PropertyContractsTab = ({
         ) : contractsError ? (
           <ErrorMessage message={t('list.error', { ns: 'contracts' })} />
         ) : contracts.length === 0 ? (
-          <div className="text-center py-12">
-            <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-            <p className="text-text-secondary mb-4">{t('contracts.empty')}</p>
-            <button
-              onClick={() =>
-                navigate(`/contracts/new?propertyId=${propertyId}`)
-              }
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-4 w-4" />
-              {t('contracts.createFirst')}
-            </button>
-          </div>
+          <EmptyState
+            variant="section"
+            icon={<FileText className="h-10 w-10" />}
+            title={t('contracts.empty')}
+            actions={
+              <button
+                onClick={() =>
+                  navigate(`/contracts/new?propertyId=${propertyId}`)
+                }
+                disabled={!canEditData}
+                className="bg-primary-500 text-white px-4 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+              >
+                <Plus className="h-4 w-4" />
+                {t('contracts.createFirst')}
+              </button>
+            }
+          />
         ) : (
           <>
             {/* Search Bar */}
@@ -178,8 +181,51 @@ export const PropertyContractsTab = ({
               </div>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
+            {/* Mobile card list (<md) */}
+            <ul className="md:hidden space-y-3 mb-2">
+              {displayedContracts.length === 0 ? (
+                <li className="text-center text-text-secondary py-6">
+                  {t('contracts.noMatchingSearch')}
+                </li>
+              ) : (
+                displayedContracts.map((contract) => (
+                  <li key={`m-${contract.identifier}`}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate(`/contracts/${contract.identifier}`)
+                      }
+                      className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+                    >
+                      <DataList
+                        title={`${contract.primaryContact.firstName} ${contract.primaryContact.lastName}`}
+                        trailing={
+                          <ContractStatusBadge status={contract.status} />
+                        }
+                        items={[
+                          {
+                            label: t('contracts.table.contractNumber'),
+                            value: `#${contract.identifier.slice(-6)}`,
+                          },
+                          {
+                            label: t('contracts.table.startDate'),
+                            value: formatDate(contract.startDate),
+                          },
+                          {
+                            label: t('contracts.table.rentAmount'),
+                            value: `${contract.rentAmountCurrency} ${contract.rentAmount.toFixed(2)}`,
+                            align: 'right',
+                          },
+                        ]}
+                      />
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+
+            {/* Table (md+) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-border-default">
                 <thead className="bg-surface-page">
                   <tr>

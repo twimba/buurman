@@ -13,6 +13,12 @@ import {
 } from '@/types/contract';
 import { CreateContactRequest } from '@/types/contact';
 import { RichTextEditor } from '@buurman/ui';
+import {
+  FormStepGate,
+  MobileFormStepperFooter,
+  MobileFormStepperProvider,
+  MobileStepperHeader,
+} from '@/components/common/MobileFormStepper';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { ContactSelector } from '@/components/common/ContactSelector';
@@ -496,659 +502,720 @@ export const ContractForm = ({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      onKeyDown={handleCmdEnter}
-      className="space-y-6"
-    >
-      {/* Property Selection */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {isEditing ? t('form.property') : t('form.propertyAndParties')}
-        </h3>
-        <div className="space-y-4">
+    <MobileFormStepperProvider totalSteps={3}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={handleCmdEnter}
+        className="space-y-6"
+      >
+        <MobileStepperHeader
+          labels={[
+            t('form.propertyAndParties'),
+            t('form.financialTerms'),
+            t('form.termsAndConditions'),
+          ]}
+        />
+        {/* Step 0: Property + Parties + Contract Details */}
+        <FormStepGate step={0}>
+          {/* Property Selection */}
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.property')} <span className="text-error-text">*</span>
-            </label>
-            <PropertySelector
-              value={formData.propertyIdentifier}
-              onChange={(value) => handleChange('propertyIdentifier', value)}
-              disabled={isLoading}
-            />
-            {errors.propertyIdentifier && (
-              <p className="text-error-text text-sm mt-1">
-                {errors.propertyIdentifier}
-              </p>
-            )}
-          </div>
-
-          {/* Parties section — create mode: inline editors */}
-          {!isEditing && (
-            <>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {isEditing ? t('form.property') : t('form.propertyAndParties')}
+            </h3>
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  {t('form.primaryContact')}{' '}
+                  {t('form.property')}{' '}
                   <span className="text-error-text">*</span>
                 </label>
-
-                {primaryMode === 'select' ? (
-                  <>
-                    <ContactSelector
-                      value={primaryContactId}
-                      onChange={(value) => {
-                        setPrimaryContactId(value);
-                        if (errors.primaryContact) {
-                          setErrors((prev) => {
-                            const next = { ...prev };
-                            delete next.primaryContact;
-                            return next;
-                          });
-                        }
-                      }}
-                      disabled={isLoading}
-                    />
-                    {errors.primaryContact && (
-                      <p className="text-error-text text-sm mt-1">
-                        {errors.primaryContact}
-                      </p>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPrimaryMode('create');
-                        setPrimaryContactId('');
-                        setErrors((prev) => {
-                          const next = { ...prev };
-                          delete next.primaryContact;
-                          return next;
-                        });
-                      }}
-                      className="mt-2 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
-                      disabled={isLoading}
-                    >
-                      <UserPlus className="h-3 w-3" />
-                      {t('form.createNewContact')}
-                    </button>
-                  </>
-                ) : (
-                  <InlineContactForm
-                    value={newPrimaryContact}
-                    onChange={(data) => {
-                      setNewPrimaryContact(data);
-                      // Clear related errors on change
-                      const keysToRemove = Object.keys(errors).filter((k) =>
-                        k.startsWith('primary_')
-                      );
-                      if (keysToRemove.length > 0) {
-                        setErrors((prev) => {
-                          const next = { ...prev };
-                          keysToRemove.forEach((k) => delete next[k]);
-                          return next;
-                        });
-                      }
-                    }}
-                    onSwitchToSelect={() => {
-                      setPrimaryMode('select');
-                      setNewPrimaryContact({ ...EMPTY_NEW_CONTACT });
-                    }}
-                    errors={errors}
-                    errorPrefix="primary"
-                    disabled={isLoading}
-                    onBlockingChange={handleDupBlocking('primary')}
-                  />
+                <PropertySelector
+                  value={formData.propertyIdentifier}
+                  onChange={(value) =>
+                    handleChange('propertyIdentifier', value)
+                  }
+                  disabled={isLoading}
+                />
+                {errors.propertyIdentifier && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.propertyIdentifier}
+                  </p>
                 )}
               </div>
 
-              {/* Additional parties */}
-              {additionalParties.map((party, index) => (
-                <div key={party.id}>
-                  {party.mode === 'select' ? (
-                    <div>
-                      <div className="flex gap-2 items-center">
-                        <div className="flex-1">
-                          <ContactSelector
-                            value={party.contactIdentifier}
-                            onChange={(value) =>
+              {/* Parties section — create mode: inline editors */}
+              {!isEditing && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
+                      {t('form.primaryContact')}{' '}
+                      <span className="text-error-text">*</span>
+                    </label>
+
+                    {primaryMode === 'select' ? (
+                      <>
+                        <ContactSelector
+                          value={primaryContactId}
+                          onChange={(value) => {
+                            setPrimaryContactId(value);
+                            if (errors.primaryContact) {
+                              setErrors((prev) => {
+                                const next = { ...prev };
+                                delete next.primaryContact;
+                                return next;
+                              });
+                            }
+                          }}
+                          disabled={isLoading}
+                        />
+                        {errors.primaryContact && (
+                          <p className="text-error-text text-sm mt-1">
+                            {errors.primaryContact}
+                          </p>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPrimaryMode('create');
+                            setPrimaryContactId('');
+                            setErrors((prev) => {
+                              const next = { ...prev };
+                              delete next.primaryContact;
+                              return next;
+                            });
+                          }}
+                          className="mt-2 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
+                          disabled={isLoading}
+                        >
+                          <UserPlus className="h-3 w-3" />
+                          {t('form.createNewContact')}
+                        </button>
+                      </>
+                    ) : (
+                      <InlineContactForm
+                        value={newPrimaryContact}
+                        onChange={(data) => {
+                          setNewPrimaryContact(data);
+                          // Clear related errors on change
+                          const keysToRemove = Object.keys(errors).filter((k) =>
+                            k.startsWith('primary_')
+                          );
+                          if (keysToRemove.length > 0) {
+                            setErrors((prev) => {
+                              const next = { ...prev };
+                              keysToRemove.forEach((k) => delete next[k]);
+                              return next;
+                            });
+                          }
+                        }}
+                        onSwitchToSelect={() => {
+                          setPrimaryMode('select');
+                          setNewPrimaryContact({ ...EMPTY_NEW_CONTACT });
+                        }}
+                        errors={errors}
+                        errorPrefix="primary"
+                        disabled={isLoading}
+                        onBlockingChange={handleDupBlocking('primary')}
+                      />
+                    )}
+                  </div>
+
+                  {/* Additional parties */}
+                  {additionalParties.map((party, index) => (
+                    <div key={party.id}>
+                      {party.mode === 'select' ? (
+                        <div>
+                          <div className="flex gap-2 items-center">
+                            <div className="flex-1">
+                              <ContactSelector
+                                value={party.contactIdentifier}
+                                onChange={(value) =>
+                                  updatePartyField(index, {
+                                    contactIdentifier: value,
+                                  })
+                                }
+                                disabled={isLoading}
+                              />
+                            </div>
+                            <select
+                              value={party.role}
+                              onChange={(e) =>
+                                updatePartyField(index, {
+                                  role: e.target.value as ContractPartyRole,
+                                })
+                              }
+                              className="w-40 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm"
+                              disabled={isLoading}
+                            >
+                              {ADDITIONAL_ROLES.map((role) => (
+                                <option key={role} value={role}>
+                                  {t(`enums.partyRoles.${role}`, role)}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() => removeParty(index)}
+                              className="p-2 text-error-text hover:bg-error-bg rounded transition-colors"
+                              disabled={isLoading}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                          {errors[`party_${index}`] && (
+                            <p className="text-error-text text-sm mt-1">
+                              {errors[`party_${index}`]}
+                            </p>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() =>
                               updatePartyField(index, {
-                                contactIdentifier: value,
+                                mode: 'create',
+                                contactIdentifier: '',
                               })
                             }
+                            className="mt-1 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
                             disabled={isLoading}
+                          >
+                            <UserPlus className="h-3 w-3" />
+                            {t('form.createNewContact')}
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex gap-2 items-center mb-2">
+                            <select
+                              value={party.role}
+                              onChange={(e) =>
+                                updatePartyField(index, {
+                                  role: e.target.value as ContractPartyRole,
+                                })
+                              }
+                              className="w-40 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm"
+                              disabled={isLoading}
+                            >
+                              {ADDITIONAL_ROLES.map((role) => (
+                                <option key={role} value={role}>
+                                  {t(`enums.partyRoles.${role}`, role)}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="flex-1" />
+                            <button
+                              type="button"
+                              onClick={() => removeParty(index)}
+                              className="p-2 text-error-text hover:bg-error-bg rounded transition-colors"
+                              disabled={isLoading}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <InlineContactForm
+                            value={party.newContact}
+                            onChange={(data) =>
+                              updatePartyField(index, { newContact: data })
+                            }
+                            onSwitchToSelect={() =>
+                              updatePartyField(index, {
+                                mode: 'select',
+                                newContact: { ...EMPTY_NEW_CONTACT },
+                              })
+                            }
+                            errors={errors}
+                            errorPrefix={`party_${index}`}
+                            disabled={isLoading}
+                            onBlockingChange={handleDupBlocking(
+                              `party_${index}`
+                            )}
                           />
                         </div>
-                        <select
-                          value={party.role}
-                          onChange={(e) =>
-                            updatePartyField(index, {
-                              role: e.target.value as ContractPartyRole,
-                            })
-                          }
-                          className="w-40 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm"
-                          disabled={isLoading}
-                        >
-                          {ADDITIONAL_ROLES.map((role) => (
-                            <option key={role} value={role}>
-                              {t(`enums.partyRoles.${role}`, role)}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          type="button"
-                          onClick={() => removeParty(index)}
-                          className="p-2 text-error-text hover:bg-error-bg rounded transition-colors"
-                          disabled={isLoading}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                      {errors[`party_${index}`] && (
-                        <p className="text-error-text text-sm mt-1">
-                          {errors[`party_${index}`]}
-                        </p>
                       )}
+                    </div>
+                  ))}
+
+                  <div className="flex items-center gap-4">
+                    {ADDITIONAL_ROLES.map((role) => (
                       <button
+                        key={role}
                         type="button"
-                        onClick={() =>
-                          updatePartyField(index, {
-                            mode: 'create',
-                            contactIdentifier: '',
-                          })
-                        }
-                        className="mt-1 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
+                        onClick={() => addParty(role)}
+                        className="flex items-center gap-1 text-sm text-primary-500 hover:text-primary-600 transition-colors"
                         disabled={isLoading}
                       >
-                        <UserPlus className="h-3 w-3" />
-                        {t('form.createNewContact')}
+                        <Plus className="h-4 w-4" />
+                        {t('common:buttons.add')}{' '}
+                        {t(`enums.partyRoles.${role}`, role)}
                       </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="flex gap-2 items-center mb-2">
-                        <select
-                          value={party.role}
-                          onChange={(e) =>
-                            updatePartyField(index, {
-                              role: e.target.value as ContractPartyRole,
-                            })
-                          }
-                          className="w-40 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm"
-                          disabled={isLoading}
-                        >
-                          {ADDITIONAL_ROLES.map((role) => (
-                            <option key={role} value={role}>
-                              {t(`enums.partyRoles.${role}`, role)}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="flex-1" />
-                        <button
-                          type="button"
-                          onClick={() => removeParty(index)}
-                          className="p-2 text-error-text hover:bg-error-bg rounded transition-colors"
-                          disabled={isLoading}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <InlineContactForm
-                        value={party.newContact}
-                        onChange={(data) =>
-                          updatePartyField(index, { newContact: data })
-                        }
-                        onSwitchToSelect={() =>
-                          updatePartyField(index, {
-                            mode: 'select',
-                            newContact: { ...EMPTY_NEW_CONTACT },
-                          })
-                        }
-                        errors={errors}
-                        errorPrefix={`party_${index}`}
-                        disabled={isLoading}
-                        onBlockingChange={handleDupBlocking(`party_${index}`)}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
 
-              <div className="flex items-center gap-4">
-                {ADDITIONAL_ROLES.map((role) => (
+          {/* Contract Parties — edit mode: separate section with live API calls */}
+          {isEditing && contract && (
+            <div>
+              <h3 className="text-lg font-semibold text-text-primary mb-4">
+                {t('form.contractParties')}
+              </h3>
+              <ContractPartiesEditor
+                contract={contract}
+                isLoading={isLoading}
+              />
+            </div>
+          )}
+
+          {/* Contract Details */}
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {t('form.contractDetails')}
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.contractType')}{' '}
+                  <span className="text-error-text">*</span>
+                </label>
+                <select
+                  value={formData.contractType}
+                  onChange={(e) =>
+                    handleChange('contractType', e.target.value as ContractType)
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  disabled={isLoading}
+                >
+                  <option value={ContractType.FIXED_TERM}>
+                    {t('enums.contractTypes.FIXED_TERM')}
+                  </option>
+                  <option value={ContractType.INDEFINITE}>
+                    {t('enums.contractTypes.INDEFINITE')}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.startDate')}{' '}
+                  <span className="text-error-text">*</span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={formData.startDate}
+                    onChange={(e) => handleChange('startDate', e.target.value)}
+                    className="flex-1 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                    disabled={isLoading}
+                  />
                   <button
-                    key={role}
                     type="button"
-                    onClick={() => addParty(role)}
-                    className="flex items-center gap-1 text-sm text-primary-500 hover:text-primary-600 transition-colors"
+                    onClick={() =>
+                      handleChange(
+                        'startDate',
+                        new Date().toISOString().split('T')[0]
+                      )
+                    }
+                    className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
                     disabled={isLoading}
                   >
-                    <Plus className="h-4 w-4" />
-                    {t('common:buttons.add')}{' '}
-                    {t(`enums.partyRoles.${role}`, role)}
+                    {t('form.today')}
                   </button>
-                ))}
+                </div>
+                {errors.startDate && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.startDate}
+                  </p>
+                )}
               </div>
-            </>
-          )}
-        </div>
-      </div>
 
-      {/* Contract Parties — edit mode: separate section with live API calls */}
-      {isEditing && contract && (
-        <div>
-          <h3 className="text-lg font-semibold text-text-primary mb-4">
-            {t('form.contractParties')}
-          </h3>
-          <ContractPartiesEditor contract={contract} isLoading={isLoading} />
-        </div>
-      )}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.endDate')}{' '}
+                  {formData.contractType === ContractType.FIXED_TERM && (
+                    <span className="text-error-text">*</span>
+                  )}
+                </label>
+                <input
+                  type="date"
+                  value={formData.endDate}
+                  onChange={(e) => handleChange('endDate', e.target.value)}
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  disabled={isLoading}
+                />
+                {errors.endDate && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.endDate}
+                  </p>
+                )}
+              </div>
 
-      {/* Contract Details */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {t('form.contractDetails')}
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.contractType')}{' '}
-              <span className="text-error-text">*</span>
-            </label>
-            <select
-              value={formData.contractType}
-              onChange={(e) =>
-                handleChange('contractType', e.target.value as ContractType)
-              }
-              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              disabled={isLoading}
-            >
-              <option value={ContractType.FIXED_TERM}>
-                {t('enums.contractTypes.FIXED_TERM')}
-              </option>
-              <option value={ContractType.INDEFINITE}>
-                {t('enums.contractTypes.INDEFINITE')}
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.startDate')} <span className="text-error-text">*</span>
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="date"
-                value={formData.startDate}
-                onChange={(e) => handleChange('startDate', e.target.value)}
-                className="flex-1 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  handleChange(
-                    'startDate',
-                    new Date().toISOString().split('T')[0]
-                  )
-                }
-                className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
-                disabled={isLoading}
-              >
-                {t('form.today')}
-              </button>
-            </div>
-            {errors.startDate && (
-              <p className="text-error-text text-sm mt-1">{errors.startDate}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.endDate')}{' '}
-              {formData.contractType === ContractType.FIXED_TERM && (
-                <span className="text-error-text">*</span>
-              )}
-            </label>
-            <input
-              type="date"
-              value={formData.endDate}
-              onChange={(e) => handleChange('endDate', e.target.value)}
-              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              disabled={isLoading}
-            />
-            {errors.endDate && (
-              <p className="text-error-text text-sm mt-1">{errors.endDate}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.signedDate')}
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="date"
-                value={formData.signedDate}
-                onChange={(e) => handleChange('signedDate', e.target.value)}
-                className="flex-1 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  handleChange(
-                    'signedDate',
-                    new Date().toISOString().split('T')[0]
-                  )
-                }
-                className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
-                disabled={isLoading}
-              >
-                {t('form.today')}
-              </button>
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.signedDate')}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={formData.signedDate}
+                    onChange={(e) => handleChange('signedDate', e.target.value)}
+                    className="flex-1 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleChange(
+                        'signedDate',
+                        new Date().toISOString().split('T')[0]
+                      )
+                    }
+                    className="px-3 py-2 text-sm bg-surface-inset hover:bg-surface-raised border border-border-strong rounded-md transition-colors"
+                    disabled={isLoading}
+                  >
+                    {t('form.today')}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </FormStepGate>
 
-      {/* Financial Terms */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {t('form.financialTerms')}
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <RentBreakdown
-            value={formData.rentAmount || ''}
-            onValueChange={(val) => handleChange('rentAmount', val)}
-            components={formData.rentComponents}
-            onComponentsChange={(components) =>
-              setFormData((prev) => ({ ...prev, rentComponents: components }))
-            }
-            onTotalChange={(total) =>
-              setFormData((prev) => ({ ...prev, rentAmount: total }))
-            }
-            currency={formData.rentAmountCurrency || defaultCurrency || ''}
-            disabled={isLoading}
-            error={!!errors.rentAmount || !!errors.rentAmountCurrency}
-            breakdownMode={formData.breakdownMode}
-            onBreakdownModeChange={(mode) =>
-              setFormData((prev) => ({ ...prev, breakdownMode: mode }))
-            }
-          />
-          {(errors.rentAmount ||
-            errors.rentAmountCurrency ||
-            errors.rentComponents) && (
-            <p className="text-error-text text-sm mt-1 col-span-1 lg:col-span-2">
-              {errors.rentAmount ||
+        {/* Step 1: Financial + Payment Terms + Termination */}
+        <FormStepGate step={1}>
+          {/* Financial Terms */}
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {t('form.financialTerms')}
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <RentBreakdown
+                value={formData.rentAmount || ''}
+                onValueChange={(val) => handleChange('rentAmount', val)}
+                components={formData.rentComponents}
+                onComponentsChange={(components) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    rentComponents: components,
+                  }))
+                }
+                onTotalChange={(total) =>
+                  setFormData((prev) => ({ ...prev, rentAmount: total }))
+                }
+                currency={formData.rentAmountCurrency || defaultCurrency || ''}
+                disabled={isLoading}
+                error={!!errors.rentAmount || !!errors.rentAmountCurrency}
+                breakdownMode={formData.breakdownMode}
+                onBreakdownModeChange={(mode) =>
+                  setFormData((prev) => ({ ...prev, breakdownMode: mode }))
+                }
+              />
+              {(errors.rentAmount ||
                 errors.rentAmountCurrency ||
-                errors.rentComponents}
+                errors.rentComponents) && (
+                <p className="text-error-text text-sm mt-1 col-span-1 lg:col-span-2">
+                  {errors.rentAmount ||
+                    errors.rentAmountCurrency ||
+                    errors.rentComponents}
+                </p>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.depositAmount')}
+                </label>
+                <MoneyInput
+                  value={formData.depositAmount ?? undefined}
+                  onChange={(val) => handleChange('depositAmount', val)}
+                  currency={
+                    formData.depositAmountCurrency || defaultCurrency || ''
+                  }
+                  disabled={isLoading}
+                  error={!!errors.depositAmountCurrency}
+                />
+                {errors.depositAmountCurrency && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.depositAmountCurrency}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.securityDeposit')}
+                </label>
+                <MoneyInput
+                  value={formData.securityDeposit ?? undefined}
+                  onChange={(val) => handleChange('securityDeposit', val)}
+                  currency={
+                    formData.securityDepositCurrency || defaultCurrency || ''
+                  }
+                  disabled={isLoading}
+                  error={!!errors.securityDepositCurrency}
+                />
+                {errors.securityDepositCurrency && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.securityDepositCurrency}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Renewal Configuration (inside Financial Terms) */}
+            <div className="mt-6 pt-6 border-t border-border-default">
+              <RenewalConfigForm
+                renewalMode={formData.renewalMode ?? 'NONE'}
+                renewalTermMonths={formData.renewalTermMonths}
+                maxRenewals={formData.maxRenewals}
+                landlordNoticeDays={formData.landlordNoticeDays}
+                tenantNoticeDays={formData.tenantNoticeDays}
+                requiresTenantConfirmation={formData.requiresTenantConfirmation}
+                rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
+                rentAdjustmentValue={formData.rentAdjustmentValue}
+                countryCode={propertyCountryCode}
+                regionCode={selectedProperty?.regionCode}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* Payment Terms */}
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {t('form.paymentTerms')}
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.paymentFrequency')}{' '}
+                  <span className="text-error-text">*</span>
+                </label>
+                <select
+                  value={formData.paymentFrequency}
+                  onChange={(e) =>
+                    handleChange(
+                      'paymentFrequency',
+                      e.target.value as PaymentFrequency
+                    )
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  disabled={isLoading}
+                >
+                  <option value={PaymentFrequency.MONTHLY}>
+                    {t('enums.paymentFrequencies.MONTHLY')}
+                  </option>
+                  <option value={PaymentFrequency.QUARTERLY}>
+                    {t('enums.paymentFrequencies.QUARTERLY')}
+                  </option>
+                  <option value={PaymentFrequency.ANNUALLY}>
+                    {t('enums.paymentFrequencies.ANNUALLY')}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.paymentDueDay')}
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="31"
+                  value={formData.paymentDueDay ?? ''}
+                  onChange={(e) =>
+                    handleChange(
+                      'paymentDueDay',
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  placeholder="1"
+                  disabled={isLoading}
+                />
+                {errors.paymentDueDay && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.paymentDueDay}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.lateFeePercentage')}
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={formData.lateFeePercentage ?? ''}
+                  onChange={(e) =>
+                    handleChange(
+                      'lateFeePercentage',
+                      e.target.value ? parseFloat(e.target.value) : undefined
+                    )
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  placeholder="2.5"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Termination */}
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {t('form.termination')}
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.terminationNoticeDays')}
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.terminationNoticeDays ?? ''}
+                  onChange={(e) =>
+                    handleChange(
+                      'terminationNoticeDays',
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  placeholder="30"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          </div>
+        </FormStepGate>
+
+        {/* Step 2: Terms + Notes + Country-Specific */}
+        <FormStepGate step={2}>
+          {/* Terms and Conditions */}
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {t('form.termsAndConditions')}
+            </h3>
+            <div>
+              <RichTextEditor
+                value={formData.termsAndConditions ?? ''}
+                onChange={(value) => handleChange('termsAndConditions', value)}
+                placeholder={t('form.termsAndConditionsPlaceholder')}
+                onSubmit={submitForm}
+              />
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {t('form.notes')}
+            </h3>
+            <div>
+              <RichTextEditor
+                value={formData.notes ?? ''}
+                onChange={(value) => handleChange('notes', value)}
+                placeholder={t('form.notesPlaceholder')}
+                onSubmit={submitForm}
+              />
+            </div>
+          </div>
+
+          {/* Country-Specific Rental Details */}
+          {propertyCountryCode ? (
+            <div>
+              <h3 className="text-lg font-semibold text-text-primary mb-2">
+                {countryName
+                  ? t('form.countryRentalDetails', { country: countryName })
+                  : t('overview.countrySpecificDetails')}
+              </h3>
+              <p className="text-sm text-text-secondary mb-4">
+                {t('form.countryRegulatoryFields', {
+                  country: countryName || propertyCountryCode,
+                })}
+              </p>
+              <CountryMetadataForm
+                countryCode={propertyCountryCode}
+                value={
+                  (formData.countryMetadata as Record<string, unknown>) ?? {}
+                }
+                onChange={(metadata) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    countryMetadata:
+                      Object.keys(metadata).length > 0 ? metadata : undefined,
+                  }))
+                }
+                currency={
+                  formData.rentAmountCurrency || defaultCurrency || 'EUR'
+                }
+                disabled={isEditing && contract?.status !== 'DRAFT'}
+              />
+            </div>
+          ) : formData.propertyIdentifier ? (
+            <p className="text-sm text-text-muted italic">
+              {t('form.setCountryForFields')}
             </p>
-          )}
+          ) : null}
+        </FormStepGate>
 
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.depositAmount')}
-            </label>
-            <MoneyInput
-              value={formData.depositAmount ?? undefined}
-              onChange={(val) => handleChange('depositAmount', val)}
-              currency={formData.depositAmountCurrency || defaultCurrency || ''}
-              disabled={isLoading}
-              error={!!errors.depositAmountCurrency}
-            />
-            {errors.depositAmountCurrency && (
-              <p className="text-error-text text-sm mt-1">
-                {errors.depositAmountCurrency}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.securityDeposit')}
-            </label>
-            <MoneyInput
-              value={formData.securityDeposit ?? undefined}
-              onChange={(val) => handleChange('securityDeposit', val)}
-              currency={
-                formData.securityDepositCurrency || defaultCurrency || ''
-              }
-              disabled={isLoading}
-              error={!!errors.securityDepositCurrency}
-            />
-            {errors.securityDepositCurrency && (
-              <p className="text-error-text text-sm mt-1">
-                {errors.securityDepositCurrency}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Renewal Configuration (inside Financial Terms) */}
-        <div className="mt-6 pt-6 border-t border-border-default">
-          <RenewalConfigForm
-            renewalMode={formData.renewalMode ?? 'NONE'}
-            renewalTermMonths={formData.renewalTermMonths}
-            maxRenewals={formData.maxRenewals}
-            landlordNoticeDays={formData.landlordNoticeDays}
-            tenantNoticeDays={formData.tenantNoticeDays}
-            requiresTenantConfirmation={formData.requiresTenantConfirmation}
-            rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
-            rentAdjustmentValue={formData.rentAdjustmentValue}
-            countryCode={propertyCountryCode}
-            regionCode={selectedProperty?.regionCode}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      {/* Payment Terms */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {t('form.paymentTerms')}
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.paymentFrequency')}{' '}
-              <span className="text-error-text">*</span>
-            </label>
-            <select
-              value={formData.paymentFrequency}
-              onChange={(e) =>
-                handleChange(
-                  'paymentFrequency',
-                  e.target.value as PaymentFrequency
-                )
-              }
-              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              disabled={isLoading}
-            >
-              <option value={PaymentFrequency.MONTHLY}>
-                {t('enums.paymentFrequencies.MONTHLY')}
-              </option>
-              <option value={PaymentFrequency.QUARTERLY}>
-                {t('enums.paymentFrequencies.QUARTERLY')}
-              </option>
-              <option value={PaymentFrequency.ANNUALLY}>
-                {t('enums.paymentFrequencies.ANNUALLY')}
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.paymentDueDay')}
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="31"
-              value={formData.paymentDueDay ?? ''}
-              onChange={(e) =>
-                handleChange(
-                  'paymentDueDay',
-                  e.target.value ? parseInt(e.target.value) : undefined
-                )
-              }
-              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              placeholder="1"
-              disabled={isLoading}
-            />
-            {errors.paymentDueDay && (
-              <p className="text-error-text text-sm mt-1">
-                {errors.paymentDueDay}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.lateFeePercentage')}
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              max="100"
-              value={formData.lateFeePercentage ?? ''}
-              onChange={(e) =>
-                handleChange(
-                  'lateFeePercentage',
-                  e.target.value ? parseFloat(e.target.value) : undefined
-                )
-              }
-              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              placeholder="2.5"
-              disabled={isLoading}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Termination */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {t('form.termination')}
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              {t('form.terminationNoticeDays')}
-            </label>
-            <input
-              type="number"
-              min="0"
-              value={formData.terminationNoticeDays ?? ''}
-              onChange={(e) =>
-                handleChange(
-                  'terminationNoticeDays',
-                  e.target.value ? parseInt(e.target.value) : undefined
-                )
-              }
-              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              placeholder="30"
-              disabled={isLoading}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Terms and Conditions */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {t('form.termsAndConditions')}
-        </h3>
-        <div>
-          <RichTextEditor
-            value={formData.termsAndConditions ?? ''}
-            onChange={(value) => handleChange('termsAndConditions', value)}
-            placeholder={t('form.termsAndConditionsPlaceholder')}
-            onSubmit={submitForm}
-          />
-        </div>
-      </div>
-
-      {/* Notes */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {t('form.notes')}
-        </h3>
-        <div>
-          <RichTextEditor
-            value={formData.notes ?? ''}
-            onChange={(value) => handleChange('notes', value)}
-            placeholder={t('form.notesPlaceholder')}
-            onSubmit={submitForm}
-          />
-        </div>
-      </div>
-
-      {/* Country-Specific Rental Details */}
-      {propertyCountryCode ? (
-        <div>
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
-            {countryName
-              ? t('form.countryRentalDetails', { country: countryName })
-              : t('overview.countrySpecificDetails')}
-          </h3>
-          <p className="text-sm text-text-secondary mb-4">
-            {t('form.countryRegulatoryFields', {
-              country: countryName || propertyCountryCode,
-            })}
-          </p>
-          <CountryMetadataForm
-            countryCode={propertyCountryCode}
-            value={(formData.countryMetadata as Record<string, unknown>) ?? {}}
-            onChange={(metadata) =>
-              setFormData((prev) => ({
-                ...prev,
-                countryMetadata:
-                  Object.keys(metadata).length > 0 ? metadata : undefined,
-              }))
-            }
-            currency={formData.rentAmountCurrency || defaultCurrency || 'EUR'}
-            disabled={isEditing && contract?.status !== 'DRAFT'}
-          />
-        </div>
-      ) : formData.propertyIdentifier ? (
-        <p className="text-sm text-text-muted italic">
-          {t('form.setCountryForFields')}
-        </p>
-      ) : null}
-
-      {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
-        <button
-          type="button"
-          onClick={() => navigate('/contracts')}
-          className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2"
-          disabled={isLoading}
-        >
-          <X className="h-4 w-4" />
-          {t('common:buttons.cancel')}
-        </button>
-        <div className="relative group/submit">
+        {/* Actions — md+ inline save bar (single-scroll desktop UX) */}
+        <div className="hidden md:flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
           <button
-            type="submit"
-            className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            disabled={isLoading || anyDuplicateBlocking}
+            type="button"
+            onClick={() => navigate('/contracts')}
+            className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2"
+            disabled={isLoading}
           >
-            <Save className="h-4 w-4" />
-            {isLoading
+            <X className="h-4 w-4" />
+            {t('common:buttons.cancel')}
+          </button>
+          <div className="relative group/submit">
+            <button
+              type="submit"
+              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              disabled={isLoading || anyDuplicateBlocking}
+            >
+              <Save className="h-4 w-4" />
+              {isLoading
+                ? t('form.saving')
+                : contract
+                  ? t('form.updateContract')
+                  : t('form.createContract')}
+            </button>
+            {anyDuplicateBlocking && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
+                {t('form.dismissDuplicateWarning')}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Phone: sticky stepper footer with Back/Continue/Save */}
+        <MobileFormStepperFooter
+          onSubmit={() => {
+            const f = document.activeElement?.closest(
+              'form'
+            ) as HTMLFormElement | null;
+            if (f) {
+              f.requestSubmit();
+            }
+          }}
+          onCancel={() => navigate('/contracts')}
+          isSubmitting={isLoading || anyDuplicateBlocking}
+          saveLabel={
+            isLoading
               ? t('form.saving')
               : contract
                 ? t('form.updateContract')
-                : t('form.createContract')}
-          </button>
-          {anyDuplicateBlocking && (
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
-              {t('form.dismissDuplicateWarning')}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
-            </div>
-          )}
-        </div>
-      </div>
-    </form>
+                : t('form.createContract')
+          }
+        />
+      </form>
+    </MobileFormStepperProvider>
   );
 };
 

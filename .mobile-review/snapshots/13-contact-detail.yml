@@ -1,0 +1,294 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: LOCAL ENVIRONMENT
+  - generic [ref=e6]:
+    - link "Skip to main content" [ref=e7] [cursor=pointer]:
+      - /url: "#main-content"
+    - button [ref=e8]:
+      - img [ref=e9]
+    - complementary [ref=e10]:
+      - generic [ref=e11]:
+        - img "Buurman" [ref=e15]
+        - navigation [ref=e16]:
+          - list [ref=e17]:
+            - listitem [ref=e18]:
+              - link "Dashboard" [ref=e19] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=e26]:
+              - link "Properties" [ref=e27] [cursor=pointer]:
+                - /url: /properties
+            - listitem [ref=e32]:
+              - link "Contacts" [ref=e33] [cursor=pointer]:
+                - /url: /contacts
+            - listitem [ref=e40]:
+              - generic [ref=e42]
+            - listitem [ref=e51]:
+              - link "Payments" [ref=e52] [cursor=pointer]:
+                - /url: /payments
+            - listitem [ref=e56]:
+              - link "Expenses" [ref=e57] [cursor=pointer]:
+                - /url: /expenses
+            - listitem [ref=e62]:
+              - link "Documents" [ref=e63] [cursor=pointer]:
+                - /url: /documents
+            - listitem [ref=e67]:
+              - link "Photos" [ref=e68] [cursor=pointer]:
+                - /url: /photos
+            - listitem [ref=e74]:
+              - link "Reports" [ref=e75] [cursor=pointer]:
+                - /url: /reports
+          - button "Administration" [ref=e81]:
+            - generic [ref=e82]:
+              - text: Administration
+              - img [ref=e83]
+            - img [ref=e85]
+        - generic [ref=e87]:
+          - button "Demo Team Admin" [ref=e90]:
+            - img [ref=e92]
+            - generic [ref=e95]:
+              - generic [ref=e96]
+              - generic [ref=e102]
+            - img [ref=e106]
+          - link "Settings" [ref=e108] [cursor=pointer]:
+            - /url: /settings
+            - img [ref=e109]
+            - generic [ref=e112]: Settings
+          - button "Sign Out" [ref=e113]:
+            - img [ref=e114]
+            - generic [ref=e117]: Sign Out
+    - main [ref=e118]:
+      - generic [ref=e121]:
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - img [ref=e125]
+              - heading "Contacts" [level=1] [ref=e130]
+            - paragraph [ref=e131]: Manage your contacts and their information
+          - generic [ref=e132]:
+            - button "Refresh data" [ref=e133]:
+              - img [ref=e134]
+            - button "CSV" [ref=e139]:
+              - img [ref=e141]
+              - text: CSV
+            - button "Import" [ref=e144]:
+              - img [ref=e145]
+              - text: Import
+            - button "Quick Add" [ref=e148]:
+              - img [ref=e149]
+              - text: Quick Add
+            - button "Add Contact" [ref=e151]:
+              - img [ref=e152]
+              - text: Add Contact
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - img [ref=e155]
+            - textbox "Search by name, email, or phone..." [ref=e158]
+          - generic [ref=e159]:
+            - img [ref=e160]
+            - combobox "Sort contacts by" [ref=e163]:
+              - option "Date Created" [selected]
+              - option "Name"
+              - option "Active Contracts"
+            - button "↓" [ref=e164]
+          - button "Filters" [ref=e165]:
+            - img [ref=e166]
+            - text: Filters
+        - paragraph [ref=e168]: 55 contacts
+        - generic [ref=e169]:
+          - generic [ref=e170] [cursor=pointer]:
+            - generic [ref=e171]:
+              - generic [ref=e172]: MD
+              - generic [ref=e173]
+            - generic [ref=e178]: Key Holder
+            - generic [ref=e179]:
+              - link "marlene.drees.demoteam21@example.demo.buurman.io" [active] [ref=e180]:
+                - /url: mailto:marlene.drees.demoteam21@example.demo.buurman.io
+              - link "+41726172569" [ref=e185]:
+                - /url: tel:+41726172569
+            - 'status "Outstanding balance: €2,613.00, 3 payments overdue" [ref=e189]':
+              - generic [ref=e190]
+              - generic [ref=e195]: 3 payments overdue
+            - generic [ref=e196]:
+              - generic [ref=e197]
+              - generic "10/16/2025" [ref=e202]
+          - generic [ref=e206] [cursor=pointer]:
+            - generic [ref=e207]:
+              - generic [ref=e208]: CD
+              - generic [ref=e209]
+            - generic [ref=e214]: Long Term
+            - generic [ref=e215]:
+              - link "cristobal.domnquez.demoteam28@example.demo.buurman.io" [ref=e216]:
+                - /url: mailto:cristobal.domnquez.demoteam28@example.demo.buurman.io
+              - link "+34690492382" [ref=e221]:
+                - /url: tel:+34690492382
+            - 'status "Outstanding balance: €5,415.00, 5 payments overdue" [ref=e225]':
+              - generic [ref=e226]
+              - generic [ref=e231]: 5 payments overdue
+            - generic [ref=e232]:
+              - generic [ref=e233]
+              - generic "9/9/2025" [ref=e238]
+          - generic [ref=e242] [cursor=pointer]:
+            - generic [ref=e243]:
+              - generic [ref=e244]: J
+              - generic [ref=e245]
+            - generic [ref=e249]:
+              - link "contact.demoteam.54@ardennestouri.demo.buurman.io" [ref=e250]:
+                - /url: mailto:contact.demoteam.54@ardennestouri.demo.buurman.io
+              - link "+32446348204" [ref=e255]:
+                - /url: tel:+32446348204
+            - 'status "Outstanding balance: €4,716.00, 3 payments overdue" [ref=e259]':
+              - generic [ref=e260]
+              - generic [ref=e265]: 3 payments overdue
+            - generic [ref=e266]:
+              - generic [ref=e267]
+              - generic "7/29/2025" [ref=e272]
+          - generic [ref=e276] [cursor=pointer]:
+            - generic [ref=e277]:
+              - generic [ref=e278]: M
+              - generic [ref=e279]
+            - generic [ref=e284]: Key Holder
+            - generic [ref=e285]:
+              - link "contact.demoteam.47@shamrockconsult.demo.buurman.io" [ref=e286]:
+                - /url: mailto:contact.demoteam.47@shamrockconsult.demo.buurman.io
+              - link "+353812638636" [ref=e291]:
+                - /url: tel:+353812638636
+            - 'status "Outstanding balance: €6,060.00, 5 payments overdue" [ref=e295]':
+              - generic [ref=e296]
+              - generic [ref=e301]: 5 payments overdue
+            - generic [ref=e302]:
+              - generic [ref=e303]
+              - generic "7/28/2025" [ref=e308]
+          - generic [ref=e312] [cursor=pointer]:
+            - generic [ref=e313]:
+              - generic [ref=e314]: BC
+              - generic [ref=e315]
+            - generic [ref=e319]:
+              - link "billy.cummings.demoteam10@example.demo.buurman.io" [ref=e320]:
+                - /url: mailto:billy.cummings.demoteam10@example.demo.buurman.io
+              - link "+16893943622" [ref=e325]:
+                - /url: tel:+16893943622
+            - 'status "Outstanding balance: €4,003.00, 2 payments overdue" [ref=e329]':
+              - generic [ref=e330]
+              - generic [ref=e335]: 2 payments overdue
+            - generic [ref=e336]:
+              - generic [ref=e337]
+              - generic "7/18/2025" [ref=e342]
+          - generic [ref=e346] [cursor=pointer]:
+            - generic [ref=e347]:
+              - generic [ref=e348]: M
+              - generic [ref=e349]
+            - generic [ref=e354]: VIP
+            - generic [ref=e355]:
+              - link "contact.demoteam.52@transportesmadr.demo.buurman.io" [ref=e356]:
+                - /url: mailto:contact.demoteam.52@transportesmadr.demo.buurman.io
+              - link "+34651425410" [ref=e361]:
+                - /url: tel:+34651425410
+            - 'status "Outstanding balance: €2,908.00, 4 payments overdue" [ref=e365]':
+              - generic [ref=e366]
+              - generic [ref=e371]: 4 payments overdue
+            - generic [ref=e372]:
+              - generic [ref=e373]
+              - generic "7/6/2025" [ref=e378]
+          - generic [ref=e382] [cursor=pointer]:
+            - generic [ref=e383]:
+              - generic [ref=e384]: BC
+              - generic [ref=e385]
+            - generic [ref=e390]: Long Term
+            - generic [ref=e391]:
+              - link "billy.cummings.demoteam11@example.demo.buurman.io" [ref=e392]:
+                - /url: mailto:billy.cummings.demoteam11@example.demo.buurman.io
+              - link "+353897311200" [ref=e397]:
+                - /url: tel:+353897311200
+            - status "All payments are up to date" [ref=e401]:
+              - generic [ref=e402]
+            - generic [ref=e407]:
+              - generic [ref=e408]
+              - generic "6/19/2025" [ref=e413]
+          - generic [ref=e417] [cursor=pointer]:
+            - generic [ref=e418]:
+              - generic [ref=e419]: KH
+              - generic [ref=e420]
+            - generic [ref=e424]:
+              - link "kesha.hilpert.demoteam26@example.demo.buurman.io" [ref=e425]:
+                - /url: mailto:kesha.hilpert.demoteam26@example.demo.buurman.io
+              - link "+447365521281" [ref=e430]:
+                - /url: tel:+447365521281
+            - generic [ref=e434]:
+              - generic [ref=e435]
+              - generic "5/8/2025" [ref=e440]
+          - generic [ref=e444] [cursor=pointer]:
+            - generic [ref=e445]:
+              - generic [ref=e446]: VC
+              - generic [ref=e447]
+            - generic [ref=e451]:
+              - link "victoria.collado.demoteam16@example.demo.buurman.io" [ref=e452]:
+                - /url: mailto:victoria.collado.demoteam16@example.demo.buurman.io
+              - link "+34652828985" [ref=e457]:
+                - /url: tel:+34652828985
+            - generic [ref=e461]:
+              - generic [ref=e462]
+              - generic "4/12/2025" [ref=e467]
+          - generic [ref=e471] [cursor=pointer]:
+            - generic [ref=e472]:
+              - generic [ref=e473]: G
+              - generic [ref=e474]
+            - generic [ref=e479]: Prospect
+            - generic [ref=e480]:
+              - link "contact.demoteam.53@lisboadigital.demo.buurman.io" [ref=e481]:
+                - /url: mailto:contact.demoteam.53@lisboadigital.demo.buurman.io
+              - link "+351936869499" [ref=e486]:
+                - /url: tel:+351936869499
+            - generic [ref=e490]:
+              - generic [ref=e491]
+              - generic "3/20/2025" [ref=e496]
+          - generic [ref=e500] [cursor=pointer]:
+            - generic [ref=e501]:
+              - generic [ref=e502]: AC
+              - generic [ref=e503]
+            - generic [ref=e507]:
+              - link "ambre.clment.demoteam3@example.demo.buurman.io" [ref=e508]:
+                - /url: mailto:ambre.clment.demoteam3@example.demo.buurman.io
+              - link "+33621246628" [ref=e513]:
+                - /url: tel:+33621246628
+            - generic [ref=e517]:
+              - generic [ref=e518]
+              - generic "11/7/2024" [ref=e523]
+          - generic [ref=e527] [cursor=pointer]:
+            - generic [ref=e528]:
+              - generic [ref=e529]: AC
+              - generic [ref=e530]
+            - generic [ref=e534]:
+              - link "ambre.clment.demoteam6@example.demo.buurman.io" [ref=e535]:
+                - /url: mailto:ambre.clment.demoteam6@example.demo.buurman.io
+              - link "+32429634502" [ref=e540]:
+                - /url: tel:+32429634502
+            - generic [ref=e544]:
+              - generic [ref=e545]
+              - generic "10/23/2024" [ref=e550]
+        - generic [ref=e555]:
+          - generic [ref=e556]:
+            - generic [ref=e557]: Showing 1 to 12 of 55
+            - combobox [ref=e558]:
+              - option "10 / page" [selected]
+              - option "25 / page"
+              - option "50 / page"
+              - option "75 / page"
+              - option "100 / page"
+              - option "150 / page"
+              - option "200 / page"
+              - option "500 / page"
+          - generic [ref=e559]:
+            - button "First page" [disabled] [ref=e560]:
+              - img [ref=e561]
+            - button "Previous page" [disabled] [ref=e564]:
+              - img [ref=e565]
+            - generic [ref=e567]:
+              - button "1" [ref=e568]
+              - button "2" [ref=e569]
+              - button "3" [ref=e570]
+              - button "4" [ref=e571]
+              - button "5" [ref=e572]
+            - button "Next page" [ref=e573]:
+              - img [ref=e574]
+            - button "Last page" [ref=e576]:
+              - img [ref=e577]
+  - status

@@ -26,6 +26,7 @@
             <plugins>
                 <plugin artifactId="spotless-maven-plugin"/>
                 <plugin artifactId="git-commit-id-maven-plugin"/>
+                <plugin artifactId="maven-install-plugin"/>
             </plugins>
         </runAlways>
     </executionControl>

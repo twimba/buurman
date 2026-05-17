@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/common/Avatar';
 import { StatusBadge } from '@buurman/ui';
 import type { BadgeColorVariant } from '@buurman/ui';
+import { formatMoney } from '@/utils/formatMoney';
 
 const CONTACT_TYPE_COLORS: Record<ContactType, BadgeColorVariant> = {
   INDIVIDUAL: 'blue',
@@ -28,11 +29,7 @@ const CONTACT_TYPE_COLORS: Record<ContactType, BadgeColorVariant> = {
 const MAX_VISIBLE_TAGS = 3;
 
 const formatCurrency = (amount: number, currency: string) =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-  }).format(amount);
+  formatMoney(amount, currency);
 
 interface ContactCardProps {
   contact: ContactListItemResponse;

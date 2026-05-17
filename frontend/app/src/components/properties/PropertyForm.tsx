@@ -18,6 +18,12 @@ import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
 import { CountrySelector } from '../common/CountrySelector';
+import {
+  FormStepGate,
+  MobileFormStepperFooter,
+  MobileFormStepperProvider,
+  MobileStepperHeader,
+} from '../common/MobileFormStepper';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useGeocode } from '@/hooks/useGeocodingHooks';
 import { IconSelect } from '../common/IconSelect';
@@ -425,281 +431,332 @@ export const PropertyForm = ({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      onKeyDown={handleCmdEnter}
-      className="space-y-6"
-    >
-      {/* Address Section */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {t('form.address')}
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <MobileFormStepperProvider totalSteps={3}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={handleCmdEnter}
+        className="space-y-6"
+      >
+        <MobileStepperHeader
+          labels={[
+            t('form.address'),
+            t('form.specifications'),
+            t('form.characteristics', { defaultValue: 'Characteristics' }),
+          ]}
+        />
+        {/* Address Section */}
+        <FormStepGate step={0}>
           <div>
-            <label className={labelCls}>
-              {t('form.street')} <span className="text-error-text">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.street}
-              onChange={(e) => handleChange('street', e.target.value)}
-              className={inputCls}
-              placeholder={t('form.streetPlaceholder')}
-            />
-            {errors.street && (
-              <p className="text-error-text text-sm mt-1">{errors.street}</p>
-            )}
-          </div>
-
-          <div>
-            <label className={labelCls}>
-              {t('form.city')} <span className="text-error-text">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.city}
-              onChange={(e) => handleChange('city', e.target.value)}
-              className={inputCls}
-              placeholder={t('form.cityPlaceholder')}
-            />
-            {errors.city && (
-              <p className="text-error-text text-sm mt-1">{errors.city}</p>
-            )}
-          </div>
-
-          <div>
-            <label className={labelCls}>
-              {t('form.postalCode')} <span className="text-error-text">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.postalCode}
-              onChange={(e) => handleChange('postalCode', e.target.value)}
-              className={inputCls}
-              placeholder={t('form.postalCodePlaceholder')}
-            />
-            {errors.postalCode && (
-              <p className="text-error-text text-sm mt-1">
-                {errors.postalCode}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className={labelCls}>
-              {t('form.country')} <span className="text-error-text">*</span>
-            </label>
-            <CountrySelector
-              value={formData.countryCode}
-              onChange={(v) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  countryCode: v,
-                  regionCode: undefined,
-                }));
-                if (errors.countryCode) {
-                  setErrors((prev) => ({ ...prev, countryCode: '' }));
-                }
-              }}
-            />
-            {errors.countryCode && (
-              <p className="text-error-text text-sm mt-1">
-                {errors.countryCode}
-              </p>
-            )}
-          </div>
-
-          {/* Region selector — only shown when country has regional regulations */}
-          {hasRegions && availableRegions.length > 0 && (
-            <div>
-              <label className={labelCls}>{t('form.region')}</label>
-              <select
-                value={formData.regionCode ?? ''}
-                onChange={(e) =>
-                  handleChange('regionCode', e.target.value || undefined)
-                }
-                className={selectCls}
-              >
-                <option value="">{t('form.regionOther')}</option>
-                {availableRegions.map((r) => (
-                  <option key={r.regionCode} value={r.regionCode}>
-                    {r.regionName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-
-        {/* Location Preview */}
-        {formData.street && formData.city && formData.countryCode && (
-          <div className="mt-6">
-            <h4 className="text-sm font-semibold text-text-secondary mb-3">
-              {t('form.locationPreview')}
-            </h4>
-            <InteractiveMap
-              street={formData.street}
-              city={formData.city}
-              latitude={formData.latitude}
-              longitude={formData.longitude}
-              geocodeAccuracy={formData.geocodeAccuracy}
-              isGeocoding={addressDirty || geocodeMutation.isPending}
-              defaultCountryCode={formData.countryCode || defaultCountryCode}
-              onLocationChange={(lat, lng) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  latitude: lat,
-                  longitude: lng,
-                  geocodeAccuracy: 'MANUAL',
-                }));
-              }}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Specifications Section */}
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {t('form.specifications')}
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Property Category */}
-          <div>
-            <label className={labelCls}>
-              {t('form.category')} <span className="text-error-text">*</span>
-            </label>
-            {isEditMode ? (
-              <div className="px-3 py-2 bg-surface-inset border border-border-strong rounded flex items-center gap-2 text-text-secondary">
-                {(() => {
-                  const cat =
-                    formData.propertyCategory ?? PropertyCategory.RESIDENTIAL;
-                  const CatIcon = PROPERTY_CATEGORY_ICONS[cat];
-                  return CatIcon ? (
-                    <CatIcon size={14} className="text-text-muted" />
-                  ) : null;
-                })()}
-                {categoryLabel(
-                  formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {t('form.address')}
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label className={labelCls}>
+                  {t('form.street')} <span className="text-error-text">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.street}
+                  onChange={(e) => handleChange('street', e.target.value)}
+                  className={inputCls}
+                  placeholder={t('form.streetPlaceholder')}
+                />
+                {errors.street && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.street}
+                  </p>
                 )}
-                <span className="text-xs text-text-muted ml-1">
-                  {t('form.categoryCannotChange')}
-                </span>
               </div>
-            ) : (
-              <IconSelect
-                value={formData.propertyCategory ?? ''}
-                options={categoryOptions}
-                onChange={(v) => handleCategoryChange(v as PropertyCategory)}
-              />
-            )}
-          </div>
 
-          {/* Property Type (filtered by category) */}
-          <div>
-            <label className={labelCls}>
-              {t('form.type')} <span className="text-error-text">*</span>
-            </label>
-            <IconSelect
-              value={formData.propertyType ?? ''}
-              options={typeOptions}
-              onChange={(v) => handleChange('propertyType', v as PropertyType)}
-            />
-          </div>
+              <div>
+                <label className={labelCls}>
+                  {t('form.city')} <span className="text-error-text">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.city}
+                  onChange={(e) => handleChange('city', e.target.value)}
+                  className={inputCls}
+                  placeholder={t('form.cityPlaceholder')}
+                />
+                {errors.city && (
+                  <p className="text-error-text text-sm mt-1">{errors.city}</p>
+                )}
+              </div>
 
-          {/* Status */}
-          <div>
-            <label className={labelCls}>
-              {t('form.status')} <span className="text-error-text">*</span>
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) =>
-                handleChange('status', e.target.value as PropertyStatus)
-              }
-              className={selectCls}
-            >
-              {Object.values(PropertyStatus).map((status) => (
-                <option key={status} value={status}>
-                  {statusLabel(status)}
-                </option>
-              ))}
-            </select>
-          </div>
+              <div>
+                <label className={labelCls}>
+                  {t('form.postalCode')}{' '}
+                  <span className="text-error-text">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.postalCode}
+                  onChange={(e) => handleChange('postalCode', e.target.value)}
+                  className={inputCls}
+                  placeholder={t('form.postalCodePlaceholder')}
+                />
+                {errors.postalCode && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.postalCode}
+                  </p>
+                )}
+              </div>
 
-          {/* Area */}
-          <div>
-            <label className={labelCls}>{t('form.area')}</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.areaValue ?? ''}
-                onChange={(e) =>
-                  handleChange(
-                    'areaValue',
-                    e.target.value ? parseFloat(e.target.value) : undefined
-                  )
-                }
-                className={`flex-1 ${inputCls}`}
-                placeholder={t('form.areaPlaceholder')}
-              />
-              <select
-                value={formData.areaUnit ?? 'sqm'}
-                onChange={(e) => handleChange('areaUnit', e.target.value)}
-                className="w-20 border border-border-strong rounded px-2 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              >
-                <option value="sqm">m²</option>
-                <option value="sqft">ft²</option>
-              </select>
+              <div>
+                <label className={labelCls}>
+                  {t('form.country')} <span className="text-error-text">*</span>
+                </label>
+                <CountrySelector
+                  value={formData.countryCode}
+                  onChange={(v) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      countryCode: v,
+                      regionCode: undefined,
+                    }));
+                    if (errors.countryCode) {
+                      setErrors((prev) => ({ ...prev, countryCode: '' }));
+                    }
+                  }}
+                />
+                {errors.countryCode && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.countryCode}
+                  </p>
+                )}
+              </div>
+
+              {/* Region selector — only shown when country has regional regulations */}
+              {hasRegions && availableRegions.length > 0 && (
+                <div>
+                  <label className={labelCls}>{t('form.region')}</label>
+                  <select
+                    value={formData.regionCode ?? ''}
+                    onChange={(e) =>
+                      handleChange('regionCode', e.target.value || undefined)
+                    }
+                    className={selectCls}
+                  >
+                    <option value="">{t('form.regionOther')}</option>
+                    {availableRegions.map((r) => (
+                      <option key={r.regionCode} value={r.regionCode}>
+                        {r.regionName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
-            {errors.areaValue && (
-              <p className="text-error-text text-sm mt-1">{errors.areaValue}</p>
+
+            {/* Location Preview */}
+            {formData.street && formData.city && formData.countryCode && (
+              <div className="mt-6">
+                <h4 className="text-sm font-semibold text-text-secondary mb-3">
+                  {t('form.locationPreview')}
+                </h4>
+                <InteractiveMap
+                  street={formData.street}
+                  city={formData.city}
+                  latitude={formData.latitude}
+                  longitude={formData.longitude}
+                  geocodeAccuracy={formData.geocodeAccuracy}
+                  isGeocoding={addressDirty || geocodeMutation.isPending}
+                  defaultCountryCode={
+                    formData.countryCode || defaultCountryCode
+                  }
+                  onLocationChange={(lat, lng) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      latitude: lat,
+                      longitude: lng,
+                      geocodeAccuracy: 'MANUAL',
+                    }));
+                  }}
+                />
+              </div>
             )}
           </div>
+        </FormStepGate>
+
+        {/* Specifications Section */}
+        <FormStepGate step={1}>
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
+              {t('form.specifications')}
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Property Category */}
+              <div>
+                <label className={labelCls}>
+                  {t('form.category')}{' '}
+                  <span className="text-error-text">*</span>
+                </label>
+                {isEditMode ? (
+                  <div className="px-3 py-2 bg-surface-inset border border-border-strong rounded flex items-center gap-2 text-text-secondary">
+                    {(() => {
+                      const cat =
+                        formData.propertyCategory ??
+                        PropertyCategory.RESIDENTIAL;
+                      const CatIcon = PROPERTY_CATEGORY_ICONS[cat];
+                      return CatIcon ? (
+                        <CatIcon size={14} className="text-text-muted" />
+                      ) : null;
+                    })()}
+                    {categoryLabel(
+                      formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
+                    )}
+                    <span className="text-xs text-text-muted ml-1">
+                      {t('form.categoryCannotChange')}
+                    </span>
+                  </div>
+                ) : (
+                  <IconSelect
+                    value={formData.propertyCategory ?? ''}
+                    options={categoryOptions}
+                    onChange={(v) =>
+                      handleCategoryChange(v as PropertyCategory)
+                    }
+                  />
+                )}
+              </div>
+
+              {/* Property Type (filtered by category) */}
+              <div>
+                <label className={labelCls}>
+                  {t('form.type')} <span className="text-error-text">*</span>
+                </label>
+                <IconSelect
+                  value={formData.propertyType ?? ''}
+                  options={typeOptions}
+                  onChange={(v) =>
+                    handleChange('propertyType', v as PropertyType)
+                  }
+                />
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className={labelCls}>
+                  {t('form.status')} <span className="text-error-text">*</span>
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) =>
+                    handleChange('status', e.target.value as PropertyStatus)
+                  }
+                  className={selectCls}
+                >
+                  {Object.values(PropertyStatus).map((status) => (
+                    <option key={status} value={status}>
+                      {statusLabel(status)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Area */}
+              <div>
+                <label className={labelCls}>{t('form.area')}</label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.areaValue ?? ''}
+                    onChange={(e) =>
+                      handleChange(
+                        'areaValue',
+                        e.target.value ? parseFloat(e.target.value) : undefined
+                      )
+                    }
+                    className={`flex-1 ${inputCls}`}
+                    placeholder={t('form.areaPlaceholder')}
+                  />
+                  <select
+                    value={formData.areaUnit ?? 'sqm'}
+                    onChange={(e) => handleChange('areaUnit', e.target.value)}
+                    className="w-20 border border-border-strong rounded px-2 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  >
+                    <option value="sqm">m²</option>
+                    <option value="sqft">ft²</option>
+                  </select>
+                </div>
+                {errors.areaValue && (
+                  <p className="text-error-text text-sm mt-1">
+                    {errors.areaValue}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </FormStepGate>
+
+        {/* Property Characteristics */}
+        <FormStepGate step={2}>
+          <PropertyCharacteristicsForm
+            formData={formData}
+            property={property}
+            onChange={handleChange}
+            outdoorAreas={outdoorAreas}
+            onCreateOutdoorArea={onCreateOutdoorArea}
+            onDeleteOutdoorArea={onDeleteOutdoorArea}
+            allAmenities={allAmenities}
+            propertyAmenities={propertyAmenities}
+            onAddAmenity={onAddAmenity}
+            onRemoveAmenity={onRemoveAmenity}
+          />
+        </FormStepGate>
+
+        {/* Actions — md+ inline save bar (single-scroll desktop UX) */}
+        <div className="hidden md:flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
+          <button
+            type="button"
+            onClick={() => navigate('/properties')}
+            className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2"
+            disabled={isLoading}
+          >
+            <X className="h-4 w-4" />
+            {t('common:buttons.cancel')}
+          </button>
+          <button
+            type="submit"
+            className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
+            disabled={isLoading}
+          >
+            <Save className="h-4 w-4" />
+            {isLoading
+              ? t('form.saving')
+              : property
+                ? t('form.updateProperty')
+                : t('form.createProperty')}
+          </button>
         </div>
-      </div>
 
-      {/* Property Characteristics */}
-      <PropertyCharacteristicsForm
-        formData={formData}
-        property={property}
-        onChange={handleChange}
-        outdoorAreas={outdoorAreas}
-        onCreateOutdoorArea={onCreateOutdoorArea}
-        onDeleteOutdoorArea={onDeleteOutdoorArea}
-        allAmenities={allAmenities}
-        propertyAmenities={propertyAmenities}
-        onAddAmenity={onAddAmenity}
-        onRemoveAmenity={onRemoveAmenity}
-      />
-
-      {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
-        <button
-          type="button"
-          onClick={() => navigate('/properties')}
-          className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2"
-          disabled={isLoading}
-        >
-          <X className="h-4 w-4" />
-          {t('common:buttons.cancel')}
-        </button>
-        <button
-          type="submit"
-          className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-          disabled={isLoading}
-        >
-          <Save className="h-4 w-4" />
-          {isLoading
-            ? t('form.saving')
-            : property
-              ? t('form.updateProperty')
-              : t('form.createProperty')}
-        </button>
-      </div>
-    </form>
+        {/* Phone: sticky stepper footer with Back/Continue/Save */}
+        <MobileFormStepperFooter
+          onSubmit={() => {
+            // form.requestSubmit() is unavailable in older Safari; trigger
+            // submit by relaying to handleSubmit via the form element.
+            const f = document.activeElement?.closest(
+              'form'
+            ) as HTMLFormElement | null;
+            if (f) {
+              f.requestSubmit();
+            }
+          }}
+          onCancel={() => navigate('/properties')}
+          isSubmitting={isLoading}
+          saveLabel={
+            isLoading
+              ? t('form.saving')
+              : property
+                ? t('form.updateProperty')
+                : t('form.createProperty')
+          }
+        />
+      </form>
+    </MobileFormStepperProvider>
   );
 };

@@ -1,0 +1,897 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: LOCAL ENVIRONMENT
+    - generic [ref=e4]:
+      - link "Skip to main content" [ref=e5] [cursor=pointer]:
+        - /url: "#main-content"
+      - button [ref=e6]:
+        - img [ref=e7]
+      - complementary [ref=e8]:
+        - generic [ref=e9]:
+          - img "Buurman" [ref=e13]
+          - navigation [ref=e14]:
+            - list [ref=e15]:
+              - listitem [ref=e16]:
+                - link "Dashboard" [ref=e17] [cursor=pointer]:
+                  - /url: /dashboard
+                  - img [ref=e18]
+                  - generic [ref=e23]: Dashboard
+              - listitem [ref=e24]:
+                - link "Properties" [ref=e25] [cursor=pointer]:
+                  - /url: /properties
+                  - img [ref=e26]
+                  - generic [ref=e29]: Properties
+              - listitem [ref=e30]:
+                - link "Contacts" [ref=e31] [cursor=pointer]:
+                  - /url: /contacts
+                  - img [ref=e32]
+                  - generic [ref=e37]: Contacts
+              - listitem [ref=e38]:
+                - generic [ref=e40]:
+                  - link "Contracts" [ref=e41] [cursor=pointer]:
+                    - /url: /contracts
+                    - img [ref=e42]
+                    - generic [ref=e45]: Contracts
+                  - button [ref=e46]:
+                    - img [ref=e47]
+              - listitem [ref=e49]:
+                - link "Payments" [ref=e50] [cursor=pointer]:
+                  - /url: /payments
+                  - img [ref=e51]
+                  - generic [ref=e53]: Payments
+              - listitem [ref=e54]:
+                - link "Expenses" [ref=e55] [cursor=pointer]:
+                  - /url: /expenses
+                  - img [ref=e56]
+                  - generic [ref=e59]: Expenses
+              - listitem [ref=e60]:
+                - link "Documents" [ref=e61] [cursor=pointer]:
+                  - /url: /documents
+                  - img [ref=e62]
+                  - generic [ref=e64]: Documents
+              - listitem [ref=e65]:
+                - link "Photos" [ref=e66] [cursor=pointer]:
+                  - /url: /photos
+                  - img [ref=e67]
+                  - generic [ref=e71]: Photos
+              - listitem [ref=e72]:
+                - link "Reports" [ref=e73] [cursor=pointer]:
+                  - /url: /reports
+                  - img [ref=e74]
+                  - generic [ref=e76]: Reports
+            - button "Administration" [ref=e79]:
+              - generic [ref=e80]:
+                - text: Administration
+                - img [ref=e81]
+              - img [ref=e83]
+          - generic [ref=e85]:
+            - button "Demo Team Admin" [ref=e88]:
+              - img [ref=e90]
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - paragraph [ref=e95]: Demo Team
+                  - img [ref=e96]
+                  - img [ref=e98]
+                - generic [ref=e100]:
+                  - img [ref=e101]
+                  - paragraph [ref=e103]: Admin
+              - img [ref=e104]
+            - link "Settings" [ref=e106] [cursor=pointer]:
+              - /url: /settings
+              - img [ref=e107]
+              - generic [ref=e110]: Settings
+            - button "Sign Out" [ref=e111]:
+              - img [ref=e112]
+              - generic [ref=e115]: Sign Out
+      - main [ref=e116]:
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - img [ref=e121]
+              - generic [ref=e125]:
+                - heading "Pending Extensions" [level=2] [ref=e126]
+                - paragraph [ref=e127]: 2 extensions awaiting action
+            - generic [ref=e128]:
+              - generic [ref=e129]:
+                - generic [ref=e130] [cursor=pointer]:
+                  - generic [ref=e131]:
+                    - generic [ref=e132]: "Extension #2"
+                    - generic [ref=e133]: "Contract #CON01KRTERBEY9MD30S03Z3SDWHZ9"
+                  - paragraph [ref=e134]:
+                    - text: EUR 502.74 → EUR 527.35
+                    - generic [ref=e135]: until 17/02/2031
+                - generic [ref=e136]:
+                  - button "Activate" [ref=e137]:
+                    - img [ref=e138]
+                    - text: Activate
+                  - button "Decline" [ref=e140]:
+                    - img [ref=e141]
+                    - text: Decline
+              - generic [ref=e145]:
+                - generic [ref=e146] [cursor=pointer]:
+                  - generic [ref=e147]:
+                    - generic [ref=e148]: "Extension #2"
+                    - generic [ref=e149]: "Contract #CON01KRTERBEYGSYTJEP0HW7QHRD4"
+                  - paragraph [ref=e150]:
+                    - text: EUR 892.90 → EUR 914.44
+                    - generic [ref=e151]: until 17/04/2030
+                - generic [ref=e152]:
+                  - button "Activate" [ref=e153]:
+                    - img [ref=e154]
+                    - text: Activate
+                  - button "Decline" [ref=e156]:
+                    - img [ref=e157]
+                    - text: Decline
+          - generic [ref=e410]:
+            - generic [ref=e412]:
+              - generic [ref=e413]:
+                - heading "Portfolio Overview" [level=2] [ref=e414]
+                - generic [ref=e415]: 30 of 30 properties have financial data
+              - generic [ref=e416]:
+                - generic [ref=e417]:
+                  - button "6M" [ref=e418]
+                  - button "1Y" [ref=e419]
+                  - button "2Y" [ref=e420]
+                  - button "3Y" [ref=e421]
+                  - button "4Y" [ref=e422]
+                  - button "5Y" [ref=e423]
+                  - button "10Y" [ref=e424]
+                  - button "All" [ref=e425]
+                - generic [ref=e426]:
+                  - textbox [ref=e427]: 2025-05-17
+                  - generic [ref=e428]: –
+                  - textbox [ref=e429]: 2026-05-17
+                - generic [ref=e430]:
+                  - button "CSV" [ref=e431]:
+                    - img [ref=e433]
+                    - text: CSV
+                  - button "PDF" [ref=e436]:
+                    - img [ref=e437]
+                    - text: PDF
+            - generic [ref=e440]:
+              - generic [ref=e442]:
+                - img [ref=e444]
+                - generic [ref=e448]:
+                  - paragraph [ref=e449]: Portfolio Value
+                  - paragraph [ref=e450]: €9,671,330
+              - generic [ref=e452]:
+                - img [ref=e454]
+                - generic [ref=e457]:
+                  - paragraph [ref=e458]: Total Equity
+                  - paragraph [ref=e459]: €6,740,405
+              - generic [ref=e461]:
+                - img [ref=e463]
+                - generic [ref=e465]:
+                  - paragraph [ref=e466]:
+                    - generic [ref=e467]: Monthly Cash Flow
+                  - paragraph [ref=e468]: "-€25,828"
+              - generic [ref=e470]:
+                - img [ref=e472]
+                - generic [ref=e476]:
+                  - paragraph [ref=e477]:
+                    - generic [ref=e478]: Wtd Cap Rate
+                  - paragraph [ref=e479]: "-1.2%"
+              - generic [ref=e481]:
+                - img [ref=e483]
+                - generic [ref=e487]:
+                  - paragraph [ref=e488]:
+                    - generic [ref=e489]: Wtd Cash-on-Cash
+                  - paragraph [ref=e490]: "-6.4%"
+              - generic [ref=e492]:
+                - img [ref=e494]
+                - generic [ref=e497]:
+                  - paragraph [ref=e498]:
+                    - generic [ref=e499]: Occupancy
+                  - paragraph [ref=e500]: 88.5%
+            - generic [ref=e501]:
+              - generic [ref=e502]:
+                - generic [ref=e503]:
+                  - generic [ref=e504]:
+                    - img [ref=e506]
+                    - heading "Portfolio Cash Flow" [level=3] [ref=e508]
+                  - button "Expand chart" [ref=e509]:
+                    - img [ref=e510]
+                - generic [ref=e516]:
+                  - list [ref=e518]:
+                    - listitem [ref=e519]:
+                      - img "income legend icon" [ref=e520]
+                      - text: Income
+                    - listitem [ref=e522]:
+                      - img "negExpenses legend icon" [ref=e523]
+                      - text: Expenses
+                    - listitem [ref=e525]:
+                      - img "negMortgage legend icon" [ref=e526]
+                      - text: Mortgage
+                    - listitem [ref=e528]:
+                      - img "net legend icon" [ref=e529]
+                      - text: Net
+                  - application [ref=e531]:
+                    - generic [ref=e668]:
+                      - generic [ref=e669]:
+                        - generic [ref=e671]: May '25
+                        - generic [ref=e673]: Aug '25
+                        - generic [ref=e675]: Nov '25
+                        - generic [ref=e677]: Feb '26
+                        - generic [ref=e679]: May '26
+                      - generic [ref=e680]:
+                        - generic [ref=e682]: "-€50K"
+                        - generic [ref=e684]: "-€25K"
+                        - generic [ref=e686]: €0
+                        - generic [ref=e688]: €25K
+                        - generic [ref=e690]: €50K
+              - generic [ref=e691]:
+                - generic [ref=e692]:
+                  - generic [ref=e693]:
+                    - img [ref=e695]
+                    - heading "Portfolio Allocation" [level=3] [ref=e698]
+                  - button "Expand chart" [ref=e699]:
+                    - img [ref=e700]
+                - generic [ref=e705]:
+                  - generic [ref=e706]:
+                    - button "By Category" [ref=e707]
+                    - button "By Country" [ref=e708]
+                  - generic [ref=e709]:
+                    - application [ref=e712]
+                    - generic [ref=e728]:
+                      - generic [ref=e729]:
+                        - generic [ref=e731]: RESIDENTIAL
+                        - generic [ref=e732]: 45.7%
+                      - generic [ref=e733]:
+                        - generic [ref=e735]: COMMERCIAL
+                        - generic [ref=e736]: 30.8%
+                      - generic [ref=e737]:
+                        - generic [ref=e739]: INDUSTRIAL
+                        - generic [ref=e740]: 17.6%
+                      - generic [ref=e741]:
+                        - generic [ref=e743]: AGRICULTURAL
+                        - generic [ref=e744]: 5.9%
+            - generic [ref=e745]:
+              - generic [ref=e746]:
+                - generic [ref=e747]:
+                  - generic [ref=e748]:
+                    - img [ref=e750]
+                    - heading "Property Comparison" [level=3] [ref=e753]
+                  - button "Expand chart" [ref=e754]:
+                    - img [ref=e755]
+                - application [ref=e762]:
+                  - generic [ref=e868]:
+                    - generic [ref=e869]:
+                      - generic [ref=e871]: "-€3,300"
+                      - generic [ref=e873]: "-€1,100"
+                      - generic [ref=e875]: €1,100
+                    - generic [ref=e876]:
+                      - generic [ref=e878]: Vondelstraat 102,Den Haag
+                      - generic [ref=e880]: Rua Augusta 12,Aveiro
+                      - generic [ref=e882]: Mariahilfer Straße142, Graz
+                      - generic [ref=e884]: Rue de la Paix 46,Toulouse
+                      - generic [ref=e886]: Calle Serrano 156,Bilbao
+                      - generic [ref=e888]: Vondelstraat 105,Utrecht
+                      - generic [ref=e890]: Elm Street 57, SanFrancisco
+                      - generic [ref=e892]: Barrack Street 28,Cork
+                      - generic [ref=e894]: Finca El Olivar 122,San Sebastián
+                      - generic [ref=e896]: Avenida dosAliados 111,Funchal
+                      - generic [ref=e898]: Corso VittorioEmanuele 70,Genoa
+                      - generic [ref=e900]: Avenue deTervueren 21,Liège
+                      - generic [ref=e902]: Estrada dasQuintas 130,Funchal
+                      - generic [ref=e904]: Chemin duVignoble 25, Paris
+                      - generic [ref=e906]: LangeGasthuisstraat 118,Leuven
+                      - generic [ref=e908]: Rue de Rivoli 2,Nice
+                      - generic [ref=e910]: Berliner Straße 71,Dresden
+                      - generic [ref=e912]: Friedrichstraße 47,Düsseldorf
+                      - generic [ref=e914]: Rambla deCatalunya 42,Granada
+                      - generic [ref=e916]: Church Lane 83,Liverpool
+                      - generic [ref=e918]: Piazza degli Affari11, Turin
+                      - generic [ref=e920]: Rue du Rhône 196,Zurich
+                      - generic [ref=e922]: King's Road 142,Bristol
+                      - generic [ref=e924]: Burlington Road14, Wexford
+                      - generic [ref=e926]: Havenweg 184,Delft
+                      - generic [ref=e928]: Gewerbepark 43,Dresden
+                      - generic [ref=e930]: Rue du Marché 25,Basel
+                      - generic [ref=e932]: Enterprise Way 13,Manchester
+                      - generic [ref=e934]: Wienerbergstraße122, Klagenfurt
+                      - generic [ref=e936]: Market Street 1,New York
+              - generic [ref=e937]:
+                - generic [ref=e938]:
+                  - generic [ref=e939]:
+                    - img [ref=e941]
+                    - heading "Equity Composition" [level=3] [ref=e943]
+                  - button "Expand chart" [ref=e944]:
+                    - img [ref=e945]
+                - generic [ref=e951]:
+                  - list [ref=e953]:
+                    - listitem [ref=e954]:
+                      - img "equity legend icon" [ref=e955]
+                      - text: Equity
+                    - listitem [ref=e957]:
+                      - img "mortgage legend icon" [ref=e958]
+                      - text: Mortgage
+                  - application [ref=e960]:
+                    - generic [ref=e1135]:
+                      - generic [ref=e1136]:
+                        - generic [ref=e1138]: €0
+                        - generic [ref=e1140]: €400K
+                        - generic [ref=e1142]: €800K
+                      - generic [ref=e1143]:
+                        - generic [ref=e1145]: Estrada dasQuintas 130,Funchal
+                        - generic [ref=e1147]: Finca El Olivar 122,San Sebastián
+                        - generic [ref=e1149]: Gewerbepark 43,Dresden
+                        - generic [ref=e1151]: Chemin duVignoble 25, Paris
+                        - generic [ref=e1153]: Enterprise Way 13,Manchester
+                        - generic [ref=e1155]: Rue du Marché 25,Basel
+                        - generic [ref=e1157]: Burlington Road14, Wexford
+                        - generic [ref=e1159]: Wienerbergstraße122, Klagenfurt
+                        - generic [ref=e1161]: Market Street 1,New York
+                        - generic [ref=e1163]: Havenweg 184,Delft
+                        - generic [ref=e1165]: Avenida dosAliados 111,Funchal
+                        - generic [ref=e1167]: Rue de la Paix 46,Toulouse
+                        - generic [ref=e1169]: Piazza degli Affari11, Turin
+                        - generic [ref=e1171]: Calle Serrano 156,Bilbao
+                        - generic [ref=e1173]: Avenue deTervueren 21,Liège
+                        - generic [ref=e1175]: Vondelstraat 102,Den Haag
+                        - generic [ref=e1177]: King's Road 142,Bristol
+                        - generic [ref=e1179]: Barrack Street 28,Cork
+                        - generic [ref=e1181]: Elm Street 57, SanFrancisco
+                        - generic [ref=e1183]: Friedrichstraße 47,Düsseldorf
+                        - generic [ref=e1185]: LangeGasthuisstraat 118,Leuven
+                        - generic [ref=e1187]: Rue du Rhône 196,Zurich
+                        - generic [ref=e1189]: Mariahilfer Straße142, Graz
+                        - generic [ref=e1191]: Corso VittorioEmanuele 70,Genoa
+                        - generic [ref=e1193]: Rua Augusta 12,Aveiro
+                        - generic [ref=e1195]: Berliner Straße 71,Dresden
+                        - generic [ref=e1197]: Vondelstraat 105,Utrecht
+                        - generic [ref=e1199]: Church Lane 83,Liverpool
+                        - generic [ref=e1201]: Rue de Rivoli 2,Nice
+                        - generic [ref=e1203]: Rambla deCatalunya 42,Granada
+            - generic [ref=e1204]:
+              - generic [ref=e1205]:
+                - generic [ref=e1206]:
+                  - img [ref=e1208]
+                  - heading "Property Performance" [level=3] [ref=e1210]
+                - button "Expand chart" [ref=e1211]:
+                  - img [ref=e1212]
+              - table [ref=e1218]:
+                - rowgroup [ref=e1219]:
+                  - row "Property Category Monthly CF Annual NOI Cap Rate CoC Occupancy Data %" [ref=e1220]:
+                    - columnheader "Property" [ref=e1221] [cursor=pointer]:
+                      - generic [ref=e1222]: Property
+                    - columnheader "Category" [ref=e1223] [cursor=pointer]:
+                      - generic [ref=e1224]: Category
+                    - columnheader "Monthly CF" [ref=e1225] [cursor=pointer]:
+                      - generic [ref=e1226]:
+                        - generic [ref=e1227]: Monthly CF
+                        - img [ref=e1228]
+                    - columnheader "Annual NOI" [ref=e1230] [cursor=pointer]:
+                      - generic [ref=e1232]: Annual NOI
+                    - columnheader "Cap Rate" [ref=e1233] [cursor=pointer]:
+                      - generic [ref=e1235]: Cap Rate
+                    - columnheader "CoC" [ref=e1236] [cursor=pointer]:
+                      - generic [ref=e1238]: CoC
+                    - columnheader "Occupancy" [ref=e1239] [cursor=pointer]:
+                      - generic [ref=e1241]: Occupancy
+                    - columnheader "Data %" [ref=e1242] [cursor=pointer]:
+                      - generic [ref=e1244]: Data %
+                - rowgroup [ref=e1245]:
+                  - row "Vondelstraat 102, Den Haag RESIDENTIAL €313 €4,908 0.9% 2.0% 100.0% 100%" [ref=e1246]:
+                    - cell "Vondelstraat 102, Den Haag" [ref=e1247]:
+                      - button "Vondelstraat 102, Den Haag" [ref=e1248]
+                    - cell "RESIDENTIAL" [ref=e1249]
+                    - cell "€313" [ref=e1250]
+                    - cell "€4,908" [ref=e1251]
+                    - cell "0.9%" [ref=e1252]
+                    - cell "2.0%" [ref=e1253]
+                    - cell "100.0%" [ref=e1254]
+                    - cell "100%" [ref=e1255]
+                  - row "Rua Augusta 12, Aveiro RESIDENTIAL -€10 €1,250 1.0% 0.3% 100.0% 100%" [ref=e1256]:
+                    - cell "Rua Augusta 12, Aveiro" [ref=e1257]:
+                      - button "Rua Augusta 12, Aveiro" [ref=e1258]
+                    - cell "RESIDENTIAL" [ref=e1259]
+                    - cell "-€10" [ref=e1260]
+                    - cell "€1,250" [ref=e1261]
+                    - cell "1.0%" [ref=e1262]
+                    - cell "0.3%" [ref=e1263]
+                    - cell "100.0%" [ref=e1264]
+                    - cell "100%" [ref=e1265]
+                  - row "Mariahilfer Straße 142, Graz RESIDENTIAL -€46 -€257 -0.1% -0.3% 100.0% 100%" [ref=e1266]:
+                    - cell "Mariahilfer Straße 142, Graz" [ref=e1267]:
+                      - button "Mariahilfer Straße 142, Graz" [ref=e1268]
+                    - cell "RESIDENTIAL" [ref=e1269]
+                    - cell "-€46" [ref=e1270]
+                    - cell "-€257" [ref=e1271]
+                    - cell "-0.1%" [ref=e1272]
+                    - cell "-0.3%" [ref=e1273]
+                    - cell "100.0%" [ref=e1274]
+                    - cell "100%" [ref=e1275]
+                  - row "Rue de la Paix 46, Toulouse RESIDENTIAL -€107 -€1,128 -0.6% -1.1% 100.0% 100%" [ref=e1276]:
+                    - cell "Rue de la Paix 46, Toulouse" [ref=e1277]:
+                      - button "Rue de la Paix 46, Toulouse" [ref=e1278]
+                    - cell "RESIDENTIAL" [ref=e1279]
+                    - cell "-€107" [ref=e1280]
+                    - cell "-€1,128" [ref=e1281]
+                    - cell "-0.6%" [ref=e1282]
+                    - cell "-1.1%" [ref=e1283]
+                    - cell "100.0%" [ref=e1284]
+                    - cell "100%" [ref=e1285]
+                  - row "Calle Serrano 156, Bilbao RESIDENTIAL -€109 -€1,175 -1.0% -2.0% 100.0% 100%" [ref=e1286]:
+                    - cell "Calle Serrano 156, Bilbao" [ref=e1287]:
+                      - button "Calle Serrano 156, Bilbao" [ref=e1288]
+                    - cell "RESIDENTIAL" [ref=e1289]
+                    - cell "-€109" [ref=e1290]
+                    - cell "-€1,175" [ref=e1291]
+                    - cell "-1.0%" [ref=e1292]
+                    - cell "-2.0%" [ref=e1293]
+                    - cell "100.0%" [ref=e1294]
+                    - cell "100%" [ref=e1295]
+                  - row "Vondelstraat 105, Utrecht RESIDENTIAL -€124 -€1,162 -0.4% -0.7% 100.0% 86%" [ref=e1296]:
+                    - cell "Vondelstraat 105, Utrecht" [ref=e1297]:
+                      - button "Vondelstraat 105, Utrecht" [ref=e1298]
+                    - cell "RESIDENTIAL" [ref=e1299]
+                    - cell "-€124" [ref=e1300]
+                    - cell "-€1,162" [ref=e1301]
+                    - cell "-0.4%" [ref=e1302]
+                    - cell "-0.7%" [ref=e1303]
+                    - cell "100.0%" [ref=e1304]
+                    - cell "86%" [ref=e1305]
+                  - row "Elm Street 57, San Francisco RESIDENTIAL -€138 -€1,423 -0.7% -0.9% 100.0% 86%" [ref=e1306]:
+                    - cell "Elm Street 57, San Francisco" [ref=e1307]:
+                      - button "Elm Street 57, San Francisco" [ref=e1308]
+                    - cell "RESIDENTIAL" [ref=e1309]
+                    - cell "-€138" [ref=e1310]
+                    - cell "-€1,423" [ref=e1311]
+                    - cell "-0.7%" [ref=e1312]
+                    - cell "-0.9%" [ref=e1313]
+                    - cell "100.0%" [ref=e1314]
+                    - cell "86%" [ref=e1315]
+                  - row "Barrack Street 28, Cork RESIDENTIAL -€178 -€1,777 -0.6% -0.7% 100.0% 86%" [ref=e1316]:
+                    - cell "Barrack Street 28, Cork" [ref=e1317]:
+                      - button "Barrack Street 28, Cork" [ref=e1318]
+                    - cell "RESIDENTIAL" [ref=e1319]
+                    - cell "-€178" [ref=e1320]
+                    - cell "-€1,777" [ref=e1321]
+                    - cell "-0.6%" [ref=e1322]
+                    - cell "-0.7%" [ref=e1323]
+                    - cell "100.0%" [ref=e1324]
+                    - cell "86%" [ref=e1325]
+                  - row "Finca El Olivar 122, San Sebastián AGRICULTURAL -€269 -€3,120 -1.4% -1.1% 62.8% 86%" [ref=e1326]:
+                    - cell "Finca El Olivar 122, San Sebastián" [ref=e1327]:
+                      - button "Finca El Olivar 122, San Sebastián" [ref=e1328]
+                    - cell "AGRICULTURAL" [ref=e1329]
+                    - cell "-€269" [ref=e1330]
+                    - cell "-€3,120" [ref=e1331]
+                    - cell "-1.4%" [ref=e1332]
+                    - cell "-1.1%" [ref=e1333]
+                    - cell "62.8%" [ref=e1334]
+                    - cell "86%" [ref=e1335]
+                  - row "Avenida dos Aliados 111, Funchal RESIDENTIAL -€325 €655 0.4% -6.0% 100.0% 100%" [ref=e1336]:
+                    - cell "Avenida dos Aliados 111, Funchal" [ref=e1337]:
+                      - button "Avenida dos Aliados 111, Funchal" [ref=e1338]
+                    - cell "RESIDENTIAL" [ref=e1339]
+                    - cell "-€325" [ref=e1340]
+                    - cell "€655" [ref=e1341]
+                    - cell "0.4%" [ref=e1342]
+                    - cell "-6.0%" [ref=e1343]
+                    - cell "100.0%" [ref=e1344]
+                    - cell "100%" [ref=e1345]
+                  - row "Corso Vittorio Emanuele 70, Genoa RESIDENTIAL -€334 €1,262 1.0% -5.3% 100.0% 100%" [ref=e1346]:
+                    - cell "Corso Vittorio Emanuele 70, Genoa" [ref=e1347]:
+                      - button "Corso Vittorio Emanuele 70, Genoa" [ref=e1348]
+                    - cell "RESIDENTIAL" [ref=e1349]
+                    - cell "-€334" [ref=e1350]
+                    - cell "€1,262" [ref=e1351]
+                    - cell "1.0%" [ref=e1352]
+                    - cell "-5.3%" [ref=e1353]
+                    - cell "100.0%" [ref=e1354]
+                    - cell "100%" [ref=e1355]
+                  - row "Avenue de Tervueren 21, Liège COMMERCIAL -€383 €4,136 1.5% -2.4% 100.0% 100%" [ref=e1356]:
+                    - cell "Avenue de Tervueren 21, Liège" [ref=e1357]:
+                      - button "Avenue de Tervueren 21, Liège" [ref=e1358]
+                    - cell "COMMERCIAL" [ref=e1359]
+                    - cell "-€383" [ref=e1360]
+                    - cell "€4,136" [ref=e1361]
+                    - cell "1.5%" [ref=e1362]
+                    - cell "-2.4%" [ref=e1363]
+                    - cell "100.0%" [ref=e1364]
+                    - cell "100%" [ref=e1365]
+                  - row "Estrada das Quintas 130, Funchal AGRICULTURAL -€394 -€4,869 -3.9% -2.9% 0.0% 57%" [ref=e1366]:
+                    - cell "Estrada das Quintas 130, Funchal" [ref=e1367]:
+                      - button "Estrada das Quintas 130, Funchal" [ref=e1368]
+                    - cell "AGRICULTURAL" [ref=e1369]
+                    - cell "-€394" [ref=e1370]
+                    - cell "-€4,869" [ref=e1371]
+                    - cell "-3.9%" [ref=e1372]
+                    - cell "-2.9%" [ref=e1373]
+                    - cell "0.0%" [ref=e1374]
+                    - cell "57%" [ref=e1375]
+                  - row "Chemin du Vignoble 25, Paris AGRICULTURAL -€465 -€5,654 -2.5% -1.9% 92.7% 86%" [ref=e1376]:
+                    - cell "Chemin du Vignoble 25, Paris" [ref=e1377]:
+                      - button "Chemin du Vignoble 25, Paris" [ref=e1378]
+                    - cell "AGRICULTURAL" [ref=e1379]
+                    - cell "-€465" [ref=e1380]
+                    - cell "-€5,654" [ref=e1381]
+                    - cell "-2.5%" [ref=e1382]
+                    - cell "-1.9%" [ref=e1383]
+                    - cell "92.7%" [ref=e1384]
+                    - cell "86%" [ref=e1385]
+                  - row "Lange Gasthuisstraat 118, Leuven RESIDENTIAL -€640 €315 0.1% -7.3% 100.0% 100%" [ref=e1386]:
+                    - cell "Lange Gasthuisstraat 118, Leuven" [ref=e1387]:
+                      - button "Lange Gasthuisstraat 118, Leuven" [ref=e1388]
+                    - cell "RESIDENTIAL" [ref=e1389]
+                    - cell "-€640" [ref=e1390]
+                    - cell "€315" [ref=e1391]
+                    - cell "0.1%" [ref=e1392]
+                    - cell "-7.3%" [ref=e1393]
+                    - cell "100.0%" [ref=e1394]
+                    - cell "100%" [ref=e1395]
+                  - row "Rue de Rivoli 2, Nice RESIDENTIAL -€662 -€395 -0.1% -5.8% 100.0% 100%" [ref=e1396]:
+                    - cell "Rue de Rivoli 2, Nice" [ref=e1397]:
+                      - button "Rue de Rivoli 2, Nice" [ref=e1398]
+                    - cell "RESIDENTIAL" [ref=e1399]
+                    - cell "-€662" [ref=e1400]
+                    - cell "-€395" [ref=e1401]
+                    - cell "-0.1%" [ref=e1402]
+                    - cell "-5.8%" [ref=e1403]
+                    - cell "100.0%" [ref=e1404]
+                    - cell "100%" [ref=e1405]
+                  - row "Berliner Straße 71, Dresden RESIDENTIAL -€724 -€9,021 -2.9% -6.5% 100.0% 100%" [ref=e1406]:
+                    - cell "Berliner Straße 71, Dresden" [ref=e1407]:
+                      - button "Berliner Straße 71, Dresden" [ref=e1408]
+                    - cell "RESIDENTIAL" [ref=e1409]
+                    - cell "-€724" [ref=e1410]
+                    - cell "-€9,021" [ref=e1411]
+                    - cell "-2.9%" [ref=e1412]
+                    - cell "-6.5%" [ref=e1413]
+                    - cell "100.0%" [ref=e1414]
+                    - cell "100%" [ref=e1415]
+                  - row "Friedrichstraße 47, Düsseldorf RESIDENTIAL -€726 -€2,482 -1.5% -11.3% 100.0% 100%" [ref=e1416]:
+                    - cell "Friedrichstraße 47, Düsseldorf" [ref=e1417]:
+                      - button "Friedrichstraße 47, Düsseldorf" [ref=e1418]
+                    - cell "RESIDENTIAL" [ref=e1419]
+                    - cell "-€726" [ref=e1420]
+                    - cell "-€2,482" [ref=e1421]
+                    - cell "-1.5%" [ref=e1422]
+                    - cell "-11.3%" [ref=e1423]
+                    - cell "100.0%" [ref=e1424]
+                    - cell "100%" [ref=e1425]
+                  - row "Rambla de Catalunya 42, Granada RESIDENTIAL -€741 -€1,100 -0.5% -6.0% 100.0% 100%" [ref=e1426]:
+                    - cell "Rambla de Catalunya 42, Granada" [ref=e1427]:
+                      - button "Rambla de Catalunya 42, Granada" [ref=e1428]
+                    - cell "RESIDENTIAL" [ref=e1429]
+                    - cell "-€741" [ref=e1430]
+                    - cell "-€1,100" [ref=e1431]
+                    - cell "-0.5%" [ref=e1432]
+                    - cell "-6.0%" [ref=e1433]
+                    - cell "100.0%" [ref=e1434]
+                    - cell "100%" [ref=e1435]
+                  - row "Church Lane 83, Liverpool RESIDENTIAL -€843 -€5,165 -2.7% -9.4% 100.0% 100%" [ref=e1436]:
+                    - cell "Church Lane 83, Liverpool" [ref=e1437]:
+                      - button "Church Lane 83, Liverpool" [ref=e1438]
+                    - cell "RESIDENTIAL" [ref=e1439]
+                    - cell "-€843" [ref=e1440]
+                    - cell "-€5,165" [ref=e1441]
+                    - cell "-2.7%" [ref=e1442]
+                    - cell "-9.4%" [ref=e1443]
+                    - cell "100.0%" [ref=e1444]
+                    - cell "100%" [ref=e1445]
+                  - row "Piazza degli Affari 11, Turin COMMERCIAL -€851 -€9 0.0% -7.4% 100.0% 100%" [ref=e1446]:
+                    - cell "Piazza degli Affari 11, Turin" [ref=e1447]:
+                      - button "Piazza degli Affari 11, Turin" [ref=e1448]
+                    - cell "COMMERCIAL" [ref=e1449]
+                    - cell "-€851" [ref=e1450]
+                    - cell "-€9" [ref=e1451]
+                    - cell "0.0%" [ref=e1452]
+                    - cell "-7.4%" [ref=e1453]
+                    - cell "100.0%" [ref=e1454]
+                    - cell "100%" [ref=e1455]
+                  - row "Rue du Rhône 196, Zurich RESIDENTIAL -€1,130 -€4,558 -1.1% -8.5% 100.0% 100%" [ref=e1456]:
+                    - cell "Rue du Rhône 196, Zurich" [ref=e1457]:
+                      - button "Rue du Rhône 196, Zurich" [ref=e1458]
+                    - cell "RESIDENTIAL" [ref=e1459]
+                    - cell "-€1,130" [ref=e1460]
+                    - cell "-€4,558" [ref=e1461]
+                    - cell "-1.1%" [ref=e1462]
+                    - cell "-8.5%" [ref=e1463]
+                    - cell "100.0%" [ref=e1464]
+                    - cell "100%" [ref=e1465]
+                  - row "King's Road 142, Bristol RESIDENTIAL -€1,233 -€4,909 -1.5% -7.0% 100.0% 100%" [ref=e1466]:
+                    - cell "King's Road 142, Bristol" [ref=e1467]:
+                      - button "King's Road 142, Bristol" [ref=e1468]
+                    - cell "RESIDENTIAL" [ref=e1469]
+                    - cell "-€1,233" [ref=e1470]
+                    - cell "-€4,909" [ref=e1471]
+                    - cell "-1.5%" [ref=e1472]
+                    - cell "-7.0%" [ref=e1473]
+                    - cell "100.0%" [ref=e1474]
+                    - cell "100%" [ref=e1475]
+                  - row "Burlington Road 14, Wexford COMMERCIAL -€1,286 €4,694 0.8% -8.0% 100.0% 100%" [ref=e1476]:
+                    - cell "Burlington Road 14, Wexford" [ref=e1477]:
+                      - button "Burlington Road 14, Wexford" [ref=e1478]
+                    - cell "COMMERCIAL" [ref=e1479]
+                    - cell "-€1,286" [ref=e1480]
+                    - cell "€4,694" [ref=e1481]
+                    - cell "0.8%" [ref=e1482]
+                    - cell "-8.0%" [ref=e1483]
+                    - cell "100.0%" [ref=e1484]
+                    - cell "100%" [ref=e1485]
+                  - row "Havenweg 184, Delft INDUSTRIAL -€1,599 €1,175 0.2% -8.2% 100.0% 100%" [ref=e1486]:
+                    - cell "Havenweg 184, Delft" [ref=e1487]:
+                      - button "Havenweg 184, Delft" [ref=e1488]
+                    - cell "INDUSTRIAL" [ref=e1489]
+                    - cell "-€1,599" [ref=e1490]
+                    - cell "€1,175" [ref=e1491]
+                    - cell "0.2%" [ref=e1492]
+                    - cell "-8.2%" [ref=e1493]
+                    - cell "100.0%" [ref=e1494]
+                    - cell "100%" [ref=e1495]
+                  - row "Gewerbepark 43, Dresden INDUSTRIAL -€1,871 -€22,764 -3.2% -3.3% 0.0% 57%" [ref=e1496]:
+                    - cell "Gewerbepark 43, Dresden" [ref=e1497]:
+                      - button "Gewerbepark 43, Dresden" [ref=e1498]
+                    - cell "INDUSTRIAL" [ref=e1499]
+                    - cell "-€1,871" [ref=e1500]
+                    - cell "-€22,764" [ref=e1501]
+                    - cell "-3.2%" [ref=e1502]
+                    - cell "-3.3%" [ref=e1503]
+                    - cell "0.0%" [ref=e1504]
+                    - cell "57%" [ref=e1505]
+                  - row "Rue du Marché 25, Basel COMMERCIAL -€2,218 €3,997 0.7% -10.9% 100.0% 100%" [ref=e1506]:
+                    - cell "Rue du Marché 25, Basel" [ref=e1507]:
+                      - button "Rue du Marché 25, Basel" [ref=e1508]
+                    - cell "COMMERCIAL" [ref=e1509]
+                    - cell "-€2,218" [ref=e1510]
+                    - cell "€3,997" [ref=e1511]
+                    - cell "0.7%" [ref=e1512]
+                    - cell "-10.9%" [ref=e1513]
+                    - cell "100.0%" [ref=e1514]
+                    - cell "100%" [ref=e1515]
+                  - row "Enterprise Way 13, Manchester INDUSTRIAL -€2,329 -€28,541 -5.6% -4.6% 0.0% 57%" [ref=e1516]:
+                    - cell "Enterprise Way 13, Manchester" [ref=e1517]:
+                      - button "Enterprise Way 13, Manchester" [ref=e1518]
+                    - cell "INDUSTRIAL" [ref=e1519]
+                    - cell "-€2,329" [ref=e1520]
+                    - cell "-€28,541" [ref=e1521]
+                    - cell "-5.6%" [ref=e1522]
+                    - cell "-4.6%" [ref=e1523]
+                    - cell "0.0%" [ref=e1524]
+                    - cell "57%" [ref=e1525]
+                  - row "Wienerbergstraße 122, Klagenfurt COMMERCIAL -€3,146 -€14,568 -2.2% -16.9% 100.0% 100%" [ref=e1526]:
+                    - cell "Wienerbergstraße 122, Klagenfurt" [ref=e1527]:
+                      - button "Wienerbergstraße 122, Klagenfurt" [ref=e1528]
+                    - cell "COMMERCIAL" [ref=e1529]
+                    - cell "-€3,146" [ref=e1530]
+                    - cell "-€14,568" [ref=e1531]
+                    - cell "-2.2%" [ref=e1532]
+                    - cell "-16.9%" [ref=e1533]
+                    - cell "100.0%" [ref=e1534]
+                    - cell "100%" [ref=e1535]
+                  - row "Market Street 1, New York COMMERCIAL -€3,259 -€20,566 -3.5% -11.9% 100.0% 100%" [ref=e1536]:
+                    - cell "Market Street 1, New York" [ref=e1537]:
+                      - button "Market Street 1, New York" [ref=e1538]
+                    - cell "COMMERCIAL" [ref=e1539]
+                    - cell "-€3,259" [ref=e1540]
+                    - cell "-€20,566" [ref=e1541]
+                    - cell "-3.5%" [ref=e1542]
+                    - cell "-11.9%" [ref=e1543]
+                    - cell "100.0%" [ref=e1544]
+                    - cell "100%" [ref=e1545]
+            - generic [ref=e1546]:
+              - generic [ref=e1547]:
+                - generic [ref=e1548]:
+                  - img [ref=e1550]
+                  - heading "Portfolio Occupancy" [level=3] [ref=e1553]
+                - button "Expand chart" [ref=e1554]:
+                  - img [ref=e1555]
+              - generic [ref=e1561]:
+                - list [ref=e1563]:
+                  - listitem [ref=e1564]:
+                    - img "selfOccupancyPercent legend icon" [ref=e1565]
+                    - text: Self Occupancy
+                  - listitem [ref=e1567]:
+                    - img "tenantOccupancyPercent legend icon" [ref=e1568]
+                    - text: Contact Occupancy
+                - application [ref=e1570]:
+                  - generic [ref=e1591]:
+                    - generic [ref=e1592]:
+                      - generic [ref=e1594]: Jul '25
+                      - generic [ref=e1596]: Oct '25
+                      - generic [ref=e1598]: Jan '26
+                      - generic [ref=e1600]: May '26
+                    - generic [ref=e1601]:
+                      - generic [ref=e1603]: 0%
+                      - generic [ref=e1605]: 25%
+                      - generic [ref=e1607]: 50%
+                      - generic [ref=e1609]: 75%
+                      - generic [ref=e1611]: 100%
+            - paragraph [ref=e1612]: Metrics are for informational purposes only.
+          - generic [ref=e166]:
+            - generic [ref=e167]:
+              - generic [ref=e168]:
+                - heading "Total Properties" [level=3] [ref=e169]
+                - img [ref=e171]
+              - generic [ref=e174]: "30"
+              - generic [ref=e175]: Active properties in portfolio
+            - generic [ref=e176]:
+              - generic [ref=e177]:
+                - heading "Occupied" [level=3] [ref=e178]
+                - img [ref=e180]
+              - generic [ref=e185]: "25"
+              - generic [ref=e186]: 5 Vacant, 0 in maintenance
+            - generic [ref=e187]:
+              - generic [ref=e188]:
+                - heading "Occupancy Rate" [level=3] [ref=e189]:
+                  - generic [ref=e190]: Occupancy Rate
+                - img [ref=e192]
+              - generic [ref=e195]: 83.3%
+              - generic [ref=e196]: Current occupancy level
+            - generic [ref=e197]:
+              - generic [ref=e198]:
+                - heading "Monthly Income" [level=3] [ref=e199]
+                - img [ref=e201]
+              - generic [ref=e203]: € 30.541
+              - generic [ref=e204]: Expected monthly revenue
+          - generic [ref=e205]:
+            - heading "Property Status" [level=2] [ref=e206]
+            - generic [ref=e210]:
+              - generic [ref=e211]:
+                - generic [ref=e214]: Occupied
+                - generic [ref=e215]:
+                  - text: "25"
+                  - generic [ref=e216]: 83%
+              - generic [ref=e217]:
+                - generic [ref=e220]: Vacant
+                - generic [ref=e221]:
+                  - text: "5"
+                  - generic [ref=e222]: 17%
+              - generic [ref=e223]:
+                - generic [ref=e226]: Maintenance
+                - generic [ref=e227]:
+                  - text: "0"
+                  - generic [ref=e228]: 0%
+              - generic [ref=e229]:
+                - generic [ref=e232]: Unavailable
+                - generic [ref=e233]:
+                  - text: "0"
+                  - generic [ref=e234]: 0%
+          - generic [ref=e235]:
+            - generic [ref=e236]:
+              - generic [ref=e237]:
+                - heading "Unpaid Payments" [level=2] [ref=e238]
+                - generic [ref=e239]: "25"
+              - generic [ref=e240]:
+                - generic [ref=e241]:
+                  - generic [ref=e242]: Total pending
+                  - generic [ref=e243]: EUR33,779.00
+                - button "View all" [ref=e244]:
+                  - text: View all
+                  - img [ref=e245]
+            - generic [ref=e247]:
+              - generic [ref=e248]:
+                - generic [ref=e249]:
+                  - img [ref=e251]
+                  - generic [ref=e254]:
+                    - generic [ref=e255]:
+                      - button "Havenweg 184 — Hamza Fietz"
+                      - generic [ref=e256]: PENDING
+                    - paragraph [ref=e257]: Due 01/07/2026
+                - generic [ref=e258]:
+                  - generic [ref=e259]: EUR2,646.00
+                  - button "Mark Paid" [ref=e260]:
+                    - img [ref=e261]
+                    - text: Mark Paid
+              - generic [ref=e264]:
+                - generic [ref=e265]:
+                  - img [ref=e267]
+                  - generic [ref=e270]:
+                    - generic [ref=e271]:
+                      - button "Burlington Road 14 — Billy Cummings"
+                      - generic [ref=e272]: PENDING
+                    - paragraph [ref=e273]: Due 01/07/2026
+                - generic [ref=e274]:
+                  - generic [ref=e275]: EUR2,366.00
+                  - button "Mark Paid" [ref=e276]:
+                    - img [ref=e277]
+                    - text: Mark Paid
+              - generic [ref=e280]:
+                - generic [ref=e281]:
+                  - img [ref=e283]
+                  - generic [ref=e286]:
+                    - generic [ref=e287]:
+                      - button "Havenweg 184 — Hamza Fietz"
+                      - generic [ref=e288]: PENDING
+                    - paragraph [ref=e289]: Due 01/08/2026
+                - generic [ref=e290]:
+                  - generic [ref=e291]: EUR2,646.00
+                  - button "Mark Paid" [ref=e292]:
+                    - img [ref=e293]
+                    - text: Mark Paid
+              - generic [ref=e296]:
+                - generic [ref=e297]:
+                  - img [ref=e299]
+                  - generic [ref=e302]:
+                    - generic [ref=e303]:
+                      - button "Burlington Road 14 — Billy Cummings"
+                      - generic [ref=e304]: PENDING
+                    - paragraph [ref=e305]: Due 01/08/2026
+                - generic [ref=e306]:
+                  - generic [ref=e307]: EUR2,366.00
+                  - button "Mark Paid" [ref=e308]:
+                    - img [ref=e309]
+                    - text: Mark Paid
+              - generic [ref=e312]:
+                - generic [ref=e313]:
+                  - img [ref=e315]
+                  - generic [ref=e318]:
+                    - generic [ref=e319]:
+                      - button "Rue du Marché 25 — Lilia Plautz"
+                      - generic [ref=e320]: PENDING
+                    - paragraph [ref=e321]: Due 01/08/2026
+                - generic [ref=e322]:
+                  - generic [ref=e323]: EUR2,957.00
+                  - button "Mark Paid" [ref=e324]:
+                    - img [ref=e325]
+                    - text: Mark Paid
+              - generic [ref=e328]:
+                - generic [ref=e329]:
+                  - img [ref=e331]
+                  - generic [ref=e334]:
+                    - generic [ref=e335]:
+                      - button "Piazza degli Affari 11 — Osvaldo Montanari"
+                      - generic [ref=e336]: PENDING
+                    - paragraph [ref=e337]: Due 01/08/2026
+                - generic [ref=e338]:
+                  - generic [ref=e339]: EUR1,774.00
+                  - button "Mark Paid" [ref=e340]:
+                    - img [ref=e341]
+                    - text: Mark Paid
+              - generic [ref=e344]:
+                - generic [ref=e345]:
+                  - img [ref=e347]
+                  - generic [ref=e350]:
+                    - generic [ref=e351]:
+                      - button "Avenue de Tervueren 21 — Elísio Braga"
+                      - generic [ref=e352]: PENDING
+                    - paragraph [ref=e353]: Due 01/08/2026
+                - generic [ref=e354]:
+                  - generic [ref=e355]: EUR1,700.00
+                  - button "Mark Paid" [ref=e356]:
+                    - img [ref=e357]
+                    - text: Mark Paid
+              - generic [ref=e360]:
+                - generic [ref=e361]:
+                  - img [ref=e363]
+                  - generic [ref=e366]:
+                    - generic [ref=e367]:
+                      - button "Avenida dos Aliados 111 — Bo Hauck"
+                      - generic [ref=e368]: PENDING
+                    - paragraph [ref=e369]: Due 01/08/2026
+                - generic [ref=e370]:
+                  - generic [ref=e371]: EUR715.00
+                  - button "Mark Paid" [ref=e372]:
+                    - img [ref=e373]
+                    - text: Mark Paid
+              - generic [ref=e376]:
+                - generic [ref=e377]:
+                  - img [ref=e379]
+                  - generic [ref=e382]:
+                    - generic [ref=e383]:
+                      - button "Calle Serrano 156 — Zoey Franke"
+                      - generic [ref=e384]: PENDING
+                    - paragraph [ref=e385]: Due 01/08/2026
+                - generic [ref=e386]:
+                  - generic [ref=e387]: EUR593.00
+                  - button "Mark Paid" [ref=e388]:
+                    - img [ref=e389]
+                    - text: Mark Paid
+              - generic [ref=e392]:
+                - generic [ref=e393]:
+                  - img [ref=e395]
+                  - generic [ref=e398]:
+                    - generic [ref=e399]:
+                      - button "Rue de la Paix 46 — Phoebe Woldering"
+                      - generic [ref=e400]: PENDING
+                    - paragraph [ref=e401]: Due 01/08/2026
+                - generic [ref=e402]:
+                  - generic [ref=e403]: EUR921.00
+                  - button "Mark Paid" [ref=e404]:
+                    - img [ref=e405]
+                    - text: Mark Paid
+              - button "+15 more unpaid payments" [ref=e409]
+    - status
+  - generic [ref=e1613]: 0%

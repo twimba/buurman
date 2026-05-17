@@ -1,0 +1,92 @@
+name: Visual Regression (Playwright)
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/visual-regression.yml"
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+
+jobs:
+  playwright:
+    name: Playwright responsive snapshots
+    runs-on: ubuntu-latest
+    permissions:
+      # `contents: write` is required so the CI run can commit
+      # newly-generated baseline screenshots back to the PR branch
+      # (first-run bootstrap). After the initial seed, subsequent
+      # runs only update if `--update-snapshots=missing` finds gaps.
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          # Check out the PR branch (not the merge commit) so the
+          # auto-commit step can push baselines back to it.
+          ref: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn install --immutable
+
+      - name: Install Playwright browsers
+        working-directory: frontend/app
+        run: npx playwright install --with-deps chromium webkit
+
+      # Generate API client TypeScript from the OpenAPI spec. The
+      # `frontend/{app,backoffice}/src/generated/` directories are
+      # gitignored and regenerated at build time by orval; without this
+      # step the `yarn build` below fails with TS2307 on every `@/generated/*`
+      # import.
+      - name: Generate API clients
+        working-directory: frontend
+        run: yarn generate:api
+
+      - name: Build app
+        working-directory: frontend/app
+        run: yarn build
+
+      - name: Run Playwright visual tests
+        working-directory: frontend/app
+        # `--update-snapshots=missing` auto-writes baselines that don't
+        # exist yet (first-time bootstrap on this branch) so missing-file
+        # errors don't block. Existing baselines still compare normally;
+        # diffs fail the run.
+        run: npx playwright test --reporter=github --update-snapshots=missing
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/app/playwright-report/
+          retention-days: 14
+
+      # If new baselines were generated above, commit them back to the
+      # PR branch so the next CI run (and human reviewers) have them.
+      # No-op when the snapshots directory is unchanged.
+      - name: Commit any new baselines back to the PR branch
+        if: github.event_name == 'pull_request'
+        run: |
+          if [[ -n "$(git status --porcelain frontend/app/tests/visual)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add frontend/app/tests/visual
+            git commit -m "ci(visual): seed Playwright baseline screenshots [skip ci]"
+            git push origin HEAD:${{ github.head_ref }}
+          else
+            echo "No new baselines to commit."
+          fi

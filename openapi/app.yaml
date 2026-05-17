@@ -26496,8 +26496,20 @@ components:
         - CPI_LINKED
         - INDEX_LINKED
         - MARKET_RENT
+        - MARKET
+        - FREE_MARKET
         - NEGOTIATED
         - FROZEN
+        - STATUTORY_CAP
+        - STATUTORY_CEILING
+        - COMPARATIVE
+        - COST_BASED
+        - CAPITAL_BASED
+        - FORMULA_BASED
+        - COST_PASS_THROUGH
+        - CAP_OVER_INDEX
+        - CANTONAL_RESTRICTION
+        - THRESHOLD_PERCENTAGE
         - OTHER
     RentFrequency:
       type: string
@@ -26505,9 +26517,12 @@ components:
         - MONTHLY
         - QUARTERLY
         - SEMI_ANNUAL
+        - SEMIANNUAL
         - ANNUAL
         - BIENNIAL
         - TRIENNIAL
+        - ON_RELET
+        - PER_MODERNISATION
     RentRegulationCountryResponse:
       type: object
       properties:

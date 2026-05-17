@@ -227,6 +227,7 @@
     "noContractsAvailable": "Ingen kontrakter tilgjengelig",
     "allContracts": "Alle kontrakter",
     "selectCurrency": "Velg valuta",
+    "selectCountry": "Velg et land",
     "select": "Velg...",
     "phoneNumber": "Telefonnummer",
     "searchCountryOrCode": "Søk etter land eller kode...",

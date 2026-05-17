@@ -1,0 +1,71 @@
+name: Lighthouse Mobile
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/lighthouse-mobile.yml"
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+
+jobs:
+  lighthouse:
+    name: Mobile Lighthouse audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn install --immutable
+
+      # Generate API client TypeScript from the OpenAPI spec. The
+      # `frontend/{app,backoffice}/src/generated/` directories are
+      # gitignored and regenerated at build time by orval; without this
+      # step the `yarn build` below fails with TS2307 on every `@/generated/*`
+      # import.
+      - name: Generate API clients
+        working-directory: frontend
+        run: yarn generate:api
+
+      - name: Build app
+        working-directory: frontend/app
+        run: yarn build
+
+      - name: Serve dist
+        working-directory: frontend/app
+        run: |
+          npx --yes serve -s dist -l 4173 &
+          # Wait until the server responds
+          for i in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:4173/ > /dev/null; then
+              echo "server up"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Lighthouse CI (mobile preset)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://127.0.0.1:4173/
+            http://127.0.0.1:4173/login
+            http://127.0.0.1:4173/register
+          configPath: ./.lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

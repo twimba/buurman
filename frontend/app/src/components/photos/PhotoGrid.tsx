@@ -15,7 +15,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { PhotoResponse } from '@/types/property';
-import { LoadingSpinner, RichTextDisplay } from '@buurman/ui';
+import { LazyImage, LoadingSpinner, RichTextDisplay } from '@buurman/ui';
 import { ErrorMessage } from '../ErrorMessage';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
@@ -219,11 +219,10 @@ export const PhotoGrid = ({
                     </div>
                   </div>
                 ) : (
-                  <img
+                  <LazyImage
                     src={photo.thumbnailUrl ?? photo.downloadUrl}
                     alt={photo.title ?? photo.fileName}
                     className="w-full h-full object-cover"
-                    loading="lazy"
                     crossOrigin="anonymous"
                     onError={() => {
                       setImageErrors((prev) =>

@@ -81,9 +81,11 @@ const variantStyles: Record<ButtonVariant, string> = {
   `,
 };
 
+// Visual heights stay sm/md/lg — but on coarse-pointer (touch) screens the
+// invisible hit area expands to 44 px via min-h-touch so it meets WCAG 2.5.5.
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-xs gap-1.5',
-  md: 'h-9 px-4 text-sm gap-2',
+  sm: 'h-8 px-3 text-xs gap-1.5 [@media(pointer:coarse)]:min-h-touch',
+  md: 'h-9 px-4 text-sm gap-2 [@media(pointer:coarse)]:min-h-touch',
   lg: 'h-11 px-5 text-base gap-2.5',
 };
 
@@ -116,10 +118,15 @@ export const Button = ({
         'font-medium',
         'rounded-md',
         'transition-all duration-150 ease-out',
+        // Press feedback — native-feel scale-down on touch/click. Capped
+        // at 0.97 so big buttons don't pixel-jump. motion-reduce: scale
+        // is opted out via the @media block in index.css.
+        'active:scale-[0.97]',
         'outline-none',
         'select-none',
         'disabled:cursor-not-allowed',
         'disabled:pointer-events-none',
+        'disabled:active:scale-100',
         variantStyles[variant],
         sizeStyles[size],
         className

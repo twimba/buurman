@@ -139,7 +139,7 @@ export const NotificationDetailModal = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onClose}>
-      <div className="flex items-center justify-center min-h-screen px-4 py-8">
+      <div className="flex items-center justify-center min-h-[100dvh] px-4 py-8">
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
 
         <div

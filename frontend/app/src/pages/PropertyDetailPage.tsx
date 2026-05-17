@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
@@ -105,7 +105,7 @@ export const PropertyDetailPage = () => {
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
-  const [activeTab, setActiveTab] = useTabState('info', [
+  const [activeTab, setActiveTabRaw] = useTabState('info', [
     'info',
     'financials',
     'photos',
@@ -115,6 +115,25 @@ export const PropertyDetailPage = () => {
     'audit',
     'dashboard',
   ] as const);
+
+  // Persist scroll position per tab. Switching tabs saves the current scrollY
+  // for the leaving tab and restores it (or 0) for the incoming tab — so
+  // returning to the Info tab after browsing Photos jumps back to where the
+  // user left off instead of scrolling to top.
+  const scrollByTab = useRef<Record<string, number>>({});
+  const setActiveTab = useCallback(
+    (next: typeof activeTab) => {
+      scrollByTab.current[activeTab] = window.scrollY;
+      setActiveTabRaw(next);
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: scrollByTab.current[next] ?? 0,
+          behavior: 'auto',
+        });
+      });
+    },
+    [activeTab, setActiveTabRaw]
+  );
 
   // Page-level modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -195,7 +214,7 @@ export const PropertyDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex items-center gap-4">
@@ -235,7 +254,7 @@ export const PropertyDetailPage = () => {
 
   if (error || !property) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
@@ -245,7 +264,7 @@ export const PropertyDetailPage = () => {
   const sanitize = DOMPurify.sanitize;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
@@ -289,9 +308,9 @@ export const PropertyDetailPage = () => {
           }
         />
 
-        {/* Tabs */}
-        <div className="border-b mb-6">
-          <div className="flex gap-8">
+        {/* Tabs — horizontally scrollable on phone (8 tabs would overflow). */}
+        <div className="border-b mb-6 -mx-4 px-4 md:mx-0 md:px-0 overflow-x-auto">
+          <div className="flex gap-4 md:gap-8 min-w-max">
             <button
               onClick={() => setActiveTab('info')}
               className={`px-4 py-2 border-b-2 transition-colors ${
@@ -386,6 +405,25 @@ export const PropertyDetailPage = () => {
         {/* Tab Content */}
         {activeTab === 'info' && (
           <div className="space-y-6">
+            {/* Phone-only photo hero: gives the detail page a visual anchor and
+                lets the user tap into the photos tab to browse the gallery.
+                Hidden md+ to preserve the desktop layout pixel-equivalently. */}
+            {property.mainPhotoUrl && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('photos')}
+                aria-label={t('detail.tabs.photos')}
+                className="md:hidden block w-full aspect-[16/10] rounded-lg overflow-hidden bg-surface-inset focus-ring -mt-2"
+              >
+                <img
+                  src={property.mainPhotoUrl}
+                  alt={property.street}
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            )}
             {/* Property Lifecycle Timeline */}
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">

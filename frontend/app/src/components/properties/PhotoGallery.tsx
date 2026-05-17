@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PhotoResponse } from '@/types/property';
 import { Upload, X, Loader2 } from 'lucide-react';
-import { ConfirmDialog, RichTextEditor } from '@buurman/ui';
+import {
+  ConfirmDialog,
+  RichTextEditor,
+  SelectionBar,
+  type SelectionBarAction,
+} from '@buurman/ui';
+import { Download as DownloadIcon, Trash2 as TrashIcon } from 'lucide-react';
 import { PhotoGrid } from '../photos/PhotoGrid';
 import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
 import { EditMetadataModal } from '../ui/EditMetadataModal';
@@ -156,6 +162,34 @@ export const PhotoGallery = ({
           </label>
         )}
       </div>
+
+      {/* Phone-only sticky selection bar */}
+      <SelectionBar
+        open={selectedPhotos.size > 0}
+        count={selectedPhotos.size}
+        label={`${selectedPhotos.size} selected`}
+        onCancel={clearSelection}
+        actions={
+          [
+            {
+              label: 'Download',
+              icon: DownloadIcon,
+              onClick: () => handleBulkDownload(Array.from(selectedPhotos)),
+              disabled: bulkDownloadMutation.isPending,
+            },
+            ...(readOnly
+              ? []
+              : [
+                  {
+                    label: 'Delete',
+                    icon: TrashIcon,
+                    tone: 'danger' as const,
+                    onClick: () => handleBulkDelete(Array.from(selectedPhotos)),
+                  },
+                ]),
+          ] as SelectionBarAction[]
+        }
+      />
 
       {/* Photo Grid */}
       <PhotoGrid

@@ -6,13 +6,23 @@ import {
   usePayments,
   usePaymentStats,
   useDeletePayment,
+  useMarkPaymentAsPaid,
 } from '@/hooks/usePaymentHooks';
 import {
   ConfirmDialog,
+  DataList,
+  EmptyState,
+  FilterSheet,
+  ListPageHeader,
   Pagination,
   RefreshButton,
   Skeleton,
+  SwipeAction,
+  type ListPageHeaderAction,
+  type SwipeActionItem,
 } from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { RefreshCw } from 'lucide-react';
 import { usePagination } from '@/hooks/usePagination';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { ContractCell } from '@/components/contracts/ContractCell';
@@ -57,6 +67,7 @@ export const PaymentsPage = () => {
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const deletePaymentMutation = useDeletePayment();
+  const markPaidMutation = useMarkPaymentAsPaid();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>(
     undefined
@@ -126,7 +137,7 @@ export const PaymentsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
@@ -171,78 +182,92 @@ export const PaymentsPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('errors.loadFailed')} />
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <DollarSign className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">
-                {t('page.title')}
-              </h1>
-            </div>
-            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <RefreshButton
-              onClick={() => refetch()}
-              isRefreshing={isFetching}
-            />
-            <EntityExportControls
-              filenameStem="payments"
-              csv={exportPaymentsCsv}
-              xlsx={exportPaymentsXlsx}
-              googleSheet={exportPaymentsGoogleSheet}
-            />
-            <button
-              onClick={() => navigate('/payments/new')}
-              disabled={!canEditData}
-              className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Plus className="h-5 w-5" />
-              {t('actions.schedulePayment')}
-            </button>
-            <button
-              onClick={() => navigate('/payments/new?register=true')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <CalendarCheck className="h-5 w-5" />
-              {t('actions.registerPayment')}
-            </button>
-          </div>
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      icon: RefreshCw,
+      onClick: () => refetch(),
+      showOn: 'mobile',
+    },
+    {
+      label: t('actions.schedulePayment'),
+      icon: Plus,
+      onClick: () => navigate('/payments/new'),
+      showOn: 'mobile',
+      disabled: !canEditData,
+    },
+    {
+      label: 'desktop-actions',
+      showOn: 'desktop',
+      render: () => (
+        <div className="flex items-center gap-2 flex-wrap">
+          <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
+          <EntityExportControls
+            filenameStem="payments"
+            csv={exportPaymentsCsv}
+            xlsx={exportPaymentsXlsx}
+            googleSheet={exportPaymentsGoogleSheet}
+          />
+          <button
+            onClick={() => navigate('/payments/new')}
+            disabled={!canEditData}
+            className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Plus className="h-5 w-5" />
+            {t('actions.schedulePayment')}
+          </button>
         </div>
+      ),
+    },
+  ];
 
-        {/* Metrics Dashboard */}
+  return (
+    <div className="min-h-[100dvh] bg-background">
+      <div className="px-4 py-4 md:py-8">
+        <ListPageHeader
+          title={t('page.title')}
+          subtitle={t('page.subtitle')}
+          icon={DollarSign}
+          mobileLeading={<MobileMenuButton />}
+          actions={headerActions}
+          primaryAction={{
+            label: t('actions.registerPayment'),
+            icon: Plus,
+            onClick: () => navigate('/payments/new?register=true'),
+            disabled: !canEditData,
+          }}
+        />
+
+        {/* Metrics Dashboard — phone shows Pending + Overdue in a 50/50
+            row; the 6-month sparkline collapses to lg+ (the data lives in
+            the dashboard's Portfolio analytics for power users anyway). */}
         {paymentStats && (
-          <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="mb-6 grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {/* Pending Payments */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-3 md:p-6">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-text-secondary">
+                <h3 className="text-xs md:text-sm font-medium text-text-secondary">
                   {t('stats.pendingPayments')}
                 </h3>
                 <Clock className="h-5 w-5 text-warning-text" />
               </div>
-              <p className="text-3xl font-bold text-text-primary">
+              <p className="text-xl md:text-3xl font-bold text-text-primary tabular-nums">
                 {fmtMoney(paymentStats.pendingAmount, statsCurrency)}
               </p>
-              <p className="text-sm text-text-secondary mt-1">
+              <p className="text-xs md:text-sm text-text-secondary mt-1">
                 {t('stats.pendingCount', { count: paymentStats.pendingCount })}
               </p>
             </div>
 
             {/* Overdue Payments */}
             <div
-              className={`rounded-lg shadow-sm border border-border-default p-6 transition-colors ${
+              className={`rounded-lg shadow-sm border border-border-default p-3 md:p-6 transition-colors ${
                 paymentStats.overdueCount > 0
                   ? 'bg-error-bg border-2 border-error-border'
                   : 'bg-surface-card'
@@ -250,7 +275,7 @@ export const PaymentsPage = () => {
             >
               <div className="flex items-center justify-between mb-2">
                 <h3
-                  className={`text-sm font-medium ${
+                  className={`text-xs md:text-sm font-medium ${
                     paymentStats.overdueCount > 0
                       ? 'text-error-text'
                       : 'text-text-secondary'
@@ -266,35 +291,36 @@ export const PaymentsPage = () => {
               </div>
               {paymentStats.overdueCount > 0 ? (
                 <>
-                  <p className="text-3xl font-bold text-error-text">
+                  <p className="text-xl md:text-3xl font-bold text-error-text tabular-nums">
                     {fmtMoney(paymentStats.overdueAmount, statsCurrency)}
                   </p>
-                  <p className="text-sm text-error-text mt-1 font-medium">
+                  <p className="text-xs md:text-sm text-error-text mt-1 font-medium">
                     {t('stats.overdueCount', {
                       count: paymentStats.overdueCount,
                     })}
                   </p>
-                  <p className="text-xs text-error-text mt-2">
+                  <p className="hidden md:block text-xs text-error-text mt-2">
                     {t('stats.overdueAction')}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-success-text">
+                  <p className="text-xl md:text-3xl font-bold text-success-text tabular-nums">
                     {fmtMoney(0, statsCurrency)}
                   </p>
-                  <p className="text-sm text-text-secondary mt-1">
+                  <p className="text-xs md:text-sm text-text-secondary mt-1">
                     {t('stats.allCaughtUp')}
                   </p>
-                  <p className="text-xs text-text-secondary mt-2">
+                  <p className="hidden md:block text-xs text-text-secondary mt-2">
                     {t('stats.noOverdue')}
                   </p>
                 </>
               )}
             </div>
 
-            {/* 6-Month Revenue Chart */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            {/* 6-Month Revenue Chart — lg+ only on phone the chart at
+                this size is unreadable; deeper trend lives in /reports. */}
+            <div className="hidden lg:block bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-text-secondary">
                   {t('stats.lastSixMonths')}
@@ -339,8 +365,42 @@ export const PaymentsPage = () => {
           </div>
         )}
 
-        {/* Filter Bar */}
-        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
+        {/* Phone: filter trigger + sheet */}
+        <div className="md:hidden mb-4 flex justify-end">
+          <FilterSheet
+            activeCount={
+              (statusFilter ? 1 : 0) +
+              (propertyFilter ? 1 : 0) +
+              (contractFilter ? 1 : 0) +
+              (periodRange ? 1 : 0)
+            }
+            onClear={() => {
+              setStatusFilter(undefined);
+              setPropertyFilter(undefined);
+              setContractFilter(undefined);
+              setPeriodRange(null);
+              resetPage();
+            }}
+            triggerLabel={t('filters.title')}
+            collapseBelow="lg"
+          >
+            <PaymentsFilterContent
+              statusFilters={statusFilters}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              propertyFilter={propertyFilter}
+              setPropertyFilter={setPropertyFilter}
+              contractFilter={contractFilter}
+              setContractFilter={setContractFilter}
+              setPeriodRange={setPeriodRange}
+              resetPage={resetPage}
+              t={t}
+            />
+          </FilterSheet>
+        </div>
+
+        {/* Filter Bar (md+) */}
+        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h3 className="font-semibold text-text-primary">
@@ -421,130 +481,207 @@ export const PaymentsPage = () => {
           </div>
         </div>
 
-        {/* Payments Table */}
+        {/* Payments — Mobile card list (<md). md+ shows the existing table below. */}
+        {paymentsData?.content && paymentsData.content.length > 0 && (
+          <ul className="md:hidden space-y-3 mb-4">
+            {paymentsData.content.map((payment) => {
+              const isUnpaid =
+                payment.status !== PaymentStatus.PAID &&
+                payment.status !== PaymentStatus.CANCELLED;
+              const leftActions: SwipeActionItem[] = [];
+              if (canEditData && isUnpaid) {
+                leftActions.push({
+                  label: t('actions.markPaid', { defaultValue: 'Mark Paid' }),
+                  icon: CheckCircle,
+                  tone: 'success',
+                  onAction: () =>
+                    markPaidMutation.mutate({
+                      id: payment.identifier,
+                      data: {
+                        paymentDate: new Date().toISOString().split('T')[0],
+                      },
+                    }),
+                });
+              }
+              if (canEditData) {
+                leftActions.push({
+                  label: t('actions.delete', { defaultValue: 'Delete' }),
+                  icon: Trash2,
+                  tone: 'danger',
+                  onAction: () => setDeleteTarget(payment.identifier),
+                });
+              }
+              return (
+                <li key={`m-${payment.identifier}`}>
+                  <SwipeAction
+                    leftActions={leftActions}
+                    onClick={() => navigate(`/payments/${payment.identifier}`)}
+                  >
+                    <div className="bg-surface-card border border-border-default p-4 min-h-touch">
+                      <DataList
+                        title={`${payment.property.street}`}
+                        trailing={
+                          <PaymentStatusBadge status={payment.status} />
+                        }
+                        items={[
+                          {
+                            label: t('table.dueDate'),
+                            value: formatDate(payment.dueDate),
+                          },
+                          {
+                            label: 'Contact',
+                            value:
+                              (payment.contact.firstName ??
+                                payment.contact.displayName) +
+                              (payment.contact.lastName
+                                ? ' ' + payment.contact.lastName
+                                : ''),
+                          },
+                          {
+                            label: t('table.amount'),
+                            value: (
+                              <span className="font-semibold text-text-primary">
+                                {fmtMoney(payment.amount, payment.currency)}
+                              </span>
+                            ),
+                            align: 'right',
+                          },
+                        ]}
+                      />
+                    </div>
+                  </SwipeAction>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {/* Payments Table — md+ */}
         {paymentsData?.content && paymentsData.content.length > 0 ? (
           <>
-            <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
-              <table className="min-w-full divide-y divide-border-default">
-                <thead className="bg-surface-page">
-                  <tr>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('dueDate')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('table.dueDate')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      {t('table.paymentNumber')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[280px]">
-                      {t('table.contract')}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('amount')}
-                    >
-                      <div className="flex items-center justify-end gap-1">
-                        {t('table.amount')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSortChange('status')}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t('table.status')}
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
-                  </tr>
-                </thead>
-                <tbody className="bg-surface-card divide-y divide-border-default">
-                  {paymentsData.content.map((payment) => (
-                    <tr
-                      key={payment.identifier}
-                      className="hover:bg-primary-50 cursor-pointer"
-                      onClick={() =>
-                        navigate(`/payments/${payment.identifier}`)
-                      }
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
-                        {formatDate(payment.dueDate)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-text-primary">
-                          #{payment.identifier}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3">
-                        <ContractCell
-                          contractIdentifier={payment.contract.identifier}
-                          contractStatus={payment.contract.status}
-                          propertyStreet={payment.property.street}
-                          propertyCity={payment.property.city}
-                          contactFirstName={
-                            payment.contact.firstName ??
-                            payment.contact.displayName
-                          }
-                          contactLastName={payment.contact.lastName}
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div>
-                          <span className="text-sm font-semibold text-text-primary">
-                            {fmtMoney(payment.amount, payment.currency)}
-                          </span>
-                          {payment.receivedAmount > 0 &&
-                            payment.status !== PaymentStatus.PAID && (
-                              <p className="text-xs text-text-secondary">
-                                {t('table.balance', {
-                                  amount: fmtMoney(
-                                    payment.balance ?? 0,
-                                    payment.currency
-                                  ),
-                                })}
-                              </p>
-                            )}
+            <div className="hidden md:block bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-border-default">
+                  <thead className="bg-surface-page">
+                    <tr>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('dueDate')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('table.dueDate')}
+                          <ArrowUpDown className="h-4 w-4" />
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <PaymentStatusBadge status={payment.status} />
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-right">
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('table.paymentNumber')}
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[280px]">
+                        {t('table.contract')}
+                      </th>
+                      <th
+                        className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('amount')}
+                      >
                         <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/payments/${payment.identifier}`);
-                            }}
-                            className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
-                            title={t('tooltips.viewPayment')}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          {canEditData && (
+                          {t('table.amount')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th
+                        className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                        onClick={() => handleSortChange('status')}
+                      >
+                        <div className="flex items-center gap-1">
+                          {t('table.status')}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-surface-card divide-y divide-border-default">
+                    {paymentsData.content.map((payment) => (
+                      <tr
+                        key={payment.identifier}
+                        className="hover:bg-primary-50 cursor-pointer"
+                        onClick={() =>
+                          navigate(`/payments/${payment.identifier}`)
+                        }
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                          {formatDate(payment.dueDate)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-text-primary">
+                            #{payment.identifier}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3">
+                          <ContractCell
+                            contractIdentifier={payment.contract.identifier}
+                            contractStatus={payment.contract.status}
+                            propertyStreet={payment.property.street}
+                            propertyCity={payment.property.city}
+                            contactFirstName={
+                              payment.contact.firstName ??
+                              payment.contact.displayName
+                            }
+                            contactLastName={payment.contact.lastName}
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                          <div>
+                            <span className="text-sm font-semibold text-text-primary">
+                              {fmtMoney(payment.amount, payment.currency)}
+                            </span>
+                            {payment.receivedAmount > 0 &&
+                              payment.status !== PaymentStatus.PAID && (
+                                <p className="text-xs text-text-secondary">
+                                  {t('table.balance', {
+                                    amount: fmtMoney(
+                                      payment.balance ?? 0,
+                                      payment.currency
+                                    ),
+                                  })}
+                                </p>
+                              )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <PaymentStatusBadge status={payment.status} />
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-right">
+                          <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDeleteTarget(payment.identifier);
+                                navigate(`/payments/${payment.identifier}`);
                               }}
-                              className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title={t('tooltips.deletePayment')}
+                              className="p-1.5 rounded hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
+                              title={t('tooltips.viewPayment')}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                            {canEditData && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeleteTarget(payment.identifier);
+                                }}
+                                className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
+                                title={t('tooltips.deletePayment')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {paymentsData && (
@@ -559,36 +696,39 @@ export const PaymentsPage = () => {
             )}
           </>
         ) : (
-          <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
-            <DollarSign className="h-12 w-12 text-text-muted mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
-              {t('empty.title')}
-            </h3>
-            <p className="text-text-secondary mb-6">
-              {statusFilter || propertyFilter || contractFilter
-                ? t('empty.filtered')
-                : t('empty.noData')}
-            </p>
-            {!statusFilter && !propertyFilter && !contractFilter && (
-              <div className="flex items-center gap-2 justify-center">
-                <button
-                  onClick={() => navigate('/payments/new')}
-                  disabled={!canEditData}
-                  className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Plus className="h-5 w-5" />
-                  {t('actions.schedulePayment')}
-                </button>
-                <button
-                  onClick={() => navigate('/payments/new?register=true')}
-                  disabled={!canEditData}
-                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-                >
-                  <CalendarCheck className="h-5 w-5" />
-                  {t('actions.registerPayment')}
-                </button>
-              </div>
-            )}
+          <div className="bg-surface-card rounded-lg border border-border-default">
+            <EmptyState
+              variant="page"
+              icon={<DollarSign className="h-12 w-12" />}
+              title={t('empty.title')}
+              description={
+                statusFilter || propertyFilter || contractFilter
+                  ? t('empty.filtered')
+                  : t('empty.noData')
+              }
+              actions={
+                !statusFilter && !propertyFilter && !contractFilter ? (
+                  <div className="flex flex-wrap items-center gap-2 justify-center">
+                    <button
+                      onClick={() => navigate('/payments/new')}
+                      disabled={!canEditData}
+                      className="text-text-secondary border border-border-strong px-4 py-2 rounded min-h-touch hover:bg-surface-inset transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus-ring"
+                    >
+                      <Plus className="h-5 w-5" />
+                      {t('actions.schedulePayment')}
+                    </button>
+                    <button
+                      onClick={() => navigate('/payments/new?register=true')}
+                      disabled={!canEditData}
+                      className="bg-primary-500 text-white px-4 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+                    >
+                      <CalendarCheck className="h-5 w-5" />
+                      {t('actions.registerPayment')}
+                    </button>
+                  </div>
+                ) : undefined
+              }
+            />
           </div>
         )}
       </div>
@@ -610,3 +750,92 @@ export const PaymentsPage = () => {
     </div>
   );
 };
+
+interface PaymentsFilterContentProps {
+  statusFilters: { label: string; value: PaymentStatus | undefined }[];
+  statusFilter: PaymentStatus | undefined;
+  setStatusFilter: (v: PaymentStatus | undefined) => void;
+  propertyFilter: string | undefined;
+  setPropertyFilter: (v: string | undefined) => void;
+  contractFilter: string | undefined;
+  setContractFilter: (v: string | undefined) => void;
+  setPeriodRange: (range: PeriodDateRange | null) => void;
+  resetPage: () => void;
+  t: (key: string) => string;
+}
+
+const PaymentsFilterContent = ({
+  statusFilters,
+  statusFilter,
+  setStatusFilter,
+  propertyFilter,
+  setPropertyFilter,
+  contractFilter,
+  setContractFilter,
+  setPeriodRange,
+  resetPage,
+  t,
+}: PaymentsFilterContentProps) => (
+  <div className="flex flex-col gap-4">
+    <PeriodFilter
+      presets={['month', 'quarter', 'year', 'all', 'custom']}
+      defaultPreset="all"
+      onChange={(range) => {
+        setPeriodRange(range);
+        resetPage();
+      }}
+    />
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.property')}
+      </label>
+      <PropertySelector
+        value={propertyFilter ?? ''}
+        onChange={(id) => {
+          setPropertyFilter(id || undefined);
+          resetPage();
+        }}
+        clearable
+        placeholder={t('filters.allProperties')}
+      />
+    </div>
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.contract')}
+      </label>
+      <ContractSelector
+        value={contractFilter ?? ''}
+        onChange={(id) => {
+          setContractFilter(id || undefined);
+          resetPage();
+        }}
+        status={undefined}
+        clearable
+        placeholder={t('filters.allContracts')}
+      />
+    </div>
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.status')}
+      </label>
+      <div className="flex gap-2 flex-wrap">
+        {statusFilters.map((filter) => (
+          <button
+            key={filter.label}
+            onClick={() => {
+              setStatusFilter(filter.value);
+              resetPage();
+            }}
+            className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+              statusFilter === filter.value
+                ? 'bg-primary-500 text-white'
+                : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+            }`}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);

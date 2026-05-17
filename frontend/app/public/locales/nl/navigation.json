@@ -11,7 +11,8 @@
     "expenses": "Uitgaven",
     "documents": "Documenten",
     "photos": "Foto's",
-    "reports": "Rapportages"
+    "reports": "Rapportages",
+    "more": "Meer"
   },
   "admin": {
     "title": "Beheer",
@@ -25,5 +26,11 @@
     "apiDocs": "API-documentatie"
   },
   "settings": "Instellingen",
-  "signOut": "Uitloggen"
+  "signOut": "Uitloggen",
+  "accessibility": {
+    "openMenu": "Menu openen",
+    "closeMenu": "Menu sluiten",
+    "primaryNav": "Hoofdnavigatie",
+    "bottomNav": "Onderste navigatie"
+  }
 }

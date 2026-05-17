@@ -10,10 +10,20 @@ import { Plus, Home, Filter, Search, X } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { useDebounce } from '@/hooks/useDebounce';
-import { Pagination, RefreshButton, Skeleton } from '@buurman/ui';
+import {
+  EmptyState,
+  FilterSheet,
+  ListPageHeader,
+  Pagination,
+  RefreshButton,
+  Skeleton,
+  type ListPageHeaderAction,
+} from '@buurman/ui';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
 import { exportPropertiesCsv, exportPropertiesXlsx } from '@/api/listExports';
 import { exportPropertiesGoogleSheet } from '@/api/googleSheetsExport';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { RefreshCw } from 'lucide-react';
 
 export const PropertyListPage = () => {
   const { t } = useTranslation('properties');
@@ -81,7 +91,7 @@ export const PropertyListPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
@@ -117,59 +127,56 @@ export const PropertyListPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('list.error')} />
       </div>
     );
   }
 
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      render: () => (
+        <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
+      ),
+      // also rebound for overflow menu
+      icon: RefreshCw,
+      onClick: () => refetch(),
+    },
+    {
+      label: 'Export',
+      render: () => (
+        <EntityExportControls
+          filenameStem="properties"
+          csv={exportPropertiesCsv}
+          xlsx={exportPropertiesXlsx}
+          googleSheet={exportPropertiesGoogleSheet}
+        />
+      ),
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <Home className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">
-                {t('list.title')}
-              </h1>
-            </div>
-            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <RefreshButton
-              onClick={() => refetch()}
-              isRefreshing={isFetching}
-            />
-            <EntityExportControls
-              filenameStem="properties"
-              csv={exportPropertiesCsv}
-              xlsx={exportPropertiesXlsx}
-              googleSheet={exportPropertiesGoogleSheet}
-            />
-            <button
-              onClick={() => navigate('/properties/new')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-5 w-5" />
-              {t('list.addButton')}
-            </button>
-          </div>
-        </div>
+    <div className="min-h-[100dvh] bg-background">
+      <div className="px-4 py-4 md:py-8">
+        <ListPageHeader
+          title={t('list.title')}
+          subtitle={t('list.subtitle')}
+          icon={Home}
+          mobileLeading={<MobileMenuButton />}
+          actions={headerActions}
+          primaryAction={{
+            label: t('list.addButton'),
+            icon: Plus,
+            onClick: () => navigate('/properties/new'),
+            disabled: !canEditData,
+          }}
+        />
 
-        {/* Filter Bar */}
-        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-text-secondary " />
-            <h2 className="font-semibold text-text-primary">
-              {t('list.filters')}
-            </h2>
-          </div>
-
-          {/* Search */}
-          <div className="relative">
+        {/* Phone: search stays inline, filters move into FilterSheet trigger.
+            md+: FilterSheet renders inline — same filter card UX as before. */}
+        <div className="md:hidden mb-4 flex items-center gap-2">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
               type="text"
@@ -193,55 +200,155 @@ export const PropertyListPage = () => {
               </button>
             )}
           </div>
+          <FilterSheet
+            activeCount={(categoryFilter ? 1 : 0) + (statusFilter ? 1 : 0)}
+            onClear={() => {
+              setCategoryFilter(undefined);
+              setStatusFilter(undefined);
+              resetPage();
+            }}
+            triggerLabel={t('list.filters')}
+            collapseBelow="lg"
+          >
+            <div className="space-y-4">
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  {t('list.category')}
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {categoryFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setCategoryFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+                        categoryFilter === filter.value
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
-                {t('list.category')}
-              </label>
-              <div className="flex gap-2 flex-wrap">
-                {categoryFilters.map((filter) => (
-                  <button
-                    key={filter.label}
-                    onClick={() => {
-                      setCategoryFilter(filter.value);
-                      resetPage();
-                    }}
-                    className={`px-4 py-2 rounded transition-colors text-sm ${
-                      categoryFilter === filter.value
-                        ? 'bg-primary-500 text-white'
-                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                    }`}
-                  >
-                    {filter.label}
-                  </button>
-                ))}
+              {/* Status Filter */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  {t('list.status')}
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {statusFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setStatusFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+                        statusFilter === filter.value
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
+          </FilterSheet>
+        </div>
 
-            {/* Status Filter */}
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">
-                {t('list.status')}
-              </label>
-              <div className="flex gap-2 flex-wrap">
-                {statusFilters.map((filter) => (
-                  <button
-                    key={filter.label}
-                    onClick={() => {
-                      setStatusFilter(filter.value);
-                      resetPage();
-                    }}
-                    className={`px-4 py-2 rounded transition-colors text-sm ${
-                      statusFilter === filter.value
-                        ? 'bg-primary-500 text-white'
-                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                    }`}
-                  >
-                    {filter.label}
-                  </button>
-                ))}
+        {/* Filter Bar (md+ only — preserves the desktop card UX) */}
+        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">
+          <div className="flex items-center gap-2">
+            <Filter className="h-5 w-5 text-text-secondary " />
+            <h2 className="font-semibold text-text-primary">
+              {t('list.filters')}
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  resetPage();
+                }}
+                placeholder={t('list.searchPlaceholder')}
+                className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    resetPage();
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  {t('list.category')}
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {categoryFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setCategoryFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm ${
+                        categoryFilter === filter.value
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status Filter */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  {t('list.status')}
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {statusFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setStatusFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm ${
+                        statusFilter === filter.value
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -274,27 +381,29 @@ export const PropertyListPage = () => {
             )}
           </>
         ) : (
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg">
-            <Home className="h-16 w-16 text-text-disabled mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
-              {t('list.empty.title')}
-            </h3>
-            <p className="text-text-secondary mb-6">
-              {searchQuery || statusFilter || categoryFilter
-                ? t('list.empty.filtered')
-                : t('list.empty.noData')}
-            </p>
-            {!searchQuery && !statusFilter && !categoryFilter && (
-              <button
-                onClick={() => navigate('/properties/new')}
-                disabled={!canEditData}
-                className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-              >
-                <Plus className="h-5 w-5" />
-                {t('list.addButton')}
-              </button>
-            )}
+          <div className="bg-surface-card rounded-lg">
+            <EmptyState
+              variant="page"
+              icon={<Home className="h-12 w-12" />}
+              title={t('list.empty.title')}
+              description={
+                searchQuery || statusFilter || categoryFilter
+                  ? t('list.empty.filtered')
+                  : t('list.empty.noData')
+              }
+              actions={
+                !searchQuery && !statusFilter && !categoryFilter ? (
+                  <button
+                    onClick={() => navigate('/properties/new')}
+                    disabled={!canEditData}
+                    className="bg-primary-500 text-white px-6 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+                  >
+                    <Plus className="h-5 w-5" />
+                    {t('list.addButton')}
+                  </button>
+                ) : undefined
+              }
+            />
           </div>
         )}
       </div>

@@ -12,6 +12,7 @@ import {
 } from '../types/expense';
 import type { PageParams } from '@/types/common';
 import { useToast } from '@buurman/ui';
+import { useAnnounce } from '@/hooks/useAnnounce';
 import { getErrorMessage } from '../utils/errorMessages';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
@@ -146,6 +147,7 @@ export const useUpdateExpense = (id: string) => {
 export const useDeleteExpense = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const announce = useAnnounce();
   return useMutation({
     mutationFn: (id: string) => expensesApi.deleteExpense(id),
     onSuccess: () => {
@@ -171,9 +173,12 @@ export const useDeleteExpense = () => {
         queryKey: queryKeys.reports.propertyComparison(),
       });
       showToast('Expense deleted successfully', 'success');
+      announce('Expense deleted');
     },
     onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
+      const message = getErrorMessage(error);
+      showToast(message, 'error');
+      announce(message, { assertive: true });
     },
   });
 };

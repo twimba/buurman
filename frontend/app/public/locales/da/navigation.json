@@ -11,7 +11,8 @@
     "expenses": "Udgifter",
     "documents": "Dokumenter",
     "photos": "Fotos",
-    "reports": "Rapporter"
+    "reports": "Rapporter",
+    "more": "Mere"
   },
   "admin": {
     "title": "Administration",
@@ -25,5 +26,11 @@
     "apiDocs": "API-dokumentation"
   },
   "settings": "Indstillinger",
-  "signOut": "Log ud"
+  "signOut": "Log ud",
+  "accessibility": {
+    "openMenu": "Åbn menu",
+    "closeMenu": "Luk menu",
+    "primaryNav": "Primær navigation",
+    "bottomNav": "Bundnavigation"
+  }
 }

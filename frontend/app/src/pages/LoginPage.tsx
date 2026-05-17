@@ -56,7 +56,7 @@ const LoginPage: React.FC = () => {
   useForceLightMode();
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-primary-50 via-white to-neutral-25">
+    <div className="flex min-h-[100dvh] bg-gradient-to-br from-primary-50 via-white to-neutral-25">
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-800 via-primary-500 to-primary-400 p-12 flex-col justify-between text-white">
         <div>

@@ -153,7 +153,7 @@ export const VerifyEmailPage: React.FC = () => {
 
   if (tokenVerifying) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="w-full max-w-md p-8">
           <div className="bg-surface-card rounded-2xl shadow-xl p-8 text-center">
             <Loader2 className="h-12 w-12 text-primary-500 animate-spin mx-auto mb-5" />
@@ -171,7 +171,7 @@ export const VerifyEmailPage: React.FC = () => {
 
   if (verified) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="w-full max-w-md p-8">
           <div className="bg-surface-card rounded-2xl shadow-xl p-8 text-center">
             <div className="bg-success-bg rounded-full p-4 inline-flex mb-5">
@@ -190,7 +190,7 @@ export const VerifyEmailPage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
       <div className="w-full max-w-md p-8">
         <div className="bg-surface-card rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">

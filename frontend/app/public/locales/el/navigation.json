@@ -11,7 +11,8 @@
     "expenses": "Έξοδα",
     "documents": "Έγγραφα",
     "photos": "Φωτογραφίες",
-    "reports": "Αναφορές"
+    "reports": "Αναφορές",
+    "more": "Περισσότερα"
   },
   "admin": {
     "title": "Διαχείριση",
@@ -25,5 +26,11 @@
     "apiDocs": "Τεκμηρίωση API"
   },
   "settings": "Ρυθμίσεις",
-  "signOut": "Αποσύνδεση"
+  "signOut": "Αποσύνδεση",
+  "accessibility": {
+    "openMenu": "Άνοιγμα μενού",
+    "closeMenu": "Κλείσιμο μενού",
+    "primaryNav": "Κύρια πλοήγηση",
+    "bottomNav": "Κάτω πλοήγηση"
+  }
 }

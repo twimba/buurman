@@ -12,6 +12,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { DataList } from '@buurman/ui';
 
 interface Invoice {
   id: string;
@@ -256,8 +257,66 @@ export const PaymentHistorySection = () => {
           </div>
         </div>
 
-        {/* Invoices List */}
-        <div className="overflow-x-auto">
+        {/* Phone: card list */}
+        <ul className="md:hidden space-y-3 mb-4">
+          {filteredInvoices.map((invoice) => {
+            const StatusIcon = statusConfig[invoice.status].icon;
+            return (
+              <li
+                key={`m-${invoice.id}`}
+                className="bg-surface-card rounded-lg border border-border-default p-4"
+              >
+                <DataList
+                  title={invoice.invoiceNumber}
+                  trailing={
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded ${statusConfig[invoice.status].color}`}
+                    >
+                      <StatusIcon
+                        className={`h-3.5 w-3.5 ${statusConfig[invoice.status].iconColor}`}
+                      />
+                      {statusConfig[invoice.status].label}
+                    </span>
+                  }
+                  items={[
+                    {
+                      label: t('paymentHistory.date'),
+                      value: formatDate(invoice.date),
+                    },
+                    {
+                      label: t('paymentHistory.plan'),
+                      value: invoice.plan,
+                    },
+                    {
+                      label: t('paymentHistory.amount'),
+                      value: (
+                        <span className="font-semibold text-text-primary">
+                          {invoice.currency} {invoice.amount.toFixed(2)}
+                        </span>
+                      ),
+                      align: 'right',
+                    },
+                  ]}
+                />
+                <button
+                  onClick={() => handleDownloadInvoice(invoice)}
+                  disabled={invoice.status !== 'paid'}
+                  className={`mt-3 w-full inline-flex items-center justify-center gap-2 min-h-touch rounded border ${
+                    invoice.status === 'paid'
+                      ? 'border-primary-300 text-primary-600 hover:bg-primary-50 focus-ring'
+                      : 'border-border-default text-text-muted cursor-not-allowed'
+                  }`}
+                >
+                  <Download className="h-4 w-4" />
+                  {t('paymentHistory.download')}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Invoices Table (md+) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full divide-y divide-border-default">
             <thead className="bg-surface-page">
               <tr>

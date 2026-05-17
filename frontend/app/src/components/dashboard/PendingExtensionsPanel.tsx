@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, XCircle, FileStack } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
-import { LoadingSpinner } from '@buurman/ui';
+import { LoadingSpinner, SwipeAction, type SwipeActionItem } from '@buurman/ui';
 import type { ContractExtensionResponse } from '@/types/contractExtension';
 
 interface PendingExtensionsPanelProps {
@@ -65,66 +65,91 @@ export const PendingExtensionsPanel = ({
       </div>
 
       <div className="space-y-3">
-        {draftExtensions.map((ext) => (
-          <div
-            key={ext.identifier}
-            className="flex items-center justify-between bg-surface-card rounded-lg border border-border-default px-4 py-3"
-          >
-            <div
-              className="flex-1 min-w-0 cursor-pointer"
+        {draftExtensions.map((ext) => {
+          const leftActions: SwipeActionItem[] = canEditData
+            ? [
+                {
+                  label: t('dashboard.pendingExtensions.activate'),
+                  icon: Check,
+                  tone: 'success',
+                  onAction: () =>
+                    onActivate(ext.contractIdentifier, ext.identifier),
+                },
+                {
+                  label: t('dashboard.pendingExtensions.decline'),
+                  icon: XCircle,
+                  tone: 'danger',
+                  onAction: () =>
+                    onDecline(ext.contractIdentifier, ext.identifier),
+                },
+              ]
+            : [];
+          const body = (
+            <div className="flex items-center justify-between bg-surface-card border border-border-default px-4 py-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-text-primary text-sm">
+                    {t('dashboard.pendingExtensions.extensionNumber', {
+                      number: ext.extensionNumber,
+                    })}
+                  </span>
+                  <span className="text-xs text-text-muted">
+                    {t('dashboard.pendingExtensions.contractNumber', {
+                      id: ext.contractIdentifier,
+                    })}
+                  </span>
+                </div>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  {ext.previousRentCurrency} {ext.previousRentAmount.toFixed(2)}{' '}
+                  &rarr; {ext.newRentCurrency} {ext.newRentAmount.toFixed(2)}
+                  {ext.newEndDate && (
+                    <span className="ml-2">
+                      until {formatDate(ext.newEndDate)}
+                    </span>
+                  )}
+                </p>
+              </div>
+              {canEditData && (
+                <div className="hidden md:flex items-center gap-1.5 shrink-0 ml-3">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onActivate(ext.contractIdentifier, ext.identifier);
+                    }}
+                    disabled={isActivating}
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-success-text bg-success-bg rounded-md hover:opacity-80 transition-colors disabled:opacity-50"
+                    title="Activate"
+                  >
+                    <Check className="h-3.5 w-3.5" />
+                    {t('dashboard.pendingExtensions.activate')}
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDecline(ext.contractIdentifier, ext.identifier);
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-error-text bg-error-bg rounded-md hover:opacity-80 transition-colors"
+                    title="Decline"
+                  >
+                    <XCircle className="h-3.5 w-3.5" />
+                    {t('dashboard.pendingExtensions.decline')}
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+          return (
+            <SwipeAction
+              key={ext.identifier}
+              leftActions={leftActions}
               onClick={() =>
                 navigate(`/contracts/${ext.contractIdentifier}?tab=extensions`)
               }
             >
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-text-primary text-sm">
-                  {t('dashboard.pendingExtensions.extensionNumber', {
-                    number: ext.extensionNumber,
-                  })}
-                </span>
-                <span className="text-xs text-text-muted">
-                  {t('dashboard.pendingExtensions.contractNumber', {
-                    id: ext.contractIdentifier,
-                  })}
-                </span>
-              </div>
-              <p className="text-xs text-text-secondary mt-0.5">
-                {ext.previousRentCurrency} {ext.previousRentAmount.toFixed(2)}{' '}
-                &rarr; {ext.newRentCurrency} {ext.newRentAmount.toFixed(2)}
-                {ext.newEndDate && (
-                  <span className="ml-2">
-                    until {formatDate(ext.newEndDate)}
-                  </span>
-                )}
-              </p>
-            </div>
-            {canEditData && (
-              <div className="flex items-center gap-1.5 shrink-0 ml-3">
-                <button
-                  onClick={() =>
-                    onActivate(ext.contractIdentifier, ext.identifier)
-                  }
-                  disabled={isActivating}
-                  className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-success-text bg-success-bg rounded-md hover:opacity-80 transition-colors disabled:opacity-50"
-                  title="Activate"
-                >
-                  <Check className="h-3.5 w-3.5" />
-                  {t('dashboard.pendingExtensions.activate')}
-                </button>
-                <button
-                  onClick={() =>
-                    onDecline(ext.contractIdentifier, ext.identifier)
-                  }
-                  className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-error-text bg-error-bg rounded-md hover:opacity-80 transition-colors"
-                  title="Decline"
-                >
-                  <XCircle className="h-3.5 w-3.5" />
-                  {t('dashboard.pendingExtensions.decline')}
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+              {body}
+            </SwipeAction>
+          );
+        })}
       </div>
     </div>
   );

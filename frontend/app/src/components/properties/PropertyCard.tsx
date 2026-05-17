@@ -3,6 +3,7 @@ import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { Bed, Bath, Ruler } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
+import { LazyImage } from '@buurman/ui';
 import {
   PROPERTY_CATEGORY_ICONS,
   PROPERTY_TYPE_ICONS,
@@ -41,11 +42,10 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       {/* Property Image */}
       <div className="relative bg-surface-inset h-48 flex items-center justify-center overflow-hidden">
         {property.mainPhotoUrl ? (
-          <img
+          <LazyImage
             src={property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl}
             alt={property.street}
             className="w-full h-full object-cover"
-            loading="lazy"
           />
         ) : (
           <PlaceholderIcon className="h-16 w-16 text-text-muted " />
@@ -66,7 +66,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         <h3 className="text-lg font-semibold text-text-primary mb-1">
           {property.street}
         </h3>
-        <p className="text-sm text-text-secondary mb-1">
+        <p className="hidden md:block text-sm text-text-secondary mb-1">
           #{property.identifier}
         </p>
         <p className="text-sm text-text-secondary mb-3">
@@ -74,7 +74,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         </p>
 
         {/* Specifications */}
-        <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 mb-3">
           {bedrooms != null && (
             <div className="flex items-center gap-1 text-text-secondary">
               <Bed className="h-4 w-4 text-text-muted " />

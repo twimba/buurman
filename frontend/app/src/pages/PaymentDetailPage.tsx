@@ -175,129 +175,131 @@ const ReceivalsTable = ({
 
       {/* Table */}
       <div className="overflow-hidden rounded-lg border border-border-default">
-        <table className="min-w-full divide-y divide-border-default">
-          <thead className="bg-surface-page">
-            <tr>
-              <th
-                className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                onClick={() => onSort('date')}
-              >
-                <div className="flex items-center gap-1">
-                  {t('receivals.date')}
-                  <ArrowUpDown className="h-3 w-3" />
-                </div>
-              </th>
-              <th
-                className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                onClick={() => onSort('amount')}
-              >
-                <div className="flex items-center justify-end gap-1">
-                  {t('receivals.amount')}
-                  <ArrowUpDown className="h-3 w-3" />
-                </div>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                {t('receivals.notes')}
-              </th>
-              {canEdit && (
-                <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider w-24">
-                  {t('receivals.actions')}
-                </th>
-              )}
-            </tr>
-          </thead>
-          <tbody className="bg-surface-card divide-y divide-border-default">
-            {paginated.map((receival) =>
-              editingId === receival.identifier ? (
-                <tr key={receival.identifier} className="bg-info-bg">
-                  <td className="px-4 py-2">
-                    <input
-                      type="date"
-                      value={editDate}
-                      onChange={(e) => setEditDate(e.target.value)}
-                      className={inputClass}
-                    />
-                  </td>
-                  <td className="px-4 py-2 text-right">
-                    <MoneyInput
-                      value={editAmount ? parseFloat(editAmount) : undefined}
-                      onChange={(val) =>
-                        setEditAmount(val !== undefined ? String(val) : '')
-                      }
-                      currency={currency}
-                      className="w-28 text-right"
-                    />
-                  </td>
-                  <td className="px-4 py-2" colSpan={canEdit ? 2 : 1}>
-                    <RichTextEditor
-                      value={editNotes}
-                      onChange={setEditNotes}
-                      placeholder={t('receivals.notes') + '...'}
-                    />
-                    <div className="flex justify-end gap-1 mt-2">
-                      <button
-                        onClick={saveEdit}
-                        className="p-1.5 text-success-text hover:bg-success-bg rounded transition-colors"
-                        title={t('tooltips.save')}
-                      >
-                        <Check className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={cancelEdit}
-                        className="p-1.5 text-text-secondary hover:bg-surface-inset rounded transition-colors"
-                        title={t('common:buttons.cancel')}
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                <tr
-                  key={receival.identifier}
-                  className="hover:bg-surface-inset"
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-border-default">
+            <thead className="bg-surface-page">
+              <tr>
+                <th
+                  className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                  onClick={() => onSort('date')}
                 >
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-text-primary">
-                    {formatDate(receival.receivalDate)}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-semibold text-right text-success-text">
-                    {symbol} {receival.amount.toFixed(2)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-text-secondary max-w-xs">
-                    {receival.notes ? (
-                      <RichTextDisplay
-                        content={receival.notes}
-                        className="text-sm [&_p]:m-0"
+                  <div className="flex items-center gap-1">
+                    {t('receivals.date')}
+                    <ArrowUpDown className="h-3 w-3" />
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
+                  onClick={() => onSort('amount')}
+                >
+                  <div className="flex items-center justify-end gap-1">
+                    {t('receivals.amount')}
+                    <ArrowUpDown className="h-3 w-3" />
+                  </div>
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                  {t('receivals.notes')}
+                </th>
+                {canEdit && (
+                  <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider w-24">
+                    {t('receivals.actions')}
+                  </th>
+                )}
+              </tr>
+            </thead>
+            <tbody className="bg-surface-card divide-y divide-border-default">
+              {paginated.map((receival) =>
+                editingId === receival.identifier ? (
+                  <tr key={receival.identifier} className="bg-info-bg">
+                    <td className="px-4 py-2">
+                      <input
+                        type="date"
+                        value={editDate}
+                        onChange={(e) => setEditDate(e.target.value)}
+                        className={inputClass}
                       />
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-                  {canEdit && (
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-1">
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      <MoneyInput
+                        value={editAmount ? parseFloat(editAmount) : undefined}
+                        onChange={(val) =>
+                          setEditAmount(val !== undefined ? String(val) : '')
+                        }
+                        currency={currency}
+                        className="w-28 text-right"
+                      />
+                    </td>
+                    <td className="px-4 py-2" colSpan={canEdit ? 2 : 1}>
+                      <RichTextEditor
+                        value={editNotes}
+                        onChange={setEditNotes}
+                        placeholder={t('receivals.notes') + '...'}
+                      />
+                      <div className="flex justify-end gap-1 mt-2">
                         <button
-                          onClick={() => startEdit(receival)}
-                          className="p-1.5 text-primary-500 hover:bg-info-bg rounded transition-colors"
-                          title={t('tooltips.editReceival')}
+                          onClick={saveEdit}
+                          className="p-1.5 text-success-text hover:bg-success-bg rounded transition-colors"
+                          title={t('tooltips.save')}
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Check className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => onDelete(receival.identifier)}
-                          className="p-1.5 text-error-text hover:bg-error-bg rounded transition-colors"
-                          title={t('tooltips.deleteReceival')}
+                          onClick={cancelEdit}
+                          className="p-1.5 text-text-secondary hover:bg-surface-inset rounded transition-colors"
+                          title={t('common:buttons.cancel')}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <X className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
-                  )}
-                </tr>
-              )
-            )}
-          </tbody>
-        </table>
+                  </tr>
+                ) : (
+                  <tr
+                    key={receival.identifier}
+                    className="hover:bg-surface-inset"
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-text-primary">
+                      {formatDate(receival.receivalDate)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-semibold text-right text-success-text">
+                      {symbol} {receival.amount.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-text-secondary max-w-xs">
+                      {receival.notes ? (
+                        <RichTextDisplay
+                          content={receival.notes}
+                          className="text-sm [&_p]:m-0"
+                        />
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    {canEdit && (
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => startEdit(receival)}
+                            className="p-1.5 text-primary-500 hover:bg-info-bg rounded transition-colors"
+                            title={t('tooltips.editReceival')}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => onDelete(receival.identifier)}
+                            className="p-1.5 text-error-text hover:bg-error-bg rounded transition-colors"
+                            title={t('tooltips.deleteReceival')}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                )
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination */}
@@ -461,7 +463,7 @@ export const PaymentDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-background flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -469,7 +471,7 @@ export const PaymentDetailPage = () => {
 
   if (error || !payment) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('errors.loadPaymentFailed')} />
       </div>
     );
@@ -485,7 +487,7 @@ export const PaymentDetailPage = () => {
   const symbol = getCurrencySymbol(payment.currency);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader

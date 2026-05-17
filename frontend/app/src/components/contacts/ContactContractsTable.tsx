@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronUp, ChevronDown } from 'lucide-react';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
+import { DataList } from '@buurman/ui';
 import { ContractPartyRole } from '@/types/contract';
 import type { ContractResponse } from '@/types/contract';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -145,7 +146,58 @@ export const ContactContractsTable = ({
           </div>
         )}
       </div>
-      <div className="overflow-x-auto">
+      {/* Mobile card list (<md) */}
+      <ul className="md:hidden space-y-3 mb-2">
+        {paginated.map((contract) => {
+          const party = contract.parties?.find(
+            (p) => p.contact.identifier === contactIdentifier
+          );
+          return (
+            <li key={`m-${contract.identifier}`}>
+              <button
+                type="button"
+                onClick={() => navigate(`/contracts/${contract.identifier}`)}
+                className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+              >
+                <DataList
+                  title={contract.property.street}
+                  trailing={<ContractStatusBadge status={contract.status} />}
+                  items={[
+                    {
+                      label: t('contractsTable.role'),
+                      value: party?.role
+                        ? t(
+                            `contracts:enums.partyRoles.${party.role}`,
+                            party.role
+                          )
+                        : '-',
+                    },
+                    {
+                      label: t('contractsTable.period'),
+                      value: `${formatDate(contract.startDate)} — ${
+                        (contract.effectiveEndDate ?? contract.endDate)
+                          ? formatDate(
+                              (contract.effectiveEndDate ??
+                                contract.endDate) as string
+                            )
+                          : t('contractsTable.ongoing')
+                      }`,
+                    },
+                    {
+                      label: t('contractsTable.rent'),
+                      value: `${getCurrencySymbol(contract.rentAmountCurrency)} ${contract.rentAmount.toFixed(2)}`,
+                      align: 'right',
+                    },
+                  ]}
+                />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Table (md+) */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-border-default text-sm">
           <thead className="bg-surface-page">
             <tr>

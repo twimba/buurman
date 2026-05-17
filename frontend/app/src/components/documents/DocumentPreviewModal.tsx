@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   X,
@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { DocumentResponse, PhotoResponse } from '@/types/property';
 import { RichTextDisplay } from '@buurman/ui';
+import { PinchZoomImage } from './PinchZoomImage';
 
 interface DocumentPreviewModalProps {
   document: DocumentResponse | PhotoResponse;
@@ -34,6 +35,11 @@ export const DocumentPreviewModal = ({
 }: DocumentPreviewModalProps) => {
   const { t } = useTranslation('documents');
   const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  // While the image is pinch-zoomed, swallow swipe-prev/next + swipe-down-dismiss
+  // so the image-pan gesture wins. PinchZoomImage's `key={document.identifier}`
+  // remounts the component on every document change so its scale resets.
+  const [imageZoomed, setImageZoomed] = useState(false);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -57,19 +63,35 @@ export const DocumentPreviewModal = ({
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) {
+    if (touchStartX.current === null || touchStartY.current === null) {
       return;
     }
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
     touchStartX.current = null;
-    if (delta > SWIPE_THRESHOLD && onPrevious) {
-      onPrevious();
+    touchStartY.current = null;
+
+    // While the image is pinch-zoomed, the gesture belongs to PinchZoomImage's
+    // pan. Don't swipe-navigate or swipe-dismiss.
+    if (imageZoomed) {
+      return;
     }
-    if (delta < -SWIPE_THRESHOLD && onNext) {
-      onNext();
+    // Swipe-down dismiss (lightbox pattern): only when clearly vertical.
+    if (dy > SWIPE_THRESHOLD && Math.abs(dy) > Math.abs(dx) * 1.5) {
+      onClose();
+      return;
+    }
+    // Horizontal swipe → prev/next.
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > SWIPE_THRESHOLD && onPrevious) {
+        onPrevious();
+      } else if (dx < -SWIPE_THRESHOLD && onNext) {
+        onNext();
+      }
     }
   };
 
@@ -81,9 +103,9 @@ export const DocumentPreviewModal = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onClose}>
-      <div className="flex items-center justify-center min-h-screen px-4 py-8">
-        {/* Background overlay */}
-        <div className="fixed inset-0 bg-black bg-opacity-60" />
+      <div className="flex items-center justify-center min-h-[100dvh] md:px-4 md:py-8">
+        {/* Background overlay — opaque on phone for true lightbox feel */}
+        <div className="fixed inset-0 bg-black md:bg-opacity-60" />
 
         {/* Previous button */}
         {onPrevious && (
@@ -113,12 +135,16 @@ export const DocumentPreviewModal = ({
           </button>
         )}
 
-        {/* Modal panel */}
+        {/* Modal panel — full-bleed on phone, centered card on md+ */}
         <div
-          className="relative bg-surface-card rounded-lg text-left overflow-hidden shadow-xl dark:shadow-black/20 w-full max-w-4xl"
+          className="relative bg-surface-card md:rounded-lg text-left overflow-hidden md:shadow-xl dark:md:shadow-black/20 w-full md:max-w-4xl min-h-[100dvh] md:min-h-0"
           onClick={(e) => e.stopPropagation()}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
+          style={{
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          }}
         >
           {/* Header */}
           <div className="bg-surface-card px-4 py-3 border-b border-border-default flex items-center justify-between">
@@ -184,13 +210,17 @@ export const DocumentPreviewModal = ({
             {canPreview ? (
               <>
                 {isImage && (
-                  <div className="flex justify-center">
-                    <img
+                  <div
+                    className="flex justify-center overflow-hidden"
+                    style={{ touchAction: 'none' }}
+                  >
+                    <PinchZoomImage
+                      key={document.identifier}
                       src={document.downloadUrl ?? undefined}
                       alt={document.title || document.fileName}
                       className="max-w-full h-auto rounded-lg shadow-lg"
-                      loading="lazy"
                       crossOrigin="anonymous"
+                      onZoomChange={setImageZoomed}
                     />
                   </div>
                 )}

@@ -5,10 +5,19 @@ import { ContractStatus } from '@/types/contract';
 import { useContracts } from '@/hooks/useContractHooks';
 import { ContractCard } from '@/components/contracts/ContractCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Plus, FileText, Filter } from 'lucide-react';
+import { Plus, FileText, Filter, RefreshCw } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination, RefreshButton, Skeleton } from '@buurman/ui';
+import {
+  EmptyState,
+  FilterSheet,
+  ListPageHeader,
+  Pagination,
+  RefreshButton,
+  Skeleton,
+  type ListPageHeaderAction,
+} from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
 import { exportContractsCsv, exportContractsXlsx } from '@/api/listExports';
 import { exportContractsGoogleSheet } from '@/api/googleSheetsExport';
@@ -57,7 +66,7 @@ export const ContractsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
@@ -96,50 +105,76 @@ export const ContractsPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background p-8">
+      <div className="min-h-[100dvh] bg-background p-8">
         <ErrorMessage message={t('list.error')} />
       </div>
     );
   }
 
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      icon: RefreshCw,
+      onClick: () => refetch(),
+      showOn: 'mobile',
+    },
+    {
+      label: 'desktop-actions',
+      showOn: 'desktop',
+      render: () => (
+        <div className="flex items-center gap-2">
+          <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
+          <EntityExportControls
+            filenameStem="contracts"
+            csv={exportContractsCsv}
+            xlsx={exportContractsXlsx}
+            googleSheet={exportContractsGoogleSheet}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <FileText className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">
-                {t('list.title')}
-              </h1>
-            </div>
-            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <RefreshButton
-              onClick={() => refetch()}
-              isRefreshing={isFetching}
+    <div className="min-h-[100dvh] bg-background">
+      <div className="px-4 py-4 md:py-8">
+        <ListPageHeader
+          title={t('list.title')}
+          subtitle={t('list.subtitle')}
+          icon={FileText}
+          mobileLeading={<MobileMenuButton />}
+          actions={headerActions}
+          primaryAction={{
+            label: t('list.addButton'),
+            icon: Plus,
+            onClick: () => navigate('/contracts/new'),
+            disabled: !canEditData,
+          }}
+        />
+
+        {/* Phone: search-less trigger + sheet. md+: inline filter card. */}
+        <div className="md:hidden mb-4 flex items-center justify-end">
+          <FilterSheet
+            activeCount={statusFilter ? 1 : 0}
+            onClear={() => {
+              setStatusFilter(undefined);
+              resetPage();
+            }}
+            triggerLabel={t('list.filters')}
+            collapseBelow="lg"
+          >
+            <ContractsStatusFilterContent
+              statusFilters={statusFilters}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              resetPage={resetPage}
+              t={t}
             />
-            <EntityExportControls
-              filenameStem="contracts"
-              csv={exportContractsCsv}
-              xlsx={exportContractsXlsx}
-              googleSheet={exportContractsGoogleSheet}
-            />
-            <button
-              onClick={() => navigate('/contracts/new')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-5 w-5" />
-              {t('list.addButton')}
-            </button>
-          </div>
+          </FilterSheet>
         </div>
 
-        {/* Filter Bar */}
-        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
+        {/* Filter Bar (md+) */}
+        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h2 className="font-semibold text-text-primary">
@@ -147,29 +182,13 @@ export const ContractsPage = () => {
             </h2>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
-              {t('list.status')}
-            </label>
-            <div className="flex gap-2 flex-wrap">
-              {statusFilters.map((filter) => (
-                <button
-                  key={filter.label}
-                  onClick={() => {
-                    setStatusFilter(filter.value);
-                    resetPage();
-                  }}
-                  className={`px-4 py-2 rounded transition-colors text-sm ${
-                    statusFilter === filter.value
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <ContractsStatusFilterContent
+            statusFilters={statusFilters}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            resetPage={resetPage}
+            t={t}
+          />
         </div>
 
         {/* Contract Count */}
@@ -199,26 +218,66 @@ export const ContractsPage = () => {
             )}
           </>
         ) : (
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg">
-            <FileText className="h-16 w-16 text-text-disabled mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
-              {t('list.empty.title')}
-            </h3>
-            <p className="text-text-secondary mb-6">
-              {t('list.empty.description')}
-            </p>
-            <button
-              onClick={() => navigate('/contracts/new')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-5 w-5" />
-              {t('list.addButton')}
-            </button>
+          <div className="bg-surface-card rounded-lg">
+            <EmptyState
+              variant="page"
+              icon={<FileText className="h-12 w-12" />}
+              title={t('list.empty.title')}
+              description={t('list.empty.description')}
+              actions={
+                <button
+                  onClick={() => navigate('/contracts/new')}
+                  disabled={!canEditData}
+                  className="bg-primary-500 text-white px-6 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+                >
+                  <Plus className="h-5 w-5" />
+                  {t('list.addButton')}
+                </button>
+              }
+            />
           </div>
         )}
       </div>
     </div>
   );
 };
+
+interface ContractsStatusFilterContentProps {
+  statusFilters: { label: string; value: ContractStatus | undefined }[];
+  statusFilter: ContractStatus | undefined;
+  setStatusFilter: (value: ContractStatus | undefined) => void;
+  resetPage: () => void;
+  t: (key: string) => string;
+}
+
+const ContractsStatusFilterContent = ({
+  statusFilters,
+  statusFilter,
+  setStatusFilter,
+  resetPage,
+  t,
+}: ContractsStatusFilterContentProps) => (
+  <div>
+    <label className="block text-sm font-medium text-text-secondary mb-2">
+      {t('list.status')}
+    </label>
+    <div className="flex gap-2 flex-wrap">
+      {statusFilters.map((filter) => (
+        <button
+          key={filter.label}
+          onClick={() => {
+            setStatusFilter(filter.value);
+            resetPage();
+          }}
+          className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+            statusFilter === filter.value
+              ? 'bg-primary-500 text-white'
+              : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+          }`}
+        >
+          {filter.label}
+        </button>
+      ))}
+    </div>
+  </div>
+);

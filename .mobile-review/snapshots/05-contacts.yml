@@ -1,0 +1,133 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: LOCAL ENVIRONMENT
+  - generic [ref=e6]:
+    - link "Skip to main content" [ref=e7] [cursor=pointer]:
+      - /url: "#main-content"
+    - button [ref=e8]:
+      - img [ref=e9]
+    - complementary [ref=e10]:
+      - generic [ref=e11]:
+        - img "Buurman" [ref=e15]
+        - navigation [ref=e16]:
+          - list [ref=e17]:
+            - listitem [ref=e18]
+            - listitem [ref=e26]
+            - listitem [ref=e32]
+            - listitem [ref=e40]
+            - listitem [ref=e51]
+            - listitem [ref=e56]
+            - listitem [ref=e62]
+            - listitem [ref=e67]
+            - listitem [ref=e74]
+          - button "Administration" [ref=e81]:
+            - generic [ref=e82]
+            - img [ref=e85]
+        - generic [ref=e87]:
+          - button "Demo Team Admin" [ref=e90]:
+            - img [ref=e92]
+            - generic [ref=e95]
+            - img [ref=e106]
+          - link "Settings" [ref=e108] [cursor=pointer]:
+            - /url: /settings
+            - img [ref=e109]
+            - generic [ref=e112]: Settings
+          - button "Sign Out" [ref=e113]:
+            - img [ref=e114]
+            - generic [ref=e117]: Sign Out
+    - main [ref=e118]:
+      - generic [ref=e121]:
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e124]
+            - paragraph [ref=e131]: Manage your contacts and their information
+          - generic [ref=e132]:
+            - button "Refresh data" [ref=e133]
+            - button "CSV" [ref=e139]
+            - button "Import" [ref=e144]
+            - button "Quick Add" [ref=e148]
+            - button "Add Contact" [ref=e151]
+        - generic [ref=e153]:
+          - generic [ref=e154]:
+            - img [ref=e155]
+            - textbox "Search by name, email, or phone..." [ref=e158]
+          - generic [ref=e159]:
+            - img [ref=e160]
+            - combobox "Sort contacts by" [ref=e163]
+            - button "↓" [ref=e164]
+          - button "Filters" [ref=e165]:
+            - img [ref=e166]
+            - text: Filters
+        - paragraph [ref=e168]: 55 contacts
+        - generic [ref=e169]:
+          - generic [ref=e170] [cursor=pointer]:
+            - generic [ref=e171]
+            - generic [ref=e178]: Key Holder
+            - generic [ref=e179]
+            - 'status "Outstanding balance: €2,613.00, 3 payments overdue" [ref=e189]'
+            - generic [ref=e196]
+          - generic [ref=e206] [cursor=pointer]:
+            - generic [ref=e207]
+            - generic [ref=e214]: Long Term
+            - generic [ref=e215]
+            - 'status "Outstanding balance: €5,415.00, 5 payments overdue" [ref=e225]'
+            - generic [ref=e232]
+          - generic [ref=e242] [cursor=pointer]:
+            - generic [ref=e243]
+            - generic [ref=e249]
+            - 'status "Outstanding balance: €4,716.00, 3 payments overdue" [ref=e259]'
+            - generic [ref=e266]
+          - generic [ref=e276] [cursor=pointer]:
+            - generic [ref=e277]
+            - generic [ref=e284]: Key Holder
+            - generic [ref=e285]
+            - 'status "Outstanding balance: €6,060.00, 5 payments overdue" [ref=e295]'
+            - generic [ref=e302]
+          - generic [ref=e312] [cursor=pointer]:
+            - generic [ref=e313]
+            - generic [ref=e319]
+            - 'status "Outstanding balance: €4,003.00, 2 payments overdue" [ref=e329]'
+            - generic [ref=e336]
+          - generic [ref=e346] [cursor=pointer]:
+            - generic [ref=e347]
+            - generic [ref=e354]: VIP
+            - generic [ref=e355]
+            - 'status "Outstanding balance: €2,908.00, 4 payments overdue" [ref=e365]'
+            - generic [ref=e372]
+          - generic [ref=e382] [cursor=pointer]:
+            - generic [ref=e383]
+            - generic [ref=e390]: Long Term
+            - generic [ref=e391]
+            - status "All payments are up to date" [ref=e401]
+            - generic [ref=e407]
+          - generic [ref=e417] [cursor=pointer]:
+            - generic [ref=e418]
+            - generic [ref=e424]
+            - generic [ref=e434]
+          - generic [ref=e444] [cursor=pointer]:
+            - generic [ref=e445]
+            - generic [ref=e451]
+            - generic [ref=e461]
+          - generic [ref=e471] [cursor=pointer]:
+            - generic [ref=e472]
+            - generic [ref=e479]: Prospect
+            - generic [ref=e480]
+            - generic [ref=e490]
+          - generic [ref=e500] [cursor=pointer]:
+            - generic [ref=e501]
+            - generic [ref=e507]
+            - generic [ref=e517]
+          - generic [ref=e527] [cursor=pointer]:
+            - generic [ref=e528]
+            - generic [ref=e534]
+            - generic [ref=e544]
+        - generic [ref=e555]:
+          - generic [ref=e556]:
+            - generic [ref=e557]: Showing 1 to 12 of 55
+            - combobox [ref=e558]
+          - generic [ref=e559]:
+            - button "First page" [disabled] [ref=e560]
+            - button "Previous page" [disabled] [ref=e564]
+            - generic [ref=e567]
+            - button "Next page" [ref=e573]
+            - button "Last page" [ref=e576]
+  - status

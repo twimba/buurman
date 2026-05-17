@@ -92,7 +92,7 @@ export const Pagination = ({
           onClick={() => onPageChange(0)}
           disabled={page === 0}
           className={cn(
-            'p-1.5 rounded-md transition-colors',
+            'p-1.5 rounded-md transition-colors [@media(pointer:coarse)]:min-h-touch [@media(pointer:coarse)]:min-w-touch inline-flex items-center justify-center',
             page === 0
               ? 'opacity-30 cursor-not-allowed text-text-muted'
               : 'text-text-secondary hover:bg-surface-inset'
@@ -105,7 +105,7 @@ export const Pagination = ({
           onClick={() => onPageChange(page - 1)}
           disabled={page === 0}
           className={cn(
-            'p-1.5 rounded-md transition-colors',
+            'p-1.5 rounded-md transition-colors [@media(pointer:coarse)]:min-h-touch [@media(pointer:coarse)]:min-w-touch inline-flex items-center justify-center',
             page === 0
               ? 'opacity-30 cursor-not-allowed text-text-muted'
               : 'text-text-secondary hover:bg-surface-inset'
@@ -131,7 +131,7 @@ export const Pagination = ({
                 key={p}
                 onClick={() => onPageChange(p)}
                 className={cn(
-                  'min-w-8 h-8 rounded-md text-sm font-medium inline-flex items-center justify-center transition-all',
+                  'min-w-8 h-8 rounded-md text-sm font-medium inline-flex items-center justify-center transition-all [@media(pointer:coarse)]:min-h-touch [@media(pointer:coarse)]:min-w-touch',
                   p === page
                     ? 'bg-primary-500 text-white'
                     : 'text-text-secondary hover:bg-surface-inset'
@@ -147,7 +147,7 @@ export const Pagination = ({
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages - 1}
           className={cn(
-            'p-1.5 rounded-md transition-colors',
+            'p-1.5 rounded-md transition-colors [@media(pointer:coarse)]:min-h-touch [@media(pointer:coarse)]:min-w-touch inline-flex items-center justify-center',
             page >= totalPages - 1
               ? 'opacity-30 cursor-not-allowed text-text-muted'
               : 'text-text-secondary hover:bg-surface-inset'
@@ -160,7 +160,7 @@ export const Pagination = ({
           onClick={() => onPageChange(totalPages - 1)}
           disabled={page >= totalPages - 1}
           className={cn(
-            'p-1.5 rounded-md transition-colors',
+            'p-1.5 rounded-md transition-colors [@media(pointer:coarse)]:min-h-touch [@media(pointer:coarse)]:min-w-touch inline-flex items-center justify-center',
             page >= totalPages - 1
               ? 'opacity-30 cursor-not-allowed text-text-muted'
               : 'text-text-secondary hover:bg-surface-inset'
