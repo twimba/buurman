@@ -12,6 +12,7 @@ import { ErrorMessage } from './ErrorMessage';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
 import { PendingExtensionsPanel } from './dashboard/PendingExtensionsPanel';
 import { PortfolioDashboard } from './dashboard/PortfolioDashboard';
+import { MobileDashboardSummary } from './dashboard/MobileDashboardSummary';
 import {
   Home,
   Users,
@@ -167,8 +168,19 @@ export const DashboardPage = () => {
     );
   }
 
+  const overdueCount = unpaidPayments.filter(
+    (p) => p.status === 'OVERDUE' || p.status === 'LATE'
+  ).length;
+
   return (
     <div className="space-y-8">
+      {/* Phone-only above-the-fold summary: alerts + hero KPI + KPI rail. */}
+      <MobileDashboardSummary
+        stats={stats}
+        overdueCount={overdueCount}
+        pendingExtensionsCount={pendingExtensions?.length ?? 0}
+      />
+
       {/* Pending Invitations */}
       <PendingInvitationsPanel />
 
@@ -188,8 +200,8 @@ export const DashboardPage = () => {
       {/* Portfolio Dashboard */}
       <PortfolioDashboard />
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Statistics Cards — phone shows MobileDashboardSummary above instead. */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Properties */}
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-info-border">
           <div className="flex items-center justify-between mb-4">
