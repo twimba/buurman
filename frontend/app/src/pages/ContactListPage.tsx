@@ -426,7 +426,10 @@ export const ContactListPage = () => {
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
             />
           </div>
-          <div className="flex items-center gap-1.5">
+          {/* Sort cluster — hidden on phone to keep the Filter chip
+              on-screen. Sort is rarely-tapped vs Filter; surfacing it on
+              phone is handled in the upcoming filter sheet (P1-5). */}
+          <div className="hidden md:flex items-center gap-1.5">
             <ArrowUpDown className="h-4 w-4 text-text-muted" />
             <select
               value={sort ?? 'createdAt'}
