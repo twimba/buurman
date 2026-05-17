@@ -746,4 +746,10 @@ public class PaymentRepository {
                             .and(field("team_id", UUID.class).eq(teamId))
                             .and(field("deleted_at").isNull()))));
   }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(PAYMENTS)
+            .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull())));
+  }
 }

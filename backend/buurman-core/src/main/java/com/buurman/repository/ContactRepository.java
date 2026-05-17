@@ -736,4 +736,10 @@ public class ContactRepository {
         .where(CONTACTS.ID.eq(contactId).and(CONTACTS.TEAM_ID.eq(teamId)))
         .execute();
   }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(CONTACTS)
+            .where(CONTACTS.TEAM_ID.eq(teamId).and(CONTACTS.DELETED_AT.isNull())));
+  }
 }

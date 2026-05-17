@@ -19,7 +19,13 @@ public record SegmentContext(
     int paymentCount,
     int calendarFeedCount,
     boolean isTeamScope,
-    boolean isUserScope) {
+    boolean isUserScope,
+    Optional<String> teamName,
+    Optional<String> teamAdminEmail,
+    Optional<String> teamOwnerEmail,
+    Optional<String> teamCurrency,
+    Optional<String> teamDefaultCountry,
+    Optional<String> teamTimezone) {
 
   public static SegmentContext global() {
     return new SegmentContext(
@@ -39,6 +45,12 @@ public record SegmentContext(
         0,
         0,
         false,
-        false);
+        false,
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
   }
 }

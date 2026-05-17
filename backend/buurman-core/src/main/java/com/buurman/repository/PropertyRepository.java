@@ -360,4 +360,10 @@ public class PropertyRepository {
         .where(PROPERTIES.ID.eq(id).and(PROPERTIES.TEAM_ID.eq(teamId)))
         .execute();
   }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(PROPERTIES)
+            .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull())));
+  }
 }
