@@ -215,6 +215,16 @@
 
   /* Updated by useKeyboardInset() from window.visualViewport. */
   --kbd-inset: 0px;
+
+  /* Fluid typography — replaces discrete text-{N}xl md:text-{M}xl jumps.
+     Each token clamps between the phone size (lower bound) and the
+     desktop size (upper bound) on a vw-driven curve. Wire via
+     `text-[var(--text-display)]` in JSX or the `.text-display` etc.
+     utilities below. */
+  --text-display: clamp(1.5rem, 1.2rem + 1.5vw, 1.875rem); /* 24–30px */
+  --text-title: clamp(1.25rem, 1.05rem + 1vw, 1.5rem); /* 20–24px */
+  --text-subtitle: clamp(1rem, 0.92rem + 0.4vw, 1.125rem); /* 16–18px */
+  --text-hero: clamp(2rem, 1.5rem + 2.5vw, 2.5rem); /* 32–40px */
 }
 
 /* Utilities for mobile foundation. */
@@ -237,6 +247,24 @@
   .pr-safe {
     padding-right: var(--safe-right);
   }
+  /* Fluid type utilities. Use in place of `text-2xl md:text-3xl` etc. */
+  .text-display {
+    font-size: var(--text-display);
+    line-height: 1.2;
+  }
+  .text-title {
+    font-size: var(--text-title);
+    line-height: 1.25;
+  }
+  .text-subtitle {
+    font-size: var(--text-subtitle);
+    line-height: 1.4;
+  }
+  .text-hero {
+    font-size: var(--text-hero);
+    line-height: 1.1;
+  }
+
   /* Invisible touch-target enlarger — keeps visual size, widens hit area to 44px. */
   .hit-44 {
     position: relative;

@@ -88,7 +88,7 @@ export const ListPageHeader = ({
           {Icon && (
             <Icon className="hidden xs:inline-block h-6 w-6 md:h-8 md:w-8 text-primary-500 dark:text-primary-300 flex-shrink-0" />
           )}
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary truncate">
+          <h1 className="text-display font-bold text-text-primary truncate">
             {title}
           </h1>
         </div>
