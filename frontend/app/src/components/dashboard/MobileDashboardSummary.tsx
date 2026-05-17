@@ -45,6 +45,16 @@ export const MobileDashboardSummary = ({
   // when PortfolioDashboard also mounts (md+).
   const { data: portfolio } = usePortfolioDashboard(6);
 
+  // Long-press the hero KPI to surface the full-precision number. The
+  // compact value (€-25.8K) hides the trailing digits that matter for
+  // accounting (e.g. €-25,828.42). 1.6s visible window via inline state.
+  // Hooks must be called unconditionally — keep above the early return.
+  const [showPrecise, setShowPrecise] = useState(false);
+  const heroLongPress = useLongPress<HTMLElement>(() => {
+    setShowPrecise(true);
+    window.setTimeout(() => setShowPrecise(false), 1600);
+  });
+
   if (!stats) {
     return null;
   }
@@ -55,15 +65,6 @@ export const MobileDashboardSummary = ({
   const cashFlow = portfolio?.summary.monthlyCashFlow;
   const cashFlowCurrency = portfolio?.currency ?? incomeCurrency;
   const cashFlowNegative = cashFlow != null && cashFlow < 0;
-
-  // Long-press the hero KPI to surface the full-precision number. The
-  // compact value (€-25.8K) hides the trailing digits that matter for
-  // accounting (e.g. €-25,828.42). 1.6s visible window via inline state.
-  const [showPrecise, setShowPrecise] = useState(false);
-  const heroLongPress = useLongPress<HTMLElement>(() => {
-    setShowPrecise(true);
-    window.setTimeout(() => setShowPrecise(false), 1600);
-  });
 
   return (
     <div className="md:hidden -mt-2 space-y-4">
