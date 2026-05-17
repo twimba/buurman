@@ -208,7 +208,7 @@ export const PropertyListPage = () => {
               resetPage();
             }}
             triggerLabel={t('list.filters')}
-            collapseBelow="md"
+            collapseBelow="lg"
           >
             <div className="space-y-4">
               {/* Category Filter */}

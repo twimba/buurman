@@ -382,7 +382,7 @@ export const PaymentsPage = () => {
               resetPage();
             }}
             triggerLabel={t('filters.title')}
-            collapseBelow="md"
+            collapseBelow="lg"
           >
             <PaymentsFilterContent
               statusFilters={statusFilters}

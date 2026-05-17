@@ -355,7 +355,7 @@ export const ExpensesPage = () => {
               resetPage();
             }}
             triggerLabel={t('filters.title')}
-            collapseBelow="md"
+            collapseBelow="lg"
           >
             <ExpensesFilterContent
               categoryFilterValues={categoryFilterValues}

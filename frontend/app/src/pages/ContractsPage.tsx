@@ -161,7 +161,7 @@ export const ContractsPage = () => {
               resetPage();
             }}
             triggerLabel={t('list.filters')}
-            collapseBelow="md"
+            collapseBelow="lg"
           >
             <ContractsStatusFilterContent
               statusFilters={statusFilters}
