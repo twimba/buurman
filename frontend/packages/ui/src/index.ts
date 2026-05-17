@@ -3,6 +3,11 @@ export { Button } from './components/Button';
 export type { ButtonVariant, ButtonSize } from './components/Button';
 export { Pagination } from './components/Pagination';
 export { PageHeader } from './components/PageHeader';
+export { ListPageHeader } from './components/ListPageHeader';
+export type {
+  ListPageHeaderAction,
+  ListPageHeaderProps,
+} from './components/ListPageHeader';
 export { ConfirmDialog } from './components/ConfirmDialog';
 export { RefreshButton } from './components/RefreshButton';
 export { SidebarTooltip } from './components/SidebarTooltip';
@@ -17,6 +22,8 @@ export { FormField } from './components/FormField';
 
 // New components — Batch 2 (Interactive)
 export { ModalWrapper } from './components/ModalWrapper';
+export { Sheet } from './components/Sheet';
+export type { SheetProps } from './components/Sheet';
 export { StatusBadge } from './components/StatusBadge';
 export type { BadgeColorVariant } from './components/StatusBadge';
 export { EmptyState } from './components/EmptyState';

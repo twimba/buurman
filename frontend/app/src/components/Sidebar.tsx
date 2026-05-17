@@ -65,10 +65,29 @@ const navLinkClass = (isActive: boolean, collapsed: boolean) => `
 interface SidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
+  /** Controlled mobile-drawer state. If omitted, the Sidebar manages its own state. */
+  mobileOpen?: boolean;
+  onMobileOpenChange?: (next: boolean) => void;
 }
 
-export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+export const Sidebar = ({
+  collapsed,
+  onToggleCollapse,
+  mobileOpen: controlledMobileOpen,
+  onMobileOpenChange,
+}: SidebarProps) => {
+  const [uncontrolledMobileOpen, setUncontrolledMobileOpen] = useState(false);
+  const isControlled = controlledMobileOpen !== undefined;
+  const mobileOpen = isControlled
+    ? controlledMobileOpen
+    : uncontrolledMobileOpen;
+  const setMobileOpen = (next: boolean) => {
+    if (isControlled) {
+      onMobileOpenChange?.(next);
+    } else {
+      setUncontrolledMobileOpen(next);
+    }
+  };
   const { logout } = useAuth();
   const { teams, canEditTeamSettings } = useTeam();
   const { isEnabled } = useFeatureFlags();

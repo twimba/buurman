@@ -11,7 +11,8 @@
     "expenses": "Έξοδα",
     "documents": "Έγγραφα",
     "photos": "Φωτογραφίες",
-    "reports": "Αναφορές"
+    "reports": "Αναφορές",
+    "more": "Περισσότερα"
   },
   "admin": {
     "title": "Διαχείριση",
@@ -29,6 +30,7 @@
   "accessibility": {
     "openMenu": "Άνοιγμα μενού",
     "closeMenu": "Κλείσιμο μενού",
-    "primaryNav": "Κύρια πλοήγηση"
+    "primaryNav": "Κύρια πλοήγηση",
+    "bottomNav": "Κάτω πλοήγηση"
   }
 }

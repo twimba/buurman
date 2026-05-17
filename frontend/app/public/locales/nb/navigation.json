@@ -11,7 +11,8 @@
     "expenses": "Utgifter",
     "documents": "Dokumenter",
     "photos": "Bilder",
-    "reports": "Rapporter"
+    "reports": "Rapporter",
+    "more": "Mer"
   },
   "admin": {
     "title": "Administrasjon",
@@ -29,6 +30,7 @@
   "accessibility": {
     "openMenu": "Åpne meny",
     "closeMenu": "Lukk meny",
-    "primaryNav": "Hovednavigasjon"
+    "primaryNav": "Hovednavigasjon",
+    "bottomNav": "Bunnavigasjon"
   }
 }

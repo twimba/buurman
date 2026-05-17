@@ -11,7 +11,8 @@
     "expenses": "Uitgaven",
     "documents": "Documenten",
     "photos": "Foto's",
-    "reports": "Rapportages"
+    "reports": "Rapportages",
+    "more": "Meer"
   },
   "admin": {
     "title": "Beheer",
@@ -29,6 +30,7 @@
   "accessibility": {
     "openMenu": "Menu openen",
     "closeMenu": "Menu sluiten",
-    "primaryNav": "Hoofdnavigatie"
+    "primaryNav": "Hoofdnavigatie",
+    "bottomNav": "Onderste navigatie"
   }
 }

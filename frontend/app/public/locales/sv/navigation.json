@@ -11,7 +11,8 @@
     "expenses": "Kostnader",
     "documents": "Dokument",
     "photos": "Foton",
-    "reports": "Rapporter"
+    "reports": "Rapporter",
+    "more": "Mer"
   },
   "admin": {
     "title": "Administration",
@@ -29,6 +30,7 @@
   "accessibility": {
     "openMenu": "Öppna meny",
     "closeMenu": "Stäng meny",
-    "primaryNav": "Huvudnavigation"
+    "primaryNav": "Huvudnavigation",
+    "bottomNav": "Bottennavigation"
   }
 }

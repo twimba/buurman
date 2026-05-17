@@ -11,7 +11,8 @@
     "expenses": "Dépenses",
     "documents": "Documents",
     "photos": "Photos",
-    "reports": "Rapports"
+    "reports": "Rapports",
+    "more": "Plus"
   },
   "admin": {
     "title": "Administration",
@@ -29,6 +30,7 @@
   "accessibility": {
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
-    "primaryNav": "Navigation principale"
+    "primaryNav": "Navigation principale",
+    "bottomNav": "Navigation inférieure"
   }
 }

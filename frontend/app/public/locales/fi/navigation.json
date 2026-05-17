@@ -11,7 +11,8 @@
     "expenses": "Kulut",
     "documents": "Asiakirjat",
     "photos": "Valokuvat",
-    "reports": "Raportit"
+    "reports": "Raportit",
+    "more": "Lisää"
   },
   "admin": {
     "title": "Hallinta",
@@ -29,6 +30,7 @@
   "accessibility": {
     "openMenu": "Avaa valikko",
     "closeMenu": "Sulje valikko",
-    "primaryNav": "Päänavigointi"
+    "primaryNav": "Päänavigointi",
+    "bottomNav": "Alanavigointi"
   }
 }
