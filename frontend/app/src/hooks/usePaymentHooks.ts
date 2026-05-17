@@ -16,6 +16,7 @@ import {
 } from '../types/payment';
 import type { PageParams } from '@/types/common';
 import { useToast } from '@buurman/ui';
+import { useAnnounce } from '@/hooks/useAnnounce';
 import { getErrorMessage } from '../utils/errorMessages';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
@@ -138,6 +139,7 @@ export const useUpdatePayment = (id: string) => {
 export const useDeletePayment = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const announce = useAnnounce();
   return useMutation({
     mutationFn: (id: string) => paymentsApi.deletePayment(id),
     onSuccess: () => {
@@ -157,9 +159,12 @@ export const useDeletePayment = () => {
         queryKey: queryKeys.reports.incomeTrend(),
       });
       showToast('Payment deleted successfully', 'success');
+      announce('Payment deleted');
     },
     onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
+      const message = getErrorMessage(error);
+      showToast(message, 'error');
+      announce(message, { assertive: true });
     },
   });
 };
@@ -167,6 +172,7 @@ export const useDeletePayment = () => {
 export const useMarkPaymentAsPaid = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const announce = useAnnounce();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: MarkPaidRequest }) =>
       paymentsApi.markPaymentAsPaid(id, data),
@@ -197,10 +203,13 @@ export const useMarkPaymentAsPaid = () => {
         queryKey: queryKeys.reports.incomeTrend(),
       });
       showToast('Payment marked as paid successfully', 'success');
+      announce('Payment marked as paid');
       trackEvent(AnalyticsEvent.PAYMENT_MARKED_PAID);
     },
     onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
+      const message = getErrorMessage(error);
+      showToast(message, 'error');
+      announce(message, { assertive: true });
     },
   });
 };
