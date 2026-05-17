@@ -10,9 +10,11 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
-import { formatMoneyCompact } from '@/utils/formatMoney';
+import { formatMoney, formatMoneyCompact } from '@/utils/formatMoney';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
+import { useLongPress } from '@buurman/ui';
+import { useState } from 'react';
 import type { DashboardStats } from '@/api/dashboard';
 
 interface MobileDashboardSummaryProps {
@@ -53,6 +55,15 @@ export const MobileDashboardSummary = ({
   const cashFlow = portfolio?.summary.monthlyCashFlow;
   const cashFlowCurrency = portfolio?.currency ?? incomeCurrency;
   const cashFlowNegative = cashFlow != null && cashFlow < 0;
+
+  // Long-press the hero KPI to surface the full-precision number. The
+  // compact value (€-25.8K) hides the trailing digits that matter for
+  // accounting (e.g. €-25,828.42). 1.6s visible window via inline state.
+  const [showPrecise, setShowPrecise] = useState(false);
+  const heroLongPress = useLongPress<HTMLElement>(() => {
+    setShowPrecise(true);
+    window.setTimeout(() => setShowPrecise(false), 1600);
+  });
 
   return (
     <div className="md:hidden -mt-2 space-y-4">
@@ -104,7 +115,8 @@ export const MobileDashboardSummary = ({
           negative so the loss is immediately visible. Falls back to income
           when the portfolio query is still loading (no cashFlow yet). */}
       <section
-        className={`rounded-xl text-white p-5 shadow-sm bg-gradient-to-br ${
+        {...heroLongPress}
+        className={`relative select-none rounded-xl text-white p-5 shadow-sm bg-gradient-to-br ${
           cashFlow == null
             ? 'from-primary-500 to-primary-700 dark:from-primary-700 dark:to-primary-900'
             : cashFlowNegative
@@ -144,6 +156,17 @@ export const MobileDashboardSummary = ({
                 defaultValue: 'Income minus expenses',
               })}
         </div>
+        {showPrecise && (
+          <div
+            role="tooltip"
+            aria-live="polite"
+            className="absolute inset-x-3 bottom-3 bg-black/70 text-white rounded-md px-3 py-2 text-sm tabular-nums backdrop-blur-sm shadow-lg pointer-events-none"
+          >
+            {cashFlow == null
+              ? formatMoney(income, incomeCurrency)
+              : formatMoney(cashFlow, cashFlowCurrency)}
+          </div>
+        )}
       </section>
 
       {/* 3. KPI rail — horizontal snap scroll. snap-proximity (not
