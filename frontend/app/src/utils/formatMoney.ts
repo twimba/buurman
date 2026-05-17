@@ -76,6 +76,11 @@ export function formatMoneyCompact(
   if (abs >= 100_000) {
     return `${sign}${symbol}${Math.round(abs / 1_000)}K`;
   }
+  if (abs >= 10_000) {
+    // 10K–100K: one decimal so `€12.4K` discriminates from `€12.7K` —
+    // matters on a rail tile where the full value is otherwise truncated.
+    return `${sign}${symbol}${(abs / 1_000).toFixed(1)}K`;
+  }
   return formatMoney(amount, currency, {
     locale,
     minimumFractionDigits: 0,
