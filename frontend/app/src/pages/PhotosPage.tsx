@@ -13,10 +13,12 @@ import {
   ListPageHeader,
   Pagination,
   RefreshButton,
+  SelectionBar,
   type ListPageHeaderAction,
+  type SelectionBarAction,
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
-import { RefreshCw } from 'lucide-react';
+import { Download, RefreshCw, Trash2 } from 'lucide-react';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { EditMetadataModal } from '@/components/ui/EditMetadataModal';
 import { PhotoResponse } from '@/types/property';
@@ -157,6 +159,43 @@ export const PhotosPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Phone-only sticky selection bar (overlays bottom tab bar) */}
+      <SelectionBar
+        open={selectedPhotos.size > 0}
+        count={selectedPhotos.size}
+        label={t('photosPage.selectedCount', {
+          count: selectedPhotos.size,
+          defaultValue: '{{count}} selected',
+        })}
+        onCancel={clearSelection}
+        actions={
+          [
+            {
+              label: t('buttons.download', {
+                ns: 'common',
+                defaultValue: 'Download',
+              }),
+              icon: Download,
+              onClick: () => handleBulkDownload(Array.from(selectedPhotos)),
+            },
+            ...(canEditData
+              ? [
+                  {
+                    label: t('buttons.delete', {
+                      ns: 'common',
+                      defaultValue: 'Delete',
+                    }),
+                    icon: Trash2,
+                    tone: 'danger' as const,
+                    onClick: () =>
+                      handleBulkDelete(Array.from(selectedPhotos)),
+                  },
+                ]
+              : []),
+          ] as SelectionBarAction[]
+        }
+      />
 
       {/* Photo Grid */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">

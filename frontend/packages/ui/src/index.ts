@@ -38,6 +38,13 @@ export type {
   SwipeActionItem,
   SwipeActionProps,
 } from './components/SwipeAction';
+export { SelectionBar } from './components/SelectionBar';
+export type {
+  SelectionBarAction,
+  SelectionBarProps,
+} from './components/SelectionBar';
+export { useSelectionMode } from './hooks/useSelectionMode';
+export type { UseSelectionModeResult } from './hooks/useSelectionMode';
 export { StatusBadge } from './components/StatusBadge';
 export type { BadgeColorVariant } from './components/StatusBadge';
 export { EmptyState } from './components/EmptyState';
