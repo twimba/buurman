@@ -394,8 +394,8 @@ public class DemoPhotoGenerator {
   }
 
   /**
-   * Hands out the next unused photo from {@code category} for this team, falling back to wrap-around
-   * if a single team somehow exhausts the pool.
+   * Hands out the next unused photo from {@code category} for this team, falling back to
+   * wrap-around if a single team somehow exhausts the pool.
    */
   @SuppressWarnings("NullAway")
   private @Nullable PhotoFile takeNextPhoto(String category, Map<String, Integer> allocator) {

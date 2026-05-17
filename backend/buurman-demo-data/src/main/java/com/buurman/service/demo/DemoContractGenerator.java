@@ -606,8 +606,8 @@ public class DemoContractGenerator {
   /**
    * Computes the end date for the last contract in a chain. The last property in the portfolio
    * always gets DRAFT (future dates). For portfolios with >12 properties, the two before that get
-   * recently-ended TERMINATED/EXPIRED — at smaller scale we skip those to avoid leaving 20–30%
-   * of the units sitting vacant.
+   * recently-ended TERMINATED/EXPIRED — at smaller scale we skip those to avoid leaving 20–30% of
+   * the units sitting vacant.
    */
   @SuppressWarnings("NullAway")
   private @org.jspecify.annotations.Nullable LocalDate computeLastContractEndDate(

@@ -136,45 +136,205 @@ public class DemoPropertyGenerator {
     static final List<PortfolioEntry> ENTRIES =
         List.of(
             new PortfolioEntry(
-                "Netherlands", "Amsterdam", "Keizersgracht", 142, "1015 CW",
-                52.3676, 4.8884, "RESIDENTIAL", "APARTMENT", 75, 2, 1898,
-                LocalDate.of(2003, 4, 12), 280_000L, 1_950L, false, 0L, 0.0, 0),
+                "Netherlands",
+                "Amsterdam",
+                "Keizersgracht",
+                142,
+                "1015 CW",
+                52.3676,
+                4.8884,
+                "RESIDENTIAL",
+                "APARTMENT",
+                75,
+                2,
+                1898,
+                LocalDate.of(2003, 4, 12),
+                280_000L,
+                1_950L,
+                false,
+                0L,
+                0.0,
+                0),
             new PortfolioEntry(
-                "Netherlands", "Amsterdam", "Vondelstraat", 88, "1054 GR",
-                52.3580, 4.8689, "RESIDENTIAL", "STUDIO", 38, 1, 1925,
-                LocalDate.of(2008, 9, 20), 210_000L, 1_250L, false, 0L, 0.0, 0),
+                "Netherlands",
+                "Amsterdam",
+                "Vondelstraat",
+                88,
+                "1054 GR",
+                52.3580,
+                4.8689,
+                "RESIDENTIAL",
+                "STUDIO",
+                38,
+                1,
+                1925,
+                LocalDate.of(2008, 9, 20),
+                210_000L,
+                1_250L,
+                false,
+                0L,
+                0.0,
+                0),
             new PortfolioEntry(
-                "Netherlands", "Rotterdam", "Coolsingel", 64, "3012 AD",
-                51.9225, 4.4791, "RESIDENTIAL", "APARTMENT", 82, 2, 1980,
-                LocalDate.of(2014, 6, 10), 245_000L, 1_750L, true, 140_000L, 3.0, 25),
+                "Netherlands",
+                "Rotterdam",
+                "Coolsingel",
+                64,
+                "3012 AD",
+                51.9225,
+                4.4791,
+                "RESIDENTIAL",
+                "APARTMENT",
+                82,
+                2,
+                1980,
+                LocalDate.of(2014, 6, 10),
+                245_000L,
+                1_750L,
+                true,
+                140_000L,
+                3.0,
+                25),
             new PortfolioEntry(
-                "Netherlands", "Utrecht", "Oudegracht", 312, "3511 PB",
-                52.0907, 5.1214, "RESIDENTIAL", "TOWNHOUSE", 110, 3, 1965,
-                LocalDate.of(2018, 3, 15), 410_000L, 2_100L, true, 240_000L, 2.0, 30),
+                "Netherlands",
+                "Utrecht",
+                "Oudegracht",
+                312,
+                "3511 PB",
+                52.0907,
+                5.1214,
+                "RESIDENTIAL",
+                "TOWNHOUSE",
+                110,
+                3,
+                1965,
+                LocalDate.of(2018, 3, 15),
+                410_000L,
+                2_100L,
+                true,
+                240_000L,
+                2.0,
+                30),
             new PortfolioEntry(
-                "Netherlands", "Haarlem", "Generaal Cronjéstraat", 24, "2021 JC",
-                52.3874, 4.6462, "RESIDENTIAL", "HOUSE", 145, 4, 1955,
-                LocalDate.of(2021, 11, 8), 575_000L, 2_600L, true, 340_000L, 1.8, 30),
+                "Netherlands",
+                "Haarlem",
+                "Generaal Cronjéstraat",
+                24,
+                "2021 JC",
+                52.3874,
+                4.6462,
+                "RESIDENTIAL",
+                "HOUSE",
+                145,
+                4,
+                1955,
+                LocalDate.of(2021, 11, 8),
+                575_000L,
+                2_600L,
+                true,
+                340_000L,
+                1.8,
+                30),
             new PortfolioEntry(
-                "Portugal", "Lisbon", "Rua da Madalena", 78, "1100-321",
-                38.7100, -9.1357, "RESIDENTIAL", "APARTMENT", 70, 2, 1948,
-                LocalDate.of(2016, 9, 22), 195_000L, 1_300L, true, 115_000L, 2.5, 25),
+                "Portugal",
+                "Lisbon",
+                "Rua da Madalena",
+                78,
+                "1100-321",
+                38.7100,
+                -9.1357,
+                "RESIDENTIAL",
+                "APARTMENT",
+                70,
+                2,
+                1948,
+                LocalDate.of(2016, 9, 22),
+                195_000L,
+                1_300L,
+                true,
+                115_000L,
+                2.5,
+                25),
             new PortfolioEntry(
-                "Portugal", "Porto", "Rua de Cedofeita", 233, "4050-178",
-                41.1500, -8.6175, "RESIDENTIAL", "STUDIO", 42, 1, 1932,
-                LocalDate.of(2020, 5, 18), 145_000L, 900L, true, 85_000L, 1.5, 25),
+                "Portugal",
+                "Porto",
+                "Rua de Cedofeita",
+                233,
+                "4050-178",
+                41.1500,
+                -8.6175,
+                "RESIDENTIAL",
+                "STUDIO",
+                42,
+                1,
+                1932,
+                LocalDate.of(2020, 5, 18),
+                145_000L,
+                900L,
+                true,
+                85_000L,
+                1.5,
+                25),
             new PortfolioEntry(
-                "Spain", "Valencia", "Carrer de Colón", 18, "46004",
-                39.4699, -0.3763, "RESIDENTIAL", "APARTMENT", 85, 2, 1970,
-                LocalDate.of(2019, 7, 30), 215_000L, 1_400L, true, 125_000L, 2.5, 25),
+                "Spain",
+                "Valencia",
+                "Carrer de Colón",
+                18,
+                "46004",
+                39.4699,
+                -0.3763,
+                "RESIDENTIAL",
+                "APARTMENT",
+                85,
+                2,
+                1970,
+                LocalDate.of(2019, 7, 30),
+                215_000L,
+                1_400L,
+                true,
+                125_000L,
+                2.5,
+                25),
             new PortfolioEntry(
-                "Italy", "Milan", "Via Tortona", 27, "20144",
-                45.4525, 9.1700, "RESIDENTIAL", "APARTMENT", 55, 1, 1962,
-                LocalDate.of(2022, 1, 12), 340_000L, 1_800L, true, 200_000L, 3.5, 25),
+                "Italy",
+                "Milan",
+                "Via Tortona",
+                27,
+                "20144",
+                45.4525,
+                9.1700,
+                "RESIDENTIAL",
+                "APARTMENT",
+                55,
+                1,
+                1962,
+                LocalDate.of(2022, 1, 12),
+                340_000L,
+                1_800L,
+                true,
+                200_000L,
+                3.5,
+                25),
             new PortfolioEntry(
-                "Germany", "Berlin", "Schliemannstraße", 9, "10437",
-                52.5410, 13.4180, "COMMERCIAL", "RETAIL", 60, 0, 1928,
-                LocalDate.of(2017, 4, 5), 280_000L, 2_800L, true, 165_000L, 2.0, 25));
+                "Germany",
+                "Berlin",
+                "Schliemannstraße",
+                9,
+                "10437",
+                52.5410,
+                13.4180,
+                "COMMERCIAL",
+                "RETAIL",
+                60,
+                0,
+                1928,
+                LocalDate.of(2017, 4, 5),
+                280_000L,
+                2_800L,
+                true,
+                165_000L,
+                2.0,
+                25));
 
     static PortfolioEntry get(int i) {
       return ENTRIES.get(i);
@@ -1933,8 +2093,7 @@ public class DemoPropertyGenerator {
 
       UUID financingId = UUID.randomUUID();
       LocalDate loanEndDate = acquisitionDate.plusMonths(termMonths);
-      String financingStatus =
-          loanEndDate.isBefore(LocalDate.now(clock)) ? "COMPLETED" : "ACTIVE";
+      String financingStatus = loanEndDate.isBefore(LocalDate.now(clock)) ? "COMPLETED" : "ACTIVE";
 
       financingRecords.add(
           new Object[] {
@@ -2074,9 +2233,10 @@ public class DemoPropertyGenerator {
           case "COMMERCIAL" -> 0.003 + random.nextDouble() * 0.003;
           case "INDUSTRIAL" -> 0.008 + random.nextDouble() * 0.007;
           case "AGRICULTURAL" -> 0.002 + random.nextDouble() * 0.003;
-          default -> 0.004 + random.nextDouble() * 0.006;
+          // Residential: ~0.1-0.2% of value (NL OZB realism, similar across PT/ES/IT/FR/DE)
+          default -> 0.001 + random.nextDouble() * 0.001;
         };
-    long taxAmount = Math.max(300, Math.round(marketValue * taxRatePct));
+    long taxAmount = Math.max(150, Math.round(marketValue * taxRatePct));
 
     taxRecords.add(
         new Object[] {
@@ -2154,7 +2314,13 @@ public class DemoPropertyGenerator {
     long annualRent = rentBaseline.longValue() * 12;
     switch (propertyCategory) {
       case "RESIDENTIAL" -> {
-        if (random.nextInt(3) < 2) {
+        // HOA / VvE is apartment-block specific — skip for standalone houses/townhouses/villas
+        String propertyType = entry.propertyType();
+        boolean inSharedBuilding =
+            "APARTMENT".equals(propertyType)
+                || "STUDIO".equals(propertyType)
+                || "ROOM".equals(propertyType);
+        if (inSharedBuilding && random.nextInt(3) < 2) {
           addFee(
               feeRecords,
               propertyId,

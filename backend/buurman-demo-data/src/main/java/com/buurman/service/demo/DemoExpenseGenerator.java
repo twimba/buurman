@@ -56,9 +56,7 @@ public class DemoExpenseGenerator {
         int startYear = acquisitionDate.getYear();
         double countryMultiplier = ctx.getPropertyCountryRentMultiplier(propertyId);
         double categoryMultiplier =
-            "INDUSTRIAL".equals(propCategory)
-                ? 2.0
-                : "COMMERCIAL".equals(propCategory) ? 1.3 : 1.0;
+            "INDUSTRIAL".equals(propCategory) ? 2.0 : "COMMERCIAL".equals(propCategory) ? 1.3 : 1.0;
 
         // Generate expenses for each COMPLETED year of ownership.
         // For the current (partial) year, only generate recurring annual expenses (insurance, tax)
@@ -81,7 +79,7 @@ public class DemoExpenseGenerator {
               currency,
               "INSURANCE",
               randomAmount(300, 1200, baseMultiplier),
-              randomDateInYear(year),
+              randomDateInYear(year, acquisitionDate),
               "Annual building insurance premium",
               "Annual renewal - " + year,
               now);
@@ -96,8 +94,8 @@ public class DemoExpenseGenerator {
               createdBy,
               currency,
               "PROPERTY_TAX",
-              randomAmount(800, 3000, baseMultiplier),
-              LocalDate.of(year, random.nextInt(1, 4), random.nextInt(1, 28)),
+              randomAmount(300, 1200, baseMultiplier),
+              propertyTaxDateForYear(year, acquisitionDate),
               "Annual property tax - " + year,
               null,
               now);
@@ -119,7 +117,7 @@ public class DemoExpenseGenerator {
               currency,
               "MAINTENANCE",
               randomAmount(150, 500, baseMultiplier),
-              randomDateInYear(year),
+              randomDateInYear(year, acquisitionDate),
               pick(
                   "Annual inspection",
                   "HVAC servicing",
@@ -132,8 +130,10 @@ public class DemoExpenseGenerator {
 
           // === PERIODIC EXPENSES ===
 
-          // 4. Cleaning (residential occasionally for turnover; commercial = tenant's responsibility)
-          int cleaningCount = "COMMERCIAL".equals(propCategory) ? 0 : (random.nextInt(3) == 0 ? 1 : 0);
+          // 4. Cleaning (residential occasionally for turnover; commercial = tenant's
+          // responsibility)
+          int cleaningCount =
+              "COMMERCIAL".equals(propCategory) ? 0 : (random.nextInt(3) == 0 ? 1 : 0);
           for (int c = 0; c < cleaningCount; c++) {
             collectExpense(
                 expenseRecords,
@@ -143,7 +143,7 @@ public class DemoExpenseGenerator {
                 currency,
                 "CLEANING",
                 randomAmount(100, 350, baseMultiplier),
-                randomDateInYear(year),
+                randomDateInYear(year, acquisitionDate),
                 pick(
                     "Common area cleaning",
                     "Window cleaning",
@@ -166,7 +166,7 @@ public class DemoExpenseGenerator {
                 currency,
                 "LANDSCAPING",
                 randomAmount(80, 300, baseMultiplier),
-                randomDateInYear(year),
+                randomDateInYear(year, acquisitionDate),
                 pick(
                     "Garden maintenance",
                     "Tree pruning",
@@ -197,7 +197,7 @@ public class DemoExpenseGenerator {
                 currency,
                 "REPAIR",
                 randomAmount(200, 1500, baseMultiplier),
-                randomDateInYear(year),
+                randomDateInYear(year, acquisitionDate),
                 pick(
                     "Plumbing repair",
                     "Electrical repair",
@@ -222,8 +222,8 @@ public class DemoExpenseGenerator {
                 createdBy,
                 currency,
                 "REPAIR",
-                randomAmount(3000, 15000, baseMultiplier),
-                randomDateInYear(year),
+                randomAmount(2000, 6000, baseMultiplier),
+                randomDateInYear(year, acquisitionDate),
                 pick(
                     "Major roof replacement",
                     "Complete HVAC system overhaul",
@@ -251,7 +251,7 @@ public class DemoExpenseGenerator {
                 currency,
                 "UTILITY",
                 randomAmount(100, 400, baseMultiplier),
-                randomDateInYear(year),
+                randomDateInYear(year, acquisitionDate),
                 pick("Water bill", "Electricity (common areas)", "Gas bill", "Waste collection"),
                 null,
                 now);
@@ -269,7 +269,7 @@ public class DemoExpenseGenerator {
                 currency,
                 random.nextBoolean() ? "LEGAL" : "FEES",
                 randomAmount(200, 800, baseMultiplier),
-                randomDateInYear(year),
+                randomDateInYear(year, acquisitionDate),
                 pick(
                     "Legal consultation fee",
                     "Lease review",
@@ -293,7 +293,7 @@ public class DemoExpenseGenerator {
                 currency,
                 "PROPERTY_MANAGEMENT",
                 randomAmount(150, 500, baseMultiplier),
-                randomDateInYear(year),
+                randomDateInYear(year, acquisitionDate),
                 pick(
                     "Monthly management fee",
                     "Property inspection report",
@@ -356,15 +356,48 @@ public class DemoExpenseGenerator {
     return BigDecimal.valueOf((long) (base * multiplier));
   }
 
-  private LocalDate randomDateInYear(int year) {
+  /** Property tax falls in Q1 — but never before the acquisition month. */
+  private LocalDate propertyTaxDateForYear(int year, LocalDate acquisitionDate) {
+    int minMonth = (acquisitionDate.getYear() == year) ? acquisitionDate.getMonthValue() : 1;
+    int maxMonth = Math.max(minMonth, 3);
+    int month = random.nextInt(minMonth, maxMonth + 1);
+    int monthLength = YearMonth.of(year, month).lengthOfMonth();
+    int minDay =
+        (acquisitionDate.getYear() == year && acquisitionDate.getMonthValue() == month)
+            ? acquisitionDate.getDayOfMonth()
+            : 1;
+    int maxDay = Math.max(minDay, Math.min(monthLength, 28));
+    int day = random.nextInt(minDay, maxDay + 1);
+    return LocalDate.of(year, month, day);
+  }
+
+  /**
+   * Random date in {@code year}, clamped to never be before {@code notBefore} (the property's
+   * acquisition date) or after today. Prevents expense records from pre-dating the purchase.
+   */
+  private LocalDate randomDateInYear(int year, @Nullable LocalDate notBefore) {
     LocalDate today = LocalDate.now(clock);
+    int minMonth = 1;
+    if (notBefore != null && notBefore.getYear() == year) {
+      minMonth = notBefore.getMonthValue();
+    }
     int maxMonth = (year == today.getYear()) ? today.getMonthValue() : 12;
-    int month = random.nextInt(1, maxMonth + 1);
+    if (maxMonth < minMonth) {
+      maxMonth = minMonth;
+    }
+    int month = random.nextInt(minMonth, maxMonth + 1);
+    int minDay = 1;
+    if (notBefore != null && notBefore.getYear() == year && month == notBefore.getMonthValue()) {
+      minDay = notBefore.getDayOfMonth();
+    }
     int maxDay = YearMonth.of(year, month).lengthOfMonth();
     if (year == today.getYear() && month == today.getMonthValue()) {
       maxDay = Math.min(maxDay, today.getDayOfMonth());
     }
-    int day = random.nextInt(1, maxDay + 1);
+    if (maxDay < minDay) {
+      maxDay = minDay;
+    }
+    int day = random.nextInt(minDay, maxDay + 1);
     return LocalDate.of(year, month, day);
   }
 
