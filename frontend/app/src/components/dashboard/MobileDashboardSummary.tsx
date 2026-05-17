@@ -147,6 +147,23 @@ export const MobileDashboardSummary = ({
           value={String(stats.maintenanceUnits ?? 0)}
         />
       </div>
+
+      {/* 4. Portfolio analytics CTA — the full charts dashboard is hidden
+          < md (see DashboardPage L208); this link routes power users to
+          /reports where the deeper analytics live. */}
+      <button
+        type="button"
+        onClick={() => navigate('/reports')}
+        className="w-full flex items-center justify-between gap-2 px-4 py-3 min-h-touch rounded-lg border border-border-default bg-surface-card text-text-secondary focus-ring"
+      >
+        <span className="inline-flex items-center gap-2 text-sm font-medium">
+          <TrendingUp className="h-4 w-4 text-primary-500" />
+          {t('dashboard.portfolioAnalyticsCta', {
+            defaultValue: 'Portfolio analytics',
+          })}
+        </span>
+        <ArrowRight className="h-4 w-4" />
+      </button>
     </div>
   );
 };
