@@ -56,7 +56,9 @@ public class DemoExpenseGenerator {
         int startYear = acquisitionDate.getYear();
         double countryMultiplier = ctx.getPropertyCountryRentMultiplier(propertyId);
         double categoryMultiplier =
-            ("COMMERCIAL".equals(propCategory) || "INDUSTRIAL".equals(propCategory)) ? 2.0 : 1.0;
+            "INDUSTRIAL".equals(propCategory)
+                ? 2.0
+                : "COMMERCIAL".equals(propCategory) ? 1.3 : 1.0;
 
         // Generate expenses for each COMPLETED year of ownership.
         // For the current (partial) year, only generate recurring annual expenses (insurance, tax)
@@ -130,9 +132,8 @@ public class DemoExpenseGenerator {
 
           // === PERIODIC EXPENSES ===
 
-          // 4. Cleaning (commercial: 2x/year, residential: 0-1x/year)
-          int cleaningCount =
-              "COMMERCIAL".equals(propCategory) ? 2 : (random.nextInt(3) == 0 ? 1 : 0);
+          // 4. Cleaning (residential occasionally for turnover; commercial = tenant's responsibility)
+          int cleaningCount = "COMMERCIAL".equals(propCategory) ? 0 : (random.nextInt(3) == 0 ? 1 : 0);
           for (int c = 0; c < cleaningCount; c++) {
             collectExpense(
                 expenseRecords,

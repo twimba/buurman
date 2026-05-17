@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -54,7 +55,6 @@ public class DemoPhotoGenerator {
 
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
-  private final Random random = new Random(42);
 
   @SuppressWarnings("ArrayRecordComponent") // Private data holder, never compared
   private record PhotoFile(byte[] data, String mimeType) {}
@@ -267,9 +267,14 @@ public class DemoPhotoGenerator {
         continue;
       }
 
+      // Per-team allocator: hands out the next unused photo index per category so no two
+      // properties on the same team share a photo file.
+      Map<String, Integer> photoAllocator = new HashMap<>();
+
       for (int pi = 0; pi < propertyIds.size(); pi++) {
         UUID propertyId = propertyIds.get(pi);
         String category = ctx.getPropertyCategory(propertyId);
+        String propertyType = ctx.getPropertyType(propertyId);
         collectPhotoUploadTasks(
             uploadTasks,
             teamId,
@@ -278,7 +283,8 @@ public class DemoPhotoGenerator {
             ctx.getIdentifier(propertyId),
             uploadedBy,
             category,
-            pi);
+            propertyType,
+            photoAllocator);
       }
     }
 
@@ -320,18 +326,20 @@ public class DemoPhotoGenerator {
       Sid propertyIdentifier,
       UUID uploadedBy,
       String propertyCategory,
-      int propertyIndex) {
+      String propertyType,
+      Map<String, Integer> photoAllocator) {
     record PhotoSlot(String category, String title, boolean isMain) {}
 
     List<PhotoSlot> slots =
         switch (propertyCategory) {
-          case "COMMERCIAL" ->
-              List.of(
-                  new PhotoSlot("offices", "Building exterior", true),
-                  new PhotoSlot("offices", "Reception area", false),
-                  new PhotoSlot("offices", "Open workspace", false),
-                  new PhotoSlot("offices", "Meeting room", false),
-                  new PhotoSlot("offices", "Break room", false));
+          case "COMMERCIAL" -> {
+            String commercialPool = "RETAIL".equals(propertyType) ? "retail" : "offices";
+            yield List.of(
+                new PhotoSlot(commercialPool, "Storefront", true),
+                new PhotoSlot(commercialPool, "Interior overview", false),
+                new PhotoSlot(commercialPool, "Sales floor", false),
+                new PhotoSlot(commercialPool, "Storage area", false));
+          }
           case "INDUSTRIAL" ->
               List.of(
                   new PhotoSlot("warehouses", "Exterior", true),
@@ -361,7 +369,7 @@ public class DemoPhotoGenerator {
         };
 
     for (PhotoSlot slot : slots) {
-      PhotoFile photoFile = pickPhoto(slot.category, slot.title, propertyIndex);
+      PhotoFile photoFile = takeNextPhoto(slot.category, photoAllocator);
       if (photoFile == null) {
         continue;
       }
@@ -383,6 +391,25 @@ public class DemoPhotoGenerator {
               slot.title,
               slot.isMain));
     }
+  }
+
+  /**
+   * Hands out the next unused photo from {@code category} for this team, falling back to wrap-around
+   * if a single team somehow exhausts the pool.
+   */
+  @SuppressWarnings("NullAway")
+  private @Nullable PhotoFile takeNextPhoto(String category, Map<String, Integer> allocator) {
+    List<PhotoFile> pool = photoPool.get(category);
+    if (pool == null || pool.isEmpty()) {
+      return photoPool.values().stream()
+          .filter(l -> !l.isEmpty())
+          .findFirst()
+          .map(l -> l.get(0))
+          .orElse(null);
+    }
+    int next = allocator.getOrDefault(category, 0);
+    allocator.put(category, next + 1);
+    return pool.get(next % pool.size());
   }
 
   @SuppressWarnings("NullAway")
@@ -431,22 +458,6 @@ public class DemoPhotoGenerator {
       }
       return results;
     }
-  }
-
-  @SuppressWarnings("NullAway")
-  private @Nullable PhotoFile pickPhoto(String category, String title, int propertyIndex) {
-    List<PhotoFile> pool = photoPool.get(category);
-    if (pool != null && !pool.isEmpty()) {
-      // Use property index to spread across the pool, avoiding repeats for sequential properties
-      int idx = (propertyIndex + random.nextInt(pool.size())) % pool.size();
-      return pool.get(idx);
-    }
-    // Shouldn't happen since loadAndAugmentPhotoPool pre-generates for all categories
-    return photoPool.values().stream()
-        .filter(l -> !l.isEmpty())
-        .findFirst()
-        .map(l -> l.get(random.nextInt(l.size())))
-        .orElse(null);
   }
 
   /**

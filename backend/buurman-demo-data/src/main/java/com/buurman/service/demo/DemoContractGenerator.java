@@ -97,13 +97,15 @@ public class DemoContractGenerator {
             return Boolean.compare(aBiz, bBiz);
           });
 
-      // Sort properties: residential first, non-residential last
+      // Sort properties: residential first, non-residential last — except keep non-residential out
+      // of the trailing DRAFT/TERMINATED/EXPIRED slots so a single commercial unit doesn't end up
+      // vacant by accident. Sort puts non-residential FIRST so it lands at propIdx 0 (ACTIVE).
       List<UUID> sortedProperties = new ArrayList<>(propertyIds);
       sortedProperties.sort(
           (a, b) -> {
             boolean aRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(a));
             boolean bRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(b));
-            return Boolean.compare(!aRes, !bRes);
+            return Boolean.compare(aRes, bRes);
           });
 
       // Global contact index across all properties in this team
@@ -602,18 +604,19 @@ public class DemoContractGenerator {
   }
 
   /**
-   * Computes the end date for the last contract in a chain. Properties 27, 28 get
-   * TERMINATED/EXPIRED (recent end). Property 29 gets DRAFT. Properties 0-26 get ACTIVE with no end
-   * date (INDEFINITE) or future end.
+   * Computes the end date for the last contract in a chain. The last property in the portfolio
+   * always gets DRAFT (future dates). For portfolios with >12 properties, the two before that get
+   * recently-ended TERMINATED/EXPIRED — at smaller scale we skip those to avoid leaving 20–30%
+   * of the units sitting vacant.
    */
   @SuppressWarnings("NullAway")
   private @org.jspecify.annotations.Nullable LocalDate computeLastContractEndDate(
       int propIdx, int totalProperties, LocalDate startDate, int termMonths, LocalDate today) {
-    if (propIdx == totalProperties - 1) {
+    if (totalProperties > 10 && propIdx == totalProperties - 1) {
       // DRAFT: future dates
       return startDate.plusMonths(termMonths);
-    } else if (propIdx >= totalProperties - 3) {
-      // TERMINATED/EXPIRED: recently ended
+    } else if (totalProperties > 10 && propIdx >= totalProperties - 3) {
+      // TERMINATED/EXPIRED: recently ended (only for larger demo portfolios)
       return today.minusMonths(random.nextInt(1, 4));
     } else {
       // ACTIVE: ~50% INDEFINITE (null end), ~50% future end date
@@ -637,11 +640,11 @@ public class DemoContractGenerator {
     }
 
     // Last contract in the chain
-    if (propIdx == totalProperties - 1) {
+    if (totalProperties > 10 && propIdx == totalProperties - 1) {
       return "DRAFT";
-    } else if (propIdx == totalProperties - 2) {
+    } else if (totalProperties > 10 && propIdx == totalProperties - 2) {
       return "TERMINATED";
-    } else if (propIdx == totalProperties - 3) {
+    } else if (totalProperties > 10 && propIdx == totalProperties - 3) {
       return "EXPIRED";
     } else {
       return "ACTIVE";
