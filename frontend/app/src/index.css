@@ -104,6 +104,11 @@ label {
   .animate-slide-down {
     animation: none;
   }
+  /* Disable active-scale press feedback under reduce-motion. Targets the
+     Button's active:scale-[0.97] (P2-4) and any future active-scale opts-in. */
+  *:active {
+    transform: none !important;
+  }
 }
 
 /* ── View Transitions (Chrome/Safari/Edge — native cross-document) ──

@@ -118,10 +118,15 @@ export const Button = ({
         'font-medium',
         'rounded-md',
         'transition-all duration-150 ease-out',
+        // Press feedback — native-feel scale-down on touch/click. Capped
+        // at 0.97 so big buttons don't pixel-jump. motion-reduce: scale
+        // is opted out via the @media block in index.css.
+        'active:scale-[0.97]',
         'outline-none',
         'select-none',
         'disabled:cursor-not-allowed',
         'disabled:pointer-events-none',
+        'disabled:active:scale-100',
         variantStyles[variant],
         sizeStyles[size],
         className
