@@ -9,6 +9,14 @@ import {
 } from 'react';
 import { cn } from '../utils/cn';
 
+/**
+ * Snap point as a fraction of the dynamic viewport height. e.g. `0.4` =
+ * "open the sheet at 40dvh". Values must be ascending; the smallest is
+ * the "peek" and the largest is "full". Drag below the smallest past
+ * the dismiss threshold closes the sheet.
+ */
+export type SheetSnapPoint = number;
+
 export interface SheetProps {
   open: boolean;
   onClose: () => void;
@@ -20,8 +28,22 @@ export interface SheetProps {
   forceSheet?: boolean;
   /** Prevent close via overlay click / Escape (still allow programmatic close). */
   preventClose?: boolean;
+  /**
+   * Sorted ascending dvh fractions, e.g. `[0.4, 0.92]` for peek/full.
+   * When provided, the sheet opens at the first snap point and the drag
+   * handle snaps between points. When omitted, the sheet behaves as a
+   * single full-height sheet (today's default at max-h:92dvh).
+   */
+  snapPoints?: SheetSnapPoint[];
+  /**
+   * Initial snap index when `snapPoints` is provided. Defaults to 0 (peek).
+   */
+  initialSnap?: number;
   className?: string;
 }
+
+const DISMISS_THRESHOLD_RATIO = 0.25;
+const VELOCITY_DISMISS = 0.6;
 
 /**
  * Responsive modal:
@@ -30,6 +52,9 @@ export interface SheetProps {
  *
  * Built on Radix Dialog so focus trap, ESC, scroll lock, ARIA are handled.
  * No Vaul dependency.
+ *
+ * Pass `snapPoints={[0.4, 0.92]}` for peek/full snap behavior — useful for
+ * long forms where the user can scan summary at peek then drag up to fill.
  */
 export function Sheet({
   open,
@@ -40,6 +65,8 @@ export function Sheet({
   footer,
   forceSheet,
   preventClose,
+  snapPoints,
+  initialSnap = 0,
   className,
 }: SheetProps) {
   const [isDesktop, setIsDesktop] = useState(() =>
@@ -47,6 +74,7 @@ export function Sheet({
       ? true
       : window.matchMedia('(min-width: 768px)').matches
   );
+  const [snapIndex, setSnapIndex] = useState(initialSnap);
 
   useEffect(() => {
     if (forceSheet) {
@@ -58,6 +86,11 @@ export function Sheet({
     return () => mq.removeEventListener('change', handler);
   }, [forceSheet]);
 
+  // Note: snapIndex persists across open/close cycles intentionally — a
+  // user dragging to "full" once usually wants the next open to land there
+  // too. Callers needing a hard reset can pass a `key` to remount the
+  // Sheet.
+
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
       if (!nextOpen && !preventClose) {
@@ -68,6 +101,8 @@ export function Sheet({
   );
 
   const renderAsSheet = forceSheet || !isDesktop;
+  const useSnap = renderAsSheet && snapPoints && snapPoints.length > 0;
+  const snapHeightDvh = useSnap ? snapPoints[snapIndex] * 100 : null;
 
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -86,10 +121,13 @@ export function Sheet({
               ? [
                   // Bottom sheet
                   'inset-x-0 bottom-0',
-                  'max-h-[92dvh]',
+                  // When snap points drive height, omit max-h so the dvh
+                  // height we set inline takes effect.
+                  useSnap ? '' : 'max-h-[92dvh]',
                   'rounded-t-2xl',
                   'data-[state=open]:animate-slide-up',
                   'data-[state=closed]:animate-slide-down',
+                  'transition-[height] duration-200 ease-out',
                 ]
               : [
                   // Centered dialog
@@ -108,12 +146,18 @@ export function Sheet({
                     'calc(var(--safe-bottom, 0px) + var(--kbd-inset, 0px))',
                   paddingLeft: 'var(--safe-left, 0px)',
                   paddingRight: 'var(--safe-right, 0px)',
+                  ...(snapHeightDvh != null
+                    ? { height: `${snapHeightDvh}dvh` }
+                    : undefined),
                 }
               : undefined
           }
         >
           {renderAsSheet && (
             <DragHandle
+              snapPoints={useSnap ? snapPoints : undefined}
+              snapIndex={snapIndex}
+              onSnapTo={(next) => setSnapIndex(next)}
               onDismiss={() => {
                 if (!preventClose) {
                   onClose();
@@ -161,17 +205,40 @@ export function Sheet({
 
 Sheet.displayName = 'Sheet';
 
+interface DragHandleProps {
+  snapPoints?: SheetSnapPoint[];
+  snapIndex: number;
+  onSnapTo: (index: number) => void;
+  onDismiss: () => void;
+}
+
 /**
- * Drag handle that listens to pointer events on the visual grabber so the
- * user can flick the sheet down to dismiss. Threshold: 25% of the parent
- * sheet height OR pointer velocity > 0.6 px/ms (matches iOS native feel).
+ * Drag handle for the bottom sheet. Two modes:
  *
- * Built on native pointer events (no @use-gesture dep in the ui package).
+ * 1. **No snap points (default):** drag down translates the sheet; release
+ *    past 25 % of sheet height OR velocity > 0.6 px/ms dismisses, else
+ *    snaps back to position 0.
+ *
+ * 2. **Snap points provided:** the sheet's height is driven by the current
+ *    snap index. Drag computes the would-be new height (current height
+ *    minus drag-down distance); on release, snaps to the nearest snap
+ *    point. Dragging below the smallest snap point past the dismiss
+ *    threshold dismisses.
+ *
+ * Built on native pointer events (no @use-gesture dep).
  */
-function DragHandle({ onDismiss }: { onDismiss: () => void }) {
-  const startRef = useRef<{ y: number; t: number; sheet: HTMLElement } | null>(
-    null
-  );
+function DragHandle({
+  snapPoints,
+  snapIndex,
+  onSnapTo,
+  onDismiss,
+}: DragHandleProps) {
+  const startRef = useRef<{
+    y: number;
+    t: number;
+    sheet: HTMLElement;
+    startHeight: number;
+  } | null>(null);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const sheet = e.currentTarget.closest(
@@ -181,7 +248,13 @@ function DragHandle({ onDismiss }: { onDismiss: () => void }) {
       return;
     }
     (e.target as Element).setPointerCapture?.(e.pointerId);
-    startRef.current = { y: e.clientY, t: e.timeStamp, sheet };
+    const startHeight = sheet.getBoundingClientRect().height;
+    startRef.current = {
+      y: e.clientY,
+      t: e.timeStamp,
+      sheet,
+      startHeight,
+    };
     sheet.style.transition = 'none';
   };
 
@@ -190,8 +263,16 @@ function DragHandle({ onDismiss }: { onDismiss: () => void }) {
     if (!start) {
       return;
     }
-    const dy = Math.max(0, e.clientY - start.y);
-    start.sheet.style.transform = `translateY(${dy}px)`;
+    const dy = e.clientY - start.y;
+    if (snapPoints) {
+      // Snap mode: shrink height as user drags down, grow as they drag up.
+      const target = Math.max(0, start.startHeight - dy);
+      start.sheet.style.height = `${target}px`;
+    } else {
+      // Translate mode: only allow downward translation.
+      const downOnly = Math.max(0, dy);
+      start.sheet.style.transform = `translateY(${downOnly}px)`;
+    }
   };
 
   const handlePointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -200,18 +281,63 @@ function DragHandle({ onDismiss }: { onDismiss: () => void }) {
       return;
     }
     startRef.current = null;
-    const dy = Math.max(0, e.clientY - start.y);
+    const dy = e.clientY - start.y;
     const dt = Math.max(1, e.timeStamp - start.t);
     const velocity = dy / dt;
-    const sheetHeight = start.sheet.getBoundingClientRect().height;
-    const shouldDismiss = dy > sheetHeight * 0.25 || velocity > 0.6;
+
+    if (snapPoints) {
+      // Snap-mode release.
+      const viewportH =
+        window.innerHeight ||
+        document.documentElement.clientHeight ||
+        start.startHeight;
+      const finalHeight = Math.max(0, start.startHeight - dy);
+      const finalRatio = finalHeight / viewportH;
+      const smallestSnap = snapPoints[0];
+
+      // Dismiss if we've dragged well below the smallest snap or flicked
+      // down with enough velocity.
+      const dismissThresholdRatio = smallestSnap * (1 - DISMISS_THRESHOLD_RATIO);
+      const shouldDismiss =
+        finalRatio < dismissThresholdRatio || velocity > VELOCITY_DISMISS;
+
+      if (shouldDismiss) {
+        start.sheet.style.transition = '';
+        start.sheet.style.height = '';
+        onDismiss();
+        return;
+      }
+
+      // Find nearest snap.
+      let nearestIdx = 0;
+      let nearestDelta = Infinity;
+      for (let i = 0; i < snapPoints.length; i++) {
+        const d = Math.abs(finalRatio - snapPoints[i]);
+        if (d < nearestDelta) {
+          nearestDelta = d;
+          nearestIdx = i;
+        }
+      }
+      // Restore CSS-driven height; clear the inline override.
+      start.sheet.style.transition = 'height 200ms ease-out';
+      start.sheet.style.height = '';
+      if (nearestIdx !== snapIndex) {
+        onSnapTo(nearestIdx);
+      }
+      return;
+    }
+
+    // Translate-mode release.
+    const downOnly = Math.max(0, dy);
+    const sheetHeight = start.startHeight;
+    const shouldDismiss =
+      downOnly > sheetHeight * DISMISS_THRESHOLD_RATIO ||
+      velocity > VELOCITY_DISMISS;
     if (shouldDismiss) {
-      // Let the close animation take over from the dragged position.
       start.sheet.style.transition = '';
       start.sheet.style.transform = '';
       onDismiss();
     } else {
-      // Snap back with a quick eased return.
       start.sheet.style.transition = 'transform 180ms ease-out';
       start.sheet.style.transform = '';
     }
@@ -220,7 +346,7 @@ function DragHandle({ onDismiss }: { onDismiss: () => void }) {
   return (
     <div
       role="button"
-      aria-label="Drag to dismiss"
+      aria-label={snapPoints ? 'Drag to resize or dismiss' : 'Drag to dismiss'}
       tabIndex={-1}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

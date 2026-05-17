@@ -23,7 +23,7 @@ export { FormField } from './components/FormField';
 // New components — Batch 2 (Interactive)
 export { ModalWrapper } from './components/ModalWrapper';
 export { Sheet } from './components/Sheet';
-export type { SheetProps } from './components/Sheet';
+export type { SheetProps, SheetSnapPoint } from './components/Sheet';
 export { FilterSheet } from './components/FilterSheet';
 export type { FilterSheetProps } from './components/FilterSheet';
 export { PullToRefresh } from './components/PullToRefresh';

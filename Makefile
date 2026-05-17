@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -66,6 +66,19 @@ backend:
 		. ./.env.backend && cd backend && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app; \
 	else \
 		cd backend && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app; \
+	fi
+
+## Run backend locally (sources workspace env overrides if present)
+## Two-phase: install all modules with build cache, then run app module only.
+## spring-boot:run forks a lifecycle that bypasses the build cache, so we compile
+## separately to avoid re-running JOOQ/OpenAPI codegen on every restart.
+backend-nocache:
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	if [ -f .env.backend ]; then \
+		echo "Sourcing workspace backend config from .env.backend"; \
+		. ./.env.backend && cd backend && mvn install -pl buurman-app -am -DskipTests -Dmaven.build.cache.enabled=false -Pquick && mvn spring-boot:run -pl buurman-app; \
+	else \
+		cd backend && mvn install -pl buurman-app -am -DskipTests -Dmaven.build.cache.enabled=false -Pquick && mvn spring-boot:run -pl buurman-app; \
 	fi
 
 ## Run frontend app locally (loads .env for VITE_* variables)
