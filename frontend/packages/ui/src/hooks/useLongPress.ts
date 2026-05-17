@@ -34,11 +34,7 @@ export function useLongPress<T extends Element = Element>(
   onLongPress: (e: React.PointerEvent<T>) => void,
   options: UseLongPressOptions = {}
 ): LongPressHandlers<T> {
-  const {
-    delayMs = 500,
-    moveTolerancePx = 8,
-    enableMouse = false,
-  } = options;
+  const { delayMs = 500, moveTolerancePx = 8, enableMouse = false } = options;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startRef = useRef<{ x: number; y: number } | null>(null);
 

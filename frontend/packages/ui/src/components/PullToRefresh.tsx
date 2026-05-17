@@ -80,10 +80,7 @@ export function PullToRefresh({
       }
       const raw = Math.max(0, e.clientY - start.y);
       // Square-root easing so the pull feels rubbery and self-limits near MAX.
-      const eased = Math.min(
-        MAX_PULL_PX,
-        Math.round(Math.sqrt(raw * 6) * 6.5)
-      );
+      const eased = Math.min(MAX_PULL_PX, Math.round(Math.sqrt(raw * 6) * 6.5));
       setPull(eased);
     },
     []
@@ -139,7 +136,8 @@ export function PullToRefresh({
         className="absolute inset-x-0 top-0 z-0 flex items-end justify-center pb-2"
         style={{
           height: `${pull}px`,
-          transition: refreshing || pull === 0 ? 'height 180ms ease-out' : 'none',
+          transition:
+            refreshing || pull === 0 ? 'height 180ms ease-out' : 'none',
         }}
       >
         <RefreshCw
@@ -157,7 +155,8 @@ export function PullToRefresh({
         className="h-full overflow-y-auto overscroll-contain"
         style={{
           transform: `translateY(${pull}px)`,
-          transition: refreshing || pull === 0 ? 'transform 180ms ease-out' : 'none',
+          transition:
+            refreshing || pull === 0 ? 'transform 180ms ease-out' : 'none',
         }}
       >
         {children}

@@ -101,10 +101,7 @@ export const EquityCompositionChart = ({
         margin={{ left: isMobile ? 6 : 20 }}
       >
         {!isMobile && (
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke={borderDefault}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={borderDefault} />
         )}
         <XAxis
           type="number"

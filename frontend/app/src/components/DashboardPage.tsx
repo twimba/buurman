@@ -14,12 +14,7 @@ import { PortfolioDashboard } from './dashboard/PortfolioDashboard';
 import { PropertyPerformanceTable } from './dashboard/PropertyPerformanceTable';
 import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
 import { DashboardKpiStrip } from './dashboard/DashboardKpiStrip';
-import {
-  ArrowRight,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-} from 'lucide-react';
+import { ArrowRight, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { formatMoney } from '@/utils/formatMoney';
@@ -182,17 +177,17 @@ export const DashboardPage = () => {
 
       {/* Pending Extensions */}
       <div className="order-4 md:order-none">
-      <PendingExtensionsPanel
-        extensions={pendingExtensions ?? []}
-        isLoading={extensionsLoading}
-        onActivate={(contractId, extensionId) =>
-          activateExtensionMutation.mutate({ contractId, extensionId })
-        }
-        onDecline={(contractId, extensionId) =>
-          declineExtensionMutation.mutate({ contractId, extensionId })
-        }
-        isActivating={activateExtensionMutation.isPending}
-      />
+        <PendingExtensionsPanel
+          extensions={pendingExtensions ?? []}
+          isLoading={extensionsLoading}
+          onActivate={(contractId, extensionId) =>
+            activateExtensionMutation.mutate({ contractId, extensionId })
+          }
+          onDecline={(contractId, extensionId) =>
+            declineExtensionMutation.mutate({ contractId, extensionId })
+          }
+          isActivating={activateExtensionMutation.isPending}
+        />
       </div>
 
       {/* Portfolio Dashboard — desktop only. Phone gets DashboardKpiStrip
@@ -226,103 +221,104 @@ export const DashboardPage = () => {
 
       {/* Property Status Breakdown */}
       <div className="order-5 md:order-none">
-      {stats &&
-        stats.totalProperties > 0 &&
-        (() => {
-          const statuses = [
-            {
-              label: t('dashboard.occupied'),
-              count: stats.occupiedUnits,
-              color: 'bg-success',
-              dotColor: 'bg-success',
-              textColor: 'text-success-text',
-            },
-            ...(stats.selfOccupiedUnits > 0
-              ? [
-                  {
-                    label: t('dashboard.selfOccupied'),
-                    count: stats.selfOccupiedUnits,
-                    color: 'bg-info',
-                    dotColor: 'bg-info',
-                    textColor: 'text-info-text',
-                  },
-                ]
-              : []),
-            {
-              label: t('dashboard.vacant'),
-              count: stats.vacantUnits,
-              color: 'bg-warning',
-              dotColor: 'bg-warning',
-              textColor: 'text-warning-text',
-            },
-            {
-              label: t('dashboard.maintenance'),
-              count: stats.maintenanceUnits,
-              color: 'bg-amber-500',
-              dotColor: 'bg-amber-500',
-              textColor: 'text-text-secondary',
-            },
-            {
-              label: t('dashboard.unavailable'),
-              count: stats.unavailableUnits,
-              color: 'bg-neutral-300',
-              dotColor: 'bg-neutral-400',
-              textColor: 'text-text-muted',
-            },
-          ];
+        {stats &&
+          stats.totalProperties > 0 &&
+          (() => {
+            const statuses = [
+              {
+                label: t('dashboard.occupied'),
+                count: stats.occupiedUnits,
+                color: 'bg-success',
+                dotColor: 'bg-success',
+                textColor: 'text-success-text',
+              },
+              ...(stats.selfOccupiedUnits > 0
+                ? [
+                    {
+                      label: t('dashboard.selfOccupied'),
+                      count: stats.selfOccupiedUnits,
+                      color: 'bg-info',
+                      dotColor: 'bg-info',
+                      textColor: 'text-info-text',
+                    },
+                  ]
+                : []),
+              {
+                label: t('dashboard.vacant'),
+                count: stats.vacantUnits,
+                color: 'bg-warning',
+                dotColor: 'bg-warning',
+                textColor: 'text-warning-text',
+              },
+              {
+                label: t('dashboard.maintenance'),
+                count: stats.maintenanceUnits,
+                color: 'bg-amber-500',
+                dotColor: 'bg-amber-500',
+                textColor: 'text-text-secondary',
+              },
+              {
+                label: t('dashboard.unavailable'),
+                count: stats.unavailableUnits,
+                color: 'bg-neutral-300',
+                dotColor: 'bg-neutral-400',
+                textColor: 'text-text-muted',
+              },
+            ];
 
-          return (
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-base font-semibold text-text-primary mb-5">
-                {t('dashboard.propertyStatus')}
-              </h2>
+            return (
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-base font-semibold text-text-primary mb-5">
+                  {t('dashboard.propertyStatus')}
+                </h2>
 
-              {/* Stacked horizontal bar */}
-              <div className="flex h-3 rounded-full overflow-hidden mb-6">
-                {statuses.map((s) =>
-                  s.count > 0 ? (
-                    <div
-                      key={s.label}
-                      className={`${s.color} first:rounded-l-full last:rounded-r-full`}
-                      style={{
-                        width: `${(s.count / stats.totalProperties) * 100}%`,
-                      }}
-                    />
-                  ) : null
-                )}
-              </div>
+                {/* Stacked horizontal bar */}
+                <div className="flex h-3 rounded-full overflow-hidden mb-6">
+                  {statuses.map((s) =>
+                    s.count > 0 ? (
+                      <div
+                        key={s.label}
+                        className={`${s.color} first:rounded-l-full last:rounded-r-full`}
+                        style={{
+                          width: `${(s.count / stats.totalProperties) * 100}%`,
+                        }}
+                      />
+                    ) : null
+                  )}
+                </div>
 
-              {/* Legend rows */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                {statuses.map((s) => {
-                  const pct = ((s.count / stats.totalProperties) * 100).toFixed(
-                    0
-                  );
-                  return (
-                    <div key={s.label} className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`h-2.5 w-2.5 rounded-full ${s.dotColor} shrink-0`}
-                        />
-                        <span className="text-xs font-medium text-text-secondary">
-                          {s.label}
-                        </span>
+                {/* Legend rows */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                  {statuses.map((s) => {
+                    const pct = (
+                      (s.count / stats.totalProperties) *
+                      100
+                    ).toFixed(0);
+                    return (
+                      <div key={s.label} className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`h-2.5 w-2.5 rounded-full ${s.dotColor} shrink-0`}
+                          />
+                          <span className="text-xs font-medium text-text-secondary">
+                            {s.label}
+                          </span>
+                        </div>
+                        <div className="pl-[18px]">
+                          <span className="text-lg font-bold text-text-primary tabular-nums">
+                            {s.count}
+                          </span>
+                          <span className="text-xs text-text-muted ml-1.5">
+                            {pct}%
+                          </span>
+                        </div>
                       </div>
-                      <div className="pl-[18px]">
-                        <span className="text-lg font-bold text-text-primary tabular-nums">
-                          {s.count}
-                        </span>
-                        <span className="text-xs text-text-muted ml-1.5">
-                          {pct}%
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
       </div>
 
       {/* Unpaid Payments — hoisted to phone position 2 (right after the

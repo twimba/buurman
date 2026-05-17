@@ -379,9 +379,7 @@ export const DocumentsPage = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        setPreviewIndex(documents.indexOf(doc))
-                      }
+                      onClick={() => setPreviewIndex(documents.indexOf(doc))}
                       className="flex-1 min-w-0 flex items-start gap-3 text-left focus-ring rounded-md"
                     >
                       <div className="flex-shrink-0 mt-0.5">

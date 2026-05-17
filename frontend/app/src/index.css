@@ -118,12 +118,21 @@ label {
    Phone slides left/right; desktop cross-fades (less jarring on wide
    viewports). Skipped entirely under prefers-reduced-motion. */
 @keyframes vt-slide-from-right {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 @keyframes vt-slide-to-left {
-  from { transform: translateX(0); }
-  to { transform: translateX(-20%); opacity: 0.6; }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-20%);
+    opacity: 0.6;
+  }
 }
 
 @media (max-width: 767px) {
@@ -145,10 +154,14 @@ label {
 }
 
 @keyframes fade-out {
-  to { opacity: 0; }
+  to {
+    opacity: 0;
+  }
 }
 @keyframes fade-in {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
