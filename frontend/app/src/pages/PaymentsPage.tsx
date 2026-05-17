@@ -425,7 +425,7 @@ export const PaymentsPage = () => {
         {paymentsData?.content && paymentsData.content.length > 0 ? (
           <>
             <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
-              <table className="min-w-full divide-y divide-border-default">
+              <div className="overflow-x-auto"><table className="min-w-full divide-y divide-border-default">
                 <thead className="bg-surface-page">
                   <tr>
                     <th
@@ -544,7 +544,7 @@ export const PaymentsPage = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </div>
 
             {paymentsData && (

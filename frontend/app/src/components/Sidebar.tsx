@@ -29,6 +29,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SidebarTooltip } from '@buurman/ui';
+import { useMobileNav } from '@/context/MobileNavContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTeam } from '@/context/TeamContext';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
@@ -233,6 +234,9 @@ export const Sidebar = ({
   }, []);
   const shouldBeInert = isMobileViewport && !mobileOpen;
 
+  // Whether a page-level header (ListPageHeader) is providing its own menu trigger.
+  const { hasOwnMenuButton } = useMobileNav();
+
   // Close drawer on Escape (mobile only)
   useEffect(() => {
     if (!mobileOpen) {
@@ -249,22 +253,25 @@ export const Sidebar = ({
 
   return (
     <>
-      {/* Mobile menu button — min-h/w 44px for AAA touch target */}
-      <button
-        type="button"
-        onClick={() => setMobileOpen(!mobileOpen)}
-        aria-label={
-          mobileOpen
-            ? t('accessibility.closeMenu', 'Close menu')
-            : t('accessibility.openMenu', 'Open menu')
-        }
-        aria-expanded={mobileOpen}
-        aria-controls="primary-sidebar"
-        className="lg:hidden fixed left-4 z-50 inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset focus-ring"
-        style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
-      >
-        {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-      </button>
+      {/* Mobile menu button — hides when a page-level header provides its own
+          trigger (avoids double hamburger). Always min-h/w 44px touch target. */}
+      {!hasOwnMenuButton && (
+        <button
+          type="button"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={
+            mobileOpen
+              ? t('accessibility.closeMenu', 'Close menu')
+              : t('accessibility.openMenu', 'Open menu')
+          }
+          aria-expanded={mobileOpen}
+          aria-controls="primary-sidebar"
+          className="lg:hidden fixed left-4 z-50 inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset focus-ring"
+          style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
+        >
+          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+      )}
 
       {/* Backdrop scrim — closes drawer on tap, only visible on mobile when open */}
       {mobileOpen && (

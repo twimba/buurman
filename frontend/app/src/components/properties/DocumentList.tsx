@@ -282,7 +282,7 @@ export const DocumentList = ({
             )}
           </div>
 
-          <table className="min-w-full divide-y divide-border-default">
+          <div className="overflow-x-auto"><table className="min-w-full divide-y divide-border-default">
             <thead className="bg-surface-page">
               <tr>
                 <th className="w-12 px-6 py-3" />
@@ -406,7 +406,7 @@ export const DocumentList = ({
                 );
               })}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
 

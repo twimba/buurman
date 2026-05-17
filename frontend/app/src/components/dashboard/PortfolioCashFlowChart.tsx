@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import {
   ComposedChart,
   Bar,
@@ -97,6 +98,7 @@ export const PortfolioCashFlowChart = ({
   height = 320,
 }: PortfolioCashFlowChartProps) => {
   const { t } = useTranslation('common');
+  const isMobile = useIsMobile();
   const chartData = useMemo(
     () =>
       data.map((d) => ({
@@ -147,16 +149,20 @@ export const PortfolioCashFlowChart = ({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <ComposedChart data={chartData} barGap={-barSize} barSize={barSize}>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
-        />
+        {!isMobile && (
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
+          />
+        )}
         <XAxis
           dataKey="month"
+          interval={isMobile ? 'preserveStartEnd' : 0}
           tickFormatter={formatMonthTick}
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
         />
         <YAxis
+          hide={isMobile}
           tickFormatter={(v: number) => formatAxisValue(v, currency)}
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
         />
@@ -181,6 +187,7 @@ export const PortfolioCashFlowChart = ({
             ];
           }}
         />
+        {!isMobile && (
         <Legend
           formatter={(value) => {
             const labels2: Record<string, string> = {
@@ -192,6 +199,7 @@ export const PortfolioCashFlowChart = ({
             return labels2[value] ?? value;
           }}
         />
+        )}
         <ReferenceLine y={0} stroke={isDark ? '#4a4e5f' : '#b0b5c8'} />
         <Bar
           dataKey="income"

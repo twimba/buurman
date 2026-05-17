@@ -283,6 +283,7 @@ export const DocumentsPage = () => {
               )}
             </div>
 
+            <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-border-default">
               <thead className="bg-surface-page">
                 <tr>
@@ -462,6 +463,7 @@ export const DocumentsPage = () => {
                 })}
               </tbody>
             </table>
+            </div>
           </div>
 
           {documentsData && (

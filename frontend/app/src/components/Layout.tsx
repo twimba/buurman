@@ -26,6 +26,7 @@ export const Layout = ({ children }: LayoutProps) => {
   });
   const [wizardDismissed, setWizardDismissed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [hasOwnMenuButton, setHasOwnMenuButton] = useState(false);
 
   useKeyboardInset();
 
@@ -35,8 +36,14 @@ export const Layout = ({ children }: LayoutProps) => {
   const openMobileNav = useCallback(() => setMobileNavOpen(true), []);
   const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
   const mobileNavValue = useMemo(
-    () => ({ open: openMobileNav, close: closeMobileNav, isOpen: mobileNavOpen }),
-    [openMobileNav, closeMobileNav, mobileNavOpen]
+    () => ({
+      open: openMobileNav,
+      close: closeMobileNav,
+      isOpen: mobileNavOpen,
+      hasOwnMenuButton,
+      setHasOwnMenuButton,
+    }),
+    [openMobileNav, closeMobileNav, mobileNavOpen, hasOwnMenuButton]
   );
 
   const toggleCollapsed = () => {

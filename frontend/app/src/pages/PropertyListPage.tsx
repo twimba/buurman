@@ -10,10 +10,18 @@ import { Plus, Home, Filter, Search, X, ChevronDown } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { useDebounce } from '@/hooks/useDebounce';
-import { Pagination, RefreshButton, Skeleton } from '@buurman/ui';
+import {
+  ListPageHeader,
+  Pagination,
+  RefreshButton,
+  Skeleton,
+  type ListPageHeaderAction,
+} from '@buurman/ui';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
 import { exportPropertiesCsv, exportPropertiesXlsx } from '@/api/listExports';
 import { exportPropertiesGoogleSheet } from '@/api/googleSheetsExport';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { RefreshCw } from 'lucide-react';
 
 export const PropertyListPage = () => {
   const { t } = useTranslation('properties');
@@ -125,41 +133,45 @@ export const PropertyListPage = () => {
     );
   }
 
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      render: () => (
+        <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
+      ),
+      // also rebound for overflow menu
+      icon: RefreshCw,
+      onClick: () => refetch(),
+    },
+    {
+      label: 'Export',
+      render: () => (
+        <EntityExportControls
+          filenameStem="properties"
+          csv={exportPropertiesCsv}
+          xlsx={exportPropertiesXlsx}
+          googleSheet={exportPropertiesGoogleSheet}
+        />
+      ),
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <Home className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">
-                {t('list.title')}
-              </h1>
-            </div>
-            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <RefreshButton
-              onClick={() => refetch()}
-              isRefreshing={isFetching}
-            />
-            <EntityExportControls
-              filenameStem="properties"
-              csv={exportPropertiesCsv}
-              xlsx={exportPropertiesXlsx}
-              googleSheet={exportPropertiesGoogleSheet}
-            />
-            <button
-              onClick={() => navigate('/properties/new')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-5 w-5" />
-              {t('list.addButton')}
-            </button>
-          </div>
-        </div>
+      <div className="px-4 py-4 md:py-8">
+        <ListPageHeader
+          title={t('list.title')}
+          subtitle={t('list.subtitle')}
+          icon={Home}
+          mobileLeading={<MobileMenuButton />}
+          actions={headerActions}
+          primaryAction={{
+            label: t('list.addButton'),
+            icon: Plus,
+            onClick: () => navigate('/properties/new'),
+            disabled: !canEditData,
+          }}
+        />
 
         {/* Filter Bar */}
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">

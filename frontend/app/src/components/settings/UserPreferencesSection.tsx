@@ -497,7 +497,7 @@ export const UserPreferencesSection = () => {
                     {t('preferences.notifications.configurePerType')}
                   </p>
                   <div className="border border-border-default rounded-lg overflow-hidden">
-                    <table className="w-full text-sm">
+                    <div className="overflow-x-auto"><table className="w-full text-sm">
                       <thead>
                         <tr className="bg-surface-page dark:bg-surface-card border-b border-border-default">
                           <th className="text-left px-4 py-3 font-medium text-text-secondary">
@@ -569,7 +569,7 @@ export const UserPreferencesSection = () => {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table></div>
                   </div>
                   {emailAvailable &&
                     !preferences.emailNotifications &&

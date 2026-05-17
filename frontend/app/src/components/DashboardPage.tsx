@@ -200,7 +200,7 @@ export const DashboardPage = () => {
               <Home className="h-5 w-5 text-primary-500" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-text-primary">
+          <div className="text-2xl md:text-3xl font-bold text-text-primary">
             {stats?.totalProperties ?? 0}
           </div>
           <div className="text-sm text-text-secondary mt-2">
@@ -218,7 +218,7 @@ export const DashboardPage = () => {
               <Users className="h-5 w-5 text-success-text" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-text-primary">
+          <div className="text-2xl md:text-3xl font-bold text-text-primary">
             {stats?.occupiedUnits ?? 0}
           </div>
           <div className="text-sm text-text-secondary mt-2">
@@ -240,7 +240,7 @@ export const DashboardPage = () => {
               <TrendingUp className="h-5 w-5 text-primary-700" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-text-primary">
+          <div className="text-2xl md:text-3xl font-bold text-text-primary">
             {stats?.occupancyRate?.toFixed(1) ?? 0}%
           </div>
           <div className="text-sm text-text-secondary mt-2">
@@ -258,7 +258,7 @@ export const DashboardPage = () => {
               <DollarSign className="h-5 w-5 text-success-text" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-text-primary">
+          <div className="text-2xl md:text-3xl font-bold text-text-primary">
             {stats?.monthlyIncome?.currency
               ? new Intl.NumberFormat('nl-NL', {
                   style: 'currency',

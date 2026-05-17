@@ -720,7 +720,7 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
           {/* Items table */}
           <div className="border border-border-default rounded-lg overflow-hidden">
             <div className="max-h-72 overflow-y-auto">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto"><table className="w-full text-sm">
                 <thead className="sticky top-0">
                   <tr className="bg-surface-inset border-b border-border-default">
                     <th className="px-3 py-2 text-left text-xs font-medium text-text-muted uppercase tracking-wider w-16">
@@ -775,7 +775,7 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </div>
           </div>
 

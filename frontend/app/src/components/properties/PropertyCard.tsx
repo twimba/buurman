@@ -74,7 +74,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         </p>
 
         {/* Specifications */}
-        <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 mb-3">
           {bedrooms != null && (
             <div className="flex items-center gap-1 text-text-secondary">
               <Bed className="h-4 w-4 text-text-muted " />

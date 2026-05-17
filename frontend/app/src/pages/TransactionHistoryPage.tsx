@@ -543,7 +543,7 @@ export const TransactionHistoryPage = () => {
         </div>
       ) : (
         <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden">
-          <table className="min-w-full divide-y divide-border-default">
+          <div className="overflow-x-auto"><table className="min-w-full divide-y divide-border-default">
             <thead className="bg-surface-page">
               <tr>
                 <th
@@ -624,7 +624,7 @@ export const TransactionHistoryPage = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
 
           {/* Pagination */}
           <div className="mt-4">

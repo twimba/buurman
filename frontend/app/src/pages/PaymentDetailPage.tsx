@@ -175,7 +175,7 @@ const ReceivalsTable = ({
 
       {/* Table */}
       <div className="overflow-hidden rounded-lg border border-border-default">
-        <table className="min-w-full divide-y divide-border-default">
+        <div className="overflow-x-auto"><table className="min-w-full divide-y divide-border-default">
           <thead className="bg-surface-page">
             <tr>
               <th
@@ -297,7 +297,7 @@ const ReceivalsTable = ({
               )
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       {/* Pagination */}
