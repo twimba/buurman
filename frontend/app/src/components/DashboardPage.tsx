@@ -7,19 +7,14 @@ import { usePendingExtensions } from '@/hooks/useContractExtensionHooks';
 import * as extensionsApi from '@/api/contractExtensions';
 import { useTeam } from '@/context/TeamContext';
 import { Skeleton, useToast } from '@buurman/ui';
-import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
 import { PendingExtensionsPanel } from './dashboard/PendingExtensionsPanel';
 import { PortfolioDashboard } from './dashboard/PortfolioDashboard';
 import { PropertyPerformanceTable } from './dashboard/PropertyPerformanceTable';
 import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
-import { MobileDashboardSummary } from './dashboard/MobileDashboardSummary';
+import { DashboardKpiStrip } from './dashboard/DashboardKpiStrip';
 import {
-  Home,
-  Users,
-  DollarSign,
-  TrendingUp,
   ArrowRight,
   AlertTriangle,
   CheckCircle,
@@ -176,19 +171,10 @@ export const DashboardPage = () => {
 
   return (
     // Phone uses flex+gap so we can `order-` the unpaid-payments section to
-    // appear right after MobileDashboardSummary (the #1 question for landlords
+    // appear right after DashboardKpiStrip (the #1 question for landlords
     // is "did money show up?"). Desktop falls back to block + space-y so
     // DOM order is the visual order and pixel parity is preserved.
     <div className="flex flex-col gap-8 md:block md:space-y-8 md:gap-0">
-      {/* Phone-only above-the-fold summary: alerts + hero KPI + KPI rail. */}
-      <div className="order-1 md:order-none">
-        <MobileDashboardSummary
-          stats={stats}
-          overdueCount={overdueCount}
-          pendingExtensionsCount={pendingExtensions?.length ?? 0}
-        />
-      </div>
-
       {/* Pending Invitations */}
       <div className="order-3 md:order-none">
         <PendingInvitationsPanel />
@@ -209,7 +195,7 @@ export const DashboardPage = () => {
       />
       </div>
 
-      {/* Portfolio Dashboard — desktop only. Phone gets MobileDashboardSummary
+      {/* Portfolio Dashboard — desktop only. Phone gets DashboardKpiStrip
           at the top instead. The portfolio block has wide period chip rows +
           native date inputs + a 6-card grid not designed for &lt; md widths. */}
       <div className="hidden md:block">
@@ -223,93 +209,19 @@ export const DashboardPage = () => {
         <PhonePropertyPerformance />
       </div>
 
-      {/* Statistics Cards — phone shows MobileDashboardSummary above instead. */}
-      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Total Properties */}
-        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-info-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              {t('dashboard.totalProperties')}
-            </h3>
-            <div className="p-2 bg-primary-100 rounded-lg">
-              <Home className="h-5 w-5 text-primary-500" />
-            </div>
-          </div>
-          <div className="text-2xl md:text-3xl font-bold text-text-primary">
-            {stats?.totalProperties ?? 0}
-          </div>
-          <div className="text-sm text-text-secondary mt-2">
-            {t('dashboard.activeProperties')}
-          </div>
-        </div>
-
-        {/* Occupied Units */}
-        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              {t('dashboard.occupied')}
-            </h3>
-            <div className="p-2 bg-success-bg rounded-lg">
-              <Users className="h-5 w-5 text-success-text" />
-            </div>
-          </div>
-          <div className="text-2xl md:text-3xl font-bold text-text-primary">
-            {stats?.occupiedUnits ?? 0}
-          </div>
-          <div className="text-sm text-text-secondary mt-2">
-            {stats?.selfOccupiedUnits
-              ? `${stats.selfOccupiedUnits} ${t('dashboard.selfOccupied')},`
-              : ''}
-            {stats?.vacantUnits ?? 0} {t('dashboard.vacant')},{' '}
-            {stats?.maintenanceUnits ?? 0} {t('dashboard.inMaintenance')}
-          </div>
-        </div>
-
-        {/* Occupancy Rate */}
-        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-primary-200">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              <MetricHint label={t('dashboard.occupancyRate')} />
-            </h3>
-            <div className="p-2 bg-primary-50 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-primary-700" />
-            </div>
-          </div>
-          <div className="text-2xl md:text-3xl font-bold text-text-primary">
-            {stats?.occupancyRate?.toFixed(1) ?? 0}%
-          </div>
-          <div className="text-sm text-text-secondary mt-2">
-            {t('dashboard.currentOccupancy')}
-          </div>
-        </div>
-
-        {/* Monthly Income */}
-        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              {t('dashboard.monthlyIncome')}
-            </h3>
-            <div className="p-2 bg-success-bg rounded-lg">
-              <DollarSign className="h-5 w-5 text-success-text" />
-            </div>
-          </div>
-          <div className="text-2xl md:text-3xl font-bold text-text-primary">
-            {stats?.monthlyIncome?.currency
-              ? new Intl.NumberFormat('nl-NL', {
-                  style: 'currency',
-                  currency: stats.monthlyIncome.currency,
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                }).format(stats?.monthlyIncome?.amount ?? 0)
-              : (stats?.monthlyIncome?.amount ?? 0).toLocaleString('nl-NL', {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                })}
-          </div>
-          <div className="text-sm text-text-secondary mt-2">
-            {t('dashboard.expectedRevenue')}
-          </div>
-        </div>
+      {/* Dashboard KPI Strip — unified owner of the at-a-glance KPIs.
+          Phone variant: alerts + sign-colored cash-flow hero + KPI rail
+          + Portfolio analytics CTA. Desktop variant: 4-card grid (Total
+          Properties / Occupied / Occupancy Rate / Monthly Income).
+          Phone position is forced to top via order-1; desktop position is
+          this DOM location (between PortfolioDashboard and Property
+          Status), preserving pre-unification desktop ordering. */}
+      <div className="order-1 md:order-none">
+        <DashboardKpiStrip
+          stats={stats}
+          overdueCount={overdueCount}
+          pendingExtensionsCount={pendingExtensions?.length ?? 0}
+        />
       </div>
 
       {/* Property Status Breakdown */}
@@ -414,7 +326,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* Unpaid Payments — hoisted to phone position 2 (right after the
-          MobileDashboardSummary) because for a property manager, the
+          DashboardKpiStrip) because for a property manager, the
           first question on opening the dashboard is "did money show up?". */}
       <div className="order-2 md:order-none bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
