@@ -81,6 +81,11 @@ export function SwipeAction({
   }, []);
 
   const [offset, setOffset] = useState(0);
+  // `dragging` ref is updated synchronously in pointer handlers (so they can read
+  // the latest value without re-render). `isDragging` state mirrors it for render
+  // (the foreground row needs transition-duration to flip during drag — accessing
+  // a ref during render is disallowed by react-hooks/refs).
+  const [isDragging, setIsDragging] = useState(false);
   const swipeEnabled = enabled && isTouch;
 
   const leftWidth = leftActions.length * ACTION_WIDTH;
@@ -106,6 +111,7 @@ export function SwipeAction({
     lastTime.current = startTime.current;
     dragging.current = false;
     captured.current = false;
+    setIsDragging(false);
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -121,6 +127,7 @@ export function SwipeAction({
         return;
       }
       dragging.current = true;
+      setIsDragging(true);
       if (containerRef.current?.setPointerCapture) {
         try {
           containerRef.current.setPointerCapture(e.pointerId);
@@ -152,6 +159,7 @@ export function SwipeAction({
       }
     }
     dragging.current = false;
+    setIsDragging(false);
     captured.current = false;
     if (!wasDrag) {
       startTime.current = 0;
@@ -182,6 +190,7 @@ export function SwipeAction({
   const onPointerCancel = () => {
     setOffset(0);
     dragging.current = false;
+    setIsDragging(false);
     captured.current = false;
     startTime.current = 0;
   };
@@ -277,7 +286,7 @@ export function SwipeAction({
         className="relative bg-surface-card transition-transform"
         style={{
           transform: `translateX(${offset}px)`,
-          transitionDuration: dragging.current ? '0ms' : '160ms',
+          transitionDuration: isDragging ? '0ms' : '160ms',
         }}
       >
         {children}
