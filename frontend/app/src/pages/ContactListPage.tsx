@@ -9,7 +9,6 @@ import {
   Plus,
   Users,
   Search,
-  Filter,
   X,
   ChevronDown,
   ChevronUp,
@@ -21,6 +20,7 @@ import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import {
   EmptyState,
+  FilterSheet,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -70,7 +70,6 @@ export const ContactListPage = () => {
     ContactType | undefined
   >();
   const [tagFilters, setTagFilters] = useState<ContactTag[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [quickAdd, setQuickAdd] = useState<CreateContactRequest>({
     contactType: 'INDIVIDUAL',
@@ -453,87 +452,21 @@ export const ContactListPage = () => {
               {direction === 'asc' ? '↑' : '↓'}
             </button>
           </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 border rounded transition-colors ${
-              hasActiveFilters
-                ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
-                : 'border-border-strong bg-surface-card text-text-secondary hover:border-primary-500'
-            }`}
+          <FilterSheet
+            activeCount={(contactTypeFilter ? 1 : 0) + tagFilters.length}
+            onClear={clearFilters}
+            triggerLabel={t('list.filters')}
+            collapseBelow="lg"
           >
-            <Filter className="h-4 w-4" />
-            {t('list.filters')}
-            {hasActiveFilters && (
-              <span className="bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {(contactTypeFilter ? 1 : 0) + tagFilters.length}
-              </span>
-            )}
-          </button>
+            <ContactsFilterContent
+              t={t}
+              contactTypeFilter={contactTypeFilter}
+              handleContactTypeChange={handleContactTypeChange}
+              tagFilters={tagFilters}
+              toggleTag={toggleTag}
+            />
+          </FilterSheet>
         </div>
-
-        {/* Filter Panel */}
-        {showFilters && (
-          <div className="bg-surface-card border border-border-default rounded-lg p-4 mb-4 space-y-4">
-            {/* Contact Type */}
-            <div>
-              <label className="text-sm font-medium text-text-secondary mb-2 block">
-                {t('list.contactType')}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {CONTACT_TYPES.map((type) => (
-                  <button
-                    key={type}
-                    onClick={() =>
-                      handleContactTypeChange(
-                        contactTypeFilter === type ? undefined : type
-                      )
-                    }
-                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-                      contactTypeFilter === type
-                        ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
-                        : 'border-border-strong text-text-secondary hover:border-primary-400'
-                    }`}
-                  >
-                    {t(`enums.contactTypes.${type}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div>
-              <label className="text-sm font-medium text-text-secondary mb-2 block">
-                {t('list.tags')}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {Object.values(ContactTag).map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTag(tag)}
-                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-                      tagFilters.includes(tag)
-                        ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
-                        : 'border-border-strong text-text-secondary hover:border-primary-400'
-                    }`}
-                  >
-                    {t(`enums.contactTags.${tag}`)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Clear */}
-            {hasActiveFilters && (
-              <button
-                onClick={clearFilters}
-                className="text-sm text-primary-500 hover:text-primary-600 flex items-center gap-1"
-              >
-                <X className="h-3.5 w-3.5" />
-                {t('list.clearAllFilters')}
-              </button>
-            )}
-          </div>
-        )}
 
         {/* Quick Add Panel */}
         {showQuickAdd && canEditData && (
@@ -715,8 +648,10 @@ export const ContactListPage = () => {
           </div>
         )}
 
-        {/* Active Filter Chips */}
-        {hasActiveFilters && !showFilters && (
+        {/* Active Filter Chips — always shown when filters are active; the
+            FilterSheet trigger badge counts them, this row lets users see
+            and dismiss individual filters at a glance. */}
+        {hasActiveFilters && (
           <div className="flex flex-wrap gap-2 mb-4">
             {contactTypeFilter && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
@@ -823,3 +758,72 @@ export const ContactListPage = () => {
     </div>
   );
 };
+
+interface ContactsFilterContentProps {
+  t: ReturnType<typeof useTranslation>['t'];
+  contactTypeFilter: ContactType | undefined;
+  handleContactTypeChange: (next: ContactType | undefined) => void;
+  tagFilters: ContactTag[];
+  toggleTag: (tag: ContactTag) => void;
+}
+
+/**
+ * Filter body for ContactListPage's FilterSheet. Extracted so the same
+ * markup can render inline at lg+ and inside the sheet at <lg without
+ * duplication.
+ */
+const ContactsFilterContent = ({
+  t,
+  contactTypeFilter,
+  handleContactTypeChange,
+  tagFilters,
+  toggleTag,
+}: ContactsFilterContentProps) => (
+  <div className="space-y-4">
+    <div>
+      <label className="text-sm font-medium text-text-secondary mb-2 block">
+        {t('list.contactType')}
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {CONTACT_TYPES.map((type) => (
+          <button
+            key={type}
+            onClick={() =>
+              handleContactTypeChange(
+                contactTypeFilter === type ? undefined : type
+              )
+            }
+            className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
+              contactTypeFilter === type
+                ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
+                : 'border-border-strong text-text-secondary hover:border-primary-400'
+            }`}
+          >
+            {t(`enums.contactTypes.${type}`)}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div>
+      <label className="text-sm font-medium text-text-secondary mb-2 block">
+        {t('list.tags')}
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {Object.values(ContactTag).map((tag) => (
+          <button
+            key={tag}
+            onClick={() => toggleTag(tag)}
+            className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
+              tagFilters.includes(tag)
+                ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
+                : 'border-border-strong text-text-secondary hover:border-primary-400'
+            }`}
+          >
+            {t(`enums.contactTags.${tag}`)}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);

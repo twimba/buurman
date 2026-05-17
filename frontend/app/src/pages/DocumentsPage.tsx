@@ -7,7 +7,6 @@ import {
   Trash2,
   FileText,
   Image as ImageIcon,
-  Filter,
   CheckSquare,
   Square,
   ChevronUp,
@@ -27,6 +26,7 @@ import {
 import { usePagination } from '@/hooks/usePagination';
 import {
   ConfirmDialog,
+  FilterSheet,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -181,10 +181,10 @@ export const DocumentsPage = () => {
 
       {/* Search and Filter Bar */}
       <div className="bg-surface-card rounded-lg shadow-sm p-4 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex items-stretch gap-3">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted" />
             <input
               type="text"
               placeholder={t('documentsPage.searchPlaceholder')}
@@ -197,37 +197,29 @@ export const DocumentsPage = () => {
             />
           </div>
 
-          {/* Entity Type Filter */}
-          <div className="w-full md:w-48 relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
-            <select
-              value={entityTypeFilter}
-              onChange={(e) => {
-                setEntityTypeFilter(e.target.value);
+          {/* Entity Type Filter — uses FilterSheet so phone gets the
+              bottom-sheet drawer pattern (matches Payments/Expenses/
+              Properties/Contracts/Contacts); lg+ shows inline radio list. */}
+          <FilterSheet
+            activeCount={entityTypeFilter ? 1 : 0}
+            onClear={() => {
+              setEntityTypeFilter('');
+              resetPage();
+            }}
+            triggerLabel={t('documentsPage.entityTypeFilter.label', {
+              defaultValue: 'Type',
+            })}
+            collapseBelow="lg"
+          >
+            <DocumentsFilterContent
+              t={t}
+              entityTypeFilter={entityTypeFilter}
+              onChange={(next) => {
+                setEntityTypeFilter(next);
                 resetPage();
               }}
-              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
-            >
-              <option value="">
-                {t('documentsPage.entityTypeFilter.all')}
-              </option>
-              <option value="PROPERTY">
-                {t('documentsPage.entityTypeFilter.property')}
-              </option>
-              <option value="CONTACT">
-                {t('documentsPage.entityTypeFilter.contact')}
-              </option>
-              <option value="CONTRACT">
-                {t('documentsPage.entityTypeFilter.contract')}
-              </option>
-              <option value="PAYMENT">
-                {t('documentsPage.entityTypeFilter.payment')}
-              </option>
-              <option value="EXPENSE">
-                {t('documentsPage.entityTypeFilter.expense')}
-              </option>
-            </select>
-          </div>
+            />
+          </FilterSheet>
         </div>
       </div>
 
@@ -713,3 +705,59 @@ export const DocumentsPage = () => {
     </div>
   );
 };
+
+const ENTITY_TYPES = [
+  '',
+  'PROPERTY',
+  'CONTACT',
+  'CONTRACT',
+  'PAYMENT',
+  'EXPENSE',
+] as const;
+
+interface DocumentsFilterContentProps {
+  t: ReturnType<typeof useTranslation>['t'];
+  entityTypeFilter: string;
+  onChange: (next: string) => void;
+}
+
+/**
+ * Filter body for DocumentsPage's FilterSheet. Renders the entity-type
+ * choices as tap-chips (44 px touch targets) instead of a native <select>
+ * — keeps the affordance consistent with the other 5 list pages.
+ */
+const DocumentsFilterContent = ({
+  t,
+  entityTypeFilter,
+  onChange,
+}: DocumentsFilterContentProps) => (
+  <div className="space-y-4">
+    <div>
+      <label className="text-sm font-medium text-text-secondary mb-2 block">
+        {t('documentsPage.entityTypeFilter.label', {
+          defaultValue: 'Type',
+        })}
+      </label>
+      <div className="flex flex-wrap gap-2">
+        {ENTITY_TYPES.map((type) => {
+          const key = type === '' ? 'all' : type.toLowerCase();
+          const active = entityTypeFilter === type;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onChange(type)}
+              className={`min-h-touch px-3 py-1.5 text-sm rounded-full border transition-colors ${
+                active
+                  ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
+                  : 'border-border-strong text-text-secondary hover:border-primary-400'
+              }`}
+            >
+              {t(`documentsPage.entityTypeFilter.${key}`)}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+);
