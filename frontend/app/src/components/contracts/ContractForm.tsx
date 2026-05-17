@@ -13,6 +13,12 @@ import {
 } from '@/types/contract';
 import { CreateContactRequest } from '@/types/contact';
 import { RichTextEditor } from '@buurman/ui';
+import {
+  FormStepGate,
+  MobileFormStepperFooter,
+  MobileFormStepperProvider,
+  MobileStepperHeader,
+} from '@/components/common/MobileFormStepper';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { ContactSelector } from '@/components/common/ContactSelector';
@@ -496,11 +502,21 @@ export const ContractForm = ({
   };
 
   return (
+    <MobileFormStepperProvider totalSteps={3}>
     <form
       onSubmit={handleSubmit}
       onKeyDown={handleCmdEnter}
       className="space-y-6"
     >
+      <MobileStepperHeader
+        labels={[
+          t('form.propertyAndParties'),
+          t('form.financialTerms'),
+          t('form.termsAndConditions'),
+        ]}
+      />
+      {/* Step 0: Property + Parties + Contract Details */}
+      <FormStepGate step={0}>
       {/* Property Selection */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
@@ -849,7 +865,10 @@ export const ContractForm = ({
           </div>
         </div>
       </div>
+      </FormStepGate>
 
+      {/* Step 1: Financial + Payment Terms + Termination */}
+      <FormStepGate step={1}>
       {/* Financial Terms */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
@@ -1052,7 +1071,10 @@ export const ContractForm = ({
           </div>
         </div>
       </div>
+      </FormStepGate>
 
+      {/* Step 2: Terms + Notes + Country-Specific */}
+      <FormStepGate step={2}>
       {/* Terms and Conditions */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
@@ -1115,9 +1137,10 @@ export const ContractForm = ({
           {t('form.setCountryForFields')}
         </p>
       ) : null}
+      </FormStepGate>
 
-      {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
+      {/* Actions — md+ inline save bar (single-scroll desktop UX) */}
+      <div className="hidden md:flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
         <button
           type="button"
           onClick={() => navigate('/contracts')}
@@ -1148,7 +1171,29 @@ export const ContractForm = ({
           )}
         </div>
       </div>
+
+      {/* Phone: sticky stepper footer with Back/Continue/Save */}
+      <MobileFormStepperFooter
+        onSubmit={() => {
+          const f = document.activeElement?.closest('form') as
+            | HTMLFormElement
+            | null;
+          if (f) {
+            f.requestSubmit();
+          }
+        }}
+        onCancel={() => navigate('/contracts')}
+        isSubmitting={isLoading || anyDuplicateBlocking}
+        saveLabel={
+          isLoading
+            ? t('form.saving')
+            : contract
+              ? t('form.updateContract')
+              : t('form.createContract')
+        }
+      />
     </form>
+    </MobileFormStepperProvider>
   );
 };
 

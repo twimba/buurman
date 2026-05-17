@@ -18,6 +18,12 @@ import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
 import { CountrySelector } from '../common/CountrySelector';
+import {
+  FormStepGate,
+  MobileFormStepperFooter,
+  MobileFormStepperProvider,
+  MobileStepperHeader,
+} from '../common/MobileFormStepper';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useGeocode } from '@/hooks/useGeocodingHooks';
 import { IconSelect } from '../common/IconSelect';
@@ -425,12 +431,21 @@ export const PropertyForm = ({
   };
 
   return (
+    <MobileFormStepperProvider totalSteps={3}>
     <form
       onSubmit={handleSubmit}
       onKeyDown={handleCmdEnter}
       className="space-y-6"
     >
+      <MobileStepperHeader
+        labels={[
+          t('form.address'),
+          t('form.specifications'),
+          t('form.characteristics', { defaultValue: 'Characteristics' }),
+        ]}
+      />
       {/* Address Section */}
+      <FormStepGate step={0}>
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
           {t('form.address')}
@@ -558,8 +573,10 @@ export const PropertyForm = ({
           </div>
         )}
       </div>
+      </FormStepGate>
 
       {/* Specifications Section */}
+      <FormStepGate step={1}>
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
           {t('form.specifications')}
@@ -661,8 +678,10 @@ export const PropertyForm = ({
           </div>
         </div>
       </div>
+      </FormStepGate>
 
       {/* Property Characteristics */}
+      <FormStepGate step={2}>
       <PropertyCharacteristicsForm
         formData={formData}
         property={property}
@@ -675,9 +694,10 @@ export const PropertyForm = ({
         onAddAmenity={onAddAmenity}
         onRemoveAmenity={onRemoveAmenity}
       />
+      </FormStepGate>
 
-      {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
+      {/* Actions — md+ inline save bar (single-scroll desktop UX) */}
+      <div className="hidden md:flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
         <button
           type="button"
           onClick={() => navigate('/properties')}
@@ -700,6 +720,30 @@ export const PropertyForm = ({
               : t('form.createProperty')}
         </button>
       </div>
+
+      {/* Phone: sticky stepper footer with Back/Continue/Save */}
+      <MobileFormStepperFooter
+        onSubmit={() => {
+          // form.requestSubmit() is unavailable in older Safari; trigger
+          // submit by relaying to handleSubmit via the form element.
+          const f = document.activeElement?.closest('form') as
+            | HTMLFormElement
+            | null;
+          if (f) {
+            f.requestSubmit();
+          }
+        }}
+        onCancel={() => navigate('/properties')}
+        isSubmitting={isLoading}
+        saveLabel={
+          isLoading
+            ? t('form.saving')
+            : property
+              ? t('form.updateProperty')
+              : t('form.createProperty')
+        }
+      />
     </form>
+    </MobileFormStepperProvider>
   );
 };
