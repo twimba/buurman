@@ -1,6 +1,12 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { cn } from '../utils/cn';
 
 export interface SheetProps {
@@ -136,9 +142,7 @@ export function Sheet({
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-4">
-            {children}
-          </div>
+          <SheetBody>{children}</SheetBody>
 
           {/* Footer */}
           {footer && (
@@ -153,3 +157,48 @@ export function Sheet({
 }
 
 Sheet.displayName = 'Sheet';
+
+/**
+ * Sheet body wrapper that auto-scrolls the focused input into view when
+ * the iOS soft keyboard opens. Without this, tapping an input near the
+ * bottom of a long form leaves it hidden behind the keyboard — Radix
+ * doesn't scroll Dialog content for focus the way `<select>` does.
+ */
+function SheetBody({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) {
+      return;
+    }
+    const handleFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) {
+        return;
+      }
+      if (
+        target.tagName !== 'INPUT' &&
+        target.tagName !== 'TEXTAREA' &&
+        target.tagName !== 'SELECT' &&
+        !(target as HTMLElement).isContentEditable
+      ) {
+        return;
+      }
+      // Defer past keyboard-open layout shift so scrollIntoView lands on
+      // the post-keyboard viewport, not the pre-keyboard one.
+      window.setTimeout(() => {
+        target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 250);
+    };
+    root.addEventListener('focusin', handleFocusIn);
+    return () => root.removeEventListener('focusin', handleFocusIn);
+  }, []);
+  return (
+    <div
+      ref={ref}
+      className="flex-1 overflow-y-auto overscroll-contain px-6 py-4"
+    >
+      {children}
+    </div>
+  );
+}
