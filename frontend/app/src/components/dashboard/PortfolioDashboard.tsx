@@ -333,7 +333,7 @@ export const PortfolioDashboard = () => {
       />
 
       {/* Cash Flow + Allocation */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ChartCard
           title={t('dashboard.charts.cashFlow')}
           icon={<BarChart3 className="h-5 w-5" />}
@@ -359,7 +359,7 @@ export const PortfolioDashboard = () => {
       </div>
 
       {/* Comparison + Equity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ChartCard
           title={t('dashboard.charts.propertyComparison')}
           icon={<TrendingUp className="h-5 w-5" />}
