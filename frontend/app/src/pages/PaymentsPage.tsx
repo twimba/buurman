@@ -244,28 +244,30 @@ export const PaymentsPage = () => {
           }}
         />
 
-        {/* Metrics Dashboard */}
+        {/* Metrics Dashboard — phone shows Pending + Overdue in a 50/50
+            row; the 6-month sparkline collapses to lg+ (the data lives in
+            the dashboard's Portfolio analytics for power users anyway). */}
         {paymentStats && (
-          <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="mb-6 grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {/* Pending Payments */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-3 md:p-6">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-text-secondary">
+                <h3 className="text-xs md:text-sm font-medium text-text-secondary">
                   {t('stats.pendingPayments')}
                 </h3>
                 <Clock className="h-5 w-5 text-warning-text" />
               </div>
-              <p className="text-3xl font-bold text-text-primary">
+              <p className="text-xl md:text-3xl font-bold text-text-primary tabular-nums">
                 {fmtMoney(paymentStats.pendingAmount, statsCurrency)}
               </p>
-              <p className="text-sm text-text-secondary mt-1">
+              <p className="text-xs md:text-sm text-text-secondary mt-1">
                 {t('stats.pendingCount', { count: paymentStats.pendingCount })}
               </p>
             </div>
 
             {/* Overdue Payments */}
             <div
-              className={`rounded-lg shadow-sm border border-border-default p-6 transition-colors ${
+              className={`rounded-lg shadow-sm border border-border-default p-3 md:p-6 transition-colors ${
                 paymentStats.overdueCount > 0
                   ? 'bg-error-bg border-2 border-error-border'
                   : 'bg-surface-card'
@@ -273,7 +275,7 @@ export const PaymentsPage = () => {
             >
               <div className="flex items-center justify-between mb-2">
                 <h3
-                  className={`text-sm font-medium ${
+                  className={`text-xs md:text-sm font-medium ${
                     paymentStats.overdueCount > 0
                       ? 'text-error-text'
                       : 'text-text-secondary'
@@ -289,35 +291,36 @@ export const PaymentsPage = () => {
               </div>
               {paymentStats.overdueCount > 0 ? (
                 <>
-                  <p className="text-3xl font-bold text-error-text">
+                  <p className="text-xl md:text-3xl font-bold text-error-text tabular-nums">
                     {fmtMoney(paymentStats.overdueAmount, statsCurrency)}
                   </p>
-                  <p className="text-sm text-error-text mt-1 font-medium">
+                  <p className="text-xs md:text-sm text-error-text mt-1 font-medium">
                     {t('stats.overdueCount', {
                       count: paymentStats.overdueCount,
                     })}
                   </p>
-                  <p className="text-xs text-error-text mt-2">
+                  <p className="hidden md:block text-xs text-error-text mt-2">
                     {t('stats.overdueAction')}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-success-text">
+                  <p className="text-xl md:text-3xl font-bold text-success-text tabular-nums">
                     {fmtMoney(0, statsCurrency)}
                   </p>
-                  <p className="text-sm text-text-secondary mt-1">
+                  <p className="text-xs md:text-sm text-text-secondary mt-1">
                     {t('stats.allCaughtUp')}
                   </p>
-                  <p className="text-xs text-text-secondary mt-2">
+                  <p className="hidden md:block text-xs text-text-secondary mt-2">
                     {t('stats.noOverdue')}
                   </p>
                 </>
               )}
             </div>
 
-            {/* 6-Month Revenue Chart */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            {/* 6-Month Revenue Chart — lg+ only on phone the chart at
+                this size is unreadable; deeper trend lives in /reports. */}
+            <div className="hidden lg:block bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-text-secondary">
                   {t('stats.lastSixMonths')}
