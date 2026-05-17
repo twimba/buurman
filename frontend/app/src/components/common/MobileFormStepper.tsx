@@ -205,9 +205,13 @@ export function MobileFormStepperFooter({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 inline-flex items-center justify-center gap-2 min-h-touch px-4 rounded-lg border border-border-strong text-text-secondary hover:bg-surface-inset"
+            aria-label={t('buttons.cancel', 'Cancel')}
+            // iOS convention: a ← chevron is the universal back-out gesture
+            // on the first step (not a "Cancel" word that competes
+            // visually with the primary "Continue" button).
+            className="inline-flex items-center justify-center min-h-touch min-w-touch px-3 rounded-lg border border-border-strong text-text-secondary hover:bg-surface-inset"
           >
-            {t('buttons.cancel', 'Cancel')}
+            <ChevronLeft className="h-5 w-5" />
           </button>
         ) : (
           <button
