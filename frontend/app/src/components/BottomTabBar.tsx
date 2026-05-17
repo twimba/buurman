@@ -52,7 +52,7 @@ export const BottomTabBar = () => {
         const Icon = tab.icon;
         const content = (isActive: boolean) => (
           <span
-            className={`flex flex-col items-center justify-center gap-0.5 min-h-touch px-2 py-2 flex-1 text-[11px] leading-none ${
+            className={`flex flex-col items-center justify-center gap-0.5 min-h-touch px-1.5 py-2 flex-1 text-[10px] leading-tight ${
               isActive
                 ? 'text-primary-600 dark:text-primary-300 font-semibold'
                 : 'text-text-secondary'
