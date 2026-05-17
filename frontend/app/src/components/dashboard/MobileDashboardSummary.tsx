@@ -7,10 +7,12 @@ import {
   DollarSign,
   Home,
   Receipt,
+  TrendingDown,
   TrendingUp,
 } from 'lucide-react';
 import { formatMoneyCompact } from '@/utils/formatMoney';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
 import type { DashboardStats } from '@/api/dashboard';
 
 interface MobileDashboardSummaryProps {
@@ -36,6 +38,10 @@ export const MobileDashboardSummary = ({
 }: MobileDashboardSummaryProps) => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
+  // 6-month default mirrors PortfolioDashboard's initial period. The query
+  // is cache-shared via react-query so this doesn't cost a second roundtrip
+  // when PortfolioDashboard also mounts (md+).
+  const { data: portfolio } = usePortfolioDashboard(6);
 
   if (!stats) {
     return null;
@@ -44,6 +50,9 @@ export const MobileDashboardSummary = ({
   const hasAlerts = overdueCount > 0 || pendingExtensionsCount > 0;
   const income = stats.monthlyIncome?.amount ?? 0;
   const incomeCurrency = stats.monthlyIncome?.currency ?? 'EUR';
+  const cashFlow = portfolio?.summary.monthlyCashFlow;
+  const cashFlowCurrency = portfolio?.currency ?? incomeCurrency;
+  const cashFlowNegative = cashFlow != null && cashFlow < 0;
 
   return (
     <div className="md:hidden -mt-2 space-y-4">
@@ -89,25 +98,51 @@ export const MobileDashboardSummary = ({
         </button>
       )}
 
-      {/* 2. Hero KPI — Monthly Income */}
+      {/* 2. Hero KPI — Monthly Cash Flow. The question landlords actually
+          ask on dashboard open is "did money show up after expenses?", not
+          gross income. Sign-colored: green for positive, red gradient for
+          negative so the loss is immediately visible. Falls back to income
+          when the portfolio query is still loading (no cashFlow yet). */}
       <section
-        className="rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 dark:from-primary-700 dark:to-primary-900 text-white p-5 shadow-sm"
+        className={`rounded-xl text-white p-5 shadow-sm bg-gradient-to-br ${
+          cashFlow == null
+            ? 'from-primary-500 to-primary-700 dark:from-primary-700 dark:to-primary-900'
+            : cashFlowNegative
+              ? 'from-error to-error-bg dark:from-error dark:to-error-bg'
+              : 'from-success to-success-text dark:from-success-text dark:to-success'
+        }`}
         aria-labelledby="hero-kpi-label"
       >
         <div className="flex items-center gap-2 opacity-90">
-          <DollarSign className="h-4 w-4" />
+          {cashFlow == null ? (
+            <DollarSign className="h-4 w-4" />
+          ) : cashFlowNegative ? (
+            <TrendingDown className="h-4 w-4" />
+          ) : (
+            <TrendingUp className="h-4 w-4" />
+          )}
           <span
             id="hero-kpi-label"
             className="text-xs font-medium uppercase tracking-wider"
           >
-            {t('dashboard.monthlyIncome')}
+            {cashFlow == null
+              ? t('dashboard.monthlyIncome')
+              : t('dashboard.monthlyCashFlow', {
+                  defaultValue: 'Monthly cash flow',
+                })}
           </span>
         </div>
         <div className="mt-2 text-4xl font-bold tabular-nums">
-          {formatMoneyCompact(income, incomeCurrency)}
+          {cashFlow == null
+            ? formatMoneyCompact(income, incomeCurrency)
+            : formatMoneyCompact(cashFlow, cashFlowCurrency)}
         </div>
         <div className="mt-1 text-sm opacity-80">
-          {t('dashboard.expectedRevenue')}
+          {cashFlow == null
+            ? t('dashboard.expectedRevenue')
+            : t('dashboard.incomeMinusExpenses', {
+                defaultValue: 'Income minus expenses',
+              })}
         </div>
       </section>
 
@@ -116,6 +151,14 @@ export const MobileDashboardSummary = ({
         className="flex gap-3 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 scroll-pl-4"
         role="list"
       >
+        {cashFlow != null && (
+          <RailTile
+            icon={DollarSign}
+            label={t('dashboard.monthlyIncome')}
+            value={formatMoneyCompact(income, incomeCurrency)}
+            sub={t('dashboard.expectedRevenue')}
+          />
+        )}
         <RailTile
           icon={Building2}
           label={t('dashboard.totalProperties')}
