@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
@@ -105,7 +105,7 @@ export const PropertyDetailPage = () => {
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
-  const [activeTab, setActiveTab] = useTabState('info', [
+  const [activeTab, setActiveTabRaw] = useTabState('info', [
     'info',
     'financials',
     'photos',
@@ -115,6 +115,25 @@ export const PropertyDetailPage = () => {
     'audit',
     'dashboard',
   ] as const);
+
+  // Persist scroll position per tab. Switching tabs saves the current scrollY
+  // for the leaving tab and restores it (or 0) for the incoming tab — so
+  // returning to the Info tab after browsing Photos jumps back to where the
+  // user left off instead of scrolling to top.
+  const scrollByTab = useRef<Record<string, number>>({});
+  const setActiveTab = useCallback(
+    (next: typeof activeTab) => {
+      scrollByTab.current[activeTab] = window.scrollY;
+      setActiveTabRaw(next);
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: scrollByTab.current[next] ?? 0,
+          behavior: 'auto',
+        });
+      });
+    },
+    [activeTab, setActiveTabRaw]
+  );
 
   // Page-level modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
