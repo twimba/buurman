@@ -36,7 +36,6 @@
     "partiallyPaid": "Parziale",
     "paid": "Pagato",
     "overdue": "Scaduto",
-    "late": "In ritardo",
     "cancelled": "Annullato"
   },
   "table": {

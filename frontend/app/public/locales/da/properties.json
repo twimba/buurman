@@ -1048,8 +1048,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Planlagt",
       "COMPLETED": "Gennemfoert",
-      "MISSED": "Udeblevet",
-      "LATE": "Forsinket"
+      "MISSED": "Udeblevet"
     },
     "insuranceTypes": {
       "BUILDING": "Bygning",

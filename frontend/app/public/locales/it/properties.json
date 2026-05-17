@@ -1048,8 +1048,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Programmato",
       "COMPLETED": "Completato",
-      "MISSED": "Mancato",
-      "LATE": "In ritardo"
+      "MISSED": "Mancato"
     },
     "insuranceTypes": {
       "BUILDING": "Fabbricato",

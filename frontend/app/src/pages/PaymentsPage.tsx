@@ -76,7 +76,6 @@ export const PaymentsPage = () => {
       { value: PaymentStatus.PARTIALLY_PAID, label: t('status.partiallyPaid') },
       { value: PaymentStatus.PAID, label: t('status.paid') },
       { value: PaymentStatus.OVERDUE, label: t('status.overdue') },
-      { value: PaymentStatus.LATE, label: t('status.late') },
       { value: PaymentStatus.CANCELLED, label: t('status.cancelled') },
     ],
     [t]

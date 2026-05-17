@@ -522,7 +522,6 @@ export const formatPaymentStatus = (
     [FinancingPaymentResponseStatus.SCHEDULED]: 'Scheduled',
     [FinancingPaymentResponseStatus.COMPLETED]: 'Completed',
     [FinancingPaymentResponseStatus.MISSED]: 'Missed',
-    [FinancingPaymentResponseStatus.LATE]: 'Late',
   };
   return labels[status];
 };

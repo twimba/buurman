@@ -1048,8 +1048,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Ajoitettu",
       "COMPLETED": "Suoritettu",
-      "MISSED": "Jaanyt valiin",
-      "LATE": "Myohassa"
+      "MISSED": "Jaanyt valiin"
     },
     "insuranceTypes": {
       "BUILDING": "Kiinteisto",

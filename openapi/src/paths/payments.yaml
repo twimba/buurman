@@ -576,7 +576,6 @@ payments:
             - PARTIALLY_PAID
             - PAID
             - OVERDUE
-            - LATE
             - CANCELLED
       - name: contractIdentifier
         in: query

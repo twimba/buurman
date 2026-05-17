@@ -162,8 +162,6 @@ const paymentStatusVariant = (status: PaymentStatus): StatusVariant => {
       return 'green';
     case PaymentStatus.SCHEDULED:
       return 'gray';
-    case PaymentStatus.LATE:
-      return 'yellow';
     case PaymentStatus.MISSED:
       return 'red';
   }

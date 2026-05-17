@@ -1048,8 +1048,7 @@
     "paymentStatuses": {
       "SCHEDULED": "Zaplanowana",
       "COMPLETED": "Zrealizowana",
-      "MISSED": "Pominięta",
-      "LATE": "Spóźniona"
+      "MISSED": "Pominięta"
     },
     "insuranceTypes": {
       "BUILDING": "Budynkowe",

@@ -13,7 +13,6 @@ const statusColors: Record<PaymentStatus, BadgeColorVariant> = {
   PARTIALLY_PAID: 'blue',
   PAID: 'emerald',
   OVERDUE: 'red',
-  LATE: 'orange',
   CANCELLED: 'gray',
 };
 
@@ -29,7 +28,6 @@ export const PaymentStatusBadge = ({
       PARTIALLY_PAID: t('status.partiallyPaid'),
       PAID: t('status.paid'),
       OVERDUE: t('status.overdue'),
-      LATE: t('status.late'),
       CANCELLED: t('status.cancelled'),
     }),
     [t]

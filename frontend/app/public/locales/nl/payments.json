@@ -36,7 +36,6 @@
     "partiallyPaid": "Gedeeltelijk",
     "paid": "Betaald",
     "overdue": "Achterstallig",
-    "late": "Te laat",
     "cancelled": "Geannuleerd"
   },
   "table": {

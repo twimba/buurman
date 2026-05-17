@@ -36,7 +36,6 @@
     "partiallyPaid": "Delvis",
     "paid": "Betald",
     "overdue": "Forsenad",
-    "late": "Sen",
     "cancelled": "Avbruten"
   },
   "table": {
