@@ -26,7 +26,7 @@ import {
   TrendingUp,
   FileCode,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SidebarTooltip } from '@buurman/ui';
 import { useMobileNav } from '@/context/MobileNavContext';
@@ -82,13 +82,16 @@ export const Sidebar = ({
   const mobileOpen = isControlled
     ? controlledMobileOpen
     : uncontrolledMobileOpen;
-  const setMobileOpen = (next: boolean) => {
-    if (isControlled) {
-      onMobileOpenChange?.(next);
-    } else {
-      setUncontrolledMobileOpen(next);
-    }
-  };
+  const setMobileOpen = useCallback(
+    (next: boolean) => {
+      if (isControlled) {
+        onMobileOpenChange?.(next);
+      } else {
+        setUncontrolledMobileOpen(next);
+      }
+    },
+    [isControlled, onMobileOpenChange]
+  );
   const { logout } = useAuth();
   const { teams, canEditTeamSettings } = useTeam();
   const { isEnabled } = useFeatureFlags();
@@ -249,7 +252,7 @@ export const Sidebar = ({
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [mobileOpen]);
+  }, [mobileOpen, setMobileOpen]);
 
   return (
     <>
@@ -269,7 +272,11 @@ export const Sidebar = ({
           className="lg:hidden fixed left-4 z-50 inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset focus-ring"
           style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
         >
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
         </button>
       )}
 
