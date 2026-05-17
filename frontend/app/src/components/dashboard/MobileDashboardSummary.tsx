@@ -146,9 +146,13 @@ export const MobileDashboardSummary = ({
         </div>
       </section>
 
-      {/* 3. KPI rail — horizontal snap scroll */}
+      {/* 3. KPI rail — horizontal snap scroll. snap-proximity (not
+          mandatory) lets the user free-scroll between tiles without
+          forcing a snap mid-gesture. The fade-right mask hints at more
+          off-screen content; collapses on systems that don't support
+          mask-image. */}
       <div
-        className="flex gap-3 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 scroll-pl-4"
+        className="flex gap-3 overflow-x-auto snap-x snap-proximity -mx-4 px-4 scroll-pl-4 [mask-image:linear-gradient(to_right,black_0,black_calc(100%-2rem),transparent_100%)]"
         role="list"
       >
         {cashFlow != null && (
