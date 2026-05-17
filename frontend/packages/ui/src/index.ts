@@ -26,6 +26,8 @@ export { Sheet } from './components/Sheet';
 export type { SheetProps } from './components/Sheet';
 export { FilterSheet } from './components/FilterSheet';
 export type { FilterSheetProps } from './components/FilterSheet';
+export { PullToRefresh } from './components/PullToRefresh';
+export type { PullToRefreshProps } from './components/PullToRefresh';
 export { ResponsiveTable } from './components/ResponsiveTable';
 export type {
   ResponsiveTableColumn,
