@@ -30,11 +30,20 @@ export function useKeyboardInset(): boolean {
     if (!vv) {
       return;
     }
+    // Baseline `visualViewport.height` at mount represents "no keyboard,
+    // browser chrome in its current state". Comparing against this rather
+    // than `window.innerHeight` makes the math robust under
+    // `interactive-widget=resizes-content`, where window.innerHeight
+    // SHRINKS with the keyboard and the original formula reads ~0.
+    let baselineHeight = vv.height;
+
     const apply = () => {
-      const inset = Math.max(
-        0,
-        Math.round(window.innerHeight - vv.height - vv.offsetTop)
-      );
+      // If the layout viewport grew (rotation, browser-UI hide), refresh
+      // baseline so the next keyboard-open computation is correct.
+      if (vv.height > baselineHeight) {
+        baselineHeight = vv.height;
+      }
+      const inset = Math.max(0, Math.round(baselineHeight - vv.height));
       document.documentElement.style.setProperty('--kbd-inset', `${inset}px`);
       const open = inset > KEYBOARD_OPEN_THRESHOLD_PX;
       if (open) {
