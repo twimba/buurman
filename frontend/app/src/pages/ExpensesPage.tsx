@@ -11,6 +11,7 @@ import {
   ConfirmDialog,
   DataList,
   EmptyState,
+  FilterSheet,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -341,8 +342,37 @@ export const ExpensesPage = () => {
           </div>
         )}
 
-        {/* Filter Bar */}
-        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
+        {/* Phone: filter trigger + sheet */}
+        <div className="md:hidden mb-4 flex justify-end">
+          <FilterSheet
+            activeCount={
+              (propertyFilter ? 1 : 0) +
+              (categoryFilter ? 1 : 0)
+            }
+            onClear={() => {
+              setPropertyFilter(undefined);
+              setCategoryFilter(undefined);
+              setPeriodRange(null);
+              resetPage();
+            }}
+            triggerLabel={t('filters.title')}
+            collapseBelow="md"
+          >
+            <ExpensesFilterContent
+              categoryFilterValues={categoryFilterValues}
+              categoryFilter={categoryFilter}
+              setCategoryFilter={setCategoryFilter}
+              propertyFilter={propertyFilter}
+              setPropertyFilter={setPropertyFilter}
+              setPeriodRange={setPeriodRange}
+              resetPage={resetPage}
+              t={t}
+            />
+          </FilterSheet>
+        </div>
+
+        {/* Filter Bar (md+) */}
+        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h3 className="font-semibold text-text-primary">
@@ -636,3 +666,73 @@ export const ExpensesPage = () => {
     </div>
   );
 };
+
+interface ExpensesFilterContentProps {
+  categoryFilterValues: (ExpenseCategory | undefined)[];
+  categoryFilter: ExpenseCategory | undefined;
+  setCategoryFilter: (v: ExpenseCategory | undefined) => void;
+  propertyFilter: string | undefined;
+  setPropertyFilter: (v: string | undefined) => void;
+  setPeriodRange: (range: PeriodDateRange | null) => void;
+  resetPage: () => void;
+  t: (key: string) => string;
+}
+
+const ExpensesFilterContent = ({
+  categoryFilterValues,
+  categoryFilter,
+  setCategoryFilter,
+  propertyFilter,
+  setPropertyFilter,
+  setPeriodRange,
+  resetPage,
+  t,
+}: ExpensesFilterContentProps) => (
+  <div className="flex flex-col gap-4">
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.property')}
+      </label>
+      <PropertySelector
+        value={propertyFilter ?? ''}
+        onChange={(id) => {
+          setPropertyFilter(id || undefined);
+          resetPage();
+        }}
+        clearable
+        placeholder={t('filters.allProperties')}
+      />
+    </div>
+    <PeriodFilter
+      presets={['month', 'quarter', 'year', 'all', 'custom']}
+      defaultPreset="all"
+      onChange={(range) => {
+        setPeriodRange(range);
+        resetPage();
+      }}
+    />
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.category')}
+      </label>
+      <div className="flex gap-2 flex-wrap">
+        {categoryFilterValues.map((value) => (
+          <button
+            key={value ?? 'all'}
+            onClick={() => {
+              setCategoryFilter(value);
+              resetPage();
+            }}
+            className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+              categoryFilter === value
+                ? 'bg-primary-500 text-white'
+                : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+            }`}
+          >
+            {value ? t(`category.${value}`) : t('filters.allCategories')}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);

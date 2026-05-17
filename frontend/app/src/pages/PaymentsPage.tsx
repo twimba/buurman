@@ -12,6 +12,7 @@ import {
   ConfirmDialog,
   DataList,
   EmptyState,
+  FilterSheet,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -361,8 +362,42 @@ export const PaymentsPage = () => {
           </div>
         )}
 
-        {/* Filter Bar */}
-        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
+        {/* Phone: filter trigger + sheet */}
+        <div className="md:hidden mb-4 flex justify-end">
+          <FilterSheet
+            activeCount={
+              (statusFilter ? 1 : 0) +
+              (propertyFilter ? 1 : 0) +
+              (contractFilter ? 1 : 0) +
+              (periodRange ? 1 : 0)
+            }
+            onClear={() => {
+              setStatusFilter(undefined);
+              setPropertyFilter(undefined);
+              setContractFilter(undefined);
+              setPeriodRange(null);
+              resetPage();
+            }}
+            triggerLabel={t('filters.title')}
+            collapseBelow="md"
+          >
+            <PaymentsFilterContent
+              statusFilters={statusFilters}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              propertyFilter={propertyFilter}
+              setPropertyFilter={setPropertyFilter}
+              contractFilter={contractFilter}
+              setContractFilter={setContractFilter}
+              setPeriodRange={setPeriodRange}
+              resetPage={resetPage}
+              t={t}
+            />
+          </FilterSheet>
+        </div>
+
+        {/* Filter Bar (md+) */}
+        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h3 className="font-semibold text-text-primary">
@@ -714,3 +749,92 @@ export const PaymentsPage = () => {
     </div>
   );
 };
+
+interface PaymentsFilterContentProps {
+  statusFilters: { label: string; value: PaymentStatus | undefined }[];
+  statusFilter: PaymentStatus | undefined;
+  setStatusFilter: (v: PaymentStatus | undefined) => void;
+  propertyFilter: string | undefined;
+  setPropertyFilter: (v: string | undefined) => void;
+  contractFilter: string | undefined;
+  setContractFilter: (v: string | undefined) => void;
+  setPeriodRange: (range: PeriodDateRange | null) => void;
+  resetPage: () => void;
+  t: (key: string) => string;
+}
+
+const PaymentsFilterContent = ({
+  statusFilters,
+  statusFilter,
+  setStatusFilter,
+  propertyFilter,
+  setPropertyFilter,
+  contractFilter,
+  setContractFilter,
+  setPeriodRange,
+  resetPage,
+  t,
+}: PaymentsFilterContentProps) => (
+  <div className="flex flex-col gap-4">
+    <PeriodFilter
+      presets={['month', 'quarter', 'year', 'all', 'custom']}
+      defaultPreset="all"
+      onChange={(range) => {
+        setPeriodRange(range);
+        resetPage();
+      }}
+    />
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.property')}
+      </label>
+      <PropertySelector
+        value={propertyFilter ?? ''}
+        onChange={(id) => {
+          setPropertyFilter(id || undefined);
+          resetPage();
+        }}
+        clearable
+        placeholder={t('filters.allProperties')}
+      />
+    </div>
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.contract')}
+      </label>
+      <ContractSelector
+        value={contractFilter ?? ''}
+        onChange={(id) => {
+          setContractFilter(id || undefined);
+          resetPage();
+        }}
+        status={undefined}
+        clearable
+        placeholder={t('filters.allContracts')}
+      />
+    </div>
+    <div>
+      <label className="block text-xs font-medium text-text-secondary mb-1">
+        {t('filters.status')}
+      </label>
+      <div className="flex gap-2 flex-wrap">
+        {statusFilters.map((filter) => (
+          <button
+            key={filter.label}
+            onClick={() => {
+              setStatusFilter(filter.value);
+              resetPage();
+            }}
+            className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+              statusFilter === filter.value
+                ? 'bg-primary-500 text-white'
+                : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+            }`}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);
