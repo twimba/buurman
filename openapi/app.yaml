@@ -26498,6 +26498,7 @@ components:
         - MARKET_RENT
         - NEGOTIATED
         - FROZEN
+        - STATUTORY_CAP
         - OTHER
     RentFrequency:
       type: string
