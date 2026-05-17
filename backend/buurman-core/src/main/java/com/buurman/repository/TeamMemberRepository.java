@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
+import static com.buurman.jooq.generated.Tables.USERS;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -126,6 +127,36 @@ public class TeamMemberRepository {
             .map(mapper::toDomain));
   }
 
+  public Optional<String> findOwnerEmailByTeamId(UUID teamId) {
+    return dsl.select(USERS.EMAIL)
+        .from(TEAM_MEMBERS)
+        .join(USERS)
+        .on(USERS.ID.eq(TEAM_MEMBERS.USER_ID).and(USERS.DELETED_AT.isNull()))
+        .where(
+            TEAM_MEMBERS
+                .TEAM_ID
+                .eq(teamId)
+                .and(TEAM_MEMBERS.DELETED_AT.isNull())
+                .and(TEAM_MEMBERS.IS_OWNER.isTrue()))
+        .limit(1)
+        .fetchOptional(USERS.EMAIL);
+  }
+
+  public Optional<String> findAnyAdminEmailByTeamId(UUID teamId) {
+    return dsl.select(USERS.EMAIL)
+        .from(TEAM_MEMBERS)
+        .join(USERS)
+        .on(USERS.ID.eq(TEAM_MEMBERS.USER_ID).and(USERS.DELETED_AT.isNull()))
+        .where(
+            TEAM_MEMBERS
+                .TEAM_ID
+                .eq(teamId)
+                .and(TEAM_MEMBERS.DELETED_AT.isNull())
+                .and(TEAM_MEMBERS.ROLE.eq("TEAM_ADMIN")))
+        .limit(1)
+        .fetchOptional(USERS.EMAIL);
+  }
+
   public boolean existsByTeamIdAndUserId(UUID teamId, UUID userId) {
     return dsl.fetchExists(
         dsl.selectFrom(TEAM_MEMBERS)
@@ -135,5 +166,11 @@ public class TeamMemberRepository {
                     .eq(teamId)
                     .and(TEAM_MEMBERS.USER_ID.eq(userId))
                     .and(TEAM_MEMBERS.DELETED_AT.isNull())));
+  }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(TEAM_MEMBERS)
+            .where(TEAM_MEMBERS.TEAM_ID.eq(teamId).and(TEAM_MEMBERS.DELETED_AT.isNull())));
   }
 }

@@ -15,7 +15,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.EvaluatedFlag;
@@ -24,8 +23,18 @@ import com.buurman.domain.FeatureFlagOverride;
 import com.buurman.domain.OverrideScope;
 import com.buurman.domain.SegmentContext;
 import com.buurman.domain.TeamRole;
+import com.buurman.repository.CalendarFeedRepository;
+import com.buurman.repository.ContactRepository;
+import com.buurman.repository.ContractRepository;
+import com.buurman.repository.DocumentRepository;
+import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.FeatureFlagOverrideRepository;
 import com.buurman.repository.FeatureFlagRepository;
+import com.buurman.repository.PaymentRepository;
+import com.buurman.repository.PhotoRepository;
+import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.TeamMemberRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.FeatureFlags;
@@ -45,8 +54,17 @@ public class FeatureFlagService {
   private final FeatureFlagRepository flagRepo;
   private final FeatureFlagOverrideRepository overrideRepo;
   private final TeamRepository teamRepository;
+  private final TeamMemberRepository teamMemberRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
+  private final PropertyRepository propertyRepository;
+  private final ContractRepository contractRepository;
+  private final ContactRepository contactRepository;
+  private final PhotoRepository photoRepository;
+  private final DocumentRepository documentRepository;
+  private final ExpenseRepository expenseRepository;
+  private final PaymentRepository paymentRepository;
+  private final CalendarFeedRepository calendarFeedRepository;
   private final SegmentEvaluator segmentEvaluator;
-  private final DSLContext dsl;
   private final Clock clock;
   private final MetricsService metricsService;
   private final MeterRegistry registry;
@@ -59,16 +77,34 @@ public class FeatureFlagService {
       FeatureFlagRepository flagRepo,
       FeatureFlagOverrideRepository overrideRepo,
       TeamRepository teamRepository,
+      TeamMemberRepository teamMemberRepository,
+      TeamPreferencesRepository teamPreferencesRepository,
+      PropertyRepository propertyRepository,
+      ContractRepository contractRepository,
+      ContactRepository contactRepository,
+      PhotoRepository photoRepository,
+      DocumentRepository documentRepository,
+      ExpenseRepository expenseRepository,
+      PaymentRepository paymentRepository,
+      CalendarFeedRepository calendarFeedRepository,
       SegmentEvaluator segmentEvaluator,
-      DSLContext dsl,
       Clock clock,
       MetricsService metricsService,
       MeterRegistry registry) {
     this.flagRepo = flagRepo;
     this.overrideRepo = overrideRepo;
     this.teamRepository = teamRepository;
+    this.teamMemberRepository = teamMemberRepository;
+    this.teamPreferencesRepository = teamPreferencesRepository;
+    this.propertyRepository = propertyRepository;
+    this.contractRepository = contractRepository;
+    this.contactRepository = contactRepository;
+    this.photoRepository = photoRepository;
+    this.documentRepository = documentRepository;
+    this.expenseRepository = expenseRepository;
+    this.paymentRepository = paymentRepository;
+    this.calendarFeedRepository = calendarFeedRepository;
     this.segmentEvaluator = segmentEvaluator;
-    this.dsl = dsl;
     this.clock = clock;
     this.metricsService = metricsService;
     this.registry = registry;
@@ -367,114 +403,34 @@ public class FeatureFlagService {
     boolean isDemo = team.map(t -> t.isDemo()).orElse(false);
     long teamAgeDays =
         team.map(t -> ChronoUnit.DAYS.between(t.getCreatedAt(), Instant.now(clock))).orElse(0L);
+    Optional<String> teamName = team.map(t -> t.getName());
+    Optional<String> teamAdminEmail = teamMemberRepository.findAnyAdminEmailByTeamId(teamId);
+    Optional<String> teamOwnerEmail = teamMemberRepository.findOwnerEmailByTeamId(teamId);
+    var prefs = teamPreferencesRepository.findByTeamId(teamId);
     return new SegmentContext(
         isDemo,
         isOwner,
         role,
         email.isEmpty() ? Optional.empty() : Optional.of(email),
         emailVerified,
-        countProperties(teamId),
-        countMembers(teamId),
+        propertyRepository.countByTeamId(teamId),
+        teamMemberRepository.countByTeamId(teamId),
         teamAgeDays,
-        countContracts(teamId),
-        countContacts(teamId),
-        countPhotos(teamId),
-        countDocuments(teamId),
-        countExpenses(teamId),
-        countPayments(teamId),
-        countCalendarFeeds(teamId),
+        contractRepository.countByTeamId(teamId),
+        contactRepository.countByTeamId(teamId),
+        photoRepository.countByTeamId(teamId),
+        documentRepository.countByTeamId(teamId),
+        expenseRepository.countByTeamId(teamId),
+        paymentRepository.countByTeamId(teamId),
+        calendarFeedRepository.countByTeamId(teamId),
         isTeamScope,
-        isUserScope);
-  }
-
-  private int countProperties(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.PROPERTIES)
-            .where(
-                com.buurman.jooq.generated.Tables.PROPERTIES
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.PROPERTIES.DELETED_AT.isNull())));
-  }
-
-  private int countMembers(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.TEAM_MEMBERS)
-            .where(
-                com.buurman.jooq.generated.Tables.TEAM_MEMBERS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.TEAM_MEMBERS.DELETED_AT.isNull())));
-  }
-
-  private int countContracts(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.CONTRACTS)
-            .where(
-                com.buurman.jooq.generated.Tables.CONTRACTS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.CONTRACTS.DELETED_AT.isNull())));
-  }
-
-  private int countContacts(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.CONTACTS)
-            .where(
-                com.buurman.jooq.generated.Tables.CONTACTS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.CONTACTS.DELETED_AT.isNull())));
-  }
-
-  private int countPhotos(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.PHOTOS)
-            .where(
-                com.buurman.jooq.generated.Tables.PHOTOS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.PHOTOS.DELETED_AT.isNull())));
-  }
-
-  private int countDocuments(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.DOCUMENTS)
-            .where(
-                com.buurman.jooq.generated.Tables.DOCUMENTS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.DOCUMENTS.DELETED_AT.isNull())));
-  }
-
-  private int countExpenses(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.EXPENSES)
-            .where(
-                com.buurman.jooq.generated.Tables.EXPENSES
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.EXPENSES.DELETED_AT.isNull())));
-  }
-
-  private int countPayments(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.PAYMENTS)
-            .where(
-                com.buurman.jooq.generated.Tables.PAYMENTS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.PAYMENTS.DELETED_AT.isNull())));
-  }
-
-  private int countCalendarFeeds(UUID teamId) {
-    return dsl.fetchCount(
-        dsl.selectFrom(com.buurman.jooq.generated.Tables.CALENDAR_FEEDS)
-            .where(
-                com.buurman.jooq.generated.Tables.CALENDAR_FEEDS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(com.buurman.jooq.generated.Tables.CALENDAR_FEEDS.DELETED_AT.isNull())));
+        isUserScope,
+        teamName,
+        teamAdminEmail,
+        teamOwnerEmail,
+        prefs.map(p -> p.getDefaultCurrency()),
+        prefs.map(p -> p.getDefaultCountryCode()),
+        prefs.map(p -> p.getTimezone()));
   }
 
   private Optional<FeatureFlag> findFlag(String flagKey) {

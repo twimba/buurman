@@ -453,4 +453,10 @@ public class ContractRepository {
         .where(CONTRACTS.ID.eq(id).and(CONTRACTS.TEAM_ID.eq(teamId)))
         .execute();
   }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(CONTRACTS)
+            .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull())));
+  }
 }

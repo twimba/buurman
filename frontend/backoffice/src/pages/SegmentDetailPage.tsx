@@ -44,6 +44,16 @@ const ATTRIBUTES = [
     label: 'Calendar Feed Count',
     type: 'number',
   },
+  { value: 'team_name', label: 'Team Name', type: 'string' },
+  { value: 'team_admin_email', label: 'Team Admin Email', type: 'string' },
+  { value: 'team_owner_email', label: 'Team Owner Email', type: 'string' },
+  { value: 'team_currency', label: 'Team Currency', type: 'string' },
+  {
+    value: 'team_default_country',
+    label: 'Team Default Country (ISO-2)',
+    type: 'string',
+  },
+  { value: 'team_timezone', label: 'Team Timezone', type: 'string' },
 ];
 
 const OPERATORS = [

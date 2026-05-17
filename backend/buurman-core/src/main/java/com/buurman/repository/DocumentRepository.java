@@ -266,4 +266,10 @@ public class DocumentRepository {
             .fetch()
             .map(mapper::toDomain));
   }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(DOCUMENTS)
+            .where(DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull())));
+  }
 }

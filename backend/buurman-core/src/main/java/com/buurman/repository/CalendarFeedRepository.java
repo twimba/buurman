@@ -157,4 +157,10 @@ public class CalendarFeedRepository {
         .where(CALENDAR_FEEDS.ID.eq(id).and(CALENDAR_FEEDS.TEAM_ID.eq(teamId)))
         .execute();
   }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(CALENDAR_FEEDS)
+            .where(CALENDAR_FEEDS.TEAM_ID.eq(teamId).and(CALENDAR_FEEDS.DELETED_AT.isNull())));
+  }
 }

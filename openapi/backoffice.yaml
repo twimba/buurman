@@ -7749,6 +7749,12 @@ components:
             - calendar_feed_count
             - is_team
             - is_user
+            - team_name
+            - team_admin_email
+            - team_owner_email
+            - team_currency
+            - team_default_country
+            - team_timezone
         operator:
           type: string
           enum:

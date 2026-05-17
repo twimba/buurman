@@ -237,4 +237,9 @@ public class PhotoRepository {
             .fetch()
             .map(mapper::toDomain));
   }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(PHOTOS).where(PHOTOS.TEAM_ID.eq(teamId).and(PHOTOS.DELETED_AT.isNull())));
+  }
 }

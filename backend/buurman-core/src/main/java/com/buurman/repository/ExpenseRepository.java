@@ -325,4 +325,10 @@ public class ExpenseRepository {
         .where(EXPENSES.ID.eq(id).and(EXPENSES.TEAM_ID.eq(teamId)))
         .execute();
   }
+
+  public int countByTeamId(UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(EXPENSES)
+            .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull())));
+  }
 }

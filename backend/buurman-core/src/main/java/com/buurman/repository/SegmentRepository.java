@@ -12,6 +12,7 @@ import static com.buurman.jooq.generated.Tables.SEGMENTS;
 import static com.buurman.jooq.generated.Tables.SEGMENT_CONDITIONS;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
+import static com.buurman.jooq.generated.Tables.TEAM_PREFERENCES;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static java.time.ZoneOffset.UTC;
 
@@ -295,6 +296,18 @@ public class SegmentRepository {
         }
         case IS_TEAM_SCOPE -> condition = condition.and(buildScopeCondition(true, c));
         case IS_USER_SCOPE -> condition = condition.and(buildScopeCondition(false, c));
+        case TEAM_NAME -> condition = condition.and(buildStrCondition(TEAMS.NAME, c));
+        case TEAM_ADMIN_EMAIL -> condition = condition.and(buildTeamMemberEmailCondition(c, true));
+        case TEAM_OWNER_EMAIL -> condition = condition.and(buildTeamMemberEmailCondition(c, false));
+        case TEAM_CURRENCY ->
+            condition =
+                condition.and(buildTeamPreferencesCondition(TEAM_PREFERENCES.DEFAULT_CURRENCY, c));
+        case TEAM_DEFAULT_COUNTRY ->
+            condition =
+                condition.and(
+                    buildTeamPreferencesCondition(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, c));
+        case TEAM_TIMEZONE ->
+            condition = condition.and(buildTeamPreferencesCondition(TEAM_PREFERENCES.TIMEZONE, c));
       }
     }
 
@@ -408,6 +421,18 @@ public class SegmentRepository {
         }
         case IS_TEAM_SCOPE -> teamCond = teamCond.and(buildScopeCondition(false, c));
         case IS_USER_SCOPE -> teamCond = teamCond.and(buildScopeCondition(true, c));
+        case TEAM_NAME -> teamCond = teamCond.and(buildStrCondition(TEAMS.NAME, c));
+        case TEAM_ADMIN_EMAIL -> teamCond = teamCond.and(buildTeamMemberEmailCondition(c, true));
+        case TEAM_OWNER_EMAIL -> teamCond = teamCond.and(buildTeamMemberEmailCondition(c, false));
+        case TEAM_CURRENCY ->
+            teamCond =
+                teamCond.and(buildTeamPreferencesCondition(TEAM_PREFERENCES.DEFAULT_CURRENCY, c));
+        case TEAM_DEFAULT_COUNTRY ->
+            teamCond =
+                teamCond.and(
+                    buildTeamPreferencesCondition(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, c));
+        case TEAM_TIMEZONE ->
+            teamCond = teamCond.and(buildTeamPreferencesCondition(TEAM_PREFERENCES.TIMEZONE, c));
       }
     }
 
@@ -561,6 +586,18 @@ public class SegmentRepository {
         }
         case IS_TEAM_SCOPE -> condition = condition.and(buildScopeCondition(true, c));
         case IS_USER_SCOPE -> condition = condition.and(buildScopeCondition(false, c));
+        case TEAM_NAME -> condition = condition.and(buildStrCondition(TEAMS.NAME, c));
+        case TEAM_ADMIN_EMAIL -> condition = condition.and(buildTeamMemberEmailCondition(c, true));
+        case TEAM_OWNER_EMAIL -> condition = condition.and(buildTeamMemberEmailCondition(c, false));
+        case TEAM_CURRENCY ->
+            condition =
+                condition.and(buildTeamPreferencesCondition(TEAM_PREFERENCES.DEFAULT_CURRENCY, c));
+        case TEAM_DEFAULT_COUNTRY ->
+            condition =
+                condition.and(
+                    buildTeamPreferencesCondition(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, c));
+        case TEAM_TIMEZONE ->
+            condition = condition.and(buildTeamPreferencesCondition(TEAM_PREFERENCES.TIMEZONE, c));
       }
     }
 
@@ -686,6 +723,18 @@ public class SegmentRepository {
         }
         case IS_TEAM_SCOPE -> teamCond = teamCond.and(buildScopeCondition(false, c));
         case IS_USER_SCOPE -> teamCond = teamCond.and(buildScopeCondition(true, c));
+        case TEAM_NAME -> teamCond = teamCond.and(buildStrCondition(TEAMS.NAME, c));
+        case TEAM_ADMIN_EMAIL -> teamCond = teamCond.and(buildTeamMemberEmailCondition(c, true));
+        case TEAM_OWNER_EMAIL -> teamCond = teamCond.and(buildTeamMemberEmailCondition(c, false));
+        case TEAM_CURRENCY ->
+            teamCond =
+                teamCond.and(buildTeamPreferencesCondition(TEAM_PREFERENCES.DEFAULT_CURRENCY, c));
+        case TEAM_DEFAULT_COUNTRY ->
+            teamCond =
+                teamCond.and(
+                    buildTeamPreferencesCondition(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, c));
+        case TEAM_TIMEZONE ->
+            teamCond = teamCond.and(buildTeamPreferencesCondition(TEAM_PREFERENCES.TIMEZONE, c));
       }
     }
 
@@ -769,6 +818,39 @@ public class SegmentRepository {
       case LTE -> numField.le(val);
       default -> DSL.trueCondition();
     };
+  }
+
+  /** Builds a team-level condition for an attribute whose value lives in TEAM_PREFERENCES. */
+  private Condition buildTeamPreferencesCondition(Field<String> prefField, SegmentCondition c) {
+    return DSL.exists(
+        dsl.selectOne()
+            .from(TEAM_PREFERENCES)
+            .where(TEAM_PREFERENCES.TEAM_ID.eq(TEAMS.ID).and(buildStrCondition(prefField, c))));
+  }
+
+  /**
+   * Builds an EXISTS condition matching a team member with the given role/owner-flag whose user
+   * email matches the string condition. Team passes if ANY such member matches.
+   */
+  private Condition buildTeamMemberEmailCondition(SegmentCondition c, boolean adminOnly) {
+    Condition memberFilter =
+        TEAM_MEMBERS
+            .TEAM_ID
+            .eq(TEAMS.ID)
+            .and(TEAM_MEMBERS.DELETED_AT.isNull())
+            .and(USERS.ID.eq(TEAM_MEMBERS.USER_ID))
+            .and(USERS.DELETED_AT.isNull())
+            .and(buildStrCondition(USERS.EMAIL, c));
+    memberFilter =
+        adminOnly
+            ? memberFilter.and(TEAM_MEMBERS.ROLE.eq("TEAM_ADMIN"))
+            : memberFilter.and(TEAM_MEMBERS.IS_OWNER.isTrue());
+    return DSL.exists(
+        dsl.selectOne()
+            .from(TEAM_MEMBERS)
+            .join(USERS)
+            .on(USERS.ID.eq(TEAM_MEMBERS.USER_ID))
+            .where(memberFilter));
   }
 
   private Condition buildUserExistsCondition(SegmentCondition c) {

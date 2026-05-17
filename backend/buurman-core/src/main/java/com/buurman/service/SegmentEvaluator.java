@@ -173,6 +173,12 @@ public class SegmentEvaluator {
       case CALENDAR_FEED_COUNT -> String.valueOf(ctx.calendarFeedCount());
       case IS_TEAM_SCOPE -> String.valueOf(ctx.isTeamScope());
       case IS_USER_SCOPE -> String.valueOf(ctx.isUserScope());
+      case TEAM_NAME -> ctx.teamName().orElse("");
+      case TEAM_ADMIN_EMAIL -> ctx.teamAdminEmail().orElse("");
+      case TEAM_OWNER_EMAIL -> ctx.teamOwnerEmail().orElse("");
+      case TEAM_CURRENCY -> ctx.teamCurrency().orElse("");
+      case TEAM_DEFAULT_COUNTRY -> ctx.teamDefaultCountry().orElse("");
+      case TEAM_TIMEZONE -> ctx.teamTimezone().orElse("");
     };
   }
 

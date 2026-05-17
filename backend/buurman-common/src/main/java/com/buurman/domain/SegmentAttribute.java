@@ -23,7 +23,13 @@ public enum SegmentAttribute {
   PAYMENT_COUNT,
   CALENDAR_FEED_COUNT,
   IS_TEAM_SCOPE("is_team"),
-  IS_USER_SCOPE("is_user");
+  IS_USER_SCOPE("is_user"),
+  TEAM_NAME,
+  TEAM_ADMIN_EMAIL,
+  TEAM_OWNER_EMAIL,
+  TEAM_CURRENCY,
+  TEAM_DEFAULT_COUNTRY,
+  TEAM_TIMEZONE;
 
   private static final Map<String, SegmentAttribute> BY_DB_VALUE =
       Arrays.stream(values())
