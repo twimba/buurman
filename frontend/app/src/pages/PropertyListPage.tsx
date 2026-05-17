@@ -11,6 +11,7 @@ import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { useDebounce } from '@/hooks/useDebounce';
 import {
+  EmptyState,
   FilterSheet,
   ListPageHeader,
   Pagination,
@@ -382,27 +383,29 @@ export const PropertyListPage = () => {
             )}
           </>
         ) : (
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg">
-            <Home className="h-16 w-16 text-text-disabled mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
-              {t('list.empty.title')}
-            </h3>
-            <p className="text-text-secondary mb-6">
-              {searchQuery || statusFilter || categoryFilter
-                ? t('list.empty.filtered')
-                : t('list.empty.noData')}
-            </p>
-            {!searchQuery && !statusFilter && !categoryFilter && (
-              <button
-                onClick={() => navigate('/properties/new')}
-                disabled={!canEditData}
-                className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-              >
-                <Plus className="h-5 w-5" />
-                {t('list.addButton')}
-              </button>
-            )}
+          <div className="bg-surface-card rounded-lg">
+            <EmptyState
+              variant="page"
+              icon={<Home className="h-12 w-12" />}
+              title={t('list.empty.title')}
+              description={
+                searchQuery || statusFilter || categoryFilter
+                  ? t('list.empty.filtered')
+                  : t('list.empty.noData')
+              }
+              actions={
+                !searchQuery && !statusFilter && !categoryFilter ? (
+                  <button
+                    onClick={() => navigate('/properties/new')}
+                    disabled={!canEditData}
+                    className="bg-primary-500 text-white px-6 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+                  >
+                    <Plus className="h-5 w-5" />
+                    {t('list.addButton')}
+                  </button>
+                ) : undefined
+              }
+            />
           </div>
         )}
       </div>

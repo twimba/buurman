@@ -10,6 +10,7 @@ import {
 import {
   ConfirmDialog,
   DataList,
+  EmptyState,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -591,26 +592,29 @@ export const ExpensesPage = () => {
             )}
           </>
         ) : (
-          <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
-            <Receipt className="h-12 w-12 text-text-muted mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
-              {t('empty.title')}
-            </h3>
-            <p className="text-text-secondary mb-6">
-              {categoryFilter || propertyFilter
-                ? t('empty.filtered')
-                : t('empty.noData')}
-            </p>
-            {!categoryFilter && !propertyFilter && (
-              <button
-                onClick={() => navigate('/expenses/new')}
-                disabled={!canEditData}
-                className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-              >
-                <Plus className="h-5 w-5" />
-                {t('actions.addExpense')}
-              </button>
-            )}
+          <div className="bg-surface-card rounded-lg border border-border-default">
+            <EmptyState
+              variant="page"
+              icon={<Receipt className="h-12 w-12" />}
+              title={t('empty.title')}
+              description={
+                categoryFilter || propertyFilter
+                  ? t('empty.filtered')
+                  : t('empty.noData')
+              }
+              actions={
+                !categoryFilter && !propertyFilter ? (
+                  <button
+                    onClick={() => navigate('/expenses/new')}
+                    disabled={!canEditData}
+                    className="bg-primary-500 text-white px-4 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+                  >
+                    <Plus className="h-5 w-5" />
+                    {t('actions.addExpense')}
+                  </button>
+                ) : undefined
+              }
+            />
           </div>
         )}
       </div>

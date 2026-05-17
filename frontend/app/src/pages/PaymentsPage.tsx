@@ -11,6 +11,7 @@ import {
 import {
   ConfirmDialog,
   DataList,
+  EmptyState,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -659,36 +660,39 @@ export const PaymentsPage = () => {
             )}
           </>
         ) : (
-          <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
-            <DollarSign className="h-12 w-12 text-text-muted mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
-              {t('empty.title')}
-            </h3>
-            <p className="text-text-secondary mb-6">
-              {statusFilter || propertyFilter || contractFilter
-                ? t('empty.filtered')
-                : t('empty.noData')}
-            </p>
-            {!statusFilter && !propertyFilter && !contractFilter && (
-              <div className="flex items-center gap-2 justify-center">
-                <button
-                  onClick={() => navigate('/payments/new')}
-                  disabled={!canEditData}
-                  className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Plus className="h-5 w-5" />
-                  {t('actions.schedulePayment')}
-                </button>
-                <button
-                  onClick={() => navigate('/payments/new?register=true')}
-                  disabled={!canEditData}
-                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-                >
-                  <CalendarCheck className="h-5 w-5" />
-                  {t('actions.registerPayment')}
-                </button>
-              </div>
-            )}
+          <div className="bg-surface-card rounded-lg border border-border-default">
+            <EmptyState
+              variant="page"
+              icon={<DollarSign className="h-12 w-12" />}
+              title={t('empty.title')}
+              description={
+                statusFilter || propertyFilter || contractFilter
+                  ? t('empty.filtered')
+                  : t('empty.noData')
+              }
+              actions={
+                !statusFilter && !propertyFilter && !contractFilter ? (
+                  <div className="flex flex-wrap items-center gap-2 justify-center">
+                    <button
+                      onClick={() => navigate('/payments/new')}
+                      disabled={!canEditData}
+                      className="text-text-secondary border border-border-strong px-4 py-2 rounded min-h-touch hover:bg-surface-inset transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus-ring"
+                    >
+                      <Plus className="h-5 w-5" />
+                      {t('actions.schedulePayment')}
+                    </button>
+                    <button
+                      onClick={() => navigate('/payments/new?register=true')}
+                      disabled={!canEditData}
+                      className="bg-primary-500 text-white px-4 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+                    >
+                      <CalendarCheck className="h-5 w-5" />
+                      {t('actions.registerPayment')}
+                    </button>
+                  </div>
+                ) : undefined
+              }
+            />
           </div>
         )}
       </div>
