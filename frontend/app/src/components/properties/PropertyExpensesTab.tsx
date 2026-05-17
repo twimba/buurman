@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { DataList, LoadingSpinner } from '@buurman/ui';
+import { DataList, EmptyState, LoadingSpinner } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { Plus, Search, ChevronUp, ChevronDown, Receipt } from 'lucide-react';
@@ -140,18 +140,21 @@ export const PropertyExpensesTab = ({
       ) : error ? (
         <ErrorMessage message={t('expenses.failedToLoad')} />
       ) : expenses.length === 0 ? (
-        <div className="text-center py-12">
-          <Receipt className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-          <p className="text-text-secondary mb-4">{t('expenses.empty')}</p>
-          <button
-            onClick={() => navigate(`/expenses/new?propertyId=${propertyId}`)}
-            disabled={!canEditData}
-            className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-          >
-            <Plus className="h-4 w-4" />
-            {t('expenses.createFirst')}
-          </button>
-        </div>
+        <EmptyState
+          variant="section"
+          icon={<Receipt className="h-10 w-10" />}
+          title={t('expenses.empty')}
+          actions={
+            <button
+              onClick={() => navigate(`/expenses/new?propertyId=${propertyId}`)}
+              disabled={!canEditData}
+              className="bg-primary-500 text-white px-4 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+            >
+              <Plus className="h-4 w-4" />
+              {t('expenses.createFirst')}
+            </button>
+          }
+        />
       ) : (
         <>
           {/* Search Bar */}

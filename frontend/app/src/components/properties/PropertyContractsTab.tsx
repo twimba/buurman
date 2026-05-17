@@ -14,7 +14,12 @@ import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupanc
 import { FinancingFormModal } from '@/components/properties/financials/modals/FinancingFormModal';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Button, DataList, LoadingSpinner } from '@buurman/ui';
+import {
+  Button,
+  DataList,
+  EmptyState,
+  LoadingSpinner,
+} from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
@@ -145,20 +150,23 @@ export const PropertyContractsTab = ({
         ) : contractsError ? (
           <ErrorMessage message={t('list.error', { ns: 'contracts' })} />
         ) : contracts.length === 0 ? (
-          <div className="text-center py-12">
-            <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-            <p className="text-text-secondary mb-4">{t('contracts.empty')}</p>
-            <button
-              onClick={() =>
-                navigate(`/contracts/new?propertyId=${propertyId}`)
-              }
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-4 w-4" />
-              {t('contracts.createFirst')}
-            </button>
-          </div>
+          <EmptyState
+            variant="section"
+            icon={<FileText className="h-10 w-10" />}
+            title={t('contracts.empty')}
+            actions={
+              <button
+                onClick={() =>
+                  navigate(`/contracts/new?propertyId=${propertyId}`)
+                }
+                disabled={!canEditData}
+                className="bg-primary-500 text-white px-4 py-2 rounded min-h-touch hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 focus-ring"
+              >
+                <Plus className="h-4 w-4" />
+                {t('contracts.createFirst')}
+              </button>
+            }
+          />
         ) : (
           <>
             {/* Search Bar */}

@@ -10,6 +10,7 @@ import {
   Button,
   ConfirmDialog,
   DataList,
+  EmptyState,
   LoadingSpinner,
 } from '@buurman/ui';
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
@@ -182,20 +183,23 @@ export const ContractPaymentsTab = ({
         ) : paymentsError ? (
           <ErrorMessage message={t('payments.failedToLoad')} />
         ) : payments.length === 0 ? (
-          <div className="text-center py-12">
-            <DollarSign className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-            <p className="text-text-secondary mb-4">
-              {t('payments.noPayments')}
-            </p>
-            <Button
-              variant="primary"
-              leftIcon={<Plus />}
-              onClick={() => navigate(`/payments/new?contractId=${contractId}`)}
-              disabled={!canEditData}
-            >
-              {t('payments.createFirstPayment')}
-            </Button>
-          </div>
+          <EmptyState
+            variant="section"
+            icon={<DollarSign className="h-10 w-10" />}
+            title={t('payments.noPayments')}
+            actions={
+              <Button
+                variant="primary"
+                leftIcon={<Plus />}
+                onClick={() =>
+                  navigate(`/payments/new?contractId=${contractId}`)
+                }
+                disabled={!canEditData}
+              >
+                {t('payments.createFirstPayment')}
+              </Button>
+            }
+          />
         ) : (
           <>
             {/* Search Bar */}
