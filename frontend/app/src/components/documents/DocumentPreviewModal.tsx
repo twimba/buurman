@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   X,
@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { DocumentResponse, PhotoResponse } from '@/types/property';
 import { RichTextDisplay } from '@buurman/ui';
+import { PinchZoomImage } from './PinchZoomImage';
 
 interface DocumentPreviewModalProps {
   document: DocumentResponse | PhotoResponse;
@@ -35,6 +36,10 @@ export const DocumentPreviewModal = ({
   const { t } = useTranslation('documents');
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
+  // While the image is pinch-zoomed, swallow swipe-prev/next + swipe-down-dismiss
+  // so the image-pan gesture wins. PinchZoomImage's `key={document.identifier}`
+  // remounts the component on every document change so its scale resets.
+  const [imageZoomed, setImageZoomed] = useState(false);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -70,6 +75,11 @@ export const DocumentPreviewModal = ({
     touchStartX.current = null;
     touchStartY.current = null;
 
+    // While the image is pinch-zoomed, the gesture belongs to PinchZoomImage's
+    // pan. Don't swipe-navigate or swipe-dismiss.
+    if (imageZoomed) {
+      return;
+    }
     // Swipe-down dismiss (lightbox pattern): only when clearly vertical.
     if (dy > SWIPE_THRESHOLD && Math.abs(dy) > Math.abs(dx) * 1.5) {
       onClose();
@@ -200,13 +210,17 @@ export const DocumentPreviewModal = ({
             {canPreview ? (
               <>
                 {isImage && (
-                  <div className="flex justify-center">
-                    <img
+                  <div
+                    className="flex justify-center overflow-hidden"
+                    style={{ touchAction: 'none' }}
+                  >
+                    <PinchZoomImage
+                      key={document.identifier}
                       src={document.downloadUrl ?? undefined}
                       alt={document.title || document.fileName}
                       className="max-w-full h-auto rounded-lg shadow-lg"
-                      loading="lazy"
                       crossOrigin="anonymous"
+                      onZoomChange={setImageZoomed}
                     />
                   </div>
                 )}
