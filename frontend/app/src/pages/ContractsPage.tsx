@@ -10,6 +10,7 @@ import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import {
   EmptyState,
+  FilterSheet,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -151,8 +152,29 @@ export const ContractsPage = () => {
           }}
         />
 
-        {/* Filter Bar */}
-        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
+        {/* Phone: search-less trigger + sheet. md+: inline filter card. */}
+        <div className="md:hidden mb-4 flex items-center justify-end">
+          <FilterSheet
+            activeCount={statusFilter ? 1 : 0}
+            onClear={() => {
+              setStatusFilter(undefined);
+              resetPage();
+            }}
+            triggerLabel={t('list.filters')}
+            collapseBelow="md"
+          >
+            <ContractsStatusFilterContent
+              statusFilters={statusFilters}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              resetPage={resetPage}
+              t={t}
+            />
+          </FilterSheet>
+        </div>
+
+        {/* Filter Bar (md+) */}
+        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h2 className="font-semibold text-text-primary">
@@ -160,29 +182,13 @@ export const ContractsPage = () => {
             </h2>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
-              {t('list.status')}
-            </label>
-            <div className="flex gap-2 flex-wrap">
-              {statusFilters.map((filter) => (
-                <button
-                  key={filter.label}
-                  onClick={() => {
-                    setStatusFilter(filter.value);
-                    resetPage();
-                  }}
-                  className={`px-4 py-2 rounded transition-colors text-sm ${
-                    statusFilter === filter.value
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <ContractsStatusFilterContent
+            statusFilters={statusFilters}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            resetPage={resetPage}
+            t={t}
+          />
         </div>
 
         {/* Contract Count */}
@@ -235,3 +241,43 @@ export const ContractsPage = () => {
     </div>
   );
 };
+
+interface ContractsStatusFilterContentProps {
+  statusFilters: { label: string; value: ContractStatus | undefined }[];
+  statusFilter: ContractStatus | undefined;
+  setStatusFilter: (value: ContractStatus | undefined) => void;
+  resetPage: () => void;
+  t: (key: string) => string;
+}
+
+const ContractsStatusFilterContent = ({
+  statusFilters,
+  statusFilter,
+  setStatusFilter,
+  resetPage,
+  t,
+}: ContractsStatusFilterContentProps) => (
+  <div>
+    <label className="block text-sm font-medium text-text-secondary mb-2">
+      {t('list.status')}
+    </label>
+    <div className="flex gap-2 flex-wrap">
+      {statusFilters.map((filter) => (
+        <button
+          key={filter.label}
+          onClick={() => {
+            setStatusFilter(filter.value);
+            resetPage();
+          }}
+          className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+            statusFilter === filter.value
+              ? 'bg-primary-500 text-white'
+              : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+          }`}
+        >
+          {filter.label}
+        </button>
+      ))}
+    </div>
+  </div>
+);
