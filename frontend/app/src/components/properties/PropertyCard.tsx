@@ -3,6 +3,7 @@ import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { Bed, Bath, Ruler } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
+import { LazyImage } from '@buurman/ui';
 import {
   PROPERTY_CATEGORY_ICONS,
   PROPERTY_TYPE_ICONS,
@@ -41,11 +42,10 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       {/* Property Image */}
       <div className="relative bg-surface-inset h-48 flex items-center justify-center overflow-hidden">
         {property.mainPhotoUrl ? (
-          <img
+          <LazyImage
             src={property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl}
             alt={property.street}
             className="w-full h-full object-cover"
-            loading="lazy"
           />
         ) : (
           <PlaceholderIcon className="h-16 w-16 text-text-muted " />

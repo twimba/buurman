@@ -59,6 +59,8 @@ export { FilterBar } from './components/FilterBar';
 export type { FilterDef } from './components/FilterBar';
 
 // Promoted shared components
+export { LazyImage } from './components/LazyImage';
+export type { LazyImageProps } from './components/LazyImage';
 export { LoadingSpinner } from './components/LoadingSpinner';
 export { EnvironmentBanner } from './components/EnvironmentBanner';
 export type { Environment } from './components/EnvironmentBanner';
