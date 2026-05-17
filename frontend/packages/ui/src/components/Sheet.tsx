@@ -121,9 +121,12 @@ export function Sheet({
               ? [
                   // Bottom sheet
                   'inset-x-0 bottom-0',
-                  // When snap points drive height, omit max-h so the dvh
-                  // height we set inline takes effect.
-                  useSnap ? '' : 'max-h-[92dvh]',
+                  // When snap points drive height, omit min/max-h so the
+                  // dvh height we set inline takes effect. Otherwise pin a
+                  // min-height so short content (e.g. a 2-row FilterSheet)
+                  // doesn't render a stubby sheet where the footer and
+                  // drag-handle dominate the visible area.
+                  useSnap ? '' : 'min-h-[60dvh] max-h-[92dvh]',
                   'rounded-t-2xl',
                   'data-[state=open]:animate-slide-up',
                   'data-[state=closed]:animate-slide-down',
@@ -297,7 +300,8 @@ function DragHandle({
 
       // Dismiss if we've dragged well below the smallest snap or flicked
       // down with enough velocity.
-      const dismissThresholdRatio = smallestSnap * (1 - DISMISS_THRESHOLD_RATIO);
+      const dismissThresholdRatio =
+        smallestSnap * (1 - DISMISS_THRESHOLD_RATIO);
       const shouldDismiss =
         finalRatio < dismissThresholdRatio || velocity > VELOCITY_DISMISS;
 
