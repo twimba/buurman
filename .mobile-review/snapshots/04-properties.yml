@@ -1,0 +1,105 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: LOCAL ENVIRONMENT
+  - generic [ref=e6]:
+    - link "Skip to main content" [ref=e7] [cursor=pointer]:
+      - /url: "#main-content"
+    - button [ref=e8]:
+      - img [ref=e9]
+    - complementary [ref=e10]:
+      - generic [ref=e11]:
+        - img "Buurman" [ref=e15]
+        - navigation [ref=e16]:
+          - list [ref=e17]:
+            - listitem [ref=e18]
+            - listitem [ref=e26]
+            - listitem [ref=e32]
+            - listitem [ref=e40]
+            - listitem [ref=e51]
+            - listitem [ref=e56]
+            - listitem [ref=e62]
+            - listitem [ref=e67]
+            - listitem [ref=e74]
+          - button "Administration" [ref=e81]:
+            - generic [ref=e82]
+            - img [ref=e85]
+        - generic [ref=e87]:
+          - button "Demo Team Admin" [ref=e90]:
+            - img [ref=e92]
+            - generic [ref=e95]
+            - img [ref=e106]
+          - link "Settings" [ref=e108] [cursor=pointer]:
+            - /url: /settings
+            - img [ref=e109]
+            - generic [ref=e112]: Settings
+          - button "Sign Out" [ref=e113]:
+            - img [ref=e114]
+            - generic [ref=e117]: Sign Out
+    - main [ref=e118]:
+      - generic [ref=e121]:
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e124]
+            - paragraph [ref=e129]: Manage your rental properties and units
+          - generic [ref=e130]:
+            - button "Refresh data" [ref=e131]
+            - button "CSV" [ref=e137]
+            - button "Add Property" [ref=e142]
+        - generic [ref=e144]:
+          - generic [ref=e145]:
+            - img [ref=e146]
+            - heading "Filters" [level=2] [ref=e148]
+          - generic [ref=e149]:
+            - img [ref=e150]
+            - textbox "Search by address, city, postal code, or type..." [ref=e153]
+          - generic [ref=e154]:
+            - generic [ref=e155]
+            - generic [ref=e164]
+        - paragraph [ref=e176]: 30 properties
+        - generic [ref=e177]:
+          - generic [ref=e178] [cursor=pointer]:
+            - generic [ref=e179]
+            - generic [ref=e182]
+          - generic [ref=e216] [cursor=pointer]:
+            - generic [ref=e217]
+            - generic [ref=e220]
+          - generic [ref=e248] [cursor=pointer]:
+            - generic [ref=e249]
+            - generic [ref=e252]
+          - generic [ref=e281] [cursor=pointer]:
+            - generic [ref=e282]
+            - generic [ref=e285]
+          - generic [ref=e319] [cursor=pointer]:
+            - generic [ref=e320]
+            - generic [ref=e323]
+          - generic [ref=e343] [cursor=pointer]:
+            - generic [ref=e344]
+            - generic [ref=e347]
+          - generic [ref=e370] [cursor=pointer]:
+            - generic [ref=e371]
+            - generic [ref=e374]
+          - generic [ref=e397] [cursor=pointer]:
+            - generic [ref=e398]
+            - generic [ref=e401]
+          - generic [ref=e426] [cursor=pointer]:
+            - generic [ref=e427]
+            - generic [ref=e430]
+          - generic [ref=e453] [cursor=pointer]:
+            - generic [ref=e454]
+            - generic [ref=e457]
+          - generic [ref=e478] [cursor=pointer]:
+            - generic [ref=e479]
+            - generic [ref=e482]
+          - generic [ref=e513] [cursor=pointer]:
+            - generic [ref=e514]
+            - generic [ref=e517]
+        - generic [ref=e550]:
+          - generic [ref=e551]:
+            - generic [ref=e552]: Showing 1 to 12 of 30
+            - combobox [ref=e553]
+          - generic [ref=e554]:
+            - button "First page" [disabled] [ref=e555]
+            - button "Previous page" [disabled] [ref=e559]
+            - generic [ref=e562]
+            - button "Next page" [ref=e566]
+            - button "Last page" [ref=e569]
+  - status

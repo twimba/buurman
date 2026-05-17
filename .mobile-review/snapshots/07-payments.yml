@@ -1,0 +1,39 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: LOCAL ENVIRONMENT
+    - generic [ref=e6]:
+      - link "Skip to main content" [ref=e7] [cursor=pointer]:
+        - /url: "#main-content"
+      - button [ref=e8]:
+        - img [ref=e9]
+      - complementary [ref=e10]:
+        - generic [ref=e11]:
+          - img "Buurman" [ref=e15]
+          - navigation [ref=e16]:
+            - list [ref=e17]
+            - button "Administration" [ref=e81]
+          - generic [ref=e87]:
+            - button "Demo Team Admin" [ref=e90]
+            - link "Settings" [ref=e108] [cursor=pointer]:
+              - /url: /settings
+            - button "Sign Out" [ref=e113]
+      - main [ref=e118]:
+        - generic [ref=e121]:
+          - generic [ref=e122]:
+            - generic [ref=e123]
+            - generic [ref=e129]
+          - generic [ref=e147]:
+            - generic [ref=e148]
+            - generic [ref=e156]
+            - generic [ref=e164]
+          - generic [ref=e196]:
+            - generic [ref=e197]
+            - generic [ref=e201]
+          - table [ref=e233]:
+            - rowgroup [ref=e234]
+            - rowgroup [ref=e254]
+          - generic [ref=e1156]:
+            - generic [ref=e1157]
+            - generic [ref=e1160]
+    - status
+  - generic [ref=e1180]: 2025-11
