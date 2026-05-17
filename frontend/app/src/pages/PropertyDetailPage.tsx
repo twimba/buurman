@@ -289,9 +289,9 @@ export const PropertyDetailPage = () => {
           }
         />
 
-        {/* Tabs */}
-        <div className="border-b mb-6">
-          <div className="flex gap-8">
+        {/* Tabs — horizontally scrollable on phone (8 tabs would overflow). */}
+        <div className="border-b mb-6 -mx-4 px-4 md:mx-0 md:px-0 overflow-x-auto">
+          <div className="flex gap-4 md:gap-8 min-w-max">
             <button
               onClick={() => setActiveTab('info')}
               className={`px-4 py-2 border-b-2 transition-colors ${
@@ -386,6 +386,25 @@ export const PropertyDetailPage = () => {
         {/* Tab Content */}
         {activeTab === 'info' && (
           <div className="space-y-6">
+            {/* Phone-only photo hero: gives the detail page a visual anchor and
+                lets the user tap into the photos tab to browse the gallery.
+                Hidden md+ to preserve the desktop layout pixel-equivalently. */}
+            {property.mainPhotoUrl && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('photos')}
+                aria-label={t('detail.tabs.photos')}
+                className="md:hidden block w-full aspect-[16/10] rounded-lg overflow-hidden bg-surface-inset focus-ring -mt-2"
+              >
+                <img
+                  src={property.mainPhotoUrl}
+                  alt={property.street}
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            )}
             {/* Property Lifecycle Timeline */}
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
