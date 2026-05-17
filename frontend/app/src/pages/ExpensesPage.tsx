@@ -222,11 +222,12 @@ export const ExpensesPage = () => {
           }}
         />
 
-        {/* Metrics Dashboard */}
+        {/* Metrics Dashboard — phone shows Total + Top Categories
+            stacked single-col; the 6-month sparkline collapses to lg+. */}
         {expenseStats && (
-          <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {/* Total Expenses */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 flex flex-col">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-3 md:p-6 flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-text-secondary">
                   {t('stats.totalExpenses')}
@@ -234,7 +235,7 @@ export const ExpensesPage = () => {
                 <DollarSign className="h-5 w-5 text-error-text" />
               </div>
               <div className="flex-1 flex flex-col justify-center">
-                <p className="text-3xl font-bold text-text-primary">
+                <p className="text-xl md:text-3xl font-bold text-text-primary tabular-nums">
                   {fmtMoney(expenseStats.totalAmount, statsCurrency)}
                 </p>
                 <p className="text-sm text-text-secondary mt-1">
@@ -250,7 +251,7 @@ export const ExpensesPage = () => {
             </div>
 
             {/* Top Categories */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-3 md:p-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-medium text-text-secondary">
                   {t('stats.topCategories')}
@@ -290,8 +291,9 @@ export const ExpensesPage = () => {
               </div>
             </div>
 
-            {/* 6-Month Expenses Chart */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            {/* 6-Month Expenses Chart — lg+ only, sparkline at phone width
+                isn't readable; deeper trend lives in /reports. */}
+            <div className="hidden lg:block bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-text-secondary">
                   {t('stats.lastSixMonths')}
