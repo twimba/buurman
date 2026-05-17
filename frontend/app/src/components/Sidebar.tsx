@@ -357,8 +357,9 @@ export const Sidebar = ({
         style={{
           top: 'var(--env-banner-height, 0px)',
           height: 'calc(100dvh - var(--env-banner-height, 0px))',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          paddingLeft: 'env(safe-area-inset-left, 0px)',
+          paddingTop: 'var(--safe-top, 0px)',
+          paddingBottom: 'var(--safe-bottom, 0px)',
+          paddingLeft: 'var(--safe-left, 0px)',
         }}
       >
         <div className="flex flex-col h-full overflow-hidden">
