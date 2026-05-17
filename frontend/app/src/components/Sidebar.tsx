@@ -72,7 +72,7 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({
-  collapsed,
+  collapsed: userCollapsed,
   onToggleCollapse,
   mobileOpen: controlledMobileOpen,
   onMobileOpenChange,
@@ -220,22 +220,56 @@ export const Sidebar = ({
     (item) => !item.featureFlag || isEnabled(item.featureFlag)
   );
 
-  // Below lg (1024px), the sidebar is an off-canvas drawer. When closed, its content
-  // remains in the DOM (so the open transition can animate from translate-x-full → 0)
-  // but should be removed from the tab order and hidden from screen readers.
-  // Above lg, the sidebar is always visible and interactive.
-  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+  // Viewport detection. Three states matter:
+  //   `phone`  (<md, <768)        — off-canvas drawer + floating hamburger
+  //   `rail`   (md → lg, 768–1023) — persistent 64-px icon-only rail (if flag enabled)
+  //   `desktop`(lg+, ≥1024)       — full expanded sidebar (user-collapsible to 20)
+  const [isPhoneViewport, setIsPhoneViewport] = useState(() =>
     typeof window !== 'undefined'
-      ? window.matchMedia('(max-width: 1023px)').matches
+      ? window.matchMedia('(max-width: 767px)').matches
+      : false
+  );
+  const [isRailViewport, setIsRailViewport] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(min-width: 768px) and (max-width: 1023px)').matches
       : false
   );
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 1023px)');
-    const handler = (e: MediaQueryListEvent) => setIsMobileViewport(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
+    const mqPhone = window.matchMedia('(max-width: 767px)');
+    const mqRail = window.matchMedia(
+      '(min-width: 768px) and (max-width: 1023px)'
+    );
+    const onPhone = (e: MediaQueryListEvent) => setIsPhoneViewport(e.matches);
+    const onRail = (e: MediaQueryListEvent) => setIsRailViewport(e.matches);
+    mqPhone.addEventListener('change', onPhone);
+    mqRail.addEventListener('change', onRail);
+    return () => {
+      mqPhone.removeEventListener('change', onPhone);
+      mqRail.removeEventListener('change', onRail);
+    };
   }, []);
-  const shouldBeInert = isMobileViewport && !mobileOpen;
+
+  // Feature flag: localStorage 'buurman.mobile.sidebarRail' ∈ { 'true','false' }.
+  // Defaults to enabled. Read once at mount.
+  const [railEnabled] = useState(() => {
+    try {
+      const v = localStorage.getItem('buurman.mobile.sidebarRail');
+      return v !== 'false';
+    } catch {
+      return true;
+    }
+  });
+  const railModeActive = isRailViewport && railEnabled;
+
+  // Effective collapsed: rail mode forces collapsed visuals regardless of the
+  // user's `collapsed` preference (which only applies at lg+).
+  // Shadowing the prop as `collapsed` makes the rest of the JSX
+  // automatically render in rail-collapsed style at md→lg.
+  const collapsed = railModeActive || userCollapsed;
+
+  // Drawer inert: only when phone-viewport AND closed. Rail and desktop always
+  // remain in tab order.
+  const shouldBeInert = isPhoneViewport && !mobileOpen;
 
   // Whether a page-level header (ListPageHeader) is providing its own menu trigger.
   const { hasOwnMenuButton } = useMobileNav();
@@ -256,8 +290,10 @@ export const Sidebar = ({
 
   return (
     <>
-      {/* Mobile menu button — hides when a page-level header provides its own
-          trigger (avoids double hamburger). Always min-h/w 44px touch target. */}
+      {/* Floating mobile menu button — phone only (`<md`). At md→lg the rail
+          provides persistent nav; at lg+ the sidebar is always visible.
+          Also hidden when a page-level header provides its own trigger
+          (ListPageHeader + MobileMenuButton). Always min-h/w 44px touch target. */}
       {!hasOwnMenuButton && (
         <button
           type="button"
@@ -269,7 +305,7 @@ export const Sidebar = ({
           }
           aria-expanded={mobileOpen}
           aria-controls="primary-sidebar"
-          className="lg:hidden fixed left-4 z-50 inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset focus-ring"
+          className={`${railEnabled ? 'md:hidden' : 'lg:hidden'} fixed left-4 z-50 inline-flex items-center justify-center min-h-11 min-w-11 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset focus-ring`}
           style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
         >
           {mobileOpen ? (
@@ -299,6 +335,7 @@ export const Sidebar = ({
           fixed left-0 bg-surface-card/95 backdrop-blur-xl border-r border-border-default z-40
           transition-all duration-300 ease-in-out
           ${mobileOpen ? 'w-64 translate-x-0' : '-translate-x-full'}
+          ${railEnabled ? 'md:translate-x-0 md:w-16' : ''}
           ${collapsed ? 'lg:w-20' : 'lg:w-64'}
           lg:translate-x-0
         `}

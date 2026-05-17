@@ -27,11 +27,15 @@ import {
 import { usePagination } from '@/hooks/usePagination';
 import {
   ConfirmDialog,
+  ListPageHeader,
   LoadingSpinner,
   Pagination,
   RefreshButton,
   RichTextDisplay,
+  type ListPageHeaderAction,
 } from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { RefreshCw } from 'lucide-react';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { EditMetadataModal } from '@/components/ui/EditMetadataModal';
 import { DocumentResponse } from '@/types/property';
@@ -145,22 +149,31 @@ export const DocumentsPage = () => {
 
   const hasSelection = selectedDocuments.size > 0;
 
-  return (
-    <div className="px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <Folder className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-text-primary">
-              {t('documentsPage.title')}
-            </h1>
-          </div>
-          <p className="text-text-secondary ml-11">
-            {t('documentsPage.subtitle')}
-          </p>
-        </div>
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      icon: RefreshCw,
+      onClick: () => refetch(),
+      showOn: 'mobile',
+    },
+    {
+      label: 'desktop-actions',
+      showOn: 'desktop',
+      render: () => (
         <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
-      </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="px-4 py-4 md:py-8">
+      <ListPageHeader
+        title={t('documentsPage.title')}
+        subtitle={t('documentsPage.subtitle')}
+        icon={Folder}
+        mobileLeading={<MobileMenuButton />}
+        actions={headerActions}
+      />
 
       {/* Search and Filter Bar */}
       <div className="bg-surface-card rounded-lg shadow-sm p-4 mb-6">

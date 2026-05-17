@@ -24,6 +24,15 @@ export { FormField } from './components/FormField';
 export { ModalWrapper } from './components/ModalWrapper';
 export { Sheet } from './components/Sheet';
 export type { SheetProps } from './components/Sheet';
+export { FilterSheet } from './components/FilterSheet';
+export type { FilterSheetProps } from './components/FilterSheet';
+export { ResponsiveTable } from './components/ResponsiveTable';
+export type {
+  ResponsiveTableColumn,
+  ResponsiveTableProps,
+} from './components/ResponsiveTable';
+export { DataList } from './components/DataList';
+export type { DataListItem, DataListProps } from './components/DataList';
 export { StatusBadge } from './components/StatusBadge';
 export type { BadgeColorVariant } from './components/StatusBadge';
 export { EmptyState } from './components/EmptyState';

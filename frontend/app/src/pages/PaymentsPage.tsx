@@ -9,10 +9,14 @@ import {
 } from '@/hooks/usePaymentHooks';
 import {
   ConfirmDialog,
+  ListPageHeader,
   Pagination,
   RefreshButton,
   Skeleton,
+  type ListPageHeaderAction,
 } from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { RefreshCw } from 'lucide-react';
 import { usePagination } from '@/hooks/usePagination';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { ContractCell } from '@/components/contracts/ContractCell';
@@ -177,49 +181,61 @@ export const PaymentsPage = () => {
     );
   }
 
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      icon: RefreshCw,
+      onClick: () => refetch(),
+      showOn: 'mobile',
+    },
+    {
+      label: t('actions.schedulePayment'),
+      icon: Plus,
+      onClick: () => navigate('/payments/new'),
+      showOn: 'mobile',
+      disabled: !canEditData,
+    },
+    {
+      label: 'desktop-actions',
+      showOn: 'desktop',
+      render: () => (
+        <div className="flex items-center gap-2 flex-wrap">
+          <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
+          <EntityExportControls
+            filenameStem="payments"
+            csv={exportPaymentsCsv}
+            xlsx={exportPaymentsXlsx}
+            googleSheet={exportPaymentsGoogleSheet}
+          />
+          <button
+            onClick={() => navigate('/payments/new')}
+            disabled={!canEditData}
+            className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Plus className="h-5 w-5" />
+            {t('actions.schedulePayment')}
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <DollarSign className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">
-                {t('page.title')}
-              </h1>
-            </div>
-            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <RefreshButton
-              onClick={() => refetch()}
-              isRefreshing={isFetching}
-            />
-            <EntityExportControls
-              filenameStem="payments"
-              csv={exportPaymentsCsv}
-              xlsx={exportPaymentsXlsx}
-              googleSheet={exportPaymentsGoogleSheet}
-            />
-            <button
-              onClick={() => navigate('/payments/new')}
-              disabled={!canEditData}
-              className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Plus className="h-5 w-5" />
-              {t('actions.schedulePayment')}
-            </button>
-            <button
-              onClick={() => navigate('/payments/new?register=true')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <CalendarCheck className="h-5 w-5" />
-              {t('actions.registerPayment')}
-            </button>
-          </div>
-        </div>
+      <div className="px-4 py-4 md:py-8">
+        <ListPageHeader
+          title={t('page.title')}
+          subtitle={t('page.subtitle')}
+          icon={DollarSign}
+          mobileLeading={<MobileMenuButton />}
+          actions={headerActions}
+          primaryAction={{
+            label: t('actions.registerPayment'),
+            icon: CalendarCheck,
+            onClick: () => navigate('/payments/new?register=true'),
+            disabled: !canEditData,
+          }}
+        />
 
         {/* Metrics Dashboard */}
         {paymentStats && (

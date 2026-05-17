@@ -28,6 +28,16 @@ export const Layout = ({ children }: LayoutProps) => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [hasOwnMenuButton, setHasOwnMenuButton] = useState(false);
 
+  // Rail-mode opt-out (localStorage 'buurman.mobile.sidebarRail' = 'false'). Default on.
+  // Read once at mount; used to skip the md:ml-16 margin reservation.
+  const [railEnabled] = useState(() => {
+    try {
+      return localStorage.getItem('buurman.mobile.sidebarRail') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
   useKeyboardInset();
 
   const { data: onboarding } = useOnboardingStatus();
@@ -87,7 +97,7 @@ export const Layout = ({ children }: LayoutProps) => {
         />
         <main
           id="main-content"
-          className={`flex-1 overflow-auto transition-[margin] duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}
+          className={`flex-1 overflow-auto transition-[margin] duration-300 ease-in-out ${railEnabled ? 'md:ml-16' : ''} ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}
           style={
             {
               // Reserve space for the iPhone bottom tab bar; collapses to 0 on md+ via md:pb-0

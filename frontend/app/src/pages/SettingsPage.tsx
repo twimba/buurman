@@ -5,6 +5,8 @@ import { UserProfileSection } from '@/components/settings/UserProfileSection';
 import { UserPreferencesSection } from '@/components/settings/UserPreferencesSection';
 import { MyTeamsSection } from '@/components/settings/MyTeamsSection';
 import { ImpersonationGuard } from '@/components/ImpersonationGuard';
+import { ListPageHeader } from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
 
 type SettingsTab = 'profile' | 'preferences' | 'teams';
 
@@ -24,19 +26,14 @@ export const SettingsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="px-4 py-8">
-        {/* Header */}
+      <div className="px-4 py-4 md:py-8">
+        <ListPageHeader
+          title={t('page.title')}
+          subtitle={t('page.subtitle')}
+          icon={SettingsIcon}
+          mobileLeading={<MobileMenuButton />}
+        />
         <div className="mb-8">
-          <div className="mb-6">
-            <div className="flex items-center gap-3 mb-1">
-              <SettingsIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">
-                {t('page.title')}
-              </h1>
-            </div>
-            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
-          </div>
-
           {/* Tabs */}
           <div className="border-b border-border-default">
             <nav className="-mb-px flex space-x-1 overflow-x-auto">

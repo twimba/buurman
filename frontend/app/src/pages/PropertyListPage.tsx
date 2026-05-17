@@ -6,11 +6,12 @@ import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { useProperties } from '@/hooks/usePropertyHooks';
 import { PropertyCard } from '@/components/properties/PropertyCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Plus, Home, Filter, Search, X, ChevronDown } from 'lucide-react';
+import { Plus, Home, Filter, Search, X } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { useDebounce } from '@/hooks/useDebounce';
 import {
+  FilterSheet,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -61,8 +62,6 @@ export const PropertyListPage = () => {
     PropertyCategory | undefined
   >(undefined);
   const [searchQuery, setSearchQuery] = useState('');
-  // Phase 0: filter card collapsed by default on phone (md hidden bypasses this state).
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const debouncedQuery = useDebounce(searchQuery, 300);
 
   const {
@@ -173,40 +172,109 @@ export const PropertyListPage = () => {
           }}
         />
 
-        {/* Filter Bar */}
-        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">
-          {/* Phone: collapsible toggle. md+: always visible header — desktop unchanged. */}
-          <button
-            type="button"
-            onClick={() => setMobileFiltersOpen((o) => !o)}
-            aria-expanded={mobileFiltersOpen}
-            aria-controls="property-filter-body"
-            className="md:hidden w-full flex items-center justify-between min-h-11"
-          >
-            <span className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-text-secondary " />
-              <span className="font-semibold text-text-primary">
-                {t('list.filters')}
-              </span>
-            </span>
-            <ChevronDown
-              className={`h-5 w-5 text-text-secondary transition-transform ${
-                mobileFiltersOpen ? 'rotate-180' : ''
-              }`}
+        {/* Phone: search stays inline, filters move into FilterSheet trigger.
+            md+: FilterSheet renders inline — same filter card UX as before. */}
+        <div className="md:hidden mb-4 flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                resetPage();
+              }}
+              placeholder={t('list.searchPlaceholder')}
+              className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
-          </button>
-          <div className="hidden md:flex items-center gap-2">
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  resetPage();
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <FilterSheet
+            activeCount={
+              (categoryFilter ? 1 : 0) + (statusFilter ? 1 : 0)
+            }
+            onClear={() => {
+              setCategoryFilter(undefined);
+              setStatusFilter(undefined);
+              resetPage();
+            }}
+            triggerLabel={t('list.filters')}
+            collapseBelow="md"
+          >
+            <div className="space-y-4">
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  {t('list.category')}
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {categoryFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setCategoryFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+                        categoryFilter === filter.value
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status Filter */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  {t('list.status')}
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {statusFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setStatusFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
+                        statusFilter === filter.value
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </FilterSheet>
+        </div>
+
+        {/* Filter Bar (md+ only — preserves the desktop card UX) */}
+        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">
+          <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h2 className="font-semibold text-text-primary">
               {t('list.filters')}
             </h2>
           </div>
 
-          {/* Body: collapsed on phone when mobileFiltersOpen=false, always visible md+ */}
-          <div
-            id="property-filter-body"
-            className={`space-y-4 ${mobileFiltersOpen ? 'block' : 'hidden'} md:block`}
-          >
+          <div className="space-y-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />

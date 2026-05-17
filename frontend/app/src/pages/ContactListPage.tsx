@@ -19,7 +19,16 @@ import {
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { EmptyState, Pagination, RefreshButton, Skeleton } from '@buurman/ui';
+import {
+  EmptyState,
+  ListPageHeader,
+  Pagination,
+  RefreshButton,
+  Skeleton,
+  type ListPageHeaderAction,
+} from '@buurman/ui';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
+import { RefreshCw } from 'lucide-react';
 import { ContactType, ContactTag, CreateContactRequest } from '@/types/contact';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import {
@@ -304,100 +313,108 @@ export const ContactListPage = () => {
     );
   }
 
+  const headerActions: ListPageHeaderAction[] = [
+    {
+      label: t('common:refresh', 'Refresh'),
+      icon: RefreshCw,
+      onClick: () => refetch(),
+      showOn: 'mobile',
+    },
+    {
+      label: 'desktop-actions',
+      showOn: 'desktop',
+      render: () => (
+        <div className="flex items-center gap-2">
+          <RefreshButton
+            onClick={() => refetch()}
+            isRefreshing={isFetching}
+          />
+          <GoogleSheetExportPill
+            result={lastGoogleSheet}
+            onDismiss={clearLastGoogleSheet}
+          />
+          <ExportDropdown
+            size="md"
+            disabled={isExporting || isGoogleExporting}
+            exporting={isExporting || isGoogleExporting}
+            options={[
+              {
+                label: 'CSV',
+                icon: <ExportOptionIcon format="csv" />,
+                onExport: handleExportCsv,
+              },
+              ...(isEnabled(FeatureFlags.EXCEL_EXPORT)
+                ? [
+                    {
+                      label: 'Excel',
+                      icon: <ExportOptionIcon format="excel" />,
+                      onExport: handleExportXlsx,
+                    },
+                  ]
+                : []),
+              ...(isEnabled(FeatureFlags.GOOGLE_SHEETS_EXPORT)
+                ? [
+                    {
+                      label: 'Google Sheets',
+                      icon: <ExportOptionIcon format="google-sheets" />,
+                      onExport: () =>
+                        triggerGoogleSheet((token) =>
+                          exportContactsGoogleSheet(token)
+                        ),
+                    },
+                  ]
+                : []),
+            ]}
+          />
+          {canEditData && (
+            <button
+              onClick={() => setShowImportWizard(true)}
+              className="border border-border-strong bg-surface-card text-text-secondary px-3 py-2 rounded hover:border-primary-500 transition-colors flex items-center gap-1.5 text-sm"
+              title={t('list.importTitle')}
+            >
+              <Upload className="h-4 w-4" />
+              {t('list.import')}
+            </button>
+          )}
+          {canEditData && (
+            <button
+              onClick={() => setShowQuickAdd(!showQuickAdd)}
+              className={`border px-3 py-2 rounded transition-colors flex items-center gap-1.5 text-sm ${
+                showQuickAdd
+                  ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
+                  : 'border-border-strong bg-surface-card text-text-secondary hover:border-primary-500'
+              }`}
+              title={t('list.quickAdd')}
+            >
+              {showQuickAdd ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+              {t('list.quickAdd')}
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <Users className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">
-                {t('list.title')}
-              </h1>
-            </div>
-            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <RefreshButton
-              onClick={() => refetch()}
-              isRefreshing={isFetching}
-            />
-            <GoogleSheetExportPill
-              result={lastGoogleSheet}
-              onDismiss={clearLastGoogleSheet}
-            />
-            <ExportDropdown
-              size="md"
-              disabled={isExporting || isGoogleExporting}
-              exporting={isExporting || isGoogleExporting}
-              options={[
-                {
-                  label: 'CSV',
-                  icon: <ExportOptionIcon format="csv" />,
-                  onExport: handleExportCsv,
-                },
-                ...(isEnabled(FeatureFlags.EXCEL_EXPORT)
-                  ? [
-                      {
-                        label: 'Excel',
-                        icon: <ExportOptionIcon format="excel" />,
-                        onExport: handleExportXlsx,
-                      },
-                    ]
-                  : []),
-                ...(isEnabled(FeatureFlags.GOOGLE_SHEETS_EXPORT)
-                  ? [
-                      {
-                        label: 'Google Sheets',
-                        icon: <ExportOptionIcon format="google-sheets" />,
-                        onExport: () =>
-                          triggerGoogleSheet((token) =>
-                            exportContactsGoogleSheet(token)
-                          ),
-                      },
-                    ]
-                  : []),
-              ]}
-            />
-            {canEditData && (
-              <button
-                onClick={() => setShowImportWizard(true)}
-                className="border border-border-strong bg-surface-card text-text-secondary px-3 py-2 rounded hover:border-primary-500 transition-colors flex items-center gap-1.5 text-sm"
-                title={t('list.importTitle')}
-              >
-                <Upload className="h-4 w-4" />
-                {t('list.import')}
-              </button>
-            )}
-            {canEditData && (
-              <button
-                onClick={() => setShowQuickAdd(!showQuickAdd)}
-                className={`border px-3 py-2 rounded transition-colors flex items-center gap-1.5 text-sm ${
-                  showQuickAdd
-                    ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
-                    : 'border-border-strong bg-surface-card text-text-secondary hover:border-primary-500'
-                }`}
-                title={t('list.quickAdd')}
-              >
-                {showQuickAdd ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-                {t('list.quickAdd')}
-              </button>
-            )}
-            <button
-              onClick={() => navigate('/contacts/new')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-5 w-5" />
-              {t('list.addButton')}
-            </button>
-          </div>
-        </div>
+      <div className="px-4 py-4 md:py-8">
+        <ListPageHeader
+          title={t('list.title')}
+          subtitle={t('list.subtitle')}
+          icon={Users}
+          mobileLeading={<MobileMenuButton />}
+          actions={headerActions}
+          primaryAction={{
+            label: t('list.addButton'),
+            icon: Plus,
+            onClick: () => navigate('/contacts/new'),
+            disabled: !canEditData,
+          }}
+        />
 
         {/* Search + Filter Toggle */}
         <div className="flex gap-3 mb-4">
