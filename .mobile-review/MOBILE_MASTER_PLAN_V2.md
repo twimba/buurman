@@ -112,3 +112,17 @@ All four experts agree: dashboard is the largest remaining gap, `min-h-screen` l
 ---
 
 **Counts:** P0 = 11 · P1 = 21 · P2 = 23 · Total = 55
+
+---
+
+## Execution status (rolling)
+
+P0: 11/11 shipped (see commits `01852f7b`, `51fd249c`).
+
+P1: 17/21 shipped. Deferred and why:
+- **P1-3 Unify Dashboard KPI strip via container queries** — desktop pixel-parity risk; the proposed single `<DashboardKpiStrip>` replaces a custom-designed 4-card grid (gradient backgrounds, hover states, "vs last month" badges) that doesn't map 1:1 to phone tiles. Needs design alignment before refactor.
+- **P1-5 Standardize filter affordance** — partial: 4/6 list pages (Properties, Contracts, Payments, Expenses) already on `FilterSheet`. ContactListPage and DocumentsPage carry legacy patterns; full migration is moderate (~100 LOC each) and should pair with the FilterSheet API extension to host sort.
+- **P1-7 Service worker** — requires installing `vite-plugin-pwa` + Workbox config + `/offline.html` route + asset precache list; defer until a clean session that can run `yarn add` and validate the manifest+SW cooperate.
+- **P1-17 iOS splash screens** — requires running `pwa-asset-generator` against the master logo to emit ~10 PNGs at exact `apple-touch-startup-image` dimensions; defer alongside P1-7.
+
+P2: pending.
