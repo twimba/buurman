@@ -345,7 +345,103 @@ export const DocumentsPage = () => {
               )}
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Phone-only card list — desktop keeps the data-dense table.
+                Each card is a tap-to-preview row with a leading checkbox for
+                selection, file icon, title/filename, entity-type chip,
+                size · date meta, and trailing download/edit/delete actions
+                in a compact icon-cluster (≥44px hit targets). */}
+            <ul className="md:hidden divide-y divide-border-default border-y border-border-default">
+              {documents.map((doc) => {
+                const isSelected = selectedDocuments.has(doc.identifier);
+                return (
+                  <li
+                    key={doc.identifier}
+                    className={`flex items-start gap-3 px-3 py-3 ${
+                      isSelected ? 'bg-info-bg' : ''
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={(e) =>
+                        handleSelectDocument(doc.identifier, e.shiftKey)
+                      }
+                      aria-label={
+                        isSelected
+                          ? t('common:buttons.deselect', 'Deselect')
+                          : t('common:buttons.select', 'Select')
+                      }
+                      className="mt-1 min-h-touch min-w-touch -m-2 p-2 inline-flex items-center justify-center text-text-secondary"
+                    >
+                      {isSelected ? (
+                        <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
+                          <Check
+                            className="h-3.5 w-3.5 text-white"
+                            strokeWidth={3}
+                          />
+                        </div>
+                      ) : (
+                        <Square className="h-5 w-5" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPreviewIndex(documents.indexOf(doc))
+                      }
+                      className="flex-1 min-w-0 flex items-start gap-3 text-left focus-ring rounded-md"
+                    >
+                      <div className="flex-shrink-0 mt-0.5">
+                        {getFileIcon(doc.mimeType)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-text-primary truncate">
+                          {doc.title ?? doc.fileName}
+                        </div>
+                        {doc.title && doc.title !== doc.fileName ? (
+                          <div className="text-xs text-text-secondary truncate">
+                            {doc.fileName}
+                          </div>
+                        ) : null}
+                        <div className="mt-1 flex items-center gap-2 text-xs text-text-secondary">
+                          <span className="px-1.5 py-0.5 rounded-full bg-surface-inset text-[10px] uppercase tracking-wider">
+                            {doc.entityType}
+                          </span>
+                          <span>·</span>
+                          <span className="tabular-nums">
+                            {formatFileSize(doc.fileSize)}
+                          </span>
+                          <span>·</span>
+                          <span>{formatDate(doc.uploadedAt)}</span>
+                        </div>
+                      </div>
+                    </button>
+                    <div className="flex flex-col gap-1">
+                      <a
+                        href={doc.downloadUrl ?? undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="min-h-touch min-w-touch -m-1 p-1 inline-flex items-center justify-center text-primary-500 rounded-md"
+                        aria-label={t('tooltips.download')}
+                      >
+                        <Download className="h-5 w-5" />
+                      </a>
+                      {canEditData && (
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(doc.identifier)}
+                          className="min-h-touch min-w-touch -m-1 p-1 inline-flex items-center justify-center text-error-text rounded-md"
+                          aria-label={t('tooltips.delete')}
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-border-default">
                 <thead className="bg-surface-page">
                   <tr>
