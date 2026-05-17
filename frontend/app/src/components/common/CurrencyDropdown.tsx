@@ -283,7 +283,7 @@ export const CurrencyDropdown = ({
             ref={listRef}
             role="listbox"
             aria-label={t('selectors.currencies')}
-            className="overflow-y-auto flex-1 pb-[env(safe-area-inset-bottom)]"
+            className="overflow-y-auto flex-1 pb-safe"
           >
             {listContent}
           </div>
