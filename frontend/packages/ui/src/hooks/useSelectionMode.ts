@@ -75,10 +75,7 @@ export function useSelectionMode<
     setSelected(new Set());
   }, []);
 
-  const isSelected = useCallback(
-    (id: TId) => selected.has(id),
-    [selected]
-  );
+  const isSelected = useCallback((id: TId) => selected.has(id), [selected]);
 
   return useMemo(
     () => ({

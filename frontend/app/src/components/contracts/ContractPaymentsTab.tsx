@@ -253,8 +253,7 @@ export const ContractPaymentsTab = ({
                             label: t('payments.table.amount'),
                             value: (
                               <span className="font-semibold text-text-primary">
-                                {payment.currency}{' '}
-                                {payment.amount.toFixed(2)}
+                                {payment.currency} {payment.amount.toFixed(2)}
                               </span>
                             ),
                             align: 'right',

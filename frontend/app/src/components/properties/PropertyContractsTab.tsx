@@ -14,12 +14,7 @@ import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupanc
 import { FinancingFormModal } from '@/components/properties/financials/modals/FinancingFormModal';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import {
-  Button,
-  DataList,
-  EmptyState,
-  LoadingSpinner,
-} from '@buurman/ui';
+import { Button, DataList, EmptyState, LoadingSpinner } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {

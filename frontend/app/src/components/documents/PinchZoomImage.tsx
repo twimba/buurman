@@ -1,8 +1,10 @@
 import { useGesture } from '@use-gesture/react';
 import { useEffect, useRef, useState, type ImgHTMLAttributes } from 'react';
 
-interface PinchZoomImageProps
-  extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'onDrag'> {
+interface PinchZoomImageProps extends Omit<
+  ImgHTMLAttributes<HTMLImageElement>,
+  'onDrag'
+> {
   /** Maximum scale via pinch. Default 4×. */
   maxScale?: number;
   /**
@@ -38,7 +40,7 @@ export function PinchZoomImage({
 
   useGesture(
     {
-      onPinch: ({ offset: [s], origin: [, ] }) => {
+      onPinch: ({ offset: [s], origin: [,] }) => {
         const next = Math.min(maxScale, Math.max(1, s));
         setScale(next);
         if (next === 1) {

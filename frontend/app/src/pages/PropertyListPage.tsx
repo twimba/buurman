@@ -201,9 +201,7 @@ export const PropertyListPage = () => {
             )}
           </div>
           <FilterSheet
-            activeCount={
-              (categoryFilter ? 1 : 0) + (statusFilter ? 1 : 0)
-            }
+            activeCount={(categoryFilter ? 1 : 0) + (statusFilter ? 1 : 0)}
             onClear={() => {
               setCategoryFilter(undefined);
               setStatusFilter(undefined);

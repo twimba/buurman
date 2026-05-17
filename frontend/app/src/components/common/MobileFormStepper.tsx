@@ -80,9 +80,7 @@ export function MobileFormStepperProvider({
   );
 
   return (
-    <StepperContext.Provider value={value}>
-      {children}
-    </StepperContext.Provider>
+    <StepperContext.Provider value={value}>{children}</StepperContext.Provider>
   );
 }
 

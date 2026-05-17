@@ -1,13 +1,10 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ImgHTMLAttributes,
-} from 'react';
+import { useEffect, useRef, useState, type ImgHTMLAttributes } from 'react';
 import { cn } from '../utils/cn';
 
-export interface LazyImageProps
-  extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
+export interface LazyImageProps extends Omit<
+  ImgHTMLAttributes<HTMLImageElement>,
+  'src'
+> {
   /** Image URL. Loaded only when the wrapper enters the viewport (or within rootMargin). */
   src: string;
   /** Class on the outer wrapper div (positioning, sizing). */

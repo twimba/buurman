@@ -174,8 +174,7 @@ export const PhotoGallery = ({
             {
               label: 'Download',
               icon: DownloadIcon,
-              onClick: () =>
-                handleBulkDownload(Array.from(selectedPhotos)),
+              onClick: () => handleBulkDownload(Array.from(selectedPhotos)),
               disabled: bulkDownloadMutation.isPending,
             },
             ...(readOnly
@@ -185,8 +184,7 @@ export const PhotoGallery = ({
                     label: 'Delete',
                     icon: TrashIcon,
                     tone: 'danger' as const,
-                    onClick: () =>
-                      handleBulkDelete(Array.from(selectedPhotos)),
+                    onClick: () => handleBulkDelete(Array.from(selectedPhotos)),
                   },
                 ]),
           ] as SelectionBarAction[]

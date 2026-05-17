@@ -262,10 +262,7 @@ export const DocumentsPage = () => {
               selected: selectedDocuments.size,
               total: documentsData?.totalElements ?? documents.length,
               defaultValue: '{{count}} selected',
-            }).replace(
-              String(selectedDocuments.size),
-              '{{count}}'
-            )}
+            }).replace(String(selectedDocuments.size), '{{count}}')}
             onCancel={clearSelection}
             actions={
               [

@@ -56,8 +56,7 @@ export function SelectionBar({
         className
       )}
       style={{
-        bottom:
-          'calc(var(--bottomnav-h, 0px) + var(--safe-bottom, 0px))',
+        bottom: 'calc(var(--bottomnav-h, 0px) + var(--safe-bottom, 0px))',
         paddingLeft: 'calc(0.75rem + var(--safe-left, 0px))',
         paddingRight: 'calc(0.75rem + var(--safe-right, 0px))',
       }}
@@ -71,7 +70,9 @@ export function SelectionBar({
         <X className="h-5 w-5 text-text-secondary" />
       </button>
       <span className="font-semibold text-text-primary text-sm">
-        {label ? label.replace('{{count}}', String(count)) : `${count} selected`}
+        {label
+          ? label.replace('{{count}}', String(count))
+          : `${count} selected`}
       </span>
       <div className="ml-auto flex items-center gap-1">
         {actions.map((a, i) => {

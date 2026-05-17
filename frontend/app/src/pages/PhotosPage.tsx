@@ -188,8 +188,7 @@ export const PhotosPage = () => {
                     }),
                     icon: Trash2,
                     tone: 'danger' as const,
-                    onClick: () =>
-                      handleBulkDelete(Array.from(selectedPhotos)),
+                    onClick: () => handleBulkDelete(Array.from(selectedPhotos)),
                   },
                 ]
               : []),

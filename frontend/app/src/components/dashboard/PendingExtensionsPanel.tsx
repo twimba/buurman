@@ -100,9 +100,8 @@ export const PendingExtensionsPanel = ({
                   </span>
                 </div>
                 <p className="text-xs text-text-secondary mt-0.5">
-                  {ext.previousRentCurrency}{' '}
-                  {ext.previousRentAmount.toFixed(2)} &rarr;{' '}
-                  {ext.newRentCurrency} {ext.newRentAmount.toFixed(2)}
+                  {ext.previousRentCurrency} {ext.previousRentAmount.toFixed(2)}{' '}
+                  &rarr; {ext.newRentCurrency} {ext.newRentAmount.toFixed(2)}
                   {ext.newEndDate && (
                     <span className="ml-2">
                       until {formatDate(ext.newEndDate)}
@@ -144,9 +143,7 @@ export const PendingExtensionsPanel = ({
               key={ext.identifier}
               leftActions={leftActions}
               onClick={() =>
-                navigate(
-                  `/contracts/${ext.contractIdentifier}?tab=extensions`
-                )
+                navigate(`/contracts/${ext.contractIdentifier}?tab=extensions`)
               }
             >
               {body}

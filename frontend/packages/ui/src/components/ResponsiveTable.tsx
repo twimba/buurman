@@ -40,7 +40,10 @@ const ALIGN: Record<'left' | 'right' | 'center', string> = {
   center: 'text-center',
 };
 
-const HIDE_BELOW: Record<NonNullable<ResponsiveTableColumn<unknown>['hideBelow']>, string> = {
+const HIDE_BELOW: Record<
+  NonNullable<ResponsiveTableColumn<unknown>['hideBelow']>,
+  string
+> = {
   sm: 'hidden sm:table-cell',
   md: 'hidden md:table-cell',
   lg: 'hidden lg:table-cell',

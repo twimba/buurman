@@ -89,7 +89,10 @@ export const MobileDashboardSummary = ({
       >
         <div className="flex items-center gap-2 opacity-90">
           <DollarSign className="h-4 w-4" />
-          <span id="hero-kpi-label" className="text-xs font-medium uppercase tracking-wider">
+          <span
+            id="hero-kpi-label"
+            className="text-xs font-medium uppercase tracking-wider"
+          >
             {t('dashboard.monthlyIncome')}
           </span>
         </div>

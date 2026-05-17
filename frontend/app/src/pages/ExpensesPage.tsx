@@ -345,10 +345,7 @@ export const ExpensesPage = () => {
         {/* Phone: filter trigger + sheet */}
         <div className="md:hidden mb-4 flex justify-end">
           <FilterSheet
-            activeCount={
-              (propertyFilter ? 1 : 0) +
-              (categoryFilter ? 1 : 0)
-            }
+            activeCount={(propertyFilter ? 1 : 0) + (categoryFilter ? 1 : 0)}
             onClear={() => {
               setPropertyFilter(undefined);
               setCategoryFilter(undefined);
@@ -456,9 +453,7 @@ export const ExpensesPage = () => {
                 <li key={`m-${expense.identifier}`}>
                   <SwipeAction
                     leftActions={leftActions}
-                    onClick={() =>
-                      navigate(`/expenses/${expense.identifier}`)
-                    }
+                    onClick={() => navigate(`/expenses/${expense.identifier}`)}
                   >
                     <div className="bg-surface-card border border-border-default p-4 min-h-touch">
                       <DataList

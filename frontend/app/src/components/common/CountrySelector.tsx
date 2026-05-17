@@ -140,9 +140,7 @@ export const CountrySelector = ({
           className="w-full text-left flex items-center justify-between min-h-touch border border-border-strong rounded px-3 py-2 bg-surface-card hover:border-primary-500 dark:hover:border-primary-400 focus-ring disabled:bg-surface-inset disabled:cursor-not-allowed text-sm"
         >
           <span
-            className={
-              displayValue ? 'text-text-primary' : 'text-text-muted'
-            }
+            className={displayValue ? 'text-text-primary' : 'text-text-muted'}
           >
             {displayValue || resolvedPlaceholder}
           </span>

@@ -512,9 +512,7 @@ export const PaymentsPage = () => {
                 <li key={`m-${payment.identifier}`}>
                   <SwipeAction
                     leftActions={leftActions}
-                    onClick={() =>
-                      navigate(`/payments/${payment.identifier}`)
-                    }
+                    onClick={() => navigate(`/payments/${payment.identifier}`)}
                   >
                     <div className="bg-surface-card border border-border-default p-4 min-h-touch">
                       <DataList

@@ -325,10 +325,7 @@ export const ContactListPage = () => {
       showOn: 'desktop',
       render: () => (
         <div className="flex items-center gap-2">
-          <RefreshButton
-            onClick={() => refetch()}
-            isRefreshing={isFetching}
-          />
+          <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <GoogleSheetExportPill
             result={lastGoogleSheet}
             onDismiss={clearLastGoogleSheet}
