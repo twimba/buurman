@@ -39,8 +39,8 @@ import {
   PrometheusIcon,
   TraefikIcon,
   TwilioIcon,
-  SendGridIcon,
-  AwsIcon,
+  MailgunIcon,
+  PostHogIcon,
   HetznerIcon,
   BetterStackIcon,
 } from './ToolIcons';
@@ -120,20 +120,15 @@ const getTools = (): ToolItem[] => {
       : [
           { name: 'Twilio', href: '/tools/twilio', icon: TwilioIcon },
           {
-            name: 'SendGrid',
-            href: 'https://app.sendgrid.com',
-            icon: SendGridIcon,
+            name: 'Mailgun',
+            href: 'https://app.mailgun.com',
+            icon: MailgunIcon,
             external: true,
           },
-        ]),
-
-    ...(local
-      ? []
-      : [
           {
-            name: 'AWS S3',
-            href: 'https://console.aws.amazon.com/s3',
-            icon: AwsIcon,
+            name: 'PostHog',
+            href: 'https://eu.posthog.com',
+            icon: PostHogIcon,
             external: true,
           },
         ]),
