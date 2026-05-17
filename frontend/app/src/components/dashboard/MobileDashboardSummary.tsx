@@ -10,6 +10,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { formatMoneyCompact } from '@/utils/formatMoney';
+import { MobileMenuButton } from '@/components/MobileMenuButton';
 import type { DashboardStats } from '@/api/dashboard';
 
 interface MobileDashboardSummaryProps {
@@ -46,6 +47,12 @@ export const MobileDashboardSummary = ({
 
   return (
     <div className="md:hidden -mt-2 space-y-4">
+      {/* Top bar — anchors the mobile-nav hamburger inside the page so the
+          Sidebar's floating fallback hides (see MobileNavContext). */}
+      <div className="flex items-center -mb-2 -mt-1">
+        <MobileMenuButton />
+      </div>
+
       {/* 1. Alerts strip */}
       {hasAlerts && (
         <button
@@ -154,11 +161,11 @@ interface RailTileProps {
 const RailTile = ({ icon: Icon, label, value, sub }: RailTileProps) => (
   <div
     role="listitem"
-    className="snap-start flex-shrink-0 w-[60%] xs:w-[48%] bg-surface-card rounded-lg border border-border-default p-4"
+    className="snap-start flex-shrink-0 w-[78%] xs:w-[60%] sm:w-[44%] bg-surface-card rounded-lg border border-border-default p-4"
   >
     <div className="flex items-center gap-2 text-text-secondary text-xs font-medium uppercase tracking-wider">
-      <Icon className="h-4 w-4" />
-      <span className="truncate">{label}</span>
+      <Icon className="h-4 w-4 flex-shrink-0" />
+      <span className="leading-tight">{label}</span>
     </div>
     <div className="mt-2 text-2xl font-bold text-text-primary tabular-nums">
       {value}

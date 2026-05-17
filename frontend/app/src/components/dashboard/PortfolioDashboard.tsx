@@ -228,7 +228,7 @@ export const PortfolioDashboard = () => {
             </span>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-wrap">
               {PERIOD_OPTIONS.map((opt) => (
                 <button
                   key={opt.label}
@@ -243,7 +243,7 @@ export const PortfolioDashboard = () => {
                 </button>
               ))}
             </div>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center flex-wrap min-w-0">
               <input
                 type="date"
                 value={customStart}

@@ -197,8 +197,12 @@ export const DashboardPage = () => {
         isActivating={activateExtensionMutation.isPending}
       />
 
-      {/* Portfolio Dashboard */}
-      <PortfolioDashboard />
+      {/* Portfolio Dashboard — desktop only. Phone gets MobileDashboardSummary
+          at the top instead. The portfolio block has wide period chip rows +
+          native date inputs + a 6-card grid not designed for &lt; md widths. */}
+      <div className="hidden md:block">
+        <PortfolioDashboard />
+      </div>
 
       {/* Statistics Cards — phone shows MobileDashboardSummary above instead. */}
       <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
