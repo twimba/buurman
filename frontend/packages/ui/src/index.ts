@@ -72,6 +72,8 @@ export { useFilterState } from './hooks/useFilterState';
 export { usePagination } from './hooks/usePagination';
 export type { PageParams } from './hooks/usePagination';
 export { useTabState } from './hooks/useTabState';
+export { useHaptic } from './hooks/useHaptic';
+export type { HapticPattern } from './hooks/useHaptic';
 
 // Rich text
 export { RichTextEditor } from './components/RichTextEditor';
