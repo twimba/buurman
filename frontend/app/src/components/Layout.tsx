@@ -9,6 +9,7 @@ import { PwaInstallPrompt } from './PwaInstallPrompt';
 import { useOnboardingStatus } from '@/hooks/useOnboarding';
 import { MobileNavContext } from '@/context/MobileNavContext';
 import { useKeyboardInset } from '@/hooks/useKeyboardInset';
+import { useSwipeBack } from '@/hooks/useSwipeBack';
 
 const STORAGE_KEY = 'buurman-sidebar-collapsed';
 
@@ -41,6 +42,7 @@ export const Layout = ({ children }: LayoutProps) => {
   });
 
   const isKeyboardOpen = useKeyboardInset();
+  useSwipeBack();
 
   const { data: onboarding } = useOnboardingStatus();
   const showWizard = onboarding && !onboarding.completed && !wizardDismissed;
