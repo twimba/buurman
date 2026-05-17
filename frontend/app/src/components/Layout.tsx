@@ -5,6 +5,7 @@ import { Sidebar } from './Sidebar';
 import { BottomTabBar } from './BottomTabBar';
 import { AuthenticatedBroadcastBanner } from './common/BroadcastBanner';
 import { OnboardingWizard } from './onboarding/OnboardingWizard';
+import { PwaInstallPrompt } from './PwaInstallPrompt';
 import { useOnboardingStatus } from '@/hooks/useOnboarding';
 import { MobileNavContext } from '@/context/MobileNavContext';
 import { useKeyboardInset } from '@/hooks/useKeyboardInset';
@@ -116,6 +117,7 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
         </main>
         <BottomTabBar />
+        <PwaInstallPrompt />
 
         {showWizard && (
           <OnboardingWizard

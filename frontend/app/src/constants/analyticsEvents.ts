@@ -29,6 +29,12 @@ export const AnalyticsEvent = {
   PHOTO_UPLOADED: 'photo_uploaded',
   TEAM_MEMBER_INVITED: 'team_member_invited',
   TEAM_SWITCHED: 'team_switched',
+  // PWA install funnel
+  PWA_INSTALL_PROMPT_AVAILABLE: 'pwa_install_prompt_available',
+  PWA_INSTALL_PROMPT_SHOWN: 'pwa_install_prompt_shown',
+  PWA_INSTALL_ACCEPTED: 'pwa_install_accepted',
+  PWA_INSTALL_DISMISSED: 'pwa_install_dismissed',
+  PWA_INSTALLED: 'pwa_installed',
 } as const;
 
 export type AnalyticsEventName =
