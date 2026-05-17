@@ -170,7 +170,9 @@ export const DocumentsPage = () => {
   return (
     <div className="px-4 py-4 md:py-8">
       <ListPageHeader
-        title={t('documentsPage.title')}
+        title={t('documentsPage.titleShort', {
+          defaultValue: 'Documents',
+        })}
         subtitle={t('documentsPage.subtitle')}
         icon={Folder}
         mobileLeading={<MobileMenuButton />}
