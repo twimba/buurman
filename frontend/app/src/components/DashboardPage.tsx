@@ -12,6 +12,8 @@ import { ErrorMessage } from './ErrorMessage';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
 import { PendingExtensionsPanel } from './dashboard/PendingExtensionsPanel';
 import { PortfolioDashboard } from './dashboard/PortfolioDashboard';
+import { PropertyPerformanceTable } from './dashboard/PropertyPerformanceTable';
+import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
 import { MobileDashboardSummary } from './dashboard/MobileDashboardSummary';
 import {
   Home,
@@ -212,6 +214,13 @@ export const DashboardPage = () => {
           native date inputs + a 6-card grid not designed for &lt; md widths. */}
       <div className="hidden md:block">
         <PortfolioDashboard />
+      </div>
+
+      {/* Phone-only Top/Bottom performers — PropertyPerformanceTable's
+          md:hidden variant. Surfaced separately because the full
+          PortfolioDashboard (which normally hosts it) is hidden on phone. */}
+      <div className="order-6 md:hidden">
+        <PhonePropertyPerformance />
       </div>
 
       {/* Statistics Cards — phone shows MobileDashboardSummary above instead. */}
@@ -543,3 +552,22 @@ export const DashboardPage = () => {
 };
 
 DashboardPage.displayName = 'DashboardPage';
+
+/**
+ * Phone-only Top/Bottom-performers section. Mounts the
+ * PropertyPerformanceTable, which already has an md:hidden phone variant —
+ * we just need to feed it from the portfolio query and wrap it so it's
+ * visible on phone where the parent PortfolioDashboard is hidden.
+ */
+const PhonePropertyPerformance = () => {
+  const { data: portfolio, isLoading } = usePortfolioDashboard(6);
+  if (isLoading || !portfolio) {
+    return null;
+  }
+  return (
+    <PropertyPerformanceTable
+      data={portfolio.propertyComparison}
+      currency={portfolio.currency}
+    />
+  );
+};
