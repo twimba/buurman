@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { CalendarClock } from 'lucide-react';
 import { useUpcomingRenewals } from '@/hooks/useContractExtensionHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { LoadingSpinner } from '@buurman/ui';
+import { DataList, LoadingSpinner } from '@buurman/ui';
 import type { RenewalMode } from '@/types/contractExtension';
 
 const RENEWAL_MODE_LABELS: Record<RenewalMode, string> = {
@@ -60,7 +60,50 @@ export const UpcomingRenewalsPanel = () => {
         <span className="text-sm text-text-secondary">({renewals.length})</span>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile card list (<md) */}
+      <ul className="md:hidden space-y-3">
+        {displayed.map((renewal) => (
+          <li key={`m-${renewal.contractIdentifier}`}>
+            <button
+              type="button"
+              onClick={() =>
+                navigate(
+                  `/contracts/${renewal.contractIdentifier}?tab=extensions`
+                )
+              }
+              className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-3 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+            >
+              <DataList
+                title={renewal.propertyName ?? '-'}
+                trailing={
+                  <span
+                    className={`text-xs font-semibold ${getDaysUntilColor(renewal.daysUntilExpiry)}`}
+                  >
+                    {renewal.daysUntilExpiry}d
+                  </span>
+                }
+                items={[
+                  {
+                    label: t('dashboard.upcomingRenewals.contact'),
+                    value: renewal.contactName ?? '-',
+                  },
+                  {
+                    label: t('dashboard.upcomingRenewals.endDate'),
+                    value: formatDate(renewal.effectiveEndDate),
+                  },
+                  {
+                    label: t('dashboard.upcomingRenewals.rent'),
+                    value: `${renewal.currency} ${renewal.currentRentAmount.toFixed(2)}`,
+                    align: 'right',
+                  },
+                ]}
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-border-default">
           <thead>
             <tr>
