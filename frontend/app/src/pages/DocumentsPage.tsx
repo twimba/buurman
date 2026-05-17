@@ -28,10 +28,10 @@ import { usePagination } from '@/hooks/usePagination';
 import {
   ConfirmDialog,
   ListPageHeader,
-  LoadingSpinner,
   Pagination,
   RefreshButton,
   RichTextDisplay,
+  Skeleton,
   type ListPageHeaderAction,
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
@@ -229,9 +229,22 @@ export const DocumentsPage = () => {
 
       {/* Document List */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <LoadingSpinner />
-        </div>
+        <ul className="space-y-3" aria-label="Loading documents">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <li
+              key={i}
+              className="bg-surface-card rounded-lg border border-border-default p-4 flex items-start gap-3"
+            >
+              <Skeleton className="h-10 w-10 rounded shrink-0" />
+              <div className="flex-1 space-y-2 min-w-0">
+                <Skeleton className="h-4 w-3/4 rounded" />
+                <Skeleton className="h-3 w-1/2 rounded" />
+                <Skeleton className="h-3 w-1/3 rounded" />
+              </div>
+              <Skeleton className="h-10 w-10 rounded shrink-0" />
+            </li>
+          ))}
+        </ul>
       ) : !documents || documents.length === 0 ? (
         <div className="text-center py-12 bg-surface-card rounded-lg shadow-sm">
           <FileText className="h-12 w-12 text-text-muted mx-auto mb-4" />
