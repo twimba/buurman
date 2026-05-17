@@ -91,8 +91,9 @@ export const PortfolioAllocationChart = ({
           {t('dashboard.allocation.byCountry')}
         </button>
       </div>
-      <div className="flex items-center gap-6">
-        <ResponsiveContainer width="60%" height={height}>
+      <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+        <div className="w-full md:w-3/5">
+        <ResponsiveContainer width="100%" height={height}>
           <PieChart>
             <Pie
               data={slices}
@@ -120,6 +121,7 @@ export const PortfolioAllocationChart = ({
             />
           </PieChart>
         </ResponsiveContainer>
+        </div>
         <div className="flex-1 space-y-2">
           {slices.map((slice, idx) => (
             <div key={slice.label} className="flex items-center gap-2 text-sm">

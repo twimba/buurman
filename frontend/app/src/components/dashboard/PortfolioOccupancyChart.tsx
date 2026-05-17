@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import {
   AreaChart,
   Area,
@@ -48,6 +49,7 @@ export const PortfolioOccupancyChart = ({
   height = 320,
 }: PortfolioOccupancyChartProps) => {
   const { t } = useTranslation('common');
+  const isMobile = useIsMobile();
   const tooltipStyle = useMemo(
     () => ({
       backgroundColor: isDark ? '#14161f' : '#fff',
@@ -80,16 +82,20 @@ export const PortfolioOccupancyChart = ({
             <stop offset="95%" stopColor="#0284c7" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
-        />
+        {!isMobile && (
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
+          />
+        )}
         <XAxis
           dataKey="month"
+          interval={isMobile ? 'preserveStartEnd' : 0}
           tickFormatter={formatMonthTick}
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
         />
         <YAxis
+          hide={isMobile}
           domain={[0, 100]}
           tickFormatter={(v: number) => `${v}%`}
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
@@ -108,15 +114,19 @@ export const PortfolioOccupancyChart = ({
             ];
           }}
         />
-        <Legend
-          formatter={(value) => {
-            const labels: Record<string, string> = {
-              tenantOccupancyPercent: t('dashboard.occupancy.contactOccupancy'),
-              selfOccupancyPercent: t('dashboard.occupancy.selfOccupancy'),
-            };
-            return labels[value] ?? value;
-          }}
-        />
+        {!isMobile && (
+          <Legend
+            formatter={(value) => {
+              const labels: Record<string, string> = {
+                tenantOccupancyPercent: t(
+                  'dashboard.occupancy.contactOccupancy'
+                ),
+                selfOccupancyPercent: t('dashboard.occupancy.selfOccupancy'),
+              };
+              return labels[value] ?? value;
+            }}
+          />
+        )}
         <Area
           type="monotone"
           dataKey="tenantOccupancyPercent"

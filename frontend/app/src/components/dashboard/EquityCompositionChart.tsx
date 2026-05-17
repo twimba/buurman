@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import {
   BarChart,
   Bar,
@@ -49,6 +50,7 @@ export const EquityCompositionChart = ({
   isDark,
 }: EquityCompositionChartProps) => {
   const { t } = useTranslation('common');
+  const isMobile = useIsMobile();
   const tooltipStyle = useMemo(
     () => ({
       backgroundColor: isDark ? '#14161f' : '#fff',
@@ -84,13 +86,20 @@ export const EquityCompositionChart = ({
 
   return (
     <ResponsiveContainer width="100%" height={barHeight}>
-      <BarChart data={chartData} layout="vertical" margin={{ left: 20 }}>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
-        />
+      <BarChart
+        data={chartData}
+        layout="vertical"
+        margin={{ left: isMobile ? 6 : 20 }}
+      >
+        {!isMobile && (
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
+          />
+        )}
         <XAxis
           type="number"
+          hide={isMobile}
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
           tickFormatter={(v: number) => {
             const symbol = getCurrencySymbol(currency);
@@ -107,8 +116,11 @@ export const EquityCompositionChart = ({
         <YAxis
           type="category"
           dataKey="address"
-          width={140}
-          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+          width={isMobile ? 110 : 140}
+          tick={{
+            fontSize: isMobile ? 10 : 11,
+            fill: isDark ? '#8b90a8' : '#6b7194',
+          }}
         />
         <Tooltip
           contentStyle={tooltipStyle}
@@ -122,13 +134,15 @@ export const EquityCompositionChart = ({
               : t('dashboard.equity.mortgage'),
           ]}
         />
-        <Legend
-          formatter={(value) =>
-            value === 'equity'
-              ? t('dashboard.equity.equity')
-              : t('dashboard.equity.mortgage')
-          }
-        />
+        {!isMobile && (
+          <Legend
+            formatter={(value) =>
+              value === 'equity'
+                ? t('dashboard.equity.equity')
+                : t('dashboard.equity.mortgage')
+            }
+          />
+        )}
         <Bar
           dataKey="equity"
           stackId="equity"
