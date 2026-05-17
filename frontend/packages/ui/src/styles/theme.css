@@ -199,7 +199,12 @@
   --animate-shimmer: shimmer 1.5s ease-in-out infinite;
 
   /* ── Mobile foundation (Phase 1) ── */
-  /* Extra-small breakpoint for very small phones (iPhone SE 1st gen and similar). */
+  /* Extra-small breakpoint for very small phones (iPhone SE 1st gen
+     and similar). Keep — used at:
+       - MobileDashboardSummary rail tile width (xs:w-[60%])
+       - PropertyCard specs grid (xs:grid-cols-3)
+       - ListPageHeader icon visibility (xs:inline-block)
+     Removing it would force these to drop content on 320px viewports. */
   --breakpoint-xs: 22.5rem; /* 360px */
 
   /* Safe-area insets — non-zero only on notched devices with viewport-fit=cover. */
