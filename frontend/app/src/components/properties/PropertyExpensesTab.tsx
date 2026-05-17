@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { LoadingSpinner } from '@buurman/ui';
+import { DataList, LoadingSpinner } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { Plus, Search, ChevronUp, ChevronDown, Receipt } from 'lucide-react';
@@ -171,8 +171,55 @@ export const PropertyExpensesTab = ({
             </div>
           </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto">
+          {/* Mobile card list (<md) */}
+          <ul className="md:hidden space-y-3 mb-2">
+            {paginatedExpenses.length === 0 ? (
+              <li className="text-center text-text-secondary py-6">
+                {t('expenses.noMatchingSearch')}
+              </li>
+            ) : (
+              paginatedExpenses.map((expense) => (
+                <li key={`m-${expense.identifier}`}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(`/expenses/${expense.identifier}`, {
+                        state: {
+                          backTo: `/properties/${propertyId}?tab=expenses`,
+                        },
+                      })
+                    }
+                    className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+                  >
+                    <DataList
+                      title={expense.description}
+                      trailing={
+                        <ExpenseCategoryBadge category={expense.category} />
+                      }
+                      items={[
+                        {
+                          label: t('expenses.table.date'),
+                          value: formatDate(expense.expenseDate),
+                        },
+                        {
+                          label: t('expenses.table.amount'),
+                          value: (
+                            <span className="font-semibold text-text-primary">
+                              {expense.currency} {expense.amount.toFixed(2)}
+                            </span>
+                          ),
+                          align: 'right',
+                        },
+                      ]}
+                    />
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+
+          {/* Table (md+) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-border-default">
               <thead className="bg-surface-page">
                 <tr>

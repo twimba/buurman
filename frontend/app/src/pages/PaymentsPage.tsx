@@ -9,6 +9,7 @@ import {
 } from '@/hooks/usePaymentHooks';
 import {
   ConfirmDialog,
+  DataList,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -437,10 +438,54 @@ export const PaymentsPage = () => {
           </div>
         </div>
 
-        {/* Payments Table */}
+        {/* Payments — Mobile card list (<md). md+ shows the existing table below. */}
+        {paymentsData?.content && paymentsData.content.length > 0 && (
+          <ul className="md:hidden space-y-3 mb-4">
+            {paymentsData.content.map((payment) => (
+              <li key={`m-${payment.identifier}`}>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/payments/${payment.identifier}`)}
+                  className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+                >
+                  <DataList
+                    title={`${payment.property.street}`}
+                    trailing={<PaymentStatusBadge status={payment.status} />}
+                    items={[
+                      {
+                        label: t('table.dueDate'),
+                        value: formatDate(payment.dueDate),
+                      },
+                      {
+                        label: 'Contact',
+                        value:
+                          (payment.contact.firstName ??
+                            payment.contact.displayName) +
+                          (payment.contact.lastName
+                            ? ' ' + payment.contact.lastName
+                            : ''),
+                      },
+                      {
+                        label: t('table.amount'),
+                        value: (
+                          <span className="font-semibold text-text-primary">
+                            {fmtMoney(payment.amount, payment.currency)}
+                          </span>
+                        ),
+                        align: 'right',
+                      },
+                    ]}
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Payments Table — md+ */}
         {paymentsData?.content && paymentsData.content.length > 0 ? (
           <>
-            <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
+            <div className="hidden md:block bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-border-default">
                   <thead className="bg-surface-page">

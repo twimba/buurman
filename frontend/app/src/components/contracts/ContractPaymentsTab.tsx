@@ -6,7 +6,12 @@ import {
 } from '@/hooks/usePaymentHooks';
 import { useGenerateContractPayments } from '@/hooks/useContractHooks';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Button, ConfirmDialog, LoadingSpinner } from '@buurman/ui';
+import {
+  Button,
+  ConfirmDialog,
+  DataList,
+  LoadingSpinner,
+} from '@buurman/ui';
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
 import { useTeam } from '@/context/TeamContext';
 import {
@@ -210,8 +215,64 @@ export const ContractPaymentsTab = ({
               </div>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
+            {/* Mobile card list (<md) */}
+            <ul className="md:hidden space-y-3 mb-2">
+              {paginatedPayments.length === 0 ? (
+                <li className="text-center text-text-secondary py-6">
+                  {t('payments.noMatch')}
+                </li>
+              ) : (
+                paginatedPayments.map((payment) => (
+                  <li key={`m-${payment.identifier}`}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate(`/payments/${payment.identifier}`, {
+                          state: {
+                            backTo: `/contracts/${contractId}?tab=payments`,
+                          },
+                        })
+                      }
+                      className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+                    >
+                      <DataList
+                        title={`#${payment.identifier.slice(-6)}`}
+                        trailing={
+                          <PaymentStatusBadge status={payment.status} />
+                        }
+                        items={[
+                          {
+                            label: t('payments.table.dueDate'),
+                            value: formatDate(payment.dueDate),
+                          },
+                          {
+                            label: t('payments.table.amount'),
+                            value: (
+                              <span className="font-semibold text-text-primary">
+                                {payment.currency}{' '}
+                                {payment.amount.toFixed(2)}
+                              </span>
+                            ),
+                            align: 'right',
+                          },
+                          ...(payment.paymentDate
+                            ? [
+                                {
+                                  label: t('payments.table.paymentDate'),
+                                  value: formatDate(payment.paymentDate),
+                                },
+                              ]
+                            : []),
+                        ]}
+                      />
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+
+            {/* Table (md+) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-border-default">
                 <thead className="bg-surface-page">
                   <tr>

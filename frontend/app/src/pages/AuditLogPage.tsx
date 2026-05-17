@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  DataList,
   LoadingSpinner,
   Pagination,
   RefreshButton,
@@ -279,10 +280,62 @@ export const AuditLogPage = () => {
           })}
         </p>
 
-        {/* Activities Table */}
+        {/* Activities — Mobile card list (<md). md+ shows the existing table below. */}
+        {activitiesData?.content && activitiesData.content.length > 0 && (
+          <ul className="md:hidden space-y-3 mb-4">
+            {activitiesData.content.map((activity) => {
+              const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}-m`;
+              return (
+                <li key={activityKey}>
+                  <button
+                    type="button"
+                    onClick={() => handleRowClick(activity)}
+                    className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+                  >
+                    <DataList
+                      title={activity.description}
+                      trailing={
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold rounded ${getActionColor(activity.action)}`}
+                        >
+                          {t(
+                            `common:auditLog.actions.${activity.action.toLowerCase()}d`,
+                            { defaultValue: activity.action }
+                          )}
+                        </span>
+                      }
+                      items={[
+                        {
+                          label: t('common:auditLog.table.time'),
+                          value: `${formatDate(activity.timestamp)} ${format(
+                            new Date(activity.timestamp),
+                            'HH:mm'
+                          )}`,
+                        },
+                        {
+                          label: t('common:auditLog.table.type'),
+                          value: t(
+                            `common:auditLog.entityTypes.${activity.entityType.toLowerCase()}`,
+                            { defaultValue: activity.entityType }
+                          ),
+                        },
+                        {
+                          label: t('common:auditLog.table.user'),
+                          value: activity.userName,
+                        },
+                      ]}
+                    />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {/* Activities Table — md+ */}
         {activitiesData?.content && activitiesData.content.length > 0 ? (
           <>
-            <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
+            <div className="hidden md:block bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-border-default">
                   <thead className="bg-surface-page">

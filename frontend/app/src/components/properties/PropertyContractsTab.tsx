@@ -14,7 +14,7 @@ import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupanc
 import { FinancingFormModal } from '@/components/properties/financials/modals/FinancingFormModal';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Button, LoadingSpinner } from '@buurman/ui';
+import { Button, DataList, LoadingSpinner } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
@@ -178,8 +178,51 @@ export const PropertyContractsTab = ({
               </div>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
+            {/* Mobile card list (<md) */}
+            <ul className="md:hidden space-y-3 mb-2">
+              {displayedContracts.length === 0 ? (
+                <li className="text-center text-text-secondary py-6">
+                  {t('contracts.noMatchingSearch')}
+                </li>
+              ) : (
+                displayedContracts.map((contract) => (
+                  <li key={`m-${contract.identifier}`}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate(`/contracts/${contract.identifier}`)
+                      }
+                      className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+                    >
+                      <DataList
+                        title={`${contract.primaryContact.firstName} ${contract.primaryContact.lastName}`}
+                        trailing={
+                          <ContractStatusBadge status={contract.status} />
+                        }
+                        items={[
+                          {
+                            label: t('contracts.table.contractNumber'),
+                            value: `#${contract.identifier.slice(-6)}`,
+                          },
+                          {
+                            label: t('contracts.table.startDate'),
+                            value: formatDate(contract.startDate),
+                          },
+                          {
+                            label: t('contracts.table.rentAmount'),
+                            value: `${contract.rentAmountCurrency} ${contract.rentAmount.toFixed(2)}`,
+                            align: 'right',
+                          },
+                        ]}
+                      />
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+
+            {/* Table (md+) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-border-default">
                 <thead className="bg-surface-page">
                   <tr>

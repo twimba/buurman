@@ -9,6 +9,7 @@ import {
 } from '@/hooks/useExpenseHooks';
 import {
   ConfirmDialog,
+  DataList,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -404,10 +405,49 @@ export const ExpensesPage = () => {
           </div>
         </div>
 
-        {/* Expenses Table */}
+        {/* Expenses — Mobile card list (<md). md+ shows the existing table below. */}
+        {expensesData?.content && expensesData.content.length > 0 && (
+          <ul className="md:hidden space-y-3 mb-4">
+            {expensesData.content.map((expense) => (
+              <li key={`m-${expense.identifier}`}>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/expenses/${expense.identifier}`)}
+                  className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+                >
+                  <DataList
+                    title={expense.description}
+                    trailing={<ExpenseCategoryBadge category={expense.category} />}
+                    items={[
+                      {
+                        label: t('table.date'),
+                        value: formatDate(expense.expenseDate),
+                      },
+                      {
+                        label: t('table.property'),
+                        value: `${expense.property.street}, ${expense.property.city}`,
+                      },
+                      {
+                        label: t('table.amount'),
+                        value: (
+                          <span className="font-semibold text-text-primary">
+                            {fmtMoney(expense.amount, expense.currency)}
+                          </span>
+                        ),
+                        align: 'right',
+                      },
+                    ]}
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Expenses Table — md+ */}
         {expensesData?.content && expensesData.content.length > 0 ? (
           <>
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default overflow-hidden mb-4">
+            <div className="hidden md:block bg-surface-card rounded-lg shadow-sm border border-border-default overflow-hidden mb-4">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-border-default">
                   <thead className="bg-surface-page">

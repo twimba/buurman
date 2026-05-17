@@ -13,7 +13,12 @@ import {
 } from 'lucide-react';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useExpenses } from '@/hooks/useExpenseHooks';
-import { LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
+import {
+  DataList,
+  LoadingSpinner,
+  Pagination,
+  RefreshButton,
+} from '@buurman/ui';
 import { PaymentStatus } from '@/types/payment';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -542,7 +547,71 @@ export const TransactionHistoryPage = () => {
           </p>
         </div>
       ) : (
-        <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden">
+        <>
+        {/* Mobile card list (<md). */}
+        <ul className="md:hidden space-y-3 mb-4">
+          {paginatedTransactions.map((transaction) => (
+            <li key={`m-${transaction.type}-${transaction.id}`}>
+              <button
+                type="button"
+                onClick={() => handleRowClick(transaction)}
+                className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
+              >
+                <DataList
+                  title={transaction.description}
+                  trailing={
+                    <span
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        transaction.type === 'INCOME'
+                          ? 'bg-success-bg text-success-text'
+                          : 'bg-error-bg text-error-text'
+                      }`}
+                    >
+                      {transaction.type === 'INCOME' ? (
+                        <TrendingUp className="h-3 w-3" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3" />
+                      )}
+                      {transaction.type}
+                    </span>
+                  }
+                  items={[
+                    {
+                      label: t('transactions.table.date'),
+                      value: formatDate(transaction.date),
+                    },
+                    {
+                      label: t('transactions.table.property'),
+                      value: transaction.property,
+                    },
+                    {
+                      label: t('transactions.table.amount'),
+                      value: (
+                        <span
+                          className={`font-semibold ${
+                            transaction.type === 'INCOME'
+                              ? 'text-success-text'
+                              : 'text-error-text'
+                          }`}
+                        >
+                          {transaction.type === 'INCOME' ? '+' : '-'}
+                          {formatCurrency(
+                            transaction.amount,
+                            transaction.currency
+                          )}
+                        </span>
+                      ),
+                      align: 'right',
+                    },
+                  ]}
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* md+ table */}
+        <div className="hidden md:block bg-surface-card rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-border-default">
               <thead className="bg-surface-page">
@@ -643,6 +712,7 @@ export const TransactionHistoryPage = () => {
             />
           </div>
         </div>
+        </>
       )}
     </div>
   );

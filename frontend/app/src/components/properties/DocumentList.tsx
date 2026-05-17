@@ -282,7 +282,55 @@ export const DocumentList = ({
             )}
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile card list (<md) */}
+          <ul className="md:hidden space-y-3">
+            {documents.map((doc, i) => {
+              const isSelected = selectedDocuments.has(doc.identifier);
+              return (
+                <li key={`m-${doc.identifier}`}>
+                  <div
+                    className={`bg-surface-card rounded-lg border p-3 ${
+                      isSelected
+                        ? 'border-primary-500 bg-info-bg'
+                        : 'border-border-default'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 mt-0.5">
+                        {getFileIcon(doc.mimeType)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewIndex(i)}
+                          className="block w-full text-left min-h-touch focus-ring rounded"
+                        >
+                          <div className="text-sm font-medium text-text-primary truncate">
+                            {doc.title ?? doc.fileName}
+                          </div>
+                          <div className="mt-0.5 text-xs text-text-secondary flex items-center gap-2 flex-wrap">
+                            <span>{formatFileSize(doc.fileSize)}</span>
+                            <span aria-hidden>·</span>
+                            <span>{formatDate(doc.uploadedAt)}</span>
+                          </div>
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDownload(doc.identifier)}
+                        aria-label={t('buttons.download', { ns: 'common' })}
+                        className="flex-shrink-0 min-h-touch min-w-touch inline-flex items-center justify-center p-2 rounded text-primary-500 hover:bg-primary-50 focus-ring"
+                      >
+                        <Download className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-border-default">
               <thead className="bg-surface-page">
                 <tr>
