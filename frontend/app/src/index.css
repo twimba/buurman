@@ -81,13 +81,27 @@ label {
   }
 }
 
+@keyframes slide-down {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
 .animate-slide-up {
   animation: slide-up 0.25s ease-out;
 }
 
+.animate-slide-down {
+  animation: slide-down 0.2s ease-in;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-slide-in,
-  .animate-slide-up {
+  .animate-slide-up,
+  .animate-slide-down {
     animation: none;
   }
 }

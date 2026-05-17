@@ -20,7 +20,15 @@ interface Tab {
  */
 export const BottomTabBar = () => {
   const { t } = useTranslation('navigation');
-  const { open: openDrawer } = useMobileNav();
+  const {
+    open: openDrawer,
+    isKeyboardOpen,
+    hasOwnBottomFooter,
+  } = useMobileNav();
+
+  if (isKeyboardOpen || hasOwnBottomFooter) {
+    return null;
+  }
 
   const tabs: Tab[] = [
     { to: '/dashboard', label: t('sidebar.dashboard'), icon: LayoutDashboard },
@@ -35,7 +43,10 @@ export const BottomTabBar = () => {
       role="navigation"
       aria-label={t('accessibility.bottomNav', 'Primary')}
       className="md:hidden fixed inset-x-0 bottom-0 z-40 bg-surface-card/95 backdrop-blur-xl border-t border-border-default flex items-stretch justify-around"
-      style={{ paddingBottom: 'var(--safe-bottom, 0px)' }}
+      style={{
+        height: 'calc(var(--bottomnav-h) + var(--safe-bottom, 0px))',
+        paddingBottom: 'var(--safe-bottom, 0px)',
+      }}
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;

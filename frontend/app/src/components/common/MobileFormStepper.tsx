@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMobileNav } from '@/context/MobileNavContext';
 
 interface StepperContextValue {
   isPhone: boolean;
@@ -172,6 +173,16 @@ export function MobileFormStepperFooter({
   const { isPhone, currentStep, totalSteps, next, prev } =
     useMobileFormStepper();
   const { t } = useTranslation('common');
+  const { setHasOwnBottomFooter } = useMobileNav();
+
+  useEffect(() => {
+    if (!isPhone) {
+      return;
+    }
+    setHasOwnBottomFooter(true);
+    return () => setHasOwnBottomFooter(false);
+  }, [isPhone, setHasOwnBottomFooter]);
+
   if (!isPhone) {
     return null;
   }
@@ -184,8 +195,10 @@ export function MobileFormStepperFooter({
       <div
         className="md:hidden fixed inset-x-0 z-30 bg-surface-card/95 backdrop-blur-xl border-t border-border-default flex items-center gap-2 px-4 py-3"
         style={{
-          bottom:
-            'calc(var(--kbd-inset, 0px) + var(--safe-bottom, 0px) + var(--bottomnav-h, 0px))',
+          // BottomTabBar is hidden when this footer mounts (via
+          // hasOwnBottomFooter in MobileNavContext), so we ride directly
+          // above the keyboard/safe-area, not above the tab bar.
+          bottom: 'calc(var(--kbd-inset, 0px) + var(--safe-bottom, 0px))',
         }}
       >
         {isFirst ? (

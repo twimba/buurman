@@ -27,6 +27,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const [wizardDismissed, setWizardDismissed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [hasOwnMenuButton, setHasOwnMenuButton] = useState(false);
+  const [hasOwnBottomFooter, setHasOwnBottomFooter] = useState(false);
 
   // Rail-mode opt-out (localStorage 'buurman.mobile.sidebarRail' = 'false'). Default on.
   // Read once at mount; used to skip the md:ml-16 margin reservation.
@@ -38,7 +39,7 @@ export const Layout = ({ children }: LayoutProps) => {
     }
   });
 
-  useKeyboardInset();
+  const isKeyboardOpen = useKeyboardInset();
 
   const { data: onboarding } = useOnboardingStatus();
   const showWizard = onboarding && !onboarding.completed && !wizardDismissed;
@@ -52,8 +53,18 @@ export const Layout = ({ children }: LayoutProps) => {
       isOpen: mobileNavOpen,
       hasOwnMenuButton,
       setHasOwnMenuButton,
+      isKeyboardOpen,
+      hasOwnBottomFooter,
+      setHasOwnBottomFooter,
     }),
-    [openMobileNav, closeMobileNav, mobileNavOpen, hasOwnMenuButton]
+    [
+      openMobileNav,
+      closeMobileNav,
+      mobileNavOpen,
+      hasOwnMenuButton,
+      isKeyboardOpen,
+      hasOwnBottomFooter,
+    ]
   );
 
   const toggleCollapsed = () => {
@@ -97,14 +108,9 @@ export const Layout = ({ children }: LayoutProps) => {
         />
         <main
           id="main-content"
-          className={`flex-1 overflow-auto transition-[margin] duration-300 ease-in-out ${railEnabled ? 'md:ml-16' : ''} ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}
-          style={
-            {
-              // Reserve space for the iPhone bottom tab bar; collapses to 0 on md+ via md:pb-0
-            }
-          }
+          className={`flex-1 overflow-auto overscroll-y-contain transition-[margin] duration-300 ease-in-out ${railEnabled ? 'md:ml-16' : ''} ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}
         >
-          <div className="max-w-screen-2xl mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 pl-safe pr-safe pb-[calc(var(--bottomnav-h)+var(--safe-bottom,0px))] md:pb-0">
+          <div className="max-w-screen-2xl mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8 pl-safe pr-safe pb-[calc(var(--bottomnav-h)+var(--safe-bottom,0px)+var(--kbd-inset,0px))] md:pb-0">
             <AuthenticatedBroadcastBanner />
             {children ?? <Outlet />}
           </div>

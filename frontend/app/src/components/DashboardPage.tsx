@@ -173,18 +173,27 @@ export const DashboardPage = () => {
   ).length;
 
   return (
-    <div className="space-y-8">
+    // Phone uses flex+gap so we can `order-` the unpaid-payments section to
+    // appear right after MobileDashboardSummary (the #1 question for landlords
+    // is "did money show up?"). Desktop falls back to block + space-y so
+    // DOM order is the visual order and pixel parity is preserved.
+    <div className="flex flex-col gap-8 md:block md:space-y-8 md:gap-0">
       {/* Phone-only above-the-fold summary: alerts + hero KPI + KPI rail. */}
-      <MobileDashboardSummary
-        stats={stats}
-        overdueCount={overdueCount}
-        pendingExtensionsCount={pendingExtensions?.length ?? 0}
-      />
+      <div className="order-1 md:order-none">
+        <MobileDashboardSummary
+          stats={stats}
+          overdueCount={overdueCount}
+          pendingExtensionsCount={pendingExtensions?.length ?? 0}
+        />
+      </div>
 
       {/* Pending Invitations */}
-      <PendingInvitationsPanel />
+      <div className="order-3 md:order-none">
+        <PendingInvitationsPanel />
+      </div>
 
       {/* Pending Extensions */}
+      <div className="order-4 md:order-none">
       <PendingExtensionsPanel
         extensions={pendingExtensions ?? []}
         isLoading={extensionsLoading}
@@ -196,6 +205,7 @@ export const DashboardPage = () => {
         }
         isActivating={activateExtensionMutation.isPending}
       />
+      </div>
 
       {/* Portfolio Dashboard — desktop only. Phone gets MobileDashboardSummary
           at the top instead. The portfolio block has wide period chip rows +
@@ -294,6 +304,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* Property Status Breakdown */}
+      <div className="order-5 md:order-none">
       {stats &&
         stats.totalProperties > 0 &&
         (() => {
@@ -391,9 +402,12 @@ export const DashboardPage = () => {
             </div>
           );
         })()}
+      </div>
 
-      {/* Unpaid Payments */}
-      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+      {/* Unpaid Payments — hoisted to phone position 2 (right after the
+          MobileDashboardSummary) because for a property manager, the
+          first question on opening the dashboard is "did money show up?". */}
+      <div className="order-2 md:order-none bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold text-text-primary">

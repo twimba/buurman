@@ -83,6 +83,7 @@ export function Sheet({
                   'max-h-[92dvh]',
                   'rounded-t-2xl',
                   'data-[state=open]:animate-slide-up',
+                  'data-[state=closed]:animate-slide-down',
                 ]
               : [
                   // Centered dialog

@@ -288,6 +288,21 @@ export const Sidebar = ({
     return () => document.removeEventListener('keydown', handler);
   }, [mobileOpen, setMobileOpen]);
 
+  // Body scroll lock while the mobile drawer is open. Native-feel: the page
+  // underneath must not be scrollable while a drawer overlays it. We toggle
+  // `overflow: hidden` on <body> rather than wrapping in Radix Dialog (the
+  // drawer is an `<aside>` with bespoke transitions, not a modal).
+  useEffect(() => {
+    if (!mobileOpen) {
+      return;
+    }
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileOpen]);
+
   return (
     <>
       {/* Floating mobile menu button — phone only (`<md`). At md→lg the rail

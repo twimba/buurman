@@ -14,6 +14,18 @@ interface MobileNavContextValue {
    */
   hasOwnMenuButton: boolean;
   setHasOwnMenuButton: (next: boolean) => void;
+  /**
+   * True while the iOS soft keyboard is up (visualViewport delta > 80px).
+   * Bottom chrome (BottomTabBar, fixed CTAs) should hide while true.
+   */
+  isKeyboardOpen: boolean;
+  /**
+   * True when a page is currently rendering its own fixed bottom action bar
+   * (e.g. MobileFormStepperFooter on Property/Contract forms). The BottomTabBar
+   * hides while true so the two strips don't stack.
+   */
+  hasOwnBottomFooter: boolean;
+  setHasOwnBottomFooter: (next: boolean) => void;
 }
 
 export const MobileNavContext = createContext<MobileNavContextValue>({
@@ -22,6 +34,9 @@ export const MobileNavContext = createContext<MobileNavContextValue>({
   isOpen: false,
   hasOwnMenuButton: false,
   setHasOwnMenuButton: () => {},
+  isKeyboardOpen: false,
+  hasOwnBottomFooter: false,
+  setHasOwnBottomFooter: () => {},
 });
 
 export const useMobileNav = (): MobileNavContextValue =>

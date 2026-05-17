@@ -252,7 +252,7 @@ export const PortfolioDashboard = () => {
                   setIsCustom(true);
                   setMonths(undefined);
                 }}
-                className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="px-3 py-1.5 border border-border-strong rounded-md text-base md:text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
               <span className="text-text-muted text-xs">–</span>
               <input
@@ -263,7 +263,7 @@ export const PortfolioDashboard = () => {
                   setIsCustom(true);
                   setMonths(undefined);
                 }}
-                className="px-3 py-1.5 border border-border-strong rounded-md text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="px-3 py-1.5 border border-border-strong rounded-md text-base md:text-xs bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
             <div className="flex items-center gap-2 flex-wrap">
