@@ -125,7 +125,11 @@ P1: 17/21 shipped. Deferred and why:
 - **P1-7 Service worker** — requires installing `vite-plugin-pwa` + Workbox config + `/offline.html` route + asset precache list; defer until a clean session that can run `yarn add` and validate the manifest+SW cooperate.
 - **P1-17 iOS splash screens** — requires running `pwa-asset-generator` against the master logo to emit ~10 PNGs at exact `apple-touch-startup-image` dimensions; defer alongside P1-7.
 
-P2: 20/23 shipped. Deferred and why:
-- **P2-3 Sheet snap-points (peek/full)** — non-trivial refactor of the now-shipped P1-8 drag-handle to compute nearest-snap targets + animate between them. Skipped here to avoid destabilizing drag-to-dismiss; revisit when a long-form use-case forces the issue.
-- **P2-18 flex-wrap min-w-0 audit** — checked RentTimeline.tsx:327/349/354 + Contacts filter row; the flagged rows already use flex-wrap (so children wrap rather than overflow) or have shrink-0 leaders + min-w-0 trailing content. No concrete bugs found; left as a noted-and-cleared item.
+P1: 19/21 shipped (P1-3 + P1-5 added in second pass — see commits `4a75bdcf` for P2-3 and `25ca288a` for P1-5; P1-3 in the most recent commit). Still deferred:
+- **P1-7 Service worker** — needs `yarn add vite-plugin-pwa` + Workbox config + offline.html.
+- **P1-17 iOS splash screens** — needs `pwa-asset-generator` against the master logo.
+
+P2: 22/23 shipped. Still deferred:
 - **P2-23 Stage Manager smoke test** — purely manual (iPad with Stage Manager at 600/700/800px window widths). Cannot meaningfully automate without a real iPad in the CI matrix.
+
+P2-18 (flex-wrap min-w-0 audit) confirmed closed: re-checked RentTimeline.tsx:327/349/354 + Contacts filter row; flagged rows already use flex-wrap or have shrink-0 leaders + min-w-0 content. No concrete bugs.
