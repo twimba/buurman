@@ -77,7 +77,13 @@
         <nav class="changelog-nav" aria-label="Jump to release">
             <div class="changelog-nav-title" aria-hidden="true">Releases</div>
             <ul class="changelog-nav-list" role="list">
-                <li class="changelog-nav-item changelog-nav-latest" data-target="week-may-10">
+                <li class="changelog-nav-item changelog-nav-latest" data-target="week-may-17">
+                    <a href="#week-may-17">
+                        <span class="changelog-nav-dot" aria-hidden="true"></span>
+                        May 17, 2026
+                    </a>
+                </li>
+                <li class="changelog-nav-item" data-target="week-may-10">
                     <a href="#week-may-10">
                         <span class="changelog-nav-dot" aria-hidden="true"></span>
                         May 10, 2026
@@ -119,13 +125,220 @@
         <!-- ── Timeline feed ── -->
         <div class="timeline">
 
+        <!-- ══ WEEK: May 17, 2026 ══════════════ -->
+        <article class="week-entry week-entry--latest" id="week-may-17" aria-label="Release: May 17, 2026">
+            <div class="week-header reveal">
+                <a class="week-date" href="#week-may-17" aria-label="Link to May 17, 2026 release">
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    May 17, 2026
+                    <span class="latest-badge" aria-label="Latest release">Latest</span>
+                </a>
+                <div class="week-line" aria-hidden="true"></div>
+                <div class="week-version" aria-label="Version range v0.65 to v0.96">v0.65 &rarr; v0.96</div>
+            </div>
+
+            <!-- ── Release headline ── -->
+            <div class="reveal" style="margin: 0.25rem 0 1.25rem; padding: 1.5rem 1.75rem; background: linear-gradient(135deg, rgba(2,132,199,0.06) 0%, rgba(16,185,129,0.05) 100%); border: 1px solid var(--primary-100); border-radius: var(--radius-xl);">
+                <div style="display: inline-flex; align-items: center; gap: 0.4375rem; padding: 0.25rem 0.625rem; background: rgba(2,132,199,0.1); color: var(--primary-dark); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 1rem; margin-bottom: 0.75rem;">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--primary); display: inline-block;" aria-hidden="true"></span>
+                    Release headline
+                </div>
+                <h2 style="font-size: clamp(1.5rem, 3.5vw, 2.125rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 0.5rem;">
+                    Buurman Goes <span class="gradient-text">Mobile</span> &mdash; and Your Data Goes Everywhere
+                </h2>
+                <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.55; margin: 0; max-width: 60ch;">
+                    Two flagships this week. A top&#8209;to&#8209;bottom mobile overhaul that turns Buurman into a real phone app &mdash; and a brand&#8209;new Google Sheets export that lands your portfolio straight in Drive. Plus the usual stack of polish, fixes, and quiet improvements.
+                </p>
+            </div>
+
+            <div class="week-stats reveal" aria-label="Release summary">
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--new" aria-hidden="true"></span>5 new</span>
+                <span class="week-stats-sep" aria-hidden="true">&middot;</span>
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--improved" aria-hidden="true"></span>6 improved</span>
+                <span class="week-stats-sep" aria-hidden="true">&middot;</span>
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--fixed" aria-hidden="true"></span>10 fixed</span>
+            </div>
+
+            <div class="features-list">
+
+                <!-- ── Spotlight #1: Mobile Overhaul ── -->
+                <div class="reveal" style="display: inline-flex; align-items: center; gap: 0.4375rem; padding: 0.3125rem 0.75rem; background: linear-gradient(135deg, var(--success), var(--success-dark)); color: white; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 1rem; align-self: flex-start; width: max-content; box-shadow: 0 2px 8px rgba(16,185,129,0.25); margin-bottom: -0.5rem;">
+                    <span aria-hidden="true">&#9733;</span>
+                    Spotlight &middot; Headliner
+                </div>
+                <div class="feature-entry feature-entry--hero feature-entry--new reveal">
+                    <div class="feature-entry-header">
+                        <div class="feature-entry-icon icon-green">
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="6" y="2" width="8" height="16" rx="2" stroke="white" stroke-width="1.5"/><path d="M9 15h2" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <h3>Your Whole Portfolio, Thumb&#8209;Friendly</h3>
+                        <span class="badge badge-new">New</span>
+                    </div>
+                    <p>Buurman on your phone is now a phone app &mdash; not a desktop app squeezed onto a small screen. We rebuilt every list, dashboard, form, chart, and modal around your thumb. <strong>Fifty&#8209;plus upgrades</strong>, end to end &mdash; the biggest single release in Buurman&rsquo;s history.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Swipe to act</strong> &mdash; swipe a payment, expense, document, or pending extension to reveal the action you want. No more digging through menus.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Card layouts everywhere</strong> &mdash; tables become readable cards on phone. Payments, expenses, documents, contracts, properties, photos, the Top 5 performers panel &mdash; every list reflows for the screen you&rsquo;re holding.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Pull&#8209;to&#8209;refresh, drag&#8209;to&#8209;dismiss, pinch&#8209;to&#8209;zoom</strong> &mdash; the gestures your phone already speaks. Pull down a list to refresh it. Drag a sheet down to close it. Pinch a document preview to zoom in.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Bottom tab bar &amp; full&#8209;screen sheets</strong> &mdash; the main sections sit at the bottom where your thumb already lives. Filters, country pickers, and photo galleries open as full&#8209;screen sheets instead of cramped popups.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Hero KPI &amp; smarter dashboard</strong> &mdash; cash flow front and centre, colour&#8209;coded green or red, with the rest of the KPIs in a horizontal rail you can swipe through. Long&#8209;press any KPI to see full precision.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Form steppers</strong> &mdash; adding a property or contract no longer means scrolling a wall of fields. One step at a time, with keyboard handling that never hides what you&rsquo;re typing.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Install Buurman to your home screen</strong> &mdash; an install prompt appears on supported phones. Once installed, Buurman opens fullscreen and tucks neatly around the notch.</p>
+                </div>
+
+                <!-- ── Spotlight #2: Google Sheets export ── -->
+                <div class="reveal" style="display: inline-flex; align-items: center; gap: 0.4375rem; padding: 0.3125rem 0.75rem; background: linear-gradient(135deg, var(--success), var(--success-dark)); color: white; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 1rem; align-self: flex-start; width: max-content; box-shadow: 0 2px 8px rgba(16,185,129,0.25); margin-bottom: -0.5rem;">
+                    <span aria-hidden="true">&#9733;</span>
+                    Spotlight &middot; Co&#8209;Headliner
+                </div>
+                <div class="feature-entry feature-entry--hero feature-entry--new reveal">
+                    <div class="feature-entry-header">
+                        <div class="feature-entry-icon icon-green">
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="2" stroke="white" stroke-width="1.5"/><path d="M3 7h14M3 12h14M8 2v16M13 2v16" stroke="white" stroke-width="1" opacity="0.6"/></svg>
+                        </div>
+                        <h3>Your Portfolio, One Click into Google Sheets</h3>
+                        <span class="badge badge-new">New</span>
+                    </div>
+                    <p>Properties, payments, expenses, and contracts all gained a one&#8209;click export menu. Pick your format &mdash; <strong>CSV</strong> for portability, <strong>Excel</strong> for your accountant, or <strong>Google Sheets</strong> &mdash; and the data lands where you need it.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Sheets, not screenshots</strong> &mdash; authorise once and your data flows straight into a fresh spreadsheet in your Drive. No download&#8209;then&#8209;upload dance, no CSV that lost its dates, no manual formatting. The sheet arrives with frozen headers, sorted filters, banded rows, currency and date columns formatted, and a tidy &ldquo;Buurman exports&rdquo; folder created for you.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Useful out of the box</strong> &mdash; payments come with the contract and property attached, expenses are linked to the property they belong to, contracts carry the address. No more UUID soup; the sheet reads like something you&rsquo;d build by hand.</p>
+                    <p style="margin-top: 0.75rem;"><strong>One&#8209;shot takeout</strong> &mdash; your full data takeout can now land as a single multi&#8209;tab Sheet &mdash; one tab per entity, in sidebar order, with native number and date formatting throughout.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Privacy by design</strong> &mdash; we ask only for the narrow <code style="background: rgba(2,132,199,0.08); padding: 0.0625rem 0.3125rem; border-radius: 4px; font-size: 0.875em;">drive.file</code> scope, so Buurman can only see the files it created. Your access token is used for one request and never stored.</p>
+                    <p style="margin-top: 0.75rem;">Google Sheets is rolling out behind a feature flag we&rsquo;re enabling team by team. CSV and Excel are live everywhere today. Want early access to Sheets? <a href="mailto:hello@buurman.io">Drop us a line.</a></p>
+                </div>
+
+                <!-- ── Smaller wins: divider + compact group ── -->
+                <div class="reveal" style="display: flex; align-items: center; gap: 0.875rem; margin: 0.5rem 0 -0.25rem;">
+                    <div style="flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent);"></div>
+                    <span style="font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">Also shipped</span>
+                    <div style="flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent);"></div>
+                </div>
+
+                <!-- ── Compact: More new this week ── -->
+                <div class="compact-group compact-group--new reveal">
+                    <div class="compact-group-header">
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-green">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <h3>More new this week</h3>
+                        <span class="badge badge-new">New</span>
+                    </div>
+                    <ul class="compact-list">
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Custom date range on the portfolio dashboard</strong> &mdash; the preset ranges never quite line up with the period your bank, accountant, or co&#8209;owner is asking about. Pick any start and end date and frame the numbers around the question you&rsquo;re actually being asked</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Expand any chart to fullscreen</strong> &mdash; every chart on the dashboard and reports page has an expand button. One click and it fills the screen &mdash; perfect for spotting a trend or presenting on a call</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>SMS notifications need a verified phone</strong> &mdash; before SMS notifications can be switched on, the phone number on the account has to be verified with a one&#8209;time code. The toggle now explains exactly what to do</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ── Compact: Improvements ── -->
+                <div class="compact-group compact-group--improved reveal">
+                    <div class="compact-group-header">
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-blue">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <h3>Quality of Life</h3>
+                        <span class="badge badge-improved">Improved</span>
+                    </div>
+                    <ul class="compact-list">
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(2,132,199,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>2026 rent regulation refresh</strong> &mdash; legal rent caps, indexation rules, and statutory ceilings have been refreshed for 2026 across every covered country, reviewed against the official 2026 figures</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(2,132,199,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>A demo that looks like a real portfolio</strong> &mdash; the trial workspace now ships with a curated ten&#8209;property mix across the Netherlands, Portugal, Spain, Italy, and Germany. Mortgages, indexation, taxes, and cash flow are all sized to a real small landlord &mdash; so the dashboard shows you what you&rsquo;ll actually see with your own data</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(2,132,199,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>The green &ldquo;all paid&rdquo; badge has arrived</strong> &mdash; we shipped amber, red, and blue last week. Now a fourth state: a green checkmark on contacts that have paid every cent they owe. A positive signal at a glance, instead of an ambiguous absence of information</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(2,132,199,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Guarantor balances on contact cards</strong> &mdash; guarantors are financially on the hook, but their cards used to show nothing. They now display the amount they guarantee, styled distinctly from money they personally owe &mdash; so you can tell &ldquo;owes&rdquo; from &ldquo;backs&rdquo; at a glance</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(2,132,199,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>More reliable email delivery</strong> &mdash; we switched our email delivery provider behind the scenes, so invitations, password resets, and notifications land in inboxes more consistently</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(2,132,199,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Richer data takeout</strong> &mdash; your data takeout now includes every document and photo you&rsquo;ve uploaded, organised by entity, with a styled index page that catalogues exactly what&rsquo;s in the bundle</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ── Bug Fixes ── -->
+                <div class="compact-group compact-group--fixed reveal">
+                    <div class="compact-group-header">
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-amber">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 6v4M9 12.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 15h11l-5.5-11-5.5 11z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>Bug Fixes</h3>
+                        <span class="badge badge-fixed">Fixed</span>
+                    </div>
+                    <ul class="compact-list">
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Past and future rent periods can now be edited or deleted &mdash; useful when you need to correct an old amount or set up a future change after the fact</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Manually&#8209;created rent periods are now preserved when a contract extension is activated &mdash; your custom amounts are no longer overwritten</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Creating a new contract extension automatically supersedes an expired active one, so the timeline always reflects the current state without manual cleanup</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Error toasts now show the actual reason a request was rejected, instead of a generic message &mdash; far easier to fix on the spot</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Property and portfolio PDF exports now use your team&rsquo;s default currency instead of falling back to euros when a property had no currency set</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>The occupancy chart on the dashboard now displays its data again &mdash; previously it could appear empty for some workspaces</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Dropdown menus and date pickers now consistently appear above other content, never tucked behind a sticky header or modal</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Payment instructions can now be added with effective dates in the past &mdash; useful when you&rsquo;re catching up after the fact</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>PDF documents preview reliably inside Buurman again, regardless of where the file is stored</span>
+                        </li>
+                        <li>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Property booklet PDFs no longer have photos spilling past the right page margin</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ── Call to action ── -->
+                <p style="margin-top: 1.5rem; padding: 1rem 1.25rem; background: rgba(2,132,199,0.06); border-left: 3px solid var(--primary); border-radius: 0 6px 6px 0;">Open Buurman on your phone, add it to your home screen, and give it a real spin on the bus. Then tell us what you&rsquo;d swipe on next &mdash; <a href="mailto:hello@buurman.io">hello@buurman.io</a>.</p>
+
+            </div>
+        </article>
+
         <!-- ══ WEEK: May 10, 2026 ══════════════ -->
-        <article class="week-entry week-entry--latest" id="week-may-10" aria-label="Release: May 10, 2026">
+        <article class="week-entry" id="week-may-10" aria-label="Release: May 10, 2026">
             <div class="week-header reveal">
                 <a class="week-date" href="#week-may-10" aria-label="Link to May 10, 2026 release">
                     <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     May 10, 2026
-                    <span class="latest-badge" aria-label="Latest release">Latest</span>
                 </a>
                 <div class="week-line" aria-hidden="true"></div>
                 <div class="week-version" aria-label="Version v0.64">v0.64</div>
