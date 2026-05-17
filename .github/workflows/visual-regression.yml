@@ -1,0 +1,54 @@
+name: Visual Regression (Playwright)
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/visual-regression.yml"
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+
+jobs:
+  playwright:
+    name: Playwright responsive snapshots
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn install --immutable
+
+      - name: Install Playwright browsers
+        working-directory: frontend/app
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Build app
+        working-directory: frontend/app
+        run: yarn build
+
+      - name: Run Playwright visual tests
+        working-directory: frontend/app
+        run: npx playwright test --reporter=github
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/app/playwright-report/
+          retention-days: 14
