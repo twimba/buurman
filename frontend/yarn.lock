@@ -1263,19 +1263,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:1.29.6":
-  version: 1.29.6
-  resolution: "@posthog/core@npm:1.29.6"
+"@posthog/core@npm:1.29.8":
+  version: 1.29.8
+  resolution: "@posthog/core@npm:1.29.8"
   dependencies:
-    "@posthog/types": "npm:1.374.3"
-  checksum: 10c0/142cf49c6914583ad7a9fd983b07b8d33f0eaa354ad78a65adb8b2808b138a432a4b0f14cfbaf23f8540621c97db5218061cc9058d3ddfc69110c7830c7763f0
+    "@posthog/types": "npm:1.375.0"
+  checksum: 10c0/c2ac17f96d8eb0f5e060ec938b57158f5789456285cadc48d8f0075793c2bdd60ba79c1012ebd09aafc054803e377d492cd36651de28e47f84a7af04e1ad6181
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.374.3":
-  version: 1.374.3
-  resolution: "@posthog/types@npm:1.374.3"
-  checksum: 10c0/9c28d8905296cffa6146962ad178fb03a478e6398f0d0163dc88dd2992717c53ab0bc1c013bad5c5acd84b1cb1b36571421fbeff97e66d36521c6fcb2d8d8303
+"@posthog/types@npm:1.375.0":
+  version: 1.375.0
+  resolution: "@posthog/types@npm:1.375.0"
+  checksum: 10c0/1651f68034ba94eb05b2c46c8d8539015ace814e2de9bb960a9586c2e5de6fca8abe745185f37bf7692f99681d2dd54127b77116392771f53a980fc63edfdb39
   languageName: node
   linkType: hard
 
@@ -4272,7 +4272,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.2"
     lucide-react: "npm:1.16.0"
-    posthog-js: "npm:1.374.3"
+    posthog-js: "npm:1.375.0"
     prettier: "npm:3.8.3"
     react: "npm:19.2.6"
     react-dom: "npm:19.2.6"
@@ -4321,7 +4321,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.16.0"
-    posthog-js: "npm:1.374.3"
+    posthog-js: "npm:1.375.0"
     prettier: "npm:3.8.3"
     react: "npm:19.2.6"
     react-dom: "npm:19.2.6"
@@ -7698,24 +7698,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.374.3":
-  version: 1.374.3
-  resolution: "posthog-js@npm:1.374.3"
+"posthog-js@npm:1.375.0":
+  version: 1.375.0
+  resolution: "posthog-js@npm:1.375.0"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
     "@opentelemetry/exporter-logs-otlp-http": "npm:^0.208.0"
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
-    "@posthog/core": "npm:1.29.6"
-    "@posthog/types": "npm:1.374.3"
+    "@posthog/core": "npm:1.29.8"
+    "@posthog/types": "npm:1.375.0"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/e1cc4b64e37f57b35827987b229e138612c12fb69d71632f927a0d80a9f30d78dc1db28c75694839d526d377903f86c8a59a08b4bfa14d1bee41a01223140f42
+  checksum: 10c0/ef2c9c976cf08b805bf19388c7daba7f5b4f4d544710ece71c2409b4da650d8f2125eca45c79f9d9c0d1513763a9279301f8d547e830b493a9ad8d0a431acd07
   languageName: node
   linkType: hard
 
