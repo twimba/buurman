@@ -289,7 +289,7 @@ __metadata:
     "@types/react": "npm:19.2.15"
     "@types/react-dom": "npm:19.2.3"
     clsx: "npm:2.1.1"
-    dompurify: "npm:3.4.5"
+    dompurify: "npm:3.4.6"
     eslint: "npm:10.4.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
@@ -4224,7 +4224,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:6.0.2"
     axios: "npm:1.16.1"
     date-fns: "npm:4.3.0"
-    dompurify: "npm:3.4.5"
+    dompurify: "npm:3.4.6"
     eslint: "npm:10.4.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
@@ -4279,7 +4279,7 @@ __metadata:
     axios: "npm:1.16.1"
     cronstrue: "npm:3.14.0"
     date-fns: "npm:4.3.0"
-    dompurify: "npm:3.4.5"
+    dompurify: "npm:3.4.6"
     eslint: "npm:10.4.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
@@ -4815,15 +4815,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:3.4.5":
-  version: 3.4.5
-  resolution: "dompurify@npm:3.4.5"
+"dompurify@npm:3.4.6":
+  version: 3.4.6
+  resolution: "dompurify@npm:3.4.6"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10c0/4bcc953b0f33c61f07fd1b928342dd301dd94401a6058bff7cb47abd57892c797abe6d03118aa8056b36ea067bfe460324bea37fcaf57c0d906ed48e7ac32020
+  checksum: 10c0/3af8de7c5cec913f08038682982cbcb2bfc33d0d48806d95a23e9f6f6913b74414a8b8a63e2b71de2039af558ccad8208d67d2bb7ab9ec244178340e99cd5ed9
   languageName: node
   linkType: hard
 
