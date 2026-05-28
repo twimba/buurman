@@ -1,7 +1,7 @@
 FROM alpine:3.23 AS gettext
 RUN apk add --no-cache gettext
 
-FROM prom/prometheus:v3.11.3
+FROM prom/prometheus:v3.12.0
 
 USER root
 COPY --from=gettext /usr/bin/envsubst /usr/local/bin/envsubst
