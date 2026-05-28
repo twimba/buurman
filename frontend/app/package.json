@@ -52,7 +52,7 @@
     "react-dom": "19.2.6",
     "react-i18next": "17.0.8",
     "react-is": "19.2.6",
-    "react-router-dom": "7.15.1",
+    "react-router-dom": "7.16.0",
     "recharts": "3.8.1",
     "swagger-ui-react": "5.32.6"
   },
