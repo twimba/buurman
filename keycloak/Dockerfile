@@ -1,4 +1,4 @@
-FROM keycloak/keycloak:26.6.2
+FROM keycloak/keycloak:26.6.3
 
 COPY themes /opt/keycloak/themes
 COPY buurman-realm.json /opt/keycloak/data/import/
