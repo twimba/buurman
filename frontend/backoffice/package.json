@@ -25,7 +25,7 @@
     "axios": "1.17.0",
     "cronstrue": "3.14.0",
     "date-fns": "4.4.0",
-    "dompurify": "3.4.9",
+    "dompurify": "3.4.10",
     "keycloak-js": "26.2.4",
     "lucide-react": "1.17.0",
     "posthog-js": "1.386.6",
