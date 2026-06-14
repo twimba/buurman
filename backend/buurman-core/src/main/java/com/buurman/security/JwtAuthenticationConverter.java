@@ -45,7 +45,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
   @Override
   public AbstractAuthenticationToken convert(Jwt jwt) {
-    String keycloakId = jwt.getSubject();
+    String keycloakId =
+        Objects.requireNonNull(jwt.getSubject(), "JWT subject (keycloakId) is missing");
     String email = Objects.toString(jwt.getClaimAsString("email"), "");
     String name = Objects.toString(jwt.getClaimAsString("name"), "");
 

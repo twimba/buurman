@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.core.convert.converter.Converter;
@@ -18,7 +19,8 @@ public class BackofficeJwtAuthenticationConverter
 
   @Override
   public AbstractAuthenticationToken convert(Jwt jwt) {
-    String keycloakId = jwt.getSubject();
+    String keycloakId =
+        Objects.requireNonNull(jwt.getSubject(), "JWT subject (keycloakId) is missing");
     Optional<String> email = Optional.ofNullable(jwt.getClaimAsString("email"));
     Optional<String> name = Optional.ofNullable(jwt.getClaimAsString("name"));
 

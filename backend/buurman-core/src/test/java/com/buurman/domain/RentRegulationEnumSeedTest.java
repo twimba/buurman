@@ -11,18 +11,18 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Regression guard: every {@code max_increase_type} and {@code frequency}
- * value seeded by {@code V053__rent_regulation_overhaul.sql} must be a member
- * of the corresponding Java enum. Adding new values to V053 without updating
- * the enum produces a runtime {@code IllegalArgumentException} from
- * {@code Enum.valueOf} when the rule is read from the database — easy to
- * miss until the page that consumes the rule blows up in production.
+ * Regression guard: every {@code max_increase_type} and {@code frequency} value seeded by {@code
+ * V053__rent_regulation_overhaul.sql} must be a member of the corresponding Java enum. Adding new
+ * values to V053 without updating the enum produces a runtime {@code IllegalArgumentException} from
+ * {@code Enum.valueOf} when the rule is read from the database — easy to miss until the page that
+ * consumes the rule blows up in production.
  *
- * This test parses the migration once and asserts membership for both columns.
+ * <p>This test parses the migration once and asserts membership for both columns.
  */
 class RentRegulationEnumSeedTest {
 
@@ -62,8 +62,8 @@ class RentRegulationEnumSeedTest {
   }
 
   /**
-   * Parses both INSERT (column-positional) and UPDATE (column = 'VALUE') forms
-   * for a single column out of the V053 migration file.
+   * Parses both INSERT (column-positional) and UPDATE (column = 'VALUE') forms for a single column
+   * out of the V053 migration file.
    */
   private static Set<String> extractSeededValues(String column) throws IOException {
     String sql = Files.readString(MIGRATION);
@@ -77,8 +77,8 @@ class RentRegulationEnumSeedTest {
     }
 
     // INSERT INTO rent_regulation_rules (cols) VALUES (...) — paren-aware
-    Pattern insertHead = Pattern.compile(
-        "INSERT\\s+INTO\\s+rent_regulation_rules\\s*\\(", Pattern.CASE_INSENSITIVE);
+    Pattern insertHead =
+        Pattern.compile("INSERT\\s+INTO\\s+rent_regulation_rules\\s*\\(", Pattern.CASE_INSENSITIVE);
     Matcher head = insertHead.matcher(sql);
     while (head.find()) {
       int colsStart = head.end() - 1;
@@ -95,17 +95,17 @@ class RentRegulationEnumSeedTest {
       }
       if (idx < 0) continue;
       // Find VALUES keyword after colsEnd
-      Matcher valuesKw =
-          Pattern.compile("VALUES\\s*", Pattern.CASE_INSENSITIVE).matcher(sql);
+      Matcher valuesKw = Pattern.compile("VALUES\\s*", Pattern.CASE_INSENSITIVE).matcher(sql);
       valuesKw.region(colsEnd, sql.length());
       if (!valuesKw.find()) continue;
       int k = valuesKw.end();
       while (k < sql.length()) {
         // skip whitespace and commas
-        while (k < sql.length() && (sql.charAt(k) == ' '
-            || sql.charAt(k) == '\t'
-            || sql.charAt(k) == '\n'
-            || sql.charAt(k) == ',')) {
+        while (k < sql.length()
+            && (sql.charAt(k) == ' '
+                || sql.charAt(k) == '\t'
+                || sql.charAt(k) == '\n'
+                || sql.charAt(k) == ',')) {
           k++;
         }
         if (k >= sql.length() || sql.charAt(k) == ';') break;
