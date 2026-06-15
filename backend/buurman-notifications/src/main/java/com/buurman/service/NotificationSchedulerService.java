@@ -109,6 +109,9 @@ public class NotificationSchedulerService {
               }
 
               String propertyName = getPropertyName(contract.getPropertyId(), team.getId());
+              String expiryBase = appProperties.email().baseUrl();
+              String expiryContractUrl =
+                  expiryBase + "/contracts/" + contract.getIdentifier().map(s -> s.value()).orElse("");
 
               notifyTeamMembers(
                   team.getId(),
@@ -127,7 +130,10 @@ public class NotificationSchedulerService {
                                       "propertyName", propertyName,
                                       "daysUntilExpiry", daysUntilExpiry,
                                       "expiryDate", formatDate(endDate),
-                                      "baseUrl", appProperties.email().baseUrl()))
+                                      "baseUrl", expiryBase,
+                                      "primaryUrl", expiryContractUrl,
+                                      "secondaryUrl",
+                                          expiryContractUrl + "?tab=extensions&action=renew"))
                               .urgency(
                                   daysUntilExpiry <= 7
                                       ? NotificationUrgency.URGENT
@@ -177,6 +183,9 @@ public class NotificationSchedulerService {
               }
 
               String propertyName = getPropertyName(contract.getPropertyId(), team.getId());
+              String reminderBase = appProperties.email().baseUrl();
+              String reminderPaymentUrl =
+                  reminderBase + "/payments/" + payment.getIdentifier().map(s -> s.value()).orElse("");
 
               notifyTeamMembers(
                   team.getId(),
@@ -195,7 +204,9 @@ public class NotificationSchedulerService {
                                       "propertyName", propertyName,
                                       "amount", formatCurrency(payment.getAmount().value()),
                                       "dueDate", formatDate(payment.getDueDate()),
-                                      "baseUrl", appProperties.email().baseUrl()))
+                                      "baseUrl", reminderBase,
+                                      "primaryUrl", reminderPaymentUrl,
+                                      "secondaryUrl", reminderPaymentUrl + "?action=mark-paid"))
                               .urgency(NotificationUrgency.URGENT)
                               .createdBy(SYSTEM_USER_ID)
                               .build()));

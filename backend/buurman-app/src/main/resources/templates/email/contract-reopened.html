@@ -20,9 +20,7 @@
                 <p style="color: #292524; margin: 0;"><strong th:text="#{email.contract-reopened.label.previousStatus}">Previous Status:</strong> <span th:text="${oldStatus}">Old Status</span></p>
             </div>
 
-            <a th:href="${baseUrl}" th:text="#{email.contract-reopened.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                View Contract
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.contract-reopened.cta}, ${secondaryUrl}, #{email.contract-reopened.cta.secondary})}"></div>
         </div>
 
         <div th:replace="~{_email-base :: footer}"></div>
