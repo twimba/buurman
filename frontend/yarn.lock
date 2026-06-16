@@ -339,7 +339,7 @@ __metadata:
     eslint: "npm:10.5.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    lucide-react: "npm:1.18.0"
+    lucide-react: "npm:1.20.0"
     prettier: "npm:3.8.4"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.1"
@@ -1146,19 +1146,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.32.4":
-  version: 1.32.5
-  resolution: "@posthog/core@npm:1.32.5"
+"@posthog/core@npm:^1.33.0":
+  version: 1.33.0
+  resolution: "@posthog/core@npm:1.33.0"
   dependencies:
-    "@posthog/types": "npm:^1.386.4"
-  checksum: 10c0/0c0ae256aed3de1f950cd80aaca3fbd13bd2983ae096c03dcc341339962f5d2a033401e9ce99e3adfb7fc1236ada9a1ba90b2116b21ea622c713f6d9cc283497
+    "@posthog/types": "npm:^1.387.0"
+  checksum: 10c0/44836fbcfbae07a70ac8bbdbec54970a8575078a4a28320ed8076348b814f81d84f7bc312ab459694639e315e6c8cb5d12f4b5a3740d49e4f28ed243c006baf6
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:^1.386.4":
-  version: 1.386.4
-  resolution: "@posthog/types@npm:1.386.4"
-  checksum: 10c0/1728027cbc54100f4040e046b7df7a29402755ebc96875a775b80d78f1a80a642cc91cdf57deb266ca4d35a684a20cfbf4c25e959b13714f6456bee9902fe2d6
+"@posthog/types@npm:^1.387.0":
+  version: 1.387.0
+  resolution: "@posthog/types@npm:1.387.0"
+  checksum: 10c0/97c5796f563670adfc1b31a90b816c5e984f048fb807c58dd861bf503cf40bd79e6ea54a9c81eeb87a6f74f093b59c2ca9431fdafd03b5516e5a3f1905a58791
   languageName: node
   linkType: hard
 
@@ -4098,8 +4098,8 @@ __metadata:
     jsdom: "npm:29.1.1"
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.6"
-    lucide-react: "npm:1.18.0"
-    posthog-js: "npm:1.386.8"
+    lucide-react: "npm:1.20.0"
+    posthog-js: "npm:1.387.0"
     prettier: "npm:3.8.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -4147,8 +4147,8 @@ __metadata:
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
-    lucide-react: "npm:1.18.0"
-    posthog-js: "npm:1.386.8"
+    lucide-react: "npm:1.20.0"
+    posthog-js: "npm:1.387.0"
     prettier: "npm:3.8.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -6708,12 +6708,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:1.18.0":
-  version: 1.18.0
-  resolution: "lucide-react@npm:1.18.0"
+"lucide-react@npm:1.20.0":
+  version: 1.20.0
+  resolution: "lucide-react@npm:1.20.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/91b52cec3e38f4b362f538f4e78a597434fc6e70f7a8fe3ccbc12c43ede886f8b32880c38ec4c9e5c949d3f32beb94e6985be0bb40341b031b2b9ca45010576b
+  checksum: 10c0/4bf86add73b29f395fa08be2751cd53939f667c3fa99c54f2f22e422f7a4d83c647c57352de67eea8496884d9c3d45ff1204bad2318304f479b1655609f15632
   languageName: node
   linkType: hard
 
@@ -7438,19 +7438,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.386.8":
-  version: 1.386.8
-  resolution: "posthog-js@npm:1.386.8"
+"posthog-js@npm:1.387.0":
+  version: 1.387.0
+  resolution: "posthog-js@npm:1.387.0"
   dependencies:
-    "@posthog/core": "npm:^1.32.4"
-    "@posthog/types": "npm:^1.386.4"
+    "@posthog/core": "npm:^1.33.0"
+    "@posthog/types": "npm:^1.387.0"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/055dd0d51066b689e6ec104da32cab3d54643447c14a3ef8de3b08a4298846711a07a04fe54d5e6841c4920336a16fb0a541d1ce216573fc81eff7019e256ddc
+  checksum: 10c0/8b70e042a61b73541b42edbb6d728e00f9db3a8d99d6b2e7e6976dd406fdd2e1d24894857909665016db6b3f9da7890725e849401cf2ecafea9c3f34797285b9
   languageName: node
   linkType: hard
 
