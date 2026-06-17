@@ -129,7 +129,7 @@ services:
       - buurman-network
 
   mailpit:
-    image: axllent/mailpit:v1.30.0
+    image: axllent/mailpit:v1.30.2
     ports:
       - "${SMTP_HOST_PORT:-1025}:1025"  # SMTP — direct port mapping (no Traefik)
     labels:
