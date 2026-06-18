@@ -18,7 +18,7 @@
     "@buurman/ui": "workspace:*",
     "@floating-ui/dom": "1.7.6",
     "@fullcalendar/core": "6.1.20",
-    "@fullcalendar/daygrid": "6.1.20",
+    "@fullcalendar/daygrid": "6.1.21",
     "@fullcalendar/icalendar": "6.1.20",
     "@fullcalendar/react": "6.1.20",
     "@tanstack/react-query": "5.101.0",
