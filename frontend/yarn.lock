@@ -785,12 +785,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/core@npm:6.1.20":
-  version: 6.1.20
-  resolution: "@fullcalendar/core@npm:6.1.20"
+"@fullcalendar/core@npm:6.1.21":
+  version: 6.1.21
+  resolution: "@fullcalendar/core@npm:6.1.21"
   dependencies:
     preact: "npm:~10.12.1"
-  checksum: 10c0/22e820979431acd690ad570b409d7eb9c2c7cbf1d7f9a08a9b5593164901ff375992f0cd437dfb7e8ec905213be79a111e2b7c675c286273419d79fbd7d99efc
+  checksum: 10c0/6856367e4b1aa7941badcd38198efc379aa03c34a1a6c6d97cd4d68fc6f99d26340cbe1007b247cab01af431abbc89ee78a3cb42d67f1e722655e8adca66692e
   languageName: node
   linkType: hard
 
@@ -803,13 +803,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/icalendar@npm:6.1.20":
-  version: 6.1.20
-  resolution: "@fullcalendar/icalendar@npm:6.1.20"
+"@fullcalendar/icalendar@npm:6.1.21":
+  version: 6.1.21
+  resolution: "@fullcalendar/icalendar@npm:6.1.21"
   peerDependencies:
-    "@fullcalendar/core": ~6.1.20
+    "@fullcalendar/core": ~6.1.21
     ical.js: ^1.4.0
-  checksum: 10c0/bd5f8b72a8df04123bc2c78c2ee5d0e91120ce01709079d69016826ffc20d57acf297978e3a2f54f50660c7a0742770105b498563e32894b3edcca340d05ae72
+  checksum: 10c0/d8bd30b7d98a1111c777502df20e35ee592ef05794922496cdb33713100e1bccec10ebe1bb223125ff1866ac2bd173a2711284840cc71227a0b9f7f6aa33d137
   languageName: node
   linkType: hard
 
@@ -4053,9 +4053,9 @@ __metadata:
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:10.0.1"
     "@floating-ui/dom": "npm:1.7.6"
-    "@fullcalendar/core": "npm:6.1.20"
+    "@fullcalendar/core": "npm:6.1.21"
     "@fullcalendar/daygrid": "npm:6.1.21"
-    "@fullcalendar/icalendar": "npm:6.1.20"
+    "@fullcalendar/icalendar": "npm:6.1.21"
     "@fullcalendar/react": "npm:6.1.21"
     "@playwright/test": "npm:1.61.0"
     "@tailwindcss/postcss": "npm:4.3.1"
@@ -4099,7 +4099,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.6"
     lucide-react: "npm:1.21.0"
-    posthog-js: "npm:1.390.1"
+    posthog-js: "npm:1.390.2"
     prettier: "npm:3.8.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -4148,7 +4148,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.21.0"
-    posthog-js: "npm:1.390.1"
+    posthog-js: "npm:1.390.2"
     prettier: "npm:3.8.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -7438,9 +7438,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.390.1":
-  version: 1.390.1
-  resolution: "posthog-js@npm:1.390.1"
+"posthog-js@npm:1.390.2":
+  version: 1.390.2
+  resolution: "posthog-js@npm:1.390.2"
   dependencies:
     "@posthog/core": "npm:^1.35.1"
     "@posthog/types": "npm:^1.390.0"
@@ -7450,7 +7450,7 @@ __metadata:
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/90a191702d4bbff06293607680fd33fb6231e90e86b871ea2531fa3cbf1db8513744385a05933d9c3bb675e08bacdf7f87e6639e254d6512d56b7fec2fdb1fb2
+  checksum: 10c0/6a65381e40d395b55f5063053a3edd7bb41f76f1dbf2847dea056db1d61dc87533ea370596bb9de168a6659863d92ab286916cb71575b37923b086341362e986
   languageName: node
   linkType: hard
 
