@@ -794,12 +794,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/daygrid@npm:6.1.20":
-  version: 6.1.20
-  resolution: "@fullcalendar/daygrid@npm:6.1.20"
+"@fullcalendar/daygrid@npm:6.1.21":
+  version: 6.1.21
+  resolution: "@fullcalendar/daygrid@npm:6.1.21"
   peerDependencies:
-    "@fullcalendar/core": ~6.1.20
-  checksum: 10c0/dc71376bc9a8173d000aaf6d395a2bde0d2b89b78e937b1dabec31ac4111a0364f740ebdc1a4efd8ef967d3a8023acc4fac58c7245b6f92828fee28050fc2f35
+    "@fullcalendar/core": ~6.1.21
+  checksum: 10c0/8e7a9e25b7390ec9c09970a729259a3882ebd4d5551084d532e330c7584d302e492dc1f15ae100c2430ae885485182dcd9fd75697962ffb1d7ac6f8f74e53407
   languageName: node
   linkType: hard
 
@@ -813,14 +813,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/react@npm:6.1.20":
-  version: 6.1.20
-  resolution: "@fullcalendar/react@npm:6.1.20"
+"@fullcalendar/react@npm:6.1.21":
+  version: 6.1.21
+  resolution: "@fullcalendar/react@npm:6.1.21"
   peerDependencies:
-    "@fullcalendar/core": ~6.1.20
+    "@fullcalendar/core": ~6.1.21
     react: ^16.7.0 || ^17 || ^18 || ^19
     react-dom: ^16.7.0 || ^17 || ^18 || ^19
-  checksum: 10c0/b23fb56d3c4f69d0e6161bc7872f77d5bd3e431f3c265c3b69710bb105a7e72aa4936e93b815602bc249c326d444e994e76139565e7c134dc87ae7fc6c34056a
+  checksum: 10c0/7103e724676ea12a43c5020e2581902394c0e3d30ace0a15319d869efc099b0a4e053aac1ab52576e8086649679f616236399996bebd5b36a131e5cb338d6ec3
   languageName: node
   linkType: hard
 
@@ -4054,9 +4054,9 @@ __metadata:
     "@eslint/js": "npm:10.0.1"
     "@floating-ui/dom": "npm:1.7.6"
     "@fullcalendar/core": "npm:6.1.20"
-    "@fullcalendar/daygrid": "npm:6.1.20"
+    "@fullcalendar/daygrid": "npm:6.1.21"
     "@fullcalendar/icalendar": "npm:6.1.20"
-    "@fullcalendar/react": "npm:6.1.20"
+    "@fullcalendar/react": "npm:6.1.21"
     "@playwright/test": "npm:1.61.0"
     "@tailwindcss/postcss": "npm:4.3.1"
     "@tanstack/react-query": "npm:5.101.0"
@@ -4140,7 +4140,7 @@ __metadata:
     "@types/react-dom": "npm:19.2.3"
     "@vitejs/plugin-react": "npm:6.0.2"
     axios: "npm:1.18.0"
-    cronstrue: "npm:3.14.0"
+    cronstrue: "npm:3.20.0"
     date-fns: "npm:4.4.0"
     dompurify: "npm:3.4.11"
     eslint: "npm:10.5.0"
@@ -4350,12 +4350,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cronstrue@npm:3.14.0":
-  version: 3.14.0
-  resolution: "cronstrue@npm:3.14.0"
+"cronstrue@npm:3.20.0":
+  version: 3.20.0
+  resolution: "cronstrue@npm:3.20.0"
   bin:
     cronstrue: bin/cli.js
-  checksum: 10c0/6a45a60a5ba6ef8c3f686ee213f0a5a989ad4123da8175d2892c92615bbb8abfd83d06e2f8d64e4097c03e4d4abd94650f4f58aa1255da435bba3f69ff5a79aa
+  checksum: 10c0/0ba16bd4f416aedef6f1477cceb0137f2408dfce041386fe189c76b9454ae213542f8a29d657a73039ee77d83ce120511994bd77cf09e691a9edc8c055351122
   languageName: node
   linkType: hard
 
