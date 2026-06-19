@@ -241,7 +241,14 @@ public class ContractService {
         savedContract.getRentAmount().currency() + " " + savedContract.getRentAmount().value());
     contractVars.put("startDate", savedContract.getStartDate().toString());
     contractVars.put("endDate", savedContract.getEndDate().map(LocalDate::toString).orElse(""));
-    contractVars.put("baseUrl", appProperties.email().baseUrl());
+    String createdBase = appProperties.email().baseUrl();
+    contractVars.put("baseUrl", createdBase);
+    contractVars.put(
+        "primaryUrl",
+        createdBase + "/contracts/" + savedContract.getIdentifier().map(s -> s.value()).orElse(""));
+    contractVars.put(
+        "secondaryUrl",
+        createdBase + "/properties/" + property.getIdentifier().map(s -> s.value()).orElse(""));
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
@@ -690,6 +697,11 @@ public class ContractService {
             ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
             : identifier.value();
     String scContactName = primaryContact.getDisplayName();
+    String scBase = appProperties.email().baseUrl();
+    String scPropertySid =
+        statusChangeProperty != null
+            ? statusChangeProperty.getIdentifier().map(s -> s.value()).orElse("")
+            : "";
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
@@ -701,7 +713,9 @@ public class ContractService {
                     "contactName", scContactName,
                     "oldStatus", oldStatus.name(),
                     "newStatus", newStatus.name(),
-                    "baseUrl", appProperties.email().baseUrl()))
+                    "baseUrl", scBase,
+                    "primaryUrl", scBase + "/contracts/" + identifier.value(),
+                    "secondaryUrl", scBase + "/properties/" + scPropertySid))
             .createdBy(principal.getUserId())
             .build());
 
@@ -798,6 +812,11 @@ public class ContractService {
             ? reopenProperty.getStreet() + ", " + reopenProperty.getCity()
             : identifier.value();
     String reopenContactName = reopenPrimaryContact.getDisplayName();
+    String reopenBase = appProperties.email().baseUrl();
+    String reopenPropertySid =
+        reopenProperty != null
+            ? reopenProperty.getIdentifier().map(s -> s.value()).orElse("")
+            : "";
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
@@ -812,7 +831,11 @@ public class ContractService {
                     "oldStatus",
                     oldStatus.name(),
                     "baseUrl",
-                    appProperties.email().baseUrl()))
+                    reopenBase,
+                    "primaryUrl",
+                    reopenBase + "/contracts/" + identifier.value(),
+                    "secondaryUrl",
+                    reopenBase + "/properties/" + reopenPropertySid))
             .createdBy(principal.getUserId())
             .build());
 

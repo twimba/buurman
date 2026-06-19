@@ -6,6 +6,12 @@
         <span th:text="#{email.base.brand}" style="font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">Buurman</span>
     </div>
 
+    <!-- Email action buttons fragment (primary + optional secondary) -->
+    <div th:fragment="actions(primaryUrl, primaryText, secondaryUrl, secondaryText)" style="margin: 8px 0 0 0;">
+        <a th:href="${primaryUrl}" th:text="${primaryText}" style="display: inline-block; background: #0284c7; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; margin: 0 8px 8px 0;">View</a>
+        <a th:if="${secondaryUrl}" th:href="${secondaryUrl}" th:text="${secondaryText}" style="display: inline-block; background: #ffffff; color: #0284c7; text-decoration: none; padding: 11px 23px; border-radius: 6px; font-weight: 500; border: 1px solid #0284c7; margin: 0 8px 8px 0;">Action</a>
+    </div>
+
     <!-- Email footer fragment -->
     <div th:fragment="footer">
         <p th:text="#{email.base.footer}" style="color: #57534e; font-size: 12px; text-align: center; margin: 24px 0 0 0; font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">

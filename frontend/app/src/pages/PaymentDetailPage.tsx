@@ -1,5 +1,10 @@
-import { useState, useMemo } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import {
@@ -348,6 +353,28 @@ export const PaymentDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
   const [showReceivalModal, setShowReceivalModal] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Open the relevant action modal when arriving from an email deep link
+  // (e.g. /payments/:id?action=mark-paid), then strip the param.
+  useEffect(() => {
+    const action = searchParams.get('action');
+    if (!action || !canEditData) {
+      return;
+    }
+    if (action === 'mark-paid') {
+      setShowMarkPaidModal(true);
+    } else if (action === 'record-receival') {
+      setShowReceivalModal(true);
+    }
+    setSearchParams(
+      (prev) => {
+        prev.delete('action');
+        return prev;
+      },
+      { replace: true }
+    );
+  }, [searchParams, setSearchParams, canEditData]);
   const [activeTab, setActiveTab] = useTabState('details', [
     'details',
     'receivals',

@@ -22,9 +22,7 @@
                 <p style="color: #92400e; margin: 0 0 8px 0;"><strong th:text="#{email.contract-extension-pending.label.currentRent}">Current Rent:</strong> <span th:text="${previousRentFormatted}">EUR 1,000.00</span></p>
                 <p style="color: #92400e; margin: 0;"><strong th:text="#{email.contract-extension-pending.label.proposedRent}">Proposed Rent:</strong> <span th:text="${newRentFormatted}">EUR 1,025.00</span></p>
             </div>
-            <a th:href="${appUrl}" th:text="#{email.contract-extension-pending.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                Review Extension
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.contract-extension-pending.cta}, ${secondaryUrl}, #{email.contract-extension-pending.cta.secondary})}"></div>
         </div>
         <div th:replace="~{_email-base :: footer}"></div>
     </div>

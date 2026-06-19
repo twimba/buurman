@@ -33,6 +33,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.User;
 import com.buurman.domain.ContractExtension.RentAdjustmentType;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Document;
@@ -53,6 +54,7 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
+import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -75,6 +77,7 @@ public class ContractExtensionService {
   private final DocumentRepository documentRepository;
   private final PropertyRepository propertyRepository;
   private final TeamRepository teamRepository;
+  private final UserRepository userRepository;
   private final NotificationService notificationService;
   private final S3StorageService s3StorageService;
   private final AuditService auditService;
@@ -829,11 +832,13 @@ public class ContractExtensionService {
       vars.put("renewalMode", contract.getRenewalMode().name());
       vars.put("renewalTermMonths", contract.getRenewalTermMonths().orElse(12));
       vars.put("contactName", "");
-      vars.put(
-          "contractUrl",
+      String renewUrl =
           appProperties.email().baseUrl()
               + "/contracts/"
-              + contract.getIdentifier().map(Sid::value).orElse(""));
+              + contract.getIdentifier().map(Sid::value).orElse("");
+      vars.put("contractUrl", renewUrl);
+      vars.put("primaryUrl", renewUrl);
+      vars.put("secondaryUrl", renewUrl + "?tab=extensions&action=renew");
 
       notificationService.sendToTeam(
           SendNotificationRequest.builder()
@@ -854,6 +859,13 @@ public class ContractExtensionService {
       Map<String, Object> vars = new HashMap<>();
       vars.put("propertyName", property.getStreet() + ", " + property.getCity());
       vars.put("contractIdentifier", contract.getIdentifier().map(Sid::value).orElse(""));
+      String roBase = appProperties.email().baseUrl();
+      vars.put(
+          "primaryUrl",
+          roBase + "/contracts/" + contract.getIdentifier().map(Sid::value).orElse(""));
+      vars.put(
+          "secondaryUrl",
+          roBase + "/properties/" + property.getIdentifier().map(Sid::value).orElse(""));
 
       notificationService.sendToTeam(
           SendNotificationRequest.builder()
@@ -884,6 +896,36 @@ public class ContractExtensionService {
         "newRentFormatted",
         extension.getNewRentAmount().currency() + " " + extension.getNewRentAmount().value());
     vars.put("triggerType", extension.getTriggerType().name());
+    String extBase = appProperties.email().baseUrl();
+    vars.put(
+        "primaryUrl",
+        extBase + "/contracts/" + contract.getIdentifier().map(Sid::value).orElse(""));
+    vars.put(
+        "secondaryUrl",
+        extBase + "/properties/" + property.getIdentifier().map(Sid::value).orElse(""));
+    vars.put(
+        "activatedBy",
+        extension
+            .getActivatedBy()
+            .flatMap(userRepository::findById)
+            .map(User::getFullName)
+            .orElse(""));
+    vars.put("rentChangeFormatted", formatRentChange(extension));
     return vars;
+  }
+
+  private String formatRentChange(ContractExtension extension) {
+    BigDecimal prev = extension.getPreviousRentAmount().value();
+    BigDecimal next = extension.getNewRentAmount().value();
+    BigDecimal diff = next.subtract(prev);
+    String currency = extension.getNewRentAmount().currency();
+    String sign = diff.signum() >= 0 ? "+" : "-";
+    String amountPart = sign + currency + " " + diff.abs();
+    if (prev.signum() == 0) {
+      return amountPart;
+    }
+    BigDecimal pct =
+        diff.abs().multiply(BigDecimal.valueOf(100)).divide(prev.abs(), 1, RoundingMode.HALF_UP);
+    return amountPart + " (" + sign + pct + "%)";
   }
 }

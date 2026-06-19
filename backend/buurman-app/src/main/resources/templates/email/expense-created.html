@@ -21,9 +21,7 @@
                 <p th:if="${description}" style="color: #292524; margin: 0;"><strong th:text="#{email.expense-created.label.description}">Description:</strong> <span th:text="${description}">Description</span></p>
             </div>
 
-            <a th:href="${baseUrl}" th:text="#{email.expense-created.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                View Expense
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.expense-created.cta}, ${secondaryUrl}, #{email.expense-created.cta.secondary})}"></div>
         </div>
 
         <div th:replace="~{_email-base :: footer}"></div>
