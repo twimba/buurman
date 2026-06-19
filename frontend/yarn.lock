@@ -1146,19 +1146,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.35.1":
-  version: 1.35.1
-  resolution: "@posthog/core@npm:1.35.1"
+"@posthog/core@npm:^1.35.3":
+  version: 1.35.3
+  resolution: "@posthog/core@npm:1.35.3"
   dependencies:
-    "@posthog/types": "npm:^1.389.0"
-  checksum: 10c0/a17ccdc442bf44d13df75a8359523e18809b47d287d08872392981d68773ebee3cf5756f133cfd323c499a04b2134937a6e3df496f0e353e45ce64d158bc82ea
+    "@posthog/types": "npm:^1.390.2"
+  checksum: 10c0/2333a25f0671449e178a996465e9f9823bdb5a21cb067592a0e70259c7345ef4a5881cdee0e14983c4974c8135a5ea3ac67edb3328f5f3da7f8663b29ac07014
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:^1.389.0, @posthog/types@npm:^1.390.0":
-  version: 1.390.0
-  resolution: "@posthog/types@npm:1.390.0"
-  checksum: 10c0/ef102092566187c5f2a5710d7c47b11d123965c3cbcbed01d4924d14f74fc2697bb5792625339fc19692633748d60217ccc1d91bf2068e80c591929d2a88e208
+"@posthog/types@npm:^1.390.2":
+  version: 1.390.2
+  resolution: "@posthog/types@npm:1.390.2"
+  checksum: 10c0/8119f4af573e44b8f35a1d11a64b7ec7c8b3f8134651394a0410e136e9fabd0eb61df8d16ab334f2cb1c8dc6053e917eaecdf83c78e18eb7f65af513a1d1a2d5
   languageName: node
   linkType: hard
 
@@ -4079,9 +4079,9 @@ __metadata:
     ical.js: "npm:2.2.1"
     jsdom: "npm:29.1.1"
     keycloak-js: "npm:26.2.4"
-    libphonenumber-js: "npm:1.13.6"
+    libphonenumber-js: "npm:1.13.7"
     lucide-react: "npm:1.21.0"
-    posthog-js: "npm:1.390.2"
+    posthog-js: "npm:1.391.2"
     prettier: "npm:3.8.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -4130,7 +4130,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.21.0"
-    posthog-js: "npm:1.390.2"
+    posthog-js: "npm:1.391.2"
     prettier: "npm:3.8.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -6482,10 +6482,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:1.13.6":
-  version: 1.13.6
-  resolution: "libphonenumber-js@npm:1.13.6"
-  checksum: 10c0/fcd6eef6a3c105da0e5674b1caa11983829b8ad6f71fee18147ae09a82e9d139d948a5e283cd2459ba9e07ebe85efd5523773fdbef997352105f2dc821a1b5fe
+"libphonenumber-js@npm:1.13.7":
+  version: 1.13.7
+  resolution: "libphonenumber-js@npm:1.13.7"
+  checksum: 10c0/2064257e26b4a98b098f3d316e92956f0dd06a4e812e7b8b11bce036e01a987a0078a8b3e6aaba639dc98e5eef1fc8c43cf81781f208e9b84bc163cccc72c89a
   languageName: node
   linkType: hard
 
@@ -7431,26 +7431,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.390.2":
-  version: 1.390.2
-  resolution: "posthog-js@npm:1.390.2"
+"posthog-js@npm:1.391.2":
+  version: 1.391.2
+  resolution: "posthog-js@npm:1.391.2"
   dependencies:
-    "@posthog/core": "npm:^1.35.1"
-    "@posthog/types": "npm:^1.390.0"
+    "@posthog/core": "npm:^1.35.3"
+    "@posthog/types": "npm:^1.390.2"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
-    preact: "npm:^10.28.2"
+    preact: "npm:^10.29.2"
     query-selector-shadow-dom: "npm:^1.0.1"
-    web-vitals: "npm:^5.1.0"
-  checksum: 10c0/6a65381e40d395b55f5063053a3edd7bb41f76f1dbf2847dea056db1d61dc87533ea370596bb9de168a6659863d92ab286916cb71575b37923b086341362e986
+    web-vitals: "npm:^5.3.0"
+  checksum: 10c0/c8efabdc33f398eeb36ad36db52cf461d8063f426aee3b9a6a467fa51299d427db429d7b3b25156383b1873d127fea3d377756b73afc2d632228e81b2e31734b
   languageName: node
   linkType: hard
 
-"preact@npm:^10.28.2":
-  version: 10.29.0
-  resolution: "preact@npm:10.29.0"
-  checksum: 10c0/d111381e5b48335e3a797a03adb83521cf5e9bdf880570fb2eff4fe9da9c82e6dedcbdf54538b1ed8f60bf813a0df0f4891b03dc32140ad93f8f720a8812dd5c
+"preact@npm:^10.29.2":
+  version: 10.29.2
+  resolution: "preact@npm:10.29.2"
+  checksum: 10c0/2ee161274e475804524608d42bba8c79920636b322293248796a9e5bf4c3332336f8c0eca1b1566ed09cdee95e408eb20b5b7613d95820ea6b6eb8fc090ef60a
   languageName: node
   linkType: hard
 
@@ -9578,10 +9578,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-vitals@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "web-vitals@npm:5.1.0"
-  checksum: 10c0/1af22ddbe2836ba880fcb492cfba24c3349f4760ebb5e92f38324ea67bca3c4dbb9c86f1a32af4795b6115cdaf98b90000cf3a7402bffef6e8c503f0d1b2e706
+"web-vitals@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "web-vitals@npm:5.3.0"
+  checksum: 10c0/a073c024d791bfac7a92f82607999b45be978ef3070f642f3cdd94c50d3e1651cf62b2475039248256b2d84651e16fa9bdcaa4b03f31af8bfeefb05832298b97
   languageName: node
   linkType: hard
 
