@@ -28,9 +28,7 @@
                 Consider renewing the contract or arranging for the move-out.
             </p>
 
-            <a th:href="${baseUrl}" th:text="#{email.contract-expiry.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                View Contract
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.contract-expiry.cta}, ${secondaryUrl}, #{email.contract-expiry.cta.secondary})}"></div>
         </div>
 
         <div th:replace="~{_email-base :: footer}"></div>

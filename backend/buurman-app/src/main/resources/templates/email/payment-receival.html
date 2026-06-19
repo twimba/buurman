@@ -22,9 +22,7 @@
                 <p style="color: #292524; margin: 0;"><strong th:text="#{email.payment-receival.label.remainingBalance}">Remaining Balance:</strong> <span th:text="${remainingBalance}">Balance</span></p>
             </div>
 
-            <a th:href="${baseUrl}" th:text="#{email.payment-receival.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                View Payment
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.payment-receival.cta}, ${secondaryUrl}, #{email.payment-receival.cta.secondary})}"></div>
         </div>
 
         <div th:replace="~{_email-base :: footer}"></div>

@@ -904,6 +904,10 @@ public class PaymentService {
             .flatMap(c -> contractPartyService.findPrimaryContactForContract(c.getId(), teamId))
             .map(Contact::getDisplayName)
             .orElse("N/A");
+    String base = appProperties.email().baseUrl();
+    String paymentSid = payment.getIdentifier().map(s -> s.value()).orElse("");
+    String contractSid =
+        contractOpt.flatMap(Contract::getIdentifier).map(s -> s.value()).orElse("");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
@@ -920,7 +924,11 @@ public class PaymentService {
                     "paymentDate",
                     payment.getPaymentDate().map(LocalDate::toString).orElse("N/A"),
                     "baseUrl",
-                    appProperties.email().baseUrl()))
+                    base,
+                    "primaryUrl",
+                    base + "/payments/" + paymentSid,
+                    "secondaryUrl",
+                    base + "/contracts/" + contractSid))
             .createdBy(principal.getUserId())
             .build());
   }
@@ -950,7 +958,13 @@ public class PaymentService {
     vars.put("receivalAmount", currency + " " + receivalAmount);
     vars.put("amount", currency + " " + payment.getAmount().value());
     vars.put("remainingBalance", currency + " " + remainingBalance);
-    vars.put("baseUrl", appProperties.email().baseUrl());
+    String base = appProperties.email().baseUrl();
+    String paymentSid = payment.getIdentifier().map(s -> s.value()).orElse("");
+    String contractSid =
+        contractOpt.flatMap(Contract::getIdentifier).map(s -> s.value()).orElse("");
+    vars.put("baseUrl", base);
+    vars.put("primaryUrl", base + "/payments/" + paymentSid);
+    vars.put("secondaryUrl", base + "/contracts/" + contractSid);
 
     notificationService.sendToTeam(
         SendNotificationRequest.builder()

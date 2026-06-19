@@ -412,6 +412,9 @@ public class ExpenseService {
 
   private void sendExpenseCreatedNotification(ExpenseResponse response, UserPrincipal principal) {
     String propertyName = formatPropertyName(response.property());
+    String base = appProperties.email().baseUrl();
+    String secondaryUrl =
+        response.property().map(p -> base + "/properties/" + p.identifier().value()).orElse("");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(Optional.of(principal.requireTeamId()))
@@ -428,7 +431,11 @@ public class ExpenseService {
                     "description",
                     response.description().orElse(""),
                     "baseUrl",
-                    appProperties.email().baseUrl()))
+                    base,
+                    "primaryUrl",
+                    base + "/expenses/" + response.identifier().value(),
+                    "secondaryUrl",
+                    secondaryUrl))
             .createdBy(principal.getUserId())
             .build());
   }

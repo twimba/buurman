@@ -652,7 +652,13 @@ public class ContractRentPeriodService {
               : "N/A");
       vars.put("newRentAmount", contract.getRentAmount().currency() + " " + newRentAmount);
       vars.put("effectiveFrom", effectiveFrom.toString());
-      vars.put("baseUrl", appProperties.email().baseUrl());
+      String base = appProperties.email().baseUrl();
+      String contractSid = contract.getIdentifier().map(s -> s.value()).orElse("");
+      String propertySid =
+          property != null ? property.getIdentifier().map(s -> s.value()).orElse("") : "";
+      vars.put("baseUrl", base);
+      vars.put("primaryUrl", base + "/contracts/" + contractSid);
+      vars.put("secondaryUrl", base + "/properties/" + propertySid);
 
       notificationService.sendToTeam(
           SendNotificationRequest.builder()

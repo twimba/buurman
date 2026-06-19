@@ -22,9 +22,7 @@
                 <p th:if="${endDate}" style="color: #292524; margin: 0;"><strong th:text="#{email.contract-created.label.endDate}">End Date:</strong> <span th:text="${endDate}">Date</span></p>
             </div>
 
-            <a th:href="${baseUrl}" th:text="#{email.contract-created.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                View Contract
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.contract-created.cta}, ${secondaryUrl}, #{email.contract-created.cta.secondary})}"></div>
         </div>
 
         <div th:replace="~{_email-base :: footer}"></div>

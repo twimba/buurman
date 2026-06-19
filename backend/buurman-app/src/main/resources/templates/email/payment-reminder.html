@@ -24,9 +24,7 @@
                 <p style="color: #292524; margin: 0;"><strong th:text="#{email.payment-reminder.label.dueDate}">Due Date:</strong> <span th:text="${dueDate}">Date</span></p>
             </div>
 
-            <a th:href="${baseUrl}" th:text="#{email.payment-reminder.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                View Payment Details
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.payment-reminder.cta}, ${secondaryUrl}, #{email.payment-reminder.cta.secondary})}"></div>
         </div>
 
         <div th:replace="~{_email-base :: footer}"></div>

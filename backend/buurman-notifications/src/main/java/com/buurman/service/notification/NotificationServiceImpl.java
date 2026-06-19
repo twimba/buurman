@@ -193,6 +193,12 @@ public class NotificationServiceImpl implements NotificationService {
           .findById(member.getUserId())
           .ifPresent(
               user -> {
+                // Personalize the greeting per recipient. sendToTeam shares one
+                // variable map across all members, so inject the recipient's name
+                // here unless the caller already provided one.
+                Map<String, Object> perUserVars = new HashMap<>(request.templateVariables());
+                perUserVars.putIfAbsent("recipientName", user.getFirstName());
+                perUserVars.putIfAbsent("userName", user.getFirstName());
                 SendNotificationRequest perUser =
                     SendNotificationRequest.builder()
                         .teamId(request.teamId())
@@ -202,7 +208,7 @@ public class NotificationServiceImpl implements NotificationService {
                         .recipientEmail(Optional.of(user.getEmail()))
                         .recipientPhone(user.getPhone())
                         .templateName(request.templateName())
-                        .templateVariables(request.templateVariables())
+                        .templateVariables(perUserVars)
                         .urgency(request.urgency())
                         .createdBy(request.createdBy())
                         .build();

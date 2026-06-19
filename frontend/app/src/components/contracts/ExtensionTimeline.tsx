@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import {
   Plus,
@@ -112,6 +113,24 @@ export const ExtensionTimeline = ({
 
   const extensions = extensionsPage?.content ?? [];
   const canCreate = canEditData && contractStatus === 'ACTIVE';
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Open the create-extension modal when arriving from an email deep link
+  // (e.g. /contracts/:id?tab=extensions&action=renew), then strip the param.
+  useEffect(() => {
+    if (searchParams.get('action') !== 'renew' || !canCreate) {
+      return;
+    }
+    setShowCreateModal(true);
+    setSearchParams(
+      (prev) => {
+        prev.delete('action');
+        return prev;
+      },
+      { replace: true }
+    );
+  }, [searchParams, setSearchParams, canCreate]);
 
   const downloadPdf = async (
     fetcher: () => Promise<Blob>,

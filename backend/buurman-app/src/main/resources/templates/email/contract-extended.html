@@ -30,9 +30,7 @@
                 <p style="color: #065f46; margin: 0;"><strong th:text="#{email.contract-extended.label.rentChange}">Rent Change:</strong> <span th:text="${rentChangeFormatted}">+2.5%</span></p>
             </div>
 
-            <a th:href="${appUrl}" th:text="#{email.contract-extended.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                View Contract
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.contract-extended.cta}, ${secondaryUrl}, #{email.contract-extended.cta.secondary})}"></div>
         </div>
 
         <div th:replace="~{_email-base :: footer}"></div>

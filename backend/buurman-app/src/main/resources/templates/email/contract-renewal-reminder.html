@@ -38,9 +38,7 @@
                 This contract requires manual renewal. Please review the contract and take action before the end date.
             </p>
 
-            <a th:href="${contractUrl}" th:text="#{email.contract-renewal-reminder.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
-                Review Contract
-            </a>
+            <div th:replace="~{_email-base :: actions(${primaryUrl}, #{email.contract-renewal-reminder.cta}, ${secondaryUrl}, #{email.contract-renewal-reminder.cta.secondary})}"></div>
         </div>
 
         <div th:replace="~{_email-base :: footer}"></div>
