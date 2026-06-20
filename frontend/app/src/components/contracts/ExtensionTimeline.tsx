@@ -122,6 +122,9 @@ export const ExtensionTimeline = ({
     if (searchParams.get('action') !== 'renew' || !canCreate) {
       return;
     }
+    // One-shot sync of an email deep link into UI state; the param is stripped immediately
+    // below so this runs once (not a derived-state smell).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowCreateModal(true);
     setSearchParams(
       (prev) => {
