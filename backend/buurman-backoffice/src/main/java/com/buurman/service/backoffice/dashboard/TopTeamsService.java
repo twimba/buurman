@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TopTeamsService {
 
-  private static final int LIMIT = 8;
+  private static final int LIMIT = 5;
 
   private final DashboardAggregateRepository aggregateRepository;
 

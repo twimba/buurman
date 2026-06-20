@@ -1,6 +1,10 @@
 /// <reference types="@types/google.maps" />
 import { useEffect, useState } from 'react';
-import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
+import {
+  APIProvider,
+  Map as GoogleMap,
+  useMap,
+} from '@vis.gl/react-google-maps';
 
 import { env } from '../../config/env';
 import type { CountryStats } from '../../generated/models';
@@ -9,20 +13,65 @@ import { formatEurMinor } from '../../lib/money';
 
 export type GeoMetric = 'teams' | 'properties' | 'value';
 
+// Low-res world country polygons (features keyed by ISO 3166-1 alpha-3 id). Served with CORS by
+// jsDelivr; fetched once and cached for the session.
+const GEOJSON_URL =
+  'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json';
+
+// Our stats use ISO-2; the GeoJSON features are keyed by ISO-3.
+const ISO2_TO_3: Record<string, string> = {
+  NL: 'NLD',
+  BE: 'BEL',
+  DE: 'DEU',
+  FR: 'FRA',
+  GB: 'GBR',
+  IE: 'IRL',
+  LU: 'LUX',
+  PT: 'PRT',
+  ES: 'ESP',
+  IT: 'ITA',
+  AT: 'AUT',
+  CH: 'CHE',
+  DK: 'DNK',
+  SE: 'SWE',
+  NO: 'NOR',
+  FI: 'FIN',
+  PL: 'POL',
+  CZ: 'CZE',
+  SK: 'SVK',
+  HU: 'HUN',
+  RO: 'ROU',
+  BG: 'BGR',
+  GR: 'GRC',
+  HR: 'HRV',
+  SI: 'SVN',
+  EE: 'EST',
+  LV: 'LVA',
+  LT: 'LTU',
+  CY: 'CYP',
+  MT: 'MLT',
+  US: 'USA',
+  CA: 'CAN',
+  BR: 'BRA',
+  AU: 'AUS',
+  NZ: 'NZL',
+  ZA: 'ZAF',
+  AE: 'ARE',
+  IN: 'IND',
+  JP: 'JPN',
+};
+
 const regionNames =
   typeof Intl !== 'undefined' && 'DisplayNames' in Intl
     ? new Intl.DisplayNames(['en'], { type: 'region' })
     : null;
 
 const countryName = (code: string): string => {
-  if (/^[A-Za-z]{2}$/.test(code)) {
-    try {
-      return regionNames?.of(code.toUpperCase()) ?? code;
-    } catch {
-      return code;
-    }
+  try {
+    return regionNames?.of(code.toUpperCase()) ?? code;
+  } catch {
+    return code;
   }
-  return code;
 };
 
 const metricValue = (c: CountryStats, m: GeoMetric): number =>
@@ -32,22 +81,17 @@ const metricValue = (c: CountryStats, m: GeoMetric): number =>
       ? c.properties
       : c.monthlyValueEurMinor;
 
-// Indigo ramp (light → dark) for bubble intensity.
-const RAMP = ['#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5'];
+// Indigo ramp (light → dark) for choropleth intensity.
+const RAMP = ['#e0e7ff', '#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5'];
 
-// Clean, desaturated base map so the data bubbles dominate.
 const MAP_STYLES: google.maps.MapTypeStyle[] = [
   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
   { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  {
-    featureType: 'road',
-    elementType: 'labels',
-    stylers: [{ visibility: 'off' }],
-  },
+  { featureType: 'road', stylers: [{ visibility: 'off' }] },
   {
     featureType: 'administrative',
     elementType: 'labels',
-    stylers: [{ saturation: -60 }],
+    stylers: [{ saturation: -70 }],
   },
   { featureType: 'water', stylers: [{ color: '#dfe6f3' }] },
   { featureType: 'landscape', stylers: [{ color: '#f3f5fb' }] },
@@ -55,7 +99,21 @@ const MAP_STYLES: google.maps.MapTypeStyle[] = [
 
 type Hover = { c: CountryStats; x: number; y: number };
 
-const Bubbles = ({
+let geoCache: object | null = null;
+const loadGeo = async (): Promise<object | null> => {
+  if (geoCache) {
+    return geoCache;
+  }
+  try {
+    const res = await fetch(GEOJSON_URL);
+    geoCache = (await res.json()) as object;
+    return geoCache;
+  } catch {
+    return null;
+  }
+};
+
+const Choropleth = ({
   countries,
   metric,
   onHover,
@@ -69,45 +127,94 @@ const Bubbles = ({
     if (!map) {
       return;
     }
+    let cancelled = false;
+    const byIso3 = new Map<string, CountryStats>();
+    countries.forEach((c) => {
+      const i3 = ISO2_TO_3[c.code.toUpperCase()];
+      if (i3) {
+        byIso3.set(i3, c);
+      }
+    });
     const max = Math.max(1, ...countries.map((c) => metricValue(c, metric)));
-    const bounds = new google.maps.LatLngBounds();
-    const markers = countries.map((c) => {
-      const center = COUNTRY_CENTROIDS[c.code.toUpperCase()];
-      const v = metricValue(c, metric);
-      const ratio = v / max;
-      bounds.extend(center);
-      const marker = new google.maps.Marker({
-        position: center,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 8 + Math.sqrt(ratio) * 22,
+
+    const clear = () => {
+      google.maps.event.clearListeners(map.data, 'mouseover');
+      google.maps.event.clearListeners(map.data, 'mousemove');
+      google.maps.event.clearListeners(map.data, 'mouseout');
+      map.data.forEach((f) => map.data.remove(f));
+    };
+
+    loadGeo().then((geo) => {
+      if (cancelled || !map || !geo) {
+        return;
+      }
+      clear();
+      map.data.addGeoJson(geo);
+      map.data.setStyle((feature) => {
+        const c = byIso3.get(String(feature.getId()));
+        if (!c) {
+          return {
+            fillColor: '#e8ebf3',
+            fillOpacity: 0.35,
+            strokeColor: '#cdd2e2',
+            strokeWeight: 0.5,
+          };
+        }
+        const ratio = metricValue(c, metric) / max;
+        return {
           fillColor:
-            RAMP[Math.min(RAMP.length - 1, Math.floor(ratio * RAMP.length))],
-          fillOpacity: 0.82,
+            RAMP[
+              Math.min(RAMP.length - 1, Math.ceil(ratio * (RAMP.length - 1)))
+            ],
+          fillOpacity: 0.9,
           strokeColor: '#ffffff',
-          strokeWeight: 1.5,
-        },
-        zIndex: Math.round(ratio * 1000),
-        optimized: false,
+          strokeWeight: 0.8,
+        };
       });
-      const move = (e: google.maps.MapMouseEvent) => {
+
+      const show = (e: google.maps.Data.MouseEvent) => {
+        const c = e.feature ? byIso3.get(String(e.feature.getId())) : undefined;
+        if (!c) {
+          onHover(null);
+          return;
+        }
+        map.data.revertStyle();
+        map.data.overrideStyle(e.feature, {
+          strokeColor: '#4f46e5',
+          strokeWeight: 2,
+          zIndex: 10,
+          fillOpacity: 1,
+        });
         const de = e.domEvent as MouseEvent;
         onHover({ c, x: de.clientX, y: de.clientY });
       };
-      marker.addListener('mouseover', move);
-      marker.addListener('mousemove', move);
-      marker.addListener('mouseout', () => onHover(null));
-      return marker;
-    });
-    markers.forEach((m) => m.setMap(map));
-    if (!bounds.isEmpty()) {
-      map.fitBounds(bounds, 56);
-    }
-    return () => {
-      markers.forEach((m) => {
-        google.maps.event.clearInstanceListeners(m);
-        m.setMap(null);
+      map.data.addListener('mouseover', show);
+      map.data.addListener('mousemove', show);
+      map.data.addListener('mouseout', () => {
+        map.data.revertStyle();
+        onHover(null);
       });
+
+      // Frame the countries that actually have data.
+      const bounds = new google.maps.LatLngBounds();
+      let any = false;
+      countries.forEach((c) => {
+        const center = COUNTRY_CENTROIDS[c.code.toUpperCase()];
+        if (center && metricValue(c, metric) > 0) {
+          bounds.extend(center);
+          any = true;
+        }
+      });
+      if (any) {
+        map.fitBounds(bounds, 64);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      if (map) {
+        clear();
+      }
     };
   }, [map, countries, metric, onHover]);
   return null;
@@ -123,7 +230,7 @@ const Tooltip = ({ hover }: { hover: Hover }) => {
   ];
   return (
     <div
-      className="pointer-events-none fixed z-50 w-52 -translate-x-1/2 -translate-y-[calc(100%+14px)] rounded-xl border border-border-default bg-surface-card p-3"
+      className="pointer-events-none fixed z-50 w-52 -translate-x-1/2 -translate-y-[calc(100%+16px)] rounded-xl border border-border-default bg-surface-card p-3"
       style={{ left: hover.x, top: hover.y, boxShadow: 'var(--shadow-raised)' }}
     >
       <p className="mb-2 flex items-center gap-2 text-sm font-bold tracking-[-0.01em] text-text-primary">
@@ -158,9 +265,6 @@ export const GeoMap = ({
 }) => {
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
   const [hover, setHover] = useState<Hover | null>(null);
-  const plotted = countries.filter(
-    (c) => COUNTRY_CENTROIDS[c.code.toUpperCase()] && metricValue(c, metric) > 0
-  );
 
   if (!apiKey) {
     return (
@@ -169,27 +273,24 @@ export const GeoMap = ({
       </p>
     );
   }
-  if (plotted.length === 0) {
-    return (
-      <p className="py-6 text-center text-xs text-text-secondary">
-        No mappable country data yet.
-      </p>
-    );
-  }
 
   return (
-    <div className="relative h-[260px] overflow-hidden rounded-lg border border-border-default">
+    <div className="relative h-[520px] overflow-hidden rounded-lg border border-border-default">
       <APIProvider apiKey={apiKey}>
-        <Map
+        <GoogleMap
           defaultCenter={{ lat: 48, lng: 8 }}
-          defaultZoom={3}
+          defaultZoom={4}
           gestureHandling="greedy"
           disableDefaultUI
           styles={MAP_STYLES}
           className="h-full w-full"
         >
-          <Bubbles countries={plotted} metric={metric} onHover={setHover} />
-        </Map>
+          <Choropleth
+            countries={countries}
+            metric={metric}
+            onHover={setHover}
+          />
+        </GoogleMap>
       </APIProvider>
       {hover && <Tooltip hover={hover} />}
     </div>

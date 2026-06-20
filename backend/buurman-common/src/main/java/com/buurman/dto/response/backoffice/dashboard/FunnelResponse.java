@@ -15,5 +15,6 @@ public record FunnelResponse(
     List<FunnelStage> stages) {
 
   @SkipTestCoverage
-  public record FunnelStage(String label, long count, double pctOfTop) {}
+  public record FunnelStage(
+      String label, long count, double pctOfTop, double pctOfPrevious, long dropOff) {}
 }

@@ -55,7 +55,7 @@ export const GeoPanel = () => {
         (team’s default country). Hover for details. Excludes demo teams.
       </p>
 
-      <Suspense fallback={<Skeleton className="h-[260px] w-full rounded-lg" />}>
+      <Suspense fallback={<Skeleton className="h-[520px] w-full rounded-lg" />}>
         <GeoMap countries={countries} metric={metric} />
       </Suspense>
 

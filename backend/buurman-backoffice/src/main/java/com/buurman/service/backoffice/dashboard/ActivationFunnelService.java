@@ -1,5 +1,10 @@
 package com.buurman.service.backoffice.dashboard;
 
+import static com.buurman.repository.backoffice.DashboardAggregateRepository.hasContact;
+import static com.buurman.repository.backoffice.DashboardAggregateRepository.hasContract;
+import static com.buurman.repository.backoffice.DashboardAggregateRepository.hasDocument;
+import static com.buurman.repository.backoffice.DashboardAggregateRepository.hasProperty;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +19,10 @@ import com.buurman.repository.backoffice.DashboardAggregateRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/** Activation funnel: teams -> teams with a property -> teams with a contract. */
+/**
+ * Activation funnel over the cumulative onboarding journey: teams -> property -> contact ->
+ * contract -> document. Each stage is a strict subset of the previous, so the funnel always tapers.
+ */
 @Service
 @RequiredArgsConstructor
 public class ActivationFunnelService {
@@ -24,15 +32,36 @@ public class ActivationFunnelService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public FunnelResponse getFunnel() {
-    long teams = aggregateRepository.countActiveTeams();
-    long withProperty = aggregateRepository.countActiveTeamsWithProperties();
-    long withContract = aggregateRepository.countActiveTeamsWithContracts();
+    // Cumulative milestones — each stage requires all previous ones, guaranteeing a monotonic
+    // funnel (every stage is a subset of the one above it), so step-conversion and drop-off are
+    // always well-defined.
+    long teams = aggregateRepository.countActiveTeamsMatching();
+    long withProperty = aggregateRepository.countActiveTeamsMatching(hasProperty());
+    long withContact = aggregateRepository.countActiveTeamsMatching(hasProperty(), hasContact());
+    long withContract =
+        aggregateRepository.countActiveTeamsMatching(hasProperty(), hasContact(), hasContract());
+    long withDocument =
+        aggregateRepository.countActiveTeamsMatching(
+            hasProperty(), hasContact(), hasContract(), hasDocument());
     List<FunnelStage> stages =
         List.of(
-            new FunnelStage("Teams", teams, 100.0),
-            new FunnelStage("With a property", withProperty, pct(withProperty, teams)),
-            new FunnelStage("With a contract", withContract, pct(withContract, teams)));
+            // First stage is the funnel entry: 100% step-conversion, no drop-off by definition.
+            new FunnelStage("Teams", teams, 100.0, 100.0, 0L),
+            stage("With a property", withProperty, teams, teams),
+            stage("With a contact", withContact, teams, withProperty),
+            stage("With a contract", withContract, teams, withContact),
+            stage("With a document", withDocument, teams, withContract));
     return new FunnelResponse(PanelStatus.LIVE, Optional.empty(), Optional.empty(), stages);
+  }
+
+  /**
+   * Builds a non-entry stage with both cumulative ({@code pctOfTop}) and step ({@code
+   * pctOfPrevious}) conversion plus the absolute drop-off from the preceding stage — the metrics
+   * that reveal where the activation leak is.
+   */
+  private static FunnelStage stage(String label, long count, long top, long previous) {
+    long dropOff = Math.max(0, previous - count);
+    return new FunnelStage(label, count, pct(count, top), pct(count, previous), dropOff);
   }
 
   private static double pct(long value, long total) {

@@ -54,42 +54,50 @@ public class DashboardAggregateRepository {
         dsl.selectCount().from(TEAMS).where(TEAMS.DEMO.isFalse().and(TEAMS.DELETED_AT.isNull())));
   }
 
-  public long countActiveTeamsWithProperties() {
-    return count(
-        dsl.selectCount()
-            .from(TEAMS)
-            .where(
-                TEAMS
-                    .DEMO
-                    .isFalse()
-                    .and(TEAMS.DELETED_AT.isNull())
-                    .andExists(
-                        selectOne()
-                            .from(PROPERTIES)
-                            .where(
-                                PROPERTIES
-                                    .TEAM_ID
-                                    .eq(TEAMS.ID)
-                                    .and(PROPERTIES.DELETED_AT.isNull())))));
+  /**
+   * Counts active (non-demo, non-deleted) teams that satisfy every supplied activation milestone.
+   * Passing milestones cumulatively (e.g. {@code hasProperty()}, then {@code hasProperty(),
+   * hasContact()}) yields a strictly monotonic funnel: each stage is a subset of the previous one,
+   * so step-conversion and drop-off are always well-defined.
+   */
+  public long countActiveTeamsMatching(Condition... milestones) {
+    Condition where = TEAMS.DEMO.isFalse().and(TEAMS.DELETED_AT.isNull());
+    for (Condition milestone : milestones) {
+      where = where.and(milestone);
+    }
+    return count(dsl.selectCount().from(TEAMS).where(where));
   }
 
-  public long countActiveTeamsWithContracts() {
-    return count(
-        dsl.selectCount()
-            .from(TEAMS)
-            .where(
-                TEAMS
-                    .DEMO
-                    .isFalse()
-                    .and(TEAMS.DELETED_AT.isNull())
-                    .andExists(
-                        selectOne()
-                            .from(CONTRACTS)
-                            .where(
-                                CONTRACTS
-                                    .TEAM_ID
-                                    .eq(TEAMS.ID)
-                                    .and(CONTRACTS.DELETED_AT.isNull())))));
+  /** Activation milestone: the team has created at least one (non-deleted) property. */
+  public static Condition hasProperty() {
+    return exists(
+        selectOne()
+            .from(PROPERTIES)
+            .where(PROPERTIES.TEAM_ID.eq(TEAMS.ID).and(PROPERTIES.DELETED_AT.isNull())));
+  }
+
+  /** Activation milestone: the team has added at least one (non-deleted) contact. */
+  public static Condition hasContact() {
+    return exists(
+        selectOne()
+            .from(CONTACTS)
+            .where(CONTACTS.TEAM_ID.eq(TEAMS.ID).and(CONTACTS.DELETED_AT.isNull())));
+  }
+
+  /** Activation milestone: the team has at least one (non-deleted) contract. */
+  public static Condition hasContract() {
+    return exists(
+        selectOne()
+            .from(CONTRACTS)
+            .where(CONTRACTS.TEAM_ID.eq(TEAMS.ID).and(CONTRACTS.DELETED_AT.isNull())));
+  }
+
+  /** Activation milestone: the team has uploaded at least one (non-deleted) document. */
+  public static Condition hasDocument() {
+    return exists(
+        selectOne()
+            .from(DOCUMENTS)
+            .where(DOCUMENTS.TEAM_ID.eq(TEAMS.ID).and(DOCUMENTS.DELETED_AT.isNull())));
   }
 
   /**
