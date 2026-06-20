@@ -3875,6 +3875,342 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/dashboard/status-strip:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get status strip
+      description: The pinned 8-pillar status strip (mission control)
+      operationId: getDashboardStatusStrip
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusStripResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/action-queue:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get action queue
+      description: Support/safety items needing attention
+      operationId: getDashboardActionQueue
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionQueueResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/action-queue/snooze:
+    post:
+      tags:
+        - Backoffice - Dashboard
+      summary: Snooze an action item
+      description: Snooze an action-queue item for the current user
+      operationId: snoozeDashboardActionItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SnoozeActionItemRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionQueueResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/product-entities:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get product entity counts
+      description: Properties/contracts/contacts created today and totals
+      operationId: getDashboardProductEntities
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductEntitiesResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/funnel:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get activation funnel
+      description: Teams -> teams with a property -> teams with a contract
+      operationId: getDashboardFunnel
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FunnelResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/top-teams:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get top teams
+      description: Top teams ranked by activity
+      operationId: getDashboardTopTeams
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopTeamsResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/scheduler-health:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get scheduler health
+      description: Quartz job/trigger health
+      operationId: getDashboardSchedulerHealth
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchedulerHealthResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/business:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get business KPIs (preview)
+      operationId: getDashboardBusiness
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreviewPanelResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/cost-watch:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get cost watch (preview)
+      operationId: getDashboardCostWatch
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreviewPanelResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/latency-heatmap:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get latency heatmap (preview)
+      operationId: getDashboardLatencyHeatmap
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreviewPanelResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/geo:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get geo distribution
+      description: Teams and properties grouped by country, plus teams without a country
+      operationId: getDashboardGeo
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeoResponse"
+  /backoffice/dashboard/property-locations:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get geocoded property coordinates for the world map
+      operationId: getDashboardPropertyLocations
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertyLocationsResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/live-tail:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get live log tail
+      description: Recent log lines from the in-memory ring buffer
+      operationId: getDashboardLiveTail
+      parameters:
+        - name: level
+          in: query
+          required: false
+          description: Minimum log level (e.g. WARN). Omit for all levels.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LiveTailResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/layout:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get dashboard layout
+      description: The current user's persisted bento layout
+      operationId: getDashboardLayout
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardLayoutResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Backoffice - Dashboard
+      summary: Save dashboard layout
+      description: Persist the current user's bento layout
+      operationId: saveDashboardLayout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveDashboardLayoutRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardLayoutResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /backoffice/buurmies/{keycloakId}:
     get:
       tags:
@@ -6572,7 +6908,7 @@ components:
           type: boolean
         defaultCurrency:
           type: string
-        defaultCountry:
+        defaultCountryCode:
           type: string
         timezone:
           type: string
@@ -7095,6 +7431,409 @@ components:
         - totalNotifications
         - totalTeams
         - totalUsers
+    PanelStatus:
+      type: string
+      enum:
+        - LIVE
+        - PREVIEW
+        - DISABLED
+    StatusStripResponse:
+      type: object
+      properties:
+        pillars:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pillar"
+      required:
+        - pillars
+    Pillar:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        value:
+          type: string
+        severity:
+          type: string
+        sparkline:
+          type: array
+          items:
+            type: number
+            format: double
+        deeplink:
+          type: string
+        previewCta:
+          type: string
+      required:
+        - key
+        - label
+        - status
+        - sparkline
+    ActionQueueResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActionItem"
+      required:
+        - status
+        - items
+    ActionItem:
+      type: object
+      properties:
+        key:
+          type: string
+        severity:
+          type: string
+        category:
+          type: string
+        title:
+          type: string
+        deeplink:
+          type: string
+        ageMinutes:
+          type: integer
+          format: int64
+        snoozedUntil:
+          type: string
+      required:
+        - key
+        - severity
+        - category
+        - title
+        - deeplink
+        - ageMinutes
+    ProductEntitiesResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        entities:
+          type: array
+          items:
+            $ref: "#/components/schemas/EntityCount"
+      required:
+        - status
+        - entities
+    EntityCount:
+      type: object
+      properties:
+        label:
+          type: string
+        today:
+          type: integer
+          format: int64
+        total:
+          type: integer
+          format: int64
+      required:
+        - label
+        - today
+        - total
+    FunnelResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        stages:
+          type: array
+          items:
+            $ref: "#/components/schemas/FunnelStage"
+      required:
+        - status
+        - stages
+    FunnelStage:
+      type: object
+      properties:
+        label:
+          type: string
+        count:
+          type: integer
+          format: int64
+        pctOfTop:
+          type: number
+          format: double
+      required:
+        - label
+        - count
+        - pctOfTop
+    TopTeamsResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        rankedBy:
+          type: string
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopTeam"
+      required:
+        - status
+        - rankedBy
+        - teams
+    TopTeam:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        activityScore:
+          type: integer
+          format: int64
+        deeplink:
+          type: string
+      required:
+        - identifier
+        - name
+        - activityScore
+        - deeplink
+    SchedulerHealthResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        total:
+          type: integer
+          format: int64
+        normal:
+          type: integer
+          format: int64
+        paused:
+          type: integer
+          format: int64
+        error:
+          type: integer
+          format: int64
+        blocked:
+          type: integer
+          format: int64
+        jobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobTile"
+      required:
+        - status
+        - total
+        - normal
+        - paused
+        - error
+        - blocked
+        - jobs
+    JobTile:
+      type: object
+      properties:
+        jobName:
+          type: string
+        jobGroup:
+          type: string
+        state:
+          type: string
+        nextFireTime:
+          type: string
+        deeplink:
+          type: string
+      required:
+        - jobName
+        - jobGroup
+        - state
+        - deeplink
+    PreviewPanelResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        panel:
+          type: string
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+      required:
+        - status
+        - panel
+    GeoResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        teamCountries:
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoCountry"
+        propertyCountries:
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoCountry"
+        teamsWithoutCountry:
+          type: integer
+          format: int64
+      required:
+        - status
+        - teamCountries
+        - propertyCountries
+        - teamsWithoutCountry
+    GeoCountry:
+      type: object
+      properties:
+        code:
+          type: string
+        count:
+          type: integer
+          format: int64
+      required:
+        - code
+        - count
+    PropertyLocationsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+        capped:
+          type: boolean
+        points:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyPoint"
+      required:
+        - total
+        - capped
+        - points
+    PropertyPoint:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+      required:
+        - lat
+        - lng
+    LiveTailResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/LogLine"
+      required:
+        - status
+        - lines
+    LogLine:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        level:
+          type: string
+        logger:
+          type: string
+        message:
+          type: string
+      required:
+        - timestamp
+        - level
+        - logger
+        - message
+    PanelPlacement:
+      type: object
+      properties:
+        panel:
+          type: string
+        x:
+          type: integer
+          format: int32
+        y:
+          type: integer
+          format: int32
+        w:
+          type: integer
+          format: int32
+        h:
+          type: integer
+          format: int32
+        hidden:
+          type: boolean
+      required:
+        - panel
+        - x
+        - y
+        - w
+        - h
+        - hidden
+    DashboardLayoutResponse:
+      type: object
+      properties:
+        panels:
+          type: array
+          items:
+            $ref: "#/components/schemas/PanelPlacement"
+      required:
+        - panels
+    SaveDashboardLayoutRequest:
+      type: object
+      properties:
+        panels:
+          type: array
+          items:
+            $ref: "#/components/schemas/PanelPlacement"
+      required:
+        - panels
+    SnoozeActionItemRequest:
+      type: object
+      properties:
+        itemKey:
+          type: string
+          maxLength: 120
+        hours:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 8760
+      required:
+        - itemKey
+        - hours
     PageResponseBuurmyResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata

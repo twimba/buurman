@@ -1,12 +1,16 @@
 package com.buurman.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import com.buurman.exception.NotFoundException;
 
 @DisplayName("BackofficePrincipal")
 class BackofficePrincipalTest {
@@ -65,6 +69,32 @@ class BackofficePrincipalTest {
               KEYCLOAK_ID, Optional.of(EMAIL), Optional.empty(), Optional.empty());
 
       assertThat(principal.getName()).isEqualTo(KEYCLOAK_ID);
+    }
+  }
+
+  @Nested
+  @DisplayName("userId")
+  class UserId {
+
+    @Test
+    @DisplayName("parses a valid UUID subject")
+    void parsesValidUuid() {
+      UUID id = UUID.randomUUID();
+      BackofficePrincipal principal =
+          new BackofficePrincipal(
+              id.toString(), Optional.empty(), Optional.empty(), Optional.empty());
+
+      assertThat(principal.userId()).isEqualTo(id);
+    }
+
+    @Test
+    @DisplayName("throws NotFoundException for a non-UUID subject")
+    void throwsForNonUuid() {
+      BackofficePrincipal principal =
+          new BackofficePrincipal(
+              "not-a-uuid", Optional.empty(), Optional.empty(), Optional.empty());
+
+      assertThatThrownBy(principal::userId).isInstanceOf(NotFoundException.class);
     }
   }
 }

@@ -184,6 +184,30 @@
                                 <importMapping>RejoinImpersonationRequest=com.buurman.dto.request.RejoinImpersonationRequest</importMapping>
                                 <importMapping>CreateImpersonationResponse=com.buurman.dto.response.CreateImpersonationResponse</importMapping>
                                 <importMapping>ImpersonationSessionResponse=com.buurman.dto.response.ImpersonationSessionResponse</importMapping>
+                                <importMapping>PanelStatus=com.buurman.domain.backoffice.PanelStatus</importMapping>
+                                <importMapping>StatusStripResponse=com.buurman.dto.response.backoffice.dashboard.StatusStripResponse</importMapping>
+                                <importMapping>Pillar=com.buurman.dto.response.backoffice.dashboard.StatusStripResponse.Pillar</importMapping>
+                                <importMapping>ActionQueueResponse=com.buurman.dto.response.backoffice.dashboard.ActionQueueResponse</importMapping>
+                                <importMapping>ActionItem=com.buurman.dto.response.backoffice.dashboard.ActionQueueResponse.ActionItem</importMapping>
+                                <importMapping>ProductEntitiesResponse=com.buurman.dto.response.backoffice.dashboard.ProductEntitiesResponse</importMapping>
+                                <importMapping>EntityCount=com.buurman.dto.response.backoffice.dashboard.ProductEntitiesResponse.EntityCount</importMapping>
+                                <importMapping>FunnelResponse=com.buurman.dto.response.backoffice.dashboard.FunnelResponse</importMapping>
+                                <importMapping>FunnelStage=com.buurman.dto.response.backoffice.dashboard.FunnelResponse.FunnelStage</importMapping>
+                                <importMapping>TopTeamsResponse=com.buurman.dto.response.backoffice.dashboard.TopTeamsResponse</importMapping>
+                                <importMapping>TopTeam=com.buurman.dto.response.backoffice.dashboard.TopTeamsResponse.TopTeam</importMapping>
+                                <importMapping>SchedulerHealthResponse=com.buurman.dto.response.backoffice.dashboard.SchedulerHealthResponse</importMapping>
+                                <importMapping>JobTile=com.buurman.dto.response.backoffice.dashboard.SchedulerHealthResponse.JobTile</importMapping>
+                                <importMapping>PreviewPanelResponse=com.buurman.dto.response.backoffice.dashboard.PreviewPanelResponse</importMapping>
+                                <importMapping>LiveTailResponse=com.buurman.dto.response.backoffice.dashboard.LiveTailResponse</importMapping>
+                                <importMapping>LogLine=com.buurman.dto.response.backoffice.dashboard.LiveTailResponse.LogLine</importMapping>
+                                <importMapping>GeoResponse=com.buurman.dto.response.backoffice.dashboard.GeoResponse</importMapping>
+                                <importMapping>GeoCountry=com.buurman.dto.response.backoffice.dashboard.GeoResponse.GeoCountry</importMapping>
+                                <importMapping>PropertyLocationsResponse=com.buurman.dto.response.backoffice.dashboard.PropertyLocationsResponse</importMapping>
+                                <importMapping>PropertyPoint=com.buurman.dto.response.backoffice.dashboard.PropertyLocationsResponse.PropertyPoint</importMapping>
+                                <importMapping>PanelPlacement=com.buurman.dto.response.backoffice.dashboard.PanelPlacement</importMapping>
+                                <importMapping>DashboardLayoutResponse=com.buurman.dto.response.backoffice.dashboard.DashboardLayoutResponse</importMapping>
+                                <importMapping>SaveDashboardLayoutRequest=com.buurman.dto.request.backoffice.dashboard.SaveDashboardLayoutRequest</importMapping>
+                                <importMapping>SnoozeActionItemRequest=com.buurman.dto.request.backoffice.dashboard.SnoozeActionItemRequest</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

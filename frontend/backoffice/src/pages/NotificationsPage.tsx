@@ -133,12 +133,15 @@ export const NotificationsPage = () => {
     handleSortChange,
   } = usePagination({ defaultSort: 'createdAt' });
 
+  const [searchParams] = useSearchParams();
   const [recipientEmail, setRecipientEmail] = useState('');
   const [recipientInput, setRecipientInput] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [channelFilter, setChannelFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [searchParams] = useSearchParams();
+  // Seed from a deep link (e.g. dashboard action queue -> /notifications?status=FAILED).
+  const [statusFilter, setStatusFilter] = useState(
+    () => searchParams.get('status') ?? ''
+  );
   const teamSearch = useTeamSearch();
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');

@@ -20,4 +20,24 @@
 
   /* Text link uses indigo */
   --text-link: #6366f1;
+
+  /* ── Mission Control (Dashboard v2) tokens ──
+     Severity is reinforcement-only; every color-coded element also carries
+     aria-label / visible text. */
+  --severity-crit: #dc2626;
+  --severity-warn: #d97706;
+  --severity-ok: #059669;
+  --severity-info: #6366f1;
+
+  /* Sparklines */
+  --sparkline-stroke: #6366f1;
+  --sparkline-fill: rgba(99, 102, 241, 0.12);
+
+  /* Latency heatmap scale (cool -> hot) */
+  --heatmap-0: #eef2ff;
+  --heatmap-1: #c7d2fe;
+  --heatmap-2: #a5b4fc;
+  --heatmap-3: #fcd34d;
+  --heatmap-4: #f97316;
+  --heatmap-5: #dc2626;
 }

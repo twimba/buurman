@@ -1,4 +1,5 @@
 import { Fragment, useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { formatDateTime, formatDateTimeFull } from '../utils/dateFormatting';
 import { ChevronDown, ChevronRight, Clock, ExternalLink } from 'lucide-react';
 import {
@@ -162,7 +163,11 @@ export const ImpersonationSessionsPage = () => {
   const [selectedTargetUser, setSelectedTargetUser] = useState<
     AsyncSelectOption[]
   >([]);
-  const [statusFilter, setStatusFilter] = useState('');
+  // Seed from a deep link (e.g. dashboard action queue -> /impersonation?status=ACTIVE).
+  const [searchParams] = useSearchParams();
+  const [statusFilter, setStatusFilter] = useState(
+    () => searchParams.get('status') ?? ''
+  );
   const [modeFilter, setModeFilter] = useState('');
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [rejoinTarget, setRejoinTarget] = useState<string | null>(null);
