@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import com.buurman.domain.backoffice.PanelStatus;
 import com.buurman.dto.response.backoffice.cost.CostOverviewResponse;
 import com.buurman.dto.response.backoffice.cost.CostWatchResponse;
 import com.buurman.dto.response.backoffice.cost.ProviderCost;
+import com.buurman.repository.backoffice.CostManualAmountRepository;
 import com.buurman.repository.backoffice.CostSnapshotRepository;
 import com.buurman.repository.backoffice.CostSnapshotRepository.LatestProviderCost;
 import com.buurman.repository.backoffice.DashboardAggregateRepository;
@@ -34,12 +36,21 @@ class CostServiceTest {
   private final CostSnapshotRepository snapshotRepository = mock(CostSnapshotRepository.class);
   private final DashboardAggregateRepository aggregateRepository =
       mock(DashboardAggregateRepository.class);
+  private final ManualCostResolver manualResolver = mock(ManualCostResolver.class);
+  private final CostManualAmountRepository manualAmountRepository =
+      mock(CostManualAmountRepository.class);
   private final FxConverter fx =
-      new FxConverter(new CostProperties("EUR", Map.of("USD", 0.9), null, Map.of()));
+      new FxConverter(new CostProperties("EUR", Map.of("USD", 0.9), null, null, null, Map.of()));
 
   private CostService serviceWith(CostSource... sources) {
     return new CostService(
-        List.of(sources), fx, snapshotRepository, aggregateRepository, new ObjectMapper());
+        List.of(sources),
+        manualResolver,
+        manualAmountRepository,
+        fx,
+        snapshotRepository,
+        aggregateRepository,
+        new ObjectMapper());
   }
 
   private static CostSource source(ProviderReading reading) {
@@ -68,6 +79,7 @@ class CostServiceTest {
                 ProviderReading.of(
                     CostProviderId.HETZNER, CostSourceType.ESTIMATED, "EUR", 2000, List.of())),
             source(ProviderReading.unavailable(CostProviderId.CLOUDFLARE, "not set")));
+    when(manualResolver.amountEurMinor(any())).thenReturn(Optional.empty());
 
     service.snapshotNow();
 

@@ -208,6 +208,7 @@
                                 <importMapping>CostTrendPoint=com.buurman.dto.response.backoffice.cost.CostTrendPoint</importMapping>
                                 <importMapping>CostWatchResponse=com.buurman.dto.response.backoffice.cost.CostWatchResponse</importMapping>
                                 <importMapping>CostOverviewResponse=com.buurman.dto.response.backoffice.cost.CostOverviewResponse</importMapping>
+                                <importMapping>SetManualCostRequest=com.buurman.dto.request.backoffice.cost.SetManualCostRequest</importMapping>
                                 <importMapping>LatencyHeatmapResponse=com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse</importMapping>
                                 <importMapping>HeatColumn=com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse.HeatColumn</importMapping>
                                 <importMapping>PropertyLocationsResponse=com.buurman.dto.response.backoffice.dashboard.PropertyLocationsResponse</importMapping>

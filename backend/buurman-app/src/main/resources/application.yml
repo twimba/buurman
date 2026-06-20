@@ -224,11 +224,16 @@ backoffice:
       USD: 0.92
     hetzner:
       token: ${HETZNER_BEARER_TOKEN:}
-    # Flat monthly EUR costs for providers without a usable cost API yet.
+    cloudflare:
+      token: ${CLOUDFLARE_API_TOKEN:}
+      account-id: ${CLOUDFLARE_ACCOUNT_ID:}
+    # Mailgun has no money API — estimate from accepted volume: flat plan fee + per-email rate.
+    mailgun:
+      base-eur: ${COST_MAILGUN_BASE_EUR:0}
+      per-email-eur: ${COST_MAILGUN_PER_EMAIL_EUR:0}
+    # Seed flat monthly EUR costs; overridden by admin edits in cost_manual_amount.
     manual-eur:
-      cloudflare: ${COST_CLOUDFLARE_EUR:0}
       better_stack: ${COST_BETTER_STACK_EUR:0}
-      mailgun: ${COST_MAILGUN_EUR:0}
 
 # Server Configuration
 server:

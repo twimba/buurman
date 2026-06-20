@@ -40,7 +40,9 @@ public class CostService {
   private static final int TREND_MONTHS = 6;
   private static final DateTimeFormatter MONTH = DateTimeFormatter.ofPattern("yyyy-MM");
 
-  private final List<CostSource> sources;
+  private final List<CostSource> apiSources;
+  private final ManualCostResolver manualResolver;
+  private final com.buurman.repository.backoffice.CostManualAmountRepository manualAmountRepository;
   private final FxConverter fxConverter;
   private final CostSnapshotRepository snapshotRepository;
   private final DashboardAggregateRepository aggregateRepository;
@@ -54,19 +56,21 @@ public class CostService {
   @Transactional
   public void snapshotNow() {
     LocalDate periodMonth = LocalDate.now().withDayOfMonth(1);
-    for (CostSource source : sources) {
-      ProviderReading reading = source.read();
-      if (!reading.available()) {
+    java.util.Map<CostProviderId, CostSource> byId = new java.util.EnumMap<>(CostProviderId.class);
+    apiSources.forEach(s -> byId.put(s.id(), s));
+
+    for (CostProviderId id : CostProviderId.values()) {
+      ProviderReading reading = resolveReading(id, byId.get(id));
+      if (reading == null) {
         continue;
       }
       Optional<Converted> eur = fxConverter.toEur(reading.currency(), reading.amountMinor());
       if (eur.isEmpty()) {
-        log.warn(
-            "No FX rate for {} ({}); skipping snapshot", reading.provider(), reading.currency());
+        log.warn("No FX rate for {} ({}); skipping snapshot", id, reading.currency());
         continue;
       }
       snapshotRepository.insert(
-          reading.provider().name(),
+          id.name(),
           reading.type().name(),
           periodMonth,
           reading.currency(),
@@ -75,6 +79,31 @@ public class CostService {
           eur.get().rate(),
           serializeBreakdown(reading));
     }
+  }
+
+  /** API reading when available, else the admin-edited/configured manual amount, else null. */
+  private ProviderReading resolveReading(CostProviderId id, CostSource apiSource) {
+    if (apiSource != null) {
+      ProviderReading reading = apiSource.read();
+      if (reading.available()) {
+        return reading;
+      }
+    }
+    return manualResolver
+        .amountEurMinor(id)
+        .map(
+            eurMinor ->
+                ProviderReading.of(id, CostSourceType.SUBSCRIPTION, "EUR", eurMinor, List.of()))
+        .orElse(null);
+  }
+
+  /** Set/override a provider's monthly EUR cost from the Costs page. */
+  @Transactional
+  @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
+  public CostOverviewResponse setManualAmount(
+      CostProviderId provider, long amountEurMinor, String updatedBy) {
+    manualAmountRepository.upsert(provider.name(), Math.max(0, amountEurMinor), updatedBy);
+    return overview();
   }
 
   @Transactional(readOnly = true)

@@ -1,9 +1,26 @@
-import { ArrowDownRight, ArrowUpRight, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Check,
+  Pencil,
+  RefreshCw,
+  X,
+} from 'lucide-react';
 
+import type { ProviderCost } from '../generated/models';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SourceTypeBadge } from '../components/cost/SourceTypeBadge';
-import { useCostOverview, useRefreshCost } from '../hooks/cost';
+import {
+  useCostOverview,
+  useRefreshCost,
+  useSetManualCost,
+} from '../hooks/cost';
 import { formatEurMinor } from '../lib/money';
+
+/** A provider's cost can be set manually when it has no live API figure (or is a flat subscription). */
+const isEditable = (p: ProviderCost): boolean =>
+  p.sourceType === 'SUBSCRIPTION' || !p.available;
 
 const monthLabel = (iso: string): string => {
   const [y, m] = iso.split('-');
@@ -16,6 +33,18 @@ const monthLabel = (iso: string): string => {
 export const CostsPage = () => {
   const { data, isLoading, isError } = useCostOverview();
   const refresh = useRefreshCost();
+  const setManual = useSetManualCost();
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  const startEdit = (p: ProviderCost) => {
+    setEditing(p.provider);
+    setEditValue(p.available ? (p.amountEurMinor / 100).toString() : '');
+  };
+  const saveEdit = (provider: string) => {
+    setManual.mutate({ provider, amountEur: parseFloat(editValue) || 0 });
+    setEditing(null);
+  };
 
   if (isLoading) {
     return <LoadingSpinner message="Loading costs..." />;
@@ -127,13 +156,59 @@ export const CostsPage = () => {
                     </span>
                     <SourceTypeBadge type={p.sourceType} />
                   </span>
-                  <span className="font-semibold text-text-primary tabular-nums">
-                    {p.available ? (
-                      formatEurMinor(p.amountEurMinor)
+                  <span className="flex items-center gap-1.5">
+                    {editing === p.provider ? (
+                      <>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="w-20 rounded border border-border-default bg-surface-card px-1.5 py-0.5 text-right text-xs tabular-nums"
+                          aria-label={`Monthly EUR cost for ${p.displayName}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => saveEdit(p.provider)}
+                          disabled={setManual.isPending}
+                          className="focus-ring rounded p-1 text-emerald-600 hover:bg-surface-page disabled:opacity-50"
+                          aria-label="Save"
+                        >
+                          <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditing(null)}
+                          className="focus-ring rounded p-1 text-text-muted hover:bg-surface-page"
+                          aria-label="Cancel"
+                        >
+                          <X className="h-3.5 w-3.5" aria-hidden="true" />
+                        </button>
+                      </>
                     ) : (
-                      <span className="text-xs font-normal text-text-muted">
-                        {p.note ?? 'Not configured'}
-                      </span>
+                      <>
+                        <span className="font-semibold text-text-primary tabular-nums">
+                          {p.available ? (
+                            formatEurMinor(p.amountEurMinor)
+                          ) : (
+                            <span className="text-xs font-normal text-text-muted">
+                              {p.note ?? 'Not configured'}
+                            </span>
+                          )}
+                        </span>
+                        {isEditable(p) && (
+                          <button
+                            type="button"
+                            onClick={() => startEdit(p)}
+                            className="focus-ring rounded p-1 text-text-muted hover:text-text-primary"
+                            aria-label={`Set ${p.displayName} monthly cost`}
+                            title="Set manual cost"
+                          >
+                            <Pencil className="h-3 w-3" aria-hidden="true" />
+                          </button>
+                        )}
+                      </>
                     )}
                   </span>
                 </div>
