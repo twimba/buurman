@@ -6,6 +6,7 @@ import static com.buurman.jooq.generated.Tables.IMPERSONATION_SESSIONS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
+import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static com.buurman.jooq.generated.Tables.TEAM_PREFERENCES;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static org.jooq.impl.DSL.exists;
@@ -137,14 +138,28 @@ public class DashboardAggregateRepository {
     return new EntityCount(label, last7Days, total);
   }
 
-  /** Non-deleted users (platform-wide). */
+  /** Non-deleted users who belong to at least one active (non-demo) team — excludes demo users. */
   private EntityCount userCount(LocalDateTime since) {
+    Condition realUser =
+        exists(
+            selectOne()
+                .from(TEAM_MEMBERS)
+                .join(TEAMS)
+                .on(TEAMS.ID.eq(TEAM_MEMBERS.TEAM_ID))
+                .where(
+                    TEAM_MEMBERS
+                        .USER_ID
+                        .eq(USERS.ID)
+                        .and(TEAM_MEMBERS.DELETED_AT.isNull())
+                        .and(TEAMS.DEMO.isFalse())
+                        .and(TEAMS.DELETED_AT.isNull())));
     long last7Days =
         count(
             dsl.selectCount()
                 .from(USERS)
-                .where(USERS.DELETED_AT.isNull().and(USERS.CREATED_AT.ge(since))));
-    long total = count(dsl.selectCount().from(USERS).where(USERS.DELETED_AT.isNull()));
+                .where(USERS.DELETED_AT.isNull().and(USERS.CREATED_AT.ge(since)).and(realUser)));
+    long total =
+        count(dsl.selectCount().from(USERS).where(USERS.DELETED_AT.isNull().and(realUser)));
     return new EntityCount("Users", last7Days, total);
   }
 
