@@ -102,6 +102,12 @@
 
 /* ── Light Mode (default) ── */
 :root {
+  /* Pin native controls (select, inputs, date pickers, scrollbars) to the
+     light scheme so they follow the app theme, not the OS preference. The
+     .dark selector below flips this to `dark`. Without this, a dark-mode OS
+     renders native controls with white text on our light surfaces. */
+  color-scheme: light;
+
   /* Surface */
   --surface-page: #fafaf9;
   --surface-card: #ffffff;
