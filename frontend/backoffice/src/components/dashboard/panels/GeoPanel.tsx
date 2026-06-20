@@ -10,19 +10,6 @@ const PropertyWorldMap = lazy(() =>
   import('../PropertyWorldMap').then((m) => ({ default: m.PropertyWorldMap }))
 );
 
-const regionNames =
-  typeof Intl !== 'undefined' && 'DisplayNames' in Intl
-    ? new Intl.DisplayNames(['en'], { type: 'region' })
-    : null;
-
-const countryName = (code: string): string => {
-  try {
-    return regionNames?.of(code.toUpperCase()) ?? code;
-  } catch {
-    return code;
-  }
-};
-
 type GeoTab = 'teams' | 'properties';
 
 const CountryBars = ({ rows }: { rows: GeoCountry[] }) => {
@@ -39,11 +26,8 @@ const CountryBars = ({ rows }: { rows: GeoCountry[] }) => {
       {rows.map((c) => (
         <li key={c.code}>
           <div className="flex items-baseline justify-between text-xs">
-            <span className="truncate text-text-secondary">
-              <span className="font-medium text-text-primary">
-                {c.code.toUpperCase()}
-              </span>{' '}
-              {countryName(c.code)}
+            <span className="truncate font-medium text-text-primary">
+              {c.code}
             </span>
             <span className="font-semibold text-text-primary tabular-nums">
               {c.count.toLocaleString()}
