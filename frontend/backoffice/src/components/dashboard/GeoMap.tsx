@@ -88,6 +88,13 @@ const MAP_STYLES: google.maps.MapTypeStyle[] = [
   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
   { featureType: 'transit', stylers: [{ visibility: 'off' }] },
   { featureType: 'road', stylers: [{ visibility: 'off' }] },
+  // Hide the basemap's own country/province border lines so they don't sit a pixel or two off
+  // from our choropleth polygon strokes (the doubled-border artifact). Our polygons own the borders.
+  {
+    featureType: 'administrative',
+    elementType: 'geometry',
+    stylers: [{ visibility: 'off' }],
+  },
   {
     featureType: 'administrative',
     elementType: 'labels',
