@@ -51,18 +51,18 @@ const EntityRow = ({
         </p>
       </div>
 
-      <span
-        className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums ${
-          hasDelta ? 'bg-primary-50 text-primary-700' : 'text-text-disabled'
-        }`}
-        aria-label={
-          hasDelta
-            ? `${last7Days} added in the last 7 days`
-            : 'No change in the last 7 days'
-        }
-      >
-        {hasDelta ? `+${last7Days.toLocaleString()}` : '—'}
-      </span>
+      <div className="shrink-0 text-right">
+        <p
+          className={`text-[15px] font-bold leading-none tabular-nums ${
+            hasDelta ? 'text-primary-600' : 'text-text-disabled'
+          }`}
+        >
+          {hasDelta ? `+${last7Days.toLocaleString()}` : '0'}
+        </p>
+        <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-text-muted">
+          last 7d
+        </p>
+      </div>
     </div>
   );
 };

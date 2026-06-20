@@ -47,33 +47,34 @@ export const SummaryBand = () => {
 
   return (
     <div
-      className="flex flex-wrap items-stretch gap-x-6 gap-y-3 rounded-xl border border-border-subtle px-5 py-3.5"
+      className="flex items-stretch divide-x divide-border-subtle overflow-hidden rounded-xl border border-border-subtle"
       style={{
         background: 'var(--hero-gradient)',
-        boxShadow: 'var(--shadow-inner-top)',
+        boxShadow: 'var(--shadow-card), var(--shadow-inner-top)',
       }}
     >
-      {/* Verdict */}
-      <div className="flex items-center gap-2.5 pr-6">
+      {/* Verdict — visually weighted left block */}
+      <div className="flex flex-1 items-center gap-3 px-5 py-4">
         <span
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
           style={{
             background: `var(--severity-${verdictSev}-bg)`,
             color: `var(--severity-${verdictSev})`,
+            boxShadow: `var(--glow-${verdictSev})`,
           }}
         >
           {verdictSev === 'ok' ? (
-            <ShieldCheck className="h-5 w-5" aria-hidden="true" />
+            <ShieldCheck className="h-[22px] w-[22px]" aria-hidden="true" />
           ) : (
-            <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+            <AlertTriangle className="h-[22px] w-[22px]" aria-hidden="true" />
           )}
         </span>
-        <div>
+        <div className="min-w-0">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-text-muted">
             System health
           </p>
           <p
-            className="text-[18px] font-bold leading-tight tracking-[-0.02em]"
+            className="truncate text-[20px] font-bold leading-tight tracking-[-0.02em]"
             style={{ color: `var(--severity-${verdictSev})` }}
           >
             {verdictText}
@@ -81,21 +82,18 @@ export const SummaryBand = () => {
         </div>
       </div>
 
-      <Divider />
       <Metric
         label="Action items"
         value={actionCount.toLocaleString()}
         sub={actionCount === 0 ? 'nothing waiting' : 'need attention'}
       />
-      <Divider />
       <Metric
         label="New this week"
         value={`+${newThisWeek.toLocaleString()}`}
         sub="entities · 7d"
         accent
       />
-      <Divider />
-      <Link to="/costs" className="focus-ring rounded">
+      <Link to="/costs" className="focus-ring flex flex-1">
         <Metric
           label="Cost run-rate"
           value={formatEurMinor(cost?.totalMonthlyEurMinor ?? 0)}
@@ -123,13 +121,6 @@ export const SummaryBand = () => {
   );
 };
 
-const Divider = () => (
-  <span
-    className="hidden w-px self-stretch bg-border-subtle sm:block"
-    aria-hidden="true"
-  />
-);
-
 const Metric = ({
   label,
   value,
@@ -141,17 +132,17 @@ const Metric = ({
   sub: React.ReactNode;
   accent?: boolean;
 }) => (
-  <div className="flex flex-col justify-center">
+  <div className="flex flex-1 flex-col justify-center px-5 py-4">
     <p className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-text-muted">
       {label}
     </p>
     <p
-      className={`text-[22px] font-bold leading-none tracking-[-0.025em] tabular-nums ${
+      className={`mt-1 text-[26px] font-bold leading-none tracking-[-0.025em] tabular-nums ${
         accent ? 'text-primary-600' : 'text-text-primary'
       }`}
     >
       {value}
     </p>
-    <p className="mt-1 text-[11px] leading-[14px] text-text-muted">{sub}</p>
+    <p className="mt-1.5 text-[11px] leading-[14px] text-text-muted">{sub}</p>
   </div>
 );

@@ -41,11 +41,20 @@
   --heatmap-4: #f97316;
   --heatmap-5: #dc2626;
 
+  /* ── Cooler page so white cards visibly lift off it (the depth that was missing) ── */
+  --color-surface-page: #eef1f7;
+  --color-surface-inset: #eceff5;
+  --color-border-subtle: #e7eaf1;
+  --color-border-default: #dde1ec;
+
   /* ── Mission-control elevation ladder (cool, indigo-tinted; reads as "instrument") ── */
-  --shadow-card: 0 1px 2px rgba(30, 33, 71, 0.04), 0 1px 1px rgba(30, 33, 71, 0.03);
-  --shadow-hover: 0 6px 16px -6px rgba(30, 33, 71, 0.12), 0 2px 6px -3px rgba(30, 33, 71, 0.06);
-  --shadow-raised: 0 12px 28px -8px rgba(30, 33, 71, 0.16), 0 4px 10px -6px rgba(30, 33, 71, 0.08);
-  --shadow-inner-top: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-card:
+    0 1px 2px rgba(30, 33, 71, 0.06), 0 2px 5px -1px rgba(30, 33, 71, 0.07);
+  --shadow-hover:
+    0 10px 24px -8px rgba(30, 33, 71, 0.18), 0 4px 10px -4px rgba(30, 33, 71, 0.1);
+  --shadow-raised:
+    0 18px 40px -12px rgba(30, 33, 71, 0.22), 0 6px 14px -6px rgba(30, 33, 71, 0.12);
+  --shadow-inner-top: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 
   /* Severity companions (chips, dot auras) — derived from the severity ramp above. */
   --severity-crit-bg: #fef2f2;

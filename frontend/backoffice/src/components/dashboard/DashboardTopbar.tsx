@@ -63,7 +63,7 @@ export const DashboardTopbar = () => {
           />
         </span>
         <div>
-          <h1 className="text-[20px] font-bold leading-6 tracking-[-0.02em] text-text-primary">
+          <h1 className="text-[24px] font-bold leading-7 tracking-[-0.025em] text-text-primary">
             Mission Control
           </h1>
           <p className="mt-0.5 flex items-center gap-2 text-[11px] leading-[14px] text-text-muted tabular-nums">
