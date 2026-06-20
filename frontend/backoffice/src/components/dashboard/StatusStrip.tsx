@@ -3,68 +3,111 @@ import { Skeleton } from '@buurman/ui';
 
 import type { Pillar } from '../../generated/models';
 import { PanelStatus } from '../../generated/models';
-import { severityStyle } from '../../lib/severity';
 import { useStatusStrip } from '../../hooks/dashboard';
 import { Sparkline } from './Sparkline';
 
+const SEV_LABEL: Record<string, string> = {
+  crit: 'Critical',
+  warn: 'Warning',
+  ok: 'OK',
+  info: 'Info',
+};
+
+const sevKey = (s?: string): string => (s && s in SEV_LABEL ? s : 'info');
+
+const sparkColor = (s?: string): string =>
+  s === 'crit'
+    ? 'var(--severity-crit)'
+    : s === 'warn'
+      ? 'var(--severity-warn)'
+      : 'var(--sparkline-stroke)';
+
 const PillarTile = ({ pillar }: { pillar: Pillar }) => {
   const isPreview = pillar.status === PanelStatus.PREVIEW;
-  const sev = severityStyle(pillar.severity);
+  const sev = sevKey(pillar.severity);
+  const escalated =
+    !isPreview && (pillar.severity === 'crit' || pillar.severity === 'warn');
+  const linked = Boolean(pillar.deeplink) && !isPreview;
 
   const body = (
     <>
       <div className="flex items-center justify-between gap-1">
-        <span className="truncate text-[11px] font-medium uppercase tracking-wider text-text-muted">
+        <span className="truncate text-[10.5px] font-semibold uppercase tracking-[0.08em] text-text-muted">
           {pillar.label}
         </span>
         {!isPreview && pillar.severity && (
           <span
-            className={`h-2 w-2 shrink-0 rounded-full ${sev.dot}`}
+            className="h-2 w-2 shrink-0 rounded-full"
+            style={{
+              background: `var(--severity-${sev})`,
+              boxShadow: `var(--glow-${sev})`,
+            }}
             role="img"
-            aria-label={sev.label}
+            aria-label={SEV_LABEL[sev]}
           />
         )}
       </div>
-      <div className="mt-1 flex items-end justify-between gap-1">
+      <div className="mt-1.5 flex items-end justify-between gap-1">
         {isPreview ? (
-          <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+          <span
+            className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-text-muted"
+            style={{ backgroundColor: 'var(--severity-info-bg)' }}
+          >
             Preview
           </span>
         ) : (
-          <span className="text-base font-bold leading-none text-text-primary">
+          <span className="text-[15px] font-bold leading-4 tracking-[-0.015em] text-text-primary tabular-nums">
             {pillar.value ?? '—'}
           </span>
         )}
-        {!isPreview && <Sparkline values={pillar.sparkline} />}
+        {!isPreview && (
+          <Sparkline
+            values={pillar.sparkline}
+            color={sparkColor(pillar.severity)}
+          />
+        )}
       </div>
     </>
   );
 
-  const base =
-    'block rounded-lg border border-border-default bg-surface-card px-3 py-2';
+  const className = `block rounded-lg border border-border-default bg-surface-card px-3 py-2 ${
+    linked ? 'mc-panel focus-ring' : 'mc-panel-quiet'
+  }`;
+  const style = escalated
+    ? { borderLeftWidth: '3px', borderLeftColor: `var(--severity-${sev})` }
+    : undefined;
+  const ariaLabel = `${pillar.label}: ${pillar.value ?? 'no data'}${
+    !isPreview && pillar.severity ? `, ${SEV_LABEL[sev]}` : ''
+  }`;
 
-  if (pillar.deeplink && !isPreview) {
+  if (linked && pillar.deeplink) {
     return (
       <Link
         to={pillar.deeplink}
-        className={`${base} focus-ring transition-shadow hover:shadow-sm`}
+        className={className}
+        style={style}
+        aria-label={ariaLabel}
       >
         {body}
       </Link>
     );
   }
-  return <div className={base}>{body}</div>;
+  return (
+    <div className={className} style={style}>
+      {body}
+    </div>
+  );
 };
 
-/** The pinned, non-draggable 8-pillar status strip. */
+/** The pinned, non-draggable 8-pillar status strip — the dashboard's "vitals" cluster. */
 export const StatusStrip = () => {
   const { data, isLoading, isError } = useStatusStrip();
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 xl:grid-cols-8">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="h-14 rounded-lg" />
+          <Skeleton key={i} className="h-[58px] rounded-lg" />
         ))}
       </div>
     );
@@ -77,7 +120,10 @@ export const StatusStrip = () => {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8">
+    <div
+      className="grid grid-cols-2 gap-2.5 rounded-xl border border-border-subtle p-1.5 sm:grid-cols-4 xl:grid-cols-8"
+      style={{ boxShadow: 'var(--shadow-inner-top)' }}
+    >
       {data.pillars.map((pillar) => (
         <PillarTile key={pillar.key} pillar={pillar} />
       ))}

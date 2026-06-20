@@ -25,7 +25,7 @@ export interface PanelDefinition {
  * this registry for defaults and for the "+ Add panel" menu.
  */
 export const PANEL_REGISTRY: PanelDefinition[] = [
-  // Row A: live, actionable
+  // Row A — act now (support) + is it running (SRE) + is spend sane (finance). The verdict triad.
   {
     id: 'action-queue',
     title: 'Action queue',
@@ -33,31 +33,9 @@ export const PANEL_REGISTRY: PanelDefinition[] = [
     colSpan: 2,
   },
   {
-    id: 'product-entities',
-    title: 'Product entities',
-    Component: ProductEntitiesPanel,
-    colSpan: 2,
-  },
-  // Row B
-  { id: 'geo', title: 'Geo', Component: GeoPanel, colSpan: 2 },
-  {
-    id: 'funnel',
-    title: 'Activation funnel',
-    Component: ActivationFunnelPanel,
-    colSpan: 1,
-  },
-  { id: 'top-teams', title: 'Top teams', Component: TopTeamsPanel, colSpan: 1 },
-  // Row C: smaller signals + previews
-  {
     id: 'scheduler-health',
     title: 'Scheduler health',
     Component: SchedulerHealthPanel,
-    colSpan: 1,
-  },
-  {
-    id: 'business',
-    title: 'Business · MTD',
-    Component: BusinessKpiPanel,
     colSpan: 1,
   },
   {
@@ -66,12 +44,34 @@ export const PANEL_REGISTRY: PanelDefinition[] = [
     Component: CostWatchPanel,
     colSpan: 1,
   },
+  // Row B — growth (leadership)
+  {
+    id: 'product-entities',
+    title: 'Product entities',
+    Component: ProductEntitiesPanel,
+    colSpan: 2,
+  },
+  {
+    id: 'funnel',
+    title: 'Activation funnel',
+    Component: ActivationFunnelPanel,
+    colSpan: 1,
+  },
+  { id: 'top-teams', title: 'Top teams', Component: TopTeamsPanel, colSpan: 1 },
+  // Row C — context + SRE depth
+  { id: 'geo', title: 'Geo', Component: GeoPanel, colSpan: 2 },
   {
     id: 'latency-heatmap',
     title: 'Latency heatmap',
     Component: LatencyHeatmapPanel,
+    colSpan: 2,
+  },
+  // Row D — preview + opt-in log stream
+  {
+    id: 'business',
+    title: 'Business · MTD',
+    Component: BusinessKpiPanel,
     colSpan: 1,
   },
-  // Row D: full-width live log stream, pinned to the bottom
-  { id: 'live-tail', title: 'Live tail', Component: LiveTailPanel, colSpan: 4 },
+  { id: 'live-tail', title: 'Live tail', Component: LiveTailPanel, colSpan: 3 },
 ];
