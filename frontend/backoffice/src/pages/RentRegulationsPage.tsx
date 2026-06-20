@@ -11,6 +11,11 @@ import {
   MessageSquareText,
   Clock,
   Globe,
+  DatabaseBackup,
+  Download,
+  AlertTriangle,
+  MapPin,
+  ScrollText,
 } from 'lucide-react';
 import {
   RefreshButton,
@@ -25,12 +30,21 @@ import {
   useCreateCountry,
   useCountryRegulationRequests,
   useDismissCountryRequest,
+  useRentRegulationCatalogInfo,
+  useRentRegulationCatalogDiff,
+  useReloadRentRegulationCatalog,
 } from '../hooks/useRentRegulationHooks';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import type {
-  RentRegulationCountryResponse,
-  CountryRegulationRequestSummary,
-  CountryRegulationRequester,
+import {
+  rentRegulationsApi,
+  type RentRegulationCountryResponse,
+  type CountryRegulationRequestSummary,
+  type CountryRegulationRequester,
+  type RentRegulationReloadResult,
+  type RentRegulationCatalogDiff,
+  type RentRegulationCountryDiff,
+  type RentRegulationDiffEntry,
+  type RentRegulationDiffCounts,
 } from '../api/rentRegulations';
 
 function groupByTeam(
@@ -131,9 +145,56 @@ function CountriesTab() {
   const createCountry = useCreateCountry();
   const navigate = useNavigate();
 
+  const { data: catalogInfo } = useRentRegulationCatalogInfo();
+  const reloadCatalog = useReloadRentRegulationCatalog();
+  const [showReloadConfirm, setShowReloadConfirm] = useState(false);
+  const {
+    data: diff,
+    isLoading: diffLoading,
+    isError: diffError,
+  } = useRentRegulationCatalogDiff(showReloadConfirm);
+  // When the diff loaded successfully and shows nothing to apply, block the
+  // destructive reload — there is nothing to change.
+  const noChangesToApply =
+    !!diff &&
+    countsTotal(diff.countries) +
+      countsTotal(diff.regions) +
+      countsTotal(diff.rules) ===
+      0;
+  const [reloadResult, setReloadResult] =
+    useState<RentRegulationReloadResult | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<CountryForm>(emptyForm);
+
+  const handleReload = () => {
+    reloadCatalog.mutate(undefined, {
+      onSuccess: (result) => {
+        setReloadResult(result);
+        setShowReloadConfirm(false);
+      },
+    });
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const res = await rentRegulationsApi.exportCatalog();
+      const blob = new Blob([JSON.stringify(res.data, null, 2)], {
+        type: 'application/json',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'rent-regulations.json';
+      link.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const countries = useMemo(() => {
     const all = data ?? [];
@@ -206,6 +267,23 @@ function CountriesTab() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<Download />}
+            onClick={handleExport}
+            disabled={isExporting}
+          >
+            Export
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<DatabaseBackup />}
+            onClick={() => setShowReloadConfirm(true)}
+          >
+            Reload from catalog
+          </Button>
+          <Button
             variant="primary"
             size="sm"
             leftIcon={<Plus />}
@@ -215,6 +293,24 @@ function CountriesTab() {
           </Button>
         </div>
       </div>
+
+      {/* Reload result banner */}
+      {reloadResult && (
+        <div className="mb-4 flex items-start justify-between gap-3 rounded-lg border border-success-border bg-success-bg px-4 py-3">
+          <p className="text-sm text-success-text">
+            Reloaded catalog <strong>v{reloadResult.version}</strong> (
+            {reloadResult.generatedAt}): {reloadResult.countriesLoaded} countries,{' '}
+            {reloadResult.regionsLoaded} regions, {reloadResult.rulesLoaded} rules.
+          </p>
+          <button
+            onClick={() => setReloadResult(null)}
+            className="text-success-text hover:opacity-70"
+            aria-label="Dismiss"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* Search */}
       <div className="mb-4 relative max-w-md">
@@ -366,7 +462,341 @@ function CountriesTab() {
           </div>
         </div>
       )}
+
+      {/* Reload confirmation (destructive) */}
+      {showReloadConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/40"
+            onClick={() => setShowReloadConfirm(false)}
+          />
+          <div className="relative bg-surface-card rounded-lg border border-border-default shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-start gap-3 px-6 py-4 border-b border-border-default">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-error-bg">
+                <DatabaseBackup className="h-5 w-5 text-error-text" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-text-primary">
+                  Reload from bundled catalog
+                </h2>
+                <p className="text-sm text-text-secondary">
+                  Replace all reference data with the dataset shipped with the
+                  app.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowReloadConfirm(false)}
+                className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-inset transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* What will be loaded */}
+              <div className="rounded-lg border border-border-default bg-surface-inset p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                    Catalog to load
+                  </span>
+                  {catalogInfo && (
+                    <span className="inline-flex items-center rounded-full bg-primary-500/10 px-2.5 py-0.5 text-xs font-semibold text-primary-600">
+                      v{catalogInfo.version}
+                    </span>
+                  )}
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <CatalogStat
+                    icon={<Globe className="h-4 w-4" />}
+                    label="Countries"
+                    value={catalogInfo?.countries}
+                  />
+                  <CatalogStat
+                    icon={<MapPin className="h-4 w-4" />}
+                    label="Regions"
+                    value={catalogInfo?.regions}
+                  />
+                  <CatalogStat
+                    icon={<ScrollText className="h-4 w-4" />}
+                    label="Rules"
+                    value={catalogInfo?.rules}
+                  />
+                </div>
+                {catalogInfo && (
+                  <p className="mt-3 text-xs text-text-muted">
+                    Generated {catalogInfo.generatedAt}
+                  </p>
+                )}
+              </div>
+
+              {/* Changes that will be applied */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                    Changes to apply
+                  </span>
+                  {diff && <DiffCountsSummary diff={diff} />}
+                </div>
+                <ReloadDiffSection
+                  diff={diff}
+                  isLoading={diffLoading}
+                  isError={diffError}
+                />
+              </div>
+
+              {/* Destructive warning */}
+              <div className="rounded-lg border border-error-border bg-error-bg p-4">
+                <div className="flex gap-3">
+                  <AlertTriangle className="h-5 w-5 flex-shrink-0 text-error-text" />
+                  <div className="space-y-1.5">
+                    <p className="text-sm font-semibold text-error-text">
+                      This permanently overwrites the current data.
+                    </p>
+                    <ul className="list-disc space-y-1 pl-4 text-sm text-error-text/90">
+                      <li>
+                        All countries, regions and rules are deleted and
+                        re-created.
+                      </li>
+                      <li>Any manual edits made here are discarded.</li>
+                      <li>This action cannot be undone.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-border-default">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowReloadConfirm(false)}
+                disabled={reloadCatalog.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                leftIcon={<DatabaseBackup />}
+                isLoading={reloadCatalog.isPending}
+                disabled={noChangesToApply}
+                title={
+                  noChangesToApply
+                    ? 'Nothing to apply — the data already matches the catalog'
+                    : undefined
+                }
+                onClick={handleReload}
+              >
+                {noChangesToApply ? 'Nothing to reload' : 'Delete and reload'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
+  );
+}
+
+function CatalogStat({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value?: number;
+}) {
+  return (
+    <div className="rounded-md border border-border-default bg-surface-card px-3 py-2.5 text-center">
+      <div className="flex items-center justify-center text-text-muted mb-1">
+        {icon}
+      </div>
+      <div className="text-xl font-bold text-text-primary tabular-nums">
+        {value ?? '—'}
+      </div>
+      <div className="text-xs text-text-muted">{label}</div>
+    </div>
+  );
+}
+
+function countsTotal(c: RentRegulationDiffCounts): number {
+  return c.added + c.removed + c.changed;
+}
+
+function DiffCountsSummary({ diff }: { diff: RentRegulationCatalogDiff }) {
+  const total =
+    countsTotal(diff.countries) +
+    countsTotal(diff.regions) +
+    countsTotal(diff.rules);
+  if (total === 0) {
+    return (
+      <span className="text-xs font-medium text-success-text">No changes</span>
+    );
+  }
+  return (
+    <span className="text-xs font-medium text-text-secondary">
+      {total} change{total === 1 ? '' : 's'}
+    </span>
+  );
+}
+
+function CountLine({
+  label,
+  counts,
+}: {
+  label: string;
+  counts: RentRegulationDiffCounts;
+}) {
+  if (countsTotal(counts) === 0) {
+    return null;
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs">
+      <span className="text-text-secondary">{label}</span>
+      {counts.added > 0 && (
+        <span className="text-success-text">+{counts.added}</span>
+      )}
+      {counts.changed > 0 && (
+        <span className="text-primary-600">~{counts.changed}</span>
+      )}
+      {counts.removed > 0 && (
+        <span className="text-error-text">-{counts.removed}</span>
+      )}
+    </span>
+  );
+}
+
+function ReloadDiffSection({
+  diff,
+  isLoading,
+  isError,
+}: {
+  diff?: RentRegulationCatalogDiff;
+  isLoading: boolean;
+  isError: boolean;
+}) {
+  if (isLoading) {
+    return (
+      <div className="rounded-lg border border-border-default bg-surface-inset px-4 py-3 text-sm text-text-muted">
+        Calculating what will change…
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <div className="rounded-lg border border-border-default bg-surface-inset px-4 py-3 text-sm text-text-muted">
+        Could not compute the changes preview. The reload will still apply the
+        full catalog.
+      </div>
+    );
+  }
+  if (!diff) {
+    return null;
+  }
+  const total =
+    countsTotal(diff.countries) +
+    countsTotal(diff.regions) +
+    countsTotal(diff.rules);
+  if (total === 0) {
+    return (
+      <div className="rounded-lg border border-success-border bg-success-bg px-4 py-3 text-sm text-success-text">
+        No differences — the database already matches catalog v
+        {diff.catalogVersion}. Reloading would re-create the same data.
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-lg border border-border-default overflow-hidden">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-border-default bg-surface-inset px-4 py-2">
+        <CountLine label="Countries" counts={diff.countries} />
+        <CountLine label="Regions" counts={diff.regions} />
+        <CountLine label="Rules" counts={diff.rules} />
+      </div>
+      <div className="max-h-64 overflow-y-auto divide-y divide-border-default">
+        {diff.byCountry.map((c) => (
+          <CountryDiffCard key={c.countryCode} country={c} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const OP_STYLE: Record<string, { sym: string; cls: string }> = {
+  ADDED: { sym: '+', cls: 'text-success-text' },
+  REMOVED: { sym: '−', cls: 'text-error-text' },
+  CHANGED: { sym: '~', cls: 'text-primary-600' },
+};
+
+const STATUS_BADGE: Record<string, string> = {
+  ADDED: 'bg-success-bg text-success-text',
+  REMOVED: 'bg-error-bg text-error-text',
+  MODIFIED: 'bg-primary-500/10 text-primary-600',
+};
+
+function CountryDiffCard({ country }: { country: RentRegulationCountryDiff }) {
+  return (
+    <div className="px-4 py-3">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="font-medium text-text-primary text-sm">
+          {country.countryName}
+        </span>
+        <span className="text-xs text-text-muted">{country.countryCode}</span>
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+            STATUS_BADGE[country.status] ?? ''
+          }`}
+        >
+          {country.status}
+        </span>
+      </div>
+      <ul className="space-y-1.5">
+        {country.changes.map((e, i) => (
+          <DiffEntryRow key={i} entry={e} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function clip(value: string): string {
+  const v = value && value.length > 0 ? value : '∅';
+  return v.length > 70 ? `${v.slice(0, 70)}…` : v;
+}
+
+function DiffEntryRow({ entry }: { entry: RentRegulationDiffEntry }) {
+  const op = OP_STYLE[entry.op] ?? OP_STYLE.CHANGED;
+  return (
+    <li className="text-xs">
+      <div className="flex items-baseline gap-1.5">
+        <span className={`font-bold ${op.cls}`}>{op.sym}</span>
+        <span className="text-text-muted uppercase tracking-wide text-[10px]">
+          {entry.entity}
+        </span>
+        <span className="text-text-primary font-medium">{entry.label}</span>
+      </div>
+      {entry.fields.length > 0 && (
+        <ul className="mt-0.5 ml-4 space-y-0.5">
+          {entry.fields.map((f, i) => (
+            <li key={i} className="text-text-secondary">
+              <span className="text-text-muted">{f.field}:</span>{' '}
+              {entry.op === 'CHANGED' ? (
+                <>
+                  <span className="line-through text-error-text/80">
+                    {clip(f.before)}
+                  </span>{' '}
+                  <span className="text-text-muted">→</span>{' '}
+                  <span className="text-success-text">{clip(f.after)}</span>
+                </>
+              ) : (
+                <span className="text-text-primary">{clip(f.after)}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
   );
 }
 

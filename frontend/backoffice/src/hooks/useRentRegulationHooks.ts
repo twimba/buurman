@@ -10,6 +10,42 @@ import {
   type BulkRuleRequest,
 } from '../api/rentRegulations';
 
+// ── Bundled catalog ──────────────────────────────────────────────────
+
+export const useRentRegulationCatalogInfo = () => {
+  return useQuery({
+    queryKey: ['rent-regulation-catalog-info'],
+    queryFn: () => rentRegulationsApi.getCatalogInfo().then((res) => res.data),
+  });
+};
+
+export const useRentRegulationCatalogDiff = (enabled: boolean) => {
+  return useQuery({
+    queryKey: ['rent-regulation-catalog-diff'],
+    queryFn: () => rentRegulationsApi.getCatalogDiff().then((res) => res.data),
+    enabled,
+    staleTime: 0,
+  });
+};
+
+export const useReloadRentRegulationCatalog = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => rentRegulationsApi.reloadCatalog().then((res) => res.data),
+    onSuccess: () => {
+      // The reload wipes and re-seeds everything: invalidate all reference data.
+      queryClient.invalidateQueries({
+        queryKey: ['rent-regulation-countries'],
+      });
+      queryClient.invalidateQueries({ queryKey: ['rent-regulation-regions'] });
+      queryClient.invalidateQueries({ queryKey: ['rent-regulation-rules'] });
+      queryClient.invalidateQueries({
+        queryKey: ['rent-regulation-catalog-diff'],
+      });
+    },
+  });
+};
+
 // ── Countries ────────────────────────────────────────────────────────
 
 export const useRentRegulationCountries = () => {

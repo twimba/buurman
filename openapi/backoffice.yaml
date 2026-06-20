@@ -3988,6 +3988,152 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/rent-regulations/catalog:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Get bundled catalog info
+      description: >-
+        Metadata (version, generated date, counts) about the canonical rent-regulation dataset
+        bundled with the application. Used to populate the reload confirmation dialog.
+      operationId: getRentRegulationCatalogInfo
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationCatalogInfo"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/diff:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Preview changes a reload would apply
+      description: >-
+        Computes the difference between the current database reference data and the bundled catalog —
+        countries / regions / rules that would be added, removed or changed — so an admin can review
+        exactly what a reload would do before performing it. Read-only; applies nothing.
+      operationId: diffRentRegulationCatalog
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationCatalogDiff"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/reload:
+    post:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Reload reference data from bundled catalog
+      description: >-
+        DESTRUCTIVE. Deletes all rent-regulation countries, regions and rules and re-seeds them from
+        the canonical dataset bundled with the application, discarding any manual edits. Returns the
+        loaded catalog version and the counts re-seeded.
+      operationId: reloadRentRegulationCatalog
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationReloadResult"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/export:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Export current reference data as catalog
+      description: >-
+        Serialises the current database reference data into the canonical catalog JSON shape. Used
+        by maintainers to regenerate the bundled file after editing data through the backoffice UI.
+      operationId: exportRentRegulationCatalog
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationCatalog"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /backoffice/rent-regulations/countries:
     get:
       tags:
@@ -6999,6 +7145,121 @@ components:
     RentRegulationRuleIdentifier:
       type: string
       description: Rent regulation rule identifier
+    RentRegulationCatalogInfo:
+      type: object
+      properties:
+        version:
+          type: string
+        generatedAt:
+          type: string
+        description:
+          type: string
+        countries:
+          type: integer
+          format: int32
+        regions:
+          type: integer
+          format: int32
+        rules:
+          type: integer
+          format: int32
+    RentRegulationReloadResult:
+      type: object
+      properties:
+        version:
+          type: string
+        generatedAt:
+          type: string
+        countriesLoaded:
+          type: integer
+          format: int32
+        regionsLoaded:
+          type: integer
+          format: int32
+        rulesLoaded:
+          type: integer
+          format: int32
+    RentRegulationCatalog:
+      type: object
+      description: Canonical rent-regulation dataset (countries carry nested regions and rules).
+      properties:
+        version:
+          type: string
+        generatedAt:
+          type: string
+        description:
+          type: string
+        countries:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    RentRegulationDiffCounts:
+      type: object
+      properties:
+        added:
+          type: integer
+          format: int32
+        removed:
+          type: integer
+          format: int32
+        changed:
+          type: integer
+          format: int32
+    RentRegulationDiffField:
+      type: object
+      properties:
+        field:
+          type: string
+        before:
+          type: string
+        after:
+          type: string
+    RentRegulationDiffEntry:
+      type: object
+      properties:
+        entity:
+          type: string
+        op:
+          type: string
+        label:
+          type: string
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentRegulationDiffField"
+    RentRegulationCountryDiff:
+      type: object
+      properties:
+        countryCode:
+          type: string
+        countryName:
+          type: string
+        status:
+          type: string
+        rules:
+          $ref: "#/components/schemas/RentRegulationDiffCounts"
+        changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentRegulationDiffEntry"
+    RentRegulationCatalogDiff:
+      type: object
+      properties:
+        catalogVersion:
+          type: string
+        generatedAt:
+          type: string
+        countries:
+          $ref: "#/components/schemas/RentRegulationDiffCounts"
+        regions:
+          $ref: "#/components/schemas/RentRegulationDiffCounts"
+        rules:
+          $ref: "#/components/schemas/RentRegulationDiffCounts"
+        byCountry:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentRegulationCountryDiff"
     MaxIncreaseType:
       type: string
       enum:
@@ -7006,8 +7267,21 @@ components:
         - CPI_LINKED
         - INDEX_LINKED
         - MARKET_RENT
+        - MARKET
+        - FREE_MARKET
         - NEGOTIATED
         - FROZEN
+        - STATUTORY_CAP
+        - STATUTORY_CEILING
+        - CEILING_RENT
+        - COMPARATIVE
+        - COST_BASED
+        - CAPITAL_BASED
+        - FORMULA_BASED
+        - COST_PASS_THROUGH
+        - CAP_OVER_INDEX
+        - CANTONAL_RESTRICTION
+        - THRESHOLD_PERCENTAGE
         - OTHER
     RentFrequency:
       type: string
@@ -7015,9 +7289,12 @@ components:
         - MONTHLY
         - QUARTERLY
         - SEMI_ANNUAL
+        - SEMIANNUAL
         - ANNUAL
         - BIENNIAL
         - TRIENNIAL
+        - ON_RELET
+        - PER_MODERNISATION
     RentRegulationCountryResponse:
       type: object
       properties:

@@ -104,11 +104,73 @@ export interface CountryRegulationRequestSummary {
   requesters: CountryRegulationRequester[];
 }
 
+export interface RentRegulationCatalogInfo {
+  version: string;
+  generatedAt: string;
+  description?: string;
+  countries: number;
+  regions: number;
+  rules: number;
+}
+
+export interface RentRegulationReloadResult {
+  version: string;
+  generatedAt: string;
+  countriesLoaded: number;
+  regionsLoaded: number;
+  rulesLoaded: number;
+}
+
+export interface RentRegulationDiffCounts {
+  added: number;
+  removed: number;
+  changed: number;
+}
+
+export interface RentRegulationDiffField {
+  field: string;
+  before: string;
+  after: string;
+}
+
+export interface RentRegulationDiffEntry {
+  entity: 'COUNTRY' | 'REGION' | 'RULE';
+  op: 'ADDED' | 'REMOVED' | 'CHANGED';
+  label: string;
+  fields: RentRegulationDiffField[];
+}
+
+export interface RentRegulationCountryDiff {
+  countryCode: string;
+  countryName: string;
+  status: 'ADDED' | 'REMOVED' | 'MODIFIED';
+  rules: RentRegulationDiffCounts;
+  changes: RentRegulationDiffEntry[];
+}
+
+export interface RentRegulationCatalogDiff {
+  catalogVersion: string;
+  generatedAt: string;
+  countries: RentRegulationDiffCounts;
+  regions: RentRegulationDiffCounts;
+  rules: RentRegulationDiffCounts;
+  byCountry: RentRegulationCountryDiff[];
+}
+
 // ── API ──────────────────────────────────────────────────────────────
 
 const BASE = '/rent-regulations';
 
 export const rentRegulationsApi = {
+  // Bundled catalog (reference dataset shipped with the app)
+  getCatalogInfo: () =>
+    client.get<RentRegulationCatalogInfo>(`${BASE}/catalog`),
+  getCatalogDiff: () =>
+    client.get<RentRegulationCatalogDiff>(`${BASE}/diff`),
+  reloadCatalog: () =>
+    client.post<RentRegulationReloadResult>(`${BASE}/reload`),
+  exportCatalog: () => client.get<unknown>(`${BASE}/export`),
+
   // Countries
   listCountries: () =>
     client.get<RentRegulationCountryResponse[]>(`${BASE}/countries`),

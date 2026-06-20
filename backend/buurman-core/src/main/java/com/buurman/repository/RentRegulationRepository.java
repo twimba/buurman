@@ -414,6 +414,27 @@ public class RentRegulationRepository {
     }
   }
 
+  // ==================== Catalog reload (destructive) ====================
+
+  /**
+   * Deletes all rent-regulation reference data (rules, then regions, then countries) in
+   * foreign-key-safe order. Intended to be called within a transaction immediately before
+   * re-seeding from the bundled catalog. Does not touch team-scoped country requests.
+   */
+  public void deleteAllReferenceData() {
+    dsl.deleteFrom(RULES).execute();
+    dsl.deleteFrom(REGIONS).execute();
+    dsl.deleteFrom(COUNTRIES).execute();
+  }
+
+  public List<RentRegulationRegion> findAllRegions() {
+    return List.copyOf(dsl.select().from(REGIONS).fetch(this::toRegionDomain));
+  }
+
+  public List<RentRegulationRule> findAllRules() {
+    return List.copyOf(dsl.select().from(RULES).fetch(this::toRuleDomain));
+  }
+
   // ==================== Country request table ===
   private static final Table<?> REQUESTS = table("rent_regulation_country_requests");
   private static final Field<UUID> RQ_ID = field("id", UUID.class);

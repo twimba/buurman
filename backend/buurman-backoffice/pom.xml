@@ -167,6 +167,14 @@
                                 <importMapping>CreateRentRegulationRuleRequest=com.buurman.dto.request.CreateRentRegulationRuleRequest</importMapping>
                                 <importMapping>UpdateRentRegulationRuleRequest=com.buurman.dto.request.UpdateRentRegulationRuleRequest</importMapping>
                                 <importMapping>BulkCreateRentRegulationRulesRequest=com.buurman.dto.request.BulkCreateRentRegulationRulesRequest</importMapping>
+                                <importMapping>RentRegulationCatalogInfo=com.buurman.dto.response.RentRegulationCatalogInfo</importMapping>
+                                <importMapping>RentRegulationReloadResult=com.buurman.dto.response.RentRegulationReloadResult</importMapping>
+                                <importMapping>RentRegulationCatalog=com.buurman.domain.regulation.RentRegulationCatalog</importMapping>
+                                <importMapping>RentRegulationCatalogDiff=com.buurman.dto.response.RentRegulationCatalogDiff</importMapping>
+                                <importMapping>RentRegulationCountryDiff=com.buurman.dto.response.RentRegulationCountryDiff</importMapping>
+                                <importMapping>RentRegulationDiffCounts=com.buurman.dto.response.RentRegulationDiffCounts</importMapping>
+                                <importMapping>RentRegulationDiffEntry=com.buurman.dto.response.RentRegulationDiffEntry</importMapping>
+                                <importMapping>RentRegulationDiffField=com.buurman.dto.response.RentRegulationDiffField</importMapping>
                                 <importMapping>MaxIncreaseType=com.buurman.domain.MaxIncreaseType</importMapping>
                                 <importMapping>RentFrequency=com.buurman.domain.RentFrequency</importMapping>
                                 <importMapping>BackofficeBroadcastMessageResponse=com.buurman.dto.response.backoffice.BackofficeBroadcastMessageResponse</importMapping>

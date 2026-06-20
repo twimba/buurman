@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
+import com.buurman.domain.regulation.RentRegulationCatalog;
 import com.buurman.dto.request.BulkCreateRentRegulationRulesRequest;
 import com.buurman.dto.request.CreateRentRegulationCountryRequest;
 import com.buurman.dto.request.CreateRentRegulationRegionRequest;
@@ -16,6 +17,9 @@ import com.buurman.dto.request.UpdateRentRegulationRegionRequest;
 import com.buurman.dto.request.UpdateRentRegulationRuleRequest;
 import com.buurman.dto.response.BulkImportResult;
 import com.buurman.dto.response.CountryRegulationRequestSummary;
+import com.buurman.dto.response.RentRegulationCatalogDiff;
+import com.buurman.dto.response.RentRegulationCatalogInfo;
+import com.buurman.dto.response.RentRegulationReloadResult;
 import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRegionResponse;
 import com.buurman.dto.response.RentRegulationRuleResponse;
@@ -23,6 +27,7 @@ import com.buurman.generated.backoffice.api.BackofficeRentRegulationsApi;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.security.SecurityUtils;
 import com.buurman.service.backoffice.BackofficeRentRegulationService;
+import com.buurman.service.backoffice.RentRegulationCatalogService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +36,28 @@ import lombok.RequiredArgsConstructor;
 public class BackofficeRentRegulationController implements BackofficeRentRegulationsApi {
 
   private final BackofficeRentRegulationService backofficeRentRegulationService;
+  private final RentRegulationCatalogService rentRegulationCatalogService;
+
+  @Override
+  public RentRegulationCatalogInfo getRentRegulationCatalogInfo() {
+    return rentRegulationCatalogService.catalogInfo();
+  }
+
+  @Override
+  public RentRegulationCatalogDiff diffRentRegulationCatalog() {
+    return rentRegulationCatalogService.diff();
+  }
+
+  @Override
+  public RentRegulationReloadResult reloadRentRegulationCatalog() {
+    BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
+    return rentRegulationCatalogService.reload(principal);
+  }
+
+  @Override
+  public RentRegulationCatalog exportRentRegulationCatalog() {
+    return rentRegulationCatalogService.exportCurrent();
+  }
 
   @Override
   public List<RentRegulationCountryResponse> listBackofficeRentRegulationCountries() {
