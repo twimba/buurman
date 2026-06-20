@@ -21,11 +21,6 @@ public class DashboardPreviewService {
     return preview("business", "Connect billing to enable MRR & churn");
   }
 
-  @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
-  public PreviewPanelResponse costWatch() {
-    return preview("cost-watch", "Connect Mailgun/Twilio/AWS billing APIs to enable");
-  }
-
   private static PreviewPanelResponse preview(String panel, String cta) {
     return new PreviewPanelResponse(PanelStatus.PREVIEW, panel, Optional.of(cta), Optional.empty());
   }

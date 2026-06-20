@@ -158,6 +158,8 @@ scheduling:
     metrics-push-cron: "0 */15 * * * ?"
   thumbnail-backfill:
     cron: "0 */5 * * * ?"
+  cost:
+    snapshot-cron: "0 0 6 * * ?"
 
 # Impersonation Configuration
 impersonation:
@@ -215,6 +217,18 @@ backoffice:
       # Label matcher scoping queries to this app across all nodes.
       selector: 'application="buurman"'
       window: 5m
+  cost:
+    base-currency: EUR
+    # Original-currency -> EUR conversion rates (Twilio bills USD; update as needed).
+    fx:
+      USD: 0.92
+    hetzner:
+      token: ${HETZNER_BEARER_TOKEN:}
+    # Flat monthly EUR costs for providers without a usable cost API yet.
+    manual-eur:
+      cloudflare: ${COST_CLOUDFLARE_EUR:0}
+      better_stack: ${COST_BETTER_STACK_EUR:0}
+      mailgun: ${COST_MAILGUN_EUR:0}
 
 # Server Configuration
 server:

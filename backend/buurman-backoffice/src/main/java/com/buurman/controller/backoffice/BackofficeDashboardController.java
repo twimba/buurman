@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.buurman.dto.request.backoffice.dashboard.SaveDashboardLayoutRequest;
 import com.buurman.dto.request.backoffice.dashboard.SnoozeActionItemRequest;
 import com.buurman.dto.response.backoffice.BackofficeDashboardResponse;
+import com.buurman.dto.response.backoffice.cost.CostWatchResponse;
 import com.buurman.dto.response.backoffice.dashboard.ActionQueueResponse;
 import com.buurman.dto.response.backoffice.dashboard.DashboardLayoutResponse;
 import com.buurman.dto.response.backoffice.dashboard.FunnelResponse;
@@ -22,6 +23,7 @@ import com.buurman.dto.response.backoffice.dashboard.TopTeamsResponse;
 import com.buurman.generated.backoffice.api.BackofficeDashboardApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.service.backoffice.BackofficeDashboardService;
+import com.buurman.service.backoffice.cost.CostService;
 import com.buurman.service.backoffice.dashboard.ActionQueueService;
 import com.buurman.service.backoffice.dashboard.ActivationFunnelService;
 import com.buurman.service.backoffice.dashboard.DashboardLayoutService;
@@ -53,6 +55,7 @@ public class BackofficeDashboardController implements BackofficeDashboardApi {
   private final TopTeamsService topTeamsService;
   private final SchedulerHealthService schedulerHealthService;
   private final DashboardPreviewService previewService;
+  private final CostService costService;
   private final GeoService geoService;
   private final LatencyHeatmapService latencyHeatmapService;
   private final LiveTailService liveTailService;
@@ -108,8 +111,8 @@ public class BackofficeDashboardController implements BackofficeDashboardApi {
   }
 
   @Override
-  public PreviewPanelResponse getDashboardCostWatch() {
-    return previewService.costWatch();
+  public CostWatchResponse getDashboardCostWatch() {
+    return costService.costWatch();
   }
 
   @Override

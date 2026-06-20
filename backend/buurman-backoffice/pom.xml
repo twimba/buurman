@@ -202,6 +202,12 @@
                                 <importMapping>LogLine=com.buurman.dto.response.backoffice.dashboard.LiveTailResponse.LogLine</importMapping>
                                 <importMapping>GeoResponse=com.buurman.dto.response.backoffice.dashboard.GeoResponse</importMapping>
                                 <importMapping>GeoCountry=com.buurman.dto.response.backoffice.dashboard.GeoResponse.GeoCountry</importMapping>
+                                <importMapping>CostSourceType=com.buurman.domain.backoffice.CostSourceType</importMapping>
+                                <importMapping>ProviderCost=com.buurman.dto.response.backoffice.cost.ProviderCost</importMapping>
+                                <importMapping>CostInsight=com.buurman.dto.response.backoffice.cost.CostInsight</importMapping>
+                                <importMapping>CostTrendPoint=com.buurman.dto.response.backoffice.cost.CostTrendPoint</importMapping>
+                                <importMapping>CostWatchResponse=com.buurman.dto.response.backoffice.cost.CostWatchResponse</importMapping>
+                                <importMapping>CostOverviewResponse=com.buurman.dto.response.backoffice.cost.CostOverviewResponse</importMapping>
                                 <importMapping>LatencyHeatmapResponse=com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse</importMapping>
                                 <importMapping>HeatColumn=com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse.HeatColumn</importMapping>
                                 <importMapping>PropertyLocationsResponse=com.buurman.dto.response.backoffice.dashboard.PropertyLocationsResponse</importMapping>

@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Wallet,
   Users,
   UserCog,
   UserCheck,
@@ -57,6 +58,7 @@ type NavItem = {
 
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Costs', href: '/costs', icon: Wallet },
   { name: 'Teams', href: '/teams', icon: Users },
   { name: 'Users', href: '/users', icon: UserCog },
   {
