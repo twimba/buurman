@@ -3246,6 +3246,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/geojson@npm:*":
+  version: 7946.0.16
+  resolution: "@types/geojson@npm:7946.0.16"
+  checksum: 10c0/1ff24a288bd5860b766b073ead337d31d73bdc715e5b50a2cee5cb0af57a1ed02cc04ef295f5fa68dc40fe3e4f104dd31282b2b818a5ba3231bc1001ba084e3c
+  languageName: node
+  linkType: hard
+
 "@types/google.maps@npm:3.65.2":
   version: 3.65.2
   resolution: "@types/google.maps@npm:3.65.2"
@@ -3334,6 +3341,25 @@ __metadata:
   dependencies:
     "@types/react": "npm:*"
   checksum: 10c0/948cdd763e7f247a5a620ccef109b2f3baa967e44ec0e02e11492543bcd39793b65dfa5399600d6e7233ffd21917cab403d63c6d614109b83e11017384b8a023
+  languageName: node
+  linkType: hard
+
+"@types/topojson-client@npm:3.1.5":
+  version: 3.1.5
+  resolution: "@types/topojson-client@npm:3.1.5"
+  dependencies:
+    "@types/geojson": "npm:*"
+    "@types/topojson-specification": "npm:*"
+  checksum: 10c0/f60c71a79ec2d6387a9437a2d3d61d1a39928211c8b26e6a4572e4e65ff6d9ad283caa2207c447fe67cb20259c72f53ce21e222cd5c7af6f31b18cce0ab79b5d
+  languageName: node
+  linkType: hard
+
+"@types/topojson-specification@npm:*":
+  version: 1.0.5
+  resolution: "@types/topojson-specification@npm:1.0.5"
+  dependencies:
+    "@types/geojson": "npm:*"
+  checksum: 10c0/015f5470b210cb2a4b9cc3fb5b411b2f774189663bdf70855a7ab8e56d55f2b23124d1f8bf345356407691f4a70a85e87d05512b0ffc90d4f5ee81ab96af180b
   languageName: node
   linkType: hard
 
@@ -4132,6 +4158,7 @@ __metadata:
     "@types/google.maps": "npm:3.65.2"
     "@types/react": "npm:19.2.17"
     "@types/react-dom": "npm:19.2.3"
+    "@types/topojson-client": "npm:3.1.5"
     "@vis.gl/react-google-maps": "npm:1.8.3"
     "@vitejs/plugin-react": "npm:6.0.2"
     axios: "npm:1.18.0"
@@ -4149,6 +4176,7 @@ __metadata:
     react-dom: "npm:19.2.7"
     react-router-dom: "npm:7.18.0"
     tailwindcss: "npm:4.3.1"
+    topojson-client: "npm:3.1.0"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.61.1"
     vite: "npm:8.0.16"
@@ -4284,6 +4312,13 @@ __metadata:
   version: 2.0.3
   resolution: "comma-separated-tokens@npm:2.0.3"
   checksum: 10c0/91f90f1aae320f1755d6957ef0b864fe4f54737f3313bd95e0802686ee2ca38bff1dd381964d00ae5db42912dd1f4ae5c2709644e82706ffc6f6842a813cdd67
+  languageName: node
+  linkType: hard
+
+"commander@npm:2":
+  version: 2.20.3
+  resolution: "commander@npm:2.20.3"
+  checksum: 10c0/74c781a5248c2402a0a3e966a0a2bba3c054aad144f5c023364be83265e796b20565aa9feff624132ff629aa64e16999fa40a743c10c12f7c61e96a794b99288
   languageName: node
   linkType: hard
 
@@ -8998,6 +9033,19 @@ __metadata:
   version: 1.0.6
   resolution: "toggle-selection@npm:1.0.6"
   checksum: 10c0/f2cf1f2c70f374fd87b0cdc8007453ba9e981c4305a8bf4eac10a30e62ecdfd28bca7d18f8f15b15a506bf8a7bfb20dbe3539f0fcf2a2c8396c1a78d53e1f179
+  languageName: node
+  linkType: hard
+
+"topojson-client@npm:3.1.0":
+  version: 3.1.0
+  resolution: "topojson-client@npm:3.1.0"
+  dependencies:
+    commander: "npm:2"
+  bin:
+    topo2geo: bin/topo2geo
+    topomerge: bin/topomerge
+    topoquantize: bin/topoquantize
+  checksum: 10c0/da2acba268cbf4d002483d5d81452e0d797b2fff6041fafb1d420e58973fa780a6f42041ce4c2677376ab977e5e1732b89c42a2db3c334a34f6c47f4d94b3eaa
   languageName: node
   linkType: hard
 

@@ -5,7 +5,12 @@ import {
   Map as GoogleMap,
   useMap,
 } from '@vis.gl/react-google-maps';
+import { feature } from 'topojson-client';
 
+// Vendored Natural Earth 50m country polygons. The `?url` import emits a content-hashed asset
+// served from our own origin, so the browser fetches it once and then serves it from immutable
+// cache forever — no external CDN dependency and no repeat downloads.
+import geoUrl from '../../assets/countries-50m.json?url';
 import { env } from '../../config/env';
 import type { CountryStats } from '../../generated/models';
 import { COUNTRY_CENTROIDS } from '../../lib/countryCentroids';
@@ -13,52 +18,47 @@ import { formatEurMinor } from '../../lib/money';
 
 export type GeoMetric = 'teams' | 'properties' | 'value';
 
-// Low-res world country polygons (features keyed by ISO 3166-1 alpha-3 id). Served with CORS by
-// jsDelivr; fetched once and cached for the session.
-const GEOJSON_URL =
-  'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json';
-
-// Our stats use ISO-2; the GeoJSON features are keyed by ISO-3.
-const ISO2_TO_3: Record<string, string> = {
-  NL: 'NLD',
-  BE: 'BEL',
-  DE: 'DEU',
-  FR: 'FRA',
-  GB: 'GBR',
-  IE: 'IRL',
-  LU: 'LUX',
-  PT: 'PRT',
-  ES: 'ESP',
-  IT: 'ITA',
-  AT: 'AUT',
-  CH: 'CHE',
-  DK: 'DNK',
-  SE: 'SWE',
-  NO: 'NOR',
-  FI: 'FIN',
-  PL: 'POL',
-  CZ: 'CZE',
-  SK: 'SVK',
-  HU: 'HUN',
-  RO: 'ROU',
-  BG: 'BGR',
-  GR: 'GRC',
-  HR: 'HRV',
-  SI: 'SVN',
-  EE: 'EST',
-  LV: 'LVA',
-  LT: 'LTU',
-  CY: 'CYP',
-  MT: 'MLT',
-  US: 'USA',
-  CA: 'CAN',
-  BR: 'BRA',
-  AU: 'AUS',
-  NZ: 'NZL',
-  ZA: 'ZAF',
-  AE: 'ARE',
-  IN: 'IND',
-  JP: 'JPN',
+// Our stats use ISO-2; world-atlas features are keyed by ISO 3166-1 numeric id.
+const ISO2_TO_NUM: Record<string, number> = {
+  NL: 528,
+  BE: 56,
+  DE: 276,
+  FR: 250,
+  GB: 826,
+  IE: 372,
+  LU: 442,
+  PT: 620,
+  ES: 724,
+  IT: 380,
+  AT: 40,
+  CH: 756,
+  DK: 208,
+  SE: 752,
+  NO: 578,
+  FI: 246,
+  PL: 616,
+  CZ: 203,
+  SK: 703,
+  HU: 348,
+  RO: 642,
+  BG: 100,
+  GR: 300,
+  HR: 191,
+  SI: 705,
+  EE: 233,
+  LV: 428,
+  LT: 440,
+  CY: 196,
+  MT: 470,
+  US: 840,
+  CA: 124,
+  BR: 76,
+  AU: 36,
+  NZ: 554,
+  ZA: 710,
+  AE: 784,
+  IN: 356,
+  JP: 392,
 };
 
 const regionNames =
@@ -112,8 +112,9 @@ const loadGeo = async (): Promise<object | null> => {
     return geoCache;
   }
   try {
-    const res = await fetch(GEOJSON_URL);
-    geoCache = (await res.json()) as object;
+    const res = await fetch(geoUrl);
+    const topo = await res.json();
+    geoCache = feature(topo, topo.objects.countries) as unknown as object;
     return geoCache;
   } catch {
     return null;
@@ -135,11 +136,11 @@ const Choropleth = ({
       return;
     }
     let cancelled = false;
-    const byIso3 = new Map<string, CountryStats>();
+    const byNum = new Map<number, CountryStats>();
     countries.forEach((c) => {
-      const i3 = ISO2_TO_3[c.code.toUpperCase()];
-      if (i3) {
-        byIso3.set(i3, c);
+      const num = ISO2_TO_NUM[c.code.toUpperCase()];
+      if (num !== undefined) {
+        byNum.set(num, c);
       }
     });
     const max = Math.max(1, ...countries.map((c) => metricValue(c, metric)));
@@ -157,8 +158,8 @@ const Choropleth = ({
       }
       clear();
       map.data.addGeoJson(geo);
-      map.data.setStyle((feature) => {
-        const c = byIso3.get(String(feature.getId()));
+      map.data.setStyle((feat) => {
+        const c = byNum.get(Number(feat.getId()));
         if (!c) {
           return {
             fillColor: '#e8ebf3',
@@ -180,7 +181,7 @@ const Choropleth = ({
       });
 
       const show = (e: google.maps.Data.MouseEvent) => {
-        const c = e.feature ? byIso3.get(String(e.feature.getId())) : undefined;
+        const c = e.feature ? byNum.get(Number(e.feature.getId())) : undefined;
         if (!c) {
           onHover(null);
           return;
