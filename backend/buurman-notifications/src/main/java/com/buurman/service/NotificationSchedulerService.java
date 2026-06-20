@@ -111,7 +111,9 @@ public class NotificationSchedulerService {
               String propertyName = getPropertyName(contract.getPropertyId(), team.getId());
               String expiryBase = appProperties.email().baseUrl();
               String expiryContractUrl =
-                  expiryBase + "/contracts/" + contract.getIdentifier().map(s -> s.value()).orElse("");
+                  expiryBase
+                      + "/contracts/"
+                      + contract.getIdentifier().map(s -> s.value()).orElse("");
 
               notifyTeamMembers(
                   team.getId(),
@@ -185,7 +187,9 @@ public class NotificationSchedulerService {
               String propertyName = getPropertyName(contract.getPropertyId(), team.getId());
               String reminderBase = appProperties.email().baseUrl();
               String reminderPaymentUrl =
-                  reminderBase + "/payments/" + payment.getIdentifier().map(s -> s.value()).orElse("");
+                  reminderBase
+                      + "/payments/"
+                      + payment.getIdentifier().map(s -> s.value()).orElse("");
 
               notifyTeamMembers(
                   team.getId(),
@@ -200,13 +204,20 @@ public class NotificationSchedulerService {
                               .templateName("payment-reminder")
                               .templateVariables(
                                   Map.of(
-                                      "userName", user.getFirstName(),
-                                      "propertyName", propertyName,
-                                      "amount", formatCurrency(payment.getAmount().value()),
-                                      "dueDate", formatDate(payment.getDueDate()),
-                                      "baseUrl", reminderBase,
-                                      "primaryUrl", reminderPaymentUrl,
-                                      "secondaryUrl", reminderPaymentUrl + "?action=mark-paid"))
+                                      "userName",
+                                      user.getFirstName(),
+                                      "propertyName",
+                                      propertyName,
+                                      "amount",
+                                      formatCurrency(payment.getAmount().value()),
+                                      "dueDate",
+                                      formatDate(payment.getDueDate()),
+                                      "baseUrl",
+                                      reminderBase,
+                                      "primaryUrl",
+                                      reminderPaymentUrl,
+                                      "secondaryUrl",
+                                      reminderPaymentUrl + "?action=mark-paid"))
                               .urgency(NotificationUrgency.URGENT)
                               .createdBy(SYSTEM_USER_ID)
                               .build()));

@@ -709,13 +709,20 @@ public class ContractService {
             .templateName("contract-status-changed")
             .templateVariables(
                 Map.of(
-                    "propertyName", scPropertyName,
-                    "contactName", scContactName,
-                    "oldStatus", oldStatus.name(),
-                    "newStatus", newStatus.name(),
-                    "baseUrl", scBase,
-                    "primaryUrl", scBase + "/contracts/" + identifier.value(),
-                    "secondaryUrl", scBase + "/properties/" + scPropertySid))
+                    "propertyName",
+                    scPropertyName,
+                    "contactName",
+                    scContactName,
+                    "oldStatus",
+                    oldStatus.name(),
+                    "newStatus",
+                    newStatus.name(),
+                    "baseUrl",
+                    scBase,
+                    "primaryUrl",
+                    scBase + "/contracts/" + identifier.value(),
+                    "secondaryUrl",
+                    scBase + "/properties/" + scPropertySid))
             .createdBy(principal.getUserId())
             .build());
 
@@ -814,9 +821,7 @@ public class ContractService {
     String reopenContactName = reopenPrimaryContact.getDisplayName();
     String reopenBase = appProperties.email().baseUrl();
     String reopenPropertySid =
-        reopenProperty != null
-            ? reopenProperty.getIdentifier().map(s -> s.value()).orElse("")
-            : "";
+        reopenProperty != null ? reopenProperty.getIdentifier().map(s -> s.value()).orElse("") : "";
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))

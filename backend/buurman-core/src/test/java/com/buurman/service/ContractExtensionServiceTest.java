@@ -52,6 +52,7 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
+import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.util.MoneyAmount;
@@ -66,6 +67,7 @@ class ContractExtensionServiceTest {
   @Mock private DocumentRepository documentRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private TeamRepository teamRepository;
+  @Mock private UserRepository userRepository;
   @Mock private NotificationService notificationService;
   @Mock private S3StorageService s3StorageService;
   @Mock private AuditService auditService;
@@ -93,6 +95,7 @@ class ContractExtensionServiceTest {
             documentRepository,
             propertyRepository,
             teamRepository,
+            userRepository,
             notificationService,
             s3StorageService,
             auditService,

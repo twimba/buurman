@@ -166,11 +166,8 @@ public class AuditService {
   }
 
   private boolean valuesEqual(Object a, Object b) {
-    if (a == b) {
-      return true;
-    }
     if (a == null || b == null) {
-      return false;
+      return a == b;
     }
     if (a instanceof java.math.BigDecimal da && b instanceof java.math.BigDecimal db) {
       return da.compareTo(db) == 0;
