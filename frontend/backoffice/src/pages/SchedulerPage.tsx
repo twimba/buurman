@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, useCallback, Fragment } from 'react';
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  Fragment,
+} from 'react';
 import { createPortal } from 'react-dom';
 import {
   Pause,
@@ -280,7 +287,50 @@ export const SchedulerPage = () => {
   const jobDropdownRef = useRef<HTMLDivElement>(null);
 
   // Initialize selected jobs: all except notificationOutboxJob and databaseMetricsRefreshJob
-  const allJobs = jobs ?? [];
+  const allJobs = useMemo(() => jobs ?? [], [jobs]);
+
+  // Client-side sorting for the scheduled-jobs table (clicking a header toggles asc/desc).
+  const [jobSort, setJobSort] = useState<{
+    field: string;
+    dir: 'asc' | 'desc';
+  }>({
+    field: 'jobName',
+    dir: 'asc',
+  });
+  const handleJobSort = (field: string) =>
+    setJobSort((s) =>
+      s.field === field
+        ? { field, dir: s.dir === 'asc' ? 'desc' : 'asc' }
+        : { field, dir: 'asc' }
+    );
+  const sortedJobs = useMemo(() => {
+    const value = (job: (typeof allJobs)[number], field: string): string => {
+      switch (field) {
+        case 'jobGroup':
+          return job.jobGroup ?? '';
+        case 'triggerType':
+          return job.triggerType ?? '';
+        case 'scheduleExpression':
+          return job.scheduleExpression ?? '';
+        case 'triggerState':
+          return job.triggerState ?? '';
+        case 'nextFireTime':
+          return job.nextFireTime ?? '';
+        default:
+          return job.jobName ?? '';
+      }
+    };
+    return [...allJobs].sort((a, b) => {
+      const cmp = value(a, jobSort.field).localeCompare(
+        value(b, jobSort.field),
+        undefined,
+        {
+          numeric: true,
+        }
+      );
+      return jobSort.dir === 'asc' ? cmp : -cmp;
+    });
+  }, [allJobs, jobSort]);
   const uniqueJobNames = [...new Set(allJobs.map((j) => j.jobName))];
   const defaultSelectedJobs = uniqueJobNames.filter(
     (name) =>
@@ -478,12 +528,48 @@ export const SchedulerPage = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-border-default">
-                <th className={thClass}>Job Name</th>
-                <th className={thClass}>Group</th>
-                <th className={thClass}>Type</th>
-                <th className={thClass}>Schedule</th>
-                <th className={thClass}>Status</th>
-                <th className={thClass}>Next Fire</th>
+                <SortableHeader
+                  field="jobName"
+                  label="Job Name"
+                  sort={jobSort.field}
+                  direction={jobSort.dir}
+                  onSortChange={handleJobSort}
+                />
+                <SortableHeader
+                  field="jobGroup"
+                  label="Group"
+                  sort={jobSort.field}
+                  direction={jobSort.dir}
+                  onSortChange={handleJobSort}
+                />
+                <SortableHeader
+                  field="triggerType"
+                  label="Type"
+                  sort={jobSort.field}
+                  direction={jobSort.dir}
+                  onSortChange={handleJobSort}
+                />
+                <SortableHeader
+                  field="scheduleExpression"
+                  label="Schedule"
+                  sort={jobSort.field}
+                  direction={jobSort.dir}
+                  onSortChange={handleJobSort}
+                />
+                <SortableHeader
+                  field="triggerState"
+                  label="Status"
+                  sort={jobSort.field}
+                  direction={jobSort.dir}
+                  onSortChange={handleJobSort}
+                />
+                <SortableHeader
+                  field="nextFireTime"
+                  label="Next Fire"
+                  sort={jobSort.field}
+                  direction={jobSort.dir}
+                  onSortChange={handleJobSort}
+                />
                 <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Actions
                 </th>
@@ -500,7 +586,7 @@ export const SchedulerPage = () => {
                   </td>
                 </tr>
               ) : (
-                allJobs.map((job) => (
+                sortedJobs.map((job) => (
                   <tr
                     key={`${job.jobGroup}.${job.jobName}.${job.triggerName}`}
                     className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
