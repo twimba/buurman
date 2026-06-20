@@ -106,7 +106,7 @@ class MetricsQueryServiceTest {
       LatencyHeatmapResponse response = service.latencyHeatmap();
 
       assertThat(response.status()).isEqualTo(PanelStatus.PREVIEW);
-      assertThat(response.previewCta()).contains("Set PROMETHEUS_URL to enable");
+      assertThat(response.previewCta()).contains("Please configure Prometheus");
       assertThat(response.bands()).hasSize(7);
     }
 
@@ -120,7 +120,7 @@ class MetricsQueryServiceTest {
       LatencyHeatmapResponse response = service.latencyHeatmap();
 
       assertThat(response.status()).isEqualTo(PanelStatus.PREVIEW);
-      assertThat(response.previewCta()).contains("Prometheus query failed — check backend logs");
+      assertThat(response.previewCta()).contains("An error occurred");
     }
 
     @Test

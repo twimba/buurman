@@ -104,11 +104,11 @@ public class StatusStripService {
     };
   }
 
-  /** Distinguishes "Prometheus not wired" (dev) from "configured but unreachable" (prod). */
+  /**
+   * Two-state model: unconfigured -> "please configure", configured-but-failing -> generic error.
+   */
   private String metricsUnavailableCta() {
-    return metricsQueryService.configured()
-        ? "Prometheus unreachable — check backend logs"
-        : "Set PROMETHEUS_URL to enable";
+    return metricsQueryService.configured() ? "An error occurred" : "Please configure Prometheus";
   }
 
   private static String formatPct(double pct) {

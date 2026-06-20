@@ -111,7 +111,7 @@ public class MetricsQueryService {
   /** Latency density heatmap (time × latency band) over the last 3 hours. */
   public LatencyHeatmapResponse latencyHeatmap() {
     if (!client.configured()) {
-      return preview("Set PROMETHEUS_URL to enable");
+      return preview("Please configure Prometheus");
     }
     try {
       Instant end = Instant.now();
@@ -125,7 +125,7 @@ public class MetricsQueryService {
       return buildHeatmap(result);
     } catch (RuntimeException e) {
       log.warn("Prometheus latency-heatmap query failed", e);
-      return preview("Prometheus query failed — check backend logs");
+      return preview("An error occurred");
     }
   }
 
