@@ -49,24 +49,26 @@ export const GeoPanel = () => {
         </div>
       }
     >
-      <p className="mb-2 text-[11px] leading-snug text-text-muted">
-        Bubble size shows{' '}
-        {metric === 'value' ? 'monthly contract value' : metric} per country
-        (team’s default country). Hover for details. Excludes demo teams.
-      </p>
+      <div className="flex h-full flex-col">
+        <Suspense
+          fallback={
+            <Skeleton className="h-full min-h-[320px] w-full rounded-lg" />
+          }
+        >
+          <div className="min-h-0 flex-1">
+            <GeoMap countries={countries} metric={metric} />
+          </div>
+        </Suspense>
 
-      <Suspense fallback={<Skeleton className="h-[520px] w-full rounded-lg" />}>
-        <GeoMap countries={countries} metric={metric} />
-      </Suspense>
-
-      {withoutCountry > 0 && (
-        <p className="mt-2 text-[11px] text-text-muted">
-          <span className="font-semibold text-text-secondary tabular-nums">
-            {withoutCountry.toLocaleString()}
-          </span>{' '}
-          team{withoutCountry === 1 ? '' : 's'} with no country set
-        </p>
-      )}
+        {withoutCountry > 0 && (
+          <p className="mt-2 shrink-0 text-[11px] text-text-muted">
+            <span className="font-semibold text-text-secondary tabular-nums">
+              {withoutCountry.toLocaleString()}
+            </span>{' '}
+            team{withoutCountry === 1 ? '' : 's'} with no country set
+          </p>
+        )}
+      </div>
     </PanelShell>
   );
 };

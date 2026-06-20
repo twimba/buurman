@@ -20,6 +20,11 @@ const SPAN_CLASS: Record<PanelDefinition['colSpan'], string> = {
   4: 'lg:col-span-4',
 };
 
+const ROWSPAN_CLASS: Record<NonNullable<PanelDefinition['rowSpan']>, string> = {
+  1: 'lg:row-span-1',
+  2: 'lg:row-span-2',
+};
+
 /**
  * 4-column bento grid driven by the per-user layout (order + visibility), persisted via
  * {@link useBentoLayout}. In edit mode panels can be drag-reordered (native DnD), hidden, and
@@ -57,7 +62,7 @@ export const BentoGrid = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 lg:auto-rows-[minmax(0,auto)] lg:grid-flow-row-dense lg:grid-cols-4">
         {visible.map((item) => {
           const def = REG_BY_ID.get(item.id);
           if (!def) {
@@ -67,7 +72,7 @@ export const BentoGrid = () => {
           return (
             <div
               key={item.id}
-              className={`relative ${SPAN_CLASS[def.colSpan]} ${editing ? 'cursor-move rounded-lg ring-2 ring-primary-200' : ''}`}
+              className={`relative ${SPAN_CLASS[def.colSpan]} ${ROWSPAN_CLASS[def.rowSpan ?? 1]} ${editing ? 'cursor-move rounded-lg ring-2 ring-primary-200' : ''}`}
               draggable={editing}
               onDragStart={() => {
                 draggedId.current = item.id;

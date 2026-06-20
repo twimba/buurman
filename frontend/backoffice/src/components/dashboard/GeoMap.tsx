@@ -275,7 +275,7 @@ export const GeoMap = ({
   }
 
   return (
-    <div className="relative h-[520px] overflow-hidden rounded-lg border border-border-default">
+    <div className="relative h-full min-h-[320px] overflow-hidden rounded-lg border border-border-default">
       <APIProvider apiKey={apiKey}>
         <GoogleMap
           defaultCenter={{ lat: 48, lng: 8 }}

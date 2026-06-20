@@ -17,6 +17,9 @@ export interface PanelDefinition {
   Component: ComponentType;
   /** Default column span in the 4-column bento grid (1–4). */
   colSpan: 1 | 2 | 3 | 4;
+  /** Default row span (1–2). Tall panels (e.g. the map) span 2 so shorter panels can stack
+   *  vertically beside them in the same band. */
+  rowSpan?: 1 | 2;
 }
 
 /**
@@ -58,20 +61,22 @@ export const PANEL_REGISTRY: PanelDefinition[] = [
     colSpan: 1,
   },
   { id: 'top-teams', title: 'Top teams', Component: TopTeamsPanel, colSpan: 1 },
-  // Row C — context + SRE depth
-  { id: 'geo', title: 'Geo', Component: GeoPanel, colSpan: 2 },
+  // Row C band — the tall map spans two rows; two shorter panels stack vertically beside it.
+  { id: 'geo', title: 'Geo', Component: GeoPanel, colSpan: 2, rowSpan: 2 },
   {
     id: 'latency-heatmap',
     title: 'Latency heatmap',
     Component: LatencyHeatmapPanel,
     colSpan: 2,
+    rowSpan: 1,
   },
-  // Row D — preview + opt-in log stream
   {
     id: 'business',
     title: 'Business · MTD',
     Component: BusinessKpiPanel,
-    colSpan: 1,
+    colSpan: 2,
+    rowSpan: 1,
   },
-  { id: 'live-tail', title: 'Live tail', Component: LiveTailPanel, colSpan: 3 },
+  // Row D — full-width opt-in log stream
+  { id: 'live-tail', title: 'Live tail', Component: LiveTailPanel, colSpan: 4 },
 ];
