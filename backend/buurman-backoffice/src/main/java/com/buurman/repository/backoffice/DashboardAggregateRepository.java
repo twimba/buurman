@@ -4,8 +4,8 @@ import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.IMPERSONATION_SESSIONS;
-import static com.buurman.jooq.generated.Tables.PHOTOS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
+import static com.buurman.jooq.generated.Tables.PHOTOS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
@@ -18,7 +18,9 @@ import static org.jooq.impl.DSL.selectCount;
 import static org.jooq.impl.DSL.selectOne;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,7 +32,7 @@ import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
-import com.buurman.dto.response.backoffice.dashboard.GeoResponse.GeoCountry;
+import com.buurman.dto.response.backoffice.dashboard.CountryStats;
 import com.buurman.dto.response.backoffice.dashboard.ProductEntitiesResponse.EntityCount;
 import com.buurman.dto.response.backoffice.dashboard.TopTeamsResponse.TopTeam;
 
@@ -139,7 +141,8 @@ public class DashboardAggregateRepository {
   /** Uploads = documents + photos (both keyed by uploaded_at), across active teams. */
   private EntityCount uploadsCount(LocalDateTime since) {
     long last7Days =
-        activeRowCount(DOCUMENTS, DOCUMENTS.TEAM_ID, DOCUMENTS.DELETED_AT, DOCUMENTS.UPLOADED_AT, since)
+        activeRowCount(
+                DOCUMENTS, DOCUMENTS.TEAM_ID, DOCUMENTS.DELETED_AT, DOCUMENTS.UPLOADED_AT, since)
             + activeRowCount(PHOTOS, PHOTOS.TEAM_ID, PHOTOS.DELETED_AT, PHOTOS.UPLOADED_AT, since);
     long total =
         activeRowTotal(DOCUMENTS, DOCUMENTS.TEAM_ID, DOCUMENTS.DELETED_AT)
@@ -159,8 +162,7 @@ public class DashboardAggregateRepository {
             .where(deletedAt.isNull().and(createdAt.ge(since)).and(activeTeam(teamId))));
   }
 
-  private long activeRowTotal(
-      Table<?> table, Field<UUID> teamId, Field<LocalDateTime> deletedAt) {
+  private long activeRowTotal(Table<?> table, Field<UUID> teamId, Field<LocalDateTime> deletedAt) {
     return count(dsl.selectCount().from(table).where(deletedAt.isNull().and(activeTeam(teamId))));
   }
 
@@ -291,30 +293,6 @@ public class DashboardAggregateRepository {
         .map(Record1::value1);
   }
 
-  /**
-   * Active (non-demo, non-deleted) teams grouped by their default country code, highest first.
-   * Excludes demo teams so the breakdown reconciles with the active-teams pillar and the funnel.
-   */
-  public List<GeoCountry> teamsByCountry() {
-    return dsl.select(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, DSL.count())
-        .from(TEAM_PREFERENCES)
-        .join(TEAMS)
-        .on(TEAMS.ID.eq(TEAM_PREFERENCES.TEAM_ID))
-        .where(
-            TEAMS
-                .DEMO
-                .isFalse()
-                .and(TEAMS.DELETED_AT.isNull())
-                .and(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE.isNotNull())
-                .and(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE.ne("")))
-        .groupBy(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE)
-        .orderBy(DSL.count().desc())
-        .fetch()
-        .map(
-            r ->
-                new GeoCountry(r.get(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE), r.get(1, Long.class)));
-  }
-
   /** Active (non-demo, non-deleted) teams with no country set (no prefs row, or null/blank). */
   public long teamsWithoutCountry() {
     return count(
@@ -334,24 +312,84 @@ public class DashboardAggregateRepository {
                             .or(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE.eq("")))));
   }
 
-  /** Non-deleted properties of active (non-demo) teams grouped by country code, highest first. */
-  public List<GeoCountry> propertiesByCountry() {
-    return dsl.select(PROPERTIES.COUNTRY_CODE, DSL.count())
+  /**
+   * Per-country rollup grouped by the team's default country: teams, properties, contracts, and the
+   * normalized monthly rent of active contracts (EUR cents). Excludes demo + soft-deleted teams.
+   */
+  public List<CountryStats> countryStats() {
+    // [teams, properties, contracts, monthlyValueMinor]
+    Map<String, long[]> acc = new LinkedHashMap<>();
+
+    dsl.select(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, DSL.count())
+        .from(TEAM_PREFERENCES)
+        .join(TEAMS)
+        .on(TEAMS.ID.eq(TEAM_PREFERENCES.TEAM_ID))
+        .where(activeCountryTeam())
+        .groupBy(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE)
+        .fetch()
+        .forEach(r -> slot(acc, r.value1())[0] = r.get(1, Long.class));
+
+    dsl.select(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, DSL.count())
         .from(PROPERTIES)
         .join(TEAMS)
         .on(TEAMS.ID.eq(PROPERTIES.TEAM_ID))
-        .where(
-            PROPERTIES
-                .DELETED_AT
-                .isNull()
-                .and(TEAMS.DELETED_AT.isNull())
-                .and(TEAMS.DEMO.isFalse())
-                .and(PROPERTIES.COUNTRY_CODE.isNotNull())
-                .and(PROPERTIES.COUNTRY_CODE.ne("")))
-        .groupBy(PROPERTIES.COUNTRY_CODE)
-        .orderBy(DSL.count().desc())
+        .join(TEAM_PREFERENCES)
+        .on(TEAM_PREFERENCES.TEAM_ID.eq(TEAMS.ID))
+        .where(PROPERTIES.DELETED_AT.isNull().and(activeCountryTeam()))
+        .groupBy(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE)
         .fetch()
-        .map(r -> new GeoCountry(r.get(PROPERTIES.COUNTRY_CODE), r.get(1, Long.class)));
+        .forEach(r -> slot(acc, r.value1())[1] = r.get(1, Long.class));
+
+    Field<java.math.BigDecimal> monthlyActive =
+        DSL.when(
+                CONTRACTS.STATUS.eq("ACTIVE"),
+                DSL.choose(CONTRACTS.PAYMENT_FREQUENCY)
+                    .when("MONTHLY", CONTRACTS.RENT_AMOUNT)
+                    .when("QUARTERLY", CONTRACTS.RENT_AMOUNT.divide(3))
+                    .when("SEMI_ANNUAL", CONTRACTS.RENT_AMOUNT.divide(6))
+                    .when("SEMIANNUAL", CONTRACTS.RENT_AMOUNT.divide(6))
+                    .when("ANNUAL", CONTRACTS.RENT_AMOUNT.divide(12))
+                    .when("BIENNIAL", CONTRACTS.RENT_AMOUNT.divide(24))
+                    .when("TRIENNIAL", CONTRACTS.RENT_AMOUNT.divide(36))
+                    .otherwise(CONTRACTS.RENT_AMOUNT))
+            .otherwise(java.math.BigDecimal.ZERO);
+    dsl.select(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, DSL.count(), DSL.sum(monthlyActive))
+        .from(CONTRACTS)
+        .join(TEAMS)
+        .on(TEAMS.ID.eq(CONTRACTS.TEAM_ID))
+        .join(TEAM_PREFERENCES)
+        .on(TEAM_PREFERENCES.TEAM_ID.eq(TEAMS.ID))
+        .where(CONTRACTS.DELETED_AT.isNull().and(activeCountryTeam()))
+        .groupBy(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE)
+        .fetch()
+        .forEach(
+            r -> {
+              long[] s = slot(acc, r.value1());
+              s[2] = r.get(1, Long.class);
+              java.math.BigDecimal sum = r.get(2, java.math.BigDecimal.class);
+              s[3] = sum == null ? 0 : Math.round(sum.doubleValue() * 100);
+            });
+
+    return acc.entrySet().stream()
+        .map(
+            e ->
+                new CountryStats(
+                    e.getKey(), e.getValue()[0], e.getValue()[1], e.getValue()[2], e.getValue()[3]))
+        .sorted(java.util.Comparator.comparingLong(CountryStats::teams).reversed())
+        .toList();
+  }
+
+  private static Condition activeCountryTeam() {
+    return TEAMS
+        .DEMO
+        .isFalse()
+        .and(TEAMS.DELETED_AT.isNull())
+        .and(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE.isNotNull())
+        .and(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE.ne(""));
+  }
+
+  private static long[] slot(Map<String, long[]> acc, String code) {
+    return acc.computeIfAbsent(code, k -> new long[4]);
   }
 
   /** Geocoded coordinates ({lat, lng}) of non-deleted properties of active teams, capped. */

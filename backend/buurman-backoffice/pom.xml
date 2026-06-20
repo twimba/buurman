@@ -202,7 +202,7 @@
                                 <importMapping>LiveTailResponse=com.buurman.dto.response.backoffice.dashboard.LiveTailResponse</importMapping>
                                 <importMapping>LogLine=com.buurman.dto.response.backoffice.dashboard.LiveTailResponse.LogLine</importMapping>
                                 <importMapping>GeoResponse=com.buurman.dto.response.backoffice.dashboard.GeoResponse</importMapping>
-                                <importMapping>GeoCountry=com.buurman.dto.response.backoffice.dashboard.GeoResponse.GeoCountry</importMapping>
+                                <importMapping>CountryStats=com.buurman.dto.response.backoffice.dashboard.CountryStats</importMapping>
                                 <importMapping>CostSourceType=com.buurman.domain.backoffice.CostSourceType</importMapping>
                                 <importMapping>ProviderCost=com.buurman.dto.response.backoffice.cost.ProviderCost</importMapping>
                                 <importMapping>CostInsight=com.buurman.dto.response.backoffice.cost.CostInsight</importMapping>

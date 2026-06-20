@@ -32,8 +32,7 @@ public class GeoService {
         PanelStatus.LIVE,
         Optional.empty(),
         Optional.empty(),
-        aggregateRepository.teamsByCountry(),
-        aggregateRepository.propertiesByCountry(),
+        aggregateRepository.countryStats(),
         aggregateRepository.teamsWithoutCountry());
   }
 

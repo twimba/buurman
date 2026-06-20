@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.backoffice.PanelStatus;
+import com.buurman.dto.response.backoffice.dashboard.CountryStats;
 import com.buurman.dto.response.backoffice.dashboard.GeoResponse;
-import com.buurman.dto.response.backoffice.dashboard.GeoResponse.GeoCountry;
 import com.buurman.dto.response.backoffice.dashboard.PropertyLocationsResponse;
 import com.buurman.repository.backoffice.DashboardAggregateRepository;
 
@@ -29,21 +29,21 @@ class GeoServiceTest {
   @InjectMocks private GeoService service;
 
   @Test
-  @DisplayName("getGeo returns a LIVE envelope with team + property country breakdowns")
+  @DisplayName("getGeo returns a LIVE envelope with per-country stats")
   void getGeoLive() {
-    when(aggregateRepository.teamsByCountry())
-        .thenReturn(List.of(new GeoCountry("NL", 10), new GeoCountry("DE", 3)));
-    when(aggregateRepository.propertiesByCountry())
-        .thenReturn(List.of(new GeoCountry("Netherlands", 42)));
+    when(aggregateRepository.countryStats())
+        .thenReturn(
+            List.of(
+                new CountryStats("NL", 10, 42, 30, 1_250_00L),
+                new CountryStats("DE", 3, 5, 4, 400_00L)));
     when(aggregateRepository.teamsWithoutCountry()).thenReturn(5L);
 
     GeoResponse response = service.getGeo();
 
     assertThat(response.status()).isEqualTo(PanelStatus.LIVE);
-    assertThat(response.teamCountries()).hasSize(2);
-    assertThat(response.propertyCountries())
-        .extracting(GeoCountry::code)
-        .containsExactly("Netherlands");
+    assertThat(response.countries()).hasSize(2);
+    assertThat(response.countries()).extracting(CountryStats::code).containsExactly("NL", "DE");
+    assertThat(response.countries().get(0).monthlyValueEurMinor()).isEqualTo(1_250_00L);
     assertThat(response.teamsWithoutCountry()).isEqualTo(5L);
   }
 
