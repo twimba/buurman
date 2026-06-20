@@ -1,5 +1,11 @@
 /// <reference types="@types/google.maps" />
-import { useEffect, useState } from 'react';
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
 import { createPortal } from 'react-dom';
 import {
   APIProvider,
@@ -61,8 +67,18 @@ interface VisualizationLib {
   }) => HeatmapLayerLike;
 }
 
-/** Density heatmap (visualization library). */
-const HeatmapLayer = ({ points }: { points: PropertyPoint[] }) => {
+/**
+ * Density heatmap via the Google visualization library. That library is deprecated and absent in
+ * some Maps versions, so this guards the constructor, filters non-finite coords (an invalid LatLng
+ * throws — unlike a Marker), and reports unavailability instead of crashing the panel.
+ */
+const HeatmapLayer = ({
+  points,
+  onUnavailable,
+}: {
+  points: PropertyPoint[];
+  onUnavailable: () => void;
+}) => {
   const map = useMap();
   const viz = useMapsLibrary(
     'visualization'
@@ -71,16 +87,47 @@ const HeatmapLayer = ({ points }: { points: PropertyPoint[] }) => {
     if (!map || !viz) {
       return;
     }
-    const layer = new viz.HeatmapLayer({
-      data: points.map((p) => new google.maps.LatLng(p.lat, p.lng)),
-      radius: 18,
-      opacity: 0.7,
-    });
-    layer.setMap(map);
-    return () => layer.setMap(null);
-  }, [map, viz, points]);
+    if (typeof viz.HeatmapLayer !== 'function') {
+      onUnavailable();
+      return;
+    }
+    const data = points
+      .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
+      .map((p) => new google.maps.LatLng(p.lat, p.lng));
+    let layer: HeatmapLayerLike | null = null;
+    try {
+      layer = new viz.HeatmapLayer({ data, radius: 18, opacity: 0.7 });
+      layer.setMap(map);
+    } catch (e) {
+      console.error('Property heatmap unavailable', e);
+      onUnavailable();
+      return;
+    }
+    return () => layer?.setMap(null);
+  }, [map, viz, points, onUnavailable]);
   return null;
 };
+
+/** Keeps a single failing map layer from tearing down the whole dashboard tree. */
+class LayerErrorBoundary extends Component<
+  { onError: () => void; children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error('Map layer error', error);
+    this.props.onError();
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 const ToggleButton = ({
   active,
@@ -107,6 +154,11 @@ const ToggleButton = ({
 
 export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
   const [mode, setMode] = useState<MapMode>('markers');
+  const [heatmapUnavailable, setHeatmapUnavailable] = useState(false);
+  const markHeatmapUnavailable = useCallback(
+    () => setHeatmapUnavailable(true),
+    []
+  );
   const { data, isLoading, isError } = usePropertyLocations(true);
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
   const points = data?.points ?? [];
@@ -189,13 +241,27 @@ export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
               className="h-full w-full"
             >
               <FitBounds points={points} />
-              {mode === 'markers' ? (
-                <MarkersLayer points={points} />
-              ) : (
-                <HeatmapLayer points={points} />
-              )}
+              <LayerErrorBoundary onError={markHeatmapUnavailable}>
+                {mode === 'markers' ? (
+                  <MarkersLayer points={points} />
+                ) : (
+                  <HeatmapLayer
+                    points={points}
+                    onUnavailable={markHeatmapUnavailable}
+                  />
+                )}
+              </LayerErrorBoundary>
             </Map>
           </APIProvider>
+        )}
+
+        {mode === 'heatmap' && heatmapUnavailable && (
+          <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center">
+            <span className="pointer-events-auto rounded-md bg-surface-card px-3 py-1.5 text-xs text-text-secondary shadow-md">
+              Heatmap isn’t supported by the loaded Maps version — switch to
+              Markers.
+            </span>
+          </div>
         )}
       </div>
     </div>,
