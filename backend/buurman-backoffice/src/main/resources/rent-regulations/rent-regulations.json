@@ -1,5 +1,5 @@
 {
-    "version": "2026.2",
+    "version": "2026.3",
     "generatedAt": "2026-06-20",
     "description": "Canonical Buurman rent-regulation dataset. Source of truth for the reference data shipped with the app. Regenerate via the backoffice Export action; reload via the backoffice Reload action.",
     "countries": [
@@ -8,8 +8,19 @@
             "countryName": "Austria",
             "hasRegionalRegulations": false,
             "summary": "Richtwertmietzins (reference value rent) system. Adjusted by CPI. Category-based max rents.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
+                {
+                    "year": 2027,
+                    "propertyCategory": "REGULATED",
+                    "maxIncreasePercentage": 2.0,
+                    "maxIncreaseType": "FIXED_PERCENTAGE",
+                    "indexName": "Mietpreisbremse (statutory cap)",
+                    "effectiveDate": "2027-04-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.ris.bka.gv.at/Dokumente/BgblAuth/BGBLA_2025_I_12/BGBLA_2025_I_12.pdf",
+                    "notes": "5. MILG / MieWeG: statutory 2% cap for Richtwert/Kategoriemiete in 2027 (already enacted). From 2028: inflation above 3% counts at half for the excess."
+                },
                 {
                     "year": 2026,
                     "propertyCategory": "FREE_MARKET",
@@ -99,7 +110,7 @@
             "countryName": "Belgium",
             "hasRegionalRegulations": true,
             "summary": "Health index (Statbel) used for rent indexation. Varies by region (Flanders, Wallonia, Brussels).",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "regions": [
                 {
                     "regionCode": "BRU",
@@ -127,6 +138,7 @@
                     "indexName": "Gezondheidsindex",
                     "effectiveDate": "2026-01-01",
                     "frequency": "ANNUAL",
+                    "sourceUrl": "https://statbel.fgov.be/nl/themas/consumptieprijsindex/gezondheidsindex",
                     "notes": "Gezondheidsindex rebased 2025=100 from 2026-01. April 2026 = 102.77. ~3.2% avg forecast (Federal Planning Bureau).",
                     "propertyType": "RESIDENTIAL"
                 },
@@ -139,6 +151,7 @@
                     "indexName": "Gezondheidsindex",
                     "effectiveDate": "2026-01-01",
                     "frequency": "ANNUAL",
+                    "sourceUrl": "https://statbel.fgov.be/nl/themas/consumptieprijsindex/gezondheidsindex",
                     "notes": "Gezondheidsindex rebased 2025=100 from 2026-01. April 2026 = 102.77. ~3.2% avg forecast (Federal Planning Bureau).",
                     "propertyType": "RESIDENTIAL"
                 },
@@ -323,7 +336,7 @@
             "countryName": "Canada",
             "hasRegionalRegulations": true,
             "summary": "Province-by-province rent control. ON, BC, QC have guideline increases. AB has no rent control.",
-            "lastReviewedAt": "2026-05-14T12:35:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "regions": [
                 {
                     "regionCode": "AB",
@@ -392,6 +405,17 @@
                 }
             ],
             "rules": [
+                {
+                    "regionCode": "NS",
+                    "year": 2027,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 5.0,
+                    "maxIncreaseType": "FIXED_PERCENTAGE",
+                    "effectiveDate": "2027-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://novascotia.ca/news/release/?id=20231006001",
+                    "notes": "Nova Scotia rent cap of 5%/yr legislated through 2027-12-31."
+                },
                 {
                     "regionCode": "AB",
                     "year": 2026,
@@ -1376,7 +1400,7 @@
             "countryName": "Switzerland",
             "hasRegionalRegulations": true,
             "summary": "Reference interest rate (hypothekarischer Referenzzinssatz) based system. CPI and cost-of-living adjustments.",
-            "lastReviewedAt": "2026-05-14T12:50:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "regions": [
                 {
                     "regionCode": "BE",
@@ -1571,7 +1595,7 @@
             "countryName": "Czech Republic",
             "hasRegionalRegulations": false,
             "summary": "Deregulated since 2012. Market rents with contract terms governing increases.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -1645,7 +1669,7 @@
             "countryName": "Germany",
             "hasRegionalRegulations": true,
             "summary": "Mietspiegel-based rent control. Mietpreisbremse (rent brake) limits initial rents in tight markets. Regional variation.",
-            "lastReviewedAt": "2026-05-14T12:30:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "regions": [
                 {
                     "regionCode": "BB",
@@ -1708,6 +1732,7 @@
                     "effectiveDate": "2026-01-01",
                     "frequency": "TRIENNIAL",
                     "additionalConditions": "Kappungsgrenze: total increases capped at 20% over any rolling 3-year period (15% in tight housing markets).",
+                    "sourceUrl": "https://www.gesetze-im-internet.de/bgb/__558.html",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -1766,6 +1791,7 @@
                     "indexName": "Mietspiegel",
                     "effectiveDate": "2026-01-01",
                     "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.berlin.de/rbmskzl/aktuelles/pressemitteilungen/2025/pressemitteilung.1615170.php",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -1787,6 +1813,21 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "BY",
+                    "year": 2026,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2026-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.verkuendung-bayern.de/baymbl/2025-558/",
+                    "notes": "Bayerische Mieterschutzverordnung: 15%/3y Kappungsgrenze + Mietpreisbremse in designated tight-market municipalities (272 per ordinance / 285 per press, up from 208). Current MiSchuV in force 2026-01-01 to 2029-12-31.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
                     "regionCode": "HE",
                     "year": 2026,
                     "propertyCategory": "ALL",
@@ -1797,6 +1838,21 @@
                     "frequency": "TRIENNIAL",
                     "sourceUrl": "https://wirtschaft.hessen.de/Mieterschutzverordnung-vom-18-November-2020-GVBl-S-802",
                     "notes": "Hessische Mieterschutzverordnung: 15%/3y in 49 designated municipalities.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "HH",
+                    "year": 2026,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2026-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.hamburg.de/politik-und-verwaltung/behoerden/behoerde-fuer-stadtentwicklung-und-wohnen/aktuelles/pressemeldungen/senat-erlaesst-mietpreisbegrenzungsverordnung-bis-ende-2029-1120602",
+                    "notes": "Entire city designated tight market: 15%/3y Kappungsgrenzenverordnung (through 2028-08-31) + Mietpreisbegrenzungsverordnung/Mietpreisbremse (2026-01-01 to 2029-12-31).",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
@@ -1870,6 +1926,7 @@
                     "effectiveDate": "2025-01-01",
                     "frequency": "TRIENNIAL",
                     "additionalConditions": "Kappungsgrenze: total increases capped at 20% over any rolling 3-year period (15% in tight housing markets).",
+                    "sourceUrl": "https://www.gesetze-im-internet.de/bgb/__558.html",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -1913,6 +1970,7 @@
                     "indexName": "Mietspiegel",
                     "effectiveDate": "2025-01-01",
                     "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.berlin.de/rbmskzl/aktuelles/pressemitteilungen/2025/pressemitteilung.1615170.php",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -1934,6 +1992,21 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "BY",
+                    "year": 2025,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2025-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.verkuendung-bayern.de/baymbl/2025-558/",
+                    "notes": "Bayerische Mieterschutzverordnung: 15%/3y Kappungsgrenze + Mietpreisbremse in designated tight-market municipalities (272 per ordinance / 285 per press, up from 208). Current MiSchuV in force 2026-01-01 to 2029-12-31.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
                     "regionCode": "HE",
                     "year": 2025,
                     "propertyCategory": "ALL",
@@ -1944,6 +2017,21 @@
                     "frequency": "TRIENNIAL",
                     "sourceUrl": "https://wirtschaft.hessen.de/Mieterschutzverordnung-vom-18-November-2020-GVBl-S-802",
                     "notes": "Hessische Mieterschutzverordnung: 15%/3y in 49 designated municipalities.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "HH",
+                    "year": 2025,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2025-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.hamburg.de/politik-und-verwaltung/behoerden/behoerde-fuer-stadtentwicklung-und-wohnen/aktuelles/pressemeldungen/senat-erlaesst-mietpreisbegrenzungsverordnung-bis-ende-2029-1120602",
+                    "notes": "Entire city designated tight market: 15%/3y Kappungsgrenzenverordnung (through 2028-08-31) + Mietpreisbegrenzungsverordnung/Mietpreisbremse (2026-01-01 to 2029-12-31).",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
@@ -2017,6 +2105,7 @@
                     "effectiveDate": "2024-01-01",
                     "frequency": "TRIENNIAL",
                     "additionalConditions": "Kappungsgrenze: total increases capped at 20% over any rolling 3-year period (15% in tight housing markets).",
+                    "sourceUrl": "https://www.gesetze-im-internet.de/bgb/__558.html",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -2060,6 +2149,7 @@
                     "indexName": "Mietspiegel",
                     "effectiveDate": "2024-01-01",
                     "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.berlin.de/rbmskzl/aktuelles/pressemitteilungen/2025/pressemitteilung.1615170.php",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -2081,6 +2171,21 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "BY",
+                    "year": 2024,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2024-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.verkuendung-bayern.de/baymbl/2025-558/",
+                    "notes": "Bayerische Mieterschutzverordnung: 15%/3y Kappungsgrenze + Mietpreisbremse in designated tight-market municipalities (272 per ordinance / 285 per press, up from 208). Current MiSchuV in force 2026-01-01 to 2029-12-31.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
                     "regionCode": "HE",
                     "year": 2024,
                     "propertyCategory": "ALL",
@@ -2091,6 +2196,21 @@
                     "frequency": "TRIENNIAL",
                     "sourceUrl": "https://wirtschaft.hessen.de/Mieterschutzverordnung-vom-18-November-2020-GVBl-S-802",
                     "notes": "Hessische Mieterschutzverordnung: 15%/3y in 49 designated municipalities.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "HH",
+                    "year": 2024,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2024-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.hamburg.de/politik-und-verwaltung/behoerden/behoerde-fuer-stadtentwicklung-und-wohnen/aktuelles/pressemeldungen/senat-erlaesst-mietpreisbegrenzungsverordnung-bis-ende-2029-1120602",
+                    "notes": "Entire city designated tight market: 15%/3y Kappungsgrenzenverordnung (through 2028-08-31) + Mietpreisbegrenzungsverordnung/Mietpreisbremse (2026-01-01 to 2029-12-31).",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
@@ -2164,6 +2284,7 @@
                     "effectiveDate": "2023-01-01",
                     "frequency": "TRIENNIAL",
                     "additionalConditions": "Kappungsgrenze: total increases capped at 20% over any rolling 3-year period (15% in tight housing markets).",
+                    "sourceUrl": "https://www.gesetze-im-internet.de/bgb/__558.html",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -2207,6 +2328,7 @@
                     "indexName": "Mietspiegel",
                     "effectiveDate": "2023-01-01",
                     "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.berlin.de/rbmskzl/aktuelles/pressemitteilungen/2025/pressemitteilung.1615170.php",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -2228,6 +2350,21 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "BY",
+                    "year": 2023,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2023-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.verkuendung-bayern.de/baymbl/2025-558/",
+                    "notes": "Bayerische Mieterschutzverordnung: 15%/3y Kappungsgrenze + Mietpreisbremse in designated tight-market municipalities (272 per ordinance / 285 per press, up from 208). Current MiSchuV in force 2026-01-01 to 2029-12-31.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
                     "regionCode": "HE",
                     "year": 2023,
                     "propertyCategory": "ALL",
@@ -2238,6 +2375,21 @@
                     "frequency": "TRIENNIAL",
                     "sourceUrl": "https://wirtschaft.hessen.de/Mieterschutzverordnung-vom-18-November-2020-GVBl-S-802",
                     "notes": "Hessische Mieterschutzverordnung: 15%/3y in 49 designated municipalities.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "HH",
+                    "year": 2023,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2023-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.hamburg.de/politik-und-verwaltung/behoerden/behoerde-fuer-stadtentwicklung-und-wohnen/aktuelles/pressemeldungen/senat-erlaesst-mietpreisbegrenzungsverordnung-bis-ende-2029-1120602",
+                    "notes": "Entire city designated tight market: 15%/3y Kappungsgrenzenverordnung (through 2028-08-31) + Mietpreisbegrenzungsverordnung/Mietpreisbremse (2026-01-01 to 2029-12-31).",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
@@ -2311,6 +2463,7 @@
                     "effectiveDate": "2022-01-01",
                     "frequency": "TRIENNIAL",
                     "additionalConditions": "Kappungsgrenze: total increases capped at 20% over any rolling 3-year period (15% in tight housing markets).",
+                    "sourceUrl": "https://www.gesetze-im-internet.de/bgb/__558.html",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -2354,6 +2507,7 @@
                     "indexName": "Mietspiegel",
                     "effectiveDate": "2022-01-01",
                     "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.berlin.de/rbmskzl/aktuelles/pressemitteilungen/2025/pressemitteilung.1615170.php",
                     "notes": "Kappungsgrenze \u00a7558 BGB: rent uplift to comparable local rent (Mietspiegel) capped at 20% over rolling 36 months. Tight-market designated areas: 15% / 36 months.",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
@@ -2375,6 +2529,21 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "BY",
+                    "year": 2022,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2022-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.verkuendung-bayern.de/baymbl/2025-558/",
+                    "notes": "Bayerische Mieterschutzverordnung: 15%/3y Kappungsgrenze + Mietpreisbremse in designated tight-market municipalities (272 per ordinance / 285 per press, up from 208). Current MiSchuV in force 2026-01-01 to 2029-12-31.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
                     "regionCode": "HE",
                     "year": 2022,
                     "propertyCategory": "ALL",
@@ -2385,6 +2554,21 @@
                     "frequency": "TRIENNIAL",
                     "sourceUrl": "https://wirtschaft.hessen.de/Mieterschutzverordnung-vom-18-November-2020-GVBl-S-802",
                     "notes": "Hessische Mieterschutzverordnung: 15%/3y in 49 designated municipalities.",
+                    "regime": "KAPPUNGSGRENZE",
+                    "propertyType": "RESIDENTIAL",
+                    "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "HH",
+                    "year": 2022,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 15.0,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "indexName": "Kappungsgrenze (tight market)",
+                    "effectiveDate": "2022-01-01",
+                    "frequency": "TRIENNIAL",
+                    "sourceUrl": "https://www.hamburg.de/politik-und-verwaltung/behoerden/behoerde-fuer-stadtentwicklung-und-wohnen/aktuelles/pressemeldungen/senat-erlaesst-mietpreisbegrenzungsverordnung-bis-ende-2029-1120602",
+                    "notes": "Entire city designated tight market: 15%/3y Kappungsgrenzenverordnung (through 2028-08-31) + Mietpreisbegrenzungsverordnung/Mietpreisbremse (2026-01-01 to 2029-12-31).",
                     "regime": "KAPPUNGSGRENZE",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
@@ -2456,7 +2640,7 @@
             "countryName": "Denmark",
             "hasRegionalRegulations": false,
             "summary": "Cost-based rent regulation for pre-1992 buildings. Newer buildings: market rent with \"det lejedes vaerdi\" limits.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -2473,13 +2657,14 @@
                 {
                     "year": 2026,
                     "propertyCategory": "PRE_1992",
-                    "maxIncreasePercentage": 2.1,
+                    "maxIncreasePercentage": 2.25,
                     "maxIncreaseType": "INDEX_LINKED",
                     "indexName": "NPI (Nettoprisindeks)",
+                    "indexValue": 122.6,
                     "effectiveDate": "2026-01-01",
                     "frequency": "ANNUAL",
                     "sourceUrl": "https://www.dst.dk/da/Statistik/emner/oekonomi/prisindeks/nettoprisindeks",
-                    "notes": "NPI April-2026 YoY \u2248 2.1%. Pre-1992 cost-based system per Lejeloven \u00a7\u00a7 19-22 (Boligreguleringsloven repealed 2022-07-01).",
+                    "notes": "NPI Oct-2024 119.9 \u2192 Oct-2025 122.6 = +2.25% (DST Nyt nr. 312, 2025-11-10). NPI rebased to 2025=100 from 2026-01.",
                     "regime": "COST_BASED",
                     "propertyType": "RESIDENTIAL",
                     "buildYearMax": 1991
@@ -2561,7 +2746,7 @@
             "countryName": "Spain",
             "hasRegionalRegulations": true,
             "summary": "CPI-linked until 2022, then temporary 2% cap (2023), 3% cap (2024), new reference index from 2025.",
-            "lastReviewedAt": "2026-05-14T12:55:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "regions": [
                 {
                     "regionCode": "CAT",
@@ -2577,6 +2762,7 @@
                     "indexName": "IRAV",
                     "effectiveDate": "2026-01-01",
                     "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.ine.es/jaxiT3/Tabla.htm?t=72975",
                     "notes": "IRAV index (monthly, INE) mandatory for primary-residence contracts signed on/after 2023-05-26. May 2026 IRAV \u2248 2.47% (March IRAV applied). Pre-2023-05-26 contracts may still use IPC unless updated. RDL 8/2026 obligatory 2-year extension ended 2026-04-29.",
                     "propertyType": "RESIDENTIAL"
                 },
@@ -2768,20 +2954,6 @@
                     "propertyCategory": "ALL",
                     "maxIncreasePercentage": 2.0,
                     "maxIncreaseType": "INDEX_LINKED",
-                    "indexName": "min(IGC, 2%) (pre-IRAV)",
-                    "effectiveDate": "2023-05-26",
-                    "frequency": "ANNUAL",
-                    "sourceUrl": "https://www.boe.es/buscar/act.php?id=BOE-A-2023-12203",
-                    "notes": "Post-Ley 12/2023 contracts in 2023: same 2% emergency cap (transitional, IRAV not yet published).",
-                    "regime": "EMERGENCY_CAP",
-                    "propertyType": "RESIDENTIAL",
-                    "contractSignedAfter": "2023-05-26"
-                },
-                {
-                    "year": 2023,
-                    "propertyCategory": "ALL",
-                    "maxIncreasePercentage": 2.0,
-                    "maxIncreaseType": "INDEX_LINKED",
                     "indexName": "min(IGC, 2%)",
                     "effectiveDate": "2023-01-01",
                     "frequency": "ANNUAL",
@@ -2790,6 +2962,20 @@
                     "regime": "EMERGENCY_CAP",
                     "propertyType": "RESIDENTIAL",
                     "contractSignedBefore": "2023-05-26"
+                },
+                {
+                    "year": 2023,
+                    "propertyCategory": "ALL",
+                    "maxIncreasePercentage": 2.0,
+                    "maxIncreaseType": "INDEX_LINKED",
+                    "indexName": "min(IGC, 2%) (pre-IRAV)",
+                    "effectiveDate": "2023-05-26",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.boe.es/buscar/act.php?id=BOE-A-2023-12203",
+                    "notes": "Post-Ley 12/2023 contracts in 2023: same 2% emergency cap (transitional, IRAV not yet published).",
+                    "regime": "EMERGENCY_CAP",
+                    "propertyType": "RESIDENTIAL",
+                    "contractSignedAfter": "2023-05-26"
                 },
                 {
                     "year": 2022,
@@ -2809,7 +2995,7 @@
             "countryName": "Finland",
             "hasRegionalRegulations": false,
             "summary": "No statutory rent control. Increases per lease terms, typically CPI-linked.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -2895,7 +3081,7 @@
             "countryName": "France",
             "hasRegionalRegulations": true,
             "summary": "IRL (Indice de Reference des Loyers) published quarterly by INSEE. Applied nationally.",
-            "lastReviewedAt": "2026-05-14T12:45:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "regions": [
                 {
                     "regionCode": "FR-BORDEAUX",
@@ -2994,7 +3180,7 @@
                     "effectiveDate": "2026-01-01",
                     "frequency": "ANNUAL",
                     "sourceUrl": "https://www.ecologie.gouv.fr/presse/evolution-du-calcul-du-dpe-1er-janvier-2026-favoriser-lelectrification-du-chauffage",
-                    "notes": "Gel des loyers passoires \u00e9nerg\u00e9tiques (loi Climat & R\u00e9silience art. 159, art. 17-1 loi 89-462). Effective 2022-08-24 for F/G dwellings; G also barred from new leases since 2025-01-01; F barred from new leases from 2028. Arr\u00eat\u00e9 du 13 ao\u00fbt 2025 (JORF 26-08-2025) modifies DPE coefficient \u00e9lectricit\u00e9 (2.3 \u2192 1.9) from 2026-01-01: ~850,000 dwellings exit F/G classification.",
+                    "notes": "Since 2022-08-24, DPE F/G dwellings barred from IRL revision (gel des loyers); G also barred from new leases since 2025-01-01. DPE electricity coefficient lowered 2.3\u21921.9 from 2026-01-01 \u2014 ~850k electrically-heated dwellings may exit F/G and resume indexation with a new DPE.",
                     "regime": "EPC_FREEZE",
                     "propertyType": "RESIDENTIAL",
                     "epcClassMin": "F",
@@ -3010,6 +3196,19 @@
                     "frequency": "ANNUAL",
                     "sourceUrl": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000044010585",
                     "notes": "Bordeaux encadrement.",
+                    "regime": "CEILING_RENT",
+                    "propertyType": "RESIDENTIAL"
+                },
+                {
+                    "regionCode": "FR-EST-ENSEMBLE",
+                    "year": 2026,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "CEILING_RENT",
+                    "indexName": "Loyer de r\u00e9f\u00e9rence + 20%",
+                    "effectiveDate": "2026-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043548908",
+                    "notes": "Est Ensemble encadrement: 9 communes. In force through the 5-year experiment expiry (2026-11); renewal pending.",
                     "regime": "CEILING_RENT",
                     "propertyType": "RESIDENTIAL"
                 },
@@ -3075,6 +3274,19 @@
                     "frequency": "ANNUAL",
                     "sourceUrl": "https://www.prefectures-regions.gouv.fr/ile-de-france/",
                     "notes": "Paris encadrement: loyer de r\u00e9f\u00e9rence major\u00e9 per arrondissement/type/\u00e9poque. Annual arr\u00eat\u00e9 pr\u00e9fectoral.",
+                    "regime": "CEILING_RENT",
+                    "propertyType": "RESIDENTIAL"
+                },
+                {
+                    "regionCode": "FR-PAYS-BASQUE",
+                    "year": 2026,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "CEILING_RENT",
+                    "indexName": "Loyer de r\u00e9f\u00e9rence + 20%",
+                    "effectiveDate": "2026-11-25",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048249642",
+                    "notes": "Pays Basque encadrement: 24 communes (Bayonne, Biarritz, Anglet, Saint-Jean-de-Luz, Hendaye, etc.).",
                     "regime": "CEILING_RENT",
                     "propertyType": "RESIDENTIAL"
                 },
@@ -3552,7 +3764,7 @@
             "countryName": "United Kingdom",
             "hasRegionalRegulations": true,
             "summary": "England/Wales: market rent with Section 13 procedure. Scotland: rent control areas possible. N. Ireland: market rent.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "regions": [
                 {
                     "regionCode": "ENG",
@@ -3804,7 +4016,7 @@
             "countryName": "Ireland",
             "hasRegionalRegulations": false,
             "summary": "Rent Pressure Zones (RPZ) cap annual increases. 2% cap since 2021.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -3871,7 +4083,7 @@
             "countryName": "Italy",
             "hasRegionalRegulations": false,
             "summary": "ISTAT FOI index (75% of index for regulated contracts). 100% for free-market contracts.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -3882,7 +4094,7 @@
                     "effectiveDate": "2026-01-01",
                     "frequency": "ANNUAL",
                     "sourceUrl": "https://www.confedilizia.it/locazioni/indice-istat/",
-                    "notes": "Canone libero (4+4 contracts): up to 100% of FOI permitted when contractually stipulated.",
+                    "notes": "Canone libero (4+4): up to 100% of ISTAT FOI when contractually stipulated. FOI is monthly \u2014 e.g. Mar-2026 +1.5%, May-2026 +3.0%. Stored % is a snapshot; apply the FOI of the month preceding each anniversary.",
                     "regime": "FREE_MARKET",
                     "propertyType": "RESIDENTIAL",
                     "contractType": "CANONE_LIBERO"
@@ -3979,7 +4191,7 @@
             "countryName": "Luxembourg",
             "hasRegionalRegulations": false,
             "summary": "Max rent = 5% of invested capital. Increases limited to cost-of-living index adjustments.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -4064,18 +4276,18 @@
             "countryName": "Netherlands",
             "hasRegionalRegulations": false,
             "summary": "Regulated sector: max increase set by government (CBS huurverhoging). Free sector: CPI + surcharge, capped since 2024.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
                     "propertyCategory": "FREE_SECTOR",
                     "maxIncreasePercentage": 4.4,
                     "maxIncreaseType": "CPI_LINKED",
-                    "indexName": "min(CPI, CAO-loon) + 1%",
+                    "indexName": "CPI + 1%",
                     "effectiveDate": "2026-01-01",
                     "frequency": "ANNUAL",
-                    "sourceUrl": "https://www.rijksoverheid.nl/actueel/nieuws/2025/12/15/maximale-huurverhoging-2026-in-sociale-sector-41-middenhuur-61-en-vrije-sector-44",
-                    "notes": "Confirmed by Ministry of Housing 2025-12-15. Lower of inflation (3.4%) or CAO wage growth (5.1%), + 1% = 4.4%.",
+                    "sourceUrl": "https://www.rijksoverheid.nl/onderwerpen/huurverhoging",
+                    "notes": "Confirmed by Ministry of Housing 2025-12-15. CPI + 1%.",
                     "regime": "FREE_SECTOR",
                     "propertyType": "RESIDENTIAL"
                 },
@@ -4097,11 +4309,11 @@
                     "propertyCategory": "REGULATED",
                     "maxIncreasePercentage": 4.1,
                     "maxIncreaseType": "FIXED_PERCENTAGE",
-                    "indexName": "3-yr avg inflation + 0.5%",
+                    "indexName": "CBS huurverhoging",
                     "effectiveDate": "2026-07-01",
                     "frequency": "ANNUAL",
-                    "sourceUrl": "https://www.rijksoverheid.nl/actueel/nieuws/2025/12/15/maximale-huurverhoging-2026-in-sociale-sector-41-middenhuur-61-en-vrije-sector-44",
-                    "notes": "Confirmed by Ministry of Housing 2025-12-15. Social-sector cap = average inflation over the prior 3 years (Dec 2022-Dec 2025: 3.6%) + 0.5% = 4.1%. Basis changed from wage-growth to inflation for 2026.",
+                    "sourceUrl": "https://www.rijksoverheid.nl/onderwerpen/huurverhoging",
+                    "notes": "Confirmed by Ministry of Housing 2025-12-15. Basis = avg inflation 3.6% + 0.5% (not wage growth). Applies to 2026-07-01.",
                     "regime": "REGULATED",
                     "propertyType": "RESIDENTIAL"
                 },
@@ -4242,7 +4454,7 @@
             "countryName": "Norway",
             "hasRegionalRegulations": false,
             "summary": "CPI-linked annual increases for existing leases. Market rent for new leases.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -4312,7 +4524,7 @@
             "countryName": "Poland",
             "hasRegionalRegulations": false,
             "summary": "Municipal housing: regulated rents. Private market: largely unregulated, contract terms apply.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -4415,7 +4627,7 @@
             "countryName": "Portugal",
             "hasRegionalRegulations": false,
             "summary": "INE coefficient applied annually to all regulated leases. Effective January 1st each year.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -4488,7 +4700,7 @@
             "countryName": "Sweden",
             "hasRegionalRegulations": false,
             "summary": "Collective bargaining (bruksvardesystemet). Annual negotiations between tenant/landlord unions.",
-            "lastReviewedAt": "2026-05-14T12:00:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "rules": [
                 {
                     "year": 2026,
@@ -4552,7 +4764,7 @@
             "countryName": "United States",
             "hasRegionalRegulations": true,
             "summary": "No federal rent control. State/city level regulations. Key states: CA, NY, OR have statewide controls.",
-            "lastReviewedAt": "2026-05-14T12:40:00Z",
+            "lastReviewedAt": "2026-06-20T00:00:00Z",
             "regions": [
                 {
                     "regionCode": "CA",
@@ -4630,12 +4842,13 @@
                     "regionCode": "CA",
                     "year": 2026,
                     "propertyCategory": "ALL",
-                    "maxIncreasePercentage": 7.5,
+                    "maxIncreasePercentage": 10.0,
                     "maxIncreaseType": "CPI_LINKED",
-                    "indexName": "CPI + 5% (max 10%)",
+                    "indexName": "5% + regional CPI (cap 10%)",
                     "effectiveDate": "2026-08-01",
                     "frequency": "ANNUAL",
-                    "notes": "Projected. AB 1482 sunset 2030.",
+                    "sourceUrl": "https://www.hcd.ca.gov/AB-1482",
+                    "notes": "AB 1482 (Tenant Protection Act): effective cap = 5% + regional CPI, hard ceiling 10%. Regional \u2014 no single statewide figure; 10% stored as the statutory ceiling. Sunsets 2030-01-01.",
                     "propertyType": "RESIDENTIAL"
                 },
                 {
@@ -4667,6 +4880,17 @@
                     "regime": "RENT_STABILIZED",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "MA",
+                    "year": 2026,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2026-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleVII/Chapter40P",
+                    "notes": "No statewide rent control. G.L. c.40P (1994 ballot Q9) prohibits municipal rent control absent home-rule authorization. As of 2026-06 no statewide change enacted; local-option efforts pending.",
+                    "propertyType": "RESIDENTIAL"
                 },
                 {
                     "regionCode": "MD-MONTGOMERY",
@@ -4761,6 +4985,17 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "NJ",
+                    "year": 2026,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2026-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.nj.gov/dca/",
+                    "notes": "No statewide rent cap. Rent control is municipal (home rule) \u2014 ~100+ municipalities maintain local ordinances (see DCA annual list). State-level row = market rent.",
+                    "propertyType": "RESIDENTIAL"
+                },
+                {
                     "regionCode": "NJ-HOBOKEN",
                     "year": 2026,
                     "propertyCategory": "ALL",
@@ -4814,7 +5049,8 @@
                     "indexName": "RGB projected",
                     "effectiveDate": "2026-10-01",
                     "frequency": "ANNUAL",
-                    "notes": "Preliminary; RGB Order #58 vote scheduled 2026-06-22. Range under discussion: 0\u20132% (1-year), 0\u20134% (2-year).",
+                    "sourceUrl": "https://rentguidelinesboard.cityofnewyork.us/",
+                    "notes": "PROJECTION pending RGB Order #58 final vote (late June 2026). Proposed range: 1-yr 0\u20132%, 2-yr 0\u20134% for leases commencing 2026-10-01.",
                     "regime": "RENT_STABILIZED",
                     "propertyType": "RESIDENTIAL"
                 },
@@ -4873,6 +5109,17 @@
                     "regime": "RENT_STABILIZED",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "MA",
+                    "year": 2025,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2025-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleVII/Chapter40P",
+                    "notes": "No statewide rent control. G.L. c.40P (1994 ballot Q9) prohibits municipal rent control absent home-rule authorization. As of 2026-06 no statewide change enacted; local-option efforts pending.",
+                    "propertyType": "RESIDENTIAL"
                 },
                 {
                     "regionCode": "MD-MONTGOMERY",
@@ -4968,6 +5215,17 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "NJ",
+                    "year": 2025,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2025-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.nj.gov/dca/",
+                    "notes": "No statewide rent cap. Rent control is municipal (home rule) \u2014 ~100+ municipalities maintain local ordinances (see DCA annual list). State-level row = market rent.",
+                    "propertyType": "RESIDENTIAL"
+                },
+                {
                     "regionCode": "NY",
                     "year": 2025,
                     "propertyCategory": "RENT_STABILIZED",
@@ -5036,6 +5294,17 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "MA",
+                    "year": 2024,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2024-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleVII/Chapter40P",
+                    "notes": "No statewide rent control. G.L. c.40P (1994 ballot Q9) prohibits municipal rent control absent home-rule authorization. As of 2026-06 no statewide change enacted; local-option efforts pending.",
+                    "propertyType": "RESIDENTIAL"
+                },
+                {
                     "regionCode": "MD-MONTGOMERY",
                     "year": 2024,
                     "propertyCategory": "ALL",
@@ -5096,6 +5365,17 @@
                     "regime": "RENT_STABILIZED",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "NJ",
+                    "year": 2024,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2024-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.nj.gov/dca/",
+                    "notes": "No statewide rent cap. Rent control is municipal (home rule) \u2014 ~100+ municipalities maintain local ordinances (see DCA annual list). State-level row = market rent.",
+                    "propertyType": "RESIDENTIAL"
                 },
                 {
                     "regionCode": "NY",
@@ -5165,6 +5445,17 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "MA",
+                    "year": 2023,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2023-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleVII/Chapter40P",
+                    "notes": "No statewide rent control. G.L. c.40P (1994 ballot Q9) prohibits municipal rent control absent home-rule authorization. As of 2026-06 no statewide change enacted; local-option efforts pending.",
+                    "propertyType": "RESIDENTIAL"
+                },
+                {
                     "regionCode": "ME-PORTLAND",
                     "year": 2023,
                     "propertyCategory": "ALL",
@@ -5193,6 +5484,17 @@
                     "regime": "RENT_STABILIZED",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "NJ",
+                    "year": 2023,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2023-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.nj.gov/dca/",
+                    "notes": "No statewide rent cap. Rent control is municipal (home rule) \u2014 ~100+ municipalities maintain local ordinances (see DCA annual list). State-level row = market rent.",
+                    "propertyType": "RESIDENTIAL"
                 },
                 {
                     "regionCode": "NY",
@@ -5262,6 +5564,17 @@
                     "tenancyPhase": "EXISTING_LEASE"
                 },
                 {
+                    "regionCode": "MA",
+                    "year": 2022,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2022-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleVII/Chapter40P",
+                    "notes": "No statewide rent control. G.L. c.40P (1994 ballot Q9) prohibits municipal rent control absent home-rule authorization. As of 2026-06 no statewide change enacted; local-option efforts pending.",
+                    "propertyType": "RESIDENTIAL"
+                },
+                {
                     "regionCode": "ME-PORTLAND",
                     "year": 2022,
                     "propertyCategory": "ALL",
@@ -5290,6 +5603,17 @@
                     "regime": "RENT_STABILIZED",
                     "propertyType": "RESIDENTIAL",
                     "tenancyPhase": "EXISTING_LEASE"
+                },
+                {
+                    "regionCode": "NJ",
+                    "year": 2022,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "MARKET_RENT",
+                    "effectiveDate": "2022-01-01",
+                    "frequency": "ANNUAL",
+                    "sourceUrl": "https://www.nj.gov/dca/",
+                    "notes": "No statewide rent cap. Rent control is municipal (home rule) \u2014 ~100+ municipalities maintain local ordinances (see DCA annual list). State-level row = market rent.",
+                    "propertyType": "RESIDENTIAL"
                 },
                 {
                     "regionCode": "NY",
