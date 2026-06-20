@@ -58,7 +58,6 @@ type NavItem = {
 
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Costs', href: '/costs', icon: Wallet },
   { name: 'Teams', href: '/teams', icon: Users },
   { name: 'Users', href: '/users', icon: UserCog },
   {
@@ -98,6 +97,7 @@ const adminNavigation = [
   { name: 'Caches', href: '/caches', icon: Database, indent: true },
   { name: 'Rate Limits', href: '/rate-limits', icon: Shield, indent: true },
   { name: 'Loggers', href: '/loggers', icon: ScrollText, indent: true },
+  { name: 'Costs', href: '/costs', icon: Wallet },
 ];
 
 const isLocalEnv = () => window.location.hostname.includes('local.buurman.io');
