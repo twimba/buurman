@@ -1,0 +1,11 @@
+/* tailwindcss FIRST so its `@layer theme, base, components, utilities;` order
+   declaration precedes theme.css's custom `@layer utilities {}` block.
+   Importing theme.css first registers the `utilities` layer ahead of `base`,
+   which lets preflight override component utilities (text-white, rounded-md…). */
+@import 'tailwindcss';
+@import '../src/styles/theme.css';
+/* RichTextDisplay/RichTextEditor prose styles live in app/src/index.css, not in
+   packages/ui — fold them in so RichText components ship styled in designs. */
+@import './rich-text.css';
+@source "../src";
+@custom-variant dark (&:where(.dark, .dark *));
