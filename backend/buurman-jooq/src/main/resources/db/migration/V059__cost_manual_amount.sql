@@ -1,7 +1,6 @@
 -- Editable monthly cost amounts (EUR) for providers without a usable cost API, or as a fallback
 -- when an API source is unavailable. One row per provider; edited from the backoffice Costs page.
 -- Additive only; safe to roll back.
-
 CREATE TABLE cost_manual_amount (
     provider VARCHAR(40) PRIMARY KEY,
     amount_eur_minor BIGINT NOT NULL,

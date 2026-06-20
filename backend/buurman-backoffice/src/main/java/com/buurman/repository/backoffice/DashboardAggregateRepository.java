@@ -15,7 +15,6 @@ import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.selectCount;
 import static org.jooq.impl.DSL.selectOne;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

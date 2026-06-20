@@ -1,7 +1,6 @@
 -- Cost tracking: daily snapshots of per-provider spend, normalized to EUR.
 -- Additive only; safe to roll back. One row per provider per poll; queries take the
 -- latest per provider (current) and the latest per (provider, period_month) (trend).
-
 CREATE TABLE cost_snapshot (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     provider VARCHAR(40) NOT NULL,

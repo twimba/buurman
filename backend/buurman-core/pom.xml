@@ -292,6 +292,7 @@
                             <inputSpec>${project.basedir}/../../openapi/app.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <output>${project.build.directory}/generated-sources/openapi</output>
+                            <templateDirectory>${project.basedir}/../openapi-templates</templateDirectory>
                             <apiPackage>com.buurman.generated.api</apiPackage>
                             <modelPackage>com.buurman.generated.model</modelPackage>
                             <generateSupportingFiles>false</generateSupportingFiles>

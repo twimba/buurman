@@ -83,6 +83,7 @@
                             <inputSpec>${project.basedir}/../../openapi/backoffice.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <output>${project.build.directory}/generated-sources/openapi</output>
+                            <templateDirectory>${project.basedir}/../openapi-templates</templateDirectory>
                             <apiPackage>com.buurman.generated.backoffice.api</apiPackage>
                             <modelPackage>com.buurman.generated.backoffice.model</modelPackage>
                             <generateSupportingFiles>false</generateSupportingFiles>
