@@ -23,29 +23,29 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   # Backend Spring Boot actuator metrics.
-  # BACKEND_METRICS_TARGET is injected at container startup via envsubst.
-  # Local (make up):  backend:8081
-  # Local (make dev): host.docker.internal:8081
-  # Production:       injected by Dokploy (e.g. buurman-api-xxx:8081)
-  # Note: if BUUR-24 (separate actuator port) is implemented, update port to 8082.
+  # @@BACKEND_METRICS_TARGET@@ is substituted at container startup (see docker-entrypoint.sh).
+  # Actuator runs on the separate management port 8082 (management.server.port).
+  # Local (make up):  host.docker.internal:8082 (backend publishes 8082 to host)
+  # Local (make dev): host.docker.internal:<MANAGEMENT_SERVER_PORT> (e.g. 8183 in a w1 workspace)
+  # Production:       injected by Dokploy (e.g. buurman-api-xxx:8082)
   - job_name: 'backend'
     metrics_path: /actuator/prometheus
     scrape_interval: 30s
     static_configs:
-      - targets: ['${BACKEND_METRICS_TARGET:-backend:8081}']
+      - targets: ['@@BACKEND_METRICS_TARGET@@']
 
   - job_name: 'postgres-exporter'
     scrape_interval: 30s
     static_configs:
-      - targets: ['${POSTGRES_EXPORTER_TARGET:-postgres-exporter:9187}']
+      - targets: ['@@POSTGRES_EXPORTER_TARGET@@']
 
   # Hetzner Cloud node discovery.
-  # HETZNER_BEARER_TOKEN is injected at container startup via envsubst.
+  # @@HETZNER_BEARER_TOKEN@@ is substituted at container startup (see docker-entrypoint.sh).
   # Only active when HETZNER_BEARER_TOKEN is set (production via Dokploy).
   # In local dev this job will fail to scrape but Prometheus will continue normally.
   - job_name: 'hetzner-nodes'
     hetzner_sd_configs:
-      - bearer_token: "${HETZNER_BEARER_TOKEN}"
+      - bearer_token: "@@HETZNER_BEARER_TOKEN@@"
         role: "hcloud"
         refresh_interval: 5m
     relabel_configs:

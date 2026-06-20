@@ -205,6 +205,17 @@ management:
         descriptions: true
         enabled: true
 
+# Backoffice mission-control dashboard
+backoffice:
+  dashboard:
+    metrics:
+      # Prometheus query endpoint. Empty => latency/error-rate/p95 panels show PREVIEW.
+      # Cluster-wide aggregation (sum by le) makes this correct on multi-node setups.
+      prometheus-url: ${PROMETHEUS_URL:}
+      # Label matcher scoping queries to this app across all nodes.
+      selector: 'application="buurman"'
+      window: 5m
+
 # Server Configuration
 server:
   port: 8081

@@ -202,6 +202,8 @@
                                 <importMapping>LogLine=com.buurman.dto.response.backoffice.dashboard.LiveTailResponse.LogLine</importMapping>
                                 <importMapping>GeoResponse=com.buurman.dto.response.backoffice.dashboard.GeoResponse</importMapping>
                                 <importMapping>GeoCountry=com.buurman.dto.response.backoffice.dashboard.GeoResponse.GeoCountry</importMapping>
+                                <importMapping>LatencyHeatmapResponse=com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse</importMapping>
+                                <importMapping>HeatColumn=com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse.HeatColumn</importMapping>
                                 <importMapping>PropertyLocationsResponse=com.buurman.dto.response.backoffice.dashboard.PropertyLocationsResponse</importMapping>
                                 <importMapping>PropertyPoint=com.buurman.dto.response.backoffice.dashboard.PropertyLocationsResponse.PropertyPoint</importMapping>
                                 <importMapping>PanelPlacement=com.buurman.dto.response.backoffice.dashboard.PanelPlacement</importMapping>

@@ -2,4 +2,5 @@
 -- Country is user-chosen (onboarding / team settings); new teams start with no country
 -- until the user sets one. Existing values are left untouched.
 ALTER TABLE team_preferences
-ALTER COLUMN default_country_code DROP DEFAULT;
+ALTER COLUMN default_country_code
+DROP DEFAULT;

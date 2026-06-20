@@ -11,6 +11,7 @@ import com.buurman.dto.response.backoffice.dashboard.ActionQueueResponse;
 import com.buurman.dto.response.backoffice.dashboard.DashboardLayoutResponse;
 import com.buurman.dto.response.backoffice.dashboard.FunnelResponse;
 import com.buurman.dto.response.backoffice.dashboard.GeoResponse;
+import com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse;
 import com.buurman.dto.response.backoffice.dashboard.LiveTailResponse;
 import com.buurman.dto.response.backoffice.dashboard.PreviewPanelResponse;
 import com.buurman.dto.response.backoffice.dashboard.ProductEntitiesResponse;
@@ -26,6 +27,7 @@ import com.buurman.service.backoffice.dashboard.ActivationFunnelService;
 import com.buurman.service.backoffice.dashboard.DashboardLayoutService;
 import com.buurman.service.backoffice.dashboard.DashboardPreviewService;
 import com.buurman.service.backoffice.dashboard.GeoService;
+import com.buurman.service.backoffice.dashboard.LatencyHeatmapService;
 import com.buurman.service.backoffice.dashboard.LiveTailService;
 import com.buurman.service.backoffice.dashboard.ProductEntitiesService;
 import com.buurman.service.backoffice.dashboard.SchedulerHealthService;
@@ -52,6 +54,7 @@ public class BackofficeDashboardController implements BackofficeDashboardApi {
   private final SchedulerHealthService schedulerHealthService;
   private final DashboardPreviewService previewService;
   private final GeoService geoService;
+  private final LatencyHeatmapService latencyHeatmapService;
   private final LiveTailService liveTailService;
   private final DashboardLayoutService layoutService;
 
@@ -110,8 +113,8 @@ public class BackofficeDashboardController implements BackofficeDashboardApi {
   }
 
   @Override
-  public PreviewPanelResponse getDashboardLatencyHeatmap() {
-    return previewService.latencyHeatmap();
+  public LatencyHeatmapResponse getDashboardLatencyHeatmap() {
+    return latencyHeatmapService.getLatencyHeatmap();
   }
 
   @Override

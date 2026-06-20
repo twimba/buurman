@@ -122,7 +122,7 @@ VITE_KEYCLOAK_URL=https://${HP}keycloak.local.buurman.io${PORT_SUFFIX}
 VITE_BACKOFFICE_KEYCLOAK_URL=https://${HP}keycloak.local.buurman.io${PORT_SUFFIX}
 CORS_ALLOWED_ORIGINS=http://localhost:${LOCAL_APP_PORT},https://${HP}app.local.buurman.io${PORT_SUFFIX}
 CORS_BACKOFFICE_ALLOWED_ORIGINS=http://localhost:${LOCAL_BACKOFFICE_PORT},https://${HP}backoffice.local.buurman.io${PORT_SUFFIX}
-BACKEND_METRICS_TARGET=host.docker.internal:${BACKEND_HOST_PORT}
+BACKEND_METRICS_TARGET=host.docker.internal:${BACKEND_MGMT_HOST_PORT}
 EOF
 
 echo "  .env generated"
@@ -276,6 +276,14 @@ for client in data.get('clients', []):
         origins.append('https://${HP}backoffice.local.buurman.io${PORT_SUFFIX}')
         origins.append('http://localhost:${LOCAL_BACKOFFICE_PORT}')
         client['webOrigins'] = list(dict.fromkeys(origins))
+    if client.get('clientId') == 'grafana':
+        uris = client.get('redirectUris', [])
+        uris.append('$WS_BACKOFFICE_URL')
+        uris.append('https://${HP}grafana.local.buurman.io${PORT_SUFFIX}/*')
+        client['redirectUris'] = list(dict.fromkeys(uris))
+        origins = client.get('webOrigins', [])
+        origins.append('https://${HP}grafana.local.buurman.io${PORT_SUFFIX}')
+        client['webOrigins'] = list(dict.fromkeys(origins))
 with open('$BACKOFFICE_REALM_FILE', 'w') as f:
     json.dump(data, f, indent=2)
 "
@@ -312,6 +320,8 @@ export APP_PUBLICURL=https://${HP}app.local.buurman.io${PORT_SUFFIX}
 export APP_API_BASEURL=https://${HP}api.local.buurman.io${PORT_SUFFIX}
 export APP_CORS_ALLOWEDORIGINS=http://localhost:${LOCAL_APP_PORT},https://${HP}app.local.buurman.io${PORT_SUFFIX}
 export APP_CORS_BACKOFFICEALLOWEDORIGINS=http://localhost:${LOCAL_BACKOFFICE_PORT},https://${HP}backoffice.local.buurman.io${PORT_SUFFIX}
+# Backend -> Prometheus query API (cluster-wide p95 / error-rate / latency heatmap dashboard panels).
+export PROMETHEUS_URL=https://${HP}prometheus.local.buurman.io${PORT_SUFFIX}
 EOF
 
 echo "  .env.backend generated"

@@ -75,4 +75,3 @@ export const BetterStackIcon = (props: IconProps) => (
     <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm0 2.18L18.36 7.5 12 10.82 5.64 7.5 12 4.18zM5 8.94l6 3.33v6.56l-6-3.33V8.94zm8 9.89v-6.56l6-3.33v6.56l-6 3.33z" />
   </Icon>
 );
-

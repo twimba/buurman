@@ -26,11 +26,6 @@ public class DashboardPreviewService {
     return preview("cost-watch", "Connect Mailgun/Twilio/AWS billing APIs to enable");
   }
 
-  @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
-  public PreviewPanelResponse latencyHeatmap() {
-    return preview("latency-heatmap", "Connect Prometheus to enable");
-  }
-
   private static PreviewPanelResponse preview(String panel, String cta) {
     return new PreviewPanelResponse(PanelStatus.PREVIEW, panel, Optional.of(cta), Optional.empty());
   }

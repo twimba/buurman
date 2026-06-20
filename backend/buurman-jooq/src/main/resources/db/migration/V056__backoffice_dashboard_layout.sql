@@ -3,7 +3,6 @@
 -- backoffice_user_id is the Keycloak subject UUID of the acting Buurmy. Backoffice
 -- admins are not necessarily rows in the tenant `users` table, so there is no FK
 -- (matches impersonation_sessions.admin_user_id).
-
 CREATE TABLE backoffice_user_dashboard_layout (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     backoffice_user_id UUID NOT NULL,
