@@ -1,0 +1,21 @@
+{
+  "pkg": "@buurman/ui",
+  "globalName": "BuurmanUI",
+  "shape": "package",
+  "projectId": "8f3ad6a5-0268-40a0-9dc4-92c3240be61f",
+  "srcDir": "src",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": ".design-sync/.cache/ui-compiled.css",
+  "extraFonts": [".design-sync/satoshi.css"],
+  "componentSrcMap": {
+    "ToastProvider": null
+  },
+  "extraEntries": ["react-router-dom"],
+  "overrides": {
+    "ConfirmDialog": { "cardMode": "single", "viewport": "680x520" },
+    "ModalWrapper": { "cardMode": "single", "viewport": "680x560" },
+    "Sheet": { "cardMode": "single", "viewport": "520x620" },
+    "FilterSheet": { "cardMode": "single", "viewport": "820x520" },
+    "SelectionBar": { "cardMode": "single", "viewport": "760x200" }
+  }
+}
