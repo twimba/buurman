@@ -7936,6 +7936,7 @@ components:
         - FROZEN
         - STATUTORY_CAP
         - STATUTORY_CEILING
+        - CEILING_RENT
         - COMPARATIVE
         - COST_BASED
         - CAPITAL_BASED
