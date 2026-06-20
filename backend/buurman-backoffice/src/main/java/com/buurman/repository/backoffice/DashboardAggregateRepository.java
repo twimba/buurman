@@ -7,6 +7,7 @@ import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_PREFERENCES;
+import static com.buurman.jooq.generated.Tables.USERS;
 import static org.jooq.impl.DSL.exists;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.min;
@@ -88,11 +89,11 @@ public class DashboardAggregateRepository {
   }
 
   /**
-   * Product entities created today and overall (non-deleted), excluding demo and soft-deleted teams
-   * so the numbers reconcile with the funnel and top-teams panels.
+   * Product-growth entities created in the last 7 days and overall (non-deleted). Team-scoped
+   * entities exclude demo + soft-deleted teams so the numbers reconcile with the other panels.
    */
   public List<EntityCount> productEntityCounts() {
-    LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+    LocalDateTime since = LocalDateTime.now().minusDays(7);
     return List.of(
         entityCount(
             "Properties",
@@ -100,21 +101,23 @@ public class DashboardAggregateRepository {
             PROPERTIES.TEAM_ID,
             PROPERTIES.DELETED_AT,
             PROPERTIES.CREATED_AT,
-            startOfToday),
+            since),
         entityCount(
             "Contracts",
             CONTRACTS,
             CONTRACTS.TEAM_ID,
             CONTRACTS.DELETED_AT,
             CONTRACTS.CREATED_AT,
-            startOfToday),
+            since),
         entityCount(
             "Contacts",
             CONTACTS,
             CONTACTS.TEAM_ID,
             CONTACTS.DELETED_AT,
             CONTACTS.CREATED_AT,
-            startOfToday));
+            since),
+        userCount(since),
+        teamCount(since));
   }
 
   private EntityCount entityCount(
@@ -123,15 +126,41 @@ public class DashboardAggregateRepository {
       Field<UUID> teamId,
       Field<LocalDateTime> deletedAt,
       Field<LocalDateTime> createdAt,
-      LocalDateTime startOfToday) {
-    long today =
+      LocalDateTime since) {
+    long last7Days =
         count(
             dsl.selectCount()
                 .from(table)
-                .where(deletedAt.isNull().and(createdAt.ge(startOfToday)).and(activeTeam(teamId))));
+                .where(deletedAt.isNull().and(createdAt.ge(since)).and(activeTeam(teamId))));
     long total =
         count(dsl.selectCount().from(table).where(deletedAt.isNull().and(activeTeam(teamId))));
-    return new EntityCount(label, today, total);
+    return new EntityCount(label, last7Days, total);
+  }
+
+  /** Non-deleted users (platform-wide). */
+  private EntityCount userCount(LocalDateTime since) {
+    long last7Days =
+        count(
+            dsl.selectCount()
+                .from(USERS)
+                .where(USERS.DELETED_AT.isNull().and(USERS.CREATED_AT.ge(since))));
+    long total = count(dsl.selectCount().from(USERS).where(USERS.DELETED_AT.isNull()));
+    return new EntityCount("Users", last7Days, total);
+  }
+
+  /** Active (non-demo, non-deleted) teams. */
+  private EntityCount teamCount(LocalDateTime since) {
+    long last7Days =
+        count(
+            dsl.selectCount()
+                .from(TEAMS)
+                .where(
+                    TEAMS
+                        .DEMO
+                        .isFalse()
+                        .and(TEAMS.DELETED_AT.isNull())
+                        .and(TEAMS.CREATED_AT.ge(since))));
+    return new EntityCount("Teams", last7Days, countActiveTeams());
   }
 
   /** Predicate: the row's team is non-demo and not soft-deleted. */

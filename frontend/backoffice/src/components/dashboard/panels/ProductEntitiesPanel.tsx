@@ -6,7 +6,7 @@ export const ProductEntitiesPanel = () => {
 
   return (
     <PanelShell
-      title="Product entities today"
+      title="Product entities · last 7 days"
       status={data?.status}
       previewCta={data?.previewCta}
       isLoading={isLoading}
@@ -22,7 +22,7 @@ export const ProductEntitiesPanel = () => {
               {entity.label}
             </p>
             <p className="mt-1 text-2xl font-bold leading-none text-text-primary tabular-nums">
-              {entity.today}
+              {entity.last7Days}
             </p>
             <p className="mt-1 text-xs text-text-secondary tabular-nums">
               {entity.total.toLocaleString()} total
