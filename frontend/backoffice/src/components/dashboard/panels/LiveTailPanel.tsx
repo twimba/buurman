@@ -50,11 +50,16 @@ export const LiveTailPanel = () => {
           No recent log activity.
         </p>
       ) : (
-        <div className="max-h-48 overflow-auto font-mono text-[11px] leading-relaxed">
-          {lines.map((line, i) => (
-            <Line key={`${line.timestamp}-${i}`} line={line} />
-          ))}
-        </div>
+        <>
+          <p className="mb-1 text-[10px] text-text-muted">
+            Logs from the serving node only — not aggregated across the cluster.
+          </p>
+          <div className="max-h-48 overflow-auto font-mono text-[11px] leading-relaxed">
+            {lines.map((line, i) => (
+              <Line key={`${line.timestamp}-${i}`} line={line} />
+            ))}
+          </div>
+        </>
       )}
     </PanelShell>
   );

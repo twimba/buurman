@@ -58,6 +58,8 @@ export const LatencyHeatmapPanel = () => {
                         key={col.time + band}
                         className="h-[14px] rounded-[1px]"
                         style={{ backgroundColor: heatColor(v, max) }}
+                        role="img"
+                        aria-label={`${band} at ${col.time}: ${v.toLocaleString()} requests/s`}
                         title={`${band} · ${col.time}: ${v.toLocaleString()} req/s`}
                       />
                     );
@@ -68,6 +70,19 @@ export const LatencyHeatmapPanel = () => {
           <div className="flex justify-between pl-[46px] text-[9px] tabular-nums text-text-muted">
             <span>{columns[0]?.time}</span>
             <span>{columns[columns.length - 1]?.time}</span>
+          </div>
+          {/* Legend: color encodes request throughput (peak = max in view). */}
+          <div className="flex items-center gap-1.5 pl-[46px] pt-1 text-[9px] text-text-muted">
+            <span>Less</span>
+            {[0, 1, 2, 3, 4, 5].map((lvl) => (
+              <span
+                key={lvl}
+                className="h-2 w-3 rounded-[1px]"
+                style={{ backgroundColor: `var(--heatmap-${lvl})` }}
+                aria-hidden="true"
+              />
+            ))}
+            <span>More req/s</span>
           </div>
         </div>
       )}

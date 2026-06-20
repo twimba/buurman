@@ -3,6 +3,7 @@ import {
   Component,
   useCallback,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -162,6 +163,7 @@ export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
   const { data, isLoading, isError } = usePropertyLocations(true);
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
   const points = data?.points ?? [];
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // Close on Escape.
   useEffect(() => {
@@ -174,17 +176,38 @@ export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  // Modal contract: lock background scroll, move focus in, restore it to the opener on close.
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeButtonRef.current?.focus();
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      opener?.focus?.();
+    };
+  }, []);
+
   return createPortal(
-    <div className="fixed inset-0 z-50 flex flex-col bg-surface-page">
+    <div
+      className="fixed inset-0 z-50 flex flex-col bg-surface-page"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="property-world-map-title"
+    >
       <header className="flex items-center justify-between gap-3 border-b border-border-default bg-surface-card px-4 py-2.5">
         <div className="flex items-baseline gap-2">
-          <h2 className="text-sm font-semibold text-text-primary">
+          <h2
+            id="property-world-map-title"
+            className="text-sm font-semibold text-text-primary"
+          >
             Property world map
           </h2>
           {data && (
             <span className="text-xs text-text-muted tabular-nums">
-              {data.total.toLocaleString()} properties
-              {data.capped ? ' (capped)' : ''}
+              {data.capped
+                ? `${data.total.toLocaleString()} properties shown (capped — more exist)`
+                : `${data.total.toLocaleString()} properties`}
             </span>
           )}
         </div>
@@ -204,6 +227,7 @@ export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
             </ToggleButton>
           </div>
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
             aria-label="Close map"
@@ -242,7 +266,8 @@ export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
             >
               <FitBounds points={points} />
               <LayerErrorBoundary onError={markHeatmapUnavailable}>
-                {mode === 'markers' ? (
+                {mode === 'markers' || heatmapUnavailable ? (
+                  // Fall back to markers so the map is never blank when the heatmap can't render.
                   <MarkersLayer points={points} />
                 ) : (
                   <HeatmapLayer

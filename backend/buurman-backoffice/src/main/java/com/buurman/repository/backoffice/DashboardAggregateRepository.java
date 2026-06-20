@@ -222,8 +222,8 @@ public class DashboardAggregateRepository {
   }
 
   /**
-   * Non-deleted teams grouped by their default country code, highest first. Demo teams are included
-   * (geographic distribution is exploratory, not a financial KPI).
+   * Active (non-demo, non-deleted) teams grouped by their default country code, highest first.
+   * Excludes demo teams so the breakdown reconciles with the active-teams pillar and the funnel.
    */
   public List<GeoCountry> teamsByCountry() {
     return dsl.select(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, DSL.count())
@@ -232,8 +232,9 @@ public class DashboardAggregateRepository {
         .on(TEAMS.ID.eq(TEAM_PREFERENCES.TEAM_ID))
         .where(
             TEAMS
-                .DELETED_AT
-                .isNull()
+                .DEMO
+                .isFalse()
+                .and(TEAMS.DELETED_AT.isNull())
                 .and(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE.isNotNull())
                 .and(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE.ne("")))
         .groupBy(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE)
@@ -244,7 +245,7 @@ public class DashboardAggregateRepository {
                 new GeoCountry(r.get(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE), r.get(1, Long.class)));
   }
 
-  /** Non-deleted teams with no country set (no prefs row, or null/blank country). */
+  /** Active (non-demo, non-deleted) teams with no country set (no prefs row, or null/blank). */
   public long teamsWithoutCountry() {
     return count(
         dsl.selectCount()
@@ -253,8 +254,9 @@ public class DashboardAggregateRepository {
             .on(TEAM_PREFERENCES.TEAM_ID.eq(TEAMS.ID))
             .where(
                 TEAMS
-                    .DELETED_AT
-                    .isNull()
+                    .DEMO
+                    .isFalse()
+                    .and(TEAMS.DELETED_AT.isNull())
                     .and(
                         TEAM_PREFERENCES
                             .DEFAULT_COUNTRY_CODE
@@ -262,7 +264,7 @@ public class DashboardAggregateRepository {
                             .or(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE.eq("")))));
   }
 
-  /** Non-deleted properties grouped by their country code, highest first. */
+  /** Non-deleted properties of active (non-demo) teams grouped by country code, highest first. */
   public List<GeoCountry> propertiesByCountry() {
     return dsl.select(PROPERTIES.COUNTRY_CODE, DSL.count())
         .from(PROPERTIES)
@@ -273,6 +275,7 @@ public class DashboardAggregateRepository {
                 .DELETED_AT
                 .isNull()
                 .and(TEAMS.DELETED_AT.isNull())
+                .and(TEAMS.DEMO.isFalse())
                 .and(PROPERTIES.COUNTRY_CODE.isNotNull())
                 .and(PROPERTIES.COUNTRY_CODE.ne("")))
         .groupBy(PROPERTIES.COUNTRY_CODE)
@@ -281,7 +284,7 @@ public class DashboardAggregateRepository {
         .map(r -> new GeoCountry(r.get(PROPERTIES.COUNTRY_CODE), r.get(1, Long.class)));
   }
 
-  /** Geocoded coordinates ({lat, lng}) of non-deleted properties, capped at {@code limit}. */
+  /** Geocoded coordinates ({lat, lng}) of non-deleted properties of active teams, capped. */
   public List<double[]> propertyCoordinates(int limit) {
     return dsl.select(PROPERTIES.LATITUDE, PROPERTIES.LONGITUDE)
         .from(PROPERTIES)
@@ -292,6 +295,7 @@ public class DashboardAggregateRepository {
                 .DELETED_AT
                 .isNull()
                 .and(TEAMS.DELETED_AT.isNull())
+                .and(TEAMS.DEMO.isFalse())
                 .and(PROPERTIES.LATITUDE.isNotNull())
                 .and(PROPERTIES.LONGITUDE.isNotNull()))
         .limit(limit)

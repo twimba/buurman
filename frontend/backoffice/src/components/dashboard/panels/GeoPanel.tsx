@@ -109,6 +109,12 @@ export const GeoPanel = () => {
           ))}
         </div>
 
+        <p className="mb-2 text-[11px] leading-snug text-text-muted">
+          {tab === 'teams'
+            ? 'Each team’s chosen default country — a preference, not a verified location. Excludes demo teams.'
+            : 'By each property’s address country. Excludes demo teams.'}
+        </p>
+
         <CountryBars rows={rows} />
 
         {tab === 'teams' && (data?.teamsWithoutCountry ?? 0) > 0 && (

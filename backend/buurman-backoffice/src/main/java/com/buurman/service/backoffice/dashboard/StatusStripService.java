@@ -76,8 +76,9 @@ public class StatusStripService {
   private Pillar errorRatePillar() {
     Metric m = metricsQueryService.errorRatePct();
     return switch (m.state()) {
-      case UNAVAILABLE -> preview("error-rate", "Error rate", "Connect Prometheus to enable");
-      case NO_DATA -> live("error-rate", "Error rate", "0%", "ok", Optional.empty());
+      case UNAVAILABLE -> preview("error-rate", "Error rate", metricsUnavailableCta());
+      // No traffic in window: neutral "—", never a green "0%" that could mask a down fleet.
+      case NO_DATA -> live("error-rate", "Error rate", "—", "info", Optional.empty());
       case LIVE ->
           live(
               "error-rate",
@@ -91,8 +92,8 @@ public class StatusStripService {
   private Pillar p95Pillar() {
     Metric m = metricsQueryService.p95Millis();
     return switch (m.state()) {
-      case UNAVAILABLE -> preview("p95", "p95 latency", "Connect Prometheus to enable");
-      case NO_DATA -> live("p95", "p95 latency", "—", "ok", Optional.empty());
+      case UNAVAILABLE -> preview("p95", "p95 latency", metricsUnavailableCta());
+      case NO_DATA -> live("p95", "p95 latency", "—", "info", Optional.empty());
       case LIVE ->
           live(
               "p95",
@@ -101,6 +102,13 @@ public class StatusStripService {
               m.value() >= 1000 ? "crit" : m.value() >= 500 ? "warn" : "ok",
               Optional.empty());
     };
+  }
+
+  /** Distinguishes "Prometheus not wired" (dev) from "configured but unreachable" (prod). */
+  private String metricsUnavailableCta() {
+    return metricsQueryService.configured()
+        ? "Prometheus unreachable — check backend logs"
+        : "Set PROMETHEUS_URL to enable";
   }
 
   private static String formatPct(double pct) {
