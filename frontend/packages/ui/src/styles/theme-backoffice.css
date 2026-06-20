@@ -111,10 +111,20 @@
   }
 }
 
+@keyframes mc-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @theme {
   --animate-mc-pulse: mc-pulse 2.4s var(--ease-out-quart) infinite;
   --animate-mc-flash: mc-flash 600ms var(--ease-out-quart);
   --animate-mc-rise: mc-rise 360ms var(--ease-out-quart) both;
+  --animate-mc-grow-x: mc-grow-x 560ms var(--ease-out-quart) both;
 }
 
 /* ── Mission-control panel surface (elevation + interactive lift) ── */

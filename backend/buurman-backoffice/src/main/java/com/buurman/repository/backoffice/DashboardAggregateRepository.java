@@ -2,7 +2,9 @@ package com.buurman.repository.backoffice;
 
 import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.IMPERSONATION_SESSIONS;
+import static com.buurman.jooq.generated.Tables.PHOTOS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
@@ -116,6 +118,7 @@ public class DashboardAggregateRepository {
             CONTACTS.DELETED_AT,
             CONTACTS.CREATED_AT,
             since),
+        uploadsCount(since),
         userCount(since),
         teamCount(since));
   }
@@ -127,14 +130,38 @@ public class DashboardAggregateRepository {
       Field<LocalDateTime> deletedAt,
       Field<LocalDateTime> createdAt,
       LocalDateTime since) {
+    return new EntityCount(
+        label,
+        activeRowCount(table, teamId, deletedAt, createdAt, since),
+        activeRowTotal(table, teamId, deletedAt));
+  }
+
+  /** Uploads = documents + photos (both keyed by uploaded_at), across active teams. */
+  private EntityCount uploadsCount(LocalDateTime since) {
     long last7Days =
-        count(
-            dsl.selectCount()
-                .from(table)
-                .where(deletedAt.isNull().and(createdAt.ge(since)).and(activeTeam(teamId))));
+        activeRowCount(DOCUMENTS, DOCUMENTS.TEAM_ID, DOCUMENTS.DELETED_AT, DOCUMENTS.UPLOADED_AT, since)
+            + activeRowCount(PHOTOS, PHOTOS.TEAM_ID, PHOTOS.DELETED_AT, PHOTOS.UPLOADED_AT, since);
     long total =
-        count(dsl.selectCount().from(table).where(deletedAt.isNull().and(activeTeam(teamId))));
-    return new EntityCount(label, last7Days, total);
+        activeRowTotal(DOCUMENTS, DOCUMENTS.TEAM_ID, DOCUMENTS.DELETED_AT)
+            + activeRowTotal(PHOTOS, PHOTOS.TEAM_ID, PHOTOS.DELETED_AT);
+    return new EntityCount("Uploads", last7Days, total);
+  }
+
+  private long activeRowCount(
+      Table<?> table,
+      Field<UUID> teamId,
+      Field<LocalDateTime> deletedAt,
+      Field<LocalDateTime> createdAt,
+      LocalDateTime since) {
+    return count(
+        dsl.selectCount()
+            .from(table)
+            .where(deletedAt.isNull().and(createdAt.ge(since)).and(activeTeam(teamId))));
+  }
+
+  private long activeRowTotal(
+      Table<?> table, Field<UUID> teamId, Field<LocalDateTime> deletedAt) {
+    return count(dsl.selectCount().from(table).where(deletedAt.isNull().and(activeTeam(teamId))));
   }
 
   /** Non-deleted users who belong to at least one active (non-demo) team — excludes demo users. */

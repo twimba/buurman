@@ -2,6 +2,7 @@ import {
   Building2,
   Contact,
   FileText,
+  Images,
   User,
   Users2,
   type LucideIcon,
@@ -14,6 +15,7 @@ const ICONS: Record<string, LucideIcon> = {
   Properties: Building2,
   Contracts: FileText,
   Contacts: Contact,
+  Uploads: Images,
   Users: User,
   Teams: Users2,
 };
