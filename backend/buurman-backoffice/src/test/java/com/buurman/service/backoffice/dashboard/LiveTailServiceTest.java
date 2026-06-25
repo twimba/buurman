@@ -40,11 +40,22 @@ class LiveTailServiceTest {
   }
 
   @Test
-  @DisplayName("returns all levels when no filter is given")
-  void returnsAllWhenNoFilter() {
+  @DisplayName("defaults to INFO floor, never surfacing DEBUG/TRACE (which may carry tenant PII)")
+  void defaultsToInfoFloor() {
     add(Level.DEBUG, "com.buurman.Foo", "a");
     add(Level.INFO, "com.buurman.Foo", "b");
 
-    assertThat(service.getLiveTail(Optional.empty()).lines()).hasSize(2);
+    var lines = service.getLiveTail(Optional.empty()).lines();
+    assertThat(lines).hasSize(1);
+    assertThat(lines.get(0).level()).isEqualTo("INFO");
+  }
+
+  @Test
+  @DisplayName("never returns below INFO even when a lower level is explicitly requested")
+  void clampsRequestedLevelToInfoFloor() {
+    add(Level.DEBUG, "com.buurman.Foo", "a");
+    add(Level.INFO, "com.buurman.Foo", "b");
+
+    assertThat(service.getLiveTail(Optional.of("DEBUG")).lines()).hasSize(1);
   }
 }

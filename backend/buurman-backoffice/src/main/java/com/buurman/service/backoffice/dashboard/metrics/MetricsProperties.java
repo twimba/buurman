@@ -24,12 +24,28 @@ public record MetricsProperties(Optional<String> prometheusUrl, String selector,
       java.util.regex.Pattern.compile("\\d+[smhdwy]");
 
   public MetricsProperties {
-    prometheusUrl = Optional.ofNullable(prometheusUrl).flatMap(o -> o).filter(s -> !s.isBlank());
+    // Only accept a syntactically valid http/https URL; anything else degrades panels to PREVIEW
+    // (configured() == false) rather than turning the dashboard into a blind GET against an
+    // arbitrary host on the backend network.
+    prometheusUrl =
+        Optional.ofNullable(prometheusUrl)
+            .flatMap(o -> o)
+            .filter(s -> !s.isBlank())
+            .filter(MetricsProperties::isHttpUrl);
     if (selector == null || !SELECTOR.matcher(selector).matches()) {
       selector = DEFAULT_SELECTOR;
     }
     if (window == null || !WINDOW.matcher(window).matches()) {
       window = "5m";
+    }
+  }
+
+  private static boolean isHttpUrl(String value) {
+    try {
+      String scheme = java.net.URI.create(value).getScheme();
+      return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
+    } catch (IllegalArgumentException e) {
+      return false;
     }
   }
 

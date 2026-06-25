@@ -17,7 +17,7 @@ const METRICS: { key: GeoMetric; label: string }[] = [
 ];
 
 export const GeoPanel = () => {
-  const { data, isLoading, isError } = useGeo();
+  const { data, isLoading, isError, refetch } = useGeo();
   const [metric, setMetric] = useState<GeoMetric>('teams');
   const countries = data?.countries ?? [];
   const withoutCountry = data?.teamsWithoutCountry ?? 0;
@@ -29,6 +29,7 @@ export const GeoPanel = () => {
       previewCta={data?.previewCta}
       isLoading={isLoading}
       isError={isError}
+      onRetry={refetch}
       headerRight={
         <div className="flex items-center gap-0.5 rounded-md border border-border-default p-0.5 text-[11px]">
           {METRICS.map((m) => (

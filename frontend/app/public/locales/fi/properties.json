@@ -840,7 +840,10 @@
       "manual": "Merkki asetettu manuaalisesti - vedaa tarvittaessa",
       "approximate": "Loysimme alueen mutta emme tarkkaa paikkaa - vedaa merkki kohteesi kohdalle!",
       "country": "No, maan ainakin loysimme! Vedaa merkki oikeaan sijaintiin."
-    }
+    },
+    "mapView": "Kartta",
+    "streetView": "Street View",
+    "noStreetView": "Street View ei ole käytettävissä tässä sijainnissa."
   },
   "timeline": {
     "selfOccupancy": "Omakaytto",

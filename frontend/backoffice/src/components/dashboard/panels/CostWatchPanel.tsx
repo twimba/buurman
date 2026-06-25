@@ -1,4 +1,4 @@
-import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react';
 
 import { useCostWatch } from '../../../hooks/dashboard';
 import { formatEurMinor } from '../../../lib/money';
@@ -6,7 +6,7 @@ import { SourceTypeBadge } from '../../cost/SourceTypeBadge';
 import { PanelShell } from '../PanelShell';
 
 export const CostWatchPanel = () => {
-  const { data, isLoading, isError } = useCostWatch();
+  const { data, isLoading, isError, refetch } = useCostWatch();
   const mom = data?.momChangePct;
 
   return (
@@ -18,6 +18,7 @@ export const CostWatchPanel = () => {
       docsLink={data?.docsLink}
       isLoading={isLoading}
       isError={isError}
+      onRetry={refetch}
     >
       <div className="flex items-baseline gap-2">
         <span className="text-xl font-bold leading-none text-text-primary tabular-nums">
@@ -26,14 +27,23 @@ export const CostWatchPanel = () => {
         <span className="text-[11px] text-text-muted">/mo</span>
         {mom !== undefined && mom !== null && (
           <span
+            aria-label={`${
+              mom > 0 ? 'Up' : mom < 0 ? 'Down' : 'Flat'
+            } ${Math.abs(mom).toFixed(1)}% month over month`}
             className={`inline-flex items-center gap-0.5 text-xs font-semibold tabular-nums ${
-              mom > 0 ? 'text-red-600' : 'text-emerald-600'
+              mom > 0
+                ? 'text-error-text'
+                : mom < 0
+                  ? 'text-success-text'
+                  : 'text-text-muted'
             }`}
           >
             {mom > 0 ? (
               <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
-            ) : (
+            ) : mom < 0 ? (
               <ArrowDownRight className="h-3 w-3" aria-hidden="true" />
+            ) : (
+              <Minus className="h-3 w-3" aria-hidden="true" />
             )}
             {Math.abs(mom).toFixed(1)}%
           </span>

@@ -11,6 +11,11 @@ import {
 import { useProductEntities } from '../../../hooks/dashboard';
 import { PanelShell } from '../PanelShell';
 
+// NOTE: keyed by the exact English labels emitted by the backend in
+// DashboardAggregateRepository.productEntityCounts (Properties/Contracts/Contacts/Uploads/Users/
+// Teams). If those labels are renamed or translated server-side, update these keys in lockstep —
+// otherwise rows silently fall back to the Building2 icon. (A backend-supplied stable enum key
+// would remove this coupling; see review follow-up D18.)
 const ICONS: Record<string, LucideIcon> = {
   Properties: Building2,
   Contracts: FileText,
@@ -70,7 +75,7 @@ const EntityRow = ({
 };
 
 export const ProductEntitiesPanel = () => {
-  const { data, isLoading, isError } = useProductEntities();
+  const { data, isLoading, isError, refetch } = useProductEntities();
   const entities = data?.entities ?? [];
 
   return (
@@ -80,6 +85,7 @@ export const ProductEntitiesPanel = () => {
       previewCta={data?.previewCta}
       isLoading={isLoading}
       isError={isError}
+      onRetry={refetch}
     >
       {entities.length === 0 ? (
         <p className="py-4 text-center text-xs text-text-secondary">

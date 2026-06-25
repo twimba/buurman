@@ -1,5 +1,6 @@
 package com.buurman.service.backoffice.dashboard;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class ActionQueueService {
   private final DashboardAggregateRepository aggregateRepository;
   private final DashboardLayoutRepository layoutRepository;
   private final BackofficeSchedulerService schedulerService;
+  private final Clock clock;
 
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
@@ -55,7 +57,7 @@ public class ActionQueueService {
   public ActionQueueResponse snooze(BackofficePrincipal principal, String itemKey, int hours) {
     int clampedHours = Math.min(MAX_SNOOZE_HOURS, Math.max(1, hours));
     layoutRepository.snooze(
-        principal.userId(), itemKey, LocalDateTime.now().plusHours(clampedHours));
+        principal.userId(), itemKey, LocalDateTime.now(clock).plusHours(clampedHours));
     return getActionQueue(principal);
   }
 
@@ -89,7 +91,8 @@ public class ActionQueueService {
             && oldest
                 .map(
                     ts ->
-                        Duration.between(ts, LocalDateTime.now()).compareTo(BACKLOG_AGE_THRESHOLD)
+                        Duration.between(ts, LocalDateTime.now(clock))
+                                .compareTo(BACKLOG_AGE_THRESHOLD)
                             > 0)
                 .orElse(false);
     if (backlogStuck) {
@@ -106,7 +109,7 @@ public class ActionQueueService {
 
     long longRunning =
         aggregateRepository.countLongRunningImpersonations(
-            LocalDateTime.now().minus(IMPERSONATION_MAX_RUNTIME));
+            LocalDateTime.now(clock).minus(IMPERSONATION_MAX_RUNTIME));
     if (longRunning > 0) {
       items.add(
           new ActionItem(
@@ -146,7 +149,7 @@ public class ActionQueueService {
     }
   }
 
-  private static long ageMinutes(Optional<LocalDateTime> since) {
-    return since.map(ts -> Duration.between(ts, LocalDateTime.now()).toMinutes()).orElse(0L);
+  private long ageMinutes(Optional<LocalDateTime> since) {
+    return since.map(ts -> Duration.between(ts, LocalDateTime.now(clock)).toMinutes()).orElse(0L);
   }
 }

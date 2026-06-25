@@ -1,5 +1,5 @@
 /// <reference types="@types/google.maps" />
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   APIProvider,
   Map as GoogleMap,
@@ -13,7 +13,6 @@ import { feature } from 'topojson-client';
 import geoUrl from '../../assets/countries-50m.json?url';
 import { env } from '../../config/env';
 import type { CountryStats } from '../../generated/models';
-import { COUNTRY_CENTROIDS } from '../../lib/countryCentroids';
 import { formatEurMinor } from '../../lib/money';
 
 export type GeoMetric = 'teams' | 'properties' | 'value';
@@ -81,8 +80,50 @@ const metricValue = (c: CountryStats, m: GeoMetric): number =>
       ? c.properties
       : c.monthlyValueEurMinor;
 
-// Indigo ramp (light → dark) for choropleth intensity.
-const RAMP = ['#e0e7ff', '#c7d2fe', '#a5b4fc', '#818cf8', '#6366f1', '#4f46e5'];
+// Brand sequential scale (light → deep indigo → violet) for choropleth intensity. Used both as the
+// continuous interpolation source and as the legend gradient, so the two always match.
+const RAMP = [
+  '#eef2ff',
+  '#c7d2fe',
+  '#a5b4fc',
+  '#818cf8',
+  '#6366f1',
+  '#4f46e5',
+  '#4338ca',
+  '#3730a3',
+];
+
+type RGB = [number, number, number];
+
+const hexToRgb = (hex: string): RGB => {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+};
+
+const RAMP_RGB = RAMP.map(hexToRgb);
+
+/** Continuous color across the full RAMP for t ∈ [0,1] — smooth gradation, not 6 hard buckets. */
+const rampColor = (t: number): string => {
+  const clamped = Math.min(1, Math.max(0, t));
+  const span = RAMP_RGB.length - 1;
+  const pos = clamped * span;
+  const i = Math.min(span - 1, Math.floor(pos));
+  const f = pos - i;
+  const [r1, g1, b1] = RAMP_RGB[i];
+  const [r2, g2, b2] = RAMP_RGB[i + 1];
+  const r = Math.round(r1 + (r2 - r1) * f);
+  const g = Math.round(g1 + (g2 - g1) * f);
+  const b = Math.round(b1 + (b2 - b1) * f);
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
+/**
+ * Perceptual scale: sqrt spreads the low end so a couple of dominant countries don't wash every
+ * other data-country into the same pale tone (the classic choropleth "one bright, rest invisible"
+ * failure). Returns t ∈ [0,1].
+ */
+const intensity = (value: number, max: number): number =>
+  max <= 0 ? 0 : Math.sqrt(value / max);
 
 const MAP_STYLES: google.maps.MapTypeStyle[] = [
   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
@@ -100,8 +141,9 @@ const MAP_STYLES: google.maps.MapTypeStyle[] = [
     elementType: 'labels',
     stylers: [{ saturation: -70 }],
   },
-  { featureType: 'water', stylers: [{ color: '#dfe6f3' }] },
-  { featureType: 'landscape', stylers: [{ color: '#f3f5fb' }] },
+  // Calm, low-chroma basemap so the indigo choropleth reads as the figure and the world as ground.
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#e2e8f5' }] },
+  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f5f6fb' }] },
 ];
 
 type Hover = { c: CountryStats; x: number; y: number };
@@ -131,20 +173,26 @@ const Choropleth = ({
   onHover: (h: Hover | null) => void;
 }) => {
   const map = useMap();
+
+  const byNum = useMemo(() => {
+    const m = new Map<number, CountryStats>();
+    countries.forEach((c) => {
+      const num = ISO2_TO_NUM[c.code.toUpperCase()];
+      if (num !== undefined) {
+        m.set(num, c);
+      }
+    });
+    return m;
+  }, [countries]);
+
+  // Geometry + listeners + initial framing. Runs only when the map, the data set, or the hover
+  // handler changes — NOT on metric toggle, so switching metric never re-parses the 241 features
+  // or resets the user's pan/zoom.
   useEffect(() => {
     if (!map) {
       return;
     }
     let cancelled = false;
-    const byNum = new Map<number, CountryStats>();
-    countries.forEach((c) => {
-      const num = ISO2_TO_NUM[c.code.toUpperCase()];
-      if (num !== undefined) {
-        byNum.set(num, c);
-      }
-    });
-    const max = Math.max(1, ...countries.map((c) => metricValue(c, metric)));
-
     const clear = () => {
       google.maps.event.clearListeners(map.data, 'mouseover');
       google.maps.event.clearListeners(map.data, 'mousemove');
@@ -158,27 +206,6 @@ const Choropleth = ({
       }
       clear();
       map.data.addGeoJson(geo);
-      map.data.setStyle((feat) => {
-        const c = byNum.get(Number(feat.getId()));
-        if (!c) {
-          return {
-            fillColor: '#e8ebf3',
-            fillOpacity: 0.35,
-            strokeColor: '#cdd2e2',
-            strokeWeight: 0.5,
-          };
-        }
-        const ratio = metricValue(c, metric) / max;
-        return {
-          fillColor:
-            RAMP[
-              Math.min(RAMP.length - 1, Math.ceil(ratio * (RAMP.length - 1)))
-            ],
-          fillOpacity: 0.9,
-          strokeColor: '#ffffff',
-          strokeWeight: 0.8,
-        };
-      });
 
       const show = (e: google.maps.Data.MouseEvent) => {
         const c = e.feature ? byNum.get(Number(e.feature.getId())) : undefined;
@@ -203,18 +230,25 @@ const Choropleth = ({
         onHover(null);
       });
 
-      // Frame the countries that actually have data.
+      // Frame the countries that have data. Extend by their real polygon extents (not a single
+      // centroid) so one data-country frames sensibly instead of zooming to a point.
       const bounds = new google.maps.LatLngBounds();
       let any = false;
-      countries.forEach((c) => {
-        const center = COUNTRY_CENTROIDS[c.code.toUpperCase()];
-        if (center && metricValue(c, metric) > 0) {
-          bounds.extend(center);
+      map.data.forEach((feat) => {
+        if (byNum.has(Number(feat.getId()))) {
+          feat.getGeometry()?.forEachLatLng((ll) => bounds.extend(ll));
           any = true;
         }
       });
       if (any) {
         map.fitBounds(bounds, 64);
+        // Cap the zoom so a small/single country keeps regional context instead of a solid block.
+        google.maps.event.addListenerOnce(map, 'idle', () => {
+          const z = map.getZoom();
+          if (z !== undefined && z > 5) {
+            map.setZoom(5);
+          }
+        });
       }
     });
 
@@ -224,7 +258,35 @@ const Choropleth = ({
         clear();
       }
     };
-  }, [map, countries, metric, onHover]);
+  }, [map, byNum, onHover]);
+
+  // Style only — re-applied on metric change (and data change). The Data layer applies this
+  // function to all features, including those added asynchronously above.
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+    const max = Math.max(1, ...countries.map((c) => metricValue(c, metric)));
+    map.data.setStyle((feat) => {
+      const c = byNum.get(Number(feat.getId()));
+      if (!c) {
+        // Countries with no data: a faint neutral fill so the world stays legible behind the metric.
+        return {
+          fillColor: '#e6e9f4',
+          fillOpacity: 0.4,
+          strokeColor: '#d4d9ea',
+          strokeWeight: 0.5,
+        };
+      }
+      const value = metricValue(c, metric);
+      return {
+        fillColor: value > 0 ? rampColor(intensity(value, max)) : '#e6e9f4',
+        fillOpacity: value > 0 ? 0.92 : 0.5,
+        strokeColor: '#ffffff',
+        strokeWeight: 0.9,
+      };
+    });
+  }, [map, byNum, countries, metric]);
   return null;
 };
 
@@ -264,6 +326,35 @@ const Tooltip = ({ hover }: { hover: Hover }) => {
   );
 };
 
+const METRIC_LABEL: Record<GeoMetric, string> = {
+  teams: 'Teams',
+  properties: 'Properties',
+  value: 'Monthly value',
+};
+
+const formatMetric = (value: number, metric: GeoMetric): string =>
+  metric === 'value' ? formatEurMinor(value) : value.toLocaleString();
+
+/** Compact choropleth legend: the brand gradient with 0 → max scale and the active metric name. */
+const Legend = ({ max, metric }: { max: number; metric: GeoMetric }) => (
+  <div
+    className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-lg border border-border-default bg-surface-card/90 px-3 py-2 backdrop-blur"
+    style={{ boxShadow: 'var(--shadow-raised)' }}
+  >
+    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+      {METRIC_LABEL[metric]}
+    </p>
+    <div
+      className="h-2 w-32 rounded-full"
+      style={{ background: `linear-gradient(to right, ${RAMP.join(', ')})` }}
+    />
+    <div className="mt-1 flex justify-between text-[10px] tabular-nums text-text-secondary">
+      <span>0</span>
+      <span>{formatMetric(max, metric)}</span>
+    </div>
+  </div>
+);
+
 export const GeoMap = ({
   countries,
   metric,
@@ -273,6 +364,11 @@ export const GeoMap = ({
 }) => {
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
   const [hover, setHover] = useState<Hover | null>(null);
+  const max = useMemo(
+    () => Math.max(0, ...countries.map((c) => metricValue(c, metric))),
+    [countries, metric]
+  );
+  const hasData = countries.some((c) => metricValue(c, metric) > 0);
 
   if (!apiKey) {
     return (
@@ -300,7 +396,29 @@ export const GeoMap = ({
           />
         </GoogleMap>
       </APIProvider>
+      {hasData && <Legend max={max} metric={metric} />}
       {hover && <Tooltip hover={hover} />}
+      {/* Non-visual equivalent of the color-only choropleth: a screen-reader/keyboard-accessible
+          table of every country with data for the active metric. */}
+      <table className="sr-only">
+        <caption>{`Country breakdown for ${METRIC_LABEL[metric]}`}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Country</th>
+            <th scope="col">{METRIC_LABEL[metric]}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {countries
+            .filter((c) => metricValue(c, metric) > 0)
+            .map((c) => (
+              <tr key={c.code}>
+                <th scope="row">{countryName(c.code)}</th>
+                <td>{formatMetric(metricValue(c, metric), metric)}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
     </div>
   );
 };

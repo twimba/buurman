@@ -5,7 +5,7 @@
 export type Severity = 'crit' | 'warn' | 'ok' | 'info';
 
 interface SeverityStyle {
-  /** Small filled status dot. */
+  /** Small filled status dot (semantic Tailwind background class). */
   dot: string;
   /** Chip background + text. */
   chip: string;
@@ -17,27 +17,27 @@ interface SeverityStyle {
 
 const STYLES: Record<Severity, SeverityStyle> = {
   crit: {
-    dot: 'bg-red-500',
-    chip: 'bg-red-50 text-red-700',
-    text: 'text-red-700',
+    dot: 'bg-error',
+    chip: 'bg-error-bg text-error-text',
+    text: 'text-error-text',
     label: 'Critical',
   },
   warn: {
-    dot: 'bg-amber-500',
-    chip: 'bg-amber-50 text-amber-700',
-    text: 'text-amber-700',
+    dot: 'bg-warning',
+    chip: 'bg-warning-bg text-warning-text',
+    text: 'text-warning-text',
     label: 'Warning',
   },
   ok: {
-    dot: 'bg-emerald-500',
-    chip: 'bg-emerald-50 text-emerald-700',
-    text: 'text-emerald-700',
+    dot: 'bg-success',
+    chip: 'bg-success-bg text-success-text',
+    text: 'text-success-text',
     label: 'OK',
   },
   info: {
-    dot: 'bg-primary-500',
-    chip: 'bg-primary-50 text-primary-700',
-    text: 'text-primary-700',
+    dot: 'bg-info',
+    chip: 'bg-info-bg text-info-text',
+    text: 'text-info-text',
     label: 'Info',
   },
 };

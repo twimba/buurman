@@ -12,7 +12,9 @@ export const BusinessKpiPanel = () => {
       isLoading={isLoading}
       isError={isError}
     >
-      {null}
+      <p className="text-xs text-text-muted">
+        Billing metrics are not available yet.
+      </p>
     </PanelShell>
   );
 };

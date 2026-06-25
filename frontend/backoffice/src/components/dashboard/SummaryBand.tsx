@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
+  Minus,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -101,13 +102,19 @@ export const SummaryBand = () => {
             mom !== undefined && mom !== null ? (
               <span
                 className={`inline-flex items-center gap-0.5 tabular-nums ${
-                  mom > 0 ? 'text-red-600' : 'text-emerald-600'
+                  mom > 0
+                    ? 'text-error-text'
+                    : mom < 0
+                      ? 'text-success-text'
+                      : 'text-text-muted'
                 }`}
               >
                 {mom > 0 ? (
                   <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
-                ) : (
+                ) : mom < 0 ? (
                   <ArrowDownRight className="h-3 w-3" aria-hidden="true" />
+                ) : (
+                  <Minus className="h-3 w-3" aria-hidden="true" />
                 )}
                 {Math.abs(mom).toFixed(1)}% MoM
               </span>

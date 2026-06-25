@@ -1,27 +1,29 @@
 /// <reference types="@types/google.maps" />
-import {
-  Component,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  APIProvider,
-  Map,
-  useMap,
-  useMapsLibrary,
-} from '@vis.gl/react-google-maps';
-import { MarkerClusterer } from '@googlemaps/markerclusterer';
+import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
+import { ScatterplotLayer } from '@deck.gl/layers';
+import { HeatmapLayer } from '@deck.gl/aggregation-layers';
+import type { Layer } from '@deck.gl/core';
 import { Flame, MapPin, X } from 'lucide-react';
 
 import { env } from '../../config/env';
 import type { PropertyPoint } from '../../generated/models';
 import { usePropertyLocations } from '../../hooks/dashboard';
+import { useDeckOverlay } from '../../lib/useDeckOverlay';
 
 type MapMode = 'markers' | 'heatmap';
+
+// On-brand density ramp (cool indigo → vivid magenta) so the heatmap matches the dashboard palette
+// instead of deck.gl's default green-yellow-red.
+const HEAT_COLOR_RANGE: [number, number, number][] = [
+  [224, 231, 255],
+  [165, 180, 252],
+  [129, 140, 248],
+  [99, 102, 241],
+  [124, 58, 237],
+  [217, 70, 239],
+];
 
 /** Fits the viewport to all points once, when they first arrive. */
 const FitBounds = ({ points }: { points: PropertyPoint[] }) => {
@@ -37,98 +39,57 @@ const FitBounds = ({ points }: { points: PropertyPoint[] }) => {
   return null;
 };
 
-/** Clustered markers — the clusterer collapses dense areas so large sets stay renderable. */
-const MarkersLayer = ({ points }: { points: PropertyPoint[] }) => {
-  const map = useMap();
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-    const markers = points.map(
-      (p) => new google.maps.Marker({ position: { lat: p.lat, lng: p.lng } })
-    );
-    const clusterer = new MarkerClusterer({ map, markers });
-    return () => {
-      clusterer.clearMarkers();
-      markers.forEach((m) => m.setMap(null));
-    };
-  }, [map, points]);
-  return null;
-};
-
-// Minimal shape we use from the visualization library — avoids @types/google.maps version quirks.
-interface HeatmapLayerLike {
-  setMap(map: google.maps.Map | null): void;
-}
-interface VisualizationLib {
-  HeatmapLayer: new (opts: {
-    data: google.maps.LatLng[];
-    radius?: number;
-    opacity?: number;
-  }) => HeatmapLayerLike;
-}
-
 /**
- * Density heatmap via the Google visualization library. That library is deprecated and absent in
- * some Maps versions, so this guards the constructor, filters non-finite coords (an invalid LatLng
- * throws — unlike a Marker), and reports unavailability instead of crashing the panel.
+ * Renders property points through a deck.gl overlay: GPU scatter for the markers view and a
+ * deck.gl HeatmapLayer for density. Replaces the deprecated Google visualization HeatmapLayer
+ * (removed May 2026) and the legacy google.maps.Marker clusterer.
  */
-const HeatmapLayer = ({
+const PropertyDeckLayers = ({
   points,
-  onUnavailable,
+  mode,
 }: {
   points: PropertyPoint[];
-  onUnavailable: () => void;
+  mode: MapMode;
 }) => {
-  const map = useMap();
-  const viz = useMapsLibrary(
-    'visualization'
-  ) as unknown as VisualizationLib | null;
-  useEffect(() => {
-    if (!map || !viz) {
-      return;
+  const layers = useMemo<Layer[]>(() => {
+    const data = points.filter(
+      (p) => Number.isFinite(p.lat) && Number.isFinite(p.lng)
+    );
+    if (mode === 'heatmap') {
+      return [
+        new HeatmapLayer<PropertyPoint>({
+          id: 'property-heat',
+          data,
+          getPosition: (p) => [p.lng, p.lat],
+          getWeight: 1,
+          radiusPixels: 36,
+          intensity: 1.1,
+          threshold: 0.04,
+          colorRange: HEAT_COLOR_RANGE,
+        }),
+      ];
     }
-    if (typeof viz.HeatmapLayer !== 'function') {
-      onUnavailable();
-      return;
-    }
-    const data = points
-      .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
-      .map((p) => new google.maps.LatLng(p.lat, p.lng));
-    let layer: HeatmapLayerLike | null = null;
-    try {
-      layer = new viz.HeatmapLayer({ data, radius: 18, opacity: 0.7 });
-      layer.setMap(map);
-    } catch (e) {
-      console.error('Property heatmap unavailable', e);
-      onUnavailable();
-      return;
-    }
-    return () => layer?.setMap(null);
-  }, [map, viz, points, onUnavailable]);
+    return [
+      new ScatterplotLayer<PropertyPoint>({
+        id: 'property-markers',
+        data,
+        getPosition: (p) => [p.lng, p.lat],
+        getFillColor: [79, 70, 229, 210],
+        getLineColor: [255, 255, 255, 230],
+        lineWidthMinPixels: 1,
+        stroked: true,
+        radiusUnits: 'pixels',
+        getRadius: 5,
+        radiusMinPixels: 3,
+        radiusMaxPixels: 9,
+        pickable: true,
+      }),
+    ];
+  }, [points, mode]);
+
+  useDeckOverlay(layers);
   return null;
 };
-
-/** Keeps a single failing map layer from tearing down the whole dashboard tree. */
-class LayerErrorBoundary extends Component<
-  { onError: () => void; children: ReactNode },
-  { failed: boolean }
-> {
-  state = { failed: false };
-
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-
-  componentDidCatch(error: unknown) {
-    console.error('Map layer error', error);
-    this.props.onError();
-  }
-
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
-}
 
 const ToggleButton = ({
   active,
@@ -155,13 +116,9 @@ const ToggleButton = ({
 
 export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
   const [mode, setMode] = useState<MapMode>('markers');
-  const [heatmapUnavailable, setHeatmapUnavailable] = useState(false);
-  const markHeatmapUnavailable = useCallback(
-    () => setHeatmapUnavailable(true),
-    []
-  );
   const { data, isLoading, isError } = usePropertyLocations(true);
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
+  const mapId = env('VITE_GOOGLE_MAPS_MAP_ID') || 'DEMO_MAP_ID';
   const points = data?.points ?? [];
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -241,7 +198,7 @@ export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
       <div className="relative flex-1">
         {!apiKey ? (
           <div className="flex h-full items-center justify-center p-6 text-center text-sm text-text-secondary">
-            Google Maps API key not configured (set VITE_GOOGLE_MAPS_API_KEY).
+            Maps API key not configured (set VITE_GOOGLE_MAPS_API_KEY).
           </div>
         ) : isLoading ? (
           <div className="flex h-full items-center justify-center text-sm text-text-secondary">
@@ -260,32 +217,36 @@ export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
             <Map
               defaultCenter={{ lat: 20, lng: 0 }}
               defaultZoom={2}
+              mapId={mapId}
               gestureHandling="greedy"
               disableDefaultUI={false}
               className="h-full w-full"
             >
               <FitBounds points={points} />
-              <LayerErrorBoundary onError={markHeatmapUnavailable}>
-                {mode === 'markers' || heatmapUnavailable ? (
-                  // Fall back to markers so the map is never blank when the heatmap can't render.
-                  <MarkersLayer points={points} />
-                ) : (
-                  <HeatmapLayer
-                    points={points}
-                    onUnavailable={markHeatmapUnavailable}
-                  />
-                )}
-              </LayerErrorBoundary>
+              <PropertyDeckLayers points={points} mode={mode} />
             </Map>
           </APIProvider>
         )}
-
-        {mode === 'heatmap' && heatmapUnavailable && (
-          <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center">
-            <span className="pointer-events-auto rounded-md bg-surface-card px-3 py-1.5 text-xs text-text-secondary shadow-md">
-              Heatmap isn’t supported by the loaded Maps version — switch to
-              Markers.
-            </span>
+        {mode === 'heatmap' && points.length > 0 && (
+          <div
+            className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-lg border border-border-default bg-surface-card/90 px-3 py-2 backdrop-blur"
+            style={{ boxShadow: 'var(--shadow-raised)' }}
+          >
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+              Density
+            </p>
+            <div
+              className="h-2 w-32 rounded-full"
+              style={{
+                background: `linear-gradient(to right, ${HEAT_COLOR_RANGE.map(
+                  ([r, g, b]) => `rgb(${r}, ${g}, ${b})`
+                ).join(', ')})`,
+              }}
+            />
+            <div className="mt-1 flex justify-between text-[10px] text-text-secondary">
+              <span>Sparse</span>
+              <span>Dense</span>
+            </div>
           </div>
         )}
       </div>

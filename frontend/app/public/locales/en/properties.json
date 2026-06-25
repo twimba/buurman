@@ -840,7 +840,10 @@
       "manual": "Pin placed manually — drag to adjust if needed",
       "approximate": "We found the neighborhood but not the exact spot — drag the pin to your property!",
       "country": "Well, we found the country at least! Drag the pin to the right location."
-    }
+    },
+    "mapView": "Map",
+    "streetView": "Street View",
+    "noStreetView": "No Street View available for this location."
   },
   "timeline": {
     "selfOccupancy": "Self-Occupancy",

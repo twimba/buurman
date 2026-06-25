@@ -5,11 +5,11 @@ import { PanelShell } from '../PanelShell';
 const levelClass = (level: string): string => {
   switch (level) {
     case 'ERROR':
-      return 'text-red-600';
+      return 'text-error-text';
     case 'WARN':
-      return 'text-amber-600';
+      return 'text-warning-text';
     case 'INFO':
-      return 'text-emerald-600';
+      return 'text-success-text';
     default:
       return 'text-text-muted';
   }
@@ -34,7 +34,7 @@ const Line = ({ line }: { line: LogLine }) => (
 );
 
 export const LiveTailPanel = () => {
-  const { data, isLoading, isError } = useLiveTail();
+  const { data, isLoading, isError, refetch } = useLiveTail();
   const lines = data?.lines ?? [];
 
   return (
@@ -44,6 +44,7 @@ export const LiveTailPanel = () => {
       previewCta={data?.previewCta}
       isLoading={isLoading}
       isError={isError}
+      onRetry={refetch}
     >
       {lines.length === 0 ? (
         <p className="py-4 text-center text-xs text-text-secondary">

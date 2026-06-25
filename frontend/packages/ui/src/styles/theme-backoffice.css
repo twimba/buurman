@@ -51,9 +51,11 @@
   --shadow-card:
     0 1px 2px rgba(30, 33, 71, 0.06), 0 2px 5px -1px rgba(30, 33, 71, 0.07);
   --shadow-hover:
-    0 10px 24px -8px rgba(30, 33, 71, 0.18), 0 4px 10px -4px rgba(30, 33, 71, 0.1);
+    0 10px 24px -8px rgba(30, 33, 71, 0.18),
+    0 4px 10px -4px rgba(30, 33, 71, 0.1);
   --shadow-raised:
-    0 18px 40px -12px rgba(30, 33, 71, 0.22), 0 6px 14px -6px rgba(30, 33, 71, 0.12);
+    0 18px 40px -12px rgba(30, 33, 71, 0.22),
+    0 6px 14px -6px rgba(30, 33, 71, 0.12);
   --shadow-inner-top: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 
   /* Severity companions (chips, dot auras) — derived from the severity ramp above. */
@@ -71,7 +73,12 @@
   --glow-info: 0 0 0 3px rgba(99, 102, 241, 0.14);
 
   /* Hero "summary band" gradient — low chroma; texture, not decoration. */
-  --hero-gradient: linear-gradient(135deg, #fbfcff 0%, #f3f5fc 55%, #eef1fb 100%);
+  --hero-gradient: linear-gradient(
+    135deg,
+    #fbfcff 0%,
+    #f3f5fc 55%,
+    #eef1fb 100%
+  );
 
   /* Motion system */
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);

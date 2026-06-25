@@ -196,15 +196,15 @@ local:
 		-e '  tell current window' \
 		-e '    set newTab to (create tab with default profile)' \
 		-e '    tell current session of newTab' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman && make dev-fg"' \
+		-e '      write text "cd /Users/luis/projects/buurman && make dev-fg"' \
 		-e '      set backendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell backendPane' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
+		-e '      write text "cd /Users/luis/projects/buurman/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
 		-e '      set frontendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell frontendPane' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman/frontend && yarn dev"' \
+		-e '      write text "cd /Users/luis/projects/buurman/frontend && yarn dev"' \
 		-e '    end tell' \
 		-e '  end tell' \
 		-e 'end tell'

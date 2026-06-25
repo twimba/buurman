@@ -1,5 +1,6 @@
 package com.buurman.service.backoffice.cost;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,7 @@ public class CostService {
   private static final int TREND_MONTHS = 6;
   private static final DateTimeFormatter MONTH = DateTimeFormatter.ofPattern("yyyy-MM");
 
+  private final Clock clock;
   private final List<CostSource> apiSources;
   private final ManualCostResolver manualResolver;
   private final com.buurman.repository.backoffice.CostManualAmountRepository manualAmountRepository;
@@ -49,35 +52,98 @@ public class CostService {
   private final ObjectMapper objectMapper;
 
   /**
-   * Polls every source and persists a snapshot. Called by the daily Quartz job (no security
-   * context) and by the refresh endpoint (URL-secured under {@code /backoffice/**}) — so it is not
-   * {@code @PreAuthorize}-guarded itself.
+   * Self-reference through the Spring proxy so {@link #persistSnapshots(List)} runs inside its own
+   * transaction when invoked from the non-transactional {@link #snapshotNow()}. A plain {@code
+   * this.persistSnapshots(...)} would be self-invocation and bypass the proxy (no tx).
    */
-  @Transactional
+  private final ObjectProvider<CostService> self;
+
+  /** A fully-resolved snapshot row, ready to persist (provider HTTP + FX already done). */
+  private record ResolvedSnapshot(
+      String provider,
+      String sourceType,
+      LocalDate periodMonth,
+      String currency,
+      long amountMinor,
+      long amountEurMinor,
+      java.math.BigDecimal rate,
+      String breakdown) {}
+
+  /**
+   * Admin-triggered refresh. Carries an explicit method-security check as defense-in-depth so the
+   * outbound provider fan-out can't be un-gated by a future change to the URL matcher alone.
+   */
+  @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
+  public void refreshNow() {
+    snapshotNow();
+  }
+
+  /**
+   * Polls every source and persists a snapshot. Called by the daily Quartz job (no security
+   * context) and by {@link #refreshNow()} for the refresh endpoint — so it is not
+   * {@code @PreAuthorize}-guarded itself.
+   *
+   * <p>Deliberately NOT {@code @Transactional}: the per-provider readings (blocking outbound HTTP)
+   * and FX conversion happen here, outside any transaction, so a DB connection is never held open
+   * across the slow provider fan-out. Only the short {@link #persistSnapshots(List)} that follows
+   * runs in a transaction (invoked through the proxy via {@link #self}).
+   */
   public void snapshotNow() {
-    LocalDate periodMonth = LocalDate.now().withDayOfMonth(1);
+    List<ResolvedSnapshot> rows = resolveSnapshots();
+    if (!rows.isEmpty()) {
+      self.getObject().persistSnapshots(rows);
+    }
+  }
+
+  /** Resolve every provider's reading + EUR conversion. No DB transaction; does the slow I/O. */
+  private List<ResolvedSnapshot> resolveSnapshots() {
+    LocalDate periodMonth = LocalDate.now(clock).withDayOfMonth(1);
     java.util.Map<CostProviderId, CostSource> byId = new java.util.EnumMap<>(CostProviderId.class);
     apiSources.forEach(s -> byId.put(s.id(), s));
 
+    List<ResolvedSnapshot> rows = new ArrayList<>();
     for (CostProviderId id : CostProviderId.values()) {
       ProviderReading reading = resolveReading(id, byId.get(id));
       if (reading == null) {
         continue;
       }
-      Optional<Converted> eur = fxConverter.toEur(reading.currency(), reading.amountMinor());
+      // EUR is frozen at capture-time FX: amount_eur_minor records the rate effective today and is
+      // NOT re-normalized if a past rate is later backfilled/corrected. Backfilling FX therefore
+      // only affects future captures, not historical snapshots — the stored figure is the
+      // historical record. (See FxConverter.)
+      Optional<Converted> eur =
+          fxConverter.toEur(reading.currency(), reading.amountMinor(), LocalDate.now(clock));
       if (eur.isEmpty()) {
         log.warn("No FX rate for {} ({}); skipping snapshot", id, reading.currency());
         continue;
       }
-      snapshotRepository.insert(
-          id.name(),
-          reading.type().name(),
-          periodMonth,
-          reading.currency(),
-          reading.amountMinor(),
-          eur.get().eurMinor(),
-          eur.get().rate(),
-          serializeBreakdown(reading));
+      rows.add(
+          new ResolvedSnapshot(
+              id.name(),
+              reading.type().name(),
+              periodMonth,
+              reading.currency(),
+              reading.amountMinor(),
+              eur.get().eurMinor(),
+              eur.get().rate(),
+              serializeBreakdown(reading)));
+    }
+    return rows;
+  }
+
+  /** Short write-only transaction: persist the already-resolved snapshot rows. */
+  @Transactional
+  public void persistSnapshots(List<ResolvedSnapshot> rows) {
+    for (ResolvedSnapshot r : rows) {
+      snapshotRepository.upsert(
+          r.provider(),
+          r.sourceType(),
+          r.periodMonth(),
+          r.currency(),
+          r.amountMinor(),
+          r.amountEurMinor(),
+          r.rate(),
+          r.breakdown());
     }
   }
 
@@ -109,7 +175,10 @@ public class CostService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public CostOverviewResponse overview() {
-    List<LatestProviderCost> latest = snapshotRepository.latestPerProvider();
+    // Headline + provider list are scoped to the current month so a provider that stopped being
+    // snapshotted can't carry a stale prior month into the run-rate total.
+    LocalDate currentMonth = LocalDate.now(clock).withDayOfMonth(1);
+    List<LatestProviderCost> latest = snapshotRepository.forMonth(currentMonth);
     List<ProviderCost> providers = providerCosts(latest);
     long total =
         providers.stream()
@@ -119,7 +188,7 @@ public class CostService {
 
     List<MonthlyTotal> monthly =
         snapshotRepository.monthlyTotals(
-            LocalDate.now().withDayOfMonth(1).minusMonths(TREND_MONTHS - 1L));
+            LocalDate.now(clock).withDayOfMonth(1).minusMonths(TREND_MONTHS - 1L));
     List<CostTrendPoint> trend =
         monthly.stream()
             .map(m -> new CostTrendPoint(MONTH.format(m.month()), m.totalEurMinor()))
@@ -236,7 +305,7 @@ public class CostService {
     if (monthly.size() < 2) {
       return Optional.empty();
     }
-    LocalDate thisMonth = LocalDate.now().withDayOfMonth(1);
+    LocalDate thisMonth = LocalDate.now(clock).withDayOfMonth(1);
     LocalDate prevMonth = YearMonth.from(thisMonth).minusMonths(1).atDay(1);
     Long cur = find(monthly, thisMonth);
     Long prev = find(monthly, prevMonth);

@@ -4,11 +4,20 @@ import { useTranslation } from 'react-i18next';
 import {
   APIProvider,
   Map,
-  Marker,
+  AdvancedMarker,
+  Pin,
   MapMouseEvent,
 } from '@vis.gl/react-google-maps';
-import { Loader2, MapPin, MousePointerClick } from 'lucide-react';
+import {
+  Camera,
+  Loader2,
+  Map as MapIcon,
+  MapPin,
+  MousePointerClick,
+} from 'lucide-react';
 import { env } from '../../config/env';
+import { useTheme } from '../../context/ThemeContext';
+import { StreetViewPanel } from './StreetViewPanel';
 
 // Approximate center coordinates for common countries
 const COUNTRY_CENTERS: Record<string, { lat: number; lng: number }> = {
@@ -123,10 +132,16 @@ export const InteractiveMap = ({
   defaultCountryCode,
 }: InteractiveMapProps) => {
   const { t } = useTranslation('properties');
+  const { effectiveTheme } = useTheme();
+  // The Map ID carries both a light and a dark cloud style; colorScheme selects which renders.
+  const colorScheme = effectiveTheme === 'dark' ? 'DARK' : 'LIGHT';
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
+  // A Cloud-styled vector Map ID is required for AdvancedMarkers and on-brand styling.
+  const mapId = env('VITE_GOOGLE_MAPS_MAP_ID') || 'DEMO_MAP_ID';
   const mapsChannel = parseGoogleMapsChannel(env('VITE_GOOGLE_MAPS_CHANNEL'));
   const [clickToPlaceActive, setClickToPlaceActive] = useState(false);
   const [mapsApiLoadError, setMapsApiLoadError] = useState(false);
+  const [view, setView] = useState<'map' | 'streetview'>('map');
   const isInteractive = !!onLocationChange;
 
   const handleMapsApiError = useCallback((error: unknown) => {
@@ -224,9 +239,11 @@ export const InteractiveMap = ({
         >
           <APIProvider {...apiProviderProps}>
             <Map
+              key={colorScheme}
               center={center}
               zoom={5}
-              mapId="interactive-map"
+              mapId={mapId}
+              colorScheme={colorScheme}
               gestureHandling="cooperative"
               disableDefaultUI={false}
               onClick={handleMapClick}
@@ -290,26 +307,70 @@ export const InteractiveMap = ({
   return (
     <div className="space-y-2">
       <div
-        className={`w-full ${height} rounded-lg overflow-hidden border border-border-default `}
+        className={`relative w-full ${height} rounded-lg overflow-hidden border border-border-default `}
       >
         <APIProvider {...apiProviderProps}>
-          <Map
-            center={coordinates}
-            zoom={zoom}
-            mapId="interactive-map"
-            gestureHandling="cooperative"
-            disableDefaultUI={false}
-          >
-            <Marker
-              position={coordinates}
+          {view === 'map' ? (
+            <Map
+              key={colorScheme}
+              center={coordinates}
+              zoom={zoom}
+              mapId={mapId}
+              colorScheme={colorScheme}
+              gestureHandling="cooperative"
+              disableDefaultUI={false}
+            >
+              <AdvancedMarker
+                position={coordinates}
+                title={`${street}, ${city}`}
+                draggable={isInteractive}
+                onDragEnd={isInteractive ? handleDragEnd : undefined}
+              >
+                <Pin
+                  background="#0284c7"
+                  borderColor="#075985"
+                  glyphColor="#ffffff"
+                />
+              </AdvancedMarker>
+            </Map>
+          ) : (
+            <StreetViewPanel
+              lat={coordinates.lat}
+              lng={coordinates.lng}
               title={`${street}, ${city}`}
-              draggable={isInteractive}
-              onDragEnd={isInteractive ? handleDragEnd : undefined}
             />
-          </Map>
+          )}
+          <div className="absolute right-2 top-2 z-10 flex items-center gap-0.5 rounded-lg border border-border-default bg-surface-card/95 p-0.5 shadow-sm backdrop-blur">
+            <button
+              type="button"
+              onClick={() => setView('map')}
+              aria-pressed={view === 'map'}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                view === 'map'
+                  ? 'bg-primary-500 text-white'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <MapIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('map.mapView')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setView('streetview')}
+              aria-pressed={view === 'streetview'}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                view === 'streetview'
+                  ? 'bg-primary-500 text-white'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Camera className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('map.streetView')}
+            </button>
+          </div>
         </APIProvider>
       </div>
-      {accuracyMessage && (
+      {accuracyMessage && view === 'map' && (
         <p className="text-sm text-text-secondary text-center">
           {accuracyMessage}
         </p>

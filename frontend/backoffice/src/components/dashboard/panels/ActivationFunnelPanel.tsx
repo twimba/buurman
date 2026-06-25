@@ -1,6 +1,7 @@
 import { Fragment, useMemo } from 'react';
 import { AlertTriangle, ArrowDown } from 'lucide-react';
 
+import type { FunnelStage } from '../../../generated/models';
 import { useFunnel } from '../../../hooks/dashboard';
 import { PanelShell } from '../PanelShell';
 
@@ -20,6 +21,9 @@ const coneClip = (topPct: number, bottomPct: number) => {
 
 const fmt = (n: number) => n.toLocaleString();
 
+/** Stable empty fallback so the `stages` reference doesn't change when there is no data. */
+const EMPTY_STAGES: FunnelStage[] = [];
+
 /** Round to a whole percent for compact labels, keeping one decimal only under 10%. */
 const pct = (n: number) => (n < 10 ? Math.round(n * 10) / 10 : Math.round(n));
 
@@ -33,7 +37,7 @@ const toneVar = (conversion: number) => {
 
 export const ActivationFunnelPanel = () => {
   const { data, isLoading, isError, refetch } = useFunnel();
-  const stages = useMemo(() => data?.stages ?? [], [data]);
+  const stages = data?.stages ?? EMPTY_STAGES;
 
   const { top, last, overall, bottleneckIdx } = useMemo(() => {
     const top = stages[0]?.count ?? 0;

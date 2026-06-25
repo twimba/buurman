@@ -8,6 +8,7 @@ import {
 import {
   LayoutDashboard,
   Wallet,
+  ArrowLeftRight,
   Users,
   UserCog,
   UserCheck,
@@ -98,6 +99,7 @@ const adminNavigation = [
   { name: 'Rate Limits', href: '/rate-limits', icon: Shield, indent: true },
   { name: 'Loggers', href: '/loggers', icon: ScrollText, indent: true },
   { name: 'Costs', href: '/costs', icon: Wallet },
+  { name: 'FX Rates', href: '/costs/fx', icon: ArrowLeftRight, indent: true },
 ];
 
 const isLocalEnv = () => window.location.hostname.includes('local.buurman.io');

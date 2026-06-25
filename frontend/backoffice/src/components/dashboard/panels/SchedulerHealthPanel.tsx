@@ -7,12 +7,12 @@ import { PanelShell } from '../PanelShell';
 const tileColor = (state: string): string => {
   switch (state) {
     case 'NORMAL':
-      return 'bg-emerald-500';
+      return 'bg-success';
     case 'PAUSED':
-      return 'bg-amber-500';
+      return 'bg-warning';
     case 'ERROR':
     case 'BLOCKED':
-      return 'bg-red-500';
+      return 'bg-error';
     default:
       return 'bg-neutral-300';
   }
@@ -32,7 +32,7 @@ const tileGlyph = (state: string): string => {
 };
 
 export const SchedulerHealthPanel = () => {
-  const { data, isLoading, isError } = useSchedulerHealth();
+  const { data, isLoading, isError, refetch } = useSchedulerHealth();
 
   return (
     <PanelShell
@@ -42,6 +42,7 @@ export const SchedulerHealthPanel = () => {
       previewCta={data?.previewCta}
       isLoading={isLoading}
       isError={isError}
+      onRetry={refetch}
     >
       <div className="mb-3 flex items-center gap-3 text-xs">
         <span className="text-text-secondary">
@@ -51,12 +52,12 @@ export const SchedulerHealthPanel = () => {
           ok
         </span>
         {(data?.error ?? 0) + (data?.blocked ?? 0) > 0 && (
-          <span className="font-semibold text-red-700 tabular-nums">
+          <span className="font-semibold text-error-text tabular-nums">
             {(data?.error ?? 0) + (data?.blocked ?? 0)} failing
           </span>
         )}
         {(data?.paused ?? 0) > 0 && (
-          <span className="text-amber-700 tabular-nums">
+          <span className="text-warning-text tabular-nums">
             {data?.paused} paused
           </span>
         )}

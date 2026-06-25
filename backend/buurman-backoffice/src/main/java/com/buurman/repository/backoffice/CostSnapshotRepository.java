@@ -5,19 +5,16 @@ import static com.buurman.jooq.generated.Tables.COST_SNAPSHOT;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
 
-/** Persistence + read models for cost snapshots. The table is small (≈ providers × days). */
+/** Persistence + read models for cost snapshots. The table is small (≈ providers × months). */
 @Repository
 @RequiredArgsConstructor
 public class CostSnapshotRepository {
@@ -34,7 +31,8 @@ public class CostSnapshotRepository {
 
   public record MonthlyTotal(LocalDate month, long totalEurMinor) {}
 
-  public void insert(
+  /** Upsert this month's row for a provider in place (idempotent within a month). */
+  public void upsert(
       String provider,
       String sourceType,
       LocalDate periodMonth,
@@ -43,6 +41,7 @@ public class CostSnapshotRepository {
       long amountEurMinor,
       BigDecimal fxRate,
       String breakdownJson) {
+    JSONB breakdown = breakdownJson == null ? null : JSONB.valueOf(breakdownJson);
     dsl.insertInto(COST_SNAPSHOT)
         .set(COST_SNAPSHOT.PROVIDER, provider)
         .set(COST_SNAPSHOT.SOURCE_TYPE, sourceType)
@@ -51,53 +50,47 @@ public class CostSnapshotRepository {
         .set(COST_SNAPSHOT.AMOUNT_MINOR, amountMinor)
         .set(COST_SNAPSHOT.AMOUNT_EUR_MINOR, amountEurMinor)
         .set(COST_SNAPSHOT.FX_RATE, fxRate)
-        .set(COST_SNAPSHOT.BREAKDOWN, breakdownJson == null ? null : JSONB.valueOf(breakdownJson))
+        .set(COST_SNAPSHOT.BREAKDOWN, breakdown)
+        .onConflict(COST_SNAPSHOT.PROVIDER, COST_SNAPSHOT.PERIOD_MONTH)
+        .doUpdate()
+        .set(COST_SNAPSHOT.SOURCE_TYPE, sourceType)
+        .set(COST_SNAPSHOT.CURRENCY, currency)
+        .set(COST_SNAPSHOT.AMOUNT_MINOR, amountMinor)
+        .set(COST_SNAPSHOT.AMOUNT_EUR_MINOR, amountEurMinor)
+        .set(COST_SNAPSHOT.FX_RATE, fxRate)
+        .set(COST_SNAPSHOT.BREAKDOWN, breakdown)
+        .set(COST_SNAPSHOT.CAPTURED_AT, LocalDateTime.now())
         .execute();
   }
 
-  /** The most recent snapshot for each provider. */
-  public List<LatestProviderCost> latestPerProvider() {
-    Map<String, LatestProviderCost> latest = new LinkedHashMap<>();
-    dsl.selectFrom(COST_SNAPSHOT)
-        .orderBy(COST_SNAPSHOT.CAPTURED_AT.desc())
+  /**
+   * The snapshot for each provider in {@code month} (at most one row per provider, thanks to the
+   * (provider, period_month) unique key). Providers with no snapshot this month are simply absent —
+   * a stale prior month is never carried forward into the headline.
+   */
+  public List<LatestProviderCost> forMonth(LocalDate month) {
+    return dsl.selectFrom(COST_SNAPSHOT)
+        .where(COST_SNAPSHOT.PERIOD_MONTH.eq(month))
         .fetch()
-        .forEach(
+        .map(
             r ->
-                latest.computeIfAbsent(
+                new LatestProviderCost(
                     r.getProvider(),
-                    k ->
-                        new LatestProviderCost(
-                            r.getProvider(),
-                            r.getSourceType(),
-                            r.getCurrency(),
-                            r.getAmountMinor(),
-                            r.getAmountEurMinor(),
-                            r.getCapturedAt())));
-    return new ArrayList<>(latest.values());
+                    r.getSourceType(),
+                    r.getCurrency(),
+                    r.getAmountMinor(),
+                    r.getAmountEurMinor(),
+                    r.getCapturedAt()));
   }
 
-  /** Total EUR per month (latest snapshot per provider within each month), oldest first. */
+  /** Total EUR per month (one row per provider per month), oldest first. Summed in SQL. */
   public List<MonthlyTotal> monthlyTotals(LocalDate since) {
-    // (provider, month) -> latest eur (rows arrive newest-first, so keep the first seen).
-    Map<String, Long> latestPerProviderMonth = new LinkedHashMap<>();
-    dsl.selectFrom(COST_SNAPSHOT)
+    return dsl.select(COST_SNAPSHOT.PERIOD_MONTH, DSL.sum(COST_SNAPSHOT.AMOUNT_EUR_MINOR))
+        .from(COST_SNAPSHOT)
         .where(COST_SNAPSHOT.PERIOD_MONTH.ge(since))
-        .orderBy(COST_SNAPSHOT.CAPTURED_AT.desc())
+        .groupBy(COST_SNAPSHOT.PERIOD_MONTH)
+        .orderBy(COST_SNAPSHOT.PERIOD_MONTH.asc())
         .fetch()
-        .forEach(
-            r ->
-                latestPerProviderMonth.computeIfAbsent(
-                    r.getPeriodMonth() + "|" + r.getProvider(), k -> r.getAmountEurMinor()));
-
-    TreeMap<LocalDate, Long> byMonth = new TreeMap<>();
-    latestPerProviderMonth.forEach(
-        (key, eur) -> {
-          LocalDate month = LocalDate.parse(key.substring(0, key.indexOf('|')));
-          byMonth.merge(month, eur, Long::sum);
-        });
-
-    List<MonthlyTotal> totals = new ArrayList<>();
-    byMonth.forEach((month, eur) -> totals.add(new MonthlyTotal(month, eur)));
-    return totals;
+        .map(r -> new MonthlyTotal(r.value1(), r.value2() == null ? 0L : r.value2().longValue()));
   }
 }

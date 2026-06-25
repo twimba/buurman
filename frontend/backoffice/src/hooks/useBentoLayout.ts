@@ -67,7 +67,13 @@ export const useBentoLayout = () => {
   const save = useSaveDashboardLayout();
   // `items` stays null until the user edits; until then we render the server layout directly. This
   // avoids seeding state in an effect (and the cascading render that comes with it).
-  const [items, setItems] = useState<LayoutItem[] | null>(null);
+  // Local edits are stored together with the server layout object they were derived from. When a
+  // save flushes and the query cache delivers a newer object, `base` no longer matches `data`, so
+  // the server layout wins again — the cache and the rendered grid can't permanently diverge.
+  const [local, setLocal] = useState<{
+    base: typeof data;
+    items: LayoutItem[];
+  } | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(
@@ -80,16 +86,20 @@ export const useBentoLayout = () => {
   );
 
   const effective = useMemo(
-    () => items ?? merge(data?.panels ?? []),
-    [items, data]
+    () =>
+      local && local.base === data ? local.items : merge(data?.panels ?? []),
+    [local, data]
   );
 
   const update = (next: LayoutItem[]) => {
-    setItems(next);
+    setLocal({ base: data, items: next });
     if (timer.current) {
       clearTimeout(timer.current);
     }
-    timer.current = setTimeout(() => save.mutate(toPlacements(next)), 800);
+    timer.current = setTimeout(() => {
+      save.mutate(toPlacements(next));
+      timer.current = null;
+    }, 800);
   };
 
   const reorderById = (draggedId: string, targetId: string) => {
@@ -102,5 +112,9 @@ export const useBentoLayout = () => {
     update(effective.map((i) => (i.id === id ? { ...i, hidden } : i)));
   };
 
-  return { items: effective, reorderById, setHidden };
+  const resetToDefault = () => {
+    update(merge([]));
+  };
+
+  return { items: effective, reorderById, setHidden, resetToDefault };
 };

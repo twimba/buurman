@@ -20,11 +20,15 @@ public record CostProperties(
     Hetzner hetzner,
     Cloudflare cloudflare,
     Mailgun mailgun,
-    Map<String, Double> manualEur) {
+    Map<String, Double> manualEur,
+    String fxApiUrl) {
 
   public CostProperties {
     if (baseCurrency == null || baseCurrency.isBlank()) {
       baseCurrency = "EUR";
+    }
+    if (fxApiUrl == null || fxApiUrl.isBlank()) {
+      fxApiUrl = "https://api.frankfurter.dev";
     }
     fx = fx == null ? Map.of() : fx;
     manualEur = manualEur == null ? Map.of() : manualEur;

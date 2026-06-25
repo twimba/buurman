@@ -3,10 +3,13 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   Check,
+  Minus,
   Pencil,
   RefreshCw,
   X,
 } from 'lucide-react';
+
+import { Link } from 'react-router-dom';
 
 import type { ProviderCost } from '../generated/models';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -42,8 +45,12 @@ export const CostsPage = () => {
     setEditValue(p.available ? (p.amountEurMinor / 100).toString() : '');
   };
   const saveEdit = (provider: string) => {
-    setManual.mutate({ provider, amountEur: parseFloat(editValue) || 0 });
-    setEditing(null);
+    const amountEur = parseFloat(editValue);
+    if (Number.isNaN(amountEur) || amountEur < 0) {
+      return; // keep the editor open; invalid input
+    }
+    // Only close on success — a failed write keeps the editor open and surfaces a toast (onError).
+    setManual.mutate({ provider, amountEur }, { onSuccess: () => setEditing(null) });
   };
 
   if (isLoading) {
@@ -105,13 +112,19 @@ export const CostsPage = () => {
           {mom !== undefined && mom !== null && (
             <p
               className={`mt-2 inline-flex items-center gap-0.5 text-sm font-semibold tabular-nums ${
-                mom > 0 ? 'text-red-600' : 'text-emerald-600'
+                mom > 0
+                  ? 'text-error-text'
+                  : mom < 0
+                    ? 'text-success-text'
+                    : 'text-text-muted'
               }`}
             >
               {mom > 0 ? (
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              ) : (
+              ) : mom < 0 ? (
                 <ArrowDownRight className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Minus className="h-4 w-4" aria-hidden="true" />
               )}
               {Math.abs(mom).toFixed(1)}% vs last month
             </p>
@@ -172,7 +185,7 @@ export const CostsPage = () => {
                           type="button"
                           onClick={() => saveEdit(p.provider)}
                           disabled={setManual.isPending}
-                          className="focus-ring rounded p-1 text-emerald-600 hover:bg-surface-page disabled:opacity-50"
+                          className="focus-ring rounded p-1 text-success-text hover:bg-surface-page disabled:opacity-50"
                           aria-label="Save"
                         >
                           <Check className="h-3.5 w-3.5" aria-hidden="true" />
@@ -244,7 +257,8 @@ export const CostsPage = () => {
                   <div
                     className="w-full rounded-t bg-primary-500"
                     style={{
-                      height: `${maxTrend > 0 ? Math.max(2, (t.totalEurMinor / maxTrend) * 100) : 2}%`,
+                      // Floor the bar only for non-zero months, so a true zero reads as empty.
+                      height: `${t.totalEurMinor > 0 && maxTrend > 0 ? Math.max(2, (t.totalEurMinor / maxTrend) * 100) : 0}%`,
                     }}
                     title={`${t.month}: ${formatEurMinor(t.totalEurMinor)}`}
                   />
@@ -257,6 +271,16 @@ export const CostsPage = () => {
           )}
         </div>
       </div>
+
+      <p className="text-xs text-text-secondary">
+        Costs are normalized to {data.baseCurrency} using live FX rates.{' '}
+        <Link
+          to="/costs/fx"
+          className="focus-ring rounded font-medium text-primary-600 hover:underline"
+        >
+          Manage FX rates →
+        </Link>
+      </p>
     </div>
   );
 };

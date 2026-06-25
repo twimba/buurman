@@ -21,7 +21,7 @@ const BADGE: { background: string; color: string }[] = [
 const BADGE_DEFAULT = { background: '#eceff5', color: '#64748b' };
 
 export const TopTeamsPanel = () => {
-  const { data, isLoading, isError } = useTopTeams();
+  const { data, isLoading, isError, refetch } = useTopTeams();
   const teams = data?.teams ?? [];
   const max = teams.reduce((m, t) => Math.max(m, t.activityScore), 0);
 
@@ -33,6 +33,7 @@ export const TopTeamsPanel = () => {
       previewCta={data?.previewCta}
       isLoading={isLoading}
       isError={isError}
+      onRetry={refetch}
     >
       {teams.length === 0 ? (
         <p className="py-4 text-center text-xs text-text-secondary">

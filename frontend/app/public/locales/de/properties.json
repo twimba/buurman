@@ -392,7 +392,10 @@
       "manual": "Pin manuell gesetzt — bei Bedarf ziehen zum Anpassen",
       "approximate": "Wir haben die Gegend gefunden, aber nicht den genauen Standort — ziehen Sie den Pin zu Ihrer Immobilie!",
       "country": "Immerhin haben wir das Land gefunden! Ziehen Sie den Pin zum richtigen Standort."
-    }
+    },
+    "mapView": "Karte",
+    "streetView": "Street View",
+    "noStreetView": "Für diesen Standort ist keine Street View verfügbar."
   },
   "timeline": {
     "selfOccupancy": "Eigennutzung",

@@ -17,6 +17,7 @@ import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.selectCount;
 import static org.jooq.impl.DSL.selectOne;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 public class DashboardAggregateRepository {
 
   private final DSLContext dsl;
+  private final Clock clock;
 
   /** Active = non-demo, not soft-deleted. */
   public long countActiveTeams() {
@@ -105,7 +107,7 @@ public class DashboardAggregateRepository {
    * entities exclude demo + soft-deleted teams so the numbers reconcile with the other panels.
    */
   public List<EntityCount> productEntityCounts() {
-    LocalDateTime since = LocalDateTime.now().minusDays(7);
+    LocalDateTime since = LocalDateTime.now(clock).minusDays(7);
     return List.of(
         entityCount(
             "Properties",

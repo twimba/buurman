@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BellOff, CheckCircle2 } from 'lucide-react';
 
 import type { ActionItem } from '../../../generated/models';
@@ -17,15 +17,13 @@ const formatAge = (minutes: number): string => {
 };
 
 const Row = ({ item }: { item: ActionItem }) => {
-  const navigate = useNavigate();
   const snooze = useSnoozeActionItem();
   const sev = severityStyle(item.severity);
 
   return (
     <li className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-surface-page">
-      <button
-        type="button"
-        onClick={() => navigate(item.deeplink)}
+      <Link
+        to={item.deeplink}
         className="focus-ring flex min-w-0 flex-1 items-center gap-2 rounded text-left"
       >
         <span
@@ -34,7 +32,7 @@ const Row = ({ item }: { item: ActionItem }) => {
           aria-label={sev.label}
         />
         <span className="truncate text-sm text-text-primary">{item.title}</span>
-      </button>
+      </Link>
       <span className="shrink-0 rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-text-muted">
         {item.category}
       </span>
@@ -56,7 +54,7 @@ const Row = ({ item }: { item: ActionItem }) => {
 };
 
 export const ActionQueuePanel = () => {
-  const { data, isLoading, isError } = useActionQueue();
+  const { data, isLoading, isError, refetch } = useActionQueue();
   const items = [...(data?.items ?? [])].sort(
     (a, b) => severityRank(a.severity) - severityRank(b.severity)
   );
@@ -68,6 +66,7 @@ export const ActionQueuePanel = () => {
       previewCta={data?.previewCta}
       isLoading={isLoading}
       isError={isError}
+      onRetry={refetch}
       headerRight={
         items.length > 0 ? (
           <span

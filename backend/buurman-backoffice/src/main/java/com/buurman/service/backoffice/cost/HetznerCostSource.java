@@ -51,7 +51,7 @@ public class HetznerCostSource implements CostSource {
           pricing.path("volume").path("price_per_gb_month").path("gross").asDouble(0);
 
       double serverCost = 0;
-      for (JsonNode s : get("/v1/servers?per_page=50").path("servers")) {
+      for (JsonNode s : getAllPages("/v1/servers", "servers")) {
         String type = s.path("server_type").path("name").asText("");
         String location = s.path("datacenter").path("location").path("name").asText("");
         serverCost +=
@@ -61,7 +61,7 @@ public class HetznerCostSource implements CostSource {
       }
 
       double volumeCost = 0;
-      for (JsonNode v : get("/v1/volumes?per_page=50").path("volumes")) {
+      for (JsonNode v : getAllPages("/v1/volumes", "volumes")) {
         volumeCost += v.path("size").asLong(0) * volumePerGb;
       }
 
@@ -94,6 +94,30 @@ public class HetznerCostSource implements CostSource {
   /** Fallback when a server's exact location price is missing: any price for that type. */
   private static double defaultPrice(String type, Map<String, Map<String, Double>> table) {
     return table.getOrDefault(type, Map.of()).values().stream().findFirst().orElse(0.0);
+  }
+
+  /**
+   * Fetch every item of a paginated Hetzner list endpoint, following {@code
+   * meta.pagination.next_page} until exhausted. Hetzner caps per_page at 50, so without this an
+   * account with &gt;50 servers/volumes would silently under-report. A page cap bounds worst-case
+   * calls and logs if hit.
+   */
+  private List<JsonNode> getAllPages(String basePath, String arrayField) {
+    List<JsonNode> items = new ArrayList<>();
+    int page = 1;
+    int maxPages = 50; // 50 pages × 50 = 2500 items; far beyond any realistic Buurman footprint.
+    while (page <= maxPages) {
+      JsonNode body = get(basePath + "?per_page=50&page=" + page);
+      body.path(arrayField).forEach(items::add);
+      JsonNode next = body.path("meta").path("pagination").path("next_page");
+      if (next.isNull() || next.isMissingNode() || next.asInt(0) <= 0) {
+        return items;
+      }
+      page = next.asInt();
+    }
+    log.warn(
+        "Hetzner {} pagination hit the {}-page cap; estimate may under-report", basePath, maxPages);
+    return items;
   }
 
   private JsonNode get(String path) {

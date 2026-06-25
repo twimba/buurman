@@ -25,11 +25,13 @@ public class LiveTailService {
 
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public LiveTailResponse getLiveTail(Optional<String> level) {
+    // Floor at INFO: the ring buffer only holds INFO+ events (DEBUG/TRACE may carry tenant PII), so
+    // never advertise a lower threshold.
     int minLevel =
         level
             .filter(s -> !s.isBlank())
-            .map(s -> Level.toLevel(s, Level.TRACE).toInt())
-            .orElse(Level.TRACE.toInt());
+            .map(s -> Math.max(Level.toLevel(s, Level.INFO).toInt(), Level.INFO.toInt()))
+            .orElse(Level.INFO.toInt());
     List<LogLine> lines =
         ringBuffer.recent(minLevel, MAX_LINES).stream()
             .map(

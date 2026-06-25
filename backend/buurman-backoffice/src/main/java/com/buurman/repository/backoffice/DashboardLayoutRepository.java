@@ -3,6 +3,7 @@ package com.buurman.repository.backoffice;
 import static com.buurman.jooq.generated.Tables.BACKOFFICE_ACTION_ITEM_SNOOZE;
 import static com.buurman.jooq.generated.Tables.BACKOFFICE_USER_DASHBOARD_LAYOUT;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class DashboardLayoutRepository {
 
   private final DSLContext dsl;
+  private final Clock clock;
 
   public Optional<String> findLayoutJson(UUID backofficeUserId) {
     return dsl.select(BACKOFFICE_USER_DASHBOARD_LAYOUT.LAYOUT)
@@ -34,11 +36,11 @@ public class DashboardLayoutRepository {
     dsl.insertInto(BACKOFFICE_USER_DASHBOARD_LAYOUT)
         .set(BACKOFFICE_USER_DASHBOARD_LAYOUT.BACKOFFICE_USER_ID, backofficeUserId)
         .set(BACKOFFICE_USER_DASHBOARD_LAYOUT.LAYOUT, JSONB.valueOf(layoutJson))
-        .set(BACKOFFICE_USER_DASHBOARD_LAYOUT.UPDATED_AT, LocalDateTime.now())
+        .set(BACKOFFICE_USER_DASHBOARD_LAYOUT.UPDATED_AT, LocalDateTime.now(clock))
         .onConflict(BACKOFFICE_USER_DASHBOARD_LAYOUT.BACKOFFICE_USER_ID)
         .doUpdate()
         .set(BACKOFFICE_USER_DASHBOARD_LAYOUT.LAYOUT, JSONB.valueOf(layoutJson))
-        .set(BACKOFFICE_USER_DASHBOARD_LAYOUT.UPDATED_AT, LocalDateTime.now())
+        .set(BACKOFFICE_USER_DASHBOARD_LAYOUT.UPDATED_AT, LocalDateTime.now(clock))
         .execute();
   }
 
@@ -51,7 +53,7 @@ public class DashboardLayoutRepository {
             BACKOFFICE_ACTION_ITEM_SNOOZE
                 .BACKOFFICE_USER_ID
                 .eq(backofficeUserId)
-                .and(BACKOFFICE_ACTION_ITEM_SNOOZE.SNOOZED_UNTIL.gt(LocalDateTime.now())))
+                .and(BACKOFFICE_ACTION_ITEM_SNOOZE.SNOOZED_UNTIL.gt(LocalDateTime.now(clock))))
         .fetch()
         .forEach(
             r ->

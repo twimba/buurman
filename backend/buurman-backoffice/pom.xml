@@ -210,6 +210,13 @@
                                 <importMapping>CostWatchResponse=com.buurman.dto.response.backoffice.cost.CostWatchResponse</importMapping>
                                 <importMapping>CostOverviewResponse=com.buurman.dto.response.backoffice.cost.CostOverviewResponse</importMapping>
                                 <importMapping>SetManualCostRequest=com.buurman.dto.request.backoffice.cost.SetManualCostRequest</importMapping>
+                                <importMapping>FxRate=com.buurman.dto.response.backoffice.cost.FxRate</importMapping>
+                                <importMapping>FxRatesResponse=com.buurman.dto.response.backoffice.cost.FxRatesResponse</importMapping>
+                                <importMapping>SetFxRateRequest=com.buurman.dto.request.backoffice.cost.SetFxRateRequest</importMapping>
+                                <importMapping>BackfillFxRequest=com.buurman.dto.request.backoffice.cost.BackfillFxRequest</importMapping>
+                                <importMapping>AddFxPairRequest=com.buurman.dto.request.backoffice.cost.AddFxPairRequest</importMapping>
+                                <importMapping>FxPair=com.buurman.dto.response.backoffice.cost.FxPair</importMapping>
+                                <importMapping>FxPairsResponse=com.buurman.dto.response.backoffice.cost.FxPairsResponse</importMapping>
                                 <importMapping>LatencyHeatmapResponse=com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse</importMapping>
                                 <importMapping>HeatColumn=com.buurman.dto.response.backoffice.dashboard.LatencyHeatmapResponse.HeatColumn</importMapping>
                                 <importMapping>PropertyLocationsResponse=com.buurman.dto.response.backoffice.dashboard.PropertyLocationsResponse</importMapping>

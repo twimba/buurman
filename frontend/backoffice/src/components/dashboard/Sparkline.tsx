@@ -55,8 +55,20 @@ export const Sparkline = ({
         strokeWidth={1.5}
         strokeLinejoin="round"
         strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
       />
-      <circle cx={lastX} cy={lastY} r={1.75} fill={color} />
+      {/* Terminal dot drawn as a zero-length round-capped stroke so non-uniform scaling
+          (preserveAspectRatio="none") can't stretch it into an ellipse. */}
+      <line
+        x1={lastX}
+        y1={lastY}
+        x2={lastX}
+        y2={lastY}
+        stroke={color}
+        strokeWidth={3.5}
+        strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+      />
     </svg>
   );
 };

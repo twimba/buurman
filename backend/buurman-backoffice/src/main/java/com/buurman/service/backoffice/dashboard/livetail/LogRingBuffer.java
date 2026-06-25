@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -12,6 +11,11 @@ import org.springframework.stereotype.Component;
 /**
  * Bounded, thread-safe in-memory buffer of recent log events that powers the dashboard "Live tail"
  * panel. Capped at {@link #CAPACITY} entries; oldest are evicted first.
+ *
+ * <p><strong>Per-JVM-instance caveat:</strong> this buffer lives in the heap of a single JVM. In a
+ * multi-replica / clustered backoffice deployment the live-tail only reflects logs from the
+ * instance that happened to serve the request — never the whole fleet. Tailing across all replicas
+ * requires a centralized log sink (e.g. Loki/ELK), not this buffer.
  */
 @Component
 public class LogRingBuffer {
@@ -37,14 +41,16 @@ public class LogRingBuffer {
 
   /** Newest-first, at most {@code limit} entries at or above {@code minLevelInt}. */
   public List<Entry> recent(int minLevelInt, int limit) {
-    List<Entry> result = new ArrayList<>();
+    // Snapshot references under the lock, then filter/limit outside it, so a dashboard read never
+    // holds the lock for longer than a fixed-size copy (the level filter runs lock-free).
+    Entry[] snapshot;
     synchronized (lock) {
-      Iterator<Entry> it = entries.descendingIterator();
-      while (it.hasNext() && result.size() < limit) {
-        Entry entry = it.next();
-        if (entry.levelInt() >= minLevelInt) {
-          result.add(entry);
-        }
+      snapshot = entries.toArray(new Entry[0]);
+    }
+    List<Entry> result = new ArrayList<>();
+    for (int i = snapshot.length - 1; i >= 0 && result.size() < limit; i--) {
+      if (snapshot[i].levelInt() >= minLevelInt) {
+        result.add(snapshot[i]);
       }
     }
     return result;

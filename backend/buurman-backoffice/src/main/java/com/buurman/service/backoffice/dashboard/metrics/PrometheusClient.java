@@ -3,6 +3,8 @@ package com.buurman.service.backoffice.dashboard.metrics;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.OptionalDouble;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PrometheusClient {
 
+  // Circuit breaker: after a transport failure, short-circuit calls for a cooldown so a degraded
+  // Prometheus can't pin a servlet thread for the full ~6s timeout on every dashboard poll.
+  private static final long BREAKER_COOLDOWN_MS = 30_000;
+  private final AtomicLong breakerOpenUntil = new AtomicLong(0);
+
   private final RestClient client;
   private final ObjectMapper objectMapper;
 
@@ -44,13 +51,15 @@ public class PrometheusClient {
   /** Instant query returning a single scalar; empty when the result set is empty or NaN. */
   public OptionalDouble queryScalar(String promql) {
     String body =
-        client
-            .get()
-            // Pass PromQL as a URI variable so its {label="…"} braces are encoded as a value,
-            // not parsed as URI template placeholders.
-            .uri(b -> b.path("/api/v1/query").queryParam("query", "{q}").build(promql))
-            .retrieve()
-            .body(String.class);
+        guarded(
+            () ->
+                client
+                    .get()
+                    // Pass PromQL as a URI variable so its {label="…"} braces are encoded as a
+                    // value, not parsed as URI template placeholders.
+                    .uri(b -> b.path("/api/v1/query").queryParam("query", "{q}").build(promql))
+                    .retrieve()
+                    .body(String.class));
     JsonNode root = readTree(body);
     JsonNode result = root == null ? null : root.path("data").path("result");
     if (result == null || !result.isArray() || result.isEmpty()) {
@@ -63,20 +72,41 @@ public class PrometheusClient {
   /** Range query returning the raw Prometheus matrix JSON ({@code data.result}). */
   public JsonNode queryRange(String promql, long startEpoch, long endEpoch, long stepSeconds) {
     String body =
-        client
-            .get()
-            .uri(
-                b ->
-                    b.path("/api/v1/query_range")
-                        .queryParam("query", "{q}")
-                        .queryParam("start", startEpoch)
-                        .queryParam("end", endEpoch)
-                        .queryParam("step", stepSeconds + "s")
-                        .build(promql))
-            .retrieve()
-            .body(String.class);
+        guarded(
+            () ->
+                client
+                    .get()
+                    .uri(
+                        b ->
+                            b.path("/api/v1/query_range")
+                                .queryParam("query", "{q}")
+                                .queryParam("start", startEpoch)
+                                .queryParam("end", endEpoch)
+                                .queryParam("step", stepSeconds + "s")
+                                .build(promql))
+                    .retrieve()
+                    .body(String.class));
     JsonNode root = readTree(body);
     return root == null ? null : root.path("data").path("result");
+  }
+
+  /**
+   * Run an HTTP call behind the circuit breaker: fail fast while the breaker is open, and trip it
+   * (opening it for the cooldown) on any failure so repeated polls don't each eat the full timeout.
+   */
+  private <T> T guarded(Supplier<T> call) {
+    long openUntil = breakerOpenUntil.get();
+    if (System.currentTimeMillis() < openUntil) {
+      throw new IllegalStateException("Prometheus circuit open (recent failure); skipping query");
+    }
+    try {
+      T result = call.get();
+      breakerOpenUntil.set(0);
+      return result;
+    } catch (RuntimeException e) {
+      breakerOpenUntil.set(System.currentTimeMillis() + BREAKER_COOLDOWN_MS);
+      throw e;
+    }
   }
 
   // Parse with the app's Jackson 2 ObjectMapper — Boot 4's RestClient converter is Jackson 3 and

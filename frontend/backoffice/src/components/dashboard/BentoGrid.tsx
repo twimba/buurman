@@ -1,5 +1,12 @@
 import { useRef } from 'react';
-import { EyeOff, GripVertical, Plus } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  EyeOff,
+  GripVertical,
+  Plus,
+  RotateCcw,
+} from 'lucide-react';
 
 import {
   PANEL_REGISTRY,
@@ -12,12 +19,13 @@ const REG_BY_ID = new Map<string, PanelDefinition>(
   PANEL_REGISTRY.map((d) => [d.id, d])
 );
 
-// Static class strings so Tailwind's JIT can detect them.
+// Static class strings so Tailwind's JIT can detect them. At the md (tablet) breakpoint we cap to a
+// balanced 2-up grid: anything wider than 1 column collapses to 2, single-column panels to 1.
 const SPAN_CLASS: Record<PanelDefinition['colSpan'], string> = {
-  1: 'lg:col-span-1',
-  2: 'lg:col-span-2',
-  3: 'lg:col-span-3',
-  4: 'lg:col-span-4',
+  1: 'md:col-span-1 lg:col-span-1',
+  2: 'md:col-span-2 lg:col-span-2',
+  3: 'md:col-span-2 lg:col-span-3',
+  4: 'md:col-span-2 lg:col-span-4',
 };
 
 const ROWSPAN_CLASS: Record<NonNullable<PanelDefinition['rowSpan']>, string> = {
@@ -32,7 +40,7 @@ const ROWSPAN_CLASS: Record<NonNullable<PanelDefinition['rowSpan']>, string> = {
  */
 export const BentoGrid = () => {
   const { editing } = useDashboardContext();
-  const { items, reorderById, setHidden } = useBentoLayout();
+  const { items, reorderById, setHidden, resetToDefault } = useBentoLayout();
   const draggedId = useRef<string | null>(null);
 
   const visible = items.filter((i) => !i.hidden);
@@ -43,8 +51,16 @@ export const BentoGrid = () => {
       {editing && (
         <div className="flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-border-strong bg-surface-page px-3 py-2">
           <span className="text-xs font-medium text-text-secondary">
-            Drag panels to reorder.
+            Drag panels to reorder, or use the arrow buttons.
           </span>
+          <button
+            type="button"
+            onClick={resetToDefault}
+            className="focus-ring inline-flex items-center gap-1 rounded-md border border-border-default bg-surface-card px-2 py-1 text-xs font-medium text-text-secondary hover:text-text-primary"
+          >
+            <RotateCcw className="h-3 w-3" aria-hidden="true" />
+            Reset layout
+          </button>
           {hidden.length > 0 && (
             <span className="text-xs text-text-muted">Add back:</span>
           )}
@@ -62,13 +78,15 @@ export const BentoGrid = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:auto-rows-[minmax(0,auto)] lg:grid-flow-row-dense lg:grid-cols-4">
-        {visible.map((item) => {
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:auto-rows-[minmax(0,auto)] lg:grid-flow-row-dense lg:grid-cols-4">
+        {visible.map((item, idx) => {
           const def = REG_BY_ID.get(item.id);
           if (!def) {
             return null;
           }
           const { Component } = def;
+          const prevId = idx > 0 ? visible[idx - 1].id : null;
+          const nextId = idx < visible.length - 1 ? visible[idx + 1].id : null;
           return (
             <div
               key={item.id}
@@ -95,10 +113,30 @@ export const BentoGrid = () => {
               }}
             >
               {editing && (
-                <div className="absolute right-2 top-2 z-10 flex items-center gap-1">
-                  <span className="rounded bg-surface-card/90 p-1 text-text-muted shadow-sm">
+                <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-end gap-1 rounded-t-lg border-b border-border-default bg-surface-card/95 px-2 py-1 backdrop-blur-sm">
+                  <span className="mr-auto rounded p-1 text-text-muted">
                     <GripVertical className="h-3.5 w-3.5" aria-hidden="true" />
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => prevId && reorderById(item.id, prevId)}
+                    disabled={!prevId}
+                    aria-label={`Move ${def.title} earlier`}
+                    title="Move earlier"
+                    className="focus-ring rounded bg-surface-card/90 p-1 text-text-muted shadow-sm hover:text-text-primary disabled:opacity-40"
+                  >
+                    <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => nextId && reorderById(item.id, nextId)}
+                    disabled={!nextId}
+                    aria-label={`Move ${def.title} later`}
+                    title="Move later"
+                    className="focus-ring rounded bg-surface-card/90 p-1 text-text-muted shadow-sm hover:text-text-primary disabled:opacity-40"
+                  >
+                    <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => setHidden(item.id, true)}
@@ -110,7 +148,9 @@ export const BentoGrid = () => {
                   </button>
                 </div>
               )}
-              <Component />
+              <div className={editing ? 'pt-8' : undefined}>
+                <Component />
+              </div>
             </div>
           );
         })}

@@ -42,6 +42,26 @@ public class CloudflareCostSource implements CostSource {
     return CostProviderId.CLOUDFLARE;
   }
 
+  /**
+   * Months covered by one billing period of the given Cloudflare subscription frequency, used to
+   * amortize the period price into a monthly figure. Cloudflare's documented enum is weekly /
+   * monthly / quarterly / yearly; "annual" is accepted as a yearly alias. Unknown values are
+   * treated conservatively as monthly (no amortization) with a warning.
+   */
+  private double monthsPerPeriod(String frequency) {
+    String freq = frequency == null ? "" : frequency.toLowerCase();
+    return switch (freq) {
+      case "weekly" -> 1.0 / 4.33;
+      case "monthly", "" -> 1.0;
+      case "quarterly" -> 3.0;
+      case "yearly", "annual" -> 12.0;
+      default -> {
+        log.warn("Unknown Cloudflare subscription frequency '{}'; treating as monthly", frequency);
+        yield 1.0;
+      }
+    };
+  }
+
   @Override
   public ProviderReading read() {
     if (client == null) {
@@ -64,7 +84,7 @@ public class CloudflareCostSource implements CostSource {
       for (JsonNode sub : result) {
         double price = sub.path("price").asDouble(0);
         String freq = sub.path("frequency").asText("monthly");
-        double perMonth = "annual".equalsIgnoreCase(freq) ? price / 12.0 : price;
+        double perMonth = price / monthsPerPeriod(freq);
         currency = sub.path("currency").asText(currency);
         monthly += perMonth;
         breakdown.add(

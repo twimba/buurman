@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.dto.response.backoffice.dashboard.ActionQueueResponse;
@@ -33,6 +35,7 @@ class ActionQueueServiceTest {
   @Mock private DashboardAggregateRepository aggregateRepository;
   @Mock private DashboardLayoutRepository layoutRepository;
   @Mock private BackofficeSchedulerService schedulerService;
+  @Spy private Clock clock = Clock.systemUTC();
   @InjectMocks private ActionQueueService service;
 
   private final BackofficePrincipal principal =
@@ -51,9 +54,10 @@ class ActionQueueServiceTest {
   @DisplayName("emits a critical item when the outbox has dead-lettered messages")
   void emitsDeadLetterItem() throws Exception {
     stubQuietWorld();
+    LocalDateTime now = LocalDateTime.now(clock);
     when(aggregateRepository.outboxDeadLetter()).thenReturn(3L);
     when(aggregateRepository.oldestDeadLetterCreatedAt())
-        .thenReturn(Optional.of(LocalDateTime.now().minusMinutes(10)));
+        .thenReturn(Optional.of(now.minusMinutes(10)));
     when(layoutRepository.activeSnoozes(any())).thenReturn(Map.of());
 
     ActionQueueResponse response = service.getActionQueue(principal);
@@ -67,11 +71,12 @@ class ActionQueueServiceTest {
   @DisplayName("filters out items the user has snoozed")
   void filtersSnoozedItems() throws Exception {
     stubQuietWorld();
+    LocalDateTime now = LocalDateTime.now(clock);
     when(aggregateRepository.outboxDeadLetter()).thenReturn(3L);
     when(aggregateRepository.oldestDeadLetterCreatedAt())
-        .thenReturn(Optional.of(LocalDateTime.now().minusMinutes(10)));
+        .thenReturn(Optional.of(now.minusMinutes(10)));
     when(layoutRepository.activeSnoozes(any()))
-        .thenReturn(Map.of("OUTBOX:deadletter", LocalDateTime.now().plusHours(1)));
+        .thenReturn(Map.of("OUTBOX:deadletter", now.plusHours(1)));
 
     ActionQueueResponse response = service.getActionQueue(principal);
 
@@ -90,7 +95,7 @@ class ActionQueueServiceTest {
     ArgumentCaptor<LocalDateTime> until = ArgumentCaptor.forClass(LocalDateTime.class);
     verify(layoutRepository).snooze(eq(principal.userId()), eq("SOME:key"), until.capture());
     assertThat(until.getValue())
-        .isAfter(LocalDateTime.now())
-        .isBefore(LocalDateTime.now().plusHours(2));
+        .isAfter(LocalDateTime.now(clock))
+        .isBefore(LocalDateTime.now(clock).plusHours(2));
   }
 }

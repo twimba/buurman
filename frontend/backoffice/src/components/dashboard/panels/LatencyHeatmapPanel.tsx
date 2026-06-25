@@ -13,7 +13,7 @@ const heatColor = (value: number, max: number): string => {
 };
 
 export const LatencyHeatmapPanel = () => {
-  const { data, isLoading, isError } = useLatencyHeatmap();
+  const { data, isLoading, isError, refetch } = useLatencyHeatmap();
   const bands = data?.bands ?? [];
   const columns = data?.columns ?? [];
   const max = columns.reduce(
@@ -29,6 +29,7 @@ export const LatencyHeatmapPanel = () => {
       docsLink={data?.docsLink}
       isLoading={isLoading}
       isError={isError}
+      onRetry={refetch}
     >
       {columns.length === 0 ? (
         <p className="py-4 text-center text-xs text-text-secondary">
@@ -36,6 +37,9 @@ export const LatencyHeatmapPanel = () => {
         </p>
       ) : (
         <div className="space-y-1">
+          <p className="text-[10px] text-text-muted">
+            Rows = latency bands · color = requests/s
+          </p>
           <div
             className="grid gap-px"
             style={{
