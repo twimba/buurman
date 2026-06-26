@@ -1,0 +1,36 @@
+[project]
+name = "buurman-seed-data"
+version = "0.1.0"
+description = "Generate production-like data in a local Buurman workspace via the public REST API"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.32",
+    "urllib3>=2.0",
+    "faker>=30.0",
+    "python-dateutil>=2.9",
+    "psycopg[binary]>=3.2",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8",
+]
+
+[project.scripts]
+seed-data = "seed_data.__main__:main"
+
+[tool.poetry]
+package-mode = true
+packages = [{ include = "seed_data" }]
+
+[build-system]
+requires = ["poetry-core>=1.9"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]

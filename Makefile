@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub seed-data
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -143,6 +143,16 @@ test-bdd-run:
 	echo ""; \
 	if [ $$rc -eq 0 ]; then echo "All tests passed."; else echo "Some tests failed (exit code $$rc)."; fi; \
 	exit $$rc
+
+## Seed the local workspace with production-like data via the API
+## Usage: make seed-data  |  make seed-data ARGS="--users 25 --months 6 --dry-run"
+seed-data:
+	cd scripts/seed-data && poetry install --quiet && \
+	  SEED_API_URL=https://$(BDD_HP)api.local.buurman.io$(BDD_PORT_SUFFIX) \
+	  SEED_KEYCLOAK_URL=https://$(BDD_HP)keycloak.local.buurman.io$(BDD_PORT_SUFFIX) \
+	  SEED_MAILPIT_URL=https://$(BDD_HP)mailpit.local.buurman.io$(BDD_PORT_SUFFIX) \
+	  SEED_DB_URL=postgresql://buurman:buurman@$(BDD_HP)postgresql.local.buurman.io:$(or $(PG_HOST_PORT),6432)/buurman \
+	  poetry run python -m seed_data $(ARGS)
 
 ## Watch backend Java sources and auto-compile on changes (run alongside `make backend`)
 ## DevTools detects recompiled classes and warm-restarts (~2s). Requires: brew install fswatch
