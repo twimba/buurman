@@ -142,8 +142,16 @@ const MAP_STYLES: google.maps.MapTypeStyle[] = [
     stylers: [{ saturation: -70 }],
   },
   // Calm, low-chroma basemap so the indigo choropleth reads as the figure and the world as ground.
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#e2e8f5' }] },
-  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f5f6fb' }] },
+  {
+    featureType: 'water',
+    elementType: 'geometry',
+    stylers: [{ color: '#e2e8f5' }],
+  },
+  {
+    featureType: 'landscape',
+    elementType: 'geometry',
+    stylers: [{ color: '#f5f6fb' }],
+  },
 ];
 
 type Hover = { c: CountryStats; x: number; y: number };
@@ -387,7 +395,10 @@ export const GeoMap = ({
           gestureHandling="greedy"
           disableDefaultUI
           styles={MAP_STYLES}
-          className="h-full w-full"
+          // Fill via absolute inset rather than h-full: the panel chain (flex-1 / min-h only,
+          // no definite pixel height) makes a percentage height collapse to 0, which left the
+          // map blank. inset-0 resolves height from the container's offsets instead.
+          className="absolute inset-0"
         >
           <Choropleth
             countries={countries}

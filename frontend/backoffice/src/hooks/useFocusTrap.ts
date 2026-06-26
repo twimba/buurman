@@ -45,7 +45,9 @@ export const useFocusTrap = <T extends HTMLElement = HTMLDivElement>(
     const getFocusable = (): HTMLElement[] => {
       return Array.from(
         container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
-      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+      ).filter(
+        (el) => el.offsetParent !== null || el === document.activeElement
+      );
     };
 
     const focusable = getFocusable();

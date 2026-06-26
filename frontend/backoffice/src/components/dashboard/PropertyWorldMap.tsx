@@ -25,6 +25,30 @@ const HEAT_COLOR_RANGE: [number, number, number][] = [
   [217, 70, 239],
 ];
 
+/** Density legend shown in heatmap mode so the color ramp isn't an undocumented encoding. */
+const HeatLegend = () => (
+  <div
+    className="pointer-events-none absolute bottom-4 left-4 z-10 rounded-lg border border-border-default bg-surface-card/90 px-3 py-2 backdrop-blur"
+    style={{ boxShadow: 'var(--shadow-raised)' }}
+  >
+    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+      Property density
+    </p>
+    <div
+      className="h-2 w-32 rounded-full"
+      style={{
+        background: `linear-gradient(to right, ${HEAT_COLOR_RANGE.map(
+          ([r, g, b]) => `rgb(${r}, ${g}, ${b})`
+        ).join(', ')})`,
+      }}
+    />
+    <div className="mt-1 flex justify-between text-[10px] text-text-secondary">
+      <span>Fewer</span>
+      <span>More</span>
+    </div>
+  </div>
+);
+
 /** Fits the viewport to all points once, when they first arrive. */
 const FitBounds = ({ points }: { points: PropertyPoint[] }) => {
   const map = useMap();
@@ -225,6 +249,7 @@ export const PropertyWorldMap = ({ onClose }: { onClose: () => void }) => {
               <FitBounds points={points} />
               <PropertyDeckLayers points={points} mode={mode} />
             </Map>
+            {mode === 'heatmap' && <HeatLegend />}
           </APIProvider>
         )}
         {mode === 'heatmap' && points.length > 0 && (

@@ -50,7 +50,10 @@ export const CostsPage = () => {
       return; // keep the editor open; invalid input
     }
     // Only close on success — a failed write keeps the editor open and surfaces a toast (onError).
-    setManual.mutate({ provider, amountEur }, { onSuccess: () => setEditing(null) });
+    setManual.mutate(
+      { provider, amountEur },
+      { onSuccess: () => setEditing(null) }
+    );
   };
 
   if (isLoading) {

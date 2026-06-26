@@ -22,7 +22,10 @@ const FX_PAIRS_KEY = ['bo-cost', 'fx-pairs'];
 
 /** Best-effort human message from an Axios/HTTP error for surfacing in a toast. */
 const errorMessage = (e: unknown): string => {
-  const ax = e as { response?: { data?: { message?: string } }; message?: string };
+  const ax = e as {
+    response?: { data?: { message?: string } };
+    message?: string;
+  };
   return ax?.response?.data?.message || ax?.message || 'Request failed';
 };
 
@@ -60,7 +63,8 @@ export const useRemoveFxPair = () => {
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
       queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
     },
-    onError: (e) => showToast(`Couldn't remove pair: ${errorMessage(e)}`, 'error'),
+    onError: (e) =>
+      showToast(`Couldn't remove pair: ${errorMessage(e)}`, 'error'),
   });
 };
 
@@ -84,7 +88,8 @@ export const useRefreshCost = () => {
         queryKey: ['bo-dashboard', 'cost-watch'],
       });
     },
-    onError: (e) => showToast(`Cost refresh failed: ${errorMessage(e)}`, 'error'),
+    onError: (e) =>
+      showToast(`Cost refresh failed: ${errorMessage(e)}`, 'error'),
   });
 };
 
@@ -106,7 +111,8 @@ export const useSetManualCost = () => {
         queryKey: ['bo-dashboard', 'cost-watch'],
       });
     },
-    onError: (e) => showToast(`Couldn't save cost: ${errorMessage(e)}`, 'error'),
+    onError: (e) =>
+      showToast(`Couldn't save cost: ${errorMessage(e)}`, 'error'),
   });
 };
 
@@ -145,7 +151,8 @@ export const useSetFxRate = () => {
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
       queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
     },
-    onError: (e) => showToast(`Couldn't save rate: ${errorMessage(e)}`, 'error'),
+    onError: (e) =>
+      showToast(`Couldn't save rate: ${errorMessage(e)}`, 'error'),
   });
 };
 
@@ -161,7 +168,8 @@ export const useDeleteFxRate = () => {
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
       queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
     },
-    onError: (e) => showToast(`Couldn't delete rate: ${errorMessage(e)}`, 'error'),
+    onError: (e) =>
+      showToast(`Couldn't delete rate: ${errorMessage(e)}`, 'error'),
   });
 };
 

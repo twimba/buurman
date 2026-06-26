@@ -55,11 +55,7 @@ const SortHeader = ({
   <th
     scope="col"
     aria-sort={
-      sortKey === k
-        ? sortDir === 'asc'
-          ? 'ascending'
-          : 'descending'
-        : 'none'
+      sortKey === k ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'
     }
     className={`px-3 py-2 font-medium text-${align}`}
   >
@@ -451,7 +447,9 @@ export const FxRatesPage = () => {
                                 }}
                                 aria-invalid={editError != null}
                                 aria-describedby={
-                                  editError ? `fx-edit-error-${r.rateDate}` : undefined
+                                  editError
+                                    ? `fx-edit-error-${r.rateDate}`
+                                    : undefined
                                 }
                                 className="w-28 rounded border border-border-default bg-surface-card px-1.5 py-0.5 text-right text-xs tabular-nums"
                                 aria-label={`Rate on ${r.rateDate}`}
@@ -518,7 +516,10 @@ export const FxRatesPage = () => {
                                 aria-label={`Confirm delete rate on ${r.rateDate}`}
                                 title="Confirm delete"
                               >
-                                <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                                <Check
+                                  className="h-3.5 w-3.5"
+                                  aria-hidden="true"
+                                />
                               </button>
                               <button
                                 type="button"
@@ -549,7 +550,9 @@ export const FxRatesPage = () => {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => setConfirmDeleteKey(rowKey(r.rateDate))}
+                                onClick={() =>
+                                  setConfirmDeleteKey(rowKey(r.rateDate))
+                                }
                                 disabled={del.isPending}
                                 className="focus-ring rounded p-1 text-text-muted hover:text-error-text disabled:opacity-50"
                                 aria-label={`Delete rate on ${r.rateDate}`}
