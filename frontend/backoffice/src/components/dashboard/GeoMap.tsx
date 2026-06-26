@@ -58,6 +58,15 @@ const ISO2_TO_NUM: Record<string, number> = {
   AE: 784,
   IN: 356,
   JP: 392,
+  KR: 410,
+  SG: 702,
+  ID: 360,
+  TR: 792,
+  RU: 643,
+  MX: 484,
+  AR: 32,
+  CL: 152,
+  CO: 170,
 };
 
 const regionNames =

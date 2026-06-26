@@ -90,7 +90,7 @@ export const BentoGrid = () => {
           return (
             <div
               key={item.id}
-              className={`relative ${SPAN_CLASS[def.colSpan]} ${ROWSPAN_CLASS[def.rowSpan ?? 1]} ${editing ? 'cursor-move rounded-lg ring-2 ring-primary-200' : ''}`}
+              className={`relative h-full ${SPAN_CLASS[def.colSpan]} ${ROWSPAN_CLASS[def.rowSpan ?? 1]} ${editing ? 'cursor-move rounded-lg ring-2 ring-primary-200' : ''}`}
               draggable={editing}
               onDragStart={() => {
                 draggedId.current = item.id;
@@ -148,7 +148,7 @@ export const BentoGrid = () => {
                   </button>
                 </div>
               )}
-              <div className={editing ? 'pt-8' : undefined}>
+              <div className={`h-full ${editing ? 'pt-8' : ''}`}>
                 <Component />
               </div>
             </div>

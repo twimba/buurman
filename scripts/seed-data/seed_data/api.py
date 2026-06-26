@@ -60,6 +60,18 @@ class BuurmanApi:
         resp = self._request("POST", path, files=files, params={"title": title})
         return resp.json()
 
+    # --- team settings ---------------------------------------------------
+
+    def set_team_country(self, team_identifier: str, country_code: str) -> None:
+        # The Geo dashboard groups teams by their default country, so a seeded team must declare one
+        # (real teams set it during onboarding). The registering user is the team admin.
+        self._request(
+            "PUT",
+            f"/teams/{team_identifier}/settings",
+            json={"regional": {"defaultCountryCode": country_code}},
+            headers={"Content-Type": "application/json"},
+        )
+
     # --- entity creation -------------------------------------------------
 
     def create_property(self, body: dict) -> str:

@@ -119,6 +119,9 @@ class Runner:
 
         api = BuurmanApi(cfg.api_url, account.token)
 
+        # Declare the team's country so it shows on the backoffice Geo map (grouped by team country).
+        api.set_team_country(account.team_identifier, plan.country)
+
         # Non-tenant contacts (companies / service providers)
         span = (self.now - plan.signup_dt).total_seconds()
         for _ in range(plan.org_contacts):
