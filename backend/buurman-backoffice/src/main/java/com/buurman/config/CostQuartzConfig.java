@@ -31,7 +31,8 @@ public class CostQuartzConfig {
     return TriggerBuilder.newTrigger()
         .forJob(costSnapshotJobDetail)
         .withIdentity("costSnapshotTrigger", "backoffice")
-        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+        .withSchedule(
+            CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing())
         .build();
   }
 }

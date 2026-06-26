@@ -3,6 +3,7 @@ package com.buurman.repository.backoffice;
 import static com.buurman.jooq.generated.Tables.COST_SNAPSHOT;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class CostSnapshotRepository {
 
   private final DSLContext dsl;
+  private final Clock clock;
 
   public record LatestProviderCost(
       String provider,
@@ -59,7 +61,7 @@ public class CostSnapshotRepository {
         .set(COST_SNAPSHOT.AMOUNT_EUR_MINOR, amountEurMinor)
         .set(COST_SNAPSHOT.FX_RATE, fxRate)
         .set(COST_SNAPSHOT.BREAKDOWN, breakdown)
-        .set(COST_SNAPSHOT.CAPTURED_AT, LocalDateTime.now())
+        .set(COST_SNAPSHOT.CAPTURED_AT, LocalDateTime.now(clock))
         .execute();
   }
 

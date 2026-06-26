@@ -515,7 +515,7 @@ public class TeamService {
             prefs.getPaymentsAheadCount(), prefs.isAutoGenerationEnabled()),
         new TeamPreferencesResponse.RegionalSettings(
             prefs.getDefaultCurrency(),
-            Optional.of(prefs.getDefaultCountryCode()),
+            Optional.ofNullable(prefs.getDefaultCountryCode()),
             Optional.of(prefs.getTimezone()),
             Optional.of(prefs.getDateFormat()),
             Optional.of(prefs.getFiscalYearStartMonth()),

@@ -37,10 +37,11 @@ def _iso(dt: datetime) -> str:
 
 
 class Runner:
-    def __init__(self, cfg: Config, now: datetime, collector: Collector) -> None:
+    def __init__(self, cfg: Config, now: datetime, collector: Collector, db=None) -> None:
         self.cfg = cfg
         self.now = now
         self.collector = collector
+        self.db = db  # DbClient, required when cfg.email_verify == "db"
         self.stats = Stats()
         self.run_id = uuid.uuid4().hex[:6]  # unique per run -> emails never collide on re-runs
         self._lock = threading.Lock()
@@ -105,8 +106,10 @@ class Runner:
             password=SEED_PASSWORD,
             first_name=first,
             last_name=last,
-            verify_email=cfg.verify_email,
+            mailpit_verify=(cfg.email_verify == "mailpit"),
         )
+        if cfg.email_verify == "db":
+            self.db.mark_email_verified(account.user_identifier, plan.signup_dt)
         self.collector.add_account(account.team_identifier, account.user_identifier, plan.signup_dt)
         with self._lock:
             self._writer.writerow(
@@ -154,12 +157,16 @@ class Runner:
                     signed_date=_iso(lease.signed_dt),
                     rent=lease.rent,
                     currency=plan.currency,
+                    document_language=plan.language,
                     rng=rng,
                 )
                 cid = api.create_contract(contract_body)
                 self.collector.add("contracts", cid, lease.signed_dt)
                 with self._lock:
                     self.stats.contracts += 1
+                # Activate so payments can be attached (the previous lease on this
+                # property is already EXPIRED/TERMINATED below, keeping one active).
+                api.change_contract_status(cid, "ACTIVE")
                 self._doc(api.upload_contract_document, cid, "Lease agreement", lease.signed_dt)
 
                 for pay in lease.payments:
@@ -179,6 +186,13 @@ class Runner:
                     if pay.paid:
                         self._doc(api.upload_payment_document, pay_id, "Receipt",
                                   pay.payment_dt or pay.due_dt)
+
+                # A lease that already ended leaves ACTIVE for the next one on this
+                # property; ongoing leases (no end / end in future) stay ACTIVE.
+                if lease.end_dt is not None and lease.end_dt < self.now:
+                    api.change_contract_status(
+                        cid, "TERMINATED" if rng.random() < 0.15 else "EXPIRED"
+                    )
 
     def run(self, plans: list[UserPlan]) -> Stats:
         start = time.time()

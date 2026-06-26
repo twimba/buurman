@@ -40,9 +40,13 @@ public class TeamPreferencesRepository {
         .map(this::toDomain);
   }
 
-  /** Returns preferences for the team, creating a default row if none exists. */
+  /**
+   * Returns the team's saved preferences, or in-memory defaults if none have been persisted
+   * yet. Reads never write: a row is created only when a caller explicitly {@link #save}s
+   * (e.g. updating settings). This keeps the method safe inside read-only transactions.
+   */
   public TeamPreferences getByTeamId(UUID teamId) {
-    return findByTeamId(teamId).orElseGet(() -> createDefaults(teamId));
+    return findByTeamId(teamId).orElseGet(() -> defaultPreferences(teamId));
   }
 
   public TeamPreferences save(TeamPreferences prefs) {
@@ -112,10 +116,11 @@ public class TeamPreferencesRepository {
             .fetch(TEAM_PREFERENCES.TEAM_ID));
   }
 
-  private TeamPreferences createDefaults(UUID teamId) {
+  /** Builds default preferences in memory without persisting them (see {@link #getByTeamId}). */
+  private TeamPreferences defaultPreferences(UUID teamId) {
     TeamPreferences prefs = new TeamPreferences();
     prefs.setTeamId(teamId);
-    return save(prefs);
+    return prefs;
   }
 
   private TeamPreferences toDomain(TeamPreferencesRecord record) {

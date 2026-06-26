@@ -9,7 +9,8 @@ from contextlib import nullcontext
 from datetime import datetime
 
 from . import backdate, flags
-from .config import BACKOFFICE_CLIENT_ID, build_config
+from .config import BACKOFFICE_CLIENT_ID, build_config, guard_non_prod
+from .db import DbClient
 from .runner import Runner
 from .simulation import build_plans, summarize
 
@@ -58,7 +59,17 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     p.add_argument("--backoffice-user", default="", help="overrides $SEED_BACKOFFICE_USER")
     p.add_argument("--backoffice-password", default="", help="overrides $SEED_BACKOFFICE_PASSWORD")
 
-    p.add_argument("--skip-email-verify", action="store_true", help="skip Mailpit verification")
+    p.add_argument(
+        "--email-verify",
+        choices=["db", "mailpit", "none"],
+        default="db",
+        help="how to verify seeded emails: db (fast, default), mailpit (real flow, "
+             "rate-limited), none (only if writes aren't gated on verification)",
+    )
+    p.add_argument(
+        "--allow-nonlocal", action="store_true",
+        help="permit non-local (non *.local./loopback) targets — DANGEROUS, never use against prod",
+    )
     p.add_argument("--dry-run", action="store_true", help="print planned volume; no API/DB calls")
     p.add_argument("--out-dir", default=".out", help="where to write users.csv (default .out)")
     return p.parse_args(argv)
@@ -82,9 +93,23 @@ def main(argv: list[str] | None = None) -> int:
         print("\n(dry run — nothing was created)")
         return 0
 
+    # Hard stop before any write if the targets aren't local (raises SystemExit on prod-like hosts).
+    guard_non_prod(cfg)
+
     print(f"\nTarget API: {cfg.api_url}")
-    print(f"Creating data (verify_email={cfg.verify_email}, documents={cfg.documents}, "
+    print(f"Creating data (email_verify={cfg.email_verify}, documents={cfg.documents}, "
           f"photos={cfg.photos}) ...")
+
+    # DB is needed for db-based email verification and/or backdating — fail fast if unreachable.
+    db = None
+    if cfg.email_verify == "db" or cfg.backdate:
+        db = DbClient(cfg.db_url)
+        try:
+            db.check()
+        except Exception as exc:  # noqa: BLE001
+            print(f"\nCannot reach the database ({cfg.db_url}): {str(exc)[:160]}")
+            print("Fix --db-url/$SEED_DB_URL, or use --email-verify mailpit --no-backdate.")
+            return 1
 
     if cfg.manage_invitation_flag:
         flag_ctx = flags.invitation_required_disabled(
@@ -98,7 +123,7 @@ def main(argv: list[str] | None = None) -> int:
         flag_ctx = nullcontext()
 
     collector = backdate.Collector()
-    runner = Runner(cfg, now, collector)
+    runner = Runner(cfg, now, collector, db=db)
     started = time.time()
     try:
         with flag_ctx:
@@ -108,6 +133,8 @@ def main(argv: list[str] | None = None) -> int:
                 runner.close()
     except flags.FlagAdminError as exc:
         runner.close()
+        if db:
+            db.close()
         print(f"\nCould not manage the invitation_required flag: {exc}")
         print("Disable it yourself (Backoffice -> Feature Flags) and re-run with "
               "--no-manage-invitation-flag, or pass --backoffice-user/--backoffice-password.")
@@ -130,9 +157,14 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as exc:  # noqa: BLE001
             print(f"  ! backdating failed: {str(exc)[:200]}")
             print("    Data was created via the API but timestamps remain 'now'.")
+            if db:
+                db.close()
             return 1
     else:
         print("Backdating skipped (--no-backdate); created_at timestamps are 'now'.")
+
+    if db:
+        db.close()
 
     return 0
 

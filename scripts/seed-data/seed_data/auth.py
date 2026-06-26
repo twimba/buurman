@@ -136,13 +136,17 @@ def provision_account(
     password: str,
     first_name: str,
     last_name: str,
-    verify_email: bool,
+    mailpit_verify: bool,
 ) -> SeededAccount:
-    """Full provisioning: register -> token -> (optional) verify email -> fresh token."""
+    """Register -> token, optionally running the real Mailpit email-verification flow.
+
+    For the default db-based verification the caller marks the email verified directly
+    (see db.DbClient); only mailpit_verify=True exercises /auth/verify-email here.
+    """
     user = register(api_url, email, password, first_name, last_name)
     token = get_token(keycloak_url, email, password)
 
-    if verify_email:
+    if mailpit_verify:
         code = _verification_code(mailpit_url, email)
         _verify_email(api_url, token, code)
         token = get_token(keycloak_url, email, password)

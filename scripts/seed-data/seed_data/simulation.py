@@ -53,6 +53,7 @@ class UserPlan:
     locale: str
     phone_cc: str
     currency: str
+    language: str
     org_contacts: int
     properties: list[PropertyPlan] = field(default_factory=list)
 
@@ -180,7 +181,7 @@ def build_plans(cfg: Config, now: datetime) -> list[UserPlan]:
             signup = month_start + timedelta(seconds=rng.random() * span)
             if signup >= now:
                 signup = now - timedelta(hours=1)
-            code, locale, phone_cc, _w, rent_base = pick_country(rng)
+            code, locale, phone_cc, _w, rent_base, language = pick_country(rng)
 
             tenure_frac = (now - signup).days / window_days
             engagement = _clamp(rng.gauss(1.0, 0.45), 0.15, 2.6)
@@ -194,7 +195,9 @@ def build_plans(cfg: Config, now: datetime) -> list[UserPlan]:
                 country=code,
                 locale=locale,
                 phone_cc=phone_cc,
-                currency="EUR" if code != "GB" else "GBP",
+                # Single team currency is enforced backend-side; the team default is EUR.
+                currency="EUR",
+                language=language,
                 org_contacts=rng.randint(1, 4),
             )
             for _p in range(n_props):

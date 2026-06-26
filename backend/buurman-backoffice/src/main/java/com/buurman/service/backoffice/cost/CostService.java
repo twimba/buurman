@@ -103,30 +103,36 @@ public class CostService {
 
     List<ResolvedSnapshot> rows = new ArrayList<>();
     for (CostProviderId id : CostProviderId.values()) {
-      ProviderReading reading = resolveReading(id, byId.get(id));
-      if (reading == null) {
-        continue;
+      // Isolate each provider: a transient failure (e.g. the manual-amount DB lookup) must not
+      // abort the whole snapshot and lose the providers that resolved cleanly.
+      try {
+        ProviderReading reading = resolveReading(id, byId.get(id));
+        if (reading == null) {
+          continue;
+        }
+        // EUR is frozen at capture-time FX: amount_eur_minor records the rate effective today and
+        // is NOT re-normalized if a past rate is later backfilled/corrected. Backfilling FX
+        // therefore only affects future captures, not historical snapshots — the stored figure is
+        // the historical record. (See FxConverter.)
+        Optional<Converted> eur =
+            fxConverter.toEur(reading.currency(), reading.amountMinor(), LocalDate.now(clock));
+        if (eur.isEmpty()) {
+          log.warn("No FX rate for {} ({}); skipping snapshot", id, reading.currency());
+          continue;
+        }
+        rows.add(
+            new ResolvedSnapshot(
+                id.name(),
+                reading.type().name(),
+                periodMonth,
+                reading.currency(),
+                reading.amountMinor(),
+                eur.get().eurMinor(),
+                eur.get().rate(),
+                serializeBreakdown(reading)));
+      } catch (RuntimeException e) {
+        log.warn("Failed to resolve cost snapshot for {}; skipping", id, e);
       }
-      // EUR is frozen at capture-time FX: amount_eur_minor records the rate effective today and is
-      // NOT re-normalized if a past rate is later backfilled/corrected. Backfilling FX therefore
-      // only affects future captures, not historical snapshots — the stored figure is the
-      // historical record. (See FxConverter.)
-      Optional<Converted> eur =
-          fxConverter.toEur(reading.currency(), reading.amountMinor(), LocalDate.now(clock));
-      if (eur.isEmpty()) {
-        log.warn("No FX rate for {} ({}); skipping snapshot", id, reading.currency());
-        continue;
-      }
-      rows.add(
-          new ResolvedSnapshot(
-              id.name(),
-              reading.type().name(),
-              periodMonth,
-              reading.currency(),
-              reading.amountMinor(),
-              eur.get().eurMinor(),
-              eur.get().rate(),
-              serializeBreakdown(reading)));
     }
     return rows;
   }

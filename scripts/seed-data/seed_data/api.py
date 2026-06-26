@@ -71,6 +71,10 @@ class BuurmanApi:
     def create_contract(self, body: dict) -> str:
         return self._post_json("/contracts", body)["identifier"]
 
+    def change_contract_status(self, contract_id: str, status: str) -> None:
+        # DRAFT -> ACTIVE, then ACTIVE -> EXPIRED/TERMINATED. One active per property.
+        self._post_json(f"/contracts/{contract_id}/change-status", {"status": status})
+
     def create_payment(self, body: dict) -> str:
         return self._post_json("/payments", body)["identifier"]
 
