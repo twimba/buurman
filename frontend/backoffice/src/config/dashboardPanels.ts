@@ -28,22 +28,8 @@ export interface PanelDefinition {
  * this registry for defaults and for the "+ Add panel" menu.
  */
 export const PANEL_REGISTRY: PanelDefinition[] = [
-  // Row A band — the tall map leads; two shorter growth panels stack vertically beside it.
-  { id: 'geo', title: 'Geo', Component: GeoPanel, colSpan: 2, rowSpan: 2 },
-  {
-    id: 'product-entities',
-    title: 'Product entities',
-    Component: ProductEntitiesPanel,
-    colSpan: 2,
-  },
-  { id: 'top-teams', title: 'Top teams', Component: TopTeamsPanel, colSpan: 1 },
-  {
-    id: 'funnel',
-    title: 'Activation funnel',
-    Component: ActivationFunnelPanel,
-    colSpan: 1,
-  },
-  // Row B — act now (support) + is it running (SRE). The operational verdict.
+  // Default order curated in-product (the operational verdict leads, then growth + geo, then the
+  // finance/SRE band). Each panel keeps its own column/row span; only the order is curated here.
   {
     id: 'action-queue',
     title: 'Action queue',
@@ -51,18 +37,19 @@ export const PANEL_REGISTRY: PanelDefinition[] = [
     colSpan: 2,
   },
   {
-    id: 'scheduler-health',
-    title: 'Scheduler health',
-    Component: SchedulerHealthPanel,
-    colSpan: 1,
-  },
-  // Row C — latency (SRE) + spend (finance).
-  {
-    id: 'latency-heatmap',
-    title: 'Latency heatmap',
-    Component: LatencyHeatmapPanel,
+    id: 'product-entities',
+    title: 'Product entities',
+    Component: ProductEntitiesPanel,
     colSpan: 2,
-    rowSpan: 1,
+  },
+  // The tall map; shorter panels pack vertically beside it via the dense grid flow.
+  { id: 'geo', title: 'Geo', Component: GeoPanel, colSpan: 2, rowSpan: 2 },
+  { id: 'top-teams', title: 'Top teams', Component: TopTeamsPanel, colSpan: 1 },
+  {
+    id: 'funnel',
+    title: 'Activation funnel',
+    Component: ActivationFunnelPanel,
+    colSpan: 1,
   },
   {
     id: 'cost-watch',
@@ -77,6 +64,19 @@ export const PANEL_REGISTRY: PanelDefinition[] = [
     colSpan: 2,
     rowSpan: 1,
   },
-  // Row D — full-width opt-in log stream
+  {
+    id: 'latency-heatmap',
+    title: 'Latency heatmap',
+    Component: LatencyHeatmapPanel,
+    colSpan: 2,
+    rowSpan: 1,
+  },
+  {
+    id: 'scheduler-health',
+    title: 'Scheduler health',
+    Component: SchedulerHealthPanel,
+    colSpan: 1,
+  },
+  // Full-width opt-in log stream stays last.
   { id: 'live-tail', title: 'Live tail', Component: LiveTailPanel, colSpan: 4 },
 ];
