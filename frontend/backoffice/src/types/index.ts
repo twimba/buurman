@@ -122,11 +122,9 @@ export interface BackofficeNotification {
 }
 
 export interface NotificationStats {
-  totalCount: number;
-  pendingCount: number;
-  sentCount: number;
-  deliveredCount: number;
-  failedCount: number;
+  total: number;
+  /** Count of notifications per delivery state (PENDING, QUEUED, … REJECTED). */
+  byStatus: Record<string, number>;
   byChannel: Record<string, number>;
 }
 

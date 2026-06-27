@@ -132,7 +132,7 @@ twilio:
 # Notification Configuration
 notification:
   outbox:
-    batch-size: ${NOTIFICATION_OUTBOX_BATCH_SIZE:250}
+    batch-size: ${NOTIFICATION_OUTBOX_BATCH_SIZE:500}
     max-retries: ${NOTIFICATION_OUTBOX_MAX_RETRIES:5}
   consolidation:
     enabled: true

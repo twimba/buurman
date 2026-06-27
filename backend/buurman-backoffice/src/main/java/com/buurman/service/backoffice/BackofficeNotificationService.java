@@ -100,15 +100,11 @@ public class BackofficeNotificationService {
     List<LabelCount> statusCounts = notificationRepository.countGroupedByStatus();
     List<LabelCount> channelCounts = notificationRepository.countGroupedByChannel();
 
-    long pendingCount = 0, deliveredCount = 0, failedCount = 0;
+    // Per-state counts power the hero bar; only states present in the data appear here, the UI
+    // defaults the rest to 0 so every lifecycle state always shows.
+    Map<String, Long> byStatus = new HashMap<>();
     for (LabelCount record : statusCounts) {
-      String s = record.label();
-      int count = record.count();
-      switch (s) {
-        case "PENDING", "QUEUED" -> pendingCount += count;
-        case "DELIVERED" -> deliveredCount = count;
-        case "FAILED", "BOUNCED", "REJECTED" -> failedCount += count;
-      }
+      byStatus.put(record.label(), (long) record.count());
     }
 
     Map<String, Long> byChannel = new HashMap<>();
@@ -117,11 +113,9 @@ public class BackofficeNotificationService {
     }
 
     Map<String, Object> stats = new HashMap<>();
-    stats.put("totalNotifications", totalCount);
-    stats.put("pendingNotifications", pendingCount);
-    stats.put("deliveredNotifications", deliveredCount);
-    stats.put("failedNotifications", failedCount);
-    stats.put("notificationsByChannel", byChannel);
+    stats.put("total", totalCount);
+    stats.put("byStatus", byStatus);
+    stats.put("byChannel", byChannel);
     return stats;
   }
 
