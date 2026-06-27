@@ -20,8 +20,15 @@ import {
   Loader2,
   X,
   AlertCircle,
+  Layers,
 } from 'lucide-react';
 import { formatDateTimeFull } from '../utils/dateFormatting';
+import {
+  jobLabel,
+  jobDescription,
+  groupLabel,
+  groupDescription,
+} from '../utils/jobDisplay';
 import cronstrue from 'cronstrue';
 import { Pagination, ConfirmDialog, RefreshButton } from '@buurman/ui';
 import { SortableHeader } from '../components/SortableHeader';
@@ -331,6 +338,26 @@ export const SchedulerPage = () => {
       return jobSort.dir === 'asc' ? cmp : -cmp;
     });
   }, [allJobs, jobSort]);
+
+  // Group the (already sorted) jobs by their Quartz group so the table mirrors
+  // the structure that naturally exists in the data. Groups are ordered by their
+  // human label; jobs inside each group keep the active sort.
+  const groupedJobs = useMemo(() => {
+    const map = new Map<string, typeof sortedJobs>();
+    for (const job of sortedJobs) {
+      const key = job.jobGroup ?? '';
+      const bucket = map.get(key);
+      if (bucket) {
+        bucket.push(job);
+      } else {
+        map.set(key, [job]);
+      }
+    }
+    return [...map.entries()].sort((a, b) =>
+      groupLabel(a[0]).localeCompare(groupLabel(b[0]))
+    );
+  }, [sortedJobs]);
+
   const uniqueJobNames = [...new Set(allJobs.map((j) => j.jobName))];
   const defaultSelectedJobs = uniqueJobNames.filter(
     (name) =>
@@ -530,14 +557,7 @@ export const SchedulerPage = () => {
               <tr className="border-b border-border-default">
                 <SortableHeader
                   field="jobName"
-                  label="Job Name"
-                  sort={jobSort.field}
-                  direction={jobSort.dir}
-                  onSortChange={handleJobSort}
-                />
-                <SortableHeader
-                  field="jobGroup"
-                  label="Group"
+                  label="Job"
                   sort={jobSort.field}
                   direction={jobSort.dir}
                   onSortChange={handleJobSort}
@@ -579,30 +599,53 @@ export const SchedulerPage = () => {
               {allJobs.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={6}
                     className="px-4 py-12 text-center text-sm text-text-muted"
                   >
                     No scheduled jobs found.
                   </td>
                 </tr>
               ) : (
-                sortedJobs.map((job) => (
-                  <tr
-                    key={`${job.jobGroup}.${job.jobName}.${job.triggerName}`}
-                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
-                  >
-                    <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-text-primary">
-                        {job.jobName}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-text-secondary">
-                        {job.jobGroup}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      {job.triggerType && (
+                groupedJobs.map(([group, groupJobs]) => (
+                  <Fragment key={group}>
+                    <tr className="bg-surface-page/60 border-b border-border-default">
+                      <td colSpan={6} className="px-4 py-2.5">
+                        <div className="flex items-center gap-2">
+                          <Layers className="h-4 w-4 text-text-muted shrink-0" />
+                          <span className="text-sm font-semibold text-text-primary">
+                            {groupLabel(group)}
+                          </span>
+                          <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-surface-inset text-xs font-medium text-text-secondary">
+                            {groupJobs.length}
+                          </span>
+                          {groupDescription(group) && (
+                            <span className="text-xs text-text-muted truncate">
+                              {groupDescription(group)}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    {groupJobs.map((job) => (
+                      <tr
+                        key={`${job.jobGroup}.${job.jobName}.${job.triggerName}`}
+                        className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
+                      >
+                        <td className="px-4 py-3 pl-10">
+                          <div className="flex flex-col">
+                            <span
+                              className="text-sm font-medium text-text-primary"
+                              title={jobDescription(job.jobName)}
+                            >
+                              {jobLabel(job.jobName)}
+                            </span>
+                            <span className="text-[11px] font-mono text-text-muted/50 underline decoration-dotted decoration-text-muted/25 underline-offset-2">
+                              {job.jobName}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          {job.triggerType && (
                         <StatusBadge
                           status={job.triggerType}
                           config={triggerTypeBadgeConfig}
@@ -701,6 +744,8 @@ export const SchedulerPage = () => {
                       </div>
                     </td>
                   </tr>
+                    ))}
+                  </Fragment>
                 ))
               )}
             </tbody>
@@ -764,7 +809,14 @@ export const SchedulerPage = () => {
                         <Check className="h-3 w-3" />
                       )}
                     </span>
-                    <span className="text-text-primary">{name}</span>
+                    <span className="flex flex-col items-start min-w-0">
+                      <span className="text-text-primary truncate">
+                        {jobLabel(name)}
+                      </span>
+                      <span className="text-[11px] font-mono text-text-muted truncate">
+                        {name}
+                      </span>
+                    </span>
                   </button>
                 ))}
               </div>
@@ -852,13 +904,21 @@ export const SchedulerPage = () => {
                         }
                       >
                         <td className="px-4 py-3">
-                          <span className="text-sm font-medium text-text-primary">
-                            {exec.jobName}
-                          </span>
+                          <div className="flex flex-col">
+                            <span
+                              className="text-sm font-medium text-text-primary"
+                              title={jobDescription(exec.jobName)}
+                            >
+                              {jobLabel(exec.jobName)}
+                            </span>
+                            <span className="text-[11px] font-mono text-text-muted/50">
+                              {exec.jobName}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-4 py-3">
                           <span className="text-sm text-text-secondary">
-                            {exec.jobGroup}
+                            {groupLabel(exec.jobGroup)}
                           </span>
                         </td>
                         <td className="px-4 py-3">
