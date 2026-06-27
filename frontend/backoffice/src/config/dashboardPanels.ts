@@ -77,6 +77,6 @@ export const PANEL_REGISTRY: PanelDefinition[] = [
     Component: SchedulerHealthPanel,
     colSpan: 1,
   },
-  // Full-width opt-in log stream stays last.
-  { id: 'live-tail', title: 'Live tail', Component: LiveTailPanel, colSpan: 4 },
+  // Deep-link out to BetterStack's fleet-wide live tail (no in-process log buffer).
+  { id: 'live-tail', title: 'Live tail', Component: LiveTailPanel, colSpan: 1 },
 ];

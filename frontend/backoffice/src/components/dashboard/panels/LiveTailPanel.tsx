@@ -1,67 +1,29 @@
-import type { LogLine } from '../../../generated/models';
-import { useLiveTail } from '../../../hooks/dashboard';
+import { ExternalLink } from 'lucide-react';
+
 import { PanelShell } from '../PanelShell';
 
-const levelClass = (level: string): string => {
-  switch (level) {
-    case 'ERROR':
-      return 'text-error-text';
-    case 'WARN':
-      return 'text-warning-text';
-    case 'INFO':
-      return 'text-success-text';
-    default:
-      return 'text-text-muted';
-  }
-};
+// In production the backoffice runs on a fleet of pods; a per-process in-memory tail would only
+// ever show one pod's logs. Aggregated, fleet-wide live tail lives in BetterStack — link out to it
+// rather than reimplement log aggregation in the dashboard.
+const BETTERSTACK_LIVE_TAIL_URL =
+  'https://telemetry.betterstack.com/team/t505111/tail?s=l1735995';
 
-const time = (iso: string): string => {
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleTimeString();
-};
-
-const Line = ({ line }: { line: LogLine }) => (
-  <div className="flex gap-2 whitespace-nowrap py-0.5">
-    <span className="shrink-0 text-text-muted tabular-nums">
-      {time(line.timestamp)}
-    </span>
-    <span className={`w-10 shrink-0 font-semibold ${levelClass(line.level)}`}>
-      {line.level}
-    </span>
-    <span className="shrink-0 text-text-secondary">{line.logger}</span>
-    <span className="truncate text-text-primary">{line.message}</span>
-  </div>
+export const LiveTailPanel = () => (
+  <PanelShell title="Live tail">
+    <div className="flex h-full flex-col justify-center gap-3 py-2">
+      <p className="text-xs text-text-secondary">
+        Logs are aggregated across the whole fleet in BetterStack. Open the live
+        tail there for real-time, cluster-wide log streaming.
+      </p>
+      <a
+        href={BETTERSTACK_LIVE_TAIL_URL}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="focus-ring inline-flex w-fit items-center gap-1.5 rounded-md border border-border-default px-2.5 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary"
+      >
+        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+        Open live tail in BetterStack
+      </a>
+    </div>
+  </PanelShell>
 );
-
-export const LiveTailPanel = () => {
-  const { data, isLoading, isError, refetch } = useLiveTail();
-  const lines = data?.lines ?? [];
-
-  return (
-    <PanelShell
-      title="Live tail"
-      status={data?.status}
-      previewCta={data?.previewCta}
-      isLoading={isLoading}
-      isError={isError}
-      onRetry={refetch}
-    >
-      {lines.length === 0 ? (
-        <p className="py-4 text-center text-xs text-text-secondary">
-          No recent log activity.
-        </p>
-      ) : (
-        <>
-          <p className="mb-1 text-[10px] text-text-muted">
-            Logs from the serving node only — not aggregated across the cluster.
-          </p>
-          <div className="max-h-48 overflow-auto font-mono text-[11px] leading-relaxed">
-            {lines.map((line, i) => (
-              <Line key={`${line.timestamp}-${i}`} line={line} />
-            ))}
-          </div>
-        </>
-      )}
-    </PanelShell>
-  );
-};

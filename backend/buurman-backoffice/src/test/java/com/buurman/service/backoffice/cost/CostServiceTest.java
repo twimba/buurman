@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -42,10 +41,7 @@ class CostServiceTest {
   private final CostManualAmountRepository manualAmountRepository =
       mock(CostManualAmountRepository.class);
   private final FxRateRepository fxRateRepository = mock(FxRateRepository.class);
-  private final FxConverter fx =
-      new FxConverter(
-          new CostProperties("EUR", Map.of("USD", 0.9), null, null, null, Map.of(), null),
-          fxRateRepository);
+  private final FxConverter fx = new FxConverter(fxRateRepository);
   private final Clock clock = Clock.systemUTC();
 
   private CostService serviceWith(CostSource... sources) {
@@ -124,6 +120,8 @@ class CostServiceTest {
                     CostProviderId.HETZNER, CostSourceType.ESTIMATED, "EUR", 2000, List.of())),
             source(ProviderReading.unavailable(CostProviderId.CLOUDFLARE, "not set")));
     when(manualResolver.amountEurMinor(any())).thenReturn(Optional.empty());
+    when(fxRateRepository.rateOn(eq("USD"), any()))
+        .thenReturn(Optional.of(java.math.BigDecimal.valueOf(0.9)));
 
     service.snapshotNow();
 

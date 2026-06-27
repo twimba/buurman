@@ -27,8 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Fetches live FX rates (source currency -> EUR) and stores them, so cost normalization uses the
- * current market rate instead of the static config fallback. Backed by frankfurter.app (ECB data,
- * no API key). Called before each cost snapshot.
+ * current market rate from the DB. Backed by frankfurter.app (ECB data, no API key). Called before
+ * each cost snapshot.
  */
 @Service
 @Slf4j
@@ -94,15 +94,10 @@ public class FxRateService {
     }
   }
 
-  /**
-   * Currencies needing a live rate: the DB-tracked pairs unioned with any currency present only in
-   * the static config fallback, so a configured-only currency still gets a live rate instead of
-   * silently using the stale static value forever. EUR (the base) is excluded.
-   */
+  /** Currencies needing a live rate: the DB-tracked pairs, excluding EUR (the base). */
   private java.util.Set<String> currenciesToRefresh() {
     java.util.Set<String> currencies = new java.util.TreeSet<>();
     pairRepository.list().forEach(c -> currencies.add(c.toUpperCase()));
-    props.fx().keySet().forEach(c -> currencies.add(c.toUpperCase()));
     currencies.remove("EUR");
     return currencies;
   }

@@ -13,7 +13,6 @@ import {
   getDashboardGeo,
   getDashboardLatencyHeatmap,
   getDashboardLayout,
-  getDashboardLiveTail,
   getDashboardProductEntities,
   getDashboardPropertyLocations,
   getDashboardSchedulerHealth,
@@ -39,7 +38,6 @@ export const REFETCH = {
   costWatch: 3_600_000,
   latencyHeatmap: 300_000,
   geo: 3_600_000,
-  liveTail: 10_000,
 } as const;
 
 /** All dashboard queries share this prefix so the topbar can refresh them together. */
@@ -112,10 +110,6 @@ export const usePropertyLocations = (enabled: boolean) =>
     enabled,
     staleTime: REFETCH.geo,
   });
-
-// Wrapped so React Query's context isn't passed through as the `params` argument.
-export const useLiveTail = () =>
-  usePanelQuery('live-tail', () => getDashboardLiveTail(), REFETCH.liveTail);
 
 export const useDashboardLayout = () =>
   useQuery({

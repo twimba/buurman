@@ -5,6 +5,7 @@ import {
   addFxPair,
   backfillFxRates,
   deleteFxRate,
+  getCostConfig,
   getCostOverview,
   getFxPairs,
   getFxRateHistory,
@@ -14,9 +15,12 @@ import {
   removeFxPair,
   setFxRate,
   setManualCost,
+  updateCostConfig,
 } from '../generated/api/backoffice-cost/backoffice-cost';
+import type { UpdateCostConfigRequest } from '../generated/models';
 
 const KEY = ['bo-cost', 'overview'];
+const CONFIG_KEY = ['bo-cost', 'config'];
 const FX_KEY = ['bo-cost', 'fx'];
 const FX_PAIRS_KEY = ['bo-cost', 'fx-pairs'];
 
@@ -113,6 +117,29 @@ export const useSetManualCost = () => {
     },
     onError: (e) =>
       showToast(`Couldn't save cost: ${errorMessage(e)}`, 'error'),
+  });
+};
+
+/** Editable provider cost parameters (e.g. Mailgun plan fee + per-email rate), DB-backed. */
+export const useCostConfig = () =>
+  useQuery({
+    queryKey: CONFIG_KEY,
+    queryFn: () => getCostConfig(),
+    staleTime: 60_000,
+  });
+
+/** Persists provider cost parameters; re-snapshotting the affected provider happens on next refresh. */
+export const useUpdateCostConfig = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (body: UpdateCostConfigRequest) => updateCostConfig(body),
+    onSuccess: (data) => {
+      queryClient.setQueryData(CONFIG_KEY, data);
+      showToast('Cost settings saved', 'success');
+    },
+    onError: (e) =>
+      showToast(`Couldn't save settings: ${errorMessage(e)}`, 'error'),
   });
 };
 

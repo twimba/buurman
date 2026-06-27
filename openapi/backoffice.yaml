@@ -6095,6 +6095,43 @@ paths:
                 $ref: "#/components/schemas/CostOverviewResponse"
       security:
         - bearer-jwt: []
+  /backoffice/cost/config:
+    get:
+      tags:
+        - Backoffice - Cost
+      summary: Get editable provider cost parameters
+      description: Admin-editable cost knobs (e.g. Mailgun plan fee + per-email rate), DB-backed
+      operationId: getCostConfig
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CostConfigResponse"
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Backoffice - Cost
+      summary: Update editable provider cost parameters
+      description: Persists provider cost knobs so they no longer require an application.yml redeploy
+      operationId: updateCostConfig
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCostConfigRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CostConfigResponse"
+      security:
+        - bearer-jwt: []
   /backoffice/cost/fx:
     get:
       tags:
@@ -6341,35 +6378,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PropertyLocationsResponse"
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetail"
-      security:
-        - bearer-jwt: []
-  /backoffice/dashboard/live-tail:
-    get:
-      tags:
-        - Backoffice - Dashboard
-      summary: Get live log tail
-      description: Recent log lines from the in-memory ring buffer
-      operationId: getDashboardLiveTail
-      parameters:
-        - name: level
-          in: query
-          required: false
-          description: Minimum log level (e.g. WARN). Omit for all levels.
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LiveTailResponse"
         default:
           description: Error
           content:
@@ -8714,6 +8722,30 @@ components:
           format: double
       required:
         - amountEur
+    CostConfigResponse:
+      type: object
+      properties:
+        mailgunBaseEur:
+          type: number
+          format: double
+        mailgunPerEmailEur:
+          type: number
+          format: double
+      required:
+        - mailgunBaseEur
+        - mailgunPerEmailEur
+    UpdateCostConfigRequest:
+      type: object
+      properties:
+        mailgunBaseEur:
+          type: number
+          format: double
+        mailgunPerEmailEur:
+          type: number
+          format: double
+      required:
+        - mailgunBaseEur
+        - mailgunPerEmailEur
     FxRate:
       type: object
       properties:
@@ -9268,38 +9300,6 @@ components:
       required:
         - time
         - values
-    LiveTailResponse:
-      type: object
-      properties:
-        status:
-          $ref: "#/components/schemas/PanelStatus"
-        previewCta:
-          type: string
-        docsLink:
-          type: string
-        lines:
-          type: array
-          items:
-            $ref: "#/components/schemas/LogLine"
-      required:
-        - status
-        - lines
-    LogLine:
-      type: object
-      properties:
-        timestamp:
-          type: string
-        level:
-          type: string
-        logger:
-          type: string
-        message:
-          type: string
-      required:
-        - timestamp
-        - level
-        - logger
-        - message
     PanelPlacement:
       type: object
       properties:

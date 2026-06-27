@@ -28,16 +28,14 @@ public class MailgunCostSource implements CostSource {
 
   private final RestClient client;
   private final String domain;
-  private final double baseEur;
-  private final double perEmailEur;
+  private final CostConfigService config;
   private final ObjectMapper objectMapper;
 
   public MailgunCostSource(
-      MailgunProperties mailgun, CostProperties cost, ObjectMapper objectMapper) {
+      MailgunProperties mailgun, CostConfigService config, ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
     this.domain = mailgun.domain();
-    this.baseEur = cost.mailgun().baseEur();
-    this.perEmailEur = cost.mailgun().perEmailEur();
+    this.config = config;
     boolean configured =
         mailgun.apiKey() != null
             && !mailgun.apiKey().isBlank()
@@ -67,7 +65,9 @@ public class MailgunCostSource implements CostSource {
       for (JsonNode stat : objectMapper.readTree(body == null ? "{}" : body).path("stats")) {
         accepted += stat.path("accepted").path("total").asLong(0);
       }
-      double volumeCost = accepted * perEmailEur;
+      // Read the editable parameters at snapshot time so admin edits take effect without a restart.
+      double baseEur = config.mailgunBaseEur();
+      double volumeCost = accepted * config.mailgunPerEmailEur();
       List<LineItem> breakdown =
           List.of(
               new LineItem("Plan", Math.round(baseEur * 100)),

@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 
 import type { ProviderCost } from '../generated/models';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { ProviderSettingsCard } from '../components/cost/ProviderSettingsCard';
 import { SourceTypeBadge } from '../components/cost/SourceTypeBadge';
 import {
   useCostOverview,
@@ -273,6 +274,10 @@ export const CostsPage = () => {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <ProviderSettingsCard />
       </div>
 
       <p className="text-xs text-text-secondary">

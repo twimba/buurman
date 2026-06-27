@@ -8,15 +8,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import com.buurman.util.SkipTestCoverage;
 
 /**
- * Cost-tracking configuration. {@code fx} maps an original currency code to its EUR rate. {@code
- * manualEur} holds seed flat monthly EUR amounts (keyed by lowercased {@code CostProviderId});
- * these are overridden at runtime by admin-edited values in {@code cost_manual_amount}.
+ * Cost-tracking configuration. {@code manualEur} holds seed flat monthly EUR amounts (keyed by
+ * lowercased {@code CostProviderId}); these are overridden at runtime by admin-edited values in
+ * {@code cost_manual_amount}.
  */
 @ConfigurationProperties(prefix = "backoffice.cost")
 @SkipTestCoverage
 public record CostProperties(
     String baseCurrency,
-    Map<String, Double> fx,
     Hetzner hetzner,
     Cloudflare cloudflare,
     Mailgun mailgun,
@@ -30,7 +29,6 @@ public record CostProperties(
     if (fxApiUrl == null || fxApiUrl.isBlank()) {
       fxApiUrl = "https://api.frankfurter.dev";
     }
-    fx = fx == null ? Map.of() : fx;
     manualEur = manualEur == null ? Map.of() : manualEur;
     hetzner = hetzner == null ? new Hetzner(Optional.empty()) : hetzner;
     cloudflare =

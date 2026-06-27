@@ -210,6 +210,8 @@
                                 <importMapping>CostWatchResponse=com.buurman.dto.response.backoffice.cost.CostWatchResponse</importMapping>
                                 <importMapping>CostOverviewResponse=com.buurman.dto.response.backoffice.cost.CostOverviewResponse</importMapping>
                                 <importMapping>SetManualCostRequest=com.buurman.dto.request.backoffice.cost.SetManualCostRequest</importMapping>
+                                <importMapping>CostConfigResponse=com.buurman.dto.response.backoffice.cost.CostConfigResponse</importMapping>
+                                <importMapping>UpdateCostConfigRequest=com.buurman.dto.request.backoffice.cost.UpdateCostConfigRequest</importMapping>
                                 <importMapping>FxRate=com.buurman.dto.response.backoffice.cost.FxRate</importMapping>
                                 <importMapping>FxRatesResponse=com.buurman.dto.response.backoffice.cost.FxRatesResponse</importMapping>
                                 <importMapping>SetFxRateRequest=com.buurman.dto.request.backoffice.cost.SetFxRateRequest</importMapping>

@@ -27,7 +27,7 @@ public class CostQuartzConfig {
   @Bean
   public Trigger costSnapshotTrigger(
       JobDetail costSnapshotJobDetail,
-      @Value("${scheduling.cost.snapshot-cron:0 0 6 * * ?}") String cron) {
+      @Value("${scheduling.cost.snapshot-cron:15 3 * * * ?}") String cron) {
     return TriggerBuilder.newTrigger()
         .forJob(costSnapshotJobDetail)
         .withIdentity("costSnapshotTrigger", "backoffice")

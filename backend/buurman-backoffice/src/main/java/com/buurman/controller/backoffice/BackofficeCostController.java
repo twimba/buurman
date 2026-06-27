@@ -10,12 +10,15 @@ import com.buurman.dto.request.backoffice.cost.AddFxPairRequest;
 import com.buurman.dto.request.backoffice.cost.BackfillFxRequest;
 import com.buurman.dto.request.backoffice.cost.SetFxRateRequest;
 import com.buurman.dto.request.backoffice.cost.SetManualCostRequest;
+import com.buurman.dto.request.backoffice.cost.UpdateCostConfigRequest;
+import com.buurman.dto.response.backoffice.cost.CostConfigResponse;
 import com.buurman.dto.response.backoffice.cost.CostOverviewResponse;
 import com.buurman.dto.response.backoffice.cost.FxPairsResponse;
 import com.buurman.dto.response.backoffice.cost.FxRatesResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.generated.backoffice.api.BackofficeCostApi;
 import com.buurman.security.SecurityUtils;
+import com.buurman.service.backoffice.cost.CostConfigService;
 import com.buurman.service.backoffice.cost.CostService;
 import com.buurman.service.backoffice.cost.FxRateService;
 
@@ -27,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class BackofficeCostController implements BackofficeCostApi {
 
   private final CostService costService;
+  private final CostConfigService costConfigService;
   private final FxRateService fxRateService;
 
   @Override
@@ -45,6 +49,17 @@ public class BackofficeCostController implements BackofficeCostApi {
     CostProviderId id = parseProvider(provider);
     String updatedBy = SecurityUtils.getBackofficePrincipal().getEmail().orElse("unknown");
     return costService.setManualAmount(id, Math.round(request.amountEur() * 100), updatedBy);
+  }
+
+  @Override
+  public CostConfigResponse getCostConfig() {
+    return costConfigService.getConfig();
+  }
+
+  @Override
+  public CostConfigResponse updateCostConfig(UpdateCostConfigRequest request) {
+    String updatedBy = SecurityUtils.getBackofficePrincipal().getEmail().orElse("unknown");
+    return costConfigService.updateConfig(request, updatedBy);
   }
 
   @Override
