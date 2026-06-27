@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react';
 import {
+  AlertTriangle,
   ArrowDown,
+  ArrowDownRight,
   ArrowUp,
+  ArrowUpRight,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -36,6 +39,13 @@ const PAGE_SIZE = 15;
 const parseRate = (v: string) => parseFloat(v.replace(',', '.'));
 const fmtRate = (v: number) =>
   v.toLocaleString(undefined, { maximumFractionDigits: 6 });
+
+/** Chart windows (days); 0 = all history. */
+const RANGES: { label: string; days: number }[] = [
+  { label: '30d', days: 30 },
+  { label: '90d', days: 90 },
+  { label: 'All', days: 0 },
+];
 
 const SortHeader = ({
   label,
@@ -106,6 +116,34 @@ export const FxRatesPage = () => {
     [rows]
   );
   const latest = chartData[chartData.length - 1];
+
+  // Read "now" once at mount (lazy init keeps render pure); fine for freshness/window math.
+  const [nowMs] = useState(() => Date.now());
+
+  // Chart range window + period delta (so rate drift = cost drift reads at a glance).
+  const [range, setRange] = useState(30);
+  const rangeData = useMemo(() => {
+    if (range === 0) {
+      return chartData;
+    }
+    const cutoff = new Date(nowMs - range * 86_400_000)
+      .toISOString()
+      .slice(0, 10);
+    return chartData.filter((p) => p.date >= cutoff);
+  }, [chartData, range, nowMs]);
+  const rangeStart = rangeData[0];
+  const rangeEnd = rangeData[rangeData.length - 1];
+  const deltaPct =
+    rangeStart && rangeEnd && rangeStart.rate > 0
+      ? ((rangeEnd.rate - rangeStart.rate) / rangeStart.rate) * 100
+      : null;
+
+  // Staleness: a rate older than ~2 days means the daily fetch likely stalled — conversions would
+  // silently use an aging rate, so warn rather than present it as current.
+  const ageDays = latest
+    ? Math.floor((nowMs - new Date(latest.date).getTime()) / 86_400_000)
+    : null;
+  const stale = ageDays != null && ageDays > 2;
 
   // Modals
   const [backfillOpen, setBackfillOpen] = useState(false);
@@ -304,11 +342,33 @@ export const FxRatesPage = () => {
       ) : (
         <>
           {/* Chart */}
-          <div className="rounded-lg border border-border-default bg-surface-card p-5">
-            <div className="mb-2 flex items-baseline justify-between gap-3">
-              <h2 className="text-sm font-semibold text-text-primary">
-                {activeCurrency} → EUR · {currencyName(activeCurrency)}
-              </h2>
+          <div className="mc-panel motion-safe:animate-mc-rise rounded-xl border border-border-default bg-surface-card p-5">
+            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <h2 className="text-sm font-semibold text-text-primary">
+                  {activeCurrency} → EUR · {currencyName(activeCurrency)}
+                </h2>
+                {deltaPct != null && (
+                  <span
+                    className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tabular-nums ${
+                      deltaPct > 0
+                        ? 'bg-success-bg text-success-text'
+                        : deltaPct < 0
+                          ? 'bg-error-bg text-error-text'
+                          : 'text-text-muted'
+                    }`}
+                    title={`Change over the selected window`}
+                  >
+                    {deltaPct > 0 ? (
+                      <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                    ) : deltaPct < 0 ? (
+                      <ArrowDownRight className="h-3 w-3" aria-hidden="true" />
+                    ) : null}
+                    {deltaPct > 0 ? '+' : ''}
+                    {deltaPct.toFixed(2)}%
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-3">
                 {latest && (
                   <span className="text-sm tabular-nums text-text-secondary">
@@ -319,6 +379,23 @@ export const FxRatesPage = () => {
                     EUR
                   </span>
                 )}
+                <div className="inline-flex overflow-hidden rounded-lg border border-border-default">
+                  {RANGES.map((r) => (
+                    <button
+                      key={r.label}
+                      type="button"
+                      onClick={() => setRange(r.days)}
+                      className={`focus-ring px-2 py-1 text-xs font-medium transition-colors ${
+                        range === r.days
+                          ? 'bg-primary-50 text-primary-700'
+                          : 'text-text-muted hover:text-text-primary'
+                      }`}
+                      aria-pressed={range === r.days}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
                 <button
                   type="button"
                   onClick={() => setRemoveTarget(activeCurrency)}
@@ -330,13 +407,20 @@ export const FxRatesPage = () => {
                 </button>
               </div>
             </div>
-            <FxRateChart data={chartData} currency={activeCurrency} />
+            {stale && (
+              <p className="mb-3 inline-flex items-center gap-1.5 rounded-md bg-warning-bg px-2.5 py-1 text-xs font-medium text-warning-text">
+                <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+                Latest rate is {ageDays} days old — the daily fetch may have
+                stalled. Refresh to update.
+              </p>
+            )}
+            <FxRateChart data={rangeData} currency={activeCurrency} />
           </div>
 
           {/* Add / override */}
           <form
             onSubmit={submitAdd}
-            className="rounded-lg border border-border-default bg-surface-card p-4"
+            className="mc-panel rounded-xl border border-border-default bg-surface-card p-4"
           >
             <div className="flex flex-wrap items-end gap-3">
               <label className="flex flex-col gap-1">
@@ -378,7 +462,7 @@ export const FxRatesPage = () => {
           </form>
 
           {/* History table */}
-          <div className="overflow-hidden rounded-lg border border-border-default bg-surface-card">
+          <div className="mc-panel overflow-hidden rounded-xl border border-border-default bg-surface-card">
             <table className="w-full text-sm">
               <thead className="border-b border-border-default bg-surface-page text-xs text-text-secondary">
                 <tr>

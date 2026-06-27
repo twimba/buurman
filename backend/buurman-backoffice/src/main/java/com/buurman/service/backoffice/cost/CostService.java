@@ -153,13 +153,20 @@ public class CostService {
     }
   }
 
-  /** API reading when available, else the admin-edited/configured manual amount, else null. */
+  /**
+   * API reading when available, else the admin-edited manual amount, else null. Formula-based
+   * providers (Mailgun) never fall back to a manual amount — if their API is unreachable they
+   * simply have no figure this cycle.
+   */
   private ProviderReading resolveReading(CostProviderId id, CostSource apiSource) {
     if (apiSource != null) {
       ProviderReading reading = apiSource.read();
       if (reading.available()) {
         return reading;
       }
+    }
+    if (id.formulaBased()) {
+      return null;
     }
     return manualResolver
         .amountEurMinor(id)
@@ -174,7 +181,26 @@ public class CostService {
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public CostOverviewResponse setManualAmount(
       CostProviderId provider, long amountEurMinor, String updatedBy) {
-    manualAmountRepository.upsert(provider.name(), Math.max(0, amountEurMinor), updatedBy);
+    if (provider.formulaBased()) {
+      throw new IllegalArgumentException(
+          provider.displayName() + " is formula-based and has no manual amount; edit its formula.");
+    }
+    long amount = Math.max(0, amountEurMinor);
+    manualAmountRepository.upsert(provider.name(), amount, updatedBy);
+    // Reflect the new amount in the current month's snapshot right away, so the Costs page and
+    // run-rate update on save exactly as they would after a Refresh — without waiting for the next
+    // poll. A manual amount is EUR by definition (rate 1, SUBSCRIPTION); inline editing is offered
+    // only when no live API figure exists, so this is the same row a refresh would resolve.
+    LocalDate currentMonth = LocalDate.now(clock).withDayOfMonth(1);
+    snapshotRepository.upsert(
+        provider.name(),
+        CostSourceType.SUBSCRIPTION.name(),
+        currentMonth,
+        "EUR",
+        amount,
+        amount,
+        java.math.BigDecimal.ONE,
+        null);
     return overview();
   }
 
@@ -267,16 +293,20 @@ public class CostService {
                 true,
                 Optional.empty()));
       } else {
+        // Formula providers (Mailgun) stay "estimated, not configured" so the UI never offers a
+        // manual edit for them; everyone else falls to a flat/manual placeholder.
+        boolean formula = id.formulaBased();
         result.add(
             new ProviderCost(
                 id.name(),
                 id.displayName(),
-                CostSourceType.SUBSCRIPTION,
+                formula ? CostSourceType.ESTIMATED : CostSourceType.SUBSCRIPTION,
                 "EUR",
                 0,
                 0,
                 false,
-                Optional.of("Awaiting first snapshot")));
+                Optional.of(
+                    formula ? "Set plan fee + per-email rate" : "Awaiting first snapshot")));
       }
     }
     result.sort(java.util.Comparator.comparingLong(ProviderCost::amountEurMinor).reversed());

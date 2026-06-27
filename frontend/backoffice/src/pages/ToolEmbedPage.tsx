@@ -10,8 +10,7 @@ const getToolUrl = (subdomain: string) => {
 };
 
 type ToolConfig = { name: string } & (
-  | { subdomain: string; url?: never }
-  | { url: string; subdomain?: never }
+  { subdomain: string; url?: never } | { url: string; subdomain?: never }
 );
 
 const getToolsConfig = (): Record<string, ToolConfig> => {

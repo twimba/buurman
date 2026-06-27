@@ -226,13 +226,9 @@ backoffice:
     cloudflare:
       token: ${CLOUDFLARE_API_TOKEN:}
       account-id: ${CLOUDFLARE_ACCOUNT_ID:}
-    # Mailgun has no money API — estimate from accepted volume: flat plan fee + per-email rate.
-    mailgun:
-      base-eur: ${COST_MAILGUN_BASE_EUR:0}
-      per-email-eur: ${COST_MAILGUN_PER_EMAIL_EUR:0}
-    # Seed flat monthly EUR costs; overridden by admin edits in cost_manual_amount.
-    manual-eur:
-      better_stack: ${COST_BETTER_STACK_EUR:0}
+    # Mailgun plan fee / per-email rate (cost_config) and flat provider amounts like BetterStack
+    # (cost_manual_amount) are managed in the DB via the backoffice Costs page — no env/yml seed.
+    # Absent config defaults to 0, i.e. unset until an admin enters the figures.
 
 # Server Configuration
 server:

@@ -86,14 +86,7 @@ export const CONTACT_TAG_LABELS: Record<ContactTag, string> = {
 };
 
 export type TagColorVariant =
-  | 'gray'
-  | 'red'
-  | 'amber'
-  | 'green'
-  | 'teal'
-  | 'blue'
-  | 'purple'
-  | 'rose';
+  'gray' | 'red' | 'amber' | 'green' | 'teal' | 'blue' | 'purple' | 'rose';
 
 export const TAG_COLORS: Record<ContactTag, TagColorVariant> = {
   [ContactTag.VIP]: 'purple',

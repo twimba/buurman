@@ -19,32 +19,25 @@ class CostConfigServiceTest {
 
   private final CostConfigRepository repository = mock(CostConfigRepository.class);
 
-  private static CostProperties propsWithMailgunSeed(double base, double perEmail) {
-    return new CostProperties(
-        "EUR", null, null, new CostProperties.Mailgun(base, perEmail), Map.of(), null);
-  }
-
   @Test
-  @DisplayName("falls back to the application.yml seed when no DB value is stored")
-  void seedFallback() {
+  @DisplayName("defaults to 0 when no DB value is stored")
+  void defaultsToZero() {
     when(repository.all()).thenReturn(Map.of());
-    CostConfigService service =
-        new CostConfigService(repository, propsWithMailgunSeed(35.0, 0.0008));
+    CostConfigService service = new CostConfigService(repository);
 
-    assertThat(service.mailgunBaseEur()).isEqualTo(35.0);
-    assertThat(service.mailgunPerEmailEur()).isEqualTo(0.0008);
+    assertThat(service.mailgunBaseEur()).isZero();
+    assertThat(service.mailgunPerEmailEur()).isZero();
   }
 
   @Test
-  @DisplayName("DB value overrides the seed")
-  void dbOverridesSeed() {
+  @DisplayName("reads the stored DB value")
+  void readsDbValue() {
     when(repository.all())
         .thenReturn(
             Map.of(
                 CostConfigService.MAILGUN_BASE_EUR, "50",
                 CostConfigService.MAILGUN_PER_EMAIL_EUR, "0.001"));
-    CostConfigService service =
-        new CostConfigService(repository, propsWithMailgunSeed(35.0, 0.0008));
+    CostConfigService service = new CostConfigService(repository);
 
     CostConfigResponse config = service.getConfig();
     assertThat(config.mailgunBaseEur()).isEqualTo(50.0);
@@ -55,17 +48,14 @@ class CostConfigServiceTest {
   @DisplayName("update clamps negatives to zero and persists both keys")
   void updateClampsAndPersists() {
     when(repository.all()).thenReturn(Map.of());
-    CostConfigService service =
-        new CostConfigService(repository, propsWithMailgunSeed(0, 0));
+    CostConfigService service = new CostConfigService(repository);
 
     CostConfigResponse saved =
         service.updateConfig(new UpdateCostConfigRequest(-5, 0.002), "admin@buurman.io");
 
     assertThat(saved.mailgunBaseEur()).isZero();
     assertThat(saved.mailgunPerEmailEur()).isEqualTo(0.002);
-    verify(repository)
-        .upsert(CostConfigService.MAILGUN_BASE_EUR, "0.0", "admin@buurman.io");
-    verify(repository)
-        .upsert(CostConfigService.MAILGUN_PER_EMAIL_EUR, "0.002", "admin@buurman.io");
+    verify(repository).upsert(CostConfigService.MAILGUN_BASE_EUR, "0.0", "admin@buurman.io");
+    verify(repository).upsert(CostConfigService.MAILGUN_PER_EMAIL_EUR, "0.002", "admin@buurman.io");
   }
 }

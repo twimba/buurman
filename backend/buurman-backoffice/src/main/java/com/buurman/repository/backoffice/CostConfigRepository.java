@@ -12,7 +12,9 @@ import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
 
-/** Admin-editable provider cost parameters (generic key/value), overriding application.yml seeds. */
+/**
+ * Admin-editable provider cost parameters (generic key/value), overriding application.yml seeds.
+ */
 @Repository
 @RequiredArgsConstructor
 public class CostConfigRepository {

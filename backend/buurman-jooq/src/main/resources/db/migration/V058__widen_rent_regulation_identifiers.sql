@@ -6,8 +6,11 @@
 -- backoffice create / bulk-import / catalog-reload inserts with
 -- "value too long for type character varying(26)". rent_regulation_country_requests was already
 -- VARCHAR(29); this aligns the remaining three tables.
-ALTER TABLE rent_regulation_countries ALTER COLUMN identifier TYPE VARCHAR(29);
+ALTER TABLE rent_regulation_countries
+ALTER COLUMN identifier TYPE VARCHAR(29);
 
-ALTER TABLE rent_regulation_regions ALTER COLUMN identifier TYPE VARCHAR(29);
+ALTER TABLE rent_regulation_regions
+ALTER COLUMN identifier TYPE VARCHAR(29);
 
-ALTER TABLE rent_regulation_rules ALTER COLUMN identifier TYPE VARCHAR(29);
+ALTER TABLE rent_regulation_rules
+ALTER COLUMN identifier TYPE VARCHAR(29);

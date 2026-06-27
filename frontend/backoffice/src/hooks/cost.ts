@@ -177,6 +177,8 @@ export const useSetFxRate = () => {
       queryClient.setQueryData(FX_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
       queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
+      // Costs are FX-normalized to EUR, so a rate change can move the Costs page total.
+      queryClient.invalidateQueries({ queryKey: KEY });
     },
     onError: (e) =>
       showToast(`Couldn't save rate: ${errorMessage(e)}`, 'error'),
@@ -194,6 +196,7 @@ export const useDeleteFxRate = () => {
       queryClient.setQueryData(FX_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
       queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
+      queryClient.invalidateQueries({ queryKey: KEY });
     },
     onError: (e) =>
       showToast(`Couldn't delete rate: ${errorMessage(e)}`, 'error'),
@@ -213,6 +216,7 @@ export const useBackfillFxRates = () => {
       queryClient.invalidateQueries({
         queryKey: ['bo-dashboard', 'cost-watch'],
       });
+      queryClient.invalidateQueries({ queryKey: KEY });
     },
     onError: (e) => showToast(`Backfill failed: ${errorMessage(e)}`, 'error'),
   });
@@ -231,6 +235,7 @@ export const useRefreshFxRates = () => {
       queryClient.invalidateQueries({
         queryKey: ['bo-dashboard', 'cost-watch'],
       });
+      queryClient.invalidateQueries({ queryKey: KEY });
     },
     onError: (e) => showToast(`FX refresh failed: ${errorMessage(e)}`, 'error'),
   });

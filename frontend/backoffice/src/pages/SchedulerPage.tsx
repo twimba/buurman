@@ -646,104 +646,107 @@ export const SchedulerPage = () => {
                         </td>
                         <td className="px-4 py-3">
                           {job.triggerType && (
-                        <StatusBadge
-                          status={job.triggerType}
-                          config={triggerTypeBadgeConfig}
-                        />
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center">
-                        <span className="text-sm text-text-secondary font-mono">
-                          {job.scheduleExpression ?? '-'}
-                        </span>
-                        {job.triggerType === 'cron' &&
-                          job.scheduleExpression && (
-                            <CronTooltip expression={job.scheduleExpression} />
+                            <StatusBadge
+                              status={job.triggerType}
+                              config={triggerTypeBadgeConfig}
+                            />
                           )}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusBadge
-                        status={job.triggerState}
-                        config={triggerStateBadgeConfig}
-                      />
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-text-secondary whitespace-nowrap">
-                        {formatFireTime(job.nextFireTime)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'flex-end',
-                          gap: '0.25rem',
-                        }}
-                      >
-                        {job.triggerState === 'PAUSED' ? (
-                          <button
-                            onClick={() =>
-                              setConfirmAction({
-                                type: 'resume',
-                                jobName: job.jobName,
-                                group: job.jobGroup,
-                              })
-                            }
-                            className="p-2 rounded-lg text-text-secondary hover:text-success-text hover:bg-surface-inset transition-colors"
-                            title="Resume job"
-                          >
-                            <Play className="h-4 w-4" />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              setConfirmAction({
-                                type: 'pause',
-                                jobName: job.jobName,
-                                group: job.jobGroup,
-                              })
-                            }
-                            className="p-2 rounded-lg text-text-secondary hover:text-warning-text hover:bg-surface-inset transition-colors"
-                            title="Pause job"
-                          >
-                            <Pause className="h-4 w-4" />
-                          </button>
-                        )}
-                        <button
-                          onClick={() =>
-                            setConfirmAction({
-                              type: 'trigger',
-                              jobName: job.jobName,
-                              group: job.jobGroup,
-                            })
-                          }
-                          className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
-                          title="Run now"
-                        >
-                          <PlayCircle className="h-4 w-4" />
-                        </button>
-                        {job.triggerType === 'cron' && (
-                          <button
-                            onClick={() => {
-                              setEditingJob({
-                                jobName: job.jobName,
-                                group: job.jobGroup,
-                                currentExpression: job.scheduleExpression ?? '',
-                              });
-                              setCronInput(job.scheduleExpression ?? '');
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center">
+                            <span className="text-sm text-text-secondary font-mono">
+                              {job.scheduleExpression ?? '-'}
+                            </span>
+                            {job.triggerType === 'cron' &&
+                              job.scheduleExpression && (
+                                <CronTooltip
+                                  expression={job.scheduleExpression}
+                                />
+                              )}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge
+                            status={job.triggerState}
+                            config={triggerStateBadgeConfig}
+                          />
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-text-secondary whitespace-nowrap">
+                            {formatFireTime(job.nextFireTime)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'flex-end',
+                              gap: '0.25rem',
                             }}
-                            className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
-                            title="Edit schedule"
                           >
-                            <Pencil className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+                            {job.triggerState === 'PAUSED' ? (
+                              <button
+                                onClick={() =>
+                                  setConfirmAction({
+                                    type: 'resume',
+                                    jobName: job.jobName,
+                                    group: job.jobGroup,
+                                  })
+                                }
+                                className="p-2 rounded-lg text-text-secondary hover:text-success-text hover:bg-surface-inset transition-colors"
+                                title="Resume job"
+                              >
+                                <Play className="h-4 w-4" />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() =>
+                                  setConfirmAction({
+                                    type: 'pause',
+                                    jobName: job.jobName,
+                                    group: job.jobGroup,
+                                  })
+                                }
+                                className="p-2 rounded-lg text-text-secondary hover:text-warning-text hover:bg-surface-inset transition-colors"
+                                title="Pause job"
+                              >
+                                <Pause className="h-4 w-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() =>
+                                setConfirmAction({
+                                  type: 'trigger',
+                                  jobName: job.jobName,
+                                  group: job.jobGroup,
+                                })
+                              }
+                              className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
+                              title="Run now"
+                            >
+                              <PlayCircle className="h-4 w-4" />
+                            </button>
+                            {job.triggerType === 'cron' && (
+                              <button
+                                onClick={() => {
+                                  setEditingJob({
+                                    jobName: job.jobName,
+                                    group: job.jobGroup,
+                                    currentExpression:
+                                      job.scheduleExpression ?? '',
+                                  });
+                                  setCronInput(job.scheduleExpression ?? '');
+                                }}
+                                className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
+                                title="Edit schedule"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
                     ))}
                   </Fragment>
                 ))

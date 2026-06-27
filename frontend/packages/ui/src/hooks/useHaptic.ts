@@ -16,12 +16,7 @@
  */
 
 export type HapticPattern =
-  | 'selection'
-  | 'light'
-  | 'medium'
-  | 'heavy'
-  | 'success'
-  | 'warning';
+  'selection' | 'light' | 'medium' | 'heavy' | 'success' | 'warning';
 
 const PATTERNS: Record<HapticPattern, number | number[]> = {
   selection: 10,

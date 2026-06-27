@@ -1,6 +1,5 @@
 package com.buurman.service.backoffice.cost;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -11,28 +10,18 @@ import com.buurman.repository.backoffice.CostManualAmountRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Resolves a provider's manual monthly EUR amount: admin-edited value ({@code cost_manual_amount})
- * first, falling back to the configured seed. Used when a provider has no API source, or its API
- * source is unavailable.
+ * Resolves a provider's manual monthly EUR amount from the admin-edited value in {@code
+ * cost_manual_amount}. Used when a provider has no API source, or its API source is unavailable.
+ * Empty until a Buurmy enters an amount on the Costs page — there is no config seed.
  */
 @Component
 @RequiredArgsConstructor
 public class ManualCostResolver {
 
   private final CostManualAmountRepository repository;
-  private final CostProperties props;
 
-  /** EUR minor units for the provider, or empty when nothing is configured. */
+  /** EUR minor units for the provider, or empty when no amount has been set. */
   public Optional<Long> amountEurMinor(CostProviderId id) {
-    Map<String, Long> edited = repository.all();
-    Long dbValue = edited.get(id.name());
-    if (dbValue != null) {
-      return Optional.of(dbValue);
-    }
-    Double seed = props.manualEur().get(id.name().toLowerCase());
-    if (seed != null && seed > 0) {
-      return Optional.of(Math.round(seed * 100));
-    }
-    return Optional.empty();
+    return Optional.ofNullable(repository.all().get(id.name()));
   }
 }

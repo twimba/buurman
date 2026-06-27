@@ -6,12 +6,7 @@ interface MetricCardProps {
   value: string;
   icon?: React.ReactNode;
   iconBgVariant?:
-    | 'primary'
-    | 'accent'
-    | 'success'
-    | 'warning'
-    | 'error'
-    | 'info';
+    'primary' | 'accent' | 'success' | 'warning' | 'error' | 'info';
   trend?: {
     direction: 'up' | 'down' | 'flat';
     label: string;

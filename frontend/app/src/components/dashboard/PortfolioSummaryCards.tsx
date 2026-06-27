@@ -43,12 +43,7 @@ function formatPercent(value: number | undefined, fallback: string): string {
 }
 
 type IconBgVariant =
-  | 'primary'
-  | 'accent'
-  | 'success'
-  | 'warning'
-  | 'error'
-  | 'info';
+  'primary' | 'accent' | 'success' | 'warning' | 'error' | 'info';
 
 function rateColor(
   value: number | undefined,
