@@ -7,6 +7,7 @@ import {
   AdvancedMarker,
   Pin,
   MapMouseEvent,
+  ControlPosition,
 } from '@vis.gl/react-google-maps';
 import {
   Camera,
@@ -240,11 +241,11 @@ export const InteractiveMap = ({
           <APIProvider {...apiProviderProps}>
             <Map
               key={colorScheme}
-              center={center}
-              zoom={5}
+              defaultCenter={center}
+              defaultZoom={5}
               mapId={mapId}
               colorScheme={colorScheme}
-              gestureHandling="cooperative"
+              gestureHandling="greedy"
               disableDefaultUI={false}
               onClick={handleMapClick}
             />
@@ -312,13 +313,16 @@ export const InteractiveMap = ({
         <APIProvider {...apiProviderProps}>
           {view === 'map' ? (
             <Map
-              key={colorScheme}
-              center={coordinates}
-              zoom={zoom}
+              key={`${colorScheme}-${coordinates.lat},${coordinates.lng}`}
+              defaultCenter={coordinates}
+              defaultZoom={zoom}
               mapId={mapId}
               colorScheme={colorScheme}
-              gestureHandling="cooperative"
+              gestureHandling="greedy"
               disableDefaultUI={false}
+              fullscreenControlOptions={{
+                position: ControlPosition.LEFT_BOTTOM,
+              }}
             >
               <AdvancedMarker
                 position={coordinates}
