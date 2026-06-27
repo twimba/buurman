@@ -29,7 +29,8 @@ public class CostSnapshotRepository {
       String currency,
       long amountMinor,
       long amountEurMinor,
-      LocalDateTime capturedAt) {}
+      LocalDateTime capturedAt,
+      String breakdownJson) {}
 
   public record MonthlyTotal(LocalDate month, long totalEurMinor) {}
 
@@ -82,7 +83,8 @@ public class CostSnapshotRepository {
                     r.getCurrency(),
                     r.getAmountMinor(),
                     r.getAmountEurMinor(),
-                    r.getCapturedAt()));
+                    r.getCapturedAt(),
+                    r.getBreakdown() == null ? "" : r.getBreakdown().data()));
   }
 
   /** Total EUR per month (one row per provider per month), oldest first. Summed in SQL. */

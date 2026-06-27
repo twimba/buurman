@@ -70,8 +70,10 @@ public class MailgunCostSource implements CostSource {
       double volumeCost = accepted * config.mailgunPerEmailEur();
       List<LineItem> breakdown =
           List.of(
-              new LineItem("Plan", Math.round(baseEur * 100)),
-              new LineItem(accepted + " emails", Math.round(volumeCost * 100)));
+              new LineItem("Plan fee", Math.round(baseEur * 100)),
+              new LineItem(
+                  String.format(java.util.Locale.ROOT, "%,d accepted emails", accepted),
+                  Math.round(volumeCost * 100)));
       long total = Math.round((baseEur + volumeCost) * 100);
       return ProviderReading.of(id(), CostSourceType.ESTIMATED, "EUR", total, breakdown);
     } catch (RuntimeException | com.fasterxml.jackson.core.JsonProcessingException e) {

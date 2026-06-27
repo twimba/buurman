@@ -108,7 +108,31 @@ The live metrics panels (p95, error rate, latency heatmap) read from Prometheus;
 
 Migration `V059__backoffice_dashboard_cost_fx.sql` is **additive** (new tables only: `backoffice_user_dashboard_layout`, `backoffice_action_item_snooze`, `cost_snapshot`, `cost_manual_amount`, `fx_rate`, `fx_pair`, `cost_config`; drops the `team_preferences.default_country_code` default). Applied automatically by Flyway on backend startup — no manual step.
 
-> Note: V056–V058 are unchanged from production (rent-regulation refresh, already deployed). Only V059 is new on this branch.
+> Note: V059 is the only **new** migration on this branch.
+
+#### ⚠️ V056–V058 checksum repair (formatting-only change)
+
+The bodies of the already-deployed `V056`–`V058` (rent-regulation refresh) were **reformatted** on
+this branch — same SQL semantics, but the file bytes changed, so Flyway computes new checksums.
+Because these versions are already recorded in production's `flyway_schema_history` with the **old**
+checksums, the backend will **fail to start** on `ValidationException` (checksum mismatch) until the
+stored checksums are updated to match the new files.
+
+**Apply the checksum update to the prod DB before/at deploy time.** The values below are from a
+**local** run — the checksum is derived from file content and is the same everywhere, but verify
+the `installed_rank` matches production (ranks 56–58 here) before running:
+
+```sql
+-- Repair V056–V058 checksums after the formatting-only reformat (run against the prod DB)
+UPDATE "public"."flyway_schema_history" SET "checksum" = 134853625  WHERE "installed_rank" = 56; -- V056
+UPDATE "public"."flyway_schema_history" SET "checksum" = 203013181  WHERE "installed_rank" = 57; -- V057
+UPDATE "public"."flyway_schema_history" SET "checksum" = 2019611573 WHERE "installed_rank" = 58; -- V058
+```
+
+> Confirm the `installed_rank` → version mapping first:
+> `SELECT installed_rank, version, checksum FROM flyway_schema_history WHERE version IN ('056','057','058');`
+> Alternatively, run `mvn -pl buurman-jooq flyway:repair` (or `flyway repair`) against prod to let
+> Flyway recompute and rewrite the checksums automatically instead of the manual UPDATEs above.
 
 ### Environment Variables
 
@@ -131,12 +155,14 @@ CLOUDFLARE_API_TOKEN=<cloudflare-api-token>
 CLOUDFLARE_ACCOUNT_ID=<cloudflare-account-id>
 ```
 
-**Editable cost amounts are managed in the DB, not env.** The Mailgun plan fee / per-email rate
-(`cost_config`) and flat provider amounts like BetterStack (`cost_manual_amount`) are set on the
-backoffice **Costs** page and take precedence over any config. The matching env vars
-(`COST_MAILGUN_BASE_EUR`, `COST_MAILGUN_PER_EMAIL_EUR`, `COST_BETTER_STACK_EUR`) exist only as an
-optional cold-start seed (default `0` = unset) and should normally be **left unset** in production —
-set the real numbers in-app instead.
+**Editable cost amounts are DB-only — there is no env/yml seed.** The Mailgun plan fee / per-email
+rate (`cost_config`) and flat provider amounts like Better Stack (`cost_manual_amount`) are set
+exclusively on the backoffice **Costs** page; edits save instantly and write the current-month
+snapshot immediately (no Refresh needed). The former `COST_MAILGUN_BASE_EUR`,
+`COST_MAILGUN_PER_EMAIL_EUR`, and `COST_BETTER_STACK_EUR` env vars **have been removed** — do not
+set them. Mailgun is **formula-only** (plan fee + per-email rate × live volume); it never falls back
+to a manual amount and is not inline-editable. Manual amounts remain for providers that need them
+(Better Stack, or as an API-down fallback).
 
 #### Frontend — Backoffice (`backoffice` service)
 
@@ -157,7 +183,7 @@ VITE_GOOGLE_MAPS_MAP_ID=<google-maps-map-id>
 
 Notes:
 - `PROMETHEUS_URL` should point at a cluster-wide Prometheus; queries aggregate across nodes via the `application="buurman"` selector.
-- Manual/seed EUR costs are starting values only — admins override them on the **Costs** page (`cost_manual_amount` / `cost_config` tables), no redeploy needed.
+- EUR cost amounts live only in the DB (`cost_manual_amount` / `cost_config`) — admins set them on the **Costs** page, no redeploy needed. Manual edits save instantly and reflect on the overview without a Refresh.
 - Cost snapshots run on a daily cron (`0 0 6 * * ?`); the **Costs** page also exposes a manual **Refresh**.
 - The Map ID is created in Google Cloud Console → Maps → Map IDs (vector type). One Map ID can be shared by app + backoffice.
 

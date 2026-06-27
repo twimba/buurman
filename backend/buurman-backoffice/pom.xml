@@ -205,6 +205,7 @@
                                 <importMapping>CountryStats=com.buurman.dto.response.backoffice.dashboard.CountryStats</importMapping>
                                 <importMapping>CostSourceType=com.buurman.domain.backoffice.CostSourceType</importMapping>
                                 <importMapping>ProviderCost=com.buurman.dto.response.backoffice.cost.ProviderCost</importMapping>
+                                <importMapping>CostLineItem=com.buurman.dto.response.backoffice.cost.CostLineItem</importMapping>
                                 <importMapping>CostInsight=com.buurman.dto.response.backoffice.cost.CostInsight</importMapping>
                                 <importMapping>CostTrendPoint=com.buurman.dto.response.backoffice.cost.CostTrendPoint</importMapping>
                                 <importMapping>CostWatchResponse=com.buurman.dto.response.backoffice.cost.CostWatchResponse</importMapping>

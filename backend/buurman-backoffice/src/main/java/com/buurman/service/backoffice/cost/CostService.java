@@ -18,6 +18,7 @@ import com.buurman.domain.backoffice.CostProviderId;
 import com.buurman.domain.backoffice.CostSourceType;
 import com.buurman.domain.backoffice.PanelStatus;
 import com.buurman.dto.response.backoffice.cost.CostInsight;
+import com.buurman.dto.response.backoffice.cost.CostLineItem;
 import com.buurman.dto.response.backoffice.cost.CostOverviewResponse;
 import com.buurman.dto.response.backoffice.cost.CostTrendPoint;
 import com.buurman.dto.response.backoffice.cost.CostWatchResponse;
@@ -28,6 +29,7 @@ import com.buurman.repository.backoffice.CostSnapshotRepository.MonthlyTotal;
 import com.buurman.repository.backoffice.DashboardAggregateRepository;
 import com.buurman.service.backoffice.cost.CostSource.ProviderReading;
 import com.buurman.service.backoffice.cost.FxConverter.Converted;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -291,7 +293,8 @@ public class CostService {
                 s.amountMinor(),
                 s.amountEurMinor(),
                 true,
-                Optional.empty()));
+                Optional.empty(),
+                parseBreakdown(s.breakdownJson())));
       } else {
         // Formula providers (Mailgun) stay "estimated, not configured" so the UI never offers a
         // manual edit for them; everyone else falls to a flat/manual placeholder.
@@ -305,8 +308,8 @@ public class CostService {
                 0,
                 0,
                 false,
-                Optional.of(
-                    formula ? "Set plan fee + per-email rate" : "Awaiting first snapshot")));
+                Optional.of(formula ? "Set plan fee + per-email rate" : "Awaiting first snapshot"),
+                List.of()));
       }
     }
     result.sort(java.util.Comparator.comparingLong(ProviderCost::amountEurMinor).reversed());
@@ -357,6 +360,21 @@ public class CostService {
         .map(MonthlyTotal::totalEurMinor)
         .findFirst()
         .orElse(null);
+  }
+
+  /**
+   * Deserialize a stored breakdown JSON array back into line items; empty on null/parse failure.
+   */
+  private List<CostLineItem> parseBreakdown(String json) {
+    if (json == null || json.isBlank()) {
+      return List.of();
+    }
+    try {
+      return objectMapper.readValue(json, new TypeReference<List<CostLineItem>>() {});
+    } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+      log.warn("Failed to parse cost breakdown JSON; omitting", e);
+      return List.of();
+    }
   }
 
   private String serializeBreakdown(ProviderReading reading) {

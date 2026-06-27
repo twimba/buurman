@@ -375,6 +375,23 @@ export const CostsPage = () => {
                       )}
                     </span>
                   </div>
+                  {p.breakdown.length > 0 && (
+                    <ul className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-text-muted">
+                      {p.breakdown.map((li) => (
+                        <li
+                          key={li.label}
+                          className="inline-flex items-center gap-1"
+                        >
+                          <span>{li.label}</span>
+                          <span className="tabular-nums text-text-secondary">
+                            {p.currency === 'EUR'
+                              ? formatEurMinor(li.amountMinor)
+                              : `${li.amountMinor}`}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-page">
                     <div
                       className="motion-safe:animate-mc-grow-x h-full origin-left rounded-full"

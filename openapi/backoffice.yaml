@@ -8849,6 +8849,10 @@ components:
           type: boolean
         note:
           type: string
+        breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/CostLineItem"
       required:
         - provider
         - displayName
@@ -8857,6 +8861,19 @@ components:
         - amountMinor
         - amountEurMinor
         - available
+        - breakdown
+    CostLineItem:
+      type: object
+      description: One component of a provider's cost (label + amount in the provider's currency).
+      properties:
+        label:
+          type: string
+        amountMinor:
+          type: integer
+          format: int64
+      required:
+        - label
+        - amountMinor
     CostInsight:
       type: object
       properties:

@@ -143,7 +143,7 @@ class CostServiceTest {
         .thenReturn(
             List.of(
                 new LatestProviderCost(
-                    "HETZNER", "ESTIMATED", "EUR", 5000, 5000, LocalDateTime.now(clock))));
+                    "HETZNER", "ESTIMATED", "EUR", 5000, 5000, LocalDateTime.now(clock), null)));
     when(snapshotRepository.monthlyTotals(any())).thenReturn(List.of());
     when(aggregateRepository.countActiveTeams()).thenReturn(10L);
 
