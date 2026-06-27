@@ -8,8 +8,4 @@ import com.buurman.util.SkipTestCoverage;
  */
 @SkipTestCoverage
 public record RentRegulationReloadResult(
-    String version,
-    String generatedAt,
-    int countriesLoaded,
-    int regionsLoaded,
-    int rulesLoaded) {}
+    String version, String generatedAt, int countriesLoaded, int regionsLoaded, int rulesLoaded) {}

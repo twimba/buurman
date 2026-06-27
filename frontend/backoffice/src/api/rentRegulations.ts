@@ -165,8 +165,7 @@ export const rentRegulationsApi = {
   // Bundled catalog (reference dataset shipped with the app)
   getCatalogInfo: () =>
     client.get<RentRegulationCatalogInfo>(`${BASE}/catalog`),
-  getCatalogDiff: () =>
-    client.get<RentRegulationCatalogDiff>(`${BASE}/diff`),
+  getCatalogDiff: () => client.get<RentRegulationCatalogDiff>(`${BASE}/diff`),
   reloadCatalog: () =>
     client.post<RentRegulationReloadResult>(`${BASE}/reload`),
   exportCatalog: () => client.get<unknown>(`${BASE}/export`),

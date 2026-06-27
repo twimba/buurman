@@ -41,9 +41,9 @@ public class TeamPreferencesRepository {
   }
 
   /**
-   * Returns the team's saved preferences, or in-memory defaults if none have been persisted
-   * yet. Reads never write: a row is created only when a caller explicitly {@link #save}s
-   * (e.g. updating settings). This keeps the method safe inside read-only transactions.
+   * Returns the team's saved preferences, or in-memory defaults if none have been persisted yet.
+   * Reads never write: a row is created only when a caller explicitly {@link #save}s (e.g. updating
+   * settings). This keeps the method safe inside read-only transactions.
    */
   public TeamPreferences getByTeamId(UUID teamId) {
     return findByTeamId(teamId).orElseGet(() -> defaultPreferences(teamId));

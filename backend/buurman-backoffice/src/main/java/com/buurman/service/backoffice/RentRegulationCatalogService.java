@@ -111,15 +111,18 @@ public class RentRegulationCatalogService {
 
   /**
    * Serialises the current database reference data into the canonical catalog shape. This is the
-   * maintainer tool used to regenerate the bundled JSON file after edits made through the backoffice
-   * UI: export, review, commit.
+   * maintainer tool used to regenerate the bundled JSON file after edits made through the
+   * backoffice UI: export, review, commit.
    */
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public RentRegulationCatalog exportCurrent() {
     RentRegulationCatalog bundled = loader.load();
     return new RentRegulationCatalog(
-        bundled.version(), LocalDate.now(clock).toString(), bundled.description(), currentCountries());
+        bundled.version(),
+        LocalDate.now(clock).toString(),
+        bundled.description(),
+        currentCountries());
   }
 
   /** Reads the current database reference data into the catalog (CatalogCountry) shape. */
@@ -339,7 +342,8 @@ public class RentRegulationCatalogService {
         }
       } else if (tr != null) {
         added++;
-        entries.add(new RentRegulationDiffEntry("RULE", "ADDED", ruleLabel(tr), ruleValueFields(tr)));
+        entries.add(
+            new RentRegulationDiffEntry("RULE", "ADDED", ruleLabel(tr), ruleValueFields(tr)));
       } else if (cr != null) {
         removed++;
         entries.add(
@@ -400,9 +404,11 @@ public class RentRegulationCatalogService {
     addFieldDiff(fields, "maxIncreaseType", nv(cur.maxIncreaseType()), nv(tgt.maxIncreaseType()));
     addFieldDiff(fields, "indexName", cur.indexName(), tgt.indexName());
     addNumberDiff(fields, "indexValue", cur.indexValue(), tgt.indexValue());
-    addFieldDiff(fields, "noticePeriodDays", nv(cur.noticePeriodDays()), nv(tgt.noticePeriodDays()));
+    addFieldDiff(
+        fields, "noticePeriodDays", nv(cur.noticePeriodDays()), nv(tgt.noticePeriodDays()));
     addFieldDiff(fields, "frequency", nv(cur.frequency()), nv(tgt.frequency()));
-    addFieldDiff(fields, "additionalConditions", cur.additionalConditions(), tgt.additionalConditions());
+    addFieldDiff(
+        fields, "additionalConditions", cur.additionalConditions(), tgt.additionalConditions());
     addFieldDiff(fields, "sourceUrl", cur.sourceUrl(), tgt.sourceUrl());
     addFieldDiff(fields, "notes", cur.notes(), tgt.notes());
     return fields;
@@ -411,8 +417,7 @@ public class RentRegulationCatalogService {
   /** A compact "current value" snapshot for an added/removed rule. */
   private static List<RentRegulationDiffField> ruleValueFields(CatalogRule r) {
     List<RentRegulationDiffField> fields = new ArrayList<>();
-    fields.add(
-        new RentRegulationDiffField("maxIncrease", "", nv(r.maxIncreasePercentage())));
+    fields.add(new RentRegulationDiffField("maxIncrease", "", nv(r.maxIncreasePercentage())));
     fields.add(new RentRegulationDiffField("type", "", nv(r.maxIncreaseType())));
     if (r.sourceUrl() != null) {
       fields.add(new RentRegulationDiffField("source", "", r.sourceUrl()));
@@ -523,7 +528,8 @@ public class RentRegulationCatalogService {
             .buildYearMax(Optional.ofNullable(rule.buildYearMax()))
             .epcClassMin(Optional.ofNullable(rule.epcClassMin()))
             .epcClassMax(Optional.ofNullable(rule.epcClassMax()))
-            .contractSignedAfter(Optional.ofNullable(rule.contractSignedAfter()).map(LocalDate::parse))
+            .contractSignedAfter(
+                Optional.ofNullable(rule.contractSignedAfter()).map(LocalDate::parse))
             .contractSignedBefore(
                 Optional.ofNullable(rule.contractSignedBefore()).map(LocalDate::parse))
             .landlordMinProperties(Optional.ofNullable(rule.landlordMinProperties()))
@@ -561,9 +567,7 @@ public class RentRegulationCatalogService {
                     .thenComparing(
                         CatalogRule::propertyCategory,
                         Comparator.nullsFirst(Comparator.naturalOrder()))
-                    .thenComparing(
-                        CatalogRule::maxIncreaseType,
-                        Comparator.comparing(Enum::name)))
+                    .thenComparing(CatalogRule::maxIncreaseType, Comparator.comparing(Enum::name)))
             .toList();
 
     return new CatalogCountry(

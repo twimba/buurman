@@ -53,7 +53,8 @@ class RentRegulationCatalogDiffTest {
   @Test
   @DisplayName("reports added / removed countries and added / removed / changed rules")
   void diff_reportsAllChangeTypes() {
-    // Bundled catalog (target): NL (rule A unchanged-key but new note, rule B new) + FR (new country)
+    // Bundled catalog (target): NL (rule A unchanged-key but new note, rule B new) + FR (new
+    // country)
     RentRegulationCatalog target =
         new RentRegulationCatalog(
             "2026.2",
@@ -66,12 +67,17 @@ class RentRegulationCatalogDiffTest {
                     List.of(
                         catalogRule(2026, "REGULATED", new BigDecimal("4.10"), "inflation-based"),
                         catalogRule(2026, "FREE_SECTOR", new BigDecimal("4.40"), "cpi"))),
-                country("FR", "France", List.of(catalogRule(2026, "ALL", new BigDecimal("0.78"), null)))));
+                country(
+                    "FR",
+                    "France",
+                    List.of(catalogRule(2026, "ALL", new BigDecimal("0.78"), null)))));
     when(loader.load()).thenReturn(target);
 
     // Current DB: NL (rule A same key but old note, rule C only-in-db) + XX (country only-in-db)
     when(repository.findAllCountries())
-        .thenReturn(List.of(domainCountry(NL_ID, "NL", "Netherlands"), domainCountry(XX_ID, "XX", "Atlantis")));
+        .thenReturn(
+            List.of(
+                domainCountry(NL_ID, "NL", "Netherlands"), domainCountry(XX_ID, "XX", "Atlantis")));
     when(repository.findAllRegions()).thenReturn(List.of());
     when(repository.findAllRules())
         .thenReturn(
@@ -86,20 +92,21 @@ class RentRegulationCatalogDiffTest {
     assertThat(diff.countries().removed()).isEqualTo(1);
     assertThat(diff.countries().changed()).isEqualTo(1);
 
-    // Rules: FR's rule (added) + NL FREE_SECTOR (added) = 2 added; NL OLD_TIER removed = 1; NL REGULATED note changed = 1
+    // Rules: FR's rule (added) + NL FREE_SECTOR (added) = 2 added; NL OLD_TIER removed = 1; NL
+    // REGULATED note changed = 1
     assertThat(diff.rules().added()).isEqualTo(2);
     assertThat(diff.rules().removed()).isEqualTo(1);
     assertThat(diff.rules().changed()).isEqualTo(1);
 
     RentRegulationCountryDiff nl =
-        diff.byCountry().stream().filter(c -> c.countryCode().equals("NL")).findFirst().orElseThrow();
+        diff.byCountry().stream()
+            .filter(c -> c.countryCode().equals("NL"))
+            .findFirst()
+            .orElseThrow();
     assertThat(nl.status()).isEqualTo("MODIFIED");
 
     RentRegulationDiffEntry changed =
-        nl.changes().stream()
-            .filter(e -> e.op().equals("CHANGED"))
-            .findFirst()
-            .orElseThrow();
+        nl.changes().stream().filter(e -> e.op().equals("CHANGED")).findFirst().orElseThrow();
     assertThat(changed.entity()).isEqualTo("RULE");
     assertThat(changed.fields())
         .anySatisfy(
@@ -124,7 +131,8 @@ class RentRegulationCatalogDiffTest {
                     "Netherlands",
                     List.of(catalogRule(2026, "REGULATED", new BigDecimal("4.10"), "same")))));
     when(loader.load()).thenReturn(target);
-    when(repository.findAllCountries()).thenReturn(List.of(domainCountry(NL_ID, "NL", "Netherlands")));
+    when(repository.findAllCountries())
+        .thenReturn(List.of(domainCountry(NL_ID, "NL", "Netherlands")));
     when(repository.findAllRegions()).thenReturn(List.of());
     when(repository.findAllRules())
         .thenReturn(List.of(domainRule(NL_ID, 2026, "REGULATED", new BigDecimal("4.10"), "same")));
@@ -169,12 +177,34 @@ class RentRegulationCatalogDiffTest {
     return new CatalogCountry(code, name, false, null, null, null, rules);
   }
 
-  private static CatalogRule catalogRule(
-      int year, String category, BigDecimal pct, String notes) {
+  private static CatalogRule catalogRule(int year, String category, BigDecimal pct, String notes) {
     return new CatalogRule(
-        null, year, category, pct, MaxIncreaseType.FIXED_PERCENTAGE, null, null, null, null,
-        RentFrequency.ANNUAL, null, null, notes, null, null, null, null, null, null, null, null,
-        null, null, null, null, null);
+        null,
+        year,
+        category,
+        pct,
+        MaxIncreaseType.FIXED_PERCENTAGE,
+        null,
+        null,
+        null,
+        null,
+        RentFrequency.ANNUAL,
+        null,
+        null,
+        notes,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null);
   }
 
   private static RentRegulationCountry domainCountry(UUID id, String code, String name) {
