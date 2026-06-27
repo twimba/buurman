@@ -7,6 +7,7 @@
 -- written here (DE Mietrecht II 3.5% index cap, LU bail reform, BE >3.2% revision, US-NY RGB
 -- Order #58, OR 6/9.5% mapping, NB cap status) — see the review report / backlog.
 -- ============================================================
+
 -- ============================================================
 -- Denmark (DK) — 2026 PRE_1992 NPI value corrected
 -- Nettoprisindeks Oct-2024 119.9 → Oct-2025 122.6 = +2.25% (DST Nyt nr. 312, 2025-11-10).
@@ -22,12 +23,7 @@ SET
     updated_at = now()
 WHERE
     country_id = (
-        SELECT
-            id
-        FROM
-            rent_regulation_countries
-        WHERE
-            country_code = 'DK'
+        SELECT id FROM rent_regulation_countries WHERE country_code = 'DK'
     )
     AND YEAR = 2026
     AND property_category = 'PRE_1992';
@@ -42,12 +38,7 @@ SET
     updated_at = now()
 WHERE
     country_id = (
-        SELECT
-            id
-        FROM
-            rent_regulation_countries
-        WHERE
-            country_code = 'NL'
+        SELECT id FROM rent_regulation_countries WHERE country_code = 'NL'
     )
     AND YEAR = 2026
     AND property_category = 'REGULATED';
@@ -69,29 +60,13 @@ SET
     updated_at = now()
 WHERE
     country_id = (
-        SELECT
-            id
-        FROM
-            rent_regulation_countries
-        WHERE
-            country_code = 'US'
+        SELECT id FROM rent_regulation_countries WHERE country_code = 'US'
     )
     AND YEAR = 2026
     AND region_id = (
-        SELECT
-            id
-        FROM
-            rent_regulation_regions
-        WHERE
-            region_code = 'CA'
-            AND country_id = (
-                SELECT
-                    id
-                FROM
-                    rent_regulation_countries
-                WHERE
-                    country_code = 'US'
-            )
+        SELECT id FROM rent_regulation_regions
+        WHERE region_code = 'CA'
+          AND country_id = (SELECT id FROM rent_regulation_countries WHERE country_code = 'US')
     );
 
 -- ============================================================
@@ -106,12 +81,7 @@ SET
     updated_at = now()
 WHERE
     country_id = (
-        SELECT
-            id
-        FROM
-            rent_regulation_countries
-        WHERE
-            country_code = 'FR'
+        SELECT id FROM rent_regulation_countries WHERE country_code = 'FR'
     )
     AND YEAR = 2026
     AND property_category = 'DPE_F_OR_G';
@@ -128,12 +98,7 @@ SET
     updated_at = now()
 WHERE
     country_id = (
-        SELECT
-            id
-        FROM
-            rent_regulation_countries
-        WHERE
-            country_code = 'IT'
+        SELECT id FROM rent_regulation_countries WHERE country_code = 'IT'
     )
     AND YEAR = 2026
     AND property_category = 'FREE_MARKET';
@@ -161,14 +126,7 @@ INSERT INTO
 VALUES
     (
         'RRL01J00000000000000000906',
-        (
-            SELECT
-                id
-            FROM
-                rent_regulation_countries
-            WHERE
-                country_code = 'AT'
-        ),
+        (SELECT id FROM rent_regulation_countries WHERE country_code = 'AT'),
         2027,
         'REGULATED',
         2.00,
@@ -198,29 +156,11 @@ INSERT INTO
 VALUES
     (
         'RRL01J00000000000000000907',
+        (SELECT id FROM rent_regulation_countries WHERE country_code = 'CA'),
         (
-            SELECT
-                id
-            FROM
-                rent_regulation_countries
-            WHERE
-                country_code = 'CA'
-        ),
-        (
-            SELECT
-                id
-            FROM
-                rent_regulation_regions
-            WHERE
-                region_code = 'NS'
-                AND country_id = (
-                    SELECT
-                        id
-                    FROM
-                        rent_regulation_countries
-                    WHERE
-                        country_code = 'CA'
-                )
+            SELECT id FROM rent_regulation_regions
+            WHERE region_code = 'NS'
+              AND country_id = (SELECT id FROM rent_regulation_countries WHERE country_code = 'CA')
         ),
         2027,
         'ALL',
@@ -241,24 +181,6 @@ SET
     updated_at = now()
 WHERE
     country_code IN (
-        'NL',
-        'DE',
-        'PT',
-        'FR',
-        'ES',
-        'BE',
-        'IE',
-        'IT',
-        'AT',
-        'LU',
-        'GB',
-        'SE',
-        'NO',
-        'CH',
-        'DK',
-        'FI',
-        'PL',
-        'CZ',
-        'US',
-        'CA'
+        'NL', 'DE', 'PT', 'FR', 'ES', 'BE', 'IE', 'IT', 'AT', 'LU',
+        'GB', 'SE', 'NO', 'CH', 'DK', 'FI', 'PL', 'CZ', 'US', 'CA'
     );
