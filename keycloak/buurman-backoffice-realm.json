@@ -88,15 +88,12 @@
         "https://backoffice.buurman.io/*",
         "http://localhost:5174/*",
         "https://backoffice.local.buurman.io:1443/*",
-        "http://localhost:5184/*",
-        "https://w1-backoffice.local.buurman.io:1443/*"
+        "http://localhost:5184/*"
       ],
       "webOrigins": [
         "https://backoffice.local.buurman.io",
         "https://backoffice.buurman.io",
-        "http://localhost:5174",
-        "https://w1-backoffice.local.buurman.io:1443",
-        "http://localhost:5184"
+        "http://localhost:5174"
       ],
       "defaultClientScopes": [
         "web-origins",
@@ -136,14 +133,11 @@
       "fullScopeAllowed": true,
       "redirectUris": [
         "https://grafana.local.buurman.io/*",
-        "https://grafana.buurman.io/login/*",
-        "https://w1-backoffice.local.buurman.io:1443/*",
-        "https://w1-grafana.local.buurman.io:1443/*"
+        "https://grafana.buurman.io/login/*"
       ],
       "webOrigins": [
         "https://grafana.local.buurman.io",
-        "https://grafana.buurman.io",
-        "https://w1-grafana.local.buurman.io:1443"
+        "https://grafana.buurman.io"
       ],
       "defaultClientScopes": [
         "web-origins",
