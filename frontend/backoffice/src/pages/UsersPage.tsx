@@ -206,7 +206,8 @@ export const UsersPage = () => {
                 users.map((user) => (
                   <tr
                     key={user.identifier}
-                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
+                    onClick={() => navigate(`/users/${user.identifier}`)}
+                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors cursor-pointer"
                   >
                     <td className="px-4 py-3">
                       <span className="text-sm font-medium text-text-primary">
@@ -268,6 +269,7 @@ export const UsersPage = () => {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div
+                        onClick={(e) => e.stopPropagation()}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
