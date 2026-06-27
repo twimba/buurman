@@ -23,10 +23,11 @@ import com.buurman.exception.BadRequestException;
 public class DocumentTemplateService {
 
   private final TemplateEngine templateEngine;
-  private final PdfRenderer pdfRenderer;
+  private final DocumentRenderer pdfRenderer;
 
   public DocumentTemplateService(
-      @Qualifier("documentTemplateEngine") TemplateEngine templateEngine, PdfRenderer pdfRenderer) {
+      @Qualifier("documentTemplateEngine") TemplateEngine templateEngine,
+      DocumentRenderer pdfRenderer) {
     this.templateEngine = templateEngine;
     this.pdfRenderer = pdfRenderer;
   }
@@ -40,8 +41,17 @@ public class DocumentTemplateService {
    * @return PDF bytes
    */
   public byte[] renderToPdf(String documentType, Locale locale, Map<String, Object> variables) {
+    return renderToPdf(documentType, locale, variables, PageSpec.A4_PORTRAIT);
+  }
+
+  /**
+   * Renders a document template to PDF bytes with an explicit page geometry (e.g. A4 landscape for
+   * one-page summary cards).
+   */
+  public byte[] renderToPdf(
+      String documentType, Locale locale, Map<String, Object> variables, PageSpec page) {
     String html = renderToHtml(documentType, locale, variables);
-    return pdfRenderer.renderHtml(html);
+    return pdfRenderer.render(html, page);
   }
 
   /**

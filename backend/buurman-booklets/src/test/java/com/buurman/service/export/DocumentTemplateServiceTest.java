@@ -50,7 +50,7 @@ class DocumentTemplateServiceTest {
     engine.setTemplateResolver(resolver);
     engine.setMessageSource(messageSource);
 
-    PdfRenderer pdfRenderer = new PdfRenderer();
+    DocumentRenderer pdfRenderer = new ITextDocumentRenderer();
     service = new DocumentTemplateService(engine, pdfRenderer);
   }
 

@@ -80,7 +80,7 @@ public class ContractBookletExporter {
   private final ContractRentPeriodRepository rentPeriodRepository;
   private final ContractExtensionRepository contractExtensionRepository;
   private final ContractPartyService contractPartyService;
-  private final PdfRenderer pdfRenderer;
+  private final DocumentRenderer pdfRenderer;
   private final MessageSource messageSource;
   private final Clock clock;
 
@@ -95,7 +95,7 @@ public class ContractBookletExporter {
       ContractRentPeriodRepository rentPeriodRepository,
       ContractExtensionRepository contractExtensionRepository,
       ContractPartyService contractPartyService,
-      PdfRenderer pdfRenderer,
+      DocumentRenderer pdfRenderer,
       @Qualifier("bookletMessageSource") MessageSource messageSource,
       Clock clock) {
     this.contractRepository = contractRepository;
@@ -196,7 +196,7 @@ public class ContractBookletExporter {
             piMap,
             effectiveEndDate,
             locale);
-    return pdfRenderer.renderHtml(html);
+    return pdfRenderer.render(html);
   }
 
   // ── HTML building ───────────────────────────────────────────────

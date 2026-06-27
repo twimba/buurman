@@ -200,3 +200,59 @@ make deploy-prod
 ### Rollback
 
 V059 is additive and safe to leave in place. To fully revert, redeploy the previous backend image; the new tables are unused by older code. No data migration to undo.
+
+---
+
+## Booklets v2: Gotenberg PDF Renderer Sidecar
+
+**Date**: 2026-06-27
+
+### Context
+
+Booklets v2 renders PDFs with a headless-Chromium **Gotenberg** sidecar instead of in-JVM iText (full modern CSS, embedded brand fonts, flawless multilingual typography incl. Greek). This adds **one new internal-only container** to the Dokploy project.
+
+The backend selects the engine via `BOOKLET_RENDERER` (`itext` default | `gotenberg`). **Deploy the sidecar first with the engine still on `itext`** (zero behaviour change), then flip `BOOKLET_RENDERER=gotenberg` once the v2 templates ship. The renderer is reached over the internal network only — **no public domain**.
+
+### Prerequisites
+
+- Access to Dokploy dashboard at `https://dokploy.buurman.io`
+- The custom image `docker/gotenberg/` (bakes Noto fonts so Greek renders without tofu). Either let Dokploy build it from the repo, or build & push it to your registry. The stock `gotenberg/gotenberg:8` image also works but lacks the bundled fallback fonts.
+
+### Steps (Dokploy v0.28.6)
+
+#### 1. Create the `gotenberg` service
+
+1. Log in to `https://dokploy.buurman.io` → your **Project** → **Create Service** (Application).
+2. **Source**: either
+   - **Docker image** — `gotenberg/gotenberg:8` (quick), or your pushed `buurman-gotenberg:8`; **or**
+   - **Git / Dockerfile** — build context `docker/gotenberg/` (recommended; includes the fonts).
+3. **Command** (override): `gotenberg --api-timeout=60s`
+4. **Container Port**: `3000`
+5. **Domains**: **none** — do NOT add a public domain. Keep it internal to the project network.
+6. **Resources**: Chromium is memory-hungry; allocate ~512MB–1GB and enable restart-on-failure.
+7. Deploy the service. Confirm it's healthy: from the backend container, `curl -fsS http://gotenberg:3000/health` returns `{"status":"up"...}`.
+
+#### 2. Point the backend at it
+
+In **backend** service → **Environment**, add:
+
+| Variable | Value | Notes |
+|----------|-------|-------|
+| `GOTENBERG_URL` | `http://gotenberg:3000` | Internal service hostname (matches the service name) |
+| `BOOKLET_RENDERER` | `itext` → later `gotenberg` | Keep `itext` until v2 templates ship, then flip to activate Chromium |
+
+#### 3. Deploy and Verify
+
+```bash
+make deploy-prod
+
+# From the backend container, the sidecar is reachable internally:
+#   curl -fsS http://gotenberg:3000/health   → status "up"
+
+# After flipping BOOKLET_RENDERER=gotenberg, generate a booklet and confirm a valid PDF:
+#   GET https://api.buurman.io/booklets/properties/{id}?lang=el   → %PDF, Greek renders (no tofu)
+```
+
+### Rollback
+
+Set `BOOKLET_RENDERER=itext` (or unset it) on the backend and redeploy — the backend immediately falls back to the in-JVM iText renderer, independent of the sidecar. The `gotenberg` service can then be removed. No data or schema changes are involved.

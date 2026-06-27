@@ -76,7 +76,7 @@ public class ContactBookletExporter {
   private final PaymentRepository paymentRepository;
   private final PropertyRepository propertyRepository;
   private final ContractPartyService contractPartyService;
-  private final PdfRenderer pdfRenderer;
+  private final DocumentRenderer pdfRenderer;
   private final MessageSource messageSource;
   private final Clock clock;
 
@@ -91,7 +91,7 @@ public class ContactBookletExporter {
       PaymentRepository paymentRepository,
       PropertyRepository propertyRepository,
       ContractPartyService contractPartyService,
-      PdfRenderer pdfRenderer,
+      DocumentRenderer pdfRenderer,
       @Qualifier("bookletMessageSource") MessageSource messageSource,
       Clock clock) {
     this.contactRepository = contactRepository;
@@ -175,7 +175,7 @@ public class ContactBookletExporter {
             relationships,
             teamId,
             locale);
-    return pdfRenderer.renderHtml(html);
+    return pdfRenderer.render(html);
   }
 
   // -- HTML building ---

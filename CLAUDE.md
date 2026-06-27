@@ -22,7 +22,7 @@ Buurman is a property management dashboard for small landlords (properties, tena
 - **Storage**: AWS SDK v2 / S3 (AWRust for dev)
 - **Email**: Spring Mail + Thymeleaf templates (MailHog for dev)
 - **Jobs**: Quartz Scheduler
-- **Docs**: SpringDoc OpenAPI 3.0.1, iText7 (PDF), OpenCSV
+- **Docs**: SpringDoc OpenAPI 3.0.1, OpenCSV; PDF booklets via a pluggable `DocumentRenderer` (`booklet.renderer`: iText7 default → Gotenberg/headless-Chromium sidecar)
 - **Monitoring**: Prometheus + Grafana
 - **Infrastructure**: Docker Compose for local development
 
@@ -68,6 +68,7 @@ All services are routed through Traefik with HTTPS (`*.local.buurman.io`). HTTP 
 | keycloak | https://keycloak.local.buurman.io | Authentication |
 | awrust | https://awrust.local.buurman.io | S3 storage (dev) |
 | mailpit | https://mailpit.local.buurman.io (SMTP: port 1025) | Email UI / SMTP (dev) |
+| gotenberg | http://localhost:3000 (internal, no Traefik route) | Headless-Chromium PDF renderer for booklets |
 | backend | https://api.local.buurman.io | Spring Boot API |
 | app | https://app.local.buurman.io | React app |
 | prometheus | https://prometheus.local.buurman.io | Metrics collection |

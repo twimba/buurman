@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class TransactionPdfExporter {
 
   private final TransactionDataLoader dataLoader;
-  private final PdfRenderer pdfRenderer;
+  private final DocumentRenderer pdfRenderer;
   private final Clock clock;
 
   public byte[] generate(Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
@@ -42,7 +42,7 @@ public class TransactionPdfExporter {
     BigDecimal netTotal = totalIncome.subtract(totalExpenses);
 
     String html = buildHtml(transactions, startDate, endDate, totalIncome, totalExpenses, netTotal);
-    return pdfRenderer.renderHtml(html);
+    return pdfRenderer.render(html);
   }
 
   private String buildHtml(

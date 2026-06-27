@@ -22,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PropertyDashboardPdfExporter {
 
-  private final PdfRenderer pdfRenderer;
+  private final DocumentRenderer pdfRenderer;
   private final TeamPreferencesRepository teamPreferencesRepository;
 
   public byte[] generate(PropertyDashboardResponse dashboard, UUID teamId) {
     String teamCurrency = teamPreferencesRepository.getByTeamId(teamId).getDefaultCurrency();
     String html = buildHtml(dashboard, teamCurrency);
-    return pdfRenderer.renderHtml(html);
+    return pdfRenderer.render(html);
   }
 
   private String buildHtml(PropertyDashboardResponse dashboard, String teamCurrency) {

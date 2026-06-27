@@ -109,7 +109,7 @@ public class PropertyBookletExporter {
   private final FeatureFlagService featureFlagService;
   private final PropertyDashboardService propertyDashboardService;
   private final TeamPreferencesRepository teamPreferencesRepository;
-  private final PdfRenderer pdfRenderer;
+  private final DocumentRenderer pdfRenderer;
   private final MessageSource messageSource;
   private final Clock clock;
 
@@ -132,7 +132,7 @@ public class PropertyBookletExporter {
       FeatureFlagService featureFlagService,
       PropertyDashboardService propertyDashboardService,
       TeamPreferencesRepository teamPreferencesRepository,
-      PdfRenderer pdfRenderer,
+      DocumentRenderer pdfRenderer,
       @Qualifier("bookletMessageSource") MessageSource messageSource,
       Clock clock) {
     this.propertyRepository = propertyRepository;
@@ -250,7 +250,7 @@ public class PropertyBookletExporter {
             dashboard,
             teamCurrency,
             locale);
-    return pdfRenderer.renderHtml(html);
+    return pdfRenderer.render(html);
   }
 
   // ── HTML building ───────────────────────────────────────────────
