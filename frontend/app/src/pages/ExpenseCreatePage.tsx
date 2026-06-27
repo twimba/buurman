@@ -242,9 +242,7 @@ export const ExpenseCreatePage = () => {
                 disabled={!bulkPropertyId || !(bulkCurrency || defaultCurrency)}
                 dateFormat={
                   defaultDateFormat as
-                    | 'DD/MM/YYYY'
-                    | 'MM/DD/YYYY'
-                    | 'YYYY-MM-DD'
+                    'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY-MM-DD'
                 }
               />
             </>

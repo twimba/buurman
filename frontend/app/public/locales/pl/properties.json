@@ -840,7 +840,10 @@
       "manual": "Pinezka umieszczona ręcznie — przeciągnij, aby dostosować",
       "approximate": "Znaleźliśmy okolicę, ale nie dokładne miejsce — przeciągnij pinezkę do swojej nieruchomości!",
       "country": "Cóż, znaleźliśmy przynajmniej kraj! Przeciągnij pinezkę we właściwe miejsce."
-    }
+    },
+    "mapView": "Mapa",
+    "streetView": "Street View",
+    "noStreetView": "Street View jest niedostępny dla tej lokalizacji."
   },
   "timeline": {
     "selfOccupancy": "Użytkowanie własne",

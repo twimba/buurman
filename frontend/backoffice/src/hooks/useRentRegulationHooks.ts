@@ -31,7 +31,8 @@ export const useRentRegulationCatalogDiff = (enabled: boolean) => {
 export const useReloadRentRegulationCatalog = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => rentRegulationsApi.reloadCatalog().then((res) => res.data),
+    mutationFn: () =>
+      rentRegulationsApi.reloadCatalog().then((res) => res.data),
     onSuccess: () => {
       // The reload wipes and re-seeds everything: invalidate all reference data.
       queryClient.invalidateQueries({

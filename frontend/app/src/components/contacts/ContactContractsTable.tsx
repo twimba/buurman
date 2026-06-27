@@ -31,11 +31,7 @@ const RoleBadge = ({
 );
 
 type SortField =
-  | 'startDate'
-  | 'rentAmount'
-  | 'status'
-  | 'property'
-  | 'contractType';
+  'startDate' | 'rentAmount' | 'status' | 'property' | 'contractType';
 
 interface ContactContractsTableProps {
   contracts: ContractResponse[];

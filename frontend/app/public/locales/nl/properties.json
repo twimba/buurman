@@ -392,7 +392,10 @@
       "manual": "Pin handmatig geplaatst — sleep om aan te passen indien nodig",
       "approximate": "We vonden de buurt maar niet de exacte locatie — sleep de pin naar uw pand!",
       "country": "We vonden in elk geval het land! Sleep de pin naar de juiste locatie."
-    }
+    },
+    "mapView": "Kaart",
+    "streetView": "Street View",
+    "noStreetView": "Street View is niet beschikbaar voor deze locatie."
   },
   "timeline": {
     "selfOccupancy": "Eigen bewoning",

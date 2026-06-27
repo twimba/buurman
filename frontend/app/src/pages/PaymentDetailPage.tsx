@@ -362,7 +362,10 @@ export const PaymentDetailPage = () => {
     if (!action || !canEditData) {
       return;
     }
+    // One-shot sync of an email deep link into UI state; the param is stripped immediately
+    // below so this runs once (not a derived-state smell).
     if (action === 'mark-paid') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowMarkPaidModal(true);
     } else if (action === 'record-receival') {
       setShowReceivalModal(true);

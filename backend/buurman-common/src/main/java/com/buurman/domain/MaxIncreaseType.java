@@ -14,10 +14,10 @@ package com.buurman.domain;
  * Mietspiegel) - MARKET: free-market / unregulated (e.g. DK post-1991 fri leje) - FREE_MARKET:
  * explicit free-market designation in regulated regimes - NEGOTIATED: bilateral negotiation between
  * landlord/tenant - FROZEN: rent freeze (statutory or emergency) - STATUTORY_CAP: hard cap defined
- * by law (e.g. DE Kappungsgrenze §558 BGB) - STATUTORY_CEILING: ceiling rent regime - CEILING_RENT: loyer de référence
- * majoré ceiling (e.g. FR encadrement des loyers) - COMPARATIVE:
- * comparable-rent test (similar to MARKET_RENT but stricter) - COST_BASED: cost-recovery regulation
- * - CAPITAL_BASED: capital-value-based formula - FORMULA_BASED: bespoke formula (e.g. CH IRPL) -
+ * by law (e.g. DE Kappungsgrenze §558 BGB) - STATUTORY_CEILING: ceiling rent regime - CEILING_RENT:
+ * loyer de référence majoré ceiling (e.g. FR encadrement des loyers) - COMPARATIVE: comparable-rent
+ * test (similar to MARKET_RENT but stricter) - COST_BASED: cost-recovery regulation -
+ * CAPITAL_BASED: capital-value-based formula - FORMULA_BASED: bespoke formula (e.g. CH IRPL) -
  * COST_PASS_THROUGH: modernisation cost pass-through (e.g. DE §559 BGB) - CAP_OVER_INDEX: cap
  * applied on top of an index - CANTONAL_RESTRICTION: cantonal/regional restriction (e.g. CH) -
  * THRESHOLD_PERCENTAGE: threshold-triggered % increase - OTHER: fallback for regimes that don't fit

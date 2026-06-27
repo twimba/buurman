@@ -33,6 +33,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ['.design-sync/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
+  {
     ignores: ['dist/', 'node_modules/'],
   }
 );

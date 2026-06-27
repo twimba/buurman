@@ -840,7 +840,10 @@
       "manual": "Nal placeret manuelt - traek for at justere om noedvendigt",
       "approximate": "Vi fandt nabolaget, men ikke det praecise sted - traek nalen til din ejendom!",
       "country": "Naa, vi fandt i hvert fald landet! Traek nalen til den rigtige lokation."
-    }
+    },
+    "mapView": "Kort",
+    "streetView": "Street View",
+    "noStreetView": "Street View er ikke tilgængelig for denne placering."
   },
   "timeline": {
     "selfOccupancy": "Selvbeboelse",

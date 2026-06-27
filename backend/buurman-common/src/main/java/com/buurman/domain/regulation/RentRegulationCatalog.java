@@ -27,9 +27,7 @@ public record RentRegulationCatalog(
     if (countries == null) {
       return 0;
     }
-    return countries.stream()
-        .mapToInt(c -> c.regions() == null ? 0 : c.regions().size())
-        .sum();
+    return countries.stream().mapToInt(c -> c.regions() == null ? 0 : c.regions().size()).sum();
   }
 
   public int ruleCount() {

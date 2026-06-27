@@ -1,16 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import {
-  Search,
-  Eye,
-  RefreshCw,
-  Mail,
-  Phone,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-} from 'lucide-react';
+import { Search, Eye, RefreshCw, Mail, Phone } from 'lucide-react';
 import { formatDateTime } from '../utils/dateFormatting';
+import type { NotificationStats } from '../types';
 import { Pagination, ConfirmDialog, RefreshButton } from '@buurman/ui';
 import { SortableHeader } from '../components/SortableHeader';
 import {
@@ -115,6 +107,115 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
+/** Solid colour per delivery state (matches the badge hues), used by the hero bar + dots. */
+const STATUS_COLOR: Record<string, string> = {
+  PENDING: '#64748b',
+  QUEUED: '#3b82f6',
+  SENT: '#0ea5e9',
+  DELIVERED: '#059669',
+  FAILED: '#dc2626',
+  BOUNCED: '#d97706',
+  REJECTED: '#e11d48',
+};
+
+/**
+ * Hero bar: total notifications + a proportional stacked bar and a count per delivery state. Each
+ * state is a button that filters the table to that status (click the active one again to clear).
+ */
+const NotificationStatsHero = ({
+  stats,
+  activeStatus,
+  onSelectStatus,
+}: {
+  stats: NotificationStats;
+  activeStatus: string;
+  onSelectStatus: (status: string) => void;
+}) => {
+  const total = stats.total ?? 0;
+  const states = STATUSES.map((status) => ({
+    status,
+    label: statusBadgeConfig[status]?.label ?? status,
+    color: STATUS_COLOR[status] ?? '#64748b',
+    count: stats.byStatus?.[status] ?? 0,
+  }));
+  const delivered = stats.byStatus?.DELIVERED ?? 0;
+  const deliveredPct = total > 0 ? Math.round((delivered / total) * 100) : 0;
+
+  return (
+    <div className="mb-6 rounded-xl border border-border-default bg-surface-card p-5">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+            Total notifications
+          </p>
+          <p className="text-3xl font-bold leading-none text-text-primary tabular-nums">
+            {total.toLocaleString()}
+          </p>
+        </div>
+        <p className="text-sm text-text-secondary tabular-nums">
+          <span className="font-semibold text-success-text">
+            {deliveredPct}%
+          </span>{' '}
+          delivered
+        </p>
+      </div>
+
+      {/* Proportional stacked bar */}
+      <div
+        className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-surface-page"
+        role="img"
+        aria-label={`Notifications by state: ${states
+          .map((s) => `${s.label} ${s.count}`)
+          .join(', ')}`}
+      >
+        {total > 0 &&
+          states
+            .filter((s) => s.count > 0)
+            .map((s) => (
+              <div
+                key={s.status}
+                style={{
+                  width: `${(s.count / total) * 100}%`,
+                  background: s.color,
+                }}
+                title={`${s.label}: ${s.count.toLocaleString()}`}
+              />
+            ))}
+      </div>
+
+      {/* Per-state counts (click to filter) */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {states.map((s) => {
+          const active = activeStatus === s.status;
+          return (
+            <button
+              key={s.status}
+              type="button"
+              onClick={() => onSelectStatus(s.status)}
+              aria-pressed={active}
+              className={`focus-ring inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm transition-colors ${
+                active
+                  ? 'border-primary-400 bg-primary-50'
+                  : 'border-border-default hover:bg-surface-page'
+              }`}
+            >
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: s.color }}
+                aria-hidden="true"
+              />
+              <span className="text-text-secondary">{s.label}</span>
+              <span className="font-semibold text-text-primary tabular-nums">
+                {s.count.toLocaleString()}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const selectClass =
   'px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 
@@ -133,12 +234,15 @@ export const NotificationsPage = () => {
     handleSortChange,
   } = usePagination({ defaultSort: 'createdAt' });
 
+  const [searchParams] = useSearchParams();
   const [recipientEmail, setRecipientEmail] = useState('');
   const [recipientInput, setRecipientInput] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [channelFilter, setChannelFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [searchParams] = useSearchParams();
+  // Seed from a deep link (e.g. dashboard action queue -> /notifications?status=FAILED).
+  const [statusFilter, setStatusFilter] = useState(
+    () => searchParams.get('status') ?? ''
+  );
   const teamSearch = useTeamSearch();
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -221,58 +325,16 @@ export const NotificationsPage = () => {
         <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats hero — count per delivery state, click a state to filter the table */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-surface-card rounded-lg border border-border-default p-4">
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              className="text-text-secondary text-sm mb-1"
-            >
-              <Mail className="h-4 w-4" />
-              Total
-            </div>
-            <div className="text-2xl font-bold text-text-primary">
-              {stats.totalCount}
-            </div>
-          </div>
-          <div className="bg-surface-card rounded-lg border border-border-default p-4">
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              className="text-text-secondary text-sm mb-1"
-            >
-              <CheckCircle className="h-4 w-4 text-success-text" />
-              Delivered
-            </div>
-            <div className="text-2xl font-bold text-success-text">
-              {stats.deliveredCount}
-            </div>
-          </div>
-          <div className="bg-surface-card rounded-lg border border-border-default p-4">
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              className="text-text-secondary text-sm mb-1"
-            >
-              <Clock className="h-4 w-4 text-info-text" />
-              Pending
-            </div>
-            <div className="text-2xl font-bold text-info-text">
-              {stats.pendingCount}
-            </div>
-          </div>
-          <div className="bg-surface-card rounded-lg border border-border-default p-4">
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              className="text-text-secondary text-sm mb-1"
-            >
-              <AlertTriangle className="h-4 w-4 text-error-text" />
-              Failed
-            </div>
-            <div className="text-2xl font-bold text-error-text">
-              {stats.failedCount}
-            </div>
-          </div>
-        </div>
+        <NotificationStatsHero
+          stats={stats}
+          activeStatus={statusFilter}
+          onSelectStatus={(s) => {
+            setStatusFilter((prev) => (prev === s ? '' : s));
+            handlePageChange(0);
+          }}
+        />
       )}
 
       {/* Filters */}

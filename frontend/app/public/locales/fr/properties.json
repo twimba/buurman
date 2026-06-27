@@ -392,7 +392,10 @@
       "manual": "Épingle placée manuellement — faites glisser pour ajuster si nécessaire",
       "approximate": "Nous avons trouvé le quartier mais pas le point exact — faites glisser l'épingle vers votre bien !",
       "country": "Eh bien, nous avons trouvé le pays au moins ! Faites glisser l'épingle au bon endroit."
-    }
+    },
+    "mapView": "Carte",
+    "streetView": "Street View",
+    "noStreetView": "Street View n'est pas disponible pour cet emplacement."
   },
   "timeline": {
     "selfOccupancy": "Usage personnel",

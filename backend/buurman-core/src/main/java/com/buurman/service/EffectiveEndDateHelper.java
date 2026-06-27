@@ -45,6 +45,18 @@ public final class EffectiveEndDateHelper {
    * <p>Usage: {@code select(EffectiveEndDateHelper.effectiveEndDate()).from(CONTRACTS)}
    */
   public static Field<LocalDate> effectiveEndDate() {
+    return effectiveEndDateExpr().as("effective_end_date");
+  }
+
+  /**
+   * Same expression as {@link #effectiveEndDate()} but WITHOUT the {@code effective_end_date}
+   * alias.
+   *
+   * <p>Use this in WHERE clauses: PostgreSQL does not allow SELECT-list aliases to be referenced in
+   * WHERE, so the aliased variant renders as a bare {@code "effective_end_date"} reference and
+   * fails with "column does not exist". The aliased variant is only safe in SELECT and ORDER BY.
+   */
+  public static Field<LocalDate> effectiveEndDateExpr() {
     return DSL.when(
             DSL.exists(
                 DSL.selectOne()
@@ -60,8 +72,7 @@ public final class EffectiveEndDateHelper {
                     .and(CE_DELETED_AT.isNull())
                     .orderBy(CE_EXTENSION_NUMBER.desc())
                     .limit(1)))
-        .otherwise(CONTRACTS.END_DATE)
-        .as("effective_end_date");
+        .otherwise(CONTRACTS.END_DATE);
   }
 
   /**

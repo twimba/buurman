@@ -415,7 +415,7 @@ public class ContractRepository {
 
   public List<Contract> findExpiringContracts(UUID teamId, LocalDate beforeDate) {
     Field<LocalDate> effectiveEndDate =
-        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
+        com.buurman.service.EffectiveEndDateHelper.effectiveEndDateExpr();
     return dsl
         .selectFrom(CONTRACTS)
         .where(

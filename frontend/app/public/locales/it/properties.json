@@ -840,7 +840,10 @@
       "manual": "Segnaposto posizionato manualmente — trascinare per regolare",
       "approximate": "Abbiamo trovato il quartiere ma non la posizione esatta — trascini il segnaposto sul Suo immobile!",
       "country": "Beh, abbiamo almeno trovato il paese! Trascini il segnaposto nella posizione corretta."
-    }
+    },
+    "mapView": "Mappa",
+    "streetView": "Street View",
+    "noStreetView": "Street View non è disponibile per questa posizione."
   },
   "timeline": {
     "selfOccupancy": "Uso proprio",

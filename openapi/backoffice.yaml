@@ -5832,6 +5832,609 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/dashboard/status-strip:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get status strip
+      description: The pinned 8-pillar status strip (mission control)
+      operationId: getDashboardStatusStrip
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusStripResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/action-queue:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get action queue
+      description: Support/safety items needing attention
+      operationId: getDashboardActionQueue
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionQueueResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/action-queue/snooze:
+    post:
+      tags:
+        - Backoffice - Dashboard
+      summary: Snooze an action item
+      description: Snooze an action-queue item for the current user
+      operationId: snoozeDashboardActionItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SnoozeActionItemRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionQueueResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/product-entities:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get product entity counts
+      description: Properties/contracts/contacts created today and totals
+      operationId: getDashboardProductEntities
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductEntitiesResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/funnel:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get activation funnel
+      description: Teams -> teams with a property -> teams with a contract
+      operationId: getDashboardFunnel
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FunnelResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/top-teams:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get top teams
+      description: Top teams ranked by activity
+      operationId: getDashboardTopTeams
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopTeamsResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/scheduler-health:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get scheduler health
+      description: Quartz job/trigger health
+      operationId: getDashboardSchedulerHealth
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchedulerHealthResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/business:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get business KPIs (preview)
+      operationId: getDashboardBusiness
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PreviewPanelResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/cost-watch:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get cost watch summary
+      description: Compact monthly cost summary; PREVIEW until a provider is configured
+      operationId: getDashboardCostWatch
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CostWatchResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/overview:
+    get:
+      tags:
+        - Backoffice - Cost
+      summary: Get full cost overview
+      description: Per-provider breakdown, monthly trend and insights (EUR)
+      operationId: getCostOverview
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CostOverviewResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/refresh:
+    post:
+      tags:
+        - Backoffice - Cost
+      summary: Capture a cost snapshot now
+      description: Polls every provider, persists a snapshot, and returns the refreshed overview
+      operationId: refreshCost
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CostOverviewResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/manual/{provider}:
+    put:
+      tags:
+        - Backoffice - Cost
+      summary: Set a provider's manual monthly cost
+      description: Used for providers without a usable cost API, or as a fallback override (EUR)
+      operationId: setManualCost
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetManualCostRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CostOverviewResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/config:
+    get:
+      tags:
+        - Backoffice - Cost
+      summary: Get editable provider cost parameters
+      description: Admin-editable cost knobs (e.g. Mailgun plan fee + per-email rate), DB-backed
+      operationId: getCostConfig
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CostConfigResponse"
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Backoffice - Cost
+      summary: Update editable provider cost parameters
+      description: Persists provider cost knobs so they no longer require an application.yml redeploy
+      operationId: updateCostConfig
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCostConfigRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CostConfigResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/fx:
+    get:
+      tags:
+        - Backoffice - Cost
+      summary: List current FX rates
+      description: Latest stored rate per currency (source currency -> EUR), with date and source
+      operationId: getFxRates
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxRatesResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/fx/history:
+    get:
+      tags:
+        - Backoffice - Cost
+      summary: FX rate history
+      description: Dated rate history across currencies (newest first), for the table and graph
+      operationId: getFxRateHistory
+      parameters:
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 730
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxRatesResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/fx/refresh:
+    post:
+      tags:
+        - Backoffice - Cost
+      summary: Refresh FX rates now
+      description: Fetches and stores today's live rates on demand, then returns the latest per currency
+      operationId: refreshFxRates
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxRatesResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/fx/{currency}:
+    put:
+      tags:
+        - Backoffice - Cost
+      summary: Set/override an FX rate for a currency
+      description: Manually set the EUR rate for a currency on a given day (defaults to today)
+      operationId: setFxRate
+      parameters:
+        - name: currency
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetFxRateRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxRatesResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/fx/pairs:
+    get:
+      tags:
+        - Backoffice - Cost
+      summary: List tracked FX pairs
+      description: All currency pairs tracked for cost normalization (anchored on EUR)
+      operationId: getFxPairs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxPairsResponse"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Cost
+      summary: Track a new FX pair
+      description: Start tracking a currency pair (source currency → EUR) and fetch today's rate
+      operationId: addFxPair
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFxPairRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxPairsResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/fx/pairs/{currency}:
+    delete:
+      tags:
+        - Backoffice - Cost
+      summary: Stop tracking an FX pair
+      description: Remove a currency pair and all its stored rates
+      operationId: removeFxPair
+      parameters:
+        - name: currency
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxPairsResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/fx/backfill:
+    post:
+      tags:
+        - Backoffice - Cost
+      summary: Backfill FX history
+      description: Fetch and store daily rates from a start date through today
+      operationId: backfillFxRates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BackfillFxRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxRatesResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/cost/fx/{currency}/{date}:
+    delete:
+      tags:
+        - Backoffice - Cost
+      summary: Delete an FX rate
+      description: Remove the stored rate for a currency on a specific day
+      operationId: deleteFxRate
+      parameters:
+        - name: currency
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FxRatesResponse"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/latency-heatmap:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get latency heatmap
+      description: Cluster-wide request-latency density over time (Prometheus); PREVIEW if absent
+      operationId: getDashboardLatencyHeatmap
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LatencyHeatmapResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/geo:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get geo distribution
+      description: Teams and properties grouped by country, plus teams without a country
+      operationId: getDashboardGeo
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeoResponse"
+  /backoffice/dashboard/property-locations:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get geocoded property coordinates for the world map
+      operationId: getDashboardPropertyLocations
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertyLocationsResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/layout:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get dashboard layout
+      description: The current user's persisted bento layout
+      operationId: getDashboardLayout
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardLayoutResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Backoffice - Dashboard
+      summary: Save dashboard layout
+      description: Persist the current user's bento layout
+      operationId: saveDashboardLayout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveDashboardLayoutRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardLayoutResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
 components:
   schemas:
     BroadcastMessageIdentifier:
@@ -8099,6 +8702,679 @@ components:
         - role
         - teamIdentifier
         - teamName
+    PanelStatus:
+      type: string
+      enum:
+        - LIVE
+        - PREVIEW
+        - DISABLED
+    CostSourceType:
+      type: string
+      enum:
+        - ACTUAL
+        - ESTIMATED
+        - SUBSCRIPTION
+    SetManualCostRequest:
+      type: object
+      properties:
+        amountEur:
+          type: number
+          format: double
+      required:
+        - amountEur
+    CostConfigResponse:
+      type: object
+      properties:
+        mailgunBaseEur:
+          type: number
+          format: double
+        mailgunPerEmailEur:
+          type: number
+          format: double
+      required:
+        - mailgunBaseEur
+        - mailgunPerEmailEur
+    UpdateCostConfigRequest:
+      type: object
+      properties:
+        mailgunBaseEur:
+          type: number
+          format: double
+        mailgunPerEmailEur:
+          type: number
+          format: double
+      required:
+        - mailgunBaseEur
+        - mailgunPerEmailEur
+    FxRate:
+      type: object
+      properties:
+        currency:
+          type: string
+        rateDate:
+          type: string
+          format: date
+        rate:
+          type: number
+          format: double
+        source:
+          type: string
+      required:
+        - currency
+        - rateDate
+        - rate
+        - source
+    FxRatesResponse:
+      type: object
+      properties:
+        rates:
+          type: array
+          items:
+            $ref: "#/components/schemas/FxRate"
+      required:
+        - rates
+    SetFxRateRequest:
+      type: object
+      properties:
+        rate:
+          type: number
+          format: double
+        date:
+          type: string
+          format: date
+      required:
+        - rate
+    BackfillFxRequest:
+      type: object
+      properties:
+        since:
+          type: string
+          format: date
+          description: First day to fetch daily rates from (through today)
+      required:
+        - since
+    AddFxPairRequest:
+      type: object
+      properties:
+        currency:
+          type: string
+          description: Source currency (ISO 4217), converted to EUR
+      required:
+        - currency
+    FxPair:
+      type: object
+      properties:
+        currency:
+          type: string
+        rate:
+          type: number
+          format: double
+          nullable: true
+        rateDate:
+          type: string
+          format: date
+          nullable: true
+        source:
+          type: string
+          nullable: true
+      required:
+        - currency
+    FxPairsResponse:
+      type: object
+      properties:
+        pairs:
+          type: array
+          items:
+            $ref: "#/components/schemas/FxPair"
+      required:
+        - pairs
+    ProviderCost:
+      type: object
+      properties:
+        provider:
+          type: string
+        displayName:
+          type: string
+        sourceType:
+          $ref: "#/components/schemas/CostSourceType"
+        currency:
+          type: string
+        amountMinor:
+          type: integer
+          format: int64
+        amountEurMinor:
+          type: integer
+          format: int64
+        available:
+          type: boolean
+        note:
+          type: string
+        breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/CostLineItem"
+      required:
+        - provider
+        - displayName
+        - sourceType
+        - currency
+        - amountMinor
+        - amountEurMinor
+        - available
+        - breakdown
+    CostLineItem:
+      type: object
+      description: One component of a provider's cost (label + amount in the provider's currency).
+      properties:
+        label:
+          type: string
+        amountMinor:
+          type: integer
+          format: int64
+      required:
+        - label
+        - amountMinor
+    CostInsight:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+        hint:
+          type: string
+      required:
+        - label
+        - value
+    CostTrendPoint:
+      type: object
+      properties:
+        month:
+          type: string
+        totalEurMinor:
+          type: integer
+          format: int64
+      required:
+        - month
+        - totalEurMinor
+    CostWatchResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        totalMonthlyEurMinor:
+          type: integer
+          format: int64
+        momChangePct:
+          type: number
+          format: double
+        topProviders:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProviderCost"
+        headline:
+          $ref: "#/components/schemas/CostInsight"
+        asOf:
+          type: string
+      required:
+        - status
+        - totalMonthlyEurMinor
+        - topProviders
+    CostOverviewResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        asOf:
+          type: string
+        baseCurrency:
+          type: string
+        totalMonthlyEurMinor:
+          type: integer
+          format: int64
+        momChangePct:
+          type: number
+          format: double
+        providers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProviderCost"
+        trend:
+          type: array
+          items:
+            $ref: "#/components/schemas/CostTrendPoint"
+        insights:
+          type: array
+          items:
+            $ref: "#/components/schemas/CostInsight"
+      required:
+        - status
+        - baseCurrency
+        - totalMonthlyEurMinor
+        - providers
+        - trend
+        - insights
+    StatusStripResponse:
+      type: object
+      properties:
+        pillars:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pillar"
+      required:
+        - pillars
+    Pillar:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        value:
+          type: string
+        severity:
+          type: string
+        sparkline:
+          type: array
+          items:
+            type: number
+            format: double
+        deeplink:
+          type: string
+        previewCta:
+          type: string
+      required:
+        - key
+        - label
+        - status
+        - sparkline
+    ActionQueueResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActionItem"
+      required:
+        - status
+        - items
+    ActionItem:
+      type: object
+      properties:
+        key:
+          type: string
+        severity:
+          type: string
+        category:
+          type: string
+        title:
+          type: string
+        deeplink:
+          type: string
+        ageMinutes:
+          type: integer
+          format: int64
+        snoozedUntil:
+          type: string
+      required:
+        - key
+        - severity
+        - category
+        - title
+        - deeplink
+        - ageMinutes
+    ProductEntitiesResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        entities:
+          type: array
+          items:
+            $ref: "#/components/schemas/EntityCount"
+      required:
+        - status
+        - entities
+    EntityCount:
+      type: object
+      properties:
+        label:
+          type: string
+        last7Days:
+          type: integer
+          format: int64
+        total:
+          type: integer
+          format: int64
+      required:
+        - label
+        - last7Days
+        - total
+    FunnelResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        stages:
+          type: array
+          items:
+            $ref: "#/components/schemas/FunnelStage"
+      required:
+        - status
+        - stages
+    FunnelStage:
+      type: object
+      properties:
+        label:
+          type: string
+        count:
+          type: integer
+          format: int64
+        pctOfTop:
+          type: number
+          format: double
+          description: Cumulative conversion from the first stage (0-100).
+        pctOfPrevious:
+          type: number
+          format: double
+          description: Step conversion from the immediately preceding stage (0-100). 100 for the first stage.
+        dropOff:
+          type: integer
+          format: int64
+          description: Number of entities lost between the previous stage and this one. 0 for the first stage.
+      required:
+        - label
+        - count
+        - pctOfTop
+        - pctOfPrevious
+        - dropOff
+    TopTeamsResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        rankedBy:
+          type: string
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopTeam"
+      required:
+        - status
+        - rankedBy
+        - teams
+    TopTeam:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        activityScore:
+          type: integer
+          format: int64
+        deeplink:
+          type: string
+      required:
+        - identifier
+        - name
+        - activityScore
+        - deeplink
+    SchedulerHealthResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        total:
+          type: integer
+          format: int64
+        normal:
+          type: integer
+          format: int64
+        paused:
+          type: integer
+          format: int64
+        error:
+          type: integer
+          format: int64
+        blocked:
+          type: integer
+          format: int64
+        jobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobTile"
+      required:
+        - status
+        - total
+        - normal
+        - paused
+        - error
+        - blocked
+        - jobs
+    JobTile:
+      type: object
+      properties:
+        jobName:
+          type: string
+        jobGroup:
+          type: string
+        state:
+          type: string
+        nextFireTime:
+          type: string
+        deeplink:
+          type: string
+      required:
+        - jobName
+        - jobGroup
+        - state
+        - deeplink
+    PreviewPanelResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        panel:
+          type: string
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+      required:
+        - status
+        - panel
+    GeoResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        countries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountryStats"
+        teamsWithoutCountry:
+          type: integer
+          format: int64
+      required:
+        - status
+        - countries
+        - teamsWithoutCountry
+    CountryStats:
+      type: object
+      properties:
+        code:
+          type: string
+        teams:
+          type: integer
+          format: int64
+        properties:
+          type: integer
+          format: int64
+        contracts:
+          type: integer
+          format: int64
+        monthlyValueEurMinor:
+          type: integer
+          format: int64
+      required:
+        - code
+        - teams
+        - properties
+        - contracts
+        - monthlyValueEurMinor
+    PropertyLocationsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+        capped:
+          type: boolean
+        points:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyPoint"
+      required:
+        - total
+        - capped
+        - points
+    PropertyPoint:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+      required:
+        - lat
+        - lng
+    LatencyHeatmapResponse:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/PanelStatus"
+        previewCta:
+          type: string
+        docsLink:
+          type: string
+        bands:
+          type: array
+          items:
+            type: string
+        columns:
+          type: array
+          items:
+            $ref: "#/components/schemas/HeatColumn"
+      required:
+        - status
+        - bands
+        - columns
+    HeatColumn:
+      type: object
+      properties:
+        time:
+          type: string
+        values:
+          type: array
+          items:
+            type: number
+            format: double
+      required:
+        - time
+        - values
+    PanelPlacement:
+      type: object
+      properties:
+        panel:
+          type: string
+        x:
+          type: integer
+          format: int32
+        y:
+          type: integer
+          format: int32
+        w:
+          type: integer
+          format: int32
+        h:
+          type: integer
+          format: int32
+        hidden:
+          type: boolean
+      required:
+        - panel
+        - x
+        - y
+        - w
+        - h
+        - hidden
+    DashboardLayoutResponse:
+      type: object
+      properties:
+        panels:
+          type: array
+          items:
+            $ref: "#/components/schemas/PanelPlacement"
+      required:
+        - panels
+    SaveDashboardLayoutRequest:
+      type: object
+      properties:
+        panels:
+          type: array
+          items:
+            $ref: "#/components/schemas/PanelPlacement"
+      required:
+        - panels
+    SnoozeActionItemRequest:
+      type: object
+      properties:
+        itemKey:
+          type: string
+          maxLength: 120
+        hours:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 8760
+      required:
+        - itemKey
+        - hours
   securitySchemes:
     bearer-jwt:
       type: http

@@ -189,9 +189,7 @@ function MetadataField({
   switch (field.type) {
     case 'MONEY': {
       const moneyObj = value as
-        | { value: number; currency: string }
-        | null
-        | undefined;
+        { value: number; currency: string } | null | undefined;
       const fieldCurrency = moneyObj?.currency || currency;
       const majorAmount = moneyValueToMajor(value, fractionalDigits);
 

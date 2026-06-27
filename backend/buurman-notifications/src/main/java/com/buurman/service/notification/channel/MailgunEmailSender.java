@@ -77,7 +77,10 @@ public class MailgunEmailSender implements NotificationChannelSender {
       MessageResponse response = mailgunApi.sendMessage(domain, message);
       String messageId = response.getId().replaceAll("^<|>$", "");
 
-      log.info("Mailgun email sent to {}, message ID: {}", recipient, messageId);
+      log.info(
+          "Mailgun email sent to {}, message ID: {}",
+          com.buurman.util.LogMasking.email(recipient),
+          messageId);
       metricsService.recordNotificationSend(start, "email", "mailgun", "success");
       return messageId;
     } catch (NotificationSendException e) {

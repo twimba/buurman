@@ -840,7 +840,10 @@
       "manual": "Pino colocado manualmente — arraste para ajustar se necessário",
       "approximate": "Encontrámos o bairro mas não o local exato — arraste o pino para o seu imóvel!",
       "country": "Bem, encontrámos o país pelo menos! Arraste o pino para a localização correta."
-    }
+    },
+    "mapView": "Mapa",
+    "streetView": "Street View",
+    "noStreetView": "O Street View não está disponível para esta localização."
   },
   "timeline": {
     "selfOccupancy": "Uso Próprio",

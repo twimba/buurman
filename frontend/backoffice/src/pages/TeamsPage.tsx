@@ -122,7 +122,8 @@ export const TeamsPage = () => {
                 teams.map((team) => (
                   <tr
                     key={team.identifier}
-                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
+                    onClick={() => navigate(`/teams/${team.identifier}`)}
+                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors cursor-pointer"
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -152,7 +153,10 @@ export const TeamsPage = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div
+                        className="flex items-center justify-end gap-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <button
                           onClick={() => navigate(`/teams/${team.identifier}`)}
                           className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"

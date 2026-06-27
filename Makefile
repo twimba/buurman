@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub seed-data
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -144,6 +144,16 @@ test-bdd-run:
 	if [ $$rc -eq 0 ]; then echo "All tests passed."; else echo "Some tests failed (exit code $$rc)."; fi; \
 	exit $$rc
 
+## Seed the local workspace with production-like data via the API
+## Usage: make seed-data  |  make seed-data ARGS="--users 25 --months 6 --dry-run"
+seed-data:
+	cd scripts/seed-data && poetry install --quiet && \
+	  SEED_API_URL=https://$(BDD_HP)api.local.buurman.io$(BDD_PORT_SUFFIX) \
+	  SEED_KEYCLOAK_URL=https://$(BDD_HP)keycloak.local.buurman.io$(BDD_PORT_SUFFIX) \
+	  SEED_MAILPIT_URL=https://$(BDD_HP)mailpit.local.buurman.io$(BDD_PORT_SUFFIX) \
+	  SEED_DB_URL=postgresql://buurman:buurman@$(BDD_HP)postgresql.local.buurman.io:$(or $(PG_HOST_PORT),6432)/buurman \
+	  poetry run python -m seed_data $(ARGS)
+
 ## Watch backend Java sources and auto-compile on changes (run alongside `make backend`)
 ## DevTools detects recompiled classes and warm-restarts (~2s). Requires: brew install fswatch
 backend-watch:
@@ -196,15 +206,15 @@ local:
 		-e '  tell current window' \
 		-e '    set newTab to (create tab with default profile)' \
 		-e '    tell current session of newTab' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman && make dev-fg"' \
+		-e '      write text "cd /Users/luis/projects/buurman && make dev-fg"' \
 		-e '      set backendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell backendPane' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
+		-e '      write text "cd /Users/luis/projects/buurman/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
 		-e '      set frontendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell frontendPane' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman/frontend && yarn dev"' \
+		-e '      write text "cd /Users/luis/projects/buurman/frontend && yarn dev"' \
 		-e '    end tell' \
 		-e '  end tell' \
 		-e 'end tell'

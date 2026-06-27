@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Loads and caches the canonical rent-regulation dataset bundled with the application as a classpath
- * resource. The dataset is immutable at runtime, so it is parsed once and reused.
+ * Loads and caches the canonical rent-regulation dataset bundled with the application as a
+ * classpath resource. The dataset is immutable at runtime, so it is parsed once and reused.
  */
 @Component
 @RequiredArgsConstructor

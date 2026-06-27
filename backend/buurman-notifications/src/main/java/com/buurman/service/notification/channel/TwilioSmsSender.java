@@ -73,7 +73,10 @@ public class TwilioSmsSender implements NotificationChannelSender {
 
       Message message = creator.create();
 
-      log.info("Twilio SMS sent to {}, SID: {}", recipientPhone, message.getSid());
+      log.info(
+          "Twilio SMS sent to {}, SID: {}",
+          com.buurman.util.LogMasking.phone(recipientPhone),
+          message.getSid());
       metricsService.recordNotificationSend(start, "sms", "twilio", "success");
       return message.getSid();
     } catch (NotificationSendException e) {

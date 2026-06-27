@@ -840,7 +840,10 @@
       "manual": "Nalen placerad manuellt -- dra for att justera vid behov",
       "approximate": "Vi hittade omradet men inte den exakta platsen -- dra nalen till din fastighet!",
       "country": "Vi hittade landet atminstone! Dra nalen till ratt plats."
-    }
+    },
+    "mapView": "Karta",
+    "streetView": "Street View",
+    "noStreetView": "Street View är inte tillgänglig för den här platsen."
   },
   "timeline": {
     "selfOccupancy": "Eget boende",

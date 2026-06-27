@@ -10,6 +10,12 @@ import { EnvironmentBanner } from './components/EnvironmentBanner';
 const DashboardPage = lazy(() =>
   import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage }))
 );
+const CostsPage = lazy(() =>
+  import('./pages/CostsPage').then((m) => ({ default: m.CostsPage }))
+);
+const FxRatesPage = lazy(() =>
+  import('./pages/FxRatesPage').then((m) => ({ default: m.FxRatesPage }))
+);
 const TeamsPage = lazy(() =>
   import('./pages/TeamsPage').then((m) => ({ default: m.TeamsPage }))
 );
@@ -121,6 +127,8 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<Layout />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/costs" element={<CostsPage />} />
+                  <Route path="/costs/fx" element={<FxRatesPage />} />
                   <Route path="/teams" element={<TeamsPage />} />
                   <Route
                     path="/teams/:identifier"

@@ -7,6 +7,8 @@ import {
 } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Wallet,
+  ArrowLeftRight,
   Users,
   UserCog,
   UserCheck,
@@ -96,6 +98,8 @@ const adminNavigation = [
   { name: 'Caches', href: '/caches', icon: Database, indent: true },
   { name: 'Rate Limits', href: '/rate-limits', icon: Shield, indent: true },
   { name: 'Loggers', href: '/loggers', icon: ScrollText, indent: true },
+  { name: 'Costs', href: '/costs', icon: Wallet },
+  { name: 'FX Rates', href: '/costs/fx', icon: ArrowLeftRight, indent: true },
 ];
 
 const isLocalEnv = () => window.location.hostname.includes('local.buurman.io');
@@ -159,7 +163,7 @@ const navLinkClass = (isActive: boolean, collapsed: boolean) => `
 `;
 
 const toolLinkClass = (isActive: boolean, collapsed: boolean) => `
-  flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px]
+  flex items-center gap-2.5 px-3 py-1 rounded-md text-[13px]
   transition-all duration-200
   ${collapsed ? 'justify-center' : ''}
   ${
@@ -170,7 +174,7 @@ const toolLinkClass = (isActive: boolean, collapsed: boolean) => `
 `;
 
 const dashboardLinkClass = (isActive: boolean) => `
-  flex items-center gap-2 pl-9 pr-3 py-1.5 rounded-lg text-[12px]
+  flex items-center gap-2 pl-9 pr-3 py-0.5 rounded-md text-[12px]
   transition-all duration-200
   ${
     isActive
@@ -218,8 +222,11 @@ export const Layout = () => {
     <div
       className="theme-backoffice flex overflow-hidden bg-surface-page"
       style={{
-        height: 'calc(100vh - var(--env-banner-height, 0px))',
-        marginTop: 'var(--env-banner-height, 0px)',
+        height: '100vh',
+        // Offset below the fixed env banner with padding (not margin) so the top margin
+        // can't collapse through <body> into <html> and add a second document scrollbar.
+        paddingTop: 'var(--env-banner-height, 0px)',
+        boxSizing: 'border-box',
       }}
     >
       <a
@@ -351,9 +358,9 @@ export const Layout = () => {
             </div>
 
             {/* Tools Section */}
-            <div className="mt-6 pt-4 border-t border-border-default">
+            <div className="mt-4 pt-3 border-t border-border-default">
               {!collapsed && (
-                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+                <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                   Tools
                 </p>
               )}

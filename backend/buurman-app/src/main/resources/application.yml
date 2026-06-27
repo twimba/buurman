@@ -132,7 +132,7 @@ twilio:
 # Notification Configuration
 notification:
   outbox:
-    batch-size: ${NOTIFICATION_OUTBOX_BATCH_SIZE:50}
+    batch-size: ${NOTIFICATION_OUTBOX_BATCH_SIZE:500}
     max-retries: ${NOTIFICATION_OUTBOX_MAX_RETRIES:5}
   consolidation:
     enabled: true
@@ -158,6 +158,8 @@ scheduling:
     metrics-push-cron: "0 */15 * * * ?"
   thumbnail-backfill:
     cron: "0 */5 * * * ?"
+  cost:
+    snapshot-cron: "0 0 6 * * ?"
 
 # Impersonation Configuration
 impersonation:
@@ -204,6 +206,29 @@ management:
         step: 30s
         descriptions: true
         enabled: true
+
+# Backoffice mission-control dashboard
+backoffice:
+  dashboard:
+    metrics:
+      # Prometheus query endpoint. Empty => latency/error-rate/p95 panels show PREVIEW.
+      # Cluster-wide aggregation (sum by le) makes this correct on multi-node setups.
+      prometheus-url: ${PROMETHEUS_URL:}
+      # Label matcher scoping queries to this app across all nodes.
+      selector: 'application="buurman"'
+      window: 5m
+  cost:
+    base-currency: EUR
+    # Live FX source (frankfurter.app, ECB data, no key) refreshed before each snapshot.
+    fx-api-url: ${COST_FX_API_URL:https://api.frankfurter.dev}
+    hetzner:
+      token: ${HETZNER_BEARER_TOKEN:}
+    cloudflare:
+      token: ${CLOUDFLARE_API_TOKEN:}
+      account-id: ${CLOUDFLARE_ACCOUNT_ID:}
+    # Mailgun plan fee / per-email rate (cost_config) and flat provider amounts like BetterStack
+    # (cost_manual_amount) are managed in the DB via the backoffice Costs page — no env/yml seed.
+    # Absent config defaults to 0, i.e. unset until an admin enters the figures.
 
 # Server Configuration
 server:

@@ -1,14 +1,12 @@
-FROM alpine:3.24 AS gettext
-RUN apk add --no-cache gettext
-
 FROM prom/prometheus:v3.12.0
 
+# Render config at startup with busybox sed (see docker-entrypoint.sh) — no envsubst/gettext needed.
 USER root
-COPY --from=gettext /usr/bin/envsubst /usr/local/bin/envsubst
-USER nobody
-
 COPY prometheus.yml.template /etc/prometheus/prometheus.yml.template
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+# Make the entrypoint executable and let the runtime (nobody) user write the rendered config.
+RUN chmod +x /docker-entrypoint.sh && chown -R nobody /etc/prometheus
+USER nobody
 
 EXPOSE 9090
 

@@ -65,7 +65,7 @@ export interface TeamSettingsInfo {
   paymentsAheadCount: number;
   autoGenerationEnabled: boolean;
   defaultCurrency: string;
-  defaultCountry: string;
+  defaultCountryCode?: string;
   timezone: string;
   dateFormat: string;
   fiscalYearStartMonth: string;
@@ -121,23 +121,10 @@ export interface BackofficeNotification {
   statusUpdatedAt?: string;
 }
 
-export interface BackofficeDashboardStats {
-  totalTeams: number;
-  totalUsers: number;
-  disabledUsers: number;
-  totalNotifications: number;
-  pendingNotifications: number;
-  failedNotifications: number;
-  deliveredNotifications: number;
-  notificationsByChannel: Record<string, number>;
-}
-
 export interface NotificationStats {
-  totalCount: number;
-  pendingCount: number;
-  sentCount: number;
-  deliveredCount: number;
-  failedCount: number;
+  total: number;
+  /** Count of notifications per delivery state (PENDING, QUEUED, … REJECTED). */
+  byStatus: Record<string, number>;
   byChannel: Record<string, number>;
 }
 

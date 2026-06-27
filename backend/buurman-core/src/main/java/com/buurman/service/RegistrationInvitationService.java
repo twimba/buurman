@@ -90,7 +90,10 @@ public class RegistrationInvitationService {
     invitation = invitationRepository.save(invitation);
 
     metricsService.incrementCounter("registration.invitation.created.total");
-    log.info("Registration invitation created: code={}, by={}", code, principalEmail);
+    log.info(
+        "Registration invitation created: code={}, by={}",
+        com.buurman.util.LogMasking.secret(code),
+        com.buurman.util.LogMasking.email(principalEmail));
 
     return toResponse(invitation);
   }
@@ -129,7 +132,10 @@ public class RegistrationInvitationService {
     String revokerEmail = principal.getEmail().orElse("unknown");
     invitationRepository.revoke(invitation.getId(), revokerEmail);
     metricsService.incrementCounter("registration.invitation.revoked.total");
-    log.info("Registration invitation revoked: code={}, by={}", invitation.getCode(), revokerEmail);
+    log.info(
+        "Registration invitation revoked: code={}, by={}",
+        com.buurman.util.LogMasking.secret(invitation.getCode()),
+        com.buurman.util.LogMasking.email(revokerEmail));
   }
 
   public ValidateInvitationCodeResponse validateCode(String code) {
@@ -163,7 +169,10 @@ public class RegistrationInvitationService {
 
     usageRepository.save(invitation.getId(), userId);
     metricsService.incrementCounter("registration.invitation.used.total");
-    log.info("Registration invitation used: code={}, userId={}", code, userId);
+    log.info(
+        "Registration invitation used: code={}, userId={}",
+        com.buurman.util.LogMasking.secret(code),
+        userId);
   }
 
   @Transactional

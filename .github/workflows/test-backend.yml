@@ -34,7 +34,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: backend
         run: |
-          mvn verify -pl buurman-common,buurman-core,buurman-notifications,buurman-booklets \
+          mvn verify -pl buurman-common,buurman-core,buurman-notifications,buurman-booklets,buurman-backoffice \
             -am -Pquick -B -Dmaven.build.cache.enabled=false
 
       - name: Generate coverage summary

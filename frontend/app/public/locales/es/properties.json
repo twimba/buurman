@@ -392,7 +392,10 @@
       "manual": "Pin colocado manualmente — arrastre para ajustar si es necesario",
       "approximate": "Encontramos el barrio pero no el punto exacto — ¡arrastre el pin hasta su propiedad!",
       "country": "Bueno, ¡al menos encontramos el país! Arrastre el pin a la ubicación correcta."
-    }
+    },
+    "mapView": "Mapa",
+    "streetView": "Street View",
+    "noStreetView": "Street View no está disponible para esta ubicación."
   },
   "timeline": {
     "selfOccupancy": "Uso Propio",

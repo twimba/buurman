@@ -21,17 +21,10 @@ export interface ContractExtensionResponse {
 }
 
 export type ExtensionStatus =
-  | 'DRAFT'
-  | 'ACTIVE'
-  | 'SUPERSEDED'
-  | 'CANCELLED'
-  | 'DECLINED';
+  'DRAFT' | 'ACTIVE' | 'SUPERSEDED' | 'CANCELLED' | 'DECLINED';
 export type TriggerType = 'MANUAL' | 'AUTO';
 export type RentAdjustmentType =
-  | 'NONE'
-  | 'FIXED_PERCENTAGE'
-  | 'FIXED_AMOUNT'
-  | 'MANUAL';
+  'NONE' | 'FIXED_PERCENTAGE' | 'FIXED_AMOUNT' | 'MANUAL';
 export type RenewalMode = 'NONE' | 'AUTOMATIC' | 'MANUAL';
 export type LandlordType = 'NATURAL_PERSON' | 'LEGAL_ENTITY';
 

@@ -436,7 +436,10 @@ export const TeamDetailPage = () => {
               label="Currency"
               value={team.settings.defaultCurrency}
             />
-            <SettingsRow label="Country" value={team.settings.defaultCountry} />
+            <SettingsRow
+              label="Country"
+              value={team.settings.defaultCountryCode ?? '—'}
+            />
             <SettingsRow label="Timezone" value={team.settings.timezone} />
             <SettingsRow label="Date Format" value={team.settings.dateFormat} />
             <SettingsRow

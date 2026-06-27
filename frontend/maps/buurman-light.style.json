@@ -1,0 +1,55 @@
+{
+  "variant": "light",
+  "backgroundColor": "#fafaf9",
+  "styles": [
+    { "id": "natural.land", "geometry": { "fillColor": "#fafaf9" } },
+    {
+      "id": "natural.water",
+      "geometry": { "fillColor": "#cfe6f4" },
+      "label": { "textFillColor": "#38bdf8", "textStrokeColor": "#fafaf9" }
+    },
+    {
+      "id": "pointOfInterest",
+      "geometry": { "visible": false },
+      "label": { "visible": false }
+    },
+    {
+      "id": "pointOfInterest.recreation.park",
+      "geometry": { "visible": true, "fillColor": "#e7eee3" },
+      "label": { "visible": false }
+    },
+    {
+      "id": "infrastructure.roadNetwork.road",
+      "geometry": { "fillColor": "#ffffff" },
+      "label": { "textFillColor": "#78716c", "textStrokeColor": "#fafaf9" }
+    },
+    {
+      "id": "infrastructure.roadNetwork.road.arterial",
+      "geometry": { "fillColor": "#f5f5f4" }
+    },
+    {
+      "id": "infrastructure.roadNetwork.road.highway",
+      "geometry": { "fillColor": "#e7e5e4" }
+    },
+    {
+      "id": "infrastructure.transitStation",
+      "geometry": { "visible": false },
+      "label": { "visible": false }
+    },
+    {
+      "id": "political.countryOrRegion",
+      "geometry": { "visible": false },
+      "label": { "textFillColor": "#78716c", "textStrokeColor": "#fafaf9" }
+    },
+    {
+      "id": "political.stateOrProvince",
+      "geometry": { "visible": false },
+      "label": { "visible": false }
+    },
+    {
+      "id": "political.landParcel",
+      "geometry": { "visible": false },
+      "label": { "visible": false }
+    }
+  ]
+}

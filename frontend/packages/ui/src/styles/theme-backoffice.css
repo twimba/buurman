@@ -20,4 +20,140 @@
 
   /* Text link uses indigo */
   --text-link: #6366f1;
+
+  /* ── Mission Control (Dashboard v2) tokens ──
+     Severity is reinforcement-only; every color-coded element also carries
+     aria-label / visible text. */
+  --severity-crit: #dc2626;
+  --severity-warn: #d97706;
+  --severity-ok: #059669;
+  --severity-info: #6366f1;
+
+  /* Sparklines */
+  --sparkline-stroke: #6366f1;
+  --sparkline-fill: rgba(99, 102, 241, 0.12);
+
+  /* Latency heatmap scale (cool -> hot) */
+  --heatmap-0: #eef2ff;
+  --heatmap-1: #c7d2fe;
+  --heatmap-2: #a5b4fc;
+  --heatmap-3: #fcd34d;
+  --heatmap-4: #f97316;
+  --heatmap-5: #dc2626;
+
+  /* ── Cooler page so white cards visibly lift off it (the depth that was missing) ── */
+  --color-surface-page: #eef1f7;
+  --color-surface-inset: #eceff5;
+  --color-border-subtle: #e7eaf1;
+  --color-border-default: #dde1ec;
+
+  /* ── Mission-control elevation ladder (cool, indigo-tinted; reads as "instrument") ── */
+  --shadow-card:
+    0 1px 2px rgba(30, 33, 71, 0.06), 0 2px 5px -1px rgba(30, 33, 71, 0.07);
+  --shadow-hover:
+    0 10px 24px -8px rgba(30, 33, 71, 0.18),
+    0 4px 10px -4px rgba(30, 33, 71, 0.1);
+  --shadow-raised:
+    0 18px 40px -12px rgba(30, 33, 71, 0.22),
+    0 6px 14px -6px rgba(30, 33, 71, 0.12);
+  --shadow-inner-top: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  /* Severity companions (chips, dot auras) — derived from the severity ramp above. */
+  --severity-crit-bg: #fef2f2;
+  --severity-crit-border: #fecaca;
+  --severity-warn-bg: #fffbeb;
+  --severity-warn-border: #fde68a;
+  --severity-ok-bg: #ecfdf5;
+  --severity-ok-border: #a7f3d0;
+  --severity-info-bg: #eef2ff;
+  --severity-info-border: #c7d2fe;
+  --glow-crit: 0 0 0 3px rgba(220, 38, 38, 0.14);
+  --glow-warn: 0 0 0 3px rgba(217, 119, 6, 0.14);
+  --glow-ok: 0 0 0 3px rgba(5, 150, 105, 0.14);
+  --glow-info: 0 0 0 3px rgba(99, 102, 241, 0.14);
+
+  /* Hero "summary band" gradient — low chroma; texture, not decoration. */
+  --hero-gradient: linear-gradient(
+    135deg,
+    #fbfcff 0%,
+    #f3f5fc 55%,
+    #eef1fb 100%
+  );
+
+  /* Motion system */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+}
+
+/* ── Mission-control animations (top-level; auto-neutralized by the reduced-motion block) ── */
+@keyframes mc-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+  }
+}
+
+@keyframes mc-flash {
+  0% {
+    background-color: rgba(99, 102, 241, 0.14);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes mc-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mc-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@theme {
+  --animate-mc-pulse: mc-pulse 2.4s var(--ease-out-quart) infinite;
+  --animate-mc-flash: mc-flash 600ms var(--ease-out-quart);
+  --animate-mc-rise: mc-rise 360ms var(--ease-out-quart) both;
+  --animate-mc-grow-x: mc-grow-x 560ms var(--ease-out-quart) both;
+}
+
+/* ── Mission-control panel surface (elevation + interactive lift) ── */
+.theme-backoffice .mc-panel,
+.theme-backoffice .mc-panel-quiet {
+  box-shadow: var(--shadow-card), var(--shadow-inner-top);
+  transition:
+    box-shadow var(--dur-base) var(--ease-out-quart),
+    transform var(--dur-base) var(--ease-out-quart),
+    border-color var(--dur-base) var(--ease-out-quart);
+}
+
+.theme-backoffice .mc-panel:hover,
+.theme-backoffice .mc-panel:focus-within {
+  box-shadow: var(--shadow-hover), var(--shadow-inner-top);
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-backoffice .mc-panel:hover,
+  .theme-backoffice .mc-panel:focus-within {
+    transform: none;
+  }
 }

@@ -299,8 +299,9 @@ function CountriesTab() {
         <div className="mb-4 flex items-start justify-between gap-3 rounded-lg border border-success-border bg-success-bg px-4 py-3">
           <p className="text-sm text-success-text">
             Reloaded catalog <strong>v{reloadResult.version}</strong> (
-            {reloadResult.generatedAt}): {reloadResult.countriesLoaded} countries,{' '}
-            {reloadResult.regionsLoaded} regions, {reloadResult.rulesLoaded} rules.
+            {reloadResult.generatedAt}): {reloadResult.countriesLoaded}{' '}
+            countries, {reloadResult.regionsLoaded} regions,{' '}
+            {reloadResult.rulesLoaded} rules.
           </p>
           <button
             onClick={() => setReloadResult(null)}

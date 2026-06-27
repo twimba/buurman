@@ -12,6 +12,7 @@ import {
   Eye,
   Pencil,
   Crown,
+  Cog,
 } from 'lucide-react';
 import {
   PageHeader,
@@ -35,6 +36,7 @@ import { UserFeatureFlags } from '../components/UserFeatureFlags';
 import { PasswordConfirmationDialog } from '../components/PasswordConfirmationDialog';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
+import { isSystemUser } from '../lib/systemUser';
 
 const DURATION_PRESETS = [
   { label: '15 min', value: 15 },
@@ -231,6 +233,8 @@ export const UserDetailPage = () => {
     },
   ];
 
+  const system = isSystemUser(user.email);
+
   return (
     <div>
       <PageHeader
@@ -238,38 +242,67 @@ export const UserDetailPage = () => {
         subtitle={`${user.firstName} ${user.lastName}`}
         backTo="/users"
         actions={
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Button
-              variant="secondary"
-              onClick={openImpersonateDialog}
-              disabled={user.disabled}
+          system ? (
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium bg-info-bg text-info-text ring-1 ring-info-border"
+              title="Built-in system account — not a real user; it cannot be impersonated, reset, or disabled"
             >
-              Impersonate
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setShowResetDialog(true)}
+              <Cog className="h-4 w-4" aria-hidden="true" />
+              Built-in system account
+            </span>
+          ) : (
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
-              Reset Password
-            </Button>
-            {user.disabled ? (
               <Button
-                variant="success"
-                onClick={() => setShowDisableDialog(true)}
+                variant="secondary"
+                onClick={openImpersonateDialog}
+                disabled={user.disabled}
               >
-                Enable
+                Impersonate
               </Button>
-            ) : (
               <Button
-                variant="danger"
-                onClick={() => setShowDisableDialog(true)}
+                variant="secondary"
+                onClick={() => setShowResetDialog(true)}
               >
-                Disable
+                Reset Password
               </Button>
-            )}
-          </div>
+              {user.disabled ? (
+                <Button
+                  variant="success"
+                  onClick={() => setShowDisableDialog(true)}
+                >
+                  Enable
+                </Button>
+              ) : (
+                <Button
+                  variant="danger"
+                  onClick={() => setShowDisableDialog(true)}
+                >
+                  Disable
+                </Button>
+              )}
+            </div>
+          )
         }
       />
+
+      {system && (
+        <div className="mb-4 flex items-start gap-3 rounded-lg border border-info-border bg-info-bg p-4">
+          <Cog
+            className="mt-0.5 h-5 w-5 flex-shrink-0 text-info-text"
+            aria-hidden="true"
+          />
+          <div className="text-sm text-info-text">
+            <p className="font-semibold">Built-in system account</p>
+            <p className="mt-0.5">
+              This is an internal platform account used by automated and system
+              actions — not a real person. It cannot be impersonated, have its
+              password reset, or be disabled.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* User Info Card */}
       <div className="bg-surface-card rounded-lg border border-border-default p-6">
