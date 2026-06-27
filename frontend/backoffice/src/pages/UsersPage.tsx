@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, Eye, UserX, UserCheck } from 'lucide-react';
+import { Search, Eye, UserX, UserCheck, Cog } from 'lucide-react';
 import { RefreshButton } from '@buurman/ui';
 import { SortableHeader } from '../components/SortableHeader';
 import { formatDate } from '../utils/dateFormatting';
@@ -10,6 +10,7 @@ import { usePagination } from '../hooks/usePagination';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { AsyncSelect, type AsyncSelectOption } from '../components/AsyncSelect';
 import { useTeamSearch } from '../hooks/useTeams';
+import { isSystemUser } from '../lib/systemUser';
 
 export const UsersPage = () => {
   const navigate = useNavigate();
@@ -210,9 +211,20 @@ export const UsersPage = () => {
                     className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors cursor-pointer"
                   >
                     <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-text-primary">
-                        {user.email}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-text-primary">
+                          {user.email}
+                        </span>
+                        {isSystemUser(user.email) && (
+                          <span
+                            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-info-bg text-info-text ring-1 ring-info-border"
+                            title="Built-in system account — not a real user"
+                          >
+                            <Cog className="h-3 w-3" aria-hidden="true" />
+                            System
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -284,7 +296,14 @@ export const UsersPage = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        {user.disabled ? (
+                        {isSystemUser(user.email) ? (
+                          <span
+                            className="p-2 text-text-muted"
+                            title="Built-in system account — cannot be disabled"
+                          >
+                            <Cog className="h-4 w-4" aria-hidden="true" />
+                          </span>
+                        ) : user.disabled ? (
                           <button
                             onClick={() =>
                               setActionTarget({
