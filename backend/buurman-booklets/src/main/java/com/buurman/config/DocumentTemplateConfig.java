@@ -64,7 +64,8 @@ public class DocumentTemplateConfig {
         "classpath:messages/document-property-booklet",
         "classpath:messages/document-contract-booklet",
         "classpath:messages/document-contact-booklet",
-        "classpath:messages/document-enum-labels");
+        "classpath:messages/document-enum-labels",
+        "classpath:messages/document-summary-card");
     source.setDefaultEncoding("UTF-8");
     source.setFallbackToSystemLocale(false);
     source.setUseCodeAsDefaultMessage(true);
