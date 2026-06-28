@@ -96,7 +96,7 @@ public class ContractBookletExporter {
       ContractExtensionRepository contractExtensionRepository,
       ContractPartyService contractPartyService,
       DocumentRenderer pdfRenderer,
-      @Qualifier("bookletMessageSource") MessageSource messageSource,
+      @Qualifier("contractBookletMessageSource") MessageSource messageSource,
       Clock clock) {
     this.contractRepository = contractRepository;
     this.propertyRepository = propertyRepository;

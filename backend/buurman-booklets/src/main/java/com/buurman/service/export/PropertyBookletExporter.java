@@ -133,7 +133,7 @@ public class PropertyBookletExporter {
       PropertyDashboardService propertyDashboardService,
       TeamPreferencesRepository teamPreferencesRepository,
       DocumentRenderer pdfRenderer,
-      @Qualifier("bookletMessageSource") MessageSource messageSource,
+      @Qualifier("propertyBookletMessageSource") MessageSource messageSource,
       Clock clock) {
     this.propertyRepository = propertyRepository;
     this.residentialDetailsRepository = residentialDetailsRepository;

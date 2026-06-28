@@ -92,7 +92,7 @@ public class ContactBookletExporter {
       PropertyRepository propertyRepository,
       ContractPartyService contractPartyService,
       DocumentRenderer pdfRenderer,
-      @Qualifier("bookletMessageSource") MessageSource messageSource,
+      @Qualifier("contactBookletMessageSource") MessageSource messageSource,
       Clock clock) {
     this.contactRepository = contactRepository;
     this.contactAddressRepository = contactAddressRepository;
