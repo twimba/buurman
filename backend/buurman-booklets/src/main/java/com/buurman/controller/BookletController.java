@@ -42,6 +42,7 @@ import com.buurman.service.export.ExtensionDocumentGenerationService;
 import com.buurman.service.export.RentChangeDocumentExporter;
 import com.buurman.service.export.RentChangeDocumentGenerationService;
 import com.buurman.service.export.RentIncreaseLetterExporter;
+import com.buurman.service.export.SummaryCardService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -61,6 +62,7 @@ public class BookletController implements BookletsApi {
   private final RentChangeDocumentExporter rentChangeDocumentExporter;
   private final ExtensionDocumentGenerationService extensionDocumentGenerationService;
   private final RentChangeDocumentGenerationService rentChangeDocumentGenerationService;
+  private final SummaryCardService summaryCardService;
   private final FeatureFlagService featureFlagService;
   private final GoogleSheetTitleResolver titleResolver;
   private final HttpServletRequest httpServletRequest;
@@ -285,6 +287,24 @@ public class BookletController implements BookletsApi {
       return Locale.forLanguageTag(lang);
     }
     return Locale.ENGLISH;
+  }
+
+  // ── One-page summary cards (A4 landscape) ─────────────────────────────────
+  @GetMapping("/contracts/{contractId}/summary")
+  public ResponseEntity<byte[]> getContractSummary(
+      @PathVariable ContractIdentifier contractId, @RequestParam(defaultValue = "en") String lang) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    byte[] pdf =
+        summaryCardService.contractSummary(
+            contractId, principal.requireTeamId(), resolveLocale(lang));
+    return summaryResponse("contract-" + contractId.value(), pdf);
+  }
+
+  private static ResponseEntity<byte[]> summaryResponse(String name, byte[] pdf) {
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + name + "-summary.pdf")
+        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_PDF_VALUE)
+        .body(pdf);
   }
 
   @GetMapping("/contracts/{contractId}/extensions/{extensionId}/addendum")

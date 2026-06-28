@@ -41,6 +41,35 @@ public class DocumentTemplateConfig {
     return engine;
   }
 
+  /**
+   * Template engine for the redesigned booklets + summary cards, bound to {@code
+   * bookletMessageSource} so their {@code #{summary.*}} / enum-label keys resolve.
+   */
+  @Bean("bookletTemplateEngine")
+  public TemplateEngine bookletTemplateEngine(
+      @Qualifier("bookletMessageSource") MessageSource bookletMessageSource,
+      @Value("${spring.thymeleaf.cache:true}") boolean cacheTemplates) {
+    ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+    resolver.setPrefix("templates/documents/");
+    resolver.setSuffix(".html");
+    resolver.setTemplateMode(TemplateMode.HTML);
+    resolver.setCharacterEncoding("UTF-8");
+    resolver.setCacheable(cacheTemplates);
+    resolver.setOrder(1);
+    resolver.setCheckExistence(true);
+
+    SpringTemplateEngine engine =
+        new SpringTemplateEngine() {
+          @Override
+          public void setMessageSource(MessageSource messageSource) {
+            super.setMessageSource(bookletMessageSource);
+          }
+        };
+    engine.setTemplateResolver(resolver);
+    engine.setMessageSource(bookletMessageSource);
+    return engine;
+  }
+
   @Bean("documentMessageSource")
   public MessageSource documentMessageSource(
       @Value("${spring.thymeleaf.cache:true}") boolean cacheTemplates) {
