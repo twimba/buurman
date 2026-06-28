@@ -76,7 +76,7 @@ class PropertyContactSummaryTemplateTest {
     v.put("parking", "2 · Garage");
     v.put("energyExpiry", "Valid to 2030");
     v.put("safety", "Smoke · CO · Alarm");
-    v.put("generatedMeta", "Generated 28 Jun 2026");
+    v.put("generatedDate", "Generated 28 Jun 2026");
 
     String html = render("property-summary/generic", v);
 
@@ -112,7 +112,7 @@ class PropertyContactSummaryTemplateTest {
     v.put("email", "l@example.com");
     v.put("phone", "+31 6 1234 5678");
     v.put("website", null);
-    v.put("generatedMeta", "Generated 28 Jun 2026");
+    v.put("generatedDate", "Generated 28 Jun 2026");
 
     String html = render("contact-summary/generic", v);
 

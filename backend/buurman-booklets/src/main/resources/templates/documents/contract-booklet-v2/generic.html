@@ -66,7 +66,7 @@
       </table>
       <img th:if="${qrDataUri}" th:src="${qrDataUri}" alt="QR" style="width:96px;height:96px;margin-top:26px;"/>
     </div>
-    <div class="footer-note" th:text="${generatedMeta}">Generated · Confidential</div>
+    <div class="footer-note" th:text="#{summary.generated} + ' ' + ${generatedDate} + ' · ' + #{summary.confidential}">Generated · Confidential</div>
   </div>
 
   <!-- PAGE 2 — Details + parties -->
@@ -88,7 +88,7 @@
         <div class="ct" th:text="${p.contact}">email · phone</div>
       </div>
     </div>
-    <div class="footer-note" th:text="${generatedMeta}">Generated</div>
+    <div class="footer-note" th:text="#{summary.generated} + ' ' + ${generatedDate} + ' · ' + #{summary.confidential}">Generated</div>
   </div>
 
   <!-- PAGE 3 — Payments -->
@@ -116,7 +116,7 @@
         </tbody>
       </table>
     </div>
-    <div class="footer-note" th:text="${generatedMeta}">Generated</div>
+    <div class="footer-note" th:text="#{summary.generated} + ' ' + ${generatedDate} + ' · ' + #{summary.confidential}">Generated</div>
   </div>
 
 </body>

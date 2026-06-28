@@ -218,7 +218,7 @@ class SummaryCardPreviewGenerator {
     v.put("lang", "en");
     v.put("dir", "ltr");
     v.put("kicker", kicker);
-    v.put("generatedMeta", "Generated 28 June 2026 · Confidential");
+    v.put("generatedDate", "28 June 2026");
     return v;
   }
 

@@ -73,7 +73,7 @@ class ContractSummaryTemplateTest {
     v.put("overdueCount", 1);
     v.put("paymentInstruction", "NL00 BANK 0123 4567 89");
     v.put("qrDataUri", null);
-    v.put("generatedMeta", "Generated 28 Jun 2026");
+    v.put("generatedDate", "Generated 28 Jun 2026");
     return v;
   }
 

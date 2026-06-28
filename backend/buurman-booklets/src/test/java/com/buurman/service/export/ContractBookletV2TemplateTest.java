@@ -61,6 +61,7 @@ class ContractBookletV2TemplateTest {
     v.put("totalPending", "€1,450.00");
     v.put("totalOverdue", "€1,450.00");
     v.put("overdueCount", 1);
+    v.put("generatedDate", "1 Jun 2026");
     v.put(
         "parties",
         List.of(Map.of("role", "Primary tenant", "name", "Luís Santos", "contact", "luis@x.com")));

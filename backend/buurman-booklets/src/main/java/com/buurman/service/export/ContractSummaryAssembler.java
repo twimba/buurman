@@ -185,7 +185,7 @@ public class ContractSummaryAssembler {
 
     v.put(
         "qrDataUri", qrCodeGenerator.toSvgDataUri(appBaseUrl + "/contracts/" + identifier.value()));
-    v.put("generatedMeta", formatter.date(today, locale));
+    v.put("generatedDate", formatter.date(today, locale));
     return v;
   }
 

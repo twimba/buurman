@@ -120,7 +120,7 @@ public class PropertySummaryAssembler {
     v.put(
         "qrDataUri",
         qrCodeGenerator.toSvgDataUri(appBaseUrl + "/properties/" + identifier.value()));
-    v.put("generatedMeta", formatter.date(LocalDate.now(clock), locale));
+    v.put("generatedDate", formatter.date(LocalDate.now(clock), locale));
     return v;
   }
 

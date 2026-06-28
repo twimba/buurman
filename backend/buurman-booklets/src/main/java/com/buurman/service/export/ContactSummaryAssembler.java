@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contact;
-import com.buurman.domain.ContactTag;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Payment;
 import com.buurman.domain.identifier.ContactIdentifier;
@@ -99,7 +98,7 @@ public class ContactSummaryAssembler {
     v.put("contactName", contact.getDisplayName());
     v.put("contactTypeLabel", enumLabels.label(contact.getContactType(), locale));
     v.put("contactIdentifier", identifier.value());
-    v.put("tags", contact.getTags().stream().map(ContactTag::getDisplayName).toList());
+    v.put("tags", contact.getTags().stream().map(t -> enumLabels.label(t, locale)).toList());
     v.put("activeContracts", String.valueOf(activeCount));
     v.put("heroSizeClass", "hero-l");
     v.put("roleLabel", role(contact, contracts, teamId, locale));
@@ -122,7 +121,7 @@ public class ContactSummaryAssembler {
 
     v.put(
         "qrDataUri", qrCodeGenerator.toSvgDataUri(appBaseUrl + "/contacts/" + identifier.value()));
-    v.put("generatedMeta", formatter.date(LocalDate.now(clock), locale));
+    v.put("generatedDate", formatter.date(LocalDate.now(clock), locale));
     return v;
   }
 
