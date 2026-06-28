@@ -63,7 +63,8 @@ public class DocumentTemplateConfig {
     source.setBasenames(
         "classpath:messages/document-property-booklet",
         "classpath:messages/document-contract-booklet",
-        "classpath:messages/document-contact-booklet");
+        "classpath:messages/document-contact-booklet",
+        "classpath:messages/document-enum-labels");
     source.setDefaultEncoding("UTF-8");
     source.setFallbackToSystemLocale(false);
     source.setUseCodeAsDefaultMessage(true);
