@@ -7,8 +7,8 @@
   <style>
     @page { size: A4 landscape; margin: 0; }
     .card { display:flex; flex-direction:column; height:209mm; }
-    .body { flex:1; display:flex; gap:22px; padding:22px 24px; }
-    .main { flex:1; display:flex; flex-direction:column; gap:16px; }
+    .body { flex:1; display:flex; gap:24px; padding:30px 32px; }
+    .main { flex:1; display:flex; flex-direction:column; justify-content:space-between; gap:18px; }
     .ident { display:flex; align-items:flex-start; justify-content:space-between; }
     .ident .cid { font-size:11px; color:var(--c-n-400); letter-spacing:1px; margin-top:4px; }
     .tags { margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; }
@@ -55,11 +55,22 @@
         <div th:replace="~{_booklet-components :: kpi(#{summary.contact.primaryChannel},${primaryChannelValue},null,'highlight')}"></div>
       </div>
 
-      <!-- Contact channels -->
-      <div class="channels">
-        <div class="row" th:if="${email}"><span th:text="#{summary.contact.email} + ':'">Email:</span> <span th:text="${email}"></span></div>
-        <div class="row" th:if="${phone}"><span th:text="#{summary.contact.phone} + ':'">Phone:</span> <span th:text="${phone}"></span></div>
-        <div class="row" th:if="${website}"><span th:text="#{summary.contact.website} + ':'">Website:</span> <span th:text="${website}"></span></div>
+      <!-- Bottom: channels + mailing address -->
+      <div style="display:flex; gap:28px;">
+        <div class="channels" style="flex:1;">
+          <div class="label" style="margin-bottom:6px;">Reach</div>
+          <div class="row" th:if="${email}"><span style="color:var(--muted);" th:text="#{summary.contact.email} + ':'">Email:</span> <span th:text="${email}"></span></div>
+          <div class="row" th:if="${phone}"><span style="color:var(--muted);" th:text="#{summary.contact.phone} + ':'">Phone:</span> <span th:text="${phone}"></span></div>
+          <div class="row" th:if="${website}"><span style="color:var(--muted);" th:text="#{summary.contact.website} + ':'">Website:</span> <span th:text="${website}"></span></div>
+        </div>
+        <div class="field" style="flex:1;" th:if="${mailingAddress}">
+          <div class="label">Mailing address</div>
+          <div class="v" th:text="${mailingAddress}">Kerkstraat 14, 1017 GC Amsterdam</div>
+        </div>
+        <div class="field" style="flex:1;" th:if="${taxId}">
+          <div class="label">Tax ID</div>
+          <div class="v num" th:text="${taxId}">NL0000.00.000.B01</div>
+        </div>
       </div>
     </div>
 

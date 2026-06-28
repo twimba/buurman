@@ -7,8 +7,8 @@
   <style>
     @page { size: A4 landscape; margin: 0; }
     .card { display:flex; flex-direction:column; height:209mm; }
-    .body { flex:1; display:flex; gap:22px; padding:22px 24px; }
-    .main { flex:1; display:flex; flex-direction:column; gap:16px; }
+    .body { flex:1; display:flex; gap:24px; padding:30px 32px; }
+    .main { flex:1; display:flex; flex-direction:column; justify-content:space-between; gap:18px; }
     .ident { display:flex; align-items:flex-start; justify-content:space-between; }
     .ident .pid { font-size:11px; color:var(--c-n-400); letter-spacing:1px; margin-top:4px; }
     /* Hero occupancy strip — status word dominates, ground tinted by status */
@@ -17,6 +17,7 @@
     .hs-occupied { background:var(--c-success-bg); } .hs-occupied .hero { color:var(--c-success); }
     .hs-vacant   { background:var(--c-accent-50);  } .hs-vacant .hero   { color:var(--c-accent-600); }
     .hs-other    { background:var(--c-primary-50); } .hs-other .hero    { color:var(--c-primary-700); }
+    .hero-strip { padding:26px 28px; }
     .hero-strip .tenure { font-size:12px; color:var(--muted); text-align:right; }
     .detail { display:flex; gap:28px; }
     .detail .field { flex:1; }
@@ -66,6 +67,20 @@
         <div class="field" th:if="${safety}">
           <div class="label" th:text="#{summary.property.safety}">Safety</div>
           <div class="v" th:text="${safety}">Smoke · CO · Alarm</div>
+        </div>
+      </div>
+      <div class="detail" th:if="${utilities != null or accessibility != null or renovated != null}">
+        <div class="field" th:if="${utilities}">
+          <div class="label">Utilities</div>
+          <div class="v" th:text="${utilities}">Gas · Fibre 1 Gbps</div>
+        </div>
+        <div class="field" th:if="${accessibility}">
+          <div class="label">Accessibility</div>
+          <div class="v" th:text="${accessibility}">Elevator · Step-free</div>
+        </div>
+        <div class="field" th:if="${renovated}">
+          <div class="label">Last renovated</div>
+          <div class="v" th:text="${renovated}">2021</div>
         </div>
       </div>
     </div>
