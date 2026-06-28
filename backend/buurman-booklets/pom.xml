@@ -39,6 +39,12 @@
             <artifactId>html2pdf</artifactId>
         </dependency>
 
+        <!-- QR codes (summary cards) -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+
         <!-- CSV -->
         <dependency>
             <groupId>com.opencsv</groupId>
