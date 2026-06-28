@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--/* One-page A4-landscape contact "summary card". Values arrive pre-formatted & localized. */-->
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${lang}" th:dir="${dir != null ? dir : 'ltr'}">
+<head>
+  <meta charset="UTF-8"/>
+  <th:block th:replace="~{_booklet-tokens :: styles}"></th:block>
+  <style>
+    @page { size: A4 landscape; margin: 0; }
+    .card { display:flex; flex-direction:column; height:209mm; }
+    .body { flex:1; display:flex; gap:22px; padding:22px 24px; }
+    .main { flex:1; display:flex; flex-direction:column; gap:16px; }
+    .ident { display:flex; align-items:flex-start; justify-content:space-between; }
+    .ident .cid { font-size:11px; color:var(--c-n-400); letter-spacing:1px; margin-top:4px; }
+    .tags { margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; }
+    .tag { font-size:10px; font-weight:600; color:var(--c-primary-700); background:var(--c-primary-50);
+           border-radius:999px; padding:3px 10px; }
+    /* Hero: role + active-contract count (the number dominates) */
+    .hero-strip { background:var(--c-primary-50); border-radius:var(--radius); padding:18px 24px;
+                  display:flex; align-items:center; gap:18px; }
+    .hero-strip .hero { color:var(--c-primary-700); }
+    .hero-strip .role { font-size:13px; color:var(--muted); }
+    .channels { display:flex; flex-direction:column; gap:6px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div th:replace="~{_booklet-components :: brandHeader(${kicker})}"></div>
+
+  <div class="body">
+    <div class="main">
+
+      <div class="ident">
+        <div>
+          <div class="display display-32" th:text="${contactName}">L. Santos</div>
+          <div class="sub" th:text="${contactTypeLabel}">Individual</div>
+          <div class="cid num" th:text="${contactIdentifier}">CT-5001</div>
+          <div class="tags" th:if="${tags}">
+            <span class="tag" th:each="t : ${tags}" th:text="${t}">Tenant</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero: active contracts -->
+      <div class="hero-strip">
+        <div class="hero num" th:classappend="${heroSizeClass}" th:text="${activeContracts}">3</div>
+        <div class="role" th:text="${roleLabel} + ' · ' + #{summary.contact.activeContracts}">Tenant · active contracts</div>
+      </div>
+
+      <!-- KPI tiles (amber highlight = primary contact channel) -->
+      <div class="kpi-row">
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.contracts},${contractsCount},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.properties},${propertiesCount},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.lifetimePaid},${lifetimePaid},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.onTime},${onTimeRate},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.contact.primaryChannel},${primaryChannelValue},null,'highlight')}"></div>
+      </div>
+
+      <!-- Contact channels -->
+      <div class="channels">
+        <div class="row" th:if="${email}"><span th:text="#{summary.contact.email} + ':'">Email:</span> <span th:text="${email}"></span></div>
+        <div class="row" th:if="${phone}"><span th:text="#{summary.contact.phone} + ':'">Phone:</span> <span th:text="${phone}"></span></div>
+        <div class="row" th:if="${website}"><span th:text="#{summary.contact.website} + ':'">Website:</span> <span th:text="${website}"></span></div>
+      </div>
+    </div>
+
+    <div class="rail">
+      <img class="qr" th:if="${qrDataUri}" th:src="${qrDataUri}" alt="QR"/>
+      <div class="sid num" th:text="${contactIdentifier}">CT-5001</div>
+    </div>
+  </div>
+
+  <div th:replace="~{_booklet-components :: brandFooter(#{summary.tagline},${generatedMeta})}"></div>
+</div>
+</body>
+</html>
