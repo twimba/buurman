@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 
 /**
  * Generates the one-page A4-landscape entity summary cards: assembler (repos → display-ready
@@ -22,19 +24,35 @@ public class SummaryCardService {
   private final TemplateEngine templateEngine;
   private final DocumentRenderer renderer;
   private final ContractSummaryAssembler contractAssembler;
+  private final PropertySummaryAssembler propertyAssembler;
+  private final ContactSummaryAssembler contactAssembler;
 
   public SummaryCardService(
       @Qualifier("bookletTemplateEngine") TemplateEngine templateEngine,
       DocumentRenderer renderer,
-      ContractSummaryAssembler contractAssembler) {
+      ContractSummaryAssembler contractAssembler,
+      PropertySummaryAssembler propertyAssembler,
+      ContactSummaryAssembler contactAssembler) {
     this.templateEngine = templateEngine;
     this.renderer = renderer;
     this.contractAssembler = contractAssembler;
+    this.propertyAssembler = propertyAssembler;
+    this.contactAssembler = contactAssembler;
   }
 
   public byte[] contractSummary(ContractIdentifier identifier, UUID teamId, Locale locale) {
     return render(
         "contract-summary/generic", contractAssembler.assemble(identifier, teamId, locale), locale);
+  }
+
+  public byte[] propertySummary(PropertyIdentifier identifier, UUID teamId, Locale locale) {
+    return render(
+        "property-summary/generic", propertyAssembler.assemble(identifier, teamId, locale), locale);
+  }
+
+  public byte[] contactSummary(ContactIdentifier identifier, UUID teamId, Locale locale) {
+    return render(
+        "contact-summary/generic", contactAssembler.assemble(identifier, teamId, locale), locale);
   }
 
   private byte[] render(String template, Map<String, Object> variables, Locale locale) {

@@ -300,6 +300,26 @@ public class BookletController implements BookletsApi {
     return summaryResponse("contract-" + contractId.value(), pdf);
   }
 
+  @GetMapping("/properties/{propertyId}/summary")
+  public ResponseEntity<byte[]> getPropertySummary(
+      @PathVariable PropertyIdentifier propertyId, @RequestParam(defaultValue = "en") String lang) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    byte[] pdf =
+        summaryCardService.propertySummary(
+            propertyId, principal.requireTeamId(), resolveLocale(lang));
+    return summaryResponse("property-" + propertyId.value(), pdf);
+  }
+
+  @GetMapping("/contacts/{contactId}/summary")
+  public ResponseEntity<byte[]> getContactSummary(
+      @PathVariable ContactIdentifier contactId, @RequestParam(defaultValue = "en") String lang) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    byte[] pdf =
+        summaryCardService.contactSummary(
+            contactId, principal.requireTeamId(), resolveLocale(lang));
+    return summaryResponse("contact-" + contactId.value(), pdf);
+  }
+
   private static ResponseEntity<byte[]> summaryResponse(String name, byte[] pdf) {
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + name + "-summary.pdf")
