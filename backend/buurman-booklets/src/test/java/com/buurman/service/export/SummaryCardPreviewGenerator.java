@@ -29,6 +29,9 @@ class SummaryCardPreviewGenerator {
 
   private final QrCodeGenerator qr = new QrCodeGenerator();
 
+  private static final Locale LOCALE =
+      Locale.forLanguageTag(System.getProperty("booklet.preview.locale", "en"));
+
   @Test
   void generate() throws Exception {
     SpringTemplateEngine engine = engine();
@@ -222,7 +225,7 @@ class SummaryCardPreviewGenerator {
   // ── plumbing ─────────────────────────────────────────────────────
 
   private static Context ctx(Map<String, Object> vars) {
-    Context c = new Context(Locale.ENGLISH);
+    Context c = new Context(LOCALE);
     c.setVariables(vars);
     return c;
   }

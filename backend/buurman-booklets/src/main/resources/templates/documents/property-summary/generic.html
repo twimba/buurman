@@ -71,15 +71,15 @@
       </div>
       <div class="detail" th:if="${utilities != null or accessibility != null or renovated != null}">
         <div class="field" th:if="${utilities}">
-          <div class="label">Utilities</div>
+          <div class="label" th:text="#{summary.property.utilities}">Utilities</div>
           <div class="v" th:text="${utilities}">Gas · Fibre 1 Gbps</div>
         </div>
         <div class="field" th:if="${accessibility}">
-          <div class="label">Accessibility</div>
+          <div class="label" th:text="#{summary.property.accessibility}">Accessibility</div>
           <div class="v" th:text="${accessibility}">Elevator · Step-free</div>
         </div>
         <div class="field" th:if="${renovated}">
-          <div class="label">Last renovated</div>
+          <div class="label" th:text="#{summary.property.renovated}">Last renovated</div>
           <div class="v" th:text="${renovated}">2021</div>
         </div>
       </div>
