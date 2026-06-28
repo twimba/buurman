@@ -38,7 +38,12 @@ class SummaryCardPreviewGenerator {
     write(dir, "contract", engine.process("contract-summary/generic", ctx(contract())));
     write(dir, "property", engine.process("property-summary/generic", ctx(property())));
     write(dir, "contact", engine.process("contact-summary/generic", ctx(contact())));
-    System.out.println("[preview] wrote 3 summary cards to " + dir.toAbsolutePath());
+    write(
+        dir,
+        "contract-booklet",
+        engine.process("contract-booklet-v2/generic", ctx(contractBooklet())));
+    System.out.println(
+        "[preview] wrote summary cards + multi-page booklet to " + dir.toAbsolutePath());
   }
 
   // ── sample data ──────────────────────────────────────────────────
@@ -125,6 +130,83 @@ class SummaryCardPreviewGenerator {
     v.put("mailingAddress", "Kerkstraat 14, 1017 GC Amsterdam");
     v.put("taxId", "NL0000.00.000.B01");
     v.put("qrDataUri", qr.toSvgDataUri("https://app.buurman.io/ct/CT-5001"));
+    return v;
+  }
+
+  private Map<String, Object> contractBooklet() {
+    Map<String, Object> v = base("Tenancy");
+    v.put("propertyAddress", "Kerkstraat 14, 1017 GC Amsterdam");
+    v.put("contractIdentifier", "C-2024-0187");
+    v.put("contractType", "Fixed-term tenancy");
+    v.put("statusCode", "ACTIVE");
+    v.put("statusLabel", "Active");
+    v.put("landlordName", "Vastgoed Bakker B.V.");
+    v.put("tenantName", "Luís Santos");
+    v.put("rent", "€1,450.00 / mo");
+    v.put("deposit", "€2,900.00");
+    v.put("frequencyLabel", "Monthly");
+    v.put("termRange", "1 Jan 2024 → 31 Dec 2024");
+    v.put("totalPaid", "€13,050.00");
+    v.put("totalPending", "€1,450.00");
+    v.put("totalOverdue", "€1,450.00");
+    v.put("overdueCount", 1);
+    v.put(
+        "parties",
+        List.of(
+            Map.of(
+                "role",
+                "Primary tenant",
+                "name",
+                "Luís Santos",
+                "contact",
+                "luis.santos@example.com · +31 6 12 34 56 78"),
+            Map.of(
+                "role",
+                "Guarantor",
+                "name",
+                "Maria Santos",
+                "contact",
+                "maria.santos@example.com")));
+    v.put(
+        "payments",
+        List.of(
+            Map.of(
+                "date",
+                "1 Apr 2026",
+                "status",
+                "Paid",
+                "statusCode",
+                "PAID",
+                "amount",
+                "€1,450.00"),
+            Map.of(
+                "date",
+                "1 May 2026",
+                "status",
+                "Paid",
+                "statusCode",
+                "PAID",
+                "amount",
+                "€1,450.00"),
+            Map.of(
+                "date",
+                "1 Jun 2026",
+                "status",
+                "Overdue",
+                "statusCode",
+                "OVERDUE",
+                "amount",
+                "€1,450.00"),
+            Map.of(
+                "date",
+                "1 Jul 2026",
+                "status",
+                "Pending",
+                "statusCode",
+                "PENDING",
+                "amount",
+                "€1,450.00")));
+    v.put("qrDataUri", qr.toSvgDataUri("https://app.buurman.io/contracts/C-2024-0187"));
     return v;
   }
 
