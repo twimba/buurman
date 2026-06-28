@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Download, X, Loader2 } from 'lucide-react';
@@ -22,12 +22,20 @@ const SUPPORTED_LANGUAGES: { code: string; label: string }[] = [
 
 interface BookletDownloadButtonProps {
   onDownload: (lang: string) => Promise<void>;
+  /** 'booklet' = full multi-page dossier, 'summary' = one-page summary card. */
+  kind?: 'booklet' | 'summary';
+  variant?: 'primary' | 'secondary';
+  icon?: ReactNode;
 }
 
 export const BookletDownloadButton = ({
   onDownload,
+  kind = 'booklet',
+  variant = 'primary',
+  icon,
 }: BookletDownloadButtonProps) => {
   const { t, i18n } = useTranslation('common');
+  const keyBase = kind === 'summary' ? 'summaryCard' : 'bookletDownload';
   const { showToast } = useToast();
   const [showPopover, setShowPopover] = useState(false);
   const [downloadingLang, setDownloadingLang] = useState<string | null>(null);
@@ -56,7 +64,7 @@ export const BookletDownloadButton = ({
       await onDownload(lang);
       setShowPopover(false);
     } catch {
-      showToast(t('bookletDownload.downloadFailed'), 'error');
+      showToast(t(`${keyBase}.downloadFailed`), 'error');
     } finally {
       setDownloadingLang(null);
     }
@@ -76,7 +84,7 @@ export const BookletDownloadButton = ({
             >
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-medium text-sm text-text-primary">
-                  {t('bookletDownload.title')}
+                  {t(`${keyBase}.title`)}
                 </h4>
                 <button
                   onClick={() => setShowPopover(false)}
@@ -86,7 +94,7 @@ export const BookletDownloadButton = ({
                 </button>
               </div>
               <p className="text-xs text-text-secondary mb-3">
-                {t('bookletDownload.description')}
+                {t(`${keyBase}.description`)}
               </p>
               <div className="space-y-0.5">
                 {SUPPORTED_LANGUAGES.map(({ code, label }) => {
@@ -127,11 +135,11 @@ export const BookletDownloadButton = ({
   return (
     <div ref={triggerRef}>
       <Button
-        variant="primary"
-        leftIcon={<Download />}
+        variant={variant}
+        leftIcon={icon ?? <Download />}
         onClick={() => setShowPopover((v) => !v)}
       >
-        {t('bookletDownload.button')}
+        {t(`${keyBase}.button`)}
       </Button>
       {popover}
     </div>

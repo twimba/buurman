@@ -9,7 +9,10 @@ import {
   useReopenContract,
   useDuplicateContract,
 } from '@/hooks/useContractHooks';
-import { downloadContractBooklet } from '@/api/contracts';
+import {
+  downloadContractBooklet,
+  downloadContractSummary,
+} from '@/api/contracts';
 import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button, PageHeader, Skeleton } from '@buurman/ui';
@@ -124,6 +127,18 @@ export const ContractDetailPage = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const handleDownloadSummary = async (lang: string) => {
+    const blob = await downloadContractSummary(id, lang);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `contract-${id}-summary-${lang}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-[100dvh] bg-background">
@@ -189,6 +204,12 @@ export const ContractDetailPage = () => {
           actions={
             <>
               <BookletDownloadButton onDownload={handleDownloadBooklet} />
+              <BookletDownloadButton
+                kind="summary"
+                variant="secondary"
+                icon={<FileText />}
+                onDownload={handleDownloadSummary}
+              />
               {!canReopen && (
                 <Button
                   variant="primary"

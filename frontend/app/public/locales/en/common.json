@@ -596,5 +596,12 @@
     "description": "Select a language for your booklet",
     "yourLanguage": "Your language",
     "downloadFailed": "Failed to download booklet"
+  },
+  "summaryCard": {
+    "button": "Summary card",
+    "title": "Download summary card",
+    "description": "A one-page overview. Select a language.",
+    "yourLanguage": "Your language",
+    "downloadFailed": "Failed to download summary card"
   }
 }

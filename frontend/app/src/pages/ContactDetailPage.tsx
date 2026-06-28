@@ -66,7 +66,7 @@ import {
   CheckCircle2,
   Shield,
 } from 'lucide-react';
-import { downloadContactBooklet } from '@/api/contacts';
+import { downloadContactBooklet, downloadContactSummary } from '@/api/contacts';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
@@ -332,6 +332,22 @@ export const ContactDetailPage = () => {
                   const link = document.createElement('a');
                   link.href = url;
                   link.download = `contact-booklet-${lang}.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(url);
+                }}
+              />
+              <BookletDownloadButton
+                kind="summary"
+                variant="secondary"
+                icon={<FileText />}
+                onDownload={async (lang) => {
+                  const blob = await downloadContactSummary(id, lang);
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = `contact-${id}-summary-${lang}.pdf`;
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);

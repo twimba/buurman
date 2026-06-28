@@ -39,7 +39,10 @@ import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { useTeam } from '@/context/TeamContext';
-import { downloadPropertyBooklet } from '@/api/properties';
+import {
+  downloadPropertyBooklet,
+  downloadPropertySummary,
+} from '@/api/properties';
 import DOMPurify from 'dompurify';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
@@ -212,6 +215,18 @@ export const PropertyDetailPage = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const handleDownloadSummary = async (lang: string) => {
+    const blob = await downloadPropertySummary(id, lang);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `property-${id}-summary-${lang}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-[100dvh] bg-background">
@@ -282,6 +297,12 @@ export const PropertyDetailPage = () => {
           actions={
             <>
               <BookletDownloadButton onDownload={handleDownloadBooklet} />
+              <BookletDownloadButton
+                kind="summary"
+                variant="secondary"
+                icon={<FileText />}
+                onDownload={handleDownloadSummary}
+              />
               {id && (
                 <CalendarFeedButton
                   feedType={CalendarFeedType.PROPERTY_PAYMENTS}

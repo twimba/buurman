@@ -596,5 +596,12 @@
     "description": "Selecteer een taal voor uw boekje",
     "yourLanguage": "Uw taal",
     "downloadFailed": "Downloaden van boekje mislukt"
+  },
+  "summaryCard": {
+    "button": "Samenvatting",
+    "title": "Samenvatting downloaden",
+    "description": "Een overzicht van één pagina. Selecteer een taal.",
+    "yourLanguage": "Uw taal",
+    "downloadFailed": "Downloaden van samenvatting mislukt"
   }
 }

@@ -351,6 +351,17 @@ export const downloadContactBooklet = async (
   return new Blob([response.data], { type: 'application/pdf' });
 };
 
+export const downloadContactSummary = async (
+  contactId: string,
+  lang?: string
+): Promise<Blob> => {
+  const response = await client.get(`/contacts/${contactId}/summary`, {
+    responseType: 'blob',
+    params: lang ? { lang } : undefined,
+  });
+  return new Blob([response.data], { type: 'application/pdf' });
+};
+
 // --- Export ---
 
 export const exportContactsCsv = async (): Promise<Blob> => {
