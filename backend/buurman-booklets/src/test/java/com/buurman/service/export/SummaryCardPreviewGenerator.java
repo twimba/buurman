@@ -51,6 +51,11 @@ class SummaryCardPreviewGenerator {
         "contact-booklet",
         bookletEngine("document-contact-booklet")
             .process("contact-booklet/generic", ctx(contactBooklet())));
+    write(
+        dir,
+        "property-booklet",
+        bookletEngine("document-property-booklet")
+            .process("property-booklet/generic", ctx(propertyBooklet())));
     System.out.println(
         "[preview] wrote summary cards + multi-page booklet to " + dir.toAbsolutePath());
   }
@@ -422,6 +427,179 @@ class SummaryCardPreviewGenerator {
     v.put("qrDataUri", qr.toSvgDataUri("https://app.buurman.io/contacts/CT-5001"));
     return v;
   }
+
+  private Map<String, Object> propertyBooklet() {
+    Map<String, Object> v = base("Property");
+    v.put("identifier", "P-0001");
+    v.put("street", "Kerkstraat 14");
+    v.put("location", "Amsterdam, 1017 GC, NL");
+    v.put("propertyTypeLabel", "Apartment");
+    v.put("statusCode", "OCCUPIED");
+    v.put("statusLabel", "Occupied");
+    v.put(
+        "coverRows",
+        List.of(
+            Map.of("k", "Bedrooms / Bathrooms", "v", "3 bed / 2 bath"),
+            Map.of("k", "Total area", "v", "120 m²"),
+            Map.of("k", "Year built", "v", "1998")));
+    v.put(
+        "detailsFields",
+        List.of(
+            Map.of("l", "Property type", "v", "Apartment"),
+            Map.of("l", "Status", "v", "Occupied"),
+            Map.of("l", "Total area", "v", "120 m²"),
+            Map.of("l", "Number of floors", "v", "4"),
+            Map.of("l", "Year built", "v", "1998"),
+            Map.of("l", "Last renovated", "v", "2021")));
+    v.put(
+        "constructionFields",
+        List.of(
+            Map.of("l", "Construction type", "v", "Brick"),
+            Map.of("l", "Roof type", "v", "Pitched Tile"),
+            Map.of("l", "Window type", "v", "Double Glazed")));
+    v.put("categoryTitle", "Residential details");
+    v.put(
+        "categoryFields",
+        List.of(
+            Map.of("l", "Bedrooms", "v", "3"),
+            Map.of("l", "Bathrooms", "v", "2"),
+            Map.of("l", "Furnished", "v", "Yes"),
+            Map.of("l", "Pet policy", "v", "Allowed")));
+    v.put("structuralNotes", "Load-bearing façade renovated in 2021; new roof membrane installed.");
+
+    v.put("hasBuildingSpecs", true);
+    v.put("energyRating", "A");
+    v.put("energyColor", "#059669");
+    v.put(
+        "energyFields",
+        List.of(
+            Map.of("l", "Heating system", "v", "District Heating"),
+            Map.of("l", "Hot water system", "v", "Central"),
+            Map.of("l", "Certificate expiry", "v", "31 Dec 2030")));
+    v.put("insulationNotes", "Triple glazing throughout; roof insulated to current code.");
+    v.put(
+        "utilitiesFields",
+        List.of(
+            Map.of("l", "Electricity", "v", "Grid"),
+            Map.of("l", "Capacity", "v", "25 A"),
+            Map.of("l", "Gas connection", "v", "Connected"),
+            Map.of("l", "Internet", "v", "Fibre"),
+            Map.of("l", "Max speed", "v", "1000 Mbps")));
+    v.put(
+        "parkingFields",
+        List.of(
+            Map.of("l", "Parking type", "v", "Garage"),
+            Map.of("l", "Parking spaces", "v", "1")));
+
+    v.put(
+        "amenityGroups",
+        List.of(
+            Map.of("category", "Indoor", "items", List.of("Dishwasher", "Washing Machine", "Built-in Wardrobes")),
+            Map.of("category", "Building", "items", List.of("Elevator", "Bicycle Storage", "Intercom"))));
+    v.put(
+        "outdoorAreas",
+        List.of(
+            Map.of("type", "Balcony", "area", "8 m²"),
+            Map.of("type", "Shared Garden", "area", "120 m²")));
+    v.put("hasFeatures", true);
+
+    v.put("hasSafety", true);
+    v.put(
+        "safetyChecks",
+        List.of(
+            Map.of("label", "Smoke detectors", "ok", true),
+            Map.of("label", "CO detectors", "ok", true),
+            Map.of("label", "Fire extinguisher", "ok", true),
+            Map.of("label", "Sprinkler system", "ok", false),
+            Map.of("label", "Alarm system", "ok", true),
+            Map.of("label", "Security cameras", "ok", false),
+            Map.of("label", "Secure entry", "ok", true)));
+    v.put("safetyNotes", "Fire safety inspection completed January 2026.");
+    v.put(
+        "accessibilityChecks",
+        List.of(
+            Map.of("label", "Wheelchair accessible", "ok", true),
+            Map.of("label", "Elevator", "ok", true),
+            Map.of("label", "Step-free entrance", "ok", true),
+            Map.of("label", "Adapted bathroom", "ok", false)));
+    v.put("accessibilityNotes", null);
+
+    v.put(
+        "photos",
+        List.of(
+            Map.of("src", PLACEHOLDER_IMG, "label", "Front facade", "main", true),
+            Map.of("src", PLACEHOLDER_IMG, "label", "Living room", "main", false),
+            Map.of("src", PLACEHOLDER_IMG, "label", "Kitchen", "main", false),
+            Map.of("src", PLACEHOLDER_IMG, "label", "Master bedroom", "main", false),
+            Map.of("src", PLACEHOLDER_IMG, "label", "Balcony view", "main", false)));
+
+    v.put(
+        "financialYears",
+        List.of(
+            Map.of("year", "2025", "income", "€17,400.00", "expenses", "€4,180.00", "net", "€13,220.00"),
+            Map.of("year", "2024", "income", "€16,800.00", "expenses", "€5,940.00", "net", "€10,860.00")));
+
+    v.put(
+        "contracts",
+        List.of(
+            Map.of(
+                "id", "C-2024-0187", "contact", "Luís Santos", "start", "1 Jan 2024",
+                "end", "Ongoing", "rent", "€1,450.00", "statusCode", "ACTIVE", "statusLabel", "Active"),
+            Map.of(
+                "id", "C-2021-0042", "contact", "Anna de Vries", "start", "1 Feb 2021",
+                "end", "31 Dec 2023", "rent", "€1,300.00", "statusCode", "EXPIRED", "statusLabel", "Expired")));
+
+    v.put("hasDashboard", true);
+    v.put(
+        "dashMetrics",
+        List.of(
+            Map.of("l", "Total ROI", "v", "42.8%"),
+            Map.of("l", "Annualized ROI", "v", "9.1%"),
+            Map.of("l", "Cap rate", "v", "5.4%"),
+            Map.of("l", "Cash-on-cash", "v", "7.2%"),
+            Map.of("l", "Monthly cash flow", "v", "€640.00"),
+            Map.of("l", "Annual NOI", "v", "€12,900.00"),
+            Map.of("l", "Total equity", "v", "€180,000.00"),
+            Map.of("l", "Occupancy", "v", "100%")));
+    v.put(
+        "cashFlow",
+        List.of(
+            cashRow("Jan 2026", "€1,450.00", "€320.00", "€600.00", "€530.00", true),
+            cashRow("Feb 2026", "€1,450.00", "€980.00", "€600.00", "-€130.00", false),
+            cashRow("Mar 2026", "€1,450.00", "€280.00", "€600.00", "€570.00", true)));
+    v.put(
+        "expenseBreakdown",
+        List.of(
+            Map.of("category", "Maintenance", "amount", "€1,200.00"),
+            Map.of("category", "Insurance", "amount", "€640.00"),
+            Map.of("category", "Property Tax", "amount", "€980.00")));
+    v.put(
+        "equityRows",
+        List.of(
+            Map.of("l", "Purchase price", "v", "€380,000.00"),
+            Map.of("l", "Current market value", "v", "€465,000.00"),
+            Map.of("l", "Mortgage balance", "v", "€285,000.00")));
+
+    v.put("qrDataUri", qr.toSvgDataUri("https://app.buurman.io/properties/P-0001"));
+    return v;
+  }
+
+  private static Map<String, Object> cashRow(
+      String month, String income, String expenses, String mortgage, String net, boolean positive) {
+    Map<String, Object> m = new HashMap<>();
+    m.put("month", month);
+    m.put("income", income);
+    m.put("expenses", expenses);
+    m.put("mortgage", mortgage);
+    m.put("net", net);
+    m.put("net_positive", positive);
+    return m;
+  }
+
+  /** 2×2 grey PNG — keeps the preview self-contained (no S3) while exercising the photo grid. */
+  private static final String PLACEHOLDER_IMG =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEklEQVR4nGP8//"
+          + "8/AzZAjBgAJ54G/2zZ0sUAAAAASUVORK5CYII=";
 
   private static Map<String, Object> base(String kicker) {
     Map<String, Object> v = new HashMap<>();
