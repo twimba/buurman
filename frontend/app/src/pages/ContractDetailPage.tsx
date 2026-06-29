@@ -13,6 +13,7 @@ import {
   downloadContractBooklet,
   downloadContractSummary,
 } from '@/api/contracts';
+import { downloadBlob } from '@/api/listExports';
 import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button, PageHeader, Skeleton } from '@buurman/ui';
@@ -116,27 +117,11 @@ export const ContractDetailPage = () => {
   };
 
   const handleDownloadBooklet = async (lang: string) => {
-    const blob = await downloadContractBooklet(id, lang);
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `contract-booklet-${lang}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    downloadBlob(await downloadContractBooklet(id, lang), `contract-booklet-${lang}.pdf`);
   };
 
   const handleDownloadSummary = async (lang: string) => {
-    const blob = await downloadContractSummary(id, lang);
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `contract-${id}-summary-${lang}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    downloadBlob(await downloadContractSummary(id, lang), `contract-${id}-summary-${lang}.pdf`);
   };
 
   if (isLoading) {

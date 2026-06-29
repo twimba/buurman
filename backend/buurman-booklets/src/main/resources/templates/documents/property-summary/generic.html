@@ -6,10 +6,6 @@
   <th:block th:replace="~{_booklet-tokens :: styles}"></th:block>
   <style>
     @page { size: A4 landscape; margin: 0; }
-    .card { display:flex; flex-direction:column; height:209mm; }
-    .body { flex:1; display:flex; gap:24px; padding:30px 32px; }
-    .main { flex:1; display:flex; flex-direction:column; justify-content:space-between; gap:18px; }
-    .ident { display:flex; align-items:flex-start; justify-content:space-between; }
     .ident .pid { font-size:11px; color:var(--c-n-400); letter-spacing:1px; margin-top:4px; }
     /* Hero occupancy strip — status word dominates, ground tinted by status */
     .hero-strip { border-radius:var(--radius); padding:20px 24px; display:flex;
@@ -51,7 +47,7 @@
         <div th:replace="~{_booklet-components :: kpi(#{summary.field.bedBath},${bedBath},null,'')}"></div>
         <div th:replace="~{_booklet-components :: kpi(#{summary.field.energy},${energyLabel},null,'')}"></div>
         <div th:replace="~{_booklet-components :: kpi(#{summary.field.year},${yearBuilt},null,'')}"></div>
-        <div th:replace="~{_booklet-components :: kpi(${isVacant} ? #{summary.property.vacant} : #{summary.field.monthlyRent},${headlineMoney},${headlineUnit},${isVacant} ? 'danger' : 'highlight')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(${isVacant} ? #{summary.property.vacant} : #{summary.field.monthlyRent},${headlineMoney},null,${isVacant} ? 'danger' : 'highlight')}"></div>
       </div>
 
       <!-- Detail rows -->

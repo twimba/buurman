@@ -1,8 +1,6 @@
 package com.buurman.service.export;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -26,13 +24,10 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
-import com.buurman.domain.ContractParty;
-import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Team;
 import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
@@ -50,7 +45,6 @@ class ContractSummaryAssemblerTest {
 
   @Mock private ContractRepository contractRepository;
   @Mock private PropertyRepository propertyRepository;
-  @Mock private ContactRepository contactRepository;
   @Mock private PaymentRepository paymentRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
   @Mock private ContractPartyService contractPartyService;
@@ -68,7 +62,6 @@ class ContractSummaryAssemblerTest {
         new ContractSummaryAssembler(
             contractRepository,
             propertyRepository,
-            contactRepository,
             paymentRepository,
             contractExtensionRepository,
             contractPartyService,
@@ -106,11 +99,6 @@ class ContractSummaryAssemblerTest {
             .postalCode("1017 GC")
             .city("Amsterdam")
             .build();
-    ContractParty tenant =
-        ContractParty.builder()
-            .contactId(Optional.of(tenantContactId))
-            .role(ContractPartyRole.PRIMARY_TENANT)
-            .build();
     Contact tenantContact =
         Contact.builder().id(tenantContactId).displayName("Luís Santos").build();
     Team team = Team.builder().id(TEAM).name("Vastgoed Bakker B.V.").build();
@@ -124,9 +112,8 @@ class ContractSummaryAssemblerTest {
 
     when(contractRepository.getByIdentifierAndTeamId(ID, TEAM)).thenReturn(contract);
     when(propertyRepository.getByIdAndTeamId(propertyId, TEAM)).thenReturn(property);
-    when(contractPartyService.getPartiesForContract(contract.getId(), TEAM))
-        .thenReturn(List.of(tenant));
-    when(contactRepository.findByIdsAndTeamId(any(), eq(TEAM))).thenReturn(List.of(tenantContact));
+    when(contractPartyService.findPrimaryContactForContract(contract.getId(), TEAM))
+        .thenReturn(Optional.of(tenantContact));
     when(paymentRepository.findByContractId(contract.getId(), TEAM)).thenReturn(payments);
     when(contractExtensionRepository.findByContractIdAndTeamId(contract.getId(), TEAM))
         .thenReturn(List.of());

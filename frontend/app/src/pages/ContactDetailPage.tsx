@@ -67,6 +67,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { downloadContactBooklet, downloadContactSummary } from '@/api/contacts';
+import { downloadBlob } from '@/api/listExports';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
@@ -158,6 +159,14 @@ export const ContactDetailPage = () => {
   const setMainPhotoMutation = useSetContactMainPhoto(id);
   const deleteDocumentMutation = useDeleteContactDocument(id);
   const deletePhotoMutation = useDeletePhoto();
+
+  const handleDownloadBooklet = async (lang: string) => {
+    downloadBlob(await downloadContactBooklet(id, lang), `contact-booklet-${lang}.pdf`);
+  };
+
+  const handleDownloadSummary = async (lang: string) => {
+    downloadBlob(await downloadContactSummary(id, lang), `contact-${id}-summary-${lang}.pdf`);
+  };
 
   const handleDelete = async () => {
     if (!id) {
@@ -325,34 +334,12 @@ export const ContactDetailPage = () => {
           }
           actions={
             <>
-              <BookletDownloadButton
-                onDownload={async (lang) => {
-                  const blob = await downloadContactBooklet(id, lang);
-                  const url = window.URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = `contact-booklet-${lang}.pdf`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(url);
-                }}
-              />
+              <BookletDownloadButton onDownload={handleDownloadBooklet} />
               <BookletDownloadButton
                 kind="summary"
                 variant="secondary"
                 icon={<FileText />}
-                onDownload={async (lang) => {
-                  const blob = await downloadContactSummary(id, lang);
-                  const url = window.URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = `contact-${id}-summary-${lang}.pdf`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(url);
-                }}
+                onDownload={handleDownloadSummary}
               />
               {id && (
                 <CalendarFeedButton

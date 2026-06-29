@@ -80,15 +80,15 @@ public class ContactSummaryAssembler {
     String currency = "EUR";
     int paidCount = 0;
     int overdueCount = 0;
-    for (Contract c : contracts) {
-      for (Payment p : paymentRepository.findByContractId(c.getId(), teamId)) {
-        if (p.getStatus() == Payment.PaymentStatus.PAID) {
-          paidSum = paidSum.add(p.getAmount().value());
-          currency = p.getAmount().currency();
-          paidCount++;
-        } else if (p.getStatus() == Payment.PaymentStatus.OVERDUE) {
-          overdueCount++;
-        }
+    // Single query for all of the contact's payments (direct + via parties) — avoids one
+    // findByContractId round-trip per contract.
+    for (Payment p : paymentRepository.findByContactIdAndTeamId(contact.getId(), teamId)) {
+      if (p.getStatus() == Payment.PaymentStatus.PAID) {
+        paidSum = paidSum.add(p.getAmount().value());
+        currency = p.getAmount().currency();
+        paidCount++;
+      } else if (p.getStatus() == Payment.PaymentStatus.OVERDUE) {
+        overdueCount++;
       }
     }
 

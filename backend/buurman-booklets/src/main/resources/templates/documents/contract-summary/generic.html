@@ -9,10 +9,6 @@
   <th:block th:replace="~{_booklet-tokens :: styles}"></th:block>
   <style>
     @page { size: A4 landscape; margin: 0; }
-    .card { display:flex; flex-direction:column; height:209mm; }
-    .body { flex:1; display:flex; gap:24px; padding:30px 32px; }
-    .main { flex:1; display:flex; flex-direction:column; justify-content:space-between; gap:18px; }
-    .ident { display:flex; align-items:flex-start; justify-content:space-between; }
     .ident .addr { font-size:13px; color:var(--muted); margin-top:2px; }
     .ident .cid { font-size:11px; color:var(--c-n-400); letter-spacing:1px; margin-top:4px; }
     /* Hero "route": landlord ──→ tenant, property as the flight label */
@@ -67,7 +63,7 @@
 
       <!-- KPI tiles (the amber/red highlight = next payment due) -->
       <div class="kpi-row">
-        <div th:replace="~{_booklet-components :: kpi(#{summary.field.rent},${rent},${rentPeriodUnit},'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.rent},${rent},null,'')}"></div>
         <div th:replace="~{_booklet-components :: kpi(#{summary.field.deposit},${deposit},null,'')}"></div>
         <div th:replace="~{_booklet-components :: kpi(#{summary.field.frequency},${frequencyLabel},null,'')}"></div>
         <div th:replace="~{_booklet-components :: kpi(#{summary.field.term},${termLabel},null,'')}"></div>
@@ -91,12 +87,8 @@
         </div>
       </div>
 
-      <!-- Bottom strip: pay-to + lease-term progress -->
+      <!-- Bottom strip: lease-term progress -->
       <div class="detail">
-        <div class="field" style="flex:1.4;" th:if="${paymentInstruction}">
-          <div class="label" th:text="#{summary.paymentInstruction}">Pay to</div>
-          <div class="iban" th:text="${paymentInstruction}">NL00 BANK 0123 4567 89</div>
-        </div>
         <div class="field" style="flex:1;" th:if="${termElapsedPct != null}">
           <div class="label" th:text="#{summary.field.term}">Term</div>
           <div class="bar"><span class="seg-paid" th:style="'width:' + ${termElapsedPct} + '%'"></span></div>

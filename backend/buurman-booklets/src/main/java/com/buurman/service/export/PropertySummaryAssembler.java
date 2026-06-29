@@ -84,7 +84,7 @@ public class PropertySummaryAssembler {
     v.put("statusLabel", statusLabel);
     v.put("heroStatusWord", heroWord);
     v.put("heroGroundClass", groundClass(status));
-    v.put("heroSizeClass", heroSize(heroWord.length()));
+    v.put("heroSizeClass", formatter.heroSize(heroWord.length()));
 
     activeContract.ifPresent(
         c -> {
@@ -104,7 +104,6 @@ public class PropertySummaryAssembler {
     v.put(
         "headlineMoney",
         activeContract.map(c -> formatter.money(c.getRentAmount(), locale)).orElse("—"));
-    v.put("headlineUnit", null);
 
     v.put("parking", parking(property));
     v.put(
@@ -147,15 +146,5 @@ public class PropertySummaryAssembler {
       case VACANT, LISTED -> "hs-vacant";
       default -> "hs-other";
     };
-  }
-
-  private static String heroSize(int len) {
-    if (len <= 10) {
-      return "hero-l";
-    }
-    if (len <= 18) {
-      return "hero-m";
-    }
-    return "hero-s";
   }
 }

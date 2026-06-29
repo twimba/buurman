@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <!--/*
+  WIP / proof-of-direction — NOT yet wired to production. Only the preview generator and a render
+  test reference this; no assembler/service/endpoint renders it, and the live contract booklet still
+  goes through the legacy ContractBookletExporter. Wiring it (a ContractBookletAssembler behind the
+  BOOKLET_V2 flag, retiring the StringBuilder exporter) is the planned next step.
+
   Redesigned multi-page contract booklet (A4 portrait) using the shared booklet design system.
   Target renderer: headless Chromium (Gotenberg). Page numbers/running footer come from Paged.js
   when wired in the Gotenberg path; this template uses page-break sections + per-page brand bands.

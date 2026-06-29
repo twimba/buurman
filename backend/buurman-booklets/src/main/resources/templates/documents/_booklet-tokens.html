@@ -76,6 +76,12 @@
   .bar > span { display:block; height:100%; }
   .seg-paid{ background:var(--c-success);} .seg-pending{ background:var(--c-warning);} .seg-overdue{ background:var(--c-error);}
 
+  /* ── Landscape summary-card shell (shared by the 3 summary cards) ─── */
+  .card { display:flex; flex-direction:column; height:209mm; }
+  .body { flex:1; display:flex; gap:24px; padding:30px 32px; }
+  .main { flex:1; display:flex; flex-direction:column; justify-content:space-between; gap:18px; }
+  .ident { display:flex; align-items:flex-start; justify-content:space-between; }
+
   /* ── QR / Sid perforation rail ───────────────────────────── */
   .rail { position:relative; border-left:2px dashed var(--c-n-200); padding-left:20px; display:flex;
           flex-direction:column; align-items:center; justify-content:center; }

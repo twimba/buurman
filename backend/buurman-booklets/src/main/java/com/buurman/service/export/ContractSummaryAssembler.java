@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,13 +17,10 @@ import org.springframework.stereotype.Component;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
-import com.buurman.domain.ContractParty;
-import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Team;
 import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
@@ -44,7 +39,6 @@ public class ContractSummaryAssembler {
 
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final ContactRepository contactRepository;
   private final PaymentRepository paymentRepository;
   private final ContractExtensionRepository contractExtensionRepository;
   private final ContractPartyService contractPartyService;
@@ -58,7 +52,6 @@ public class ContractSummaryAssembler {
   public ContractSummaryAssembler(
       ContractRepository contractRepository,
       PropertyRepository propertyRepository,
-      ContactRepository contactRepository,
       PaymentRepository paymentRepository,
       ContractExtensionRepository contractExtensionRepository,
       ContractPartyService contractPartyService,
@@ -70,7 +63,6 @@ public class ContractSummaryAssembler {
       @Value("${booklet.app-base-url:https://app.buurman.io}") String appBaseUrl) {
     this.contractRepository = contractRepository;
     this.propertyRepository = propertyRepository;
-    this.contactRepository = contactRepository;
     this.paymentRepository = paymentRepository;
     this.contractExtensionRepository = contractExtensionRepository;
     this.contractPartyService = contractPartyService;
@@ -86,24 +78,9 @@ public class ContractSummaryAssembler {
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
-    List<ContractParty> parties =
-        contractPartyService.getPartiesForContract(contract.getId(), teamId);
-    Set<UUID> contactIds =
-        parties.stream()
-            .map(ContractParty::getContactId)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toSet());
-    Map<UUID, Contact> contactMap =
-        contactRepository.findByIdsAndTeamId(contactIds, teamId).stream()
-            .collect(Collectors.toMap(Contact::getId, c -> c));
-
     String tenantName =
-        parties.stream()
-            .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
-            .findFirst()
-            .flatMap(ContractParty::getContactId)
-            .map(contactMap::get)
+        contractPartyService
+            .findPrimaryContactForContract(contract.getId(), teamId)
             .map(Contact::getDisplayName)
             .orElse("—");
     String landlordName = teamRepository.findById(teamId).map(Team::getName).orElse("—");
@@ -145,9 +122,9 @@ public class ContractSummaryAssembler {
     v.put("statusLabel", enumLabels.label(contract.getStatus(), locale));
     v.put("landlordName", landlordName);
     v.put("tenantName", tenantName);
-    v.put("heroSizeClass", heroSize(Math.max(landlordName.length(), tenantName.length())));
+    v.put(
+        "heroSizeClass", formatter.heroSize(Math.max(landlordName.length(), tenantName.length())));
     v.put("rent", formatter.money(contract.getRentAmount(), locale));
-    v.put("rentPeriodUnit", null);
     v.put(
         "deposit",
         formatter.money(
@@ -168,7 +145,6 @@ public class ContractSummaryAssembler {
     v.put("paidPct", formatter.pct(paid, total));
     v.put("pendingPct", formatter.pct(pending, total));
     v.put("overduePct", formatter.pct(overdue, total));
-    v.put("paymentInstruction", null);
 
     LocalDate today = LocalDate.now(clock);
     effectiveEnd.ifPresent(
@@ -191,15 +167,5 @@ public class ContractSummaryAssembler {
 
   private static String address(Property property) {
     return property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
-  }
-
-  private static String heroSize(int longestName) {
-    if (longestName <= 12) {
-      return "hero-l";
-    }
-    if (longestName <= 20) {
-      return "hero-m";
-    }
-    return "hero-s";
   }
 }

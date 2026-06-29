@@ -43,6 +43,7 @@ import {
   downloadPropertyBooklet,
   downloadPropertySummary,
 } from '@/api/properties';
+import { downloadBlob } from '@/api/listExports';
 import DOMPurify from 'dompurify';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
@@ -203,28 +204,11 @@ export const PropertyDetailPage = () => {
   };
 
   const handleDownloadBooklet = async (lang: string) => {
-    const blob = await downloadPropertyBooklet(id, lang);
-    const pdfBlob = new Blob([blob], { type: 'application/pdf' });
-    const url = window.URL.createObjectURL(pdfBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `property-booklet-${lang}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    downloadBlob(await downloadPropertyBooklet(id, lang), `property-booklet-${lang}.pdf`);
   };
 
   const handleDownloadSummary = async (lang: string) => {
-    const blob = await downloadPropertySummary(id, lang);
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `property-${id}-summary-${lang}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    downloadBlob(await downloadPropertySummary(id, lang), `property-${id}-summary-${lang}.pdf`);
   };
 
   if (isLoading) {

@@ -101,11 +101,12 @@ class ContactSummaryAssemblerTest {
     when(contactRepository.getByIdentifierAndTeamId(ID, TEAM)).thenReturn(contact);
     when(contractRepository.findByContactIdViaParties(contactId, TEAM))
         .thenReturn(List.of(active, expired));
-    when(paymentRepository.findByContractId(active.getId(), TEAM))
+    when(paymentRepository.findByContactIdAndTeamId(contactId, TEAM))
         .thenReturn(
-            List.of(payment(Payment.PaymentStatus.PAID), payment(Payment.PaymentStatus.OVERDUE)));
-    when(paymentRepository.findByContractId(expired.getId(), TEAM))
-        .thenReturn(List.of(payment(Payment.PaymentStatus.PAID)));
+            List.of(
+                payment(Payment.PaymentStatus.PAID),
+                payment(Payment.PaymentStatus.OVERDUE),
+                payment(Payment.PaymentStatus.PAID)));
     when(contractPartyService.getPartiesForContract(active.getId(), TEAM))
         .thenReturn(
             List.of(

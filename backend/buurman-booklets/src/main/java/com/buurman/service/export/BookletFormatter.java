@@ -57,6 +57,19 @@ public class BookletFormatter {
     return (int) Math.round(part * 100.0 / total);
   }
 
+  /**
+   * Hero font-size class by text length (longer text → smaller): hero-l ≤12, hero-m ≤20, else -s.
+   */
+  public String heroSize(int length) {
+    if (length <= 12) {
+      return "hero-l";
+    }
+    if (length <= 20) {
+      return "hero-m";
+    }
+    return "hero-s";
+  }
+
   public String numberOrDash(@Nullable BigDecimal value, Locale locale) {
     return value == null ? DASH : CurrencyUtils.formatNumber(value, locale);
   }
