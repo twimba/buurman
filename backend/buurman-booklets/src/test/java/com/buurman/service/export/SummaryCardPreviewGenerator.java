@@ -44,7 +44,8 @@ class SummaryCardPreviewGenerator {
     write(
         dir,
         "contract-booklet",
-        engine.process("contract-booklet-v2/generic", ctx(contractBooklet())));
+        bookletEngine("document-contract-booklet")
+            .process("contract-booklet/generic", ctx(contractBooklet())));
     System.out.println(
         "[preview] wrote summary cards + multi-page booklet to " + dir.toAbsolutePath());
   }
@@ -140,19 +141,34 @@ class SummaryCardPreviewGenerator {
     Map<String, Object> v = base("Tenancy");
     v.put("propertyAddress", "Kerkstraat 14, 1017 GC Amsterdam");
     v.put("contractIdentifier", "C-2024-0187");
-    v.put("contractType", "Fixed-term tenancy");
     v.put("statusCode", "ACTIVE");
     v.put("statusLabel", "Active");
-    v.put("landlordName", "Vastgoed Bakker B.V.");
+    v.put("contractTypeLabel", "Fixed term");
     v.put("tenantName", "Luís Santos");
-    v.put("rent", "€1,450.00 / mo");
-    v.put("deposit", "€2,900.00");
+    v.put("rent", "€1,450.00");
     v.put("frequencyLabel", "Monthly");
-    v.put("termRange", "1 Jan 2024 → 31 Dec 2024");
-    v.put("totalPaid", "€13,050.00");
-    v.put("totalPending", "€1,450.00");
-    v.put("totalOverdue", "€1,450.00");
-    v.put("overdueCount", 1);
+    v.put("period", "1 Jan 2024 — 31 Dec 2024");
+    v.put("startDate", "1 Jan 2024");
+    v.put("endDate", "31 Dec 2024");
+    v.put("signedDate", "18 Dec 2023");
+    v.put("deposit", "€2,900.00");
+    v.put("securityDeposit", "€1,450.00");
+    v.put("dueDay", "1");
+    v.put("renewalMode", "Automatic");
+    v.put("lateFee", "5%");
+    v.put("propertyTypeLabel", "Apartment");
+    v.put("propertyCategoryLabel", "Residential");
+    v.put("propertyArea", "84 m²");
+    v.put(
+        "rentPeriods",
+        List.of(
+            Map.of("from", "1 Jan 2024", "to", "—", "amount", "€1,450.00"),
+            Map.of("from", "1 Jan 2023", "to", "31 Dec 2023", "amount", "€1,400.00")));
+    v.put(
+        "termsHtml",
+        "<p>The tenant shall use the premises solely as a private residence. Subletting requires"
+            + " the landlord's written consent.</p>");
+    v.put("notesHtml", "<p>Keys handed over on 1 Jan 2024 (2× front door, 1× mailbox).</p>");
     v.put(
         "parties",
         List.of(
@@ -162,53 +178,77 @@ class SummaryCardPreviewGenerator {
                 "name",
                 "Luís Santos",
                 "contact",
-                "luis.santos@example.com · +31 6 12 34 56 78"),
+                "luis.santos@example.com · +31 6 12 34 56 78 · CT-5001"),
             Map.of(
                 "role",
                 "Guarantor",
                 "name",
                 "Maria Santos",
                 "contact",
-                "maria.santos@example.com")));
+                "maria.santos@example.com · CT-5002")));
+    v.put(
+        "instructions",
+        List.of(
+            Map.of(
+                "method", "Bank transfer",
+                "current", true,
+                "name", "Primary account",
+                "bankName", "ABN AMRO",
+                "accountHolder", "Vastgoed Bakker B.V.",
+                "iban", "NL91 ABNA 0417 1643 00",
+                "bic", "ABNANL2A",
+                "reference", "Rent C-2024-0187")));
     v.put(
         "payments",
         List.of(
             Map.of(
-                "date",
-                "1 Apr 2026",
-                "status",
-                "Paid",
-                "statusCode",
-                "PAID",
-                "amount",
-                "€1,450.00"),
-            Map.of(
-                "date",
-                "1 May 2026",
-                "status",
-                "Paid",
-                "statusCode",
-                "PAID",
-                "amount",
-                "€1,450.00"),
-            Map.of(
-                "date",
-                "1 Jun 2026",
-                "status",
-                "Overdue",
-                "statusCode",
-                "OVERDUE",
-                "amount",
-                "€1,450.00"),
-            Map.of(
-                "date",
+                "due",
                 "1 Jul 2026",
                 "status",
                 "Pending",
                 "statusCode",
                 "PENDING",
                 "amount",
+                "€1,450.00",
+                "paid",
+                "€0.00"),
+            Map.of(
+                "due",
+                "1 Jun 2026",
+                "status",
+                "Overdue",
+                "statusCode",
+                "OVERDUE",
+                "amount",
+                "€1,450.00",
+                "paid",
+                "€0.00"),
+            Map.of(
+                "due",
+                "1 May 2026",
+                "status",
+                "Paid",
+                "statusCode",
+                "PAID",
+                "amount",
+                "€1,450.00",
+                "paid",
+                "€1,450.00"),
+            Map.of(
+                "due",
+                "1 Apr 2026",
+                "status",
+                "Paid",
+                "statusCode",
+                "PAID",
+                "amount",
+                "€1,450.00",
+                "paid",
                 "€1,450.00")));
+    v.put("totalPaid", "€13,050.00");
+    v.put("totalPending", "€1,450.00");
+    v.put("totalOverdue", "€1,450.00");
+    v.put("overdueCount", 1);
     v.put("qrDataUri", qr.toSvgDataUri("https://app.buurman.io/contracts/C-2024-0187"));
     return v;
   }
@@ -244,6 +284,24 @@ class SummaryCardPreviewGenerator {
   }
 
   private static SpringTemplateEngine engine() {
+    return engineFor("classpath:messages/document-summary-card");
+  }
+
+  /**
+   * Per-entity booklet engine mirroring production: the entity bundle (loaded from the app module
+   * via file:) + the shared enum-label & summary-card chrome (classpath, in this module).
+   */
+  private static SpringTemplateEngine bookletEngine(String entityBundle) {
+    String appMessages =
+        System.getProperty(
+            "booklet.preview.appmessages", "../buurman-app/src/main/resources/messages");
+    return engineFor(
+        "file:" + appMessages + "/" + entityBundle,
+        "classpath:messages/document-enum-labels",
+        "classpath:messages/document-summary-card");
+  }
+
+  private static SpringTemplateEngine engineFor(String... basenames) {
     ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
     resolver.setPrefix("templates/documents/");
     resolver.setSuffix(".html");
@@ -252,7 +310,7 @@ class SummaryCardPreviewGenerator {
     resolver.setCacheable(false);
 
     ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
-    ms.setBasenames("classpath:messages/document-summary-card");
+    ms.setBasenames(basenames);
     ms.setDefaultEncoding("UTF-8");
     ms.setFallbackToSystemLocale(false);
     ms.setUseCodeAsDefaultMessage(true);

@@ -1,46 +1,29 @@
 package com.buurman.service.export;
 
-import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
-import static com.buurman.domain.Payment.PaymentStatus.OVERDUE;
-import static com.buurman.domain.Payment.PaymentStatus.PAID;
-import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
-import static com.buurman.domain.Payment.PaymentStatus.PENDING;
-import static com.buurman.service.export.BookletHelper.appendCoverCell;
-import static com.buurman.service.export.BookletHelper.appendCoverEnd;
-import static com.buurman.service.export.BookletHelper.appendCoverStart;
-import static com.buurman.service.export.BookletHelper.appendDocumentEnd;
-import static com.buurman.service.export.BookletHelper.appendDocumentStart;
-import static com.buurman.service.export.BookletHelper.appendField;
-import static com.buurman.service.export.BookletHelper.appendPageEnd;
-import static com.buurman.service.export.BookletHelper.appendPageStart;
-import static com.buurman.service.export.BookletHelper.appendRunningFooter;
-import static com.buurman.service.export.BookletHelper.appendSectionTitle;
-import static com.buurman.service.export.BookletHelper.appendStatusBadge;
-import static com.buurman.service.export.BookletHelper.appendSummaryCard;
-import static com.buurman.service.export.BookletHelper.escapeHtml;
-import static com.buurman.service.export.BookletHelper.formatDate;
-import static com.buurman.service.export.BookletHelper.formatEnumValue;
-import static com.buurman.service.export.BookletHelper.sanitizeRichText;
 import static java.util.stream.Collectors.toMap;
 
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
@@ -53,6 +36,7 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
+import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
@@ -67,6 +51,12 @@ import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
 
+/**
+ * Generates the multi-page contract dossier PDF. Loads the contract + property + parties + payments
+ * + instructions, projects them into a localized view-model ({@link #buildModel}) and renders the
+ * {@code contract-booklet/generic} Thymeleaf template via Gotenberg/Chromium. All money/dates/enum
+ * labels are pre-formatted here; the template only lays out.
+ */
 @Component
 public class ContractBookletExporter {
 
@@ -81,9 +71,13 @@ public class ContractBookletExporter {
   private final ContractExtensionRepository contractExtensionRepository;
   private final ContractPartyService contractPartyService;
   private final DocumentRenderer pdfRenderer;
+  private final TemplateEngine templateEngine;
   private final MessageSource messageSource;
   private final EnumLabelResolver enumLabels;
+  private final BookletFormatter formatter;
+  private final QrCodeGenerator qrCodeGenerator;
   private final Clock clock;
+  private final String appBaseUrl;
 
   public ContractBookletExporter(
       ContractRepository contractRepository,
@@ -97,9 +91,13 @@ public class ContractBookletExporter {
       ContractExtensionRepository contractExtensionRepository,
       ContractPartyService contractPartyService,
       DocumentRenderer pdfRenderer,
+      @Qualifier("contractBookletTemplateEngine") TemplateEngine templateEngine,
       @Qualifier("contractBookletMessageSource") MessageSource messageSource,
       EnumLabelResolver enumLabels,
-      Clock clock) {
+      BookletFormatter formatter,
+      QrCodeGenerator qrCodeGenerator,
+      Clock clock,
+      @Value("${booklet.app-base-url:https://app.buurman.io}") String appBaseUrl) {
     this.contractRepository = contractRepository;
     this.propertyRepository = propertyRepository;
     this.contactRepository = contactRepository;
@@ -111,14 +109,17 @@ public class ContractBookletExporter {
     this.contractExtensionRepository = contractExtensionRepository;
     this.contractPartyService = contractPartyService;
     this.pdfRenderer = pdfRenderer;
+    this.templateEngine = templateEngine;
     this.messageSource = messageSource;
     this.enumLabels = enumLabels;
+    this.formatter = formatter;
+    this.qrCodeGenerator = qrCodeGenerator;
     this.clock = clock;
+    this.appBaseUrl = appBaseUrl;
   }
 
   private String msg(String key, Locale locale) {
-    return java.util.Objects.requireNonNullElse(
-        messageSource.getMessage(key, null, key, locale), key);
+    return Objects.requireNonNullElse(messageSource.getMessage(key, null, key, locale), key);
   }
 
   public byte[] generate(ContractIdentifier contractIdentifier, UUID teamId, Locale locale) {
@@ -139,7 +140,9 @@ public class ContractBookletExporter {
     // Load payments + receivals
     List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
     Set<UUID> paymentIds = new HashSet<>();
-    for (Payment p : payments) paymentIds.add(p.getId());
+    for (Payment p : payments) {
+      paymentIds.add(p.getId());
+    }
     List<PaymentReceival> allReceivals =
         paymentIds.isEmpty()
             ? List.of()
@@ -175,8 +178,8 @@ public class ContractBookletExporter {
     Optional<LocalDate> effectiveEndDate =
         EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
 
-    String html =
-        buildHtml(
+    Map<String, Object> model =
+        buildModel(
             contract,
             property,
             parties,
@@ -188,12 +191,15 @@ public class ContractBookletExporter {
             piMap,
             effectiveEndDate,
             locale);
-    return pdfRenderer.render(html);
+    Context context = new Context(locale);
+    context.setVariables(model);
+    String html = templateEngine.process("contract-booklet/generic", context);
+    return pdfRenderer.render(html, PageSpec.A4_PORTRAIT);
   }
 
-  // ── HTML building ───────────────────────────────────────────────
+  // ── View-model ──────────────────────────────────────────────────
 
-  private String buildHtml(
+  private Map<String, Object> buildModel(
       Contract contract,
       Property property,
       List<ContractParty> parties,
@@ -205,780 +211,220 @@ public class ContractBookletExporter {
       Map<UUID, PaymentInstruction> piMap,
       Optional<LocalDate> effectiveEndDate,
       Locale locale) {
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
-    String generatedDate = LocalDate.now(clock).format(dateFmt);
     String ccy = contract.getRentAmount().currency();
-
-    String primaryName =
-        findPrimaryContact(parties, contactMap)
-            .map(t -> escapeHtml(t.getDisplayName()))
-            .orElse("—");
-
+    String identifier = contract.getIdentifier().map(Sid::value).orElse("—");
+    String tenantName =
+        findPrimaryContact(parties, contactMap).map(Contact::getDisplayName).orElse("—");
     PaymentAggregation agg = aggregatePayments(payments, receivedByPayment);
 
-    String css =
-        BookletCss.base()
-            + BookletCss.contractStatusBadges()
-            + BookletCss.partyCards()
-            + BookletCss.paymentInstructionCards()
-            + BookletCss.summaryGrid()
-            + BookletCss.paymentTable()
-            + BookletCss.paymentStatusBadges();
-
-    StringBuilder html = new StringBuilder(8192);
-    appendDocumentStart(html, css);
-    appendRunningFooter(html, generatedDate);
-
-    appendCoverPage(
-        html,
-        contract,
-        property,
-        primaryName,
-        ccy,
-        dateFmt,
-        generatedDate,
-        effectiveEndDate,
-        locale);
-    appendContractDetailsPage(
-        html, contract, property, rentPeriods, dateFmt, ccy, effectiveEndDate, locale);
-    appendPartiesPage(html, parties, contactMap, locale);
-    appendPaymentInstructionsPage(html, allCpis, piMap, dateFmt, locale);
-    appendPaymentOverviewPage(html, payments, receivedByPayment, agg, ccy, dateFmt, locale);
-
-    appendDocumentEnd(html);
-    return html.toString();
-  }
-
-  // ── Page: Cover ─────────────────────────────────────────────────
-
-  private void appendCoverPage(
-      StringBuilder html,
-      Contract contract,
-      Property property,
-      String primaryName,
-      String ccy,
-      DateTimeFormatter dateFmt,
-      String generatedDate,
-      Optional<LocalDate> effectiveEndDate,
-      Locale locale) {
-    appendCoverStart(
-        html,
-        msg("cover.title", locale),
-        escapeHtml(contract.getIdentifier().orElseThrow().value()),
-        generatedDate);
-
-    String statusStr = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
-    appendStatusBadge(html, statusStr);
-
-    html.append("<table class='cover-summary'>");
-    html.append("<tr>");
-    appendCoverCell(
-        html,
-        msg("cover.property", locale),
-        escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
-    appendCoverCell(html, msg("cover.primary.contact", locale), primaryName);
-    html.append("</tr><tr>");
-    appendCoverCell(
-        html,
-        msg("cover.current.rent", locale),
-        CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy, locale));
-    String period =
-        formatDate(contract.getStartDate(), dateFmt)
-            + " — "
-            + effectiveEndDate
-                .map(d -> formatDate(d, dateFmt))
-                .orElse(msg("value.indefinite", locale));
-    appendCoverCell(html, msg("cover.contract.period", locale), period);
-    html.append("</tr><tr>");
-    appendCoverCell(
-        html,
-        msg("cover.contract.type", locale),
-        formatEnumValue(
-            contract.getContractType() != null ? contract.getContractType().name() : ""));
-    appendCoverCell(
-        html,
-        msg("cover.payment.frequency", locale),
-        formatEnumValue(
-            contract.getPaymentFrequency() != null ? contract.getPaymentFrequency().name() : ""));
-    html.append("</tr>");
-    html.append("</table>");
-
-    appendCoverEnd(html);
-  }
-
-  // ── Page: Contract Details ──────────────────────────────────────
-
-  private void appendContractDetailsPage(
-      StringBuilder html,
-      Contract contract,
-      Property property,
-      List<ContractRentPeriod> rentPeriods,
-      DateTimeFormatter dateFmt,
-      String ccy,
-      Optional<LocalDate> effectiveEndDate,
-      Locale locale) {
-    appendPageStart(html, msg("page.contract.details", locale));
-
-    appendSectionTitle(html, msg("section.contract.information", locale));
-    String statusStr = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
-    html.append("<table class='detail-grid'>");
-    html.append("<tr>");
-    appendField(
-        html, msg("field.contract.id", locale), contract.getIdentifier().orElseThrow().value());
-    appendField(html, msg("field.status", locale), formatEnumValue(statusStr));
-    html.append("</tr><tr>");
-    appendField(
-        html,
-        msg("field.contract.type", locale),
-        formatEnumValue(
-            contract.getContractType() != null ? contract.getContractType().name() : ""));
-    appendField(
-        html,
-        msg("field.signed.date", locale),
-        contract
-            .getSignedDate()
-            .map(d -> formatDate(d, dateFmt))
-            .orElse(msg("value.not.signed", locale)));
-    html.append("</tr><tr>");
-    appendField(
-        html, msg("field.start.date", locale), formatDate(contract.getStartDate(), dateFmt));
-    appendField(
-        html,
-        msg("field.end.date", locale),
-        effectiveEndDate.map(d -> formatDate(d, dateFmt)).orElse(msg("value.indefinite", locale)));
-    html.append("</tr>");
-    // Show original end date if it differs from the effective end date
-    if (!effectiveEndDate.equals(contract.getEndDate())) {
-      html.append("<tr>");
-      appendField(
-          html,
-          msg("field.original.end.date", locale),
-          contract
-              .getEndDate()
-              .map(d -> formatDate(d, dateFmt))
-              .orElse(msg("value.indefinite", locale)));
-      appendField(html, "", null);
-      html.append("</tr>");
-    }
-    html.append("<tr>");
-    appendField(
-        html,
-        msg("field.current.rent", locale),
-        CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy, locale));
-    appendField(
-        html,
-        msg("field.deposit.amount", locale),
-        CurrencyUtils.formatCurrency(
-            contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value).orElse(null),
-            ccy,
-            locale));
-    html.append("</tr><tr>");
-    appendField(
-        html,
-        msg("field.security.deposit", locale),
-        CurrencyUtils.formatCurrency(
-            contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null),
-            ccy,
-            locale));
-    appendField(
-        html,
-        msg("field.currency", locale),
-        CurrencyUtils.getCurrencySymbol(ccy) + " (" + ccy + ")");
-    html.append("</tr><tr>");
-    appendField(
-        html,
-        msg("field.payment.frequency", locale),
-        formatEnumValue(
-            contract.getPaymentFrequency() != null ? contract.getPaymentFrequency().name() : ""));
-    appendField(
-        html,
-        msg("field.payment.due.day", locale),
-        contract
-            .getPaymentDueDay()
-            .map(d -> msg("value.day.of.month", locale).replace("{0}", String.valueOf(d)))
-            .orElse("—"));
-    html.append("</tr><tr>");
-    appendField(
-        html,
-        msg("field.renewal.mode", locale),
-        contract.getRenewalMode() != null
-            ? enumLabels.label(contract.getRenewalMode(), locale)
-            : msg("value.none", locale));
-    appendField(
-        html,
-        msg("field.landlord.notice", locale),
-        contract.getLandlordNoticeDays() + " " + msg("value.days", locale));
-    html.append("</tr><tr>");
-    appendField(
-        html,
-        msg("field.termination.notice", locale),
-        contract.getTerminationNoticeDays() != null
-            ? contract.getTerminationNoticeDays() + " " + msg("value.days", locale)
+    Map<String, Object> v = new HashMap<>();
+    v.put("lang", locale.getLanguage());
+    v.put("dir", "ltr");
+    v.put("contractIdentifier", identifier);
+    v.put("statusCode", contract.getStatus() != null ? contract.getStatus().name() : "DRAFT");
+    v.put(
+        "statusLabel",
+        contract.getStatus() != null ? enumLabels.label(contract.getStatus(), locale) : "—");
+    v.put(
+        "contractTypeLabel",
+        contract.getContractType() != null
+            ? enumLabels.label(contract.getContractType(), locale)
             : "—");
-    appendField(
-        html,
-        msg("field.late.fee", locale),
-        contract.getLateFeePercentage().map(p -> p + "%").orElse("—"));
-    html.append("</tr>");
-    html.append("</table>");
+    v.put("propertyAddress", address(property));
+    v.put("tenantName", tenantName);
+    v.put("rent", formatter.money(contract.getRentAmount(), locale));
+    v.put(
+        "frequencyLabel",
+        contract.getPaymentFrequency() != null
+            ? enumLabels.label(contract.getPaymentFrequency(), locale)
+            : "—");
+    String endStr =
+        effectiveEndDate
+            .map(d -> formatter.date(d, locale))
+            .orElse(msg("value.indefinite", locale));
+    v.put("period", formatter.date(contract.getStartDate(), locale) + " — " + endStr);
+    v.put("startDate", formatter.date(contract.getStartDate(), locale));
+    v.put("endDate", endStr);
+    v.put("signedDate", contract.getSignedDate().map(d -> formatter.date(d, locale)).orElse(null));
+    v.put("deposit", contract.getDepositAmount().map(a -> formatter.money(a, locale)).orElse(null));
+    v.put(
+        "securityDeposit",
+        contract.getSecurityDeposit().map(a -> formatter.money(a, locale)).orElse(null));
+    v.put("dueDay", contract.getPaymentDueDay().map(String::valueOf).orElse(null));
+    v.put("renewalMode", enumLabels.label(contract.getRenewalMode(), locale));
+    v.put(
+        "lateFee",
+        contract
+            .getLateFeePercentage()
+            .map(p -> p.stripTrailingZeros().toPlainString() + "%")
+            .orElse(null));
 
-    // Rich text sections
-    contract
-        .getTermsAndConditions()
-        .filter(s -> !s.isBlank())
-        .ifPresent(
-            tc -> {
-              appendSectionTitle(html, msg("section.terms.conditions", locale));
-              html.append("<div class='text-block'>").append(sanitizeRichText(tc)).append("</div>");
-            });
-    contract
-        .getNotes()
-        .filter(s -> !s.isBlank())
-        .ifPresent(
-            notes -> {
-              appendSectionTitle(html, msg("section.notes", locale));
-              html.append("<div class='text-block'>")
-                  .append(sanitizeRichText(notes))
-                  .append("</div>");
-            });
-
-    // Rent History section
-    if (rentPeriods.size() > 1) {
-      appendRentHistorySection(html, rentPeriods, ccy, dateFmt, locale);
-    }
-
-    // Property section
-    appendSectionTitle(html, msg("section.property", locale));
-    html.append("<table class='detail-grid'>");
-    html.append("<tr>");
-    appendField(html, msg("field.address", locale), escapeHtml(property.getStreet()));
-    appendField(
-        html,
-        msg("field.city", locale),
-        escapeHtml(property.getCity()) + " " + escapeHtml(property.getPostalCode()));
-    html.append("</tr><tr>");
-    appendField(html, msg("field.country", locale), escapeHtml(property.getCountryCode()));
-    appendField(
-        html,
-        msg("field.property.type", locale),
-        enumLabels.label(property.getPropertyType(), locale));
-    html.append("</tr><tr>");
-    appendField(
-        html,
-        msg("field.category", locale),
-        enumLabels.label(property.getPropertyCategory(), locale));
-    appendField(
-        html, msg("field.property.id", locale), property.getIdentifier().orElseThrow().value());
-    html.append("</tr><tr>");
-    appendField(
-        html,
-        msg("field.area", locale),
+    v.put("propertyTypeLabel", enumLabels.label(property.getPropertyType(), locale));
+    v.put("propertyCategoryLabel", enumLabels.label(property.getPropertyCategory(), locale));
+    v.put(
+        "propertyArea",
         property
             .getAreaValue()
-            .map(av -> "%s %s".formatted(av, property.getAreaUnit().orElse("")))
-            .orElse("–"));
-    html.append("</tr>");
-    html.append("</table>");
+            .map(
+                a ->
+                    formatter.numberOrDash(a, locale)
+                        + property.getAreaUnit().map(u -> " " + u).orElse(""))
+            .orElse(null));
 
-    appendPageEnd(html);
+    v.put("rentPeriods", buildRentPeriods(rentPeriods, locale));
+    v.put(
+        "termsHtml",
+        contract
+            .getTermsAndConditions()
+            .filter(s -> !s.isBlank())
+            .map(BookletHelper::sanitizeRichText)
+            .orElse(null));
+    v.put(
+        "notesHtml",
+        contract
+            .getNotes()
+            .filter(s -> !s.isBlank())
+            .map(BookletHelper::sanitizeRichText)
+            .orElse(null));
+
+    v.put("parties", buildParties(parties, contactMap, locale));
+    v.put("instructions", buildInstructions(allCpis, piMap, locale));
+    v.put("payments", buildPayments(payments, receivedByPayment, ccy, locale));
+    v.put("totalPaid", CurrencyUtils.formatCurrency(agg.totalPaid, ccy, locale));
+    v.put("totalPending", CurrencyUtils.formatCurrency(agg.totalPending, ccy, locale));
+    v.put("totalOverdue", CurrencyUtils.formatCurrency(agg.totalOverdue, ccy, locale));
+    v.put("overdueCount", (int) agg.countOverdue);
+
+    v.put("qrDataUri", qrCodeGenerator.toSvgDataUri(appBaseUrl + "/contracts/" + identifier));
+    v.put("generatedDate", formatter.date(LocalDate.now(clock), locale));
+    return v;
   }
 
-  // ── Page: Contract Parties ──────────────────────────────────────
+  private List<Map<String, Object>> buildRentPeriods(
+      List<ContractRentPeriod> rentPeriods, Locale locale) {
+    List<ContractRentPeriod> sorted = new ArrayList<>(rentPeriods);
+    sorted.sort(Comparator.comparing(ContractRentPeriod::getEffectiveFrom).reversed());
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (ContractRentPeriod rp : sorted) {
+      Map<String, Object> m = new HashMap<>();
+      m.put("from", formatter.date(rp.getEffectiveFrom(), locale));
+      m.put("to", rp.getEffectiveTo().map(d -> formatter.date(d, locale)).orElse("—"));
+      m.put("amount", formatter.money(rp.getRentAmount(), locale));
+      out.add(m);
+    }
+    return out;
+  }
 
-  private void appendPartiesPage(
-      StringBuilder html,
-      List<ContractParty> parties,
-      Map<UUID, Contact> contactMap,
-      Locale locale) {
-    appendPageStart(html, msg("page.contract.parties", locale));
-
-    appendSectionTitle(html, msg("section.parties", locale) + " (" + parties.size() + ")");
-
-    List<ContractParty> sortedParties = new ArrayList<>(parties);
-    sortedParties.sort(
-        (a, b) -> {
-          if (a.getRole() == ContractPartyRole.PRIMARY_TENANT) {
-            return -1;
-          }
-          if (b.getRole() == ContractPartyRole.PRIMARY_TENANT) {
-            return 1;
-          }
-          return a.getRole().compareTo(b.getRole());
-        });
-
-    for (ContractParty party : sortedParties) {
-      Contact t = party.getContactId().map(contactMap::get).orElse(null);
-      if (t == null) {
+  private List<Map<String, Object>> buildParties(
+      List<ContractParty> parties, Map<UUID, Contact> contactMap, Locale locale) {
+    List<ContractParty> sorted = new ArrayList<>(parties);
+    sorted.sort(
+        Comparator.comparing((ContractParty p) -> p.getRole() != ContractPartyRole.PRIMARY_TENANT)
+            .thenComparing(p -> p.getRole()));
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (ContractParty party : sorted) {
+      Contact c = party.getContactId().map(contactMap::get).orElse(null);
+      if (c == null) {
         continue;
       }
-      String roleColor = getPartyRoleColor(party.getRole());
-      String roleBg = getPartyRoleBgColor(party.getRole());
-
-      html.append("<div class='party-card' style='border-left-color:")
-          .append(roleColor)
-          .append(";'>");
-
-      html.append("<div class='party-role' style='color:")
-          .append(roleColor)
-          .append(";background-color:")
-          .append(roleBg)
-          .append(";'>");
-      html.append(party.getRole().getDisplayName());
-      html.append("</div>");
-
-      html.append("<div class='party-name'>");
-      html.append(escapeHtml(t.getDisplayName()));
-      html.append("</div>");
-
-      html.append("<table class='party-details'>");
-      String phone = t.getPhone().orElse(null);
-      if (t.getEmail().isPresent()) {
-        html.append("<tr><td class='pd-label'>Email</td><td class='pd-value'>")
-            .append(escapeHtml(t.getEmail().get()))
-            .append("</td>");
-        if (phone != null) {
-          html.append("<td class='pd-label'>Phone</td><td class='pd-value'>")
-              .append(escapeHtml(phone))
-              .append("</td>");
-        } else {
-          html.append("<td></td><td></td>");
-        }
-        html.append("</tr>");
-      } else if (phone != null) {
-        html.append("<tr><td class='pd-label'>Phone</td><td class='pd-value'>")
-            .append(escapeHtml(phone))
-            .append("</td><td></td><td></td></tr>");
-      }
-      String taxNumber = t.getTaxNumber().orElse(null);
-      String idNumber = t.getIdNumber().orElse(null);
-      boolean hasTax = taxNumber != null && !taxNumber.isBlank();
-      boolean hasId = idNumber != null && !idNumber.isBlank();
-      if (hasTax || hasId) {
-        html.append("<tr>");
-        if (hasTax) {
-          html.append("<td class='pd-label'>Tax Number</td><td class='pd-value'>")
-              .append(escapeHtml(taxNumber))
-              .append("</td>");
-        } else {
-          html.append("<td></td><td></td>");
-        }
-        if (hasId) {
-          html.append("<td class='pd-label'>ID Number</td><td class='pd-value'>")
-              .append(escapeHtml(idNumber))
-              .append("</td>");
-        } else {
-          html.append("<td></td><td></td>");
-        }
-        html.append("</tr>");
-      }
-      html.append(
-              "<tr><td class='pd-label'>Reference</td><td class='pd-value'"
-                  + " style='color:#a8a29e;font-size:11px;'>")
-          .append(t.getIdentifier().orElseThrow().value())
-          .append("</td><td></td><td></td></tr>");
-      html.append("</table></div>");
+      List<String> contactBits = new ArrayList<>();
+      c.getEmail().filter(s -> !s.isBlank()).ifPresent(contactBits::add);
+      c.getPhone().filter(s -> !s.isBlank()).ifPresent(contactBits::add);
+      c.getTaxNumber()
+          .filter(s -> !s.isBlank())
+          .ifPresent(t -> contactBits.add(msg("summary.contact.taxId", locale) + ": " + t));
+      c.getIdentifier().ifPresent(id -> contactBits.add(id.value()));
+      Map<String, Object> m = new HashMap<>();
+      m.put("role", enumLabels.label(party.getRole(), locale));
+      m.put("name", c.getDisplayName());
+      m.put("contact", String.join(" · ", contactBits));
+      out.add(m);
     }
-
-    appendPageEnd(html);
+    return out;
   }
 
-  // ── Section: Rent History ──────────────────────────────────────
-
-  private void appendRentHistorySection(
-      StringBuilder html,
-      List<ContractRentPeriod> rentPeriods,
-      String ccy,
-      DateTimeFormatter dateFmt,
-      Locale locale) {
-    appendSectionTitle(
-        html,
-        msg("section.rent.history", locale)
-            + " ("
-            + rentPeriods.size()
-            + " "
-            + msg("value.periods", locale)
-            + ")");
-
-    // Periods are already ordered by effective_from DESC from the repository
-    List<ContractRentPeriod> sorted = new ArrayList<>(rentPeriods);
-    sorted.sort((a, b) -> b.getEffectiveFrom().compareTo(a.getEffectiveFrom()));
-
-    html.append("<table class='payment-table'>");
-    html.append("<thead><tr>");
-    html.append("<th>")
-        .append(msg("col.effective.from", locale))
-        .append("</th><th>")
-        .append(msg("col.effective.to", locale))
-        .append("</th><th style='text-align:right'>")
-        .append(msg("col.rent.amount", locale))
-        .append("</th><th style='text-align:right'>")
-        .append(msg("col.change", locale))
-        .append("</th>");
-    html.append("</tr></thead><tbody>");
-
-    for (int i = 0; i < sorted.size(); i++) {
-      ContractRentPeriod period = sorted.get(i);
-      boolean isCurrent = period.getEffectiveTo().isEmpty();
-
-      html.append("<tr>");
-      html.append("<td>").append(formatDate(period.getEffectiveFrom(), dateFmt)).append("</td>");
-      html.append("<td>")
-          .append(
-              period.getEffectiveTo().isPresent()
-                  ? formatDate(period.getEffectiveTo().get(), dateFmt)
-                  : "<span style='color:#166534;font-weight:600;'>"
-                      + msg("value.current", locale)
-                      + "</span>")
-          .append("</td>");
-      html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;")
-          .append(isCurrent ? "font-weight:600;" : "")
-          .append("'>")
-          .append(CurrencyUtils.formatCurrency(period.getRentAmount().value(), ccy, locale))
-          .append("</td>");
-
-      // Percentage change vs next older period
-      html.append("<td style='text-align:right;'>");
-      if (i < sorted.size() - 1) {
-        BigDecimal previousAmount = sorted.get(i + 1).getRentAmount().value();
-        if (previousAmount.compareTo(BigDecimal.ZERO) > 0) {
-          BigDecimal change =
-              period
-                  .getRentAmount()
-                  .value()
-                  .subtract(previousAmount)
-                  .multiply(new BigDecimal("100"))
-                  .divide(previousAmount, 1, java.math.RoundingMode.HALF_UP);
-          String color = change.compareTo(BigDecimal.ZERO) > 0 ? "#dc2626" : "#166534";
-          String prefix = change.compareTo(BigDecimal.ZERO) > 0 ? "+" : "";
-          html.append("<span style='color:")
-              .append(color)
-              .append(";font-weight:600;font-size:12px;'>")
-              .append(prefix)
-              .append(change)
-              .append("%</span>");
-        }
-      } else {
-        html.append("<span style='color:#78716c;font-size:12px;'>")
-            .append(msg("value.initial", locale))
-            .append("</span>");
-      }
-      html.append("</td>");
-
-      html.append("</tr>");
-    }
-
-    html.append("</tbody></table>");
-  }
-
-  // ── Page: Payment Instructions ──────────────────────────────────
-
-  private void appendPaymentInstructionsPage(
-      StringBuilder html,
+  private List<Map<String, Object>> buildInstructions(
       List<ContractPaymentInstruction> allCpis,
       Map<UUID, PaymentInstruction> piMap,
-      DateTimeFormatter dateFmt,
       Locale locale) {
-    if (allCpis.isEmpty()) {
-      return;
-    }
-
-    appendPageStart(html, msg("page.payment.instructions", locale));
-
-    List<ContractPaymentInstruction> sortedCpis = new ArrayList<>(allCpis);
-    sortedCpis.sort(
-        (a, b) -> {
-          LocalDate aDate = a.getEffectiveFrom();
-          LocalDate bDate = b.getEffectiveFrom();
-          if (aDate == null && bDate == null) {
-            return 0;
-          } else if (aDate == null) {
-            return 1;
-          } else if (bDate == null) {
-            return -1;
-          } else {
-            return bDate.compareTo(aDate);
-          }
-        });
-
-    for (ContractPaymentInstruction cpi : sortedCpis) {
+    List<ContractPaymentInstruction> sorted = new ArrayList<>(allCpis);
+    // Current (no effective-to) first, then most recent.
+    sorted.sort(
+        Comparator.comparing((ContractPaymentInstruction c) -> c.getEffectiveTo().isPresent())
+            .thenComparing(c -> c.getEffectiveFrom(), Comparator.reverseOrder()));
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (ContractPaymentInstruction cpi : sorted) {
       boolean isCustom = cpi.getIsCustom();
       PaymentInstruction tpl =
           !isCustom ? cpi.getPaymentInstructionId().map(piMap::get).orElse(null) : null;
-
-      String piName =
-          isCustom ? cpi.getCustomName().orElse(null) : (tpl != null ? tpl.getName() : null);
-      String piMethod =
+      String method =
           isCustom
               ? cpi.getCustomPaymentMethod().orElse(null)
               : (tpl != null && tpl.getPaymentMethod() != null
                   ? tpl.getPaymentMethod().name()
                   : null);
-      String piBankName =
+      Map<String, Object> m = new HashMap<>();
+      m.put(
+          "name",
+          isCustom ? cpi.getCustomName().orElse(null) : (tpl != null ? tpl.getName() : null));
+      m.put("method", formatPaymentMethod(method, locale));
+      m.put("current", cpi.getEffectiveTo().isEmpty());
+      m.put(
+          "bankName",
           isCustom
               ? cpi.getCustomBankName().orElse(null)
-              : (tpl != null ? tpl.getBankName().orElse(null) : null);
-      String piAccountHolder =
+              : opt(tpl, PaymentInstruction::getBankName));
+      m.put(
+          "accountHolder",
           isCustom
               ? cpi.getCustomAccountHolderName().orElse(null)
-              : (tpl != null ? tpl.getAccountHolderName().orElse(null) : null);
-      String piIban =
-          isCustom
-              ? cpi.getCustomIban().orElse(null)
-              : (tpl != null ? tpl.getIban().orElse(null) : null);
-      String piBicSwift =
+              : opt(tpl, PaymentInstruction::getAccountHolderName));
+      m.put(
+          "iban",
+          isCustom ? cpi.getCustomIban().orElse(null) : opt(tpl, PaymentInstruction::getIban));
+      m.put(
+          "bic",
           isCustom
               ? cpi.getCustomBicSwift().orElse(null)
-              : (tpl != null ? tpl.getBicSwift().orElse(null) : null);
-      String piAccountNumber =
-          isCustom
-              ? cpi.getCustomAccountNumber().orElse(null)
-              : (tpl != null ? tpl.getAccountNumber().orElse(null) : null);
-      String piRoutingNumber =
-          isCustom
-              ? cpi.getCustomRoutingNumber().orElse(null)
-              : (tpl != null ? tpl.getRoutingNumber().orElse(null) : null);
-      String piReference =
+              : opt(tpl, PaymentInstruction::getBicSwift));
+      m.put(
+          "reference",
           isCustom
               ? cpi.getCustomPaymentReference().orElse(null)
-              : (tpl != null ? tpl.getPaymentReference().orElse(null) : null);
-      String piDetails =
-          isCustom
-              ? cpi.getCustomAdditionalDetails().orElse(null)
-              : (tpl != null ? tpl.getAdditionalDetails().orElse(null) : null);
-
-      boolean isCurrent = cpi.getEffectiveTo().isEmpty();
-      String accentColor = isCurrent ? "#0284c7" : "#a8a29e";
-
-      html.append("<div class='pi-card' style='border-left-color:")
-          .append(accentColor)
-          .append(";'>");
-
-      // Header
-      html.append("<div class='pi-header'>");
-      if (piName != null && !piName.isBlank()) {
-        html.append("<span class='pi-name'>").append(escapeHtml(piName)).append("</span>");
-      }
-      if (piMethod != null && !piMethod.isBlank()) {
-        html.append("<span class='pi-method'>")
-            .append(formatPaymentMethod(piMethod, locale))
-            .append("</span>");
-      }
-      if (isCurrent) {
-        html.append("<span class='pi-current'>")
-            .append(msg("value.current", locale))
-            .append("</span>");
-      }
-      html.append("</div>");
-
-      // Period
-      String fromStr =
-          cpi.getEffectiveFrom() != null ? formatDate(cpi.getEffectiveFrom(), dateFmt) : "—";
-      String toStr =
-          cpi.getEffectiveTo()
-              .map(d -> formatDate(d, dateFmt))
-              .orElse(msg("value.present", locale));
-      html.append("<div class='pi-period'>")
-          .append(fromStr)
-          .append(" — ")
-          .append(toStr)
-          .append("</div>");
-
-      // Details grid
-      html.append("<table class='detail-grid'>");
-      boolean hasBank = piBankName != null && !piBankName.isBlank();
-      boolean hasHolder = piAccountHolder != null && !piAccountHolder.isBlank();
-      if (hasBank || hasHolder) {
-        html.append("<tr>");
-        appendField(html, msg("field.bank.name", locale), hasBank ? escapeHtml(piBankName) : null);
-        appendField(
-            html,
-            msg("field.account.holder", locale),
-            hasHolder ? escapeHtml(piAccountHolder) : null);
-        html.append("</tr>");
-      }
-      boolean hasIban = piIban != null && !piIban.isBlank();
-      boolean hasBic = piBicSwift != null && !piBicSwift.isBlank();
-      if (hasIban || hasBic) {
-        html.append("<tr>");
-        appendField(html, msg("field.iban", locale), hasIban ? escapeHtml(piIban) : null);
-        appendField(html, msg("field.bic.swift", locale), hasBic ? escapeHtml(piBicSwift) : null);
-        html.append("</tr>");
-      }
-      boolean hasAccNum = piAccountNumber != null && !piAccountNumber.isBlank();
-      boolean hasRouting = piRoutingNumber != null && !piRoutingNumber.isBlank();
-      if (hasAccNum || hasRouting) {
-        html.append("<tr>");
-        appendField(
-            html,
-            msg("field.account.number", locale),
-            hasAccNum ? escapeHtml(piAccountNumber) : null);
-        appendField(
-            html,
-            msg("field.routing.number", locale),
-            hasRouting ? escapeHtml(piRoutingNumber) : null);
-        html.append("</tr>");
-      }
-      if (piReference != null && !piReference.isBlank()) {
-        html.append("<tr>");
-        appendField(html, msg("field.payment.reference", locale), escapeHtml(piReference));
-        html.append("<td></td>");
-        html.append("</tr>");
-      }
-      html.append("</table>");
-
-      if (piDetails != null && !piDetails.isBlank()) {
-        html.append("<div class='pi-details'><span class='fg-label'>")
-            .append(msg("field.additional.details", locale))
-            .append("</span><br/>");
-        html.append("<span style='font-size:13px;color:#44403c;'>")
-            .append(escapeHtml(piDetails))
-            .append("</span></div>");
-      }
-      cpi.getNotes()
-          .filter(n -> !n.isBlank())
-          .ifPresent(
-              n -> {
-                html.append("<div class='pi-details'><span class='fg-label'>")
-                    .append(msg("section.notes", locale))
-                    .append("</span><br/>");
-                html.append("<span style='font-size:13px;color:#44403c;'>")
-                    .append(escapeHtml(n))
-                    .append("</span></div>");
-              });
-
-      html.append("</div>");
+              : opt(tpl, PaymentInstruction::getPaymentReference));
+      out.add(m);
     }
-
-    appendPageEnd(html);
+    return out;
   }
 
-  // ── Page: Payment Overview ──────────────────────────────────────
-
-  private void appendPaymentOverviewPage(
-      StringBuilder html,
-      List<Payment> payments,
-      Map<UUID, BigDecimal> receivedByPayment,
-      PaymentAggregation agg,
-      String ccy,
-      DateTimeFormatter dateFmt,
-      Locale locale) {
-    appendPageStart(html, msg("page.payment.overview", locale));
-
-    // Summary cards
-    appendSectionTitle(html, msg("section.summary", locale));
-    html.append("<table class='summary-grid'><tr>");
-    appendSummaryCard(
-        html,
-        msg("status.paid", locale),
-        agg.countPaid,
-        CurrencyUtils.formatCurrency(agg.totalPaid, ccy, locale),
-        "#f0fdf4",
-        "#16a34a",
-        "#166534");
-    appendSummaryCard(
-        html,
-        msg("status.pending", locale),
-        agg.countPending,
-        CurrencyUtils.formatCurrency(agg.totalPending, ccy, locale),
-        "#fefce8",
-        "#ca8a04",
-        "#854d0e");
-    appendSummaryCard(
-        html,
-        msg("status.partial", locale),
-        agg.countPartial,
-        CurrencyUtils.formatCurrency(
-            payments.stream()
-                .filter(p -> p.getStatus() == PARTIALLY_PAID)
-                .map(p -> p.getAmount().value())
-                .reduce(BigDecimal.ZERO, BigDecimal::add),
-            ccy,
-            locale),
-        "#f0f9ff",
-        "#0284c7",
-        "#0c4a6e");
-    appendSummaryCard(
-        html,
-        msg("status.overdue", locale),
-        agg.countOverdue,
-        CurrencyUtils.formatCurrency(agg.totalOverdue, ccy, locale),
-        "#fef2f2",
-        "#dc2626",
-        "#991b1b");
-    html.append("</tr></table>");
-
-    // Payment table
-    html.append("<h2 class='section-title'>")
-        .append(msg("section.payment.history", locale))
-        .append(" (")
-        .append(payments.size())
-        .append(")</h2>");
-
-    if (payments.isEmpty()) {
-      html.append("<p style='color:#78716c;font-style:italic;'>")
-          .append(msg("msg.no.payments", locale))
-          .append("</p>");
-    } else {
-      List<Payment> sortedPayments = new ArrayList<>(payments);
-      sortedPayments.sort((a, b) -> b.getDueDate().compareTo(a.getDueDate()));
-
-      html.append("<table class='payment-table'>");
-      html.append("<thead><tr>");
-      html.append("<th>")
-          .append(msg("col.due.date", locale))
-          .append("</th><th style='text-align:right'>")
-          .append(msg("col.amount", locale))
-          .append("</th><th style='text-align:right'>")
-          .append(msg("col.paid", locale))
-          .append("</th><th style='text-align:right'>")
-          .append(msg("col.balance", locale))
-          .append("</th><th>")
-          .append(msg("col.status", locale))
-          .append("</th><th>")
-          .append(msg("col.payment.date", locale))
-          .append("</th>");
-      html.append("</tr></thead><tbody>");
-
-      for (Payment payment : sortedPayments) {
-        BigDecimal received = receivedByPayment.getOrDefault(payment.getId(), BigDecimal.ZERO);
-        BigDecimal balance = payment.getAmount().value().subtract(received);
-        String paymentCcy = payment.getAmount().currency();
-        html.append("<tr>");
-        html.append("<td>").append(formatDate(payment.getDueDate(), dateFmt)).append("</td>");
-        html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
-            .append(CurrencyUtils.formatCurrency(payment.getAmount().value(), paymentCcy, locale))
-            .append("</td>");
-        html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
-            .append(
-                received.compareTo(BigDecimal.ZERO) > 0
-                    ? CurrencyUtils.formatCurrency(received, paymentCcy, locale)
-                    : "—")
-            .append("</td>");
-        html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
-            .append(
-                balance.compareTo(BigDecimal.ZERO) > 0 && payment.getStatus() != PAID
-                    ? CurrencyUtils.formatCurrency(balance, paymentCcy, locale)
-                    : "—")
-            .append("</td>");
-        html.append("<td>");
-        String payStatus = payment.getStatus().name();
-        html.append("<span class='pay-status pay-")
-            .append(payStatus.toLowerCase(Locale.ROOT))
-            .append("'>");
-        html.append(formatEnumValue(payStatus)).append("</span>");
-        html.append("</td>");
-        html.append("<td>")
-            .append(payment.getPaymentDate().map(d -> formatDate(d, dateFmt)).orElse("—"))
-            .append("</td>");
-        html.append("</tr>");
+  private List<Map<String, Object>> buildPayments(
+      List<Payment> payments, Map<UUID, BigDecimal> receivedByPayment, String ccy, Locale locale) {
+    List<Payment> sorted = new ArrayList<>(payments);
+    sorted.sort(Comparator.comparing(Payment::getDueDate).reversed());
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (Payment p : sorted) {
+      BigDecimal received = receivedByPayment.getOrDefault(p.getId(), BigDecimal.ZERO);
+      if (received.signum() == 0 && p.getStatus() == Payment.PaymentStatus.PAID) {
+        received = p.getAmount().value();
       }
-      html.append("</tbody></table>");
+      Map<String, Object> m = new HashMap<>();
+      m.put("due", formatter.date(p.getDueDate(), locale));
+      m.put("status", enumLabels.label(p.getStatus(), locale));
+      m.put("statusCode", p.getStatus().name());
+      m.put("amount", formatter.money(p.getAmount(), locale));
+      m.put("paid", CurrencyUtils.formatCurrency(received, ccy, locale));
+      out.add(m);
     }
-
-    appendPageEnd(html);
+    return out;
   }
 
   // ── Helpers ─────────────────────────────────────────────────────
+
+  private static @Nullable String opt(
+      @Nullable PaymentInstruction tpl,
+      java.util.function.Function<PaymentInstruction, Optional<String>> getter) {
+    return tpl == null ? null : getter.apply(tpl).orElse(null);
+  }
 
   private Optional<Contact> findPrimaryContact(
       List<ContractParty> parties, Map<UUID, Contact> contactMap) {
@@ -1006,10 +452,7 @@ public class ContractBookletExporter {
           agg.totalOverdue = agg.totalOverdue.add(p.getAmount().value());
           agg.countOverdue++;
         }
-        case CANCELLED -> {
-          agg.totalCancelled = agg.totalCancelled.add(p.getAmount().value());
-          agg.countCancelled++;
-        }
+        case CANCELLED -> agg.countCancelled++;
         case PARTIALLY_PAID -> {
           agg.totalPaid = agg.totalPaid.add(received);
           agg.totalPending = agg.totalPending.add(p.getAmount().value().subtract(received));
@@ -1024,37 +467,18 @@ public class ContractBookletExporter {
     return enumLabels.label("paymentMethod", value, locale);
   }
 
-  private String getPartyRoleColor(ContractPartyRole role) {
-    return switch (role) {
-      case PRIMARY_TENANT -> "#0284c7";
-      case GUARANTOR -> "#b45309";
-      case COSIGNER -> "#6d28d9";
-      case EXTRA_TENANT -> "#0f766e";
-      case SIGNER -> "#374151";
-      case CORPORATE_TENANT -> "#0369a1";
-      case AUTHORIZED_REPRESENTATIVE -> "#9333ea";
-    };
+  private static String address(Property property) {
+    return property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
   }
 
-  private String getPartyRoleBgColor(ContractPartyRole role) {
-    return switch (role) {
-      case PRIMARY_TENANT -> "#f0f9ff";
-      case GUARANTOR -> "#fffbeb";
-      case COSIGNER -> "#f5f3ff";
-      case EXTRA_TENANT -> "#f0fdfa";
-      case SIGNER -> "#f9fafb";
-      case CORPORATE_TENANT -> "#f0f9ff";
-      case AUTHORIZED_REPRESENTATIVE -> "#faf5ff";
-    };
-  }
-
-  // ── Inner types ─────────────────────────────────────────────────
-
-  private static class PaymentAggregation {
+  private static final class PaymentAggregation {
     BigDecimal totalPaid = BigDecimal.ZERO;
     BigDecimal totalPending = BigDecimal.ZERO;
     BigDecimal totalOverdue = BigDecimal.ZERO;
-    BigDecimal totalCancelled = BigDecimal.ZERO;
-    long countPaid, countPending, countOverdue, countCancelled, countPartial;
+    long countPaid;
+    long countPending;
+    long countOverdue;
+    long countCancelled;
+    long countPartial;
   }
 }
