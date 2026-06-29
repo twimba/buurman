@@ -596,5 +596,12 @@
     "description": "Velg et språk for heftet ditt",
     "yourLanguage": "Ditt språk",
     "downloadFailed": "Nedlasting av hefte mislyktes"
+  },
+  "summaryCard": {
+    "button": "Sammendrag",
+    "title": "Last ned sammendrag",
+    "description": "En oversikt på én side. Velg språk.",
+    "yourLanguage": "Ditt språk",
+    "downloadFailed": "Kunne ikke laste ned sammendrag"
   }
 }

@@ -137,6 +137,7 @@ export const BookletDownloadButton = ({
       <Button
         variant={variant}
         leftIcon={icon ?? <Download />}
+        disabled={downloadingLang !== null}
         onClick={() => setShowPopover((v) => !v)}
       >
         {t(`${keyBase}.button`)}

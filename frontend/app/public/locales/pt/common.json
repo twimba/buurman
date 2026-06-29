@@ -596,5 +596,12 @@
     "description": "Selecione um idioma para o seu caderno",
     "yourLanguage": "Seu idioma",
     "downloadFailed": "Falha ao baixar o caderno"
+  },
+  "summaryCard": {
+    "button": "Resumo",
+    "title": "Descarregar resumo",
+    "description": "Uma visão geral de uma página. Selecione um idioma.",
+    "yourLanguage": "Seu idioma",
+    "downloadFailed": "Falha ao descarregar o resumo"
   }
 }

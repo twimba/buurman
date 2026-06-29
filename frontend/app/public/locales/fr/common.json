@@ -596,5 +596,12 @@
     "description": "Sélectionnez une langue pour votre livret",
     "yourLanguage": "Votre langue",
     "downloadFailed": "Échec du téléchargement du livret"
+  },
+  "summaryCard": {
+    "button": "Fiche récap",
+    "title": "Télécharger la fiche récap",
+    "description": "Un aperçu d'une page. Choisissez une langue.",
+    "yourLanguage": "Votre langue",
+    "downloadFailed": "Échec du téléchargement de la fiche récap"
   }
 }

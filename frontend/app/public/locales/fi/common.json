@@ -596,5 +596,12 @@
     "description": "Valitse vihkon kieli",
     "yourLanguage": "Kielesi",
     "downloadFailed": "Vihkon lataaminen epäonnistui"
+  },
+  "summaryCard": {
+    "button": "Yhteenveto",
+    "title": "Lataa yhteenveto",
+    "description": "Yhden sivun yhteenveto. Valitse kieli.",
+    "yourLanguage": "Kielesi",
+    "downloadFailed": "Yhteenvedon lataaminen epäonnistui"
   }
 }

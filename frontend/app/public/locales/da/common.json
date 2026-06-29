@@ -596,5 +596,12 @@
     "description": "Vælg et sprog til dit hæfte",
     "yourLanguage": "Dit sprog",
     "downloadFailed": "Hentning af hæfte mislykkedes"
+  },
+  "summaryCard": {
+    "button": "Resumé",
+    "title": "Download resumé",
+    "description": "Et overblik på én side. Vælg sprog.",
+    "yourLanguage": "Dit sprog",
+    "downloadFailed": "Kunne ikke downloade resumé"
   }
 }

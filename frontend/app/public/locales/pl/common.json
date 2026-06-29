@@ -596,5 +596,12 @@
     "description": "Wybierz język dla swojej broszury",
     "yourLanguage": "Twój język",
     "downloadFailed": "Nie udało się pobrać broszury"
+  },
+  "summaryCard": {
+    "button": "Podsumowanie",
+    "title": "Pobierz podsumowanie",
+    "description": "Przegląd na jednej stronie. Wybierz język.",
+    "yourLanguage": "Twój język",
+    "downloadFailed": "Nie udało się pobrać podsumowania"
   }
 }

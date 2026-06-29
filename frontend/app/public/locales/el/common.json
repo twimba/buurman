@@ -596,5 +596,12 @@
     "description": "Επιλέξτε γλώσσα για το φυλλάδιό σας",
     "yourLanguage": "Η γλώσσα σας",
     "downloadFailed": "Αποτυχία λήψης φυλλαδίου"
+  },
+  "summaryCard": {
+    "button": "Σύνοψη",
+    "title": "Λήψη σύνοψης",
+    "description": "Σύνοψη μίας σελίδας. Επιλέξτε γλώσσα.",
+    "yourLanguage": "Η γλώσσα σας",
+    "downloadFailed": "Αποτυχία λήψης σύνοψης"
   }
 }

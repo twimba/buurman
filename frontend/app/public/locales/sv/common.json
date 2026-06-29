@@ -596,5 +596,12 @@
     "description": "Välj ett språk för ditt häfte",
     "yourLanguage": "Ditt språk",
     "downloadFailed": "Det gick inte att ladda ned häftet"
+  },
+  "summaryCard": {
+    "button": "Sammanfattning",
+    "title": "Ladda ner sammanfattning",
+    "description": "En översikt på en sida. Välj språk.",
+    "yourLanguage": "Ditt språk",
+    "downloadFailed": "Det gick inte att ladda ner sammanfattningen"
   }
 }

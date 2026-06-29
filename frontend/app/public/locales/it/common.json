@@ -596,5 +596,12 @@
     "description": "Seleziona una lingua per il tuo libretto",
     "yourLanguage": "La tua lingua",
     "downloadFailed": "Impossibile scaricare il libretto"
+  },
+  "summaryCard": {
+    "button": "Scheda riepilogo",
+    "title": "Scarica scheda riepilogo",
+    "description": "Una panoramica di una pagina. Seleziona una lingua.",
+    "yourLanguage": "La tua lingua",
+    "downloadFailed": "Download della scheda riepilogo non riuscito"
   }
 }

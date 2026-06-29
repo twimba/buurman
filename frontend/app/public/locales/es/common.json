@@ -596,5 +596,12 @@
     "description": "Seleccione un idioma para su folleto",
     "yourLanguage": "Su idioma",
     "downloadFailed": "Error al descargar el folleto"
+  },
+  "summaryCard": {
+    "button": "Resumen",
+    "title": "Descargar resumen",
+    "description": "Un resumen de una página. Seleccione un idioma.",
+    "yourLanguage": "Su idioma",
+    "downloadFailed": "Error al descargar el resumen"
   }
 }

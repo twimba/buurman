@@ -596,5 +596,12 @@
     "description": "Wählen Sie eine Sprache für Ihre Broschüre",
     "yourLanguage": "Ihre Sprache",
     "downloadFailed": "Broschüre konnte nicht heruntergeladen werden"
+  },
+  "summaryCard": {
+    "button": "Übersicht",
+    "title": "Übersicht herunterladen",
+    "description": "Eine einseitige Übersicht. Sprache wählen.",
+    "yourLanguage": "Ihre Sprache",
+    "downloadFailed": "Herunterladen der Übersicht fehlgeschlagen"
   }
 }
