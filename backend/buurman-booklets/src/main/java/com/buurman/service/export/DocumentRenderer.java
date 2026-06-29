@@ -1,9 +1,9 @@
 package com.buurman.service.export;
 
 /**
- * Renders an HTML document to PDF bytes. This is the swap-point seam for the rendering engine:
- * iText today ({@link ITextDocumentRenderer}), a headless-Chromium/Gotenberg sidecar next. Callers
- * depend on this interface, never on a concrete engine.
+ * Renders an HTML document to PDF bytes. The swap-point seam for the rendering engine — currently a
+ * headless-Chromium/Gotenberg sidecar ({@link GotenbergDocumentRenderer}). Callers depend on this
+ * interface, never on a concrete engine.
  */
 public interface DocumentRenderer {
 

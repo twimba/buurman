@@ -2,8 +2,8 @@ package com.buurman.service.export;
 
 /**
  * Renderer-agnostic description of the target page geometry for a generated document. Kept free of
- * any rendering-engine types so it can drive iText today and a headless-Chromium (Gotenberg)
- * renderer tomorrow.
+ * any rendering-engine types so the {@link DocumentRenderer} contract stays engine-independent
+ * (today: the headless-Chromium Gotenberg sidecar).
  */
 public record PageSpec(PaperSize size, Orientation orientation) {
 

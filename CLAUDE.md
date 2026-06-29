@@ -22,7 +22,7 @@ Buurman is a property management dashboard for small landlords (properties, tena
 - **Storage**: AWS SDK v2 / S3 (AWRust for dev)
 - **Email**: Spring Mail + Thymeleaf templates (MailHog for dev)
 - **Jobs**: Quartz Scheduler
-- **Docs**: SpringDoc OpenAPI 3.0.1, OpenCSV; PDF booklets via a pluggable `DocumentRenderer` (`booklet.renderer`: iText7 default → Gotenberg/headless-Chromium sidecar)
+- **Docs**: SpringDoc OpenAPI 3.0.1, OpenCSV; PDF booklets via `DocumentRenderer`, rendered by a **Gotenberg** (headless-Chromium) sidecar — the sole PDF engine (no in-JVM iText)
 - **Monitoring**: Prometheus + Grafana
 - **Infrastructure**: Docker Compose for local development
 

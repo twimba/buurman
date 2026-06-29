@@ -28,16 +28,8 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- PDF -->
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itext-core</artifactId>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>html2pdf</artifactId>
-        </dependency>
+        <!-- PDF rendering is delegated to the Gotenberg (headless-Chromium) sidecar over HTTP;
+             no in-JVM PDF engine dependency. -->
 
         <!-- QR codes (summary cards) -->
         <dependency>

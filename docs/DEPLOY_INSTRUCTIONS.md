@@ -203,15 +203,15 @@ V059 is additive and safe to leave in place. To fully revert, redeploy the previ
 
 ---
 
-## Booklets v2: Gotenberg PDF Renderer Sidecar
+## Booklets v2: Gotenberg PDF Renderer Sidecar (REQUIRED)
 
-**Date**: 2026-06-27
+**Date**: 2026-06-29
 
 ### Context
 
-Booklets v2 renders PDFs with a headless-Chromium **Gotenberg** sidecar instead of in-JVM iText (full modern CSS, embedded brand fonts, flawless multilingual typography incl. Greek). This adds **one new internal-only container** to the Dokploy project.
+All PDFs (booklets, summary cards, legal documents) are rendered by a headless-Chromium **Gotenberg** sidecar — full modern CSS, embedded brand fonts, flawless multilingual typography incl. Greek. The in-JVM iText engine (and its AGPL dependency) has been **removed**: Gotenberg is now the **sole renderer**, so the sidecar is a **hard runtime dependency** — the backend cannot produce PDFs without it. It runs as **one new internal-only container** in the Dokploy project (reached over the internal network only — **no public domain**).
 
-The backend selects the engine via `BOOKLET_RENDERER` (`itext` default | `gotenberg`). **Deploy the sidecar first with the engine still on `itext`** (zero behaviour change), then flip `BOOKLET_RENDERER=gotenberg` once the v2 templates ship. The renderer is reached over the internal network only — **no public domain**.
+**Deploy the `gotenberg` service before (or together with) the backend release that removes iText.** There is no in-JVM fallback.
 
 ### Prerequisites
 
@@ -238,21 +238,21 @@ In **backend** service → **Environment**, add:
 
 | Variable | Value | Notes |
 |----------|-------|-------|
-| `GOTENBERG_URL` | `http://gotenberg:3000` | Internal service hostname (matches the service name) |
-| `BOOKLET_RENDERER` | `itext` → later `gotenberg` | Keep `itext` until v2 templates ship, then flip to activate Chromium |
+| `GOTENBERG_URL` | `http://gotenberg:3000` | Internal service hostname (matches the service name). Required — the backend has no other PDF engine. |
 
 #### 3. Deploy and Verify
 
 ```bash
 make deploy-prod
 
-# From the backend container, the sidecar is reachable internally:
+# From the backend container, the sidecar must be reachable internally:
 #   curl -fsS http://gotenberg:3000/health   → status "up"
 
-# After flipping BOOKLET_RENDERER=gotenberg, generate a booklet and confirm a valid PDF:
-#   GET https://api.buurman.io/booklets/properties/{id}?lang=el   → %PDF, Greek renders (no tofu)
+# Generate a booklet and confirm a valid PDF (Greek exercises font fallback):
+#   GET https://api.buurman.io/booklets/properties/{id}?lang=el        → %PDF, no tofu
+#   GET https://api.buurman.io/properties/{id}/summary?lang=el          → %PDF (landscape card)
 ```
 
 ### Rollback
 
-Set `BOOKLET_RENDERER=itext` (or unset it) on the backend and redeploy — the backend immediately falls back to the in-JVM iText renderer, independent of the sidecar. The `gotenberg` service can then be removed. No data or schema changes are involved.
+There is no in-JVM fallback — if PDF generation breaks, fix or restart the `gotenberg` sidecar (it is stateless), or redeploy the previous backend release (the one that still bundled iText). No data or schema changes are involved.

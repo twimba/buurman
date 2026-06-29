@@ -16,7 +16,7 @@
 | **Storage** | AWS SDK v2 / S3 (AWRust for dev) |
 | **Email** | Spring Mail + Thymeleaf templates (MailHog for dev) |
 | **Jobs** | Quartz Scheduler |
-| **Docs** | SpringDoc OpenAPI 3, iText7 (PDF generation), OpenCSV |
+| **Docs** | SpringDoc OpenAPI 3, Gotenberg headless-Chromium (PDF generation), OpenCSV |
 | **Monitoring** | Prometheus + Grafana |
 | **Infra** | Docker Compose, multi-profile (local / docker) |
 

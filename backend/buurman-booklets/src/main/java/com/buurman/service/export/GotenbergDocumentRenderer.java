@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -19,14 +18,13 @@ import com.buurman.exception.DocumentRenderException;
  * Headless-Chromium implementation of {@link DocumentRenderer}, delegating to a <a
  * href="https://gotenberg.dev">Gotenberg</a> sidecar over HTTP. Chromium gives the full modern
  * CSS/typography ceiling (grid, flexbox, embedded WOFF2/variable fonts, flawless multilingual
- * shaping) and is the target engine for booklets v2.
+ * shaping) and is the sole booklet/PDF renderer.
  *
- * <p>Active only when {@code booklet.renderer=gotenberg}; otherwise {@link ITextDocumentRenderer}
- * is used. The sidecar URL is {@code booklet.gotenberg.url} (Docker/Dokploy: {@code
- * http://gotenberg:3000}; local host-run backend: {@code http://localhost:3000}).
+ * <p>The sidecar URL is {@code booklet.gotenberg.url} (Docker/Dokploy: {@code
+ * http://gotenberg:3000}; local host-run backend: {@code http://localhost:3000}). Fonts (Satoshi +
+ * Noto) are baked into the custom Gotenberg image (see {@code docker/gotenberg}).
  */
 @Component
-@ConditionalOnProperty(name = "booklet.renderer", havingValue = "gotenberg")
 class GotenbergDocumentRenderer implements DocumentRenderer {
 
   /** A4 in inches — Gotenberg/Chromium express paper size in inches. */

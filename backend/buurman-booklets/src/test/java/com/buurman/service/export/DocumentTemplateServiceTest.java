@@ -50,8 +50,20 @@ class DocumentTemplateServiceTest {
     engine.setTemplateResolver(resolver);
     engine.setMessageSource(messageSource);
 
-    DocumentRenderer pdfRenderer = new ITextDocumentRenderer();
-    service = new DocumentTemplateService(engine, pdfRenderer);
+    service = new DocumentTemplateService(engine, new CapturingRenderer());
+  }
+
+  /**
+   * Stand-in for the real (Gotenberg) renderer: PDF generation is delegated to an external sidecar,
+   * so unit tests can't produce real PDFs. This captures the HTML + page spec and returns a {@code
+   * %PDF}-prefixed stub of the HTML, letting the renderToPdf tests verify the service rendered the
+   * right (locale-specific) HTML and delegated correctly without a PDF engine on the classpath.
+   */
+  private static final class CapturingRenderer implements DocumentRenderer {
+    @Override
+    public byte[] render(String html, PageSpec page) {
+      return ("%PDF-1.7\n" + html).getBytes(UTF_8);
+    }
   }
 
   @Nested
