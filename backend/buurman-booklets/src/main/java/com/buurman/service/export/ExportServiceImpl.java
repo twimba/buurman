@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.identifier.ContactIdentifier;
@@ -65,6 +66,7 @@ public class ExportServiceImpl implements ExportService {
   }
 
   @Override
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public byte[] generatePropertyBrochurePDF(
       PropertyIdentifier propertyIdentifier, UUID teamId, Locale locale) {
     return withMetrics(
@@ -73,6 +75,7 @@ public class ExportServiceImpl implements ExportService {
   }
 
   @Override
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public byte[] generateContractReportPDF(
       ContractIdentifier contractIdentifier, UUID teamId, Locale locale) {
     return withMetrics(
@@ -81,6 +84,7 @@ public class ExportServiceImpl implements ExportService {
   }
 
   @Override
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public byte[] generateContactReportPDF(
       ContactIdentifier contactIdentifier, UUID teamId, Locale locale) {
     return withMetrics(

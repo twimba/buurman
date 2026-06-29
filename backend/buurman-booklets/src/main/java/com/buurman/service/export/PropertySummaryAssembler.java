@@ -110,11 +110,8 @@ public class PropertySummaryAssembler {
         "energyExpiry",
         property.getEnergyCertificateExpiryDate().map(d -> formatter.date(d, locale)).orElse(null));
     v.put("renovated", property.getYearLastRenovated().map(String::valueOf).orElse(null));
-    // Compound feature strings (safety/utilities/accessibility) are omitted to avoid English copy;
-    // they belong in localized bundles when the full booklet redesign lands.
-    v.put("safety", null);
-    v.put("utilities", null);
-    v.put("accessibility", null);
+    // Compound feature strings (safety/utilities/accessibility) would need localized bundles; they
+    // are intentionally not rendered yet (the template has no tiles for them).
 
     v.put(
         "qrDataUri",

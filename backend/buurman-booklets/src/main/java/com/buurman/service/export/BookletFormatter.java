@@ -36,14 +36,6 @@ public class BookletFormatter {
     return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));
   }
 
-  /** Compact day+month for tight tiles (e.g. "1 Jul" / "1 juill."). */
-  public String dateShort(@Nullable LocalDate date, Locale locale) {
-    if (date == null) {
-      return DASH;
-    }
-    return date.format(DateTimeFormatter.ofPattern("d MMM", locale));
-  }
-
   /** Whole-number percent string (locale-neutral digits + '%'); pass the percentage, e.g. 42. */
   public String percentWhole(int value) {
     return value + "%";

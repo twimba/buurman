@@ -76,21 +76,27 @@ public class ContactSummaryAssembler {
         contracts.stream().filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE).count();
     long propertiesCount = contracts.stream().map(Contract::getPropertyId).distinct().count();
 
-    BigDecimal paidSum = BigDecimal.ZERO;
-    String currency = "EUR";
+    // Sum paid amounts per currency (never across currencies). Single query for all of the
+    // contact's payments (direct + via parties) — avoids one findByContractId round-trip per
+    // contract.
+    Map<String, BigDecimal> paidByCurrency = new HashMap<>();
     int paidCount = 0;
     int overdueCount = 0;
-    // Single query for all of the contact's payments (direct + via parties) — avoids one
-    // findByContractId round-trip per contract.
     for (Payment p : paymentRepository.findByContactIdAndTeamId(contact.getId(), teamId)) {
       if (p.getStatus() == Payment.PaymentStatus.PAID) {
-        paidSum = paidSum.add(p.getAmount().value());
-        currency = p.getAmount().currency();
+        paidByCurrency.merge(p.getAmount().currency(), p.getAmount().value(), BigDecimal::add);
         paidCount++;
       } else if (p.getStatus() == Payment.PaymentStatus.OVERDUE) {
         overdueCount++;
       }
     }
+    // Render the dominant currency's total (largest sum); mixed-currency contacts are rare and a
+    // cross-currency sum would be meaningless. "—" when there are no paid payments.
+    MoneyAmount lifetimePaid =
+        paidByCurrency.entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .map(e -> MoneyAmount.of(e.getValue(), e.getKey()))
+            .orElse(null);
 
     Map<String, Object> v = new HashMap<>();
     v.put("lang", locale.getLanguage());
@@ -104,7 +110,7 @@ public class ContactSummaryAssembler {
     v.put("roleLabel", role(contact, contracts, teamId, locale));
     v.put("contractsCount", String.valueOf(contracts.size()));
     v.put("propertiesCount", String.valueOf(propertiesCount));
-    v.put("lifetimePaid", formatter.money(MoneyAmount.of(paidSum, currency), locale));
+    v.put("lifetimePaid", formatter.money(lifetimePaid, locale));
     int onTimeBase = paidCount + overdueCount;
     v.put(
         "onTimeRate",

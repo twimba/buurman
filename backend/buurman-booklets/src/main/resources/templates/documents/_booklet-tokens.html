@@ -61,8 +61,10 @@
          border-left:3px solid var(--c-primary-500); padding:16px 16px; min-height:82px;
          display:flex; flex-direction:column; justify-content:center; }
   .kpi .label { color:var(--c-primary-600); }
-  .kpi .val { font-size:25px; font-weight:800; color:var(--c-n-900); margin-top:5px; line-height:1.1;
-              white-space:nowrap; }
+  /* Money/number values fit on one line; long localized enum labels (e.g. de/fi "Vierteljährlich" /
+     "Neljännesvuosittain") wrap instead of clipping out of the fixed-width tile. */
+  .kpi .val { font-size:23px; font-weight:800; color:var(--c-n-900); margin-top:5px; line-height:1.12;
+              overflow-wrap:anywhere; }
   .kpi .val .unit { font-size:12px; font-weight:600; color:var(--muted); white-space:nowrap; }
   /* The single amber highlight — at most one per page */
   .kpi.highlight { background:var(--c-accent-50); border-left-color:var(--c-accent-500);

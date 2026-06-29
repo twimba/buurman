@@ -135,6 +135,9 @@ services:
     command:
       - "gotenberg"
       - "--api-timeout=60s"
+    # Chromium is the sole PDF engine and is memory-hungry; cap it and auto-restart on crash/OOM.
+    restart: unless-stopped
+    mem_limit: 1g
     ports:
       # Host port so a host-run backend (`make dev`) can reach it at http://localhost:3000.
       # Containerised backend (`make up`) and prod reach it as http://gotenberg:3000.
@@ -319,7 +322,7 @@ services:
       awrust:
         condition: service_healthy
       gotenberg:
-        condition: service_started
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
       interval: 30s

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -19,6 +20,7 @@ import com.buurman.domain.identifier.PropertyIdentifier;
  * contact summaries are wired here as their assemblers land.
  */
 @Service
+@PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
 public class SummaryCardService {
 
   private final TemplateEngine templateEngine;

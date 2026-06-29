@@ -139,6 +139,46 @@ class ContactSummaryAssemblerTest {
     assertThat((String) v.get("qrDataUri")).startsWith("data:image/svg+xml;base64,");
   }
 
+  @Test
+  @DisplayName("mixed-currency lifetimePaid shows the dominant currency total, not a cross-sum")
+  void mixedCurrencyShowsDominant() {
+    UUID contactId = UUID.randomUUID();
+    Contact contact =
+        Contact.builder()
+            .id(contactId)
+            .contactType(ContactType.INDIVIDUAL)
+            .displayName("X")
+            .build();
+    Contract c =
+        Contract.builder()
+            .id(UUID.randomUUID())
+            .propertyId(UUID.randomUUID())
+            .status(Contract.ContractStatus.ACTIVE)
+            .build();
+    when(contactRepository.getByIdentifierAndTeamId(ID, TEAM)).thenReturn(contact);
+    when(contractRepository.findByContactIdViaParties(contactId, TEAM)).thenReturn(List.of(c));
+    when(paymentRepository.findByContactIdAndTeamId(contactId, TEAM))
+        .thenReturn(
+            List.of(
+                paid(new BigDecimal("1000.00"), "EUR"),
+                paid(new BigDecimal("1000.00"), "EUR"),
+                paid(new BigDecimal("5000.00"), "USD")));
+
+    Map<String, Object> v = assembler.assemble(ID, TEAM, Locale.ENGLISH);
+
+    // USD 5,000 is the dominant (largest) currency total; never a meaningless 7,000 cross-sum.
+    assertThat((String) v.get("lifetimePaid")).contains("5,000").doesNotContain("7,000");
+  }
+
+  private static Payment paid(BigDecimal amount, String currency) {
+    return Payment.builder()
+        .id(UUID.randomUUID())
+        .amount(MoneyAmount.of(amount, currency))
+        .dueDate(LocalDate.parse("2026-01-01"))
+        .status(Payment.PaymentStatus.PAID)
+        .build();
+  }
+
   private static Payment payment(Payment.PaymentStatus status) {
     return Payment.builder()
         .id(UUID.randomUUID())

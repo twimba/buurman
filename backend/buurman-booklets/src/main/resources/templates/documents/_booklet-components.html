@@ -14,7 +14,7 @@
   <!--/* Bottom brand band: tagline + localized "Generated <date> · Confidential". */-->
   <div th:fragment="brandFooter(tagline,generatedDate)" class="brand-footer" style="height:40px;">
     <span class="tagline" th:text="${tagline}">Your portfolio, in focus.</span>
-    <span th:text="#{summary.generated} + ' ' + ${generatedDate} + ' · ' + #{summary.confidential}">Generated</span>
+    <span th:text="#{summary.generatedMeta(${generatedDate})}">Generated</span>
   </div>
 
   <!--/* One KPI tile. variant: '' | 'highlight' (amber) | 'danger' (red). */-->

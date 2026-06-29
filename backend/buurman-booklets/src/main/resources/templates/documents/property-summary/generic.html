@@ -50,7 +50,7 @@
         <div th:replace="~{_booklet-components :: kpi(${isVacant} ? #{summary.property.vacant} : #{summary.field.monthlyRent},${headlineMoney},null,${isVacant} ? 'danger' : 'highlight')}"></div>
       </div>
 
-      <!-- Detail rows -->
+      <!-- Detail row (wired, localized fields only) -->
       <div class="detail">
         <div class="field" th:if="${parking}">
           <div class="label" th:text="#{summary.property.parking}">Parking</div>
@@ -59,20 +59,6 @@
         <div class="field" th:if="${energyExpiry}">
           <div class="label" th:text="#{summary.property.energyExpiry}">Energy certificate</div>
           <div class="v" th:text="${energyExpiry}">Valid to 2030</div>
-        </div>
-        <div class="field" th:if="${safety}">
-          <div class="label" th:text="#{summary.property.safety}">Safety</div>
-          <div class="v" th:text="${safety}">Smoke · CO · Alarm</div>
-        </div>
-      </div>
-      <div class="detail" th:if="${utilities != null or accessibility != null or renovated != null}">
-        <div class="field" th:if="${utilities}">
-          <div class="label" th:text="#{summary.property.utilities}">Utilities</div>
-          <div class="v" th:text="${utilities}">Gas · Fibre 1 Gbps</div>
-        </div>
-        <div class="field" th:if="${accessibility}">
-          <div class="label" th:text="#{summary.property.accessibility}">Accessibility</div>
-          <div class="v" th:text="${accessibility}">Elevator · Step-free</div>
         </div>
         <div class="field" th:if="${renovated}">
           <div class="label" th:text="#{summary.property.renovated}">Last renovated</div>

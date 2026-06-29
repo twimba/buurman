@@ -133,9 +133,7 @@ public class ContractSummaryAssembler {
     v.put("termLabel", enumLabels.label(contract.getContractType(), locale));
     v.put(
         "nextPaymentAmount", nextDue.map(p -> formatter.money(p.getAmount(), locale)).orElse("—"));
-    v.put(
-        "nextPaymentWhen",
-        nextDue.map(p -> formatter.dateShort(p.getDueDate(), locale)).orElse(""));
+    v.put("nextPaymentWhen", nextDue.map(p -> formatter.date(p.getDueDate(), locale)).orElse(""));
     v.put(
         "nextPaymentDanger",
         nextDue.map(p -> p.getStatus() == Payment.PaymentStatus.OVERDUE).orElse(false));
