@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<!--/*
+  Redesigned multi-page contact dossier (A4 portrait), rendered by Gotenberg/Chromium.
+  Values arrive pre-formatted & localized from ContactBookletExporter#buildModel; rich text
+  (profile notes, note bodies) is pre-sanitized and emitted with th:utext.
+*/-->
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${lang}" th:dir="${dir != null ? dir : 'ltr'}">
+<head>
+  <meta charset="UTF-8"/>
+  <th:block th:replace="~{_booklet-tokens :: styles}"></th:block>
+  <style>
+    @page { size: A4 portrait; margin: 0; }
+    .tagrow { margin-bottom:14px; display:flex; gap:6px; flex-wrap:wrap; }
+    .tag { font-size:10px; font-weight:600; color:var(--c-primary-700); background:var(--c-primary-50);
+           border:1px solid var(--c-primary-100); border-radius:999px; padding:3px 10px; }
+    .active-tag { color:var(--c-success); font-weight:700; font-size:10px; letter-spacing:.5px;
+                  text-transform:uppercase; margin-left:8px; }
+    .note { border:1px solid var(--hairline); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:10px; }
+    .note .meta { display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-bottom:5px; }
+    .note .subj { font-weight:700; font-size:12px; color:var(--c-n-700); margin-bottom:3px; }
+    .note .body { font-size:11px; color:var(--c-n-600); line-height:1.5; }
+  </style>
+</head>
+<body>
+
+  <!-- COVER -->
+  <div class="page">
+    <div class="page-band"><span class="t">buurman</span><span class="k" th:text="#{booklet.contact.title}">Contact Dossier</span></div>
+    <div class="cover">
+      <div class="eyebrow" th:text="${contactTypeLabel}">Individual</div>
+      <h1 th:text="${contactName}">Luís Santos</h1>
+      <div class="cref num" th:text="${contactIdentifier}">CT-5001</div>
+      <table class="sumtbl">
+        <tr th:if="${email}"><td class="k" th:text="#{cover.email}">Email</td><td th:text="${email}">—</td></tr>
+        <tr th:if="${phone}"><td class="k" th:text="#{cover.phone}">Phone</td><td th:text="${phone}">—</td></tr>
+        <tr><td class="k" th:text="#{cover.active.contracts}">Active contracts</td><td th:text="${activeContracts}">0</td></tr>
+        <tr><td class="k" th:text="#{cover.total.contracts}">Total contracts</td><td th:text="${totalContracts}">0</td></tr>
+        <tr th:if="${currentProperty}"><td class="k" th:text="#{cover.current.property}">Current property</td><td th:text="${currentProperty}">—</td></tr>
+      </table>
+      <img th:if="${qrDataUri}" th:src="${qrDataUri}" alt="QR" style="width:96px;height:96px;margin-top:26px;"/>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contactIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="page">
+    <div class="page-band"><span class="t" th:text="#{page.contact.profile}">Profile</span><span class="k num" th:text="${contactIdentifier}">CT-5001</span></div>
+    <div class="pad">
+      <div class="tagrow" th:if="${tags != null and !tags.isEmpty()}">
+        <span class="tag" th:each="t : ${tags}" th:text="${t}">Tenant</span>
+      </div>
+      <div class="sec" th:text="${isIndividual} ? #{section.personal.information} : #{section.organisation.information}">Personal information</div>
+      <div class="grid">
+        <div class="f"><div class="l" th:text="#{field.display.name}">Name</div><div class="v" th:text="${contactName}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.contact.type}">Type</div><div class="v" th:text="${contactTypeLabel}">—</div></div>
+        <div class="f" th:if="${email}"><div class="l" th:text="#{field.email}">Email</div><div class="v" th:text="${email}">—</div></div>
+        <div class="f" th:if="${phone}"><div class="l" th:text="#{field.phone}">Phone</div><div class="v" th:text="${phone}">—</div></div>
+        <div class="f" th:if="${dateOfBirth}"><div class="l" th:text="#{field.date.of.birth}">Date of birth</div><div class="v" th:text="${dateOfBirth}">—</div></div>
+        <div class="f" th:if="${companyName}"><div class="l" th:text="#{field.company.name}">Company</div><div class="v" th:text="${companyName}">—</div></div>
+        <div class="f" th:if="${tradeName}"><div class="l" th:text="#{field.trade.name}">Trade name</div><div class="v" th:text="${tradeName}">—</div></div>
+        <div class="f" th:if="${industry}"><div class="l" th:text="#{field.industry}">Industry</div><div class="v" th:text="${industry}">—</div></div>
+        <div class="f" th:if="${website}"><div class="l" th:text="#{field.website}">Website</div><div class="v" th:text="${website}">—</div></div>
+        <div class="f" th:if="${taxNumber}"><div class="l" th:text="#{field.tax.number}">Tax number</div><div class="v num" th:text="${taxNumber}">—</div></div>
+        <div class="f" th:if="${idNumber}"><div class="l" th:text="#{field.government.id}">ID</div><div class="v num" th:text="${idNumber}">—</div></div>
+        <div class="f" th:if="${currentProperty}"><div class="l" th:text="#{field.current.property}">Current property</div><div class="v" th:text="${currentProperty}">—</div></div>
+      </div>
+
+      <th:block th:if="${profileNotesHtml}">
+        <div class="sec" th:text="#{section.notes}">Notes</div>
+        <div class="prose" th:utext="${profileNotesHtml}">…</div>
+      </th:block>
+
+      <div class="sec" th:text="#{section.financial.summary}">Financial summary</div>
+      <div class="kpi-row">
+        <div th:replace="~{_booklet-components :: kpi(#{summary.total.paid},${totalPaid},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.outstanding},${outstanding},null,${hasOutstanding} ? 'danger' : '')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.active.contracts},${activeContracts},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.total.contracts},${totalContracts},null,'')}"></div>
+      </div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contactIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- ADDRESSES -->
+  <div class="page" th:if="${addresses != null and !addresses.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.addresses}">Addresses</span><span class="k num" th:text="${contactIdentifier}">CT-5001</span></div>
+    <div class="pad">
+      <div class="card-item" th:each="a : ${addresses}">
+        <div class="ro"><span th:text="${a.type}">Mailing</span><span th:if="${a.active}" class="active-tag" th:text="#{value.active}">Active</span></div>
+        <div class="nm" th:text="${a.street}">Street</div>
+        <div class="ct" th:text="${a.city} + (${a.country} != null ? ' · ' + ${a.country} : '')">City</div>
+      </div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contactIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- RENTAL HISTORY -->
+  <div class="page" th:if="${rentals != null and !rentals.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.rental.history}">Rental history</span><span class="k num" th:text="${contactIdentifier}">CT-5001</span></div>
+    <div class="pad">
+      <div class="card-item" th:each="r : ${rentals}">
+        <div class="ro"><span th:text="${r.role}">Tenant</span>
+          <span class="badge" style="font-size:9px;padding:2px 8px;margin-left:8px;" th:classappend="'s-' + ${#strings.toLowerCase(r.statusCode)}" th:text="${r.status}">Active</span></div>
+        <div class="nm" th:text="${r.property}">Property</div>
+        <div class="grid" style="margin-top:8px;">
+          <div class="f"><div class="l" th:text="#{field.contract.id}">Contract</div><div class="v num" th:text="${r.contractId}">—</div></div>
+          <div class="f"><div class="l" th:text="#{field.contract.type}">Type</div><div class="v" th:text="${r.type}">—</div></div>
+          <div class="f"><div class="l" th:text="#{field.start.date}">Start</div><div class="v" th:text="${r.start}">—</div></div>
+          <div class="f"><div class="l" th:text="#{field.end.date}">End</div><div class="v" th:text="${r.end}">—</div></div>
+          <div class="f"><div class="l" th:text="#{field.rent.amount}">Rent</div><div class="v" th:text="${r.rent}">—</div></div>
+          <div class="f"><div class="l" th:text="#{field.payment.frequency}">Frequency</div><div class="v" th:text="${r.frequency}">—</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contactIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- PAYMENT HISTORY -->
+  <div class="page" th:if="${payments != null and !payments.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.payment.history}">Payment history</span><span class="k num" th:text="${contactIdentifier}">CT-5001</span></div>
+    <div class="pad">
+      <div class="sec" th:text="#{section.recent.payments}">Recent payments</div>
+      <table class="tbl">
+        <thead><tr>
+          <th th:text="#{col.due.date}">Due</th>
+          <th th:text="#{col.payment.date}">Paid on</th>
+          <th th:text="#{col.status}">Status</th>
+          <th class="r" th:text="#{col.amount}">Amount</th>
+        </tr></thead>
+        <tbody>
+          <tr th:each="pm : ${payments}">
+            <td th:text="${pm.due}">—</td>
+            <td th:text="${pm.paidOn}">—</td>
+            <td><span class="badge" style="font-size:9px;padding:2px 8px;" th:classappend="'s-' + ${#strings.toLowerCase(pm.statusCode)}" th:text="${pm.status}">Paid</span></td>
+            <td class="r num" th:text="${pm.amount}">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contactIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="page" th:if="${notes != null and !notes.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.notes}">Notes</span><span class="k num" th:text="${contactIdentifier}">CT-5001</span></div>
+    <div class="pad">
+      <div class="note" th:each="n : ${notes}">
+        <div class="meta"><span th:text="${n.type} + (${n.pinned} ? ' · ' + #{value.pinned} : '')">Call</span><span th:text="${n.date} + ' · ' + ${n.author}">date</span></div>
+        <div class="subj" th:if="${n.subject}" th:text="${n.subject}">Subject</div>
+        <div class="body" th:utext="${n.body}">…</div>
+      </div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contactIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- RELATIONSHIPS -->
+  <div class="page" th:if="${relationships != null and !relationships.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.relationships}">Relationships</span><span class="k num" th:text="${contactIdentifier}">CT-5001</span></div>
+    <div class="pad">
+      <table class="tbl">
+        <thead><tr><th th:text="#{col.related.contact}">Contact</th><th th:text="#{col.relationship}">Relationship</th><th th:text="#{col.notes}">Notes</th></tr></thead>
+        <tbody><tr th:each="rel : ${relationships}"><td th:text="${rel.name}">—</td><td th:text="${rel.type}">—</td><td th:text="${rel.notes}">—</td></tr></tbody>
+      </table>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contactIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+</body>
+</html>

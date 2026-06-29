@@ -46,6 +46,11 @@ class SummaryCardPreviewGenerator {
         "contract-booklet",
         bookletEngine("document-contract-booklet")
             .process("contract-booklet/generic", ctx(contractBooklet())));
+    write(
+        dir,
+        "contact-booklet",
+        bookletEngine("document-contact-booklet")
+            .process("contact-booklet/generic", ctx(contactBooklet())));
     System.out.println(
         "[preview] wrote summary cards + multi-page booklet to " + dir.toAbsolutePath());
   }
@@ -250,6 +255,171 @@ class SummaryCardPreviewGenerator {
     v.put("totalOverdue", "€1,450.00");
     v.put("overdueCount", 1);
     v.put("qrDataUri", qr.toSvgDataUri("https://app.buurman.io/contracts/C-2024-0187"));
+    return v;
+  }
+
+  private Map<String, Object> contactBooklet() {
+    Map<String, Object> v = base("Contact");
+    v.put("contactName", "Luís Santos");
+    v.put("contactTypeLabel", "Individual");
+    v.put("contactIdentifier", "CT-5001");
+    v.put("isIndividual", true);
+    v.put("email", "luis.santos@example.com");
+    v.put("phone", "+31 6 12 34 56 78");
+    v.put("website", null);
+    v.put("companyName", null);
+    v.put("tradeName", null);
+    v.put("industry", null);
+    v.put("dateOfBirth", "4 Mar 1989");
+    v.put("taxNumber", "NL0000.00.000.B01");
+    v.put("idNumber", null);
+    v.put("currentProperty", "Kerkstraat 14, Amsterdam");
+    v.put("tags", List.of("Tenant", "Primary", "Reliable payer"));
+    v.put("profileNotesHtml", "<p>Long-standing tenant; prefers contact by email. No arrears.</p>");
+    v.put("totalPaid", "€34,800.00");
+    v.put("outstanding", "€1,450.00");
+    v.put("hasOutstanding", true);
+    v.put("activeContracts", "1");
+    v.put("totalContracts", "2");
+    v.put(
+        "addresses",
+        List.of(
+            Map.of(
+                "type",
+                "Current",
+                "active",
+                true,
+                "street",
+                "Kerkstraat 14",
+                "city",
+                "Amsterdam, 1017 GC",
+                "country",
+                "NL"),
+            Map.of(
+                "type",
+                "Mailing",
+                "active",
+                false,
+                "street",
+                "Postbus 123",
+                "city",
+                "Amsterdam, 1000 AA",
+                "country",
+                "NL")));
+    v.put(
+        "rentals",
+        List.of(
+            Map.of(
+                "role",
+                "Primary tenant",
+                "status",
+                "Active",
+                "statusCode",
+                "ACTIVE",
+                "property",
+                "Kerkstraat 14, Amsterdam",
+                "contractId",
+                "C-2024-0187",
+                "type",
+                "Fixed term",
+                "start",
+                "1 Jan 2024",
+                "end",
+                "Ongoing",
+                "rent",
+                "€1,450.00",
+                "frequency",
+                "Monthly"),
+            Map.of(
+                "role",
+                "Primary tenant",
+                "status",
+                "Expired",
+                "statusCode",
+                "EXPIRED",
+                "property",
+                "Lindenlaan 7, Utrecht",
+                "contractId",
+                "C-2021-0042",
+                "type",
+                "Fixed term",
+                "start",
+                "1 Jan 2021",
+                "end",
+                "31 Dec 2023",
+                "rent",
+                "€1,200.00",
+                "frequency",
+                "Monthly")));
+    v.put(
+        "payments",
+        List.of(
+            Map.of(
+                "due",
+                "1 Jun 2026",
+                "paidOn",
+                "—",
+                "status",
+                "Overdue",
+                "statusCode",
+                "OVERDUE",
+                "amount",
+                "€1,450.00"),
+            Map.of(
+                "due",
+                "1 May 2026",
+                "paidOn",
+                "1 May 2026",
+                "status",
+                "Paid",
+                "statusCode",
+                "PAID",
+                "amount",
+                "€1,450.00"),
+            Map.of(
+                "due",
+                "1 Apr 2026",
+                "paidOn",
+                "2 Apr 2026",
+                "status",
+                "Paid",
+                "statusCode",
+                "PAID",
+                "amount",
+                "€1,450.00")));
+    v.put(
+        "notes",
+        List.of(
+            Map.of(
+                "type",
+                "Call",
+                "pinned",
+                true,
+                "date",
+                "12 May 2026",
+                "author",
+                "A. Bakker",
+                "subject",
+                "Annual review",
+                "body",
+                "Discussed rent indexation for 2027. Tenant agreeable."),
+            Map.of(
+                "type",
+                "Email",
+                "pinned",
+                false,
+                "date",
+                "3 Apr 2026",
+                "author",
+                "A. Bakker",
+                "subject",
+                "—",
+                "body",
+                "Confirmed payment received.")));
+    v.put(
+        "relationships",
+        List.of(Map.of("name", "Maria Santos", "type", "Spouse", "notes", "Co-occupant")));
+    v.put("qrDataUri", qr.toSvgDataUri("https://app.buurman.io/contacts/CT-5001"));
     return v;
   }
 
