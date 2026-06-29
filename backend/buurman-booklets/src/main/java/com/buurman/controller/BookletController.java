@@ -42,7 +42,6 @@ import com.buurman.service.export.ExtensionDocumentGenerationService;
 import com.buurman.service.export.RentChangeDocumentExporter;
 import com.buurman.service.export.RentChangeDocumentGenerationService;
 import com.buurman.service.export.RentIncreaseLetterExporter;
-import com.buurman.service.export.SummaryCardService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -62,7 +61,6 @@ public class BookletController implements BookletsApi {
   private final RentChangeDocumentExporter rentChangeDocumentExporter;
   private final ExtensionDocumentGenerationService extensionDocumentGenerationService;
   private final RentChangeDocumentGenerationService rentChangeDocumentGenerationService;
-  private final SummaryCardService summaryCardService;
   private final FeatureFlagService featureFlagService;
   private final GoogleSheetTitleResolver titleResolver;
   private final HttpServletRequest httpServletRequest;
@@ -295,7 +293,7 @@ public class BookletController implements BookletsApi {
       @PathVariable ContractIdentifier contractId, @RequestParam(defaultValue = "en") String lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     byte[] pdf =
-        summaryCardService.contractSummary(
+        exportService.generateContractSummaryPDF(
             contractId, principal.requireTeamId(), resolveLocale(lang));
     return summaryResponse("contract-" + contractId.value(), pdf);
   }
@@ -305,7 +303,7 @@ public class BookletController implements BookletsApi {
       @PathVariable PropertyIdentifier propertyId, @RequestParam(defaultValue = "en") String lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     byte[] pdf =
-        summaryCardService.propertySummary(
+        exportService.generatePropertySummaryPDF(
             propertyId, principal.requireTeamId(), resolveLocale(lang));
     return summaryResponse("property-" + propertyId.value(), pdf);
   }
@@ -315,7 +313,7 @@ public class BookletController implements BookletsApi {
       @PathVariable ContactIdentifier contactId, @RequestParam(defaultValue = "en") String lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     byte[] pdf =
-        summaryCardService.contactSummary(
+        exportService.generateContactSummaryPDF(
             contactId, principal.requireTeamId(), resolveLocale(lang));
     return summaryResponse("contact-" + contactId.value(), pdf);
   }

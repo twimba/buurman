@@ -31,6 +31,7 @@ public class ExportServiceImpl implements ExportService {
   private final PropertyBookletExporter propertyBookletExporter;
   private final ContractBookletExporter contractBookletExporter;
   private final ContactBookletExporter contactBookletExporter;
+  private final SummaryCardService summaryCardService;
   private final PropertyDashboardPdfExporter propertyDashboardPdfExporter;
   private final PropertyDashboardCsvExporter propertyDashboardCsvExporter;
   private final PortfolioDashboardPdfExporter portfolioDashboardPdfExporter;
@@ -89,6 +90,33 @@ public class ExportServiceImpl implements ExportService {
       ContactIdentifier contactIdentifier, UUID teamId, Locale locale) {
     return withMetrics(
         "contact_report", () -> contactBookletExporter.generate(contactIdentifier, teamId, locale));
+  }
+
+  @Override
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public byte[] generatePropertySummaryPDF(
+      PropertyIdentifier propertyIdentifier, UUID teamId, Locale locale) {
+    return withMetrics(
+        "property_summary",
+        () -> summaryCardService.propertySummary(propertyIdentifier, teamId, locale));
+  }
+
+  @Override
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public byte[] generateContractSummaryPDF(
+      ContractIdentifier contractIdentifier, UUID teamId, Locale locale) {
+    return withMetrics(
+        "contract_summary",
+        () -> summaryCardService.contractSummary(contractIdentifier, teamId, locale));
+  }
+
+  @Override
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public byte[] generateContactSummaryPDF(
+      ContactIdentifier contactIdentifier, UUID teamId, Locale locale) {
+    return withMetrics(
+        "contact_summary",
+        () -> summaryCardService.contactSummary(contactIdentifier, teamId, locale));
   }
 
   @Override

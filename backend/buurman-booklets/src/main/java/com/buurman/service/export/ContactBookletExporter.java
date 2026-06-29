@@ -78,6 +78,7 @@ public class ContactBookletExporter {
   private final ContractPartyService contractPartyService;
   private final DocumentRenderer pdfRenderer;
   private final MessageSource messageSource;
+  private final EnumLabelResolver enumLabels;
   private final Clock clock;
 
   public ContactBookletExporter(
@@ -93,6 +94,7 @@ public class ContactBookletExporter {
       ContractPartyService contractPartyService,
       DocumentRenderer pdfRenderer,
       @Qualifier("contactBookletMessageSource") MessageSource messageSource,
+      EnumLabelResolver enumLabels,
       Clock clock) {
     this.contactRepository = contactRepository;
     this.contactAddressRepository = contactAddressRepository;
@@ -106,6 +108,7 @@ public class ContactBookletExporter {
     this.contractPartyService = contractPartyService;
     this.pdfRenderer = pdfRenderer;
     this.messageSource = messageSource;
+    this.enumLabels = enumLabels;
     this.clock = clock;
   }
 
@@ -456,7 +459,7 @@ public class ContactBookletExporter {
     for (ContactAddress addr : addresses) {
       String type =
           addr.getAddressType() != null
-              ? formatEnumValue(addr.getAddressType().name())
+              ? enumLabels.label(addr.getAddressType(), locale)
               : msg("value.other", locale);
       boolean isActive = addr.getStatus() != null && addr.getStatus().name().equals("ACTIVE");
       String borderColor = isActive ? "#0284c7" : "#a8a29e";
@@ -530,7 +533,7 @@ public class ContactBookletExporter {
               ? escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity())
               : msg("value.unknown", locale);
       ContractPartyRole role = contractRoles.get(contract.getId());
-      String roleLabel = role != null ? formatEnumValue(role.name()) : "—";
+      String roleLabel = role != null ? enumLabels.label(role, locale) : "—";
       String statusName = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
       boolean isActive = statusName.equals("ACTIVE");
       String borderColor = isActive ? "#0284c7" : "#a8a29e";
@@ -575,7 +578,7 @@ public class ContactBookletExporter {
           html,
           msg("field.contract.type", locale),
           contract.getContractType() != null
-              ? formatEnumValue(contract.getContractType().name())
+              ? enumLabels.label(contract.getContractType(), locale)
               : "—");
       html.append("</tr><tr>");
       appendField(
@@ -600,7 +603,7 @@ public class ContactBookletExporter {
           html,
           msg("field.payment.frequency", locale),
           contract.getPaymentFrequency() != null
-              ? formatEnumValue(contract.getPaymentFrequency().name())
+              ? enumLabels.label(contract.getPaymentFrequency(), locale)
               : "—");
       html.append("</tr></table>");
 

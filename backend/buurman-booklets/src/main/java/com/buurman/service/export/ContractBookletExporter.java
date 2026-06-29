@@ -82,6 +82,7 @@ public class ContractBookletExporter {
   private final ContractPartyService contractPartyService;
   private final DocumentRenderer pdfRenderer;
   private final MessageSource messageSource;
+  private final EnumLabelResolver enumLabels;
   private final Clock clock;
 
   public ContractBookletExporter(
@@ -97,6 +98,7 @@ public class ContractBookletExporter {
       ContractPartyService contractPartyService,
       DocumentRenderer pdfRenderer,
       @Qualifier("contractBookletMessageSource") MessageSource messageSource,
+      EnumLabelResolver enumLabels,
       Clock clock) {
     this.contractRepository = contractRepository;
     this.propertyRepository = propertyRepository;
@@ -110,6 +112,7 @@ public class ContractBookletExporter {
     this.contractPartyService = contractPartyService;
     this.pdfRenderer = pdfRenderer;
     this.messageSource = messageSource;
+    this.enumLabels = enumLabels;
     this.clock = clock;
   }
 
@@ -117,17 +120,6 @@ public class ContractBookletExporter {
     return java.util.Objects.requireNonNullElse(
         messageSource.getMessage(key, null, key, locale), key);
   }
-
-  private static final Map<String, String> PAYMENT_METHOD_LABELS =
-      Map.of(
-          "BANK_TRANSFER", "Bank Transfer",
-          "PAYPAL", "PayPal",
-          "CASH", "Cash",
-          "CHECK", "Check",
-          "DIRECT_DEBIT", "Direct Debit",
-          "IDEAL_WERO", "iDEAL / Wero",
-          "ZELLE", "Zelle",
-          "OTHER", "Other");
 
   public byte[] generate(ContractIdentifier contractIdentifier, UUID teamId, Locale locale) {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
@@ -410,7 +402,7 @@ public class ContractBookletExporter {
         html,
         msg("field.renewal.mode", locale),
         contract.getRenewalMode() != null
-            ? formatEnumValue(contract.getRenewalMode().name())
+            ? enumLabels.label(contract.getRenewalMode(), locale)
             : msg("value.none", locale));
     appendField(
         html,
@@ -469,12 +461,12 @@ public class ContractBookletExporter {
     appendField(
         html,
         msg("field.property.type", locale),
-        formatEnumValue(property.getPropertyType().name()));
+        enumLabels.label(property.getPropertyType(), locale));
     html.append("</tr><tr>");
     appendField(
         html,
         msg("field.category", locale),
-        formatEnumValue(property.getPropertyCategory().name()));
+        enumLabels.label(property.getPropertyCategory(), locale));
     appendField(
         html, msg("field.property.id", locale), property.getIdentifier().orElseThrow().value());
     html.append("</tr><tr>");
@@ -768,7 +760,7 @@ public class ContractBookletExporter {
       }
       if (piMethod != null && !piMethod.isBlank()) {
         html.append("<span class='pi-method'>")
-            .append(formatPaymentMethod(piMethod))
+            .append(formatPaymentMethod(piMethod, locale))
             .append("</span>");
       }
       if (isCurrent) {
@@ -1028,11 +1020,8 @@ public class ContractBookletExporter {
     return agg;
   }
 
-  private String formatPaymentMethod(@Nullable String value) {
-    if (value == null) {
-      return "";
-    }
-    return PAYMENT_METHOD_LABELS.getOrDefault(value, formatEnumValue(value));
+  private String formatPaymentMethod(@Nullable String value, Locale locale) {
+    return enumLabels.label("paymentMethod", value, locale);
   }
 
   private String getPartyRoleColor(ContractPartyRole role) {

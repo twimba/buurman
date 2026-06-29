@@ -32,6 +32,15 @@ public interface ExportService {
 
   byte[] generateContactReportPDF(ContactIdentifier contactIdentifier, UUID teamId, Locale locale);
 
+  // One-page A4-landscape summary cards
+  byte[] generatePropertySummaryPDF(
+      PropertyIdentifier propertyIdentifier, UUID teamId, Locale locale);
+
+  byte[] generateContractSummaryPDF(
+      ContractIdentifier contractIdentifier, UUID teamId, Locale locale);
+
+  byte[] generateContactSummaryPDF(ContactIdentifier contactIdentifier, UUID teamId, Locale locale);
+
   byte[] generatePropertyDashboardPDF(PropertyDashboardResponse dashboard, UUID teamId);
 
   byte[] generatePropertyDashboardCSV(PropertyDashboardResponse dashboard);

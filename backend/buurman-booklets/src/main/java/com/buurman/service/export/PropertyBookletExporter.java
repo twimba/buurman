@@ -111,6 +111,7 @@ public class PropertyBookletExporter {
   private final TeamPreferencesRepository teamPreferencesRepository;
   private final DocumentRenderer pdfRenderer;
   private final MessageSource messageSource;
+  private final EnumLabelResolver enumLabels;
   private final Clock clock;
 
   public PropertyBookletExporter(
@@ -134,6 +135,7 @@ public class PropertyBookletExporter {
       TeamPreferencesRepository teamPreferencesRepository,
       DocumentRenderer pdfRenderer,
       @Qualifier("propertyBookletMessageSource") MessageSource messageSource,
+      EnumLabelResolver enumLabels,
       Clock clock) {
     this.propertyRepository = propertyRepository;
     this.residentialDetailsRepository = residentialDetailsRepository;
@@ -154,6 +156,7 @@ public class PropertyBookletExporter {
     this.propertyDashboardService = propertyDashboardService;
     this.teamPreferencesRepository = teamPreferencesRepository;
     this.pdfRenderer = pdfRenderer;
+    this.enumLabels = enumLabels;
     this.messageSource = messageSource;
     this.clock = clock;
   }
@@ -391,7 +394,7 @@ public class PropertyBookletExporter {
         html,
         msg("cover.property.type", locale),
         propertyTypeIconHtml(property.getPropertyType().name())
-            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
+            + escapeHtml(enumLabels.label(property.getPropertyType(), locale)));
     appendCoverCell(html, msg("cover.location", locale), location);
     html.append("</tr><tr>");
     String bedBath =
@@ -421,7 +424,7 @@ public class PropertyBookletExporter {
         html,
         msg("cover.property.type", locale),
         propertyTypeIconHtml(property.getPropertyType().name())
-            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
+            + escapeHtml(enumLabels.label(property.getPropertyType(), locale)));
     appendCoverCell(html, msg("cover.location", locale), location);
     html.append("</tr><tr>");
     String usable =
@@ -460,7 +463,7 @@ public class PropertyBookletExporter {
         html,
         msg("cover.property.type", locale),
         propertyTypeIconHtml(property.getPropertyType().name())
-            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
+            + escapeHtml(enumLabels.label(property.getPropertyType(), locale)));
     appendCoverCell(html, msg("cover.location", locale), location);
     html.append("</tr><tr>");
     appendCoverCell(html, msg("cover.total.area", locale), area);
@@ -501,7 +504,7 @@ public class PropertyBookletExporter {
         html,
         msg("cover.property.type", locale),
         propertyTypeIconHtml(property.getPropertyType().name())
-            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
+            + escapeHtml(enumLabels.label(property.getPropertyType(), locale)));
     appendCoverCell(html, msg("cover.location", locale), location);
     html.append("</tr><tr>");
     appendCoverCell(
@@ -538,7 +541,7 @@ public class PropertyBookletExporter {
         html,
         msg("cover.property.type", locale),
         propertyTypeIconHtml(property.getPropertyType().name())
-            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
+            + escapeHtml(enumLabels.label(property.getPropertyType(), locale)));
     appendCoverCell(html, msg("cover.location", locale), location);
     html.append("</tr><tr>");
     appendCoverCell(html, msg("cover.total.area", locale), area);
@@ -573,8 +576,8 @@ public class PropertyBookletExporter {
     appendField(
         html,
         msg("field.property.type", locale),
-        formatEnumValue(property.getPropertyType().name()));
-    appendField(html, msg("field.status", locale), formatEnumValue(property.getStatus().name()));
+        enumLabels.label(property.getPropertyType(), locale));
+    appendField(html, msg("field.status", locale), enumLabels.label(property.getStatus(), locale));
     html.append("</tr><tr>");
     appendField(html, msg("field.total.area", locale), area);
     appendField(

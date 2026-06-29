@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.buurman.domain.ContactAddress;
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.Contract;
@@ -50,7 +51,9 @@ class EnumLabelBundleParityTest {
           ContractExtension.RentAdjustmentType.class,
           ContactType.class,
           ContractPartyRole.class,
-          ContactTag.class);
+          ContactTag.class,
+          Contract.RenewalMode.class,
+          ContactAddress.AddressType.class);
 
   private static Properties load(String resource) throws Exception {
     Properties p = new Properties();
