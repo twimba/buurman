@@ -328,13 +328,13 @@ public class PropertyBookletExporter {
     appendPhotoGalleryPage(html, photos);
     String currency =
         dashboard != null ? dashboard.summary().currency().orElse(teamCurrency) : teamCurrency;
-    appendFinancialOverviewPage(html, yearSummaries, currency);
+    appendFinancialOverviewPage(html, yearSummaries, currency, locale);
 
     if (dashboard != null) {
       appendDashboardPage(html, dashboard, teamCurrency);
     }
 
-    appendContractsPage(html, contracts, teamId);
+    appendContractsPage(html, contracts, teamId, locale);
 
     appendDocumentEnd(html);
     return html.toString();
@@ -1024,7 +1024,7 @@ public class PropertyBookletExporter {
           msg("field.certificate.expiry", locale),
           property
               .getEnergyCertificateExpiryDate()
-              .map(d -> d.format(DateTimeFormatter.ofPattern("MMM d, yyyy")))
+              .map(d -> d.format(DateTimeFormatter.ofPattern("d MMM yyyy", locale)))
               .orElse("—"));
       html.append("</tr>");
     }
@@ -1353,7 +1353,8 @@ public class PropertyBookletExporter {
   private void appendFinancialOverviewPage(
       StringBuilder html,
       Map<Integer, FinancialYearSummary> yearSummaries,
-      @Nullable String currency) {
+      @Nullable String currency,
+      Locale locale) {
     if (yearSummaries.isEmpty()) {
       return;
     }
@@ -1375,21 +1376,21 @@ public class PropertyBookletExporter {
                   + " style='font-size:10px;color:#78716c;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Income</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#059669;'>")
-          .append(CurrencyUtils.formatCurrency(summary.income, ccy))
+          .append(CurrencyUtils.formatCurrency(summary.income, ccy, locale))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#78716c;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Expenses</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#dc2626;'>")
-          .append(CurrencyUtils.formatCurrency(summary.expenses, ccy))
+          .append(CurrencyUtils.formatCurrency(summary.expenses, ccy, locale))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#78716c;text-transform:uppercase;letter-spacing:1px;'>Net"
                   + " Profit</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#0284c7;'>")
-          .append(CurrencyUtils.formatCurrency(summary.getNetProfit(), ccy))
+          .append(CurrencyUtils.formatCurrency(summary.getNetProfit(), ccy, locale))
           .append("</div></td>");
       html.append("</tr></table>");
       html.append("</div>");
@@ -1400,7 +1401,8 @@ public class PropertyBookletExporter {
 
   // ── Page: Contracts ─────────────────────────────────────────────
 
-  private void appendContractsPage(StringBuilder html, List<Contract> contracts, UUID teamId) {
+  private void appendContractsPage(
+      StringBuilder html, List<Contract> contracts, UUID teamId, Locale locale) {
     if (contracts.isEmpty()) {
       return;
     }
@@ -1445,7 +1447,7 @@ public class PropertyBookletExporter {
       html.append("<td>")
           .append(
               CurrencyUtils.formatCurrency(
-                  contract.getRentAmount().value(), contract.getRentAmount().currency()))
+                  contract.getRentAmount().value(), contract.getRentAmount().currency(), locale))
           .append("</td>");
       html.append("<td>")
           .append(
@@ -1573,6 +1575,10 @@ public class PropertyBookletExporter {
     return value != null ? value.toPlainString() + "%" : "N/A";
   }
 
+  // NOTE: the optional dashboard embed is not locale-threaded — it uses the deprecated
+  // locale-unaware formatter. The main booklet financial overview IS locale-correct (see
+  // appendFinancialOverviewPage).
+  @SuppressWarnings("deprecation")
   private static String fmtMoney(@Nullable BigDecimal value, String currencyCode) {
     return CurrencyUtils.formatCurrency(value, currencyCode);
   }

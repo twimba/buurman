@@ -289,7 +289,7 @@ public class ContractBookletExporter {
     appendCoverCell(
         html,
         msg("cover.current.rent", locale),
-        CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
+        CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy, locale));
     String period =
         formatDate(contract.getStartDate(), dateFmt)
             + " — "
@@ -372,20 +372,22 @@ public class ContractBookletExporter {
     appendField(
         html,
         msg("field.current.rent", locale),
-        CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
+        CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy, locale));
     appendField(
         html,
         msg("field.deposit.amount", locale),
         CurrencyUtils.formatCurrency(
             contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value).orElse(null),
-            ccy));
+            ccy,
+            locale));
     html.append("</tr><tr>");
     appendField(
         html,
         msg("field.security.deposit", locale),
         CurrencyUtils.formatCurrency(
             contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null),
-            ccy));
+            ccy,
+            locale));
     appendField(
         html,
         msg("field.currency", locale),
@@ -639,7 +641,7 @@ public class ContractBookletExporter {
       html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;")
           .append(isCurrent ? "font-weight:600;" : "")
           .append("'>")
-          .append(CurrencyUtils.formatCurrency(period.getRentAmount().value(), ccy))
+          .append(CurrencyUtils.formatCurrency(period.getRentAmount().value(), ccy, locale))
           .append("</td>");
 
       // Percentage change vs next older period
@@ -877,7 +879,7 @@ public class ContractBookletExporter {
         html,
         msg("status.paid", locale),
         agg.countPaid,
-        CurrencyUtils.formatCurrency(agg.totalPaid, ccy),
+        CurrencyUtils.formatCurrency(agg.totalPaid, ccy, locale),
         "#f0fdf4",
         "#16a34a",
         "#166534");
@@ -885,7 +887,7 @@ public class ContractBookletExporter {
         html,
         msg("status.pending", locale),
         agg.countPending,
-        CurrencyUtils.formatCurrency(agg.totalPending, ccy),
+        CurrencyUtils.formatCurrency(agg.totalPending, ccy, locale),
         "#fefce8",
         "#ca8a04",
         "#854d0e");
@@ -898,7 +900,8 @@ public class ContractBookletExporter {
                 .filter(p -> p.getStatus() == PARTIALLY_PAID)
                 .map(p -> p.getAmount().value())
                 .reduce(BigDecimal.ZERO, BigDecimal::add),
-            ccy),
+            ccy,
+            locale),
         "#f0f9ff",
         "#0284c7",
         "#0c4a6e");
@@ -906,7 +909,7 @@ public class ContractBookletExporter {
         html,
         msg("status.overdue", locale),
         agg.countOverdue,
-        CurrencyUtils.formatCurrency(agg.totalOverdue, ccy),
+        CurrencyUtils.formatCurrency(agg.totalOverdue, ccy, locale),
         "#fef2f2",
         "#dc2626",
         "#991b1b");
@@ -951,18 +954,18 @@ public class ContractBookletExporter {
         html.append("<tr>");
         html.append("<td>").append(formatDate(payment.getDueDate(), dateFmt)).append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
-            .append(CurrencyUtils.formatCurrency(payment.getAmount().value(), paymentCcy))
+            .append(CurrencyUtils.formatCurrency(payment.getAmount().value(), paymentCcy, locale))
             .append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
             .append(
                 received.compareTo(BigDecimal.ZERO) > 0
-                    ? CurrencyUtils.formatCurrency(received, paymentCcy)
+                    ? CurrencyUtils.formatCurrency(received, paymentCcy, locale)
                     : "—")
             .append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
             .append(
                 balance.compareTo(BigDecimal.ZERO) > 0 && payment.getStatus() != PAID
-                    ? CurrencyUtils.formatCurrency(balance, paymentCcy)
+                    ? CurrencyUtils.formatCurrency(balance, paymentCcy, locale)
                     : "—")
             .append("</td>");
         html.append("<td>");

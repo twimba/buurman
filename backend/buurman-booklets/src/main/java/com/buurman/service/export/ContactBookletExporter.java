@@ -595,7 +595,7 @@ public class ContactBookletExporter {
           html,
           msg("field.rent.amount", locale),
           CurrencyUtils.formatCurrency(
-              contract.getRentAmount().value(), contract.getRentAmount().currency()));
+              contract.getRentAmount().value(), contract.getRentAmount().currency(), locale));
       appendField(
           html,
           msg("field.payment.frequency", locale),
@@ -702,7 +702,7 @@ public class ContactBookletExporter {
       html.append("<td style='font-variant-numeric:tabular-nums;'>")
           .append(
               CurrencyUtils.formatCurrency(
-                  payment.getAmount().value(), payment.getAmount().currency()))
+                  payment.getAmount().value(), payment.getAmount().currency(), locale))
           .append("</td>");
       html.append("<td>")
           .append(payment.getPaymentDate().map(d -> d.format(shortFmt)).orElse("—"))
