@@ -65,7 +65,7 @@ class SummaryCardPreviewGenerator {
   private Map<String, Object> contract() {
     Map<String, Object> v = base("Tenancy Summary");
     v.put("propertyAddress", "Kerkstraat 14, 1017 GC Amsterdam");
-    v.put("contractIdentifier", "C-2024-0187");
+    v.put("contractIdentifier", "CON01KWARB2PX4W0J4WGV7RG3S6P6");
     v.put("statusCode", "ACTIVE");
     v.put("statusLabel", "Active");
     v.put("landlordName", "Vastgoed Bakker B.V.");
@@ -99,7 +99,7 @@ class SummaryCardPreviewGenerator {
     v.put("propertyAddress", "Kerkstraat 14");
     v.put("propertyTypeLabel", "Apartment");
     v.put("propertyCategoryLabel", "Residential");
-    v.put("propertyIdentifier", "P-001");
+    v.put("propertyIdentifier", "PRO01KWARB1XZVENQXM5JYS9N5ZK7");
     v.put("statusCode", "OCCUPIED");
     v.put("statusLabel", "Occupied");
     v.put("heroGroundClass", "hs-occupied");
@@ -128,16 +128,16 @@ class SummaryCardPreviewGenerator {
     Map<String, Object> v = base("Contact Summary");
     v.put("contactName", "Luís Santos");
     v.put("contactTypeLabel", "Individual");
-    v.put("contactIdentifier", "CT-5001");
+    v.put("contactIdentifier", "CTC01KWARB1RQ8M2Q9JK6PHQXMN8H");
     v.put("tags", List.of("Tenant", "Primary", "Reliable payer"));
     v.put("activeContracts", "3");
     v.put("heroSizeClass", "hero-l");
     v.put("roleLabel", "Tenant");
     v.put("contractsCount", "5");
     v.put("propertiesCount", "2");
-    v.put("lifetimePaid", "€34,800.00");
+    v.put("lifetimePaid", "€128,450.00");
     v.put("onTimeRate", "98%");
-    v.put("primaryChannelValue", "+31 6 12 34 56 78");
+    v.put("primaryChannelValue", "+447133235331");
     v.put("email", "luis.santos@example.com");
     v.put("phone", "+31 6 12 34 56 78");
     v.put("website", null);
@@ -488,14 +488,21 @@ class SummaryCardPreviewGenerator {
     v.put(
         "parkingFields",
         List.of(
-            Map.of("l", "Parking type", "v", "Garage"),
-            Map.of("l", "Parking spaces", "v", "1")));
+            Map.of("l", "Parking type", "v", "Garage"), Map.of("l", "Parking spaces", "v", "1")));
 
     v.put(
         "amenityGroups",
         List.of(
-            Map.of("category", "Indoor", "items", List.of("Dishwasher", "Washing Machine", "Built-in Wardrobes")),
-            Map.of("category", "Building", "items", List.of("Elevator", "Bicycle Storage", "Intercom"))));
+            Map.of(
+                "category",
+                "Indoor",
+                "items",
+                List.of("Dishwasher", "Washing Machine", "Built-in Wardrobes")),
+            Map.of(
+                "category",
+                "Building",
+                "items",
+                List.of("Elevator", "Bicycle Storage", "Intercom"))));
     v.put(
         "outdoorAreas",
         List.of(
@@ -536,18 +543,58 @@ class SummaryCardPreviewGenerator {
     v.put(
         "financialYears",
         List.of(
-            Map.of("year", "2025", "income", "€17,400.00", "expenses", "€4,180.00", "net", "€13,220.00"),
-            Map.of("year", "2024", "income", "€16,800.00", "expenses", "€5,940.00", "net", "€10,860.00")));
+            Map.of(
+                "year",
+                "2025",
+                "income",
+                "€17,400.00",
+                "expenses",
+                "€4,180.00",
+                "net",
+                "€13,220.00"),
+            Map.of(
+                "year",
+                "2024",
+                "income",
+                "€16,800.00",
+                "expenses",
+                "€5,940.00",
+                "net",
+                "€10,860.00")));
 
     v.put(
         "contracts",
         List.of(
             Map.of(
-                "id", "C-2024-0187", "contact", "Luís Santos", "start", "1 Jan 2024",
-                "end", "Ongoing", "rent", "€1,450.00", "statusCode", "ACTIVE", "statusLabel", "Active"),
+                "id",
+                "C-2024-0187",
+                "contact",
+                "Luís Santos",
+                "start",
+                "1 Jan 2024",
+                "end",
+                "Ongoing",
+                "rent",
+                "€1,450.00",
+                "statusCode",
+                "ACTIVE",
+                "statusLabel",
+                "Active"),
             Map.of(
-                "id", "C-2021-0042", "contact", "Anna de Vries", "start", "1 Feb 2021",
-                "end", "31 Dec 2023", "rent", "€1,300.00", "statusCode", "EXPIRED", "statusLabel", "Expired")));
+                "id",
+                "C-2021-0042",
+                "contact",
+                "Anna de Vries",
+                "start",
+                "1 Feb 2021",
+                "end",
+                "31 Dec 2023",
+                "rent",
+                "€1,300.00",
+                "statusCode",
+                "EXPIRED",
+                "statusLabel",
+                "Expired")));
 
     v.put("hasDashboard", true);
     v.put(

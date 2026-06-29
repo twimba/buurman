@@ -17,10 +17,12 @@
     <span th:text="#{summary.generatedMeta(${generatedDate})}">Generated</span>
   </div>
 
-  <!--/* One KPI tile. variant: '' | 'highlight' (amber) | 'danger' (red). */-->
+  <!--/* One KPI tile. variant: '' | 'highlight' (amber) | 'danger' (red).
+         The value font auto-shrinks by character count so long money / phone values stay on one
+         line instead of breaking mid-digit (v-sm ≥10 chars, v-xs ≥13). */-->
   <div th:fragment="kpi(label,value,unit,variant)" class="kpi" th:classappend="${variant}">
     <div class="label" th:text="${label}">LABEL</div>
-    <div class="val num"><span th:text="${value}">0</span><span class="unit" th:if="${unit}" th:text="' ' + ${unit}"></span></div>
+    <div class="val num" th:classappend="${value == null ? '' : (#strings.length(value) >= 13 ? 'v-xs' : (#strings.length(value) >= 10 ? 'v-sm' : ''))}"><span th:text="${value}">0</span><span class="unit" th:if="${unit}" th:text="' ' + ${unit}"></span></div>
   </div>
 
   <!--/* Status badge: code drives the colour class (active/vacant/overdue/...). */-->
