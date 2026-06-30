@@ -1,8 +1,6 @@
 import { useEditor, EditorContent, Extension } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
 import Highlight from '@tiptap/extension-highlight';
-import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
 import DOMPurify from 'dompurify';
@@ -86,19 +84,23 @@ export const RichTextEditor = ({
   });
 
   const editor = useEditor({
+    // Required for React 19 / StrictMode: defer ProseMirror view creation until after mount so the
+    // keymap (Enter → new paragraph, etc.) binds to the live view instead of a discarded one.
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
-      }),
-      Underline,
-      Highlight.configure({ multicolor: false }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class:
-            'text-primary-600 dark:text-primary-400 underline cursor-pointer',
+        // Link & Underline ship inside StarterKit v3 — configure Link here rather than re-adding the
+        // standalone extensions; duplicate extensions corrupt the schema/keymap.
+        link: {
+          openOnClick: false,
+          HTMLAttributes: {
+            class:
+              'text-primary-600 dark:text-primary-400 underline cursor-pointer',
+          },
         },
       }),
+      Highlight.configure({ multicolor: false }),
       Placeholder.configure({ placeholder }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Extension.create({
