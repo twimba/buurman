@@ -199,7 +199,7 @@ services:
       - buurman-network
 
   postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.19.1
+    image: prometheuscommunity/postgres-exporter:v0.20.0
     environment:
       DATA_SOURCE_NAME: "postgresql://${DB_USERNAME:-buurman}:${DB_PASSWORD:-buurman}@postgres:5432/buurman?sslmode=disable"
     depends_on:
