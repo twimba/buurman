@@ -135,11 +135,11 @@ class SummaryCardPreviewGenerator {
     v.put("roleLabel", "Tenant");
     v.put("contractsCount", "5");
     v.put("propertiesCount", "2");
-    v.put("lifetimePaid", "€128,450.00");
+    v.put("lifetimePaid", "€45,920.00");
     v.put("onTimeRate", "98%");
-    v.put("primaryChannelValue", "+447133235331");
+    v.put("primaryChannelValue", "+43631187167");
     v.put("email", "luis.santos@example.com");
-    v.put("phone", "+31 6 12 34 56 78");
+    v.put("phone", "+43631187167");
     v.put("website", null);
     v.put("mailingAddress", "Kerkstraat 14, 1017 GC Amsterdam");
     v.put("taxId", "NL0000.00.000.B01");

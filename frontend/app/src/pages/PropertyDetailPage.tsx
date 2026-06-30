@@ -204,11 +204,17 @@ export const PropertyDetailPage = () => {
   };
 
   const handleDownloadBooklet = async (lang: string) => {
-    downloadBlob(await downloadPropertyBooklet(id, lang), `property-booklet-${lang}.pdf`);
+    downloadBlob(
+      await downloadPropertyBooklet(id, lang),
+      `property-booklet-${lang}.pdf`
+    );
   };
 
   const handleDownloadSummary = async (lang: string) => {
-    downloadBlob(await downloadPropertySummary(id, lang), `property-${id}-summary-${lang}.pdf`);
+    downloadBlob(
+      await downloadPropertySummary(id, lang),
+      `property-${id}-summary-${lang}.pdf`
+    );
   };
 
   if (isLoading) {

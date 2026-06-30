@@ -117,11 +117,17 @@ export const ContractDetailPage = () => {
   };
 
   const handleDownloadBooklet = async (lang: string) => {
-    downloadBlob(await downloadContractBooklet(id, lang), `contract-booklet-${lang}.pdf`);
+    downloadBlob(
+      await downloadContractBooklet(id, lang),
+      `contract-booklet-${lang}.pdf`
+    );
   };
 
   const handleDownloadSummary = async (lang: string) => {
-    downloadBlob(await downloadContractSummary(id, lang), `contract-${id}-summary-${lang}.pdf`);
+    downloadBlob(
+      await downloadContractSummary(id, lang),
+      `contract-${id}-summary-${lang}.pdf`
+    );
   };
 
   if (isLoading) {

@@ -65,10 +65,13 @@
      "Neljännesvuosittain") wrap instead of clipping out of the fixed-width tile. */
   .kpi .val { font-size:23px; font-weight:800; color:var(--c-n-900); margin-top:5px; line-height:1.12;
               overflow-wrap:anywhere; }
-  /* Auto-shrink long values (money/phone/long enum labels) so they stay on one line instead of
-     breaking mid-digit. Applied by character count in the kpi fragment. */
-  .kpi .val.v-sm { font-size:18px; }
-  .kpi .val.v-xs { font-size:15px; letter-spacing:-.2px; }
+  /* Auto-shrink long values (money/phone/email/long enum labels) so they stay on one line instead
+     of breaking mid-digit. Applied by character count in the kpi fragment; tuned for the narrowest
+     (5-tile) summary-card row. */
+  .kpi .val.v-sm  { font-size:18px; }
+  .kpi .val.v-md  { font-size:16px; }
+  .kpi .val.v-xs  { font-size:14px; letter-spacing:-.2px; }
+  .kpi .val.v-xxs { font-size:12px; letter-spacing:-.3px; }
   .kpi .val .unit { font-size:12px; font-weight:600; color:var(--muted); white-space:nowrap; }
   /* The single amber highlight — at most one per page */
   .kpi.highlight { background:var(--c-accent-50); border-left-color:var(--c-accent-500);

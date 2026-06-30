@@ -161,11 +161,17 @@ export const ContactDetailPage = () => {
   const deletePhotoMutation = useDeletePhoto();
 
   const handleDownloadBooklet = async (lang: string) => {
-    downloadBlob(await downloadContactBooklet(id, lang), `contact-booklet-${lang}.pdf`);
+    downloadBlob(
+      await downloadContactBooklet(id, lang),
+      `contact-booklet-${lang}.pdf`
+    );
   };
 
   const handleDownloadSummary = async (lang: string) => {
-    downloadBlob(await downloadContactSummary(id, lang), `contact-${id}-summary-${lang}.pdf`);
+    downloadBlob(
+      await downloadContactSummary(id, lang),
+      `contact-${id}-summary-${lang}.pdf`
+    );
   };
 
   const handleDelete = async () => {

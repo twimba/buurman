@@ -81,10 +81,10 @@ import com.buurman.util.FeatureFlags;
 /**
  * Generates the multi-page property dossier PDF. Loads the property + category-specific details +
  * amenities + outdoor areas + photos + financials + contracts (+ optional investment dashboard),
- * projects everything into a localized, list-driven view-model ({@link #buildModel}) and renders the
- * {@code property-booklet/generic} Thymeleaf template via Gotenberg/Chromium. All money/dates/enum
- * labels are pre-formatted &amp; localized here; the template only lays out (no category branching,
- * no hardcoded English).
+ * projects everything into a localized, list-driven view-model ({@link #buildModel}) and renders
+ * the {@code property-booklet/generic} Thymeleaf template via Gotenberg/Chromium. All
+ * money/dates/enum labels are pre-formatted &amp; localized here; the template only lays out (no
+ * category branching, no hardcoded English).
  */
 @Component
 public class PropertyBookletExporter {
@@ -314,26 +314,44 @@ public class PropertyBookletExporter {
 
     // ── Property overview ──
     List<Map<String, Object>> details = new ArrayList<>();
-    addAlways(details, msg("field.property.type", locale), enumLabels.label(property.getPropertyType(), locale));
+    addAlways(
+        details,
+        msg("field.property.type", locale),
+        enumLabels.label(property.getPropertyType(), locale));
     addAlways(details, msg("field.status", locale), enumLabels.label(property.getStatus(), locale));
     addAlways(details, msg("field.total.area", locale), area);
-    addAlways(details, msg("field.number.of.floors", locale), property.getNumberOfFloors().map(Object::toString).orElse(null));
-    addAlways(details, msg("field.year.built", locale), property.getYearBuilt().map(Object::toString).orElse(null));
-    addAlways(details, msg("field.last.renovated", locale), property.getYearLastRenovated().map(Object::toString).orElse(null));
+    addAlways(
+        details,
+        msg("field.number.of.floors", locale),
+        property.getNumberOfFloors().map(Object::toString).orElse(null));
+    addAlways(
+        details,
+        msg("field.year.built", locale),
+        property.getYearBuilt().map(Object::toString).orElse(null));
+    addAlways(
+        details,
+        msg("field.last.renovated", locale),
+        property.getYearLastRenovated().map(Object::toString).orElse(null));
     v.put("detailsFields", details);
 
     v.put("constructionFields", buildConstructionFields(property, locale));
 
     CategorySection cat =
         buildCategorySection(
-            category, residentialDetails, commercialDetails, industrialDetails, agriculturalDetails, locale);
+            category,
+            residentialDetails,
+            commercialDetails,
+            industrialDetails,
+            agriculturalDetails,
+            locale);
     v.put("categoryTitle", cat.title);
     v.put("categoryFields", cat.fields);
 
     v.put("structuralNotes", property.getStructuralNotes().filter(s -> !s.isBlank()).orElse(null));
 
     // ── Building specifications (skipped for agricultural) ──
-    String energyRating = property.getEnergyEfficiencyRating().filter(s -> !s.isBlank()).orElse(null);
+    String energyRating =
+        property.getEnergyEfficiencyRating().filter(s -> !s.isBlank()).orElse(null);
     List<Map<String, Object>> energyFields = buildEnergyFields(property, locale);
     String insulationNotes = property.getInsulationNotes().filter(s -> !s.isBlank()).orElse(null);
     List<Map<String, Object>> utilitiesFields = buildUtilitiesFields(property, locale);
@@ -403,39 +421,92 @@ public class PropertyBookletExporter {
       Locale locale) {
     List<Map<String, Object>> rows = new ArrayList<>();
     if (category == COMMERCIAL && commercial != null) {
-      addRow(rows, msg("cover.usable.common.area", locale),
-          areaDisplay(commercial.getUsableAreaValue().orElse(null), commercial.getUsableAreaUnit().orElse(null))
+      addRow(
+          rows,
+          msg("cover.usable.common.area", locale),
+          areaDisplay(
+                  commercial.getUsableAreaValue().orElse(null),
+                  commercial.getUsableAreaUnit().orElse(null))
               + " / "
-              + areaDisplay(commercial.getCommonAreaValue().orElse(null), commercial.getCommonAreaUnit().orElse(null)));
-      addRow(rows, msg("cover.floor.level", locale), commercial.getFloorLevel().map(Object::toString).orElse(null));
-      addRow(rows, msg("cover.ceiling.height", locale),
-          measureDisplay(commercial.getCeilingHeightValue().orElse(null), commercial.getCeilingHeightUnit().orElse(null), "m"));
+              + areaDisplay(
+                  commercial.getCommonAreaValue().orElse(null),
+                  commercial.getCommonAreaUnit().orElse(null)));
+      addRow(
+          rows,
+          msg("cover.floor.level", locale),
+          commercial.getFloorLevel().map(Object::toString).orElse(null));
+      addRow(
+          rows,
+          msg("cover.ceiling.height", locale),
+          measureDisplay(
+              commercial.getCeilingHeightValue().orElse(null),
+              commercial.getCeilingHeightUnit().orElse(null),
+              "m"));
     } else if (category == INDUSTRIAL && industrial != null) {
       addRow(rows, msg("cover.total.area", locale), area);
-      addRow(rows, msg("cover.clear.height", locale),
-          measureDisplay(industrial.getClearHeightValue().orElse(null), industrial.getClearHeightUnit().orElse(null), "m"));
-      addRow(rows, msg("cover.loading.docks", locale), industrial.getLoadingDocks().map(Object::toString).orElse(null));
-      addRow(rows, msg("cover.power.capacity", locale),
-          industrial.getPowerCapacityValue().map(p -> p + " " + industrial.getPowerCapacityUnit().orElse("kVA")).orElse(null));
+      addRow(
+          rows,
+          msg("cover.clear.height", locale),
+          measureDisplay(
+              industrial.getClearHeightValue().orElse(null),
+              industrial.getClearHeightUnit().orElse(null),
+              "m"));
+      addRow(
+          rows,
+          msg("cover.loading.docks", locale),
+          industrial.getLoadingDocks().map(Object::toString).orElse(null));
+      addRow(
+          rows,
+          msg("cover.power.capacity", locale),
+          industrial
+              .getPowerCapacityValue()
+              .map(p -> p + " " + industrial.getPowerCapacityUnit().orElse("kVA"))
+              .orElse(null));
     } else if (category == AGRICULTURAL && agricultural != null) {
-      addRow(rows, msg("cover.total.land.area", locale),
-          areaDisplay(agricultural.getTotalLandAreaValue().orElse(null), agricultural.getTotalLandAreaUnit().orElse(null)));
-      addRow(rows, msg("cover.arable.area", locale),
-          areaDisplay(agricultural.getArableAreaValue().orElse(null), agricultural.getArableAreaUnit().orElse(null)));
-      addRow(rows, msg("cover.soil.type", locale), agricultural.getSoilType().map(BookletHelper::formatEnumValue).orElse(null));
-      addRow(rows, msg("cover.current.use", locale), agricultural.getCurrentUse().map(BookletHelper::formatEnumValue).orElse(null));
+      addRow(
+          rows,
+          msg("cover.total.land.area", locale),
+          areaDisplay(
+              agricultural.getTotalLandAreaValue().orElse(null),
+              agricultural.getTotalLandAreaUnit().orElse(null)));
+      addRow(
+          rows,
+          msg("cover.arable.area", locale),
+          areaDisplay(
+              agricultural.getArableAreaValue().orElse(null),
+              agricultural.getArableAreaUnit().orElse(null)));
+      addRow(
+          rows,
+          msg("cover.soil.type", locale),
+          agricultural.getSoilType().map(BookletHelper::formatEnumValue).orElse(null));
+      addRow(
+          rows,
+          msg("cover.current.use", locale),
+          agricultural.getCurrentUse().map(BookletHelper::formatEnumValue).orElse(null));
     } else if (category == RESIDENTIAL && residential != null) {
       String bedBath =
           residential.getBedrooms().map(b -> b + " " + msg("cover.bed", locale)).orElse("—")
               + " / "
-              + residential.getBathrooms().map(b -> b + " " + msg("cover.bath", locale)).orElse("—");
+              + residential
+                  .getBathrooms()
+                  .map(b -> b + " " + msg("cover.bath", locale))
+                  .orElse("—");
       addRow(rows, msg("cover.bedrooms.bathrooms", locale), bedBath);
       addRow(rows, msg("cover.total.area", locale), area);
-      addRow(rows, msg("cover.year.built", locale), property.getYearBuilt().map(Object::toString).orElse(null));
+      addRow(
+          rows,
+          msg("cover.year.built", locale),
+          property.getYearBuilt().map(Object::toString).orElse(null));
     } else {
       addRow(rows, msg("cover.total.area", locale), area);
-      addRow(rows, msg("cover.year.built", locale), property.getYearBuilt().map(Object::toString).orElse(null));
-      addRow(rows, msg("cover.floor.level", locale), property.getNumberOfFloors().map(Object::toString).orElse(null));
+      addRow(
+          rows,
+          msg("cover.year.built", locale),
+          property.getYearBuilt().map(Object::toString).orElse(null));
+      addRow(
+          rows,
+          msg("cover.floor.level", locale),
+          property.getNumberOfFloors().map(Object::toString).orElse(null));
     }
     return rows;
   }
@@ -462,51 +533,159 @@ public class PropertyBookletExporter {
       Locale locale) {
     List<Map<String, Object>> f = new ArrayList<>();
     if (category == RESIDENTIAL && residential != null) {
-      addField(f, msg("field.bedrooms", locale), residential.getBedrooms().map(Object::toString).orElse(null));
-      addField(f, msg("field.bathrooms", locale), residential.getBathrooms().map(Object::toString).orElse(null));
+      addField(
+          f,
+          msg("field.bedrooms", locale),
+          residential.getBedrooms().map(Object::toString).orElse(null));
+      addField(
+          f,
+          msg("field.bathrooms", locale),
+          residential.getBathrooms().map(Object::toString).orElse(null));
       addField(f, msg("field.furnished", locale), yesNo(residential.getFurnished(), locale));
-      addField(f, msg("field.pet.policy", locale), residential.getPetPolicy().map(BookletHelper::formatEnumValue).orElse(null));
+      addField(
+          f,
+          msg("field.pet.policy", locale),
+          residential.getPetPolicy().map(BookletHelper::formatEnumValue).orElse(null));
       return new CategorySection(msg("section.residential.details", locale), f);
     }
     if (category == COMMERCIAL && commercial != null) {
-      addField(f, msg("field.usable.area", locale), areaDisplay(commercial.getUsableAreaValue().orElse(null), commercial.getUsableAreaUnit().orElse(null)));
-      addField(f, msg("field.common.area", locale), areaDisplay(commercial.getCommonAreaValue().orElse(null), commercial.getCommonAreaUnit().orElse(null)));
-      addField(f, msg("field.floor.level", locale), commercial.getFloorLevel().map(Object::toString).orElse(null));
-      addField(f, msg("field.ceiling.height", locale), measureDisplay(commercial.getCeilingHeightValue().orElse(null), commercial.getCeilingHeightUnit().orElse(null), "m"));
+      addField(
+          f,
+          msg("field.usable.area", locale),
+          areaDisplay(
+              commercial.getUsableAreaValue().orElse(null),
+              commercial.getUsableAreaUnit().orElse(null)));
+      addField(
+          f,
+          msg("field.common.area", locale),
+          areaDisplay(
+              commercial.getCommonAreaValue().orElse(null),
+              commercial.getCommonAreaUnit().orElse(null)));
+      addField(
+          f,
+          msg("field.floor.level", locale),
+          commercial.getFloorLevel().map(Object::toString).orElse(null));
+      addField(
+          f,
+          msg("field.ceiling.height", locale),
+          measureDisplay(
+              commercial.getCeilingHeightValue().orElse(null),
+              commercial.getCeilingHeightUnit().orElse(null),
+              "m"));
       addField(f, msg("field.storefront", locale), yesNo(commercial.getHasStorefront(), locale));
-      addField(f, msg("field.signage.rights", locale), yesNo(commercial.getHasSignageRights(), locale));
-      addField(f, msg("field.max.occupancy", locale), commercial.getMaxOccupancy().map(Object::toString).orElse(null));
-      addField(f, msg("field.restrooms", locale), commercial.getRestroomCount().map(Object::toString).orElse(null));
-      addField(f, msg("field.kitchen.facility", locale), yesNo(commercial.getHasKitchenFacility(), locale));
-      addField(f, msg("field.accessibility.compliant", locale), yesNo(commercial.getAccessibilityCompliant(), locale));
+      addField(
+          f, msg("field.signage.rights", locale), yesNo(commercial.getHasSignageRights(), locale));
+      addField(
+          f,
+          msg("field.max.occupancy", locale),
+          commercial.getMaxOccupancy().map(Object::toString).orElse(null));
+      addField(
+          f,
+          msg("field.restrooms", locale),
+          commercial.getRestroomCount().map(Object::toString).orElse(null));
+      addField(
+          f,
+          msg("field.kitchen.facility", locale),
+          yesNo(commercial.getHasKitchenFacility(), locale));
+      addField(
+          f,
+          msg("field.accessibility.compliant", locale),
+          yesNo(commercial.getAccessibilityCompliant(), locale));
       addField(f, msg("field.zoning", locale), commercial.getZoningClassification().orElse(null));
       return new CategorySection(msg("section.commercial.details", locale), f);
     }
     if (category == INDUSTRIAL && industrial != null) {
-      addField(f, msg("field.clear.height", locale), measureDisplay(industrial.getClearHeightValue().orElse(null), industrial.getClearHeightUnit().orElse(null), "m"));
-      addField(f, msg("field.loading.docks", locale), industrial.getLoadingDocks().map(Object::toString).orElse(null));
-      addField(f, msg("field.drive.in.doors", locale), industrial.getDriveInDoors().map(Object::toString).orElse(null));
-      addField(f, msg("field.floor.load.capacity", locale), measureDisplay(industrial.getFloorLoadCapacityValue().orElse(null), industrial.getFloorLoadCapacityUnit().orElse(null), "kg/m²"));
-      addField(f, msg("field.power.capacity", locale), industrial.getPowerCapacityValue().map(p -> p + " " + industrial.getPowerCapacityUnit().orElse("kVA")).orElse(null));
-      addField(f, msg("field.three.phase.power", locale), yesNo(industrial.getHasThreePhasePower(), locale));
+      addField(
+          f,
+          msg("field.clear.height", locale),
+          measureDisplay(
+              industrial.getClearHeightValue().orElse(null),
+              industrial.getClearHeightUnit().orElse(null),
+              "m"));
+      addField(
+          f,
+          msg("field.loading.docks", locale),
+          industrial.getLoadingDocks().map(Object::toString).orElse(null));
+      addField(
+          f,
+          msg("field.drive.in.doors", locale),
+          industrial.getDriveInDoors().map(Object::toString).orElse(null));
+      addField(
+          f,
+          msg("field.floor.load.capacity", locale),
+          measureDisplay(
+              industrial.getFloorLoadCapacityValue().orElse(null),
+              industrial.getFloorLoadCapacityUnit().orElse(null),
+              "kg/m²"));
+      addField(
+          f,
+          msg("field.power.capacity", locale),
+          industrial
+              .getPowerCapacityValue()
+              .map(p -> p + " " + industrial.getPowerCapacityUnit().orElse("kVA"))
+              .orElse(null));
+      addField(
+          f,
+          msg("field.three.phase.power", locale),
+          yesNo(industrial.getHasThreePhasePower(), locale));
       addField(f, msg("field.crane", locale), craneText(industrial, locale));
-      addField(f, msg("field.hazmat.certification", locale), yesNo(industrial.getHasHazmatCertification(), locale));
-      addField(f, msg("field.ventilation.system", locale), yesNo(industrial.getHasVentilationSystem(), locale));
-      addField(f, msg("field.climate.control", locale), yesNo(industrial.getHasClimateControl(), locale));
-      addField(f, msg("field.yard.area", locale), areaDisplay(industrial.getYardAreaValue().orElse(null), industrial.getYardAreaUnit().orElse(null)));
+      addField(
+          f,
+          msg("field.hazmat.certification", locale),
+          yesNo(industrial.getHasHazmatCertification(), locale));
+      addField(
+          f,
+          msg("field.ventilation.system", locale),
+          yesNo(industrial.getHasVentilationSystem(), locale));
+      addField(
+          f,
+          msg("field.climate.control", locale),
+          yesNo(industrial.getHasClimateControl(), locale));
+      addField(
+          f,
+          msg("field.yard.area", locale),
+          areaDisplay(
+              industrial.getYardAreaValue().orElse(null),
+              industrial.getYardAreaUnit().orElse(null)));
       addField(f, msg("field.zoning", locale), industrial.getZoningClassification().orElse(null));
       return new CategorySection(msg("section.industrial.details", locale), f);
     }
     if (category == AGRICULTURAL && agricultural != null) {
-      addField(f, msg("field.total.land.area", locale), areaDisplay(agricultural.getTotalLandAreaValue().orElse(null), agricultural.getTotalLandAreaUnit().orElse(null)));
-      addField(f, msg("field.arable.area", locale), areaDisplay(agricultural.getArableAreaValue().orElse(null), agricultural.getArableAreaUnit().orElse(null)));
-      addField(f, msg("field.soil.type", locale), agricultural.getSoilType().map(BookletHelper::formatEnumValue).orElse(null));
-      addField(f, msg("field.water.rights", locale), yesNo(agricultural.getHasWaterRights(), locale));
-      addField(f, msg("field.water.source", locale), agricultural.getWaterSource().map(BookletHelper::formatEnumValue).orElse(null));
-      addField(f, msg("field.irrigation", locale), agricultural.getIrrigationType().map(BookletHelper::formatEnumValue).orElse(null));
-      addField(f, msg("field.fencing", locale), agricultural.getFencingType().map(BookletHelper::formatEnumValue).orElse(null));
+      addField(
+          f,
+          msg("field.total.land.area", locale),
+          areaDisplay(
+              agricultural.getTotalLandAreaValue().orElse(null),
+              agricultural.getTotalLandAreaUnit().orElse(null)));
+      addField(
+          f,
+          msg("field.arable.area", locale),
+          areaDisplay(
+              agricultural.getArableAreaValue().orElse(null),
+              agricultural.getArableAreaUnit().orElse(null)));
+      addField(
+          f,
+          msg("field.soil.type", locale),
+          agricultural.getSoilType().map(BookletHelper::formatEnumValue).orElse(null));
+      addField(
+          f, msg("field.water.rights", locale), yesNo(agricultural.getHasWaterRights(), locale));
+      addField(
+          f,
+          msg("field.water.source", locale),
+          agricultural.getWaterSource().map(BookletHelper::formatEnumValue).orElse(null));
+      addField(
+          f,
+          msg("field.irrigation", locale),
+          agricultural.getIrrigationType().map(BookletHelper::formatEnumValue).orElse(null));
+      addField(
+          f,
+          msg("field.fencing", locale),
+          agricultural.getFencingType().map(BookletHelper::formatEnumValue).orElse(null));
       addField(f, msg("field.outbuildings", locale), outbuildingsText(agricultural, locale));
-      addField(f, msg("field.current.use", locale), agricultural.getCurrentUse().map(BookletHelper::formatEnumValue).orElse(null));
+      addField(
+          f,
+          msg("field.current.use", locale),
+          agricultural.getCurrentUse().map(BookletHelper::formatEnumValue).orElse(null));
       addField(f, msg("field.zoning", locale), agricultural.getZoningClassification().orElse(null));
       return new CategorySection(msg("section.agricultural.details", locale), f);
     }
@@ -520,7 +699,13 @@ public class PropertyBookletExporter {
                 isTrue(v)
                     ? msg("value.yes", locale)
                         + d.getCraneCapacityValue()
-                            .map(t -> " (" + t + " " + d.getCraneCapacityUnit().orElse("metric_tons") + ")")
+                            .map(
+                                t ->
+                                    " ("
+                                        + t
+                                        + " "
+                                        + d.getCraneCapacityUnit().orElse("metric_tons")
+                                        + ")")
                             .orElse("")
                     : msg("value.no", locale))
         .orElse(null);
@@ -531,7 +716,8 @@ public class PropertyBookletExporter {
         .map(
             v ->
                 isTrue(v)
-                    ? msg("value.yes", locale) + d.getOutbuildingDetails().map(t -> " — " + t).orElse("")
+                    ? msg("value.yes", locale)
+                        + d.getOutbuildingDetails().map(t -> " — " + t).orElse("")
                     : msg("value.no", locale))
         .orElse(null);
   }
@@ -543,7 +729,9 @@ public class PropertyBookletExporter {
     addField(f, msg("field.heating.system", locale), enumStr(property.getHeatingType()));
     addField(f, msg("field.cooling.system", locale), enumStr(property.getCoolingType()));
     addField(f, msg("field.hot.water.system", locale), enumStr(property.getHotWaterSystem()));
-    addField(f, msg("field.certificate.expiry", locale),
+    addField(
+        f,
+        msg("field.certificate.expiry", locale),
         property.getEnergyCertificateExpiryDate().map(d -> formatter.date(d, locale)).orElse(null));
     return f;
   }
@@ -551,17 +739,32 @@ public class PropertyBookletExporter {
   private List<Map<String, Object>> buildUtilitiesFields(Property property, Locale locale) {
     List<Map<String, Object>> f = new ArrayList<>();
     addField(f, msg("field.electricity", locale), enumStr(property.getElectricityConnectionType()));
-    addField(f, msg("field.capacity", locale),
-        property.getElectricityCapacityValue().map(a -> a + " " + property.getElectricityCapacityUnit().orElse("A")).orElse(null));
+    addField(
+        f,
+        msg("field.capacity", locale),
+        property
+            .getElectricityCapacityValue()
+            .map(a -> a + " " + property.getElectricityCapacityUnit().orElse("A"))
+            .orElse(null));
     addField(f, msg("field.water", locale), enumStr(property.getWaterConnectionType()));
-    addField(f, msg("field.gas.connection", locale),
-        property.getHasGasConnection()
-            .map(g -> isTrue(g) ? msg("value.connected", locale) : msg("value.not.connected", locale))
+    addField(
+        f,
+        msg("field.gas.connection", locale),
+        property
+            .getHasGasConnection()
+            .map(
+                g ->
+                    isTrue(g) ? msg("value.connected", locale) : msg("value.not.connected", locale))
             .orElse(null));
     addField(f, msg("field.sewage", locale), enumStr(property.getSewageType()));
     addField(f, msg("field.internet", locale), enumStr(property.getInternetConnectionType()));
-    addField(f, msg("field.max.speed", locale),
-        property.getInternetMaxSpeedValue().map(s -> s + " " + property.getInternetMaxSpeedUnit().orElse("Mbps")).orElse(null));
+    addField(
+        f,
+        msg("field.max.speed", locale),
+        property
+            .getInternetMaxSpeedValue()
+            .map(s -> s + " " + property.getInternetMaxSpeedUnit().orElse("Mbps"))
+            .orElse(null));
     addField(f, msg("field.internet.status", locale), enumStr(property.getInternetStatus()));
     return f;
   }
@@ -569,7 +772,10 @@ public class PropertyBookletExporter {
   private List<Map<String, Object>> buildParkingFields(Property property, Locale locale) {
     List<Map<String, Object>> f = new ArrayList<>();
     addField(f, msg("field.parking.type", locale), enumStr(property.getParkingType()));
-    addField(f, msg("field.parking.spaces", locale), property.getParkingSpaces().map(Object::toString).orElse(null));
+    addField(
+        f,
+        msg("field.parking.spaces", locale),
+        property.getParkingSpaces().map(Object::toString).orElse(null));
     return f;
   }
 
@@ -616,7 +822,10 @@ public class PropertyBookletExporter {
   // ── Safety & accessibility ───────────────────────────────────────
 
   private void buildSafetySection(
-      Map<String, Object> v, Property property, @Nullable PropertyCategory category, Locale locale) {
+      Map<String, Object> v,
+      Property property,
+      @Nullable PropertyCategory category,
+      Locale locale) {
     boolean hasSafetyData =
         isTrue(property.getHasSmokeDetectors().orElse(null))
             || isTrue(property.getHasCoDetectors().orElse(null))
@@ -639,26 +848,56 @@ public class PropertyBookletExporter {
     List<Map<String, Object>> safetyChecks = new ArrayList<>();
     List<Map<String, Object>> accessChecks = new ArrayList<>();
     if (hasSafetyData) {
-      safetyChecks.add(check(msg("check.smoke.detectors", locale), property.getHasSmokeDetectors().orElse(null)));
-      safetyChecks.add(check(msg("check.co.detectors", locale), property.getHasCoDetectors().orElse(null)));
-      safetyChecks.add(check(msg("check.fire.extinguisher", locale), property.getHasFireExtinguisher().orElse(null)));
-      safetyChecks.add(check(msg("check.sprinkler.system", locale), property.getHasSprinklerSystem().orElse(null)));
-      safetyChecks.add(check(msg("check.alarm.system", locale), property.getHasAlarmSystem().orElse(null)));
-      safetyChecks.add(check(msg("check.security.cameras", locale), property.getHasSecurityCameras().orElse(null)));
-      safetyChecks.add(check(msg("check.secure.entry", locale), property.getHasSecureEntry().orElse(null)));
+      safetyChecks.add(
+          check(
+              msg("check.smoke.detectors", locale), property.getHasSmokeDetectors().orElse(null)));
+      safetyChecks.add(
+          check(msg("check.co.detectors", locale), property.getHasCoDetectors().orElse(null)));
+      safetyChecks.add(
+          check(
+              msg("check.fire.extinguisher", locale),
+              property.getHasFireExtinguisher().orElse(null)));
+      safetyChecks.add(
+          check(
+              msg("check.sprinkler.system", locale),
+              property.getHasSprinklerSystem().orElse(null)));
+      safetyChecks.add(
+          check(msg("check.alarm.system", locale), property.getHasAlarmSystem().orElse(null)));
+      safetyChecks.add(
+          check(
+              msg("check.security.cameras", locale),
+              property.getHasSecurityCameras().orElse(null)));
+      safetyChecks.add(
+          check(msg("check.secure.entry", locale), property.getHasSecureEntry().orElse(null)));
     }
     if (hasAccessData) {
-      accessChecks.add(check(msg("check.wheelchair.accessible", locale), property.getIsWheelchairAccessible().orElse(null)));
-      accessChecks.add(check(msg("check.elevator", locale), property.getHasElevator().orElse(null)));
-      accessChecks.add(check(msg("check.step.free.entrance", locale), property.getHasStepFreeEntrance().orElse(null)));
-      accessChecks.add(check(msg("check.adapted.bathroom", locale), property.getHasAdaptedBathroom().orElse(null)));
+      accessChecks.add(
+          check(
+              msg("check.wheelchair.accessible", locale),
+              property.getIsWheelchairAccessible().orElse(null)));
+      accessChecks.add(
+          check(msg("check.elevator", locale), property.getHasElevator().orElse(null)));
+      accessChecks.add(
+          check(
+              msg("check.step.free.entrance", locale),
+              property.getHasStepFreeEntrance().orElse(null)));
+      accessChecks.add(
+          check(
+              msg("check.adapted.bathroom", locale),
+              property.getHasAdaptedBathroom().orElse(null)));
     }
 
     v.put("hasSafety", category != AGRICULTURAL && (hasSafetyData || hasAccessData));
     v.put("safetyChecks", safetyChecks);
-    v.put("safetyNotes", hasSafetyData ? property.getSafetyNotes().filter(s -> !s.isBlank()).orElse(null) : null);
+    v.put(
+        "safetyNotes",
+        hasSafetyData ? property.getSafetyNotes().filter(s -> !s.isBlank()).orElse(null) : null);
     v.put("accessibilityChecks", accessChecks);
-    v.put("accessibilityNotes", hasAccessData ? property.getAccessibilityNotes().filter(s -> !s.isBlank()).orElse(null) : null);
+    v.put(
+        "accessibilityNotes",
+        hasAccessData
+            ? property.getAccessibilityNotes().filter(s -> !s.isBlank()).orElse(null)
+            : null);
   }
 
   private Map<String, Object> check(String label, @Nullable Boolean value) {
@@ -706,7 +945,8 @@ public class PropertyBookletExporter {
 
   // ── Contracts ────────────────────────────────────────────────────
 
-  private List<Map<String, Object>> buildContracts(List<Contract> contracts, UUID teamId, Locale locale) {
+  private List<Map<String, Object>> buildContracts(
+      List<Contract> contracts, UUID teamId, Locale locale) {
     if (contracts.isEmpty()) {
       return List.of();
     }
@@ -729,10 +969,16 @@ public class PropertyBookletExporter {
       m.put("id", contract.getIdentifier().map(Sid::value).orElse("—"));
       m.put("contact", contact != null ? contact.getDisplayName() : msg("value.unknown", locale));
       m.put("start", formatter.date(contract.getStartDate(), locale));
-      m.put("end", effectiveEndDate.map(d -> formatter.date(d, locale)).orElse(msg("value.ongoing", locale)));
+      m.put(
+          "end",
+          effectiveEndDate
+              .map(d -> formatter.date(d, locale))
+              .orElse(msg("value.ongoing", locale)));
       m.put("rent", formatter.money(contract.getRentAmount(), locale));
       m.put("statusCode", contract.getStatus() != null ? contract.getStatus().name() : "DRAFT");
-      m.put("statusLabel", contract.getStatus() != null ? enumLabels.label(contract.getStatus(), locale) : "—");
+      m.put(
+          "statusLabel",
+          contract.getStatus() != null ? enumLabels.label(contract.getStatus(), locale) : "—");
       out.add(m);
     }
     return out;
@@ -741,19 +987,36 @@ public class PropertyBookletExporter {
   // ── Investment dashboard ─────────────────────────────────────────
 
   private void buildDashboard(
-      Map<String, Object> v, PropertyDashboardResponse dashboard, String teamCurrency, Locale locale) {
+      Map<String, Object> v,
+      PropertyDashboardResponse dashboard,
+      String teamCurrency,
+      Locale locale) {
     SummaryMetrics s = dashboard.summary();
     String ccy = s.currency().orElse(teamCurrency);
 
     List<Map<String, Object>> metrics = new ArrayList<>();
-    metrics.add(kv(msg("dashboard.total.roi", locale), pct(s.totalRoiPercent().orElse(null), locale)));
-    metrics.add(kv(msg("dashboard.annualized.roi", locale), pct(s.annualizedRoiPercent().orElse(null), locale)));
-    metrics.add(kv(msg("dashboard.cap.rate", locale), pct(s.capRatePercent().orElse(null), locale)));
-    metrics.add(kv(msg("dashboard.cash.on.cash", locale), pct(s.cashOnCashPercent().orElse(null), locale)));
-    metrics.add(kv(msg("dashboard.monthly.cash.flow", locale), moneyOpt(s.monthlyCashFlow().orElse(null), ccy, locale)));
-    metrics.add(kv(msg("dashboard.annual.noi", locale), moneyOpt(s.annualNoi().orElse(null), ccy, locale)));
-    metrics.add(kv(msg("dashboard.total.equity", locale), moneyOpt(s.totalEquity().orElse(null), ccy, locale)));
-    metrics.add(kv(msg("dashboard.occupancy", locale), pct(s.occupancyRatePercent().orElse(null), locale)));
+    metrics.add(
+        kv(msg("dashboard.total.roi", locale), pct(s.totalRoiPercent().orElse(null), locale)));
+    metrics.add(
+        kv(
+            msg("dashboard.annualized.roi", locale),
+            pct(s.annualizedRoiPercent().orElse(null), locale)));
+    metrics.add(
+        kv(msg("dashboard.cap.rate", locale), pct(s.capRatePercent().orElse(null), locale)));
+    metrics.add(
+        kv(msg("dashboard.cash.on.cash", locale), pct(s.cashOnCashPercent().orElse(null), locale)));
+    metrics.add(
+        kv(
+            msg("dashboard.monthly.cash.flow", locale),
+            moneyOpt(s.monthlyCashFlow().orElse(null), ccy, locale)));
+    metrics.add(
+        kv(msg("dashboard.annual.noi", locale), moneyOpt(s.annualNoi().orElse(null), ccy, locale)));
+    metrics.add(
+        kv(
+            msg("dashboard.total.equity", locale),
+            moneyOpt(s.totalEquity().orElse(null), ccy, locale)));
+    metrics.add(
+        kv(msg("dashboard.occupancy", locale), pct(s.occupancyRatePercent().orElse(null), locale)));
 
     List<Map<String, Object>> cashFlow = new ArrayList<>();
     for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
@@ -776,9 +1039,24 @@ public class PropertyBookletExporter {
     }
 
     List<Map<String, Object>> equity = new ArrayList<>();
-    addEquity(equity, msg("equity.purchase.price", locale), dashboard.equity().purchasePrice().orElse(null), ccy, locale);
-    addEquity(equity, msg("equity.current.market.value", locale), dashboard.equity().currentMarketValue().orElse(null), ccy, locale);
-    addEquity(equity, msg("equity.mortgage.balance", locale), dashboard.equity().mortgageBalance().orElse(null), ccy, locale);
+    addEquity(
+        equity,
+        msg("equity.purchase.price", locale),
+        dashboard.equity().purchasePrice().orElse(null),
+        ccy,
+        locale);
+    addEquity(
+        equity,
+        msg("equity.current.market.value", locale),
+        dashboard.equity().currentMarketValue().orElse(null),
+        ccy,
+        locale);
+    addEquity(
+        equity,
+        msg("equity.mortgage.balance", locale),
+        dashboard.equity().mortgageBalance().orElse(null),
+        ccy,
+        locale);
 
     v.put("hasDashboard", true);
     v.put("dashMetrics", metrics);
@@ -788,7 +1066,11 @@ public class PropertyBookletExporter {
   }
 
   private void addEquity(
-      List<Map<String, Object>> list, String label, @Nullable BigDecimal value, String ccy, Locale locale) {
+      List<Map<String, Object>> list,
+      String label,
+      @Nullable BigDecimal value,
+      String ccy,
+      Locale locale) {
     if (value == null) {
       return;
     }
@@ -832,7 +1114,8 @@ public class PropertyBookletExporter {
   }
 
   private @Nullable String yesNo(Optional<Boolean> opt, Locale locale) {
-    return opt.map(b -> isTrue(b) ? msg("value.yes", locale) : msg("value.no", locale)).orElse(null);
+    return opt.map(b -> isTrue(b) ? msg("value.yes", locale) : msg("value.no", locale))
+        .orElse(null);
   }
 
   private @Nullable String enumStr(Optional<String> opt) {
@@ -865,7 +1148,8 @@ public class PropertyBookletExporter {
     return measureDisplay(value, unit, "sqm");
   }
 
-  private String measureDisplay(@Nullable BigDecimal value, @Nullable String unit, String defaultUnit) {
+  private String measureDisplay(
+      @Nullable BigDecimal value, @Nullable String unit, String defaultUnit) {
     if (value == null) {
       return "—";
     }
