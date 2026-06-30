@@ -1,19 +1,29 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { schedulerApi } from '../api/scheduler';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  listJobs,
+  pauseJob,
+  resumeJob,
+  triggerJob,
+  rescheduleJob,
+  getHistory,
+} from '../generated/api/backoffice-scheduler/backoffice-scheduler';
+import type { GetHistoryParams } from '../generated/models';
 
 export const useScheduledJobs = () => {
   return useQuery({
     queryKey: ['scheduler-jobs'],
-    queryFn: () => schedulerApi.listJobs().then((res) => res.data),
+    queryFn: () => listJobs(),
     refetchInterval: 30000,
   });
 };
 
 export const usePauseJob = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({ jobName, group }: { jobName: string; group: string }) =>
-      schedulerApi.pauseJob(jobName, group),
+      pauseJob(jobName, { group }),
+    errorTitle: "Couldn't pause job",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scheduler-jobs'] });
     },
@@ -22,9 +32,10 @@ export const usePauseJob = () => {
 
 export const useResumeJob = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({ jobName, group }: { jobName: string; group: string }) =>
-      schedulerApi.resumeJob(jobName, group),
+      resumeJob(jobName, { group }),
+    errorTitle: "Couldn't resume job",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scheduler-jobs'] });
     },
@@ -33,9 +44,10 @@ export const useResumeJob = () => {
 
 export const useTriggerJob = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({ jobName, group }: { jobName: string; group: string }) =>
-      schedulerApi.triggerJob(jobName, group),
+      triggerJob(jobName, { group }),
+    errorTitle: "Couldn't trigger job",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scheduler-jobs'] });
       queryClient.invalidateQueries({ queryKey: ['scheduler-history'] });
@@ -45,7 +57,7 @@ export const useTriggerJob = () => {
 
 export const useRescheduleJob = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       jobName,
       group,
@@ -54,7 +66,8 @@ export const useRescheduleJob = () => {
       jobName: string;
       group: string;
       cronExpression: string;
-    }) => schedulerApi.rescheduleJob(jobName, group, cronExpression),
+    }) => rescheduleJob(jobName, { cronExpression }, { group }),
+    errorTitle: "Couldn't reschedule job",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scheduler-jobs'] });
     },
@@ -73,6 +86,6 @@ interface HistoryParams {
 export const useJobExecutionHistory = (params?: HistoryParams) => {
   return useQuery({
     queryKey: ['scheduler-history', params],
-    queryFn: () => schedulerApi.history(params).then((res) => res.data),
+    queryFn: () => getHistory(params as GetHistoryParams),
   });
 };

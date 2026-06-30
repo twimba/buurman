@@ -27,7 +27,7 @@ import {
   NotificationFilterParams,
   NotificationChannel,
 } from '@/types/notification';
-import { getNotification } from '@/api/notifications';
+import { getNotification } from '@/generated/api/notifications/notifications';
 import { NotificationStatusBadge } from '@/components/notifications/NotificationStatusBadge';
 import { NotificationFilters } from '@/components/notifications/NotificationFilters';
 import { NotificationDetailModal } from '@/components/notifications/NotificationDetailModal';
@@ -80,7 +80,7 @@ export const AdminNotificationsPage = () => {
     page,
     size,
     sort: 'createdAt',
-    direction: 'desc',
+    direction: 'DESC',
   });
   const { data: stats, refetch: refetchStats } = useNotificationStats();
   const resendMutation = useResendNotification();
@@ -375,12 +375,12 @@ export const AdminNotificationsPage = () => {
             </table>
           </div>
 
-          {notifications && notifications.totalPages > 0 && (
+          {notifications && (notifications.totalPages ?? 0) > 0 && (
             <div className="px-4 py-3 border-t border-border-default">
               <Pagination
                 page={page}
-                totalPages={notifications.totalPages}
-                totalElements={notifications.totalElements}
+                totalPages={notifications.totalPages ?? 0}
+                totalElements={notifications.totalElements ?? 0}
                 size={size}
                 onPageChange={setPage}
                 onSizeChange={(newSize) => {

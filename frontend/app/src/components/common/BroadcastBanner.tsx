@@ -7,7 +7,7 @@ import {
   usePublicBroadcasts,
   useDismissBroadcast,
 } from '../../hooks/useBroadcasts';
-import type { BroadcastMessage } from '../../api/broadcasts';
+import type { BroadcastMessage } from '../../types/broadcast';
 
 const severityConfig = {
   INFO: {
@@ -41,7 +41,9 @@ const BroadcastItem = ({
   onDismiss: (identifier: string) => void;
 }) => {
   const { t } = useTranslation('common');
-  const config = severityConfig[message.severity];
+  const config =
+    severityConfig[message.severity as keyof typeof severityConfig] ??
+    severityConfig.INFO;
   const Icon = config.icon;
 
   return (

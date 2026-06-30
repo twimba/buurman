@@ -1,20 +1,26 @@
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  keepPreviousData,
-} from '@tanstack/react-query';
-import * as photosApi from '../api/photos';
-import { SearchPhotosParams } from '../api/photos';
+  getAllPhotos,
+  getPhoto,
+  deletePhoto,
+  bulkDownload,
+  updatePhoto,
+} from '../generated/api/photos/photos';
+import type { GetAllPhotosParams } from '../generated/models';
 import type { PageParams } from '@/types/common';
-import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
+import { downloadBlob } from '../utils/downloadBlob';
+
+export interface SearchPhotosParams {
+  search?: string;
+  entityType?: string;
+}
 
 export const usePhotos = (params?: SearchPhotosParams & PageParams) => {
   return useQuery({
     queryKey: queryKeys.photos.all(params),
-    queryFn: () => photosApi.searchPhotos(params),
+    queryFn: () => getAllPhotos(params as GetAllPhotosParams),
     placeholderData: keepPreviousData,
   });
 };
@@ -22,16 +28,16 @@ export const usePhotos = (params?: SearchPhotosParams & PageParams) => {
 export const usePhoto = (id: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.photos.detail(id),
-    queryFn: () => photosApi.getPhoto(id ?? ''),
+    queryFn: () => getPhoto(id ?? ''),
     enabled: !!id,
   });
 };
 
 export const useDeletePhoto = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (id: string) => photosApi.deletePhoto(id),
+  return useMutationWithToast({
+    successMessage: 'Photo deleted successfully',
+    mutationFn: (id: string) => deletePhoto(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
       queryClient.invalidateQueries({
@@ -39,46 +45,36 @@ export const useDeletePhoto = () => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.photos() });
       queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
-      showToast('Photo deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useBulkDownloadPhotos = () => {
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (photoIds: string[]) => photosApi.bulkDownloadPhotos(photoIds),
+  return useMutationWithToast({
+    successMessage: 'Photos downloaded successfully',
+    mutationFn: (photoIds: string[]) =>
+      bulkDownload({ documentIdentifiers: photoIds }),
     onSuccess: (blob) => {
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'photos.zip';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      showToast('Photos downloaded successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
+      downloadBlob(blob, 'photos.zip');
     },
   });
 };
 
 export const useUpdatePhoto = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Photo updated successfully',
     mutationFn: ({
       id,
       data,
     }: {
       id: string;
       data: { title: string | null; notes: string | null };
-    }) => photosApi.updatePhoto(id, data),
+    }) =>
+      updatePhoto(id, {
+        title: data.title ?? undefined,
+        notes: data.notes ?? undefined,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
       queryClient.invalidateQueries({
@@ -92,10 +88,6 @@ export const useUpdatePhoto = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.auditLog(),
       });
-      showToast('Photo updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

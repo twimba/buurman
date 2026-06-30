@@ -278,14 +278,16 @@ export const ExpenseDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/properties/${expense.property.identifier}`)
+                          navigate(
+                            `/properties/${expense.property?.identifier}`
+                          )
                         }
                         className="font-medium text-primary-500 hover:underline text-left"
                       >
-                        {expense.property.street}, {expense.property.city}
+                        {expense.property?.street}, {expense.property?.city}
                       </button>
                       <p className="text-xs text-text-secondary mt-1">
-                        #{expense.property.identifier}
+                        #{expense.property?.identifier}
                       </p>
                     </div>
                   </div>
@@ -363,8 +365,10 @@ export const ExpenseDetailPage = () => {
                         {t('detail.lastUpdated')}
                       </span>{' '}
                       <span className="text-text-primary">
-                        {formatDate(expense.updatedAt)}{' '}
-                        {new Date(expense.updatedAt).toLocaleTimeString()}
+                        {formatDate(expense.updatedAt ?? '')}{' '}
+                        {expense.updatedAt
+                          ? new Date(expense.updatedAt).toLocaleTimeString()
+                          : ''}
                       </span>
                     </div>
                   </div>

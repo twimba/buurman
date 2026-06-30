@@ -4,8 +4,8 @@ import {
   getUserTeams,
   switchTeam as switchTeamApi,
   setDefaultTeam as setDefaultTeamApi,
-  UserTeamResponse,
-} from '../api/users';
+} from '../generated/api/users/users';
+import type { UserTeamResponse } from '../types/users';
 import { useAuth } from './AuthContext';
 import { useImpersonation } from './ImpersonationContext';
 import { trackEvent } from '../utils/analytics';
@@ -39,7 +39,7 @@ const TeamContext = createContext<TeamContextType | undefined>(undefined);
 const mapApiTeamToTeam = (apiTeam: UserTeamResponse): Team => ({
   identifier: apiTeam.identifier,
   name: apiTeam.teamName,
-  role: apiTeam.role,
+  role: apiTeam.role as Team['role'],
   isOwner: apiTeam.isOwner,
   isDefault: apiTeam.isDefault,
   isActive: apiTeam.isActive,
@@ -67,7 +67,7 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
   const defaultTeamId = teams.find((t) => t.isDefault)?.identifier ?? null;
 
   const switchTeamMutation = useMutation({
-    mutationFn: switchTeamApi,
+    mutationFn: (teamIdentifier: string) => switchTeamApi({ teamIdentifier }),
     onSuccess: () => {
       trackEvent(AnalyticsEvent.TEAM_SWITCHED);
       // Clear all cached data and navigate to a known good state
@@ -77,7 +77,8 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const setDefaultTeamMutation = useMutation({
-    mutationFn: setDefaultTeamApi,
+    mutationFn: (teamIdentifier: string) =>
+      setDefaultTeamApi({ teamIdentifier }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-teams'] });
     },

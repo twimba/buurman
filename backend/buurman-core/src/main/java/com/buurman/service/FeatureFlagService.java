@@ -23,6 +23,9 @@ import com.buurman.domain.FeatureFlagOverride;
 import com.buurman.domain.OverrideScope;
 import com.buurman.domain.SegmentContext;
 import com.buurman.domain.TeamRole;
+import com.buurman.dto.response.FeatureFlagState;
+import com.buurman.dto.response.backoffice.CacheEntryResponse;
+import com.buurman.dto.response.backoffice.CacheInfoResponse;
 import com.buurman.repository.CalendarFeedRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractRepository;
@@ -41,6 +44,7 @@ import com.buurman.util.FeatureFlags;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
@@ -252,7 +256,7 @@ public class FeatureFlagService {
   }
 
   /** Get all evaluated flags for the current user (for the frontend endpoint). */
-  public Map<String, Object> getAllFlags(UserPrincipal principal) {
+  public Map<String, FeatureFlagState> getAllFlags(UserPrincipal principal) {
     try {
       List<FeatureFlag> allFlags = getAllFlagDefs();
       SegmentContext ctx = buildSegmentContext(principal);
@@ -265,14 +269,11 @@ public class FeatureFlagService {
       Map<String, List<FeatureFlagOverride>> byFlag =
           allOverrides.stream().collect(Collectors.groupingBy(FeatureFlagOverride::getFlagKey));
 
-      Map<String, Object> result = new HashMap<>();
+      Map<String, FeatureFlagState> result = new HashMap<>();
       for (FeatureFlag flag : allFlags) {
         List<FeatureFlagOverride> overrides = byFlag.getOrDefault(flag.getKey(), List.of());
         EvaluatedFlag eval = resolve(flag, overrides);
-        Map<String, Object> flagData = new HashMap<>();
-        flagData.put("enabled", eval.enabled());
-        flagData.put("value", eval.value().orElse(null));
-        result.put(flag.getKey(), flagData);
+        result.put(flag.getKey(), new FeatureFlagState(eval.enabled(), eval.value().orElse(null)));
       }
       return result;
     } catch (Exception e) {
@@ -283,14 +284,13 @@ public class FeatureFlagService {
   }
 
   /** Get all environment-level flags (no identity context, for backoffice global view). */
-  public Map<String, Object> getAllEnvironmentFlags() {
+  public Map<String, FeatureFlagState> getAllEnvironmentFlags() {
     try {
-      Map<String, Object> result = new HashMap<>();
+      Map<String, FeatureFlagState> result = new HashMap<>();
       for (FeatureFlag flag : getAllFlagDefs()) {
-        Map<String, Object> flagData = new HashMap<>();
-        flagData.put("enabled", flag.isDefaultEnabled());
-        flagData.put("value", flag.getDefaultValue().orElse(null));
-        result.put(flag.getKey(), flagData);
+        result.put(
+            flag.getKey(),
+            new FeatureFlagState(flag.isDefaultEnabled(), flag.getDefaultValue().orElse(null)));
       }
       return result;
     } catch (Exception e) {
@@ -305,7 +305,7 @@ public class FeatureFlagService {
    * Evaluate all flags for a specific user+team combination with full override resolution
    * (backoffice user inspection).
    */
-  public Map<String, Object> evaluateAllForUser(
+  public Map<String, FeatureFlagState> evaluateAllForUser(
       UUID userId,
       UUID teamId,
       boolean isOwner,
@@ -322,14 +322,11 @@ public class FeatureFlagService {
     Map<String, List<FeatureFlagOverride>> byFlag =
         allOverrides.stream().collect(Collectors.groupingBy(FeatureFlagOverride::getFlagKey));
 
-    Map<String, Object> result = new HashMap<>();
+    Map<String, FeatureFlagState> result = new HashMap<>();
     for (FeatureFlag flag : allFlags) {
       List<FeatureFlagOverride> overrides = byFlag.getOrDefault(flag.getKey(), List.of());
       EvaluatedFlag eval = resolve(flag, overrides);
-      Map<String, Object> flagData = new HashMap<>();
-      flagData.put("enabled", eval.enabled());
-      flagData.put("value", eval.value().orElse(null));
-      result.put(flag.getKey(), flagData);
+      result.put(flag.getKey(), new FeatureFlagState(eval.enabled(), eval.value().orElse(null)));
     }
     return result;
   }
@@ -453,13 +450,10 @@ public class FeatureFlagService {
     return overrideCache.get(key, k -> overrideRepo.findTeamOverrides(teamId, segmentKeys));
   }
 
-  private Map<String, Object> buildDefaultFlagMap() {
-    Map<String, Object> result = new HashMap<>();
+  private Map<String, FeatureFlagState> buildDefaultFlagMap() {
+    Map<String, FeatureFlagState> result = new HashMap<>();
     for (var entry : FeatureFlags.DEFAULTS.entrySet()) {
-      Map<String, Object> flagData = new HashMap<>();
-      flagData.put("enabled", entry.getValue());
-      flagData.put("value", null);
-      result.put(entry.getKey(), flagData);
+      result.put(entry.getKey(), new FeatureFlagState(entry.getValue(), null));
     }
     return result;
   }
@@ -472,58 +466,64 @@ public class FeatureFlagService {
   }
 
   /** Cache stats for backoffice inspection. */
-  public Map<String, Object> getFlagDefsCacheInfo() {
-    var stats = flagDefsCache.stats();
-    Map<String, Object> info = new LinkedHashMap<>();
-    info.put("name", "flag_definitions");
-    info.put("type", "LoadingCache");
-    info.put("description", "All active feature flag definitions");
-    info.put("maxSize", 1);
-    info.put("ttlSeconds", 60);
-    info.put("refreshPolicy", "refresh-after-write");
-    info.put("entryCount", flagDefsCache.estimatedSize());
-    info.put("hitCount", stats.hitCount());
-    info.put("missCount", stats.missCount());
-    info.put("hitRate", stats.hitCount() + stats.missCount() > 0 ? stats.hitRate() : 0.0);
-    info.put("loadCount", stats.loadCount());
-    info.put("averageLoadTimeMs", stats.averageLoadPenalty() / 1_000_000.0);
-    info.put("evictionCount", stats.evictionCount());
-    info.put("lastInvalidatedAt", lastInvalidatedAt.orElse(null));
-    return info;
+  public CacheInfoResponse getFlagDefsCacheInfo() {
+    return toCacheInfo(
+        "flag_definitions",
+        "LoadingCache",
+        "All active feature flag definitions",
+        1L,
+        60,
+        "refresh-after-write",
+        flagDefsCache.estimatedSize(),
+        flagDefsCache.stats());
   }
 
-  public Map<String, Object> getOverrideCacheInfo() {
-    var stats = overrideCache.stats();
-    Map<String, Object> info = new LinkedHashMap<>();
-    info.put("name", "overrides");
-    info.put("type", "Cache");
-    info.put("description", "Team/user/segment override lookups");
-    info.put("maxSize", 1000);
-    info.put("ttlSeconds", 30);
-    info.put("refreshPolicy", "expire-after-write");
-    info.put("entryCount", overrideCache.estimatedSize());
-    info.put("hitCount", stats.hitCount());
-    info.put("missCount", stats.missCount());
-    info.put("hitRate", stats.hitCount() + stats.missCount() > 0 ? stats.hitRate() : 0.0);
-    info.put("loadCount", stats.loadCount());
-    info.put("averageLoadTimeMs", stats.averageLoadPenalty() / 1_000_000.0);
-    info.put("evictionCount", stats.evictionCount());
-    info.put("lastInvalidatedAt", lastInvalidatedAt.orElse(null));
-    return info;
+  public CacheInfoResponse getOverrideCacheInfo() {
+    return toCacheInfo(
+        "overrides",
+        "Cache",
+        "Team/user/segment override lookups",
+        1000L,
+        30,
+        "expire-after-write",
+        overrideCache.estimatedSize(),
+        overrideCache.stats());
+  }
+
+  private CacheInfoResponse toCacheInfo(
+      String name,
+      String type,
+      String description,
+      long maxSize,
+      int ttlSeconds,
+      String refreshPolicy,
+      long entryCount,
+      CacheStats stats) {
+    return new CacheInfoResponse(
+        name,
+        type,
+        description,
+        maxSize,
+        ttlSeconds,
+        refreshPolicy,
+        entryCount,
+        stats.hitCount(),
+        stats.missCount(),
+        stats.hitCount() + stats.missCount() > 0 ? stats.hitRate() : 0.0,
+        stats.loadCount(),
+        stats.averageLoadPenalty() / 1_000_000.0,
+        stats.evictionCount(),
+        lastInvalidatedAt.map(Instant::toString).orElse(null));
   }
 
   /** Cache entries for backoffice inspection. */
-  public List<Map<String, Object>> getFlagDefsCacheEntries() {
-    List<Map<String, Object>> entries = new ArrayList<>();
+  public List<CacheEntryResponse> getFlagDefsCacheEntries() {
+    List<CacheEntryResponse> entries = new ArrayList<>();
     flagDefsCache
         .asMap()
         .forEach(
             (key, flags) -> {
-              Map<String, Object> entry = new LinkedHashMap<>();
-              entry.put("key", key);
-              entry.put("summary", flags.size() + " flag definitions");
-              entry.put(
-                  "details",
+              List<Map<String, Object>> details =
                   flags.stream()
                       .map(
                           f -> {
@@ -534,23 +534,19 @@ public class FeatureFlagService {
                             detail.put("valueType", f.getValueType());
                             return detail;
                           })
-                      .toList());
-              entries.add(entry);
+                      .toList();
+              entries.add(new CacheEntryResponse(key, flags.size() + " flag definitions", details));
             });
     return entries;
   }
 
-  public List<Map<String, Object>> getOverrideCacheEntries() {
-    List<Map<String, Object>> entries = new ArrayList<>();
+  public List<CacheEntryResponse> getOverrideCacheEntries() {
+    List<CacheEntryResponse> entries = new ArrayList<>();
     overrideCache
         .asMap()
         .forEach(
             (key, overrides) -> {
-              Map<String, Object> entry = new LinkedHashMap<>();
-              entry.put("key", formatOverrideCacheKey(key));
-              entry.put("summary", overrides.size() + " overrides");
-              entry.put(
-                  "details",
+              List<Map<String, Object>> details =
                   overrides.stream()
                       .map(
                           o -> {
@@ -561,8 +557,10 @@ public class FeatureFlagService {
                             detail.put("value", o.getValue().orElse(null));
                             return detail;
                           })
-                      .toList());
-              entries.add(entry);
+                      .toList();
+              entries.add(
+                  new CacheEntryResponse(
+                      formatOverrideCacheKey(key), overrides.size() + " overrides", details));
             });
     return entries;
   }

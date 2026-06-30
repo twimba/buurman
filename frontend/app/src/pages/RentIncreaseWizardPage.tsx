@@ -7,7 +7,7 @@ import {
 } from '@/hooks/useRentIncreaseHooks';
 import type {
   RentIncreasePreviewResponse,
-  RentIncreaseItem,
+  RentIncreaseItemDraft,
   ApplyRentIncreasesResponse,
 } from '@/types/rentIncrease';
 import { YearSelectionStep } from '@/components/rentIncreases/YearSelectionStep';
@@ -40,7 +40,7 @@ export const RentIncreaseWizardPage = () => {
   const [preview, setPreview] = useState<RentIncreasePreviewResponse | null>(
     null
   );
-  const [increases, setIncreases] = useState<RentIncreaseItem[]>([]);
+  const [increases, setIncreases] = useState<RentIncreaseItemDraft[]>([]);
   const [applyResult, setApplyResult] =
     useState<ApplyRentIncreasesResponse | null>(null);
   const [appliedContractIds, setAppliedContractIds] = useState<Set<string>>(

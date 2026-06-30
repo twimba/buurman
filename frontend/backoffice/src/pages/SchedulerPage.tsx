@@ -974,13 +974,13 @@ export const SchedulerPage = () => {
       </div>
 
       {/* History Pagination */}
-      {historyData && historyData.totalElements > 0 && (
+      {historyData && (historyData.totalElements ?? 0) > 0 && (
         <div className="mt-4">
           <Pagination
-            page={historyData.page}
-            totalPages={historyData.totalPages}
-            totalElements={historyData.totalElements}
-            size={historyData.size}
+            page={historyData.page ?? 0}
+            totalPages={historyData.totalPages ?? 0}
+            totalElements={historyData.totalElements ?? 0}
+            size={historyData.size ?? 0}
             onPageChange={handlePageChange}
             onSizeChange={handleSizeChange}
           />

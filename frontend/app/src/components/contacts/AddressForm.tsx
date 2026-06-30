@@ -77,7 +77,7 @@ export const AddressForm = ({
               street: formData.street,
               city: formData.city,
               postalCode: formData.postalCode,
-              countryCode: formData.countryCode,
+              country: formData.countryCode,
             },
             {
               onSuccess: (result) => {

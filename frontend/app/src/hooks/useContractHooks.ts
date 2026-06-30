@@ -4,26 +4,55 @@ import {
   useQueryClient,
   keepPreviousData,
 } from '@tanstack/react-query';
-import * as contractsApi from '../api/contracts';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getContracts,
+  getContract,
+  createContract,
+  updateContract,
+  deleteContract,
+  changeContractStatus,
+  reopenContract,
+  duplicateContract,
+  getContractDocuments,
+  uploadContractDocument,
+  deleteContractDocument,
+  getContractAuditLog,
+  generatePayments,
+  getMetadataSchema,
+  addParty,
+  removeParty,
+  changePrimaryContact,
+} from '../generated/api/contracts/contracts';
 import {
   CreateContractRequest,
   UpdateContractRequest,
   ChangeContractStatusRequest,
   AddContractPartyRequest,
   ChangePrimaryContactRequest,
+  CountryMetadataSchema,
+  ContractResponse,
 } from '../types/contract';
-import { GetContractsParams } from '../api/contracts';
-import type { PageParams } from '@/types/common';
+import type { PageResponse, PageParams } from '@/types/common';
+import type { GetContractsParams } from '../generated/models';
 import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { toRentComponentRequests } from '../utils/rentComponents';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 import { queryKeys } from '../lib/queryKeys';
 
-export const useContracts = (params?: GetContractsParams & PageParams) => {
+// Param shape is widened to PageParams (sort as a plain string) for caller convenience;
+// cast to the generated params at the call site.
+export const useContracts = (
+  params?: Omit<GetContractsParams, 'direction'> & PageParams
+) => {
   return useQuery({
     queryKey: queryKeys.contracts.all(params),
-    queryFn: () => contractsApi.getContracts(params),
+    queryFn: () =>
+      getContracts(params as GetContractsParams) as Promise<
+        PageResponse<ContractResponse>
+      >,
     placeholderData: keepPreviousData,
   });
 };
@@ -31,7 +60,7 @@ export const useContracts = (params?: GetContractsParams & PageParams) => {
 export const useContract = (id: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contracts.detail(id),
-    queryFn: () => contractsApi.getContract(id ?? ''),
+    queryFn: () => getContract(id ?? '') as Promise<ContractResponse>,
     enabled: !!id,
   });
 };
@@ -39,16 +68,19 @@ export const useContract = (id: string | undefined) => {
 export const useCreateContract = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: CreateContractRequest) =>
-      contractsApi.createContract(data),
+      createContract({
+        ...data,
+        rentComponents: toRentComponentRequests(data.rentComponents),
+      }),
     onSuccess: (newContract) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.all(),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.detail(newContract.property.identifier),
+        queryKey: queryKeys.properties.detail(newContract.property?.identifier),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.all(),
@@ -67,18 +99,18 @@ export const useCreateContract = () => {
       showToast('Contract created successfully', 'success');
       trackEvent(AnalyticsEvent.CONTRACT_CREATED);
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUpdateContract = (id: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Contract updated successfully',
     mutationFn: (data: UpdateContractRequest) =>
-      contractsApi.updateContract(id, data),
+      updateContract(id, {
+        ...data,
+        rentComponents: toRentComponentRequests(data.rentComponents),
+      }),
     onSuccess: (updatedContract) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
       queryClient.invalidateQueries({
@@ -92,7 +124,7 @@ export const useUpdateContract = (id: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.detail(
-          updatedContract.property.identifier
+          updatedContract.property?.identifier
         ),
       });
       queryClient.invalidateQueries({
@@ -114,19 +146,15 @@ export const useUpdateContract = (id: string) => {
         queryKey: queryKeys.contracts.paymentsByContract(id),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
-      showToast('Contract updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteContract = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (id: string) => contractsApi.deleteContract(id),
+  return useMutationWithToast({
+    successMessage: 'Contract deleted successfully',
+    mutationFn: (id: string) => deleteContract(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
@@ -137,20 +165,15 @@ export const useDeleteContract = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Contract deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useChangeContractStatus = (id: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: ChangeContractStatusRequest) =>
-      contractsApi.changeContractStatus(id, data),
+      changeContractStatus(id, data),
     onSuccess: (updatedContract) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
       queryClient.invalidateQueries({
@@ -164,7 +187,7 @@ export const useChangeContractStatus = (id: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.detail(
-          updatedContract.property.identifier
+          updatedContract.property?.identifier
         ),
       });
       queryClient.invalidateQueries({
@@ -184,9 +207,6 @@ export const useChangeContractStatus = (id: string) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       trackEvent(AnalyticsEvent.CONTRACT_STATUS_CHANGED);
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
@@ -194,7 +214,7 @@ export const useReopenContract = (id: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: () => contractsApi.reopenContract(id),
+    mutationFn: () => reopenContract(id),
     onSuccess: (updatedContract) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
       queryClient.invalidateQueries({
@@ -208,7 +228,7 @@ export const useReopenContract = (id: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.detail(
-          updatedContract.property.identifier
+          updatedContract.property?.identifier
         ),
       });
       queryClient.invalidateQueries({
@@ -237,13 +257,13 @@ export const useReopenContract = (id: string) => {
 
 export const useDuplicateContract = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (id: string) => contractsApi.duplicateContract(id),
+  return useMutationWithToast({
+    successMessage: 'Contract duplicated successfully',
+    mutationFn: (id: string) => duplicateContract(id),
     onSuccess: (newContract) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.detail(newContract.property.identifier),
+        queryKey: queryKeys.properties.detail(newContract.property?.identifier),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.detail(
@@ -256,10 +276,6 @@ export const useDuplicateContract = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Contract duplicated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -267,15 +283,14 @@ export const useDuplicateContract = () => {
 export const useContractDocuments = (contractId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contracts.documents(contractId),
-    queryFn: () => contractsApi.getContractDocuments(contractId ?? ''),
+    queryFn: () => getContractDocuments(contractId ?? ''),
     enabled: !!contractId,
   });
 };
 
 export const useUploadContractDocument = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       file,
       title,
@@ -284,7 +299,7 @@ export const useUploadContractDocument = (contractId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => contractsApi.uploadContractDocument(contractId, file, title, notes),
+    }) => uploadContractDocument(contractId, { file }, { title, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.documents(contractId),
@@ -292,19 +307,14 @@ export const useUploadContractDocument = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteContractDocument = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (documentId: string) =>
-      contractsApi.deleteContractDocument(documentId),
+  return useMutationWithToast({
+    mutationFn: (documentId: string) => deleteContractDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.documents(contractId),
@@ -312,9 +322,6 @@ export const useDeleteContractDocument = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -322,7 +329,7 @@ export const useDeleteContractDocument = (contractId: string) => {
 export const useContractAuditLog = (contractId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contracts.auditLog(contractId),
-    queryFn: () => contractsApi.getContractAuditLog(contractId ?? ''),
+    queryFn: () => getContractAuditLog(contractId ?? ''),
     enabled: !!contractId,
   });
 };
@@ -330,7 +337,7 @@ export const useContractAuditLog = (contractId: string | undefined) => {
 export const useGenerateContractPayments = (contractId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       count,
       markAsPaid,
@@ -338,7 +345,11 @@ export const useGenerateContractPayments = (contractId: string) => {
       count: number;
       markAsPaid?: boolean;
     }) =>
-      contractsApi.generateContractPayments(contractId, { count, markAsPaid }),
+      generatePayments(contractId, { count, markAsPaid }) as Promise<{
+        generated: number;
+        requested: number;
+        markedAsPaid?: number;
+      }>,
     onSuccess: (result) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.paymentsByContract(contractId),
@@ -372,9 +383,6 @@ export const useGenerateContractPayments = (contractId: string) => {
         );
       }
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
@@ -383,7 +391,8 @@ export const useGenerateContractPayments = (contractId: string) => {
 export const useContractMetadataSchema = (countryCode?: string) => {
   return useQuery({
     queryKey: queryKeys.contracts.metadataSchema(countryCode),
-    queryFn: () => contractsApi.getContractMetadataSchema(countryCode ?? ''),
+    queryFn: () =>
+      getMetadataSchema(countryCode ?? '') as Promise<CountryMetadataSchema>,
     enabled: !!countryCode,
     staleTime: Infinity, // Schemas don't change during a session
   });
@@ -393,10 +402,9 @@ export const useContractMetadataSchema = (countryCode?: string) => {
 
 export const useAddContractParty = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: AddContractPartyRequest) =>
-      contractsApi.addContractParty(contractId, data),
+  return useMutationWithToast({
+    successMessage: 'Party added successfully',
+    mutationFn: (data: AddContractPartyRequest) => addParty(contractId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.detail(contractId),
@@ -406,20 +414,16 @@ export const useAddContractParty = (contractId: string) => {
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
-      showToast('Party added successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useRemoveContractParty = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Party removed successfully',
     mutationFn: (partyIdentifier: string) =>
-      contractsApi.removeContractParty(contractId, partyIdentifier),
+      removeParty(contractId, partyIdentifier),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.detail(contractId),
@@ -429,20 +433,16 @@ export const useRemoveContractParty = (contractId: string) => {
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
-      showToast('Party removed successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useChangePrimaryContact = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Primary contact changed successfully',
     mutationFn: (data: ChangePrimaryContactRequest) =>
-      contractsApi.changePrimaryContact(contractId, data),
+      changePrimaryContact(contractId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.detail(contractId),
@@ -452,10 +452,6 @@ export const useChangePrimaryContact = (contractId: string) => {
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
-      showToast('Primary contact changed successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

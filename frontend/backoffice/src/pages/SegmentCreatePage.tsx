@@ -9,7 +9,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useCreateSegment } from '../hooks/useSegments';
-import type { SegmentCondition } from '../api/segments';
+import type { SegmentConditionRequest as SegmentCondition } from '../generated/models';
 
 const ATTRIBUTES = [
   { value: 'is_demo', label: 'Is Demo', type: 'boolean' },

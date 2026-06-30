@@ -757,13 +757,13 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
         <div className="bg-surface-page rounded-lg px-3 py-2 border border-border-default">
           <p className="text-xs text-text-muted">Mean Latency</p>
           <p className="text-lg font-bold font-mono text-text-primary">
-            {httpLatency.meanMs.toFixed(1)}ms
+            {httpLatency ? `${httpLatency.meanMs.toFixed(1)}ms` : '—'}
           </p>
         </div>
       </div>
 
       {/* Latency distribution */}
-      {metrics.httpRequestCount > 0 && (
+      {httpLatency && metrics.httpRequestCount > 0 && (
         <div className="mb-5">
           <p className="text-xs font-medium uppercase tracking-wider text-text-muted mb-3">
             Response Time Distribution

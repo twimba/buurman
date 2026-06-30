@@ -18,7 +18,10 @@ import {
   Shield,
   Trash2,
 } from 'lucide-react';
-import * as extensionsApi from '@/api/contractExtensions';
+import {
+  getExtensionAddendum,
+  getRentIncreaseLetter,
+} from '@/generated/api/contract-extensions/contract-extensions';
 import {
   GenerateDocumentsModal,
   COUNTRY_OFFICIAL_LANGUAGES,
@@ -254,20 +257,14 @@ export const ExtensionTimeline = ({
               onDownloadAddendum={() =>
                 downloadPdf(
                   () =>
-                    extensionsApi.downloadAddendum(
-                      contractIdentifier,
-                      ext.identifier
-                    ),
+                    getExtensionAddendum(contractIdentifier, ext.identifier),
                   `addendum-${ext.extensionNumber}.pdf`
                 )
               }
               onDownloadLetter={() =>
                 downloadPdf(
                   () =>
-                    extensionsApi.downloadRentIncreaseLetter(
-                      contractIdentifier,
-                      ext.identifier
-                    ),
+                    getRentIncreaseLetter(contractIdentifier, ext.identifier),
                   `rent-increase-letter-${ext.extensionNumber}.pdf`
                 )
               }

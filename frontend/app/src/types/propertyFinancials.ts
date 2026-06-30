@@ -1,7 +1,35 @@
 // ============================================================
-// Enums — re-exported from generated
+// Thin re-export of generated property-financials models.
+// Frontend-only content kept: PaymentFrequency enum (spec uses
+// `string` for this field), label formatters, short aliases.
 // ============================================================
 
+// --- Response / request models (thin re-export) ---
+export type {
+  PropertyFinancialSummaryResponse,
+  PropertyAcquisitionResponse,
+  UpsertPropertyAcquisitionRequest,
+  PropertyValuationResponse,
+  CreatePropertyValuationRequest,
+  UpdatePropertyValuationRequest,
+  PropertyFinancingResponse,
+  CreatePropertyFinancingRequest,
+  UpdatePropertyFinancingRequest,
+  FinancingPaymentResponse,
+  CreateFinancingPaymentRequest,
+  UpdateFinancingPaymentRequest,
+  PropertyInsuranceResponse,
+  CreatePropertyInsuranceRequest,
+  UpdatePropertyInsuranceRequest,
+  PropertyTaxResponse,
+  CreatePropertyTaxRequest,
+  UpdatePropertyTaxRequest,
+  PropertyFeeResponse,
+  CreatePropertyFeeRequest,
+  UpdatePropertyFeeRequest,
+} from '../generated/models';
+
+// --- Enums re-exported from generated (used as values + types) ---
 export {
   PropertyAcquisitionResponseAcquisitionType as AcquisitionType,
   type PropertyAcquisitionResponseAcquisitionType,
@@ -67,8 +95,9 @@ export {
   type PropertyFeeResponseStatus,
 } from '../generated/models';
 
-// PaymentFrequency — generated uses `string` for this field,
-// keep manual enum for full type safety (includes SEMI_ANNUALLY, CUSTOM)
+// PaymentFrequency — frontend-only. Generated models type this field as
+// `string`; keep a real enum for dropdowns/form state and full member set
+// (includes SEMI_ANNUALLY, CUSTOM).
 export enum PaymentFrequency {
   MONTHLY = 'MONTHLY',
   QUARTERLY = 'QUARTERLY',
@@ -78,7 +107,7 @@ export enum PaymentFrequency {
 }
 
 // ============================================================
-// Imports for manual interfaces and constants
+// Imports for label formatters
 // ============================================================
 
 import { PropertyAcquisitionResponseAcquisitionType } from '../generated/models';
@@ -94,341 +123,6 @@ import { PropertyTaxResponseTaxType } from '../generated/models';
 import { PropertyTaxResponseStatus } from '../generated/models';
 import { PropertyFeeResponseFeeType } from '../generated/models';
 import { PropertyFeeResponseStatus } from '../generated/models';
-
-// ============================================================
-// Response interfaces — kept manual (generated uses `string` for enum fields)
-// ============================================================
-
-export interface PropertyAcquisitionResponse {
-  identifier: string;
-  acquisitionType: PropertyAcquisitionResponseAcquisitionType;
-  acquisitionDate?: string;
-  purchasePrice?: number;
-  purchasePriceCurrency?: string;
-  closingCosts?: number;
-  closingCostsCurrency?: string;
-  renovationCosts?: number;
-  renovationCostsCurrency?: string;
-  landValue?: number;
-  landValueCurrency?: string;
-  depreciationMethod?: PropertyAcquisitionResponseDepreciationMethod;
-  depreciationYears?: number;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PropertyValuationResponse {
-  identifier: string;
-  valuationType: PropertyValuationResponseValuationType;
-  valuationDate: string;
-  amount: number;
-  currency: string;
-  source?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PropertyFinancingResponse {
-  identifier: string;
-  propertyIdentifier: string;
-  financingType: PropertyFinancingResponseFinancingType;
-  rateType: PropertyFinancingResponseRateType;
-  lenderName?: string;
-  loanNumber?: string;
-  originalAmount: number;
-  originalAmountCurrency: string;
-  currentBalance?: number;
-  currentBalanceCurrency?: string;
-  interestRate?: number;
-  monthlyPayment?: number;
-  monthlyPaymentCurrency?: string;
-  paymentVariable: boolean;
-  startDate: string;
-  endDate?: string;
-  termMonths?: number;
-  status: PropertyFinancingResponseStatus;
-  notes?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface FinancingPaymentResponse {
-  identifier: string;
-  financingIdentifier: string;
-  paymentDate: string;
-  totalAmount: number;
-  principalAmount?: number;
-  interestAmount?: number;
-  escrowAmount?: number;
-  extraPayment?: number;
-  currency: string;
-  status: FinancingPaymentResponseStatus;
-  notes?: string;
-  balanceDeducted: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PropertyInsuranceResponse {
-  identifier: string;
-  propertyIdentifier: string;
-  insuranceType: PropertyInsuranceResponseInsuranceType;
-  provider?: string;
-  policyNumber?: string;
-  coverageAmount?: number;
-  coverageAmountCurrency?: string;
-  annualPremium: number;
-  annualPremiumCurrency: string;
-  paymentFrequency: PaymentFrequency;
-  startDate?: string;
-  endDate?: string;
-  status: PropertyInsuranceResponseStatus;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PropertyTaxResponse {
-  identifier: string;
-  propertyIdentifier: string;
-  taxType: PropertyTaxResponseTaxType;
-  authority?: string;
-  annualAmount: number;
-  currency: string;
-  paymentFrequency: PaymentFrequency;
-  dueMonths?: string;
-  taxYear?: number;
-  startDate?: string;
-  endDate?: string;
-  status: PropertyTaxResponseStatus;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PropertyFeeResponse {
-  identifier: string;
-  propertyIdentifier: string;
-  feeType: PropertyFeeResponseFeeType;
-  name?: string;
-  annualAmount: number;
-  currency: string;
-  paymentFrequency: PaymentFrequency;
-  dueMonths?: string;
-  startDate?: string;
-  endDate?: string;
-  status: PropertyFeeResponseStatus;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PropertyFinancialSummaryResponse {
-  acquisition?: PropertyAcquisitionResponse;
-  latestValuation?: PropertyValuationResponse;
-  valuationHistory: PropertyValuationResponse[];
-  financings: PropertyFinancingResponse[];
-  insurances: PropertyInsuranceResponse[];
-  taxes: PropertyTaxResponse[];
-  fees: PropertyFeeResponse[];
-  totalFinancingBalance?: number;
-  totalAnnualInsurance?: number;
-  totalAnnualTaxes?: number;
-  totalAnnualFees?: number;
-  totalAnnualCosts?: number;
-  netWorth?: number;
-  currency?: string;
-}
-
-// ============================================================
-// Request interfaces — manual (generated adds to all optional fields)
-// ============================================================
-
-export interface UpsertPropertyAcquisitionRequest {
-  acquisitionType: PropertyAcquisitionResponseAcquisitionType;
-  acquisitionDate?: string;
-  purchasePrice?: number;
-  purchasePriceCurrency?: string;
-  closingCosts?: number;
-  closingCostsCurrency?: string;
-  renovationCosts?: number;
-  renovationCostsCurrency?: string;
-  landValue?: number;
-  landValueCurrency?: string;
-  depreciationMethod?: PropertyAcquisitionResponseDepreciationMethod;
-  depreciationYears?: number;
-  notes?: string;
-}
-
-export interface CreatePropertyValuationRequest {
-  valuationType: PropertyValuationResponseValuationType;
-  valuationDate: string;
-  amount: number;
-  currency: string;
-  source?: string;
-  notes?: string;
-}
-
-export interface UpdatePropertyValuationRequest {
-  valuationType?: PropertyValuationResponseValuationType;
-  valuationDate?: string;
-  amount?: number;
-  currency?: string;
-  source?: string;
-  notes?: string;
-}
-
-export interface CreatePropertyFinancingRequest {
-  financingType: PropertyFinancingResponseFinancingType;
-  rateType?: PropertyFinancingResponseRateType;
-  lenderName?: string;
-  loanNumber?: string;
-  originalAmount: number;
-  originalAmountCurrency: string;
-  currentBalance?: number;
-  currentBalanceCurrency?: string;
-  interestRate?: number;
-  monthlyPayment?: number;
-  monthlyPaymentCurrency?: string;
-  paymentVariable?: boolean;
-  startDate: string;
-  endDate?: string;
-  termMonths?: number;
-  status?: PropertyFinancingResponseStatus;
-  notes?: string;
-}
-
-export interface UpdatePropertyFinancingRequest {
-  financingType?: PropertyFinancingResponseFinancingType;
-  rateType?: PropertyFinancingResponseRateType;
-  lenderName?: string;
-  loanNumber?: string;
-  originalAmount?: number;
-  originalAmountCurrency?: string;
-  currentBalance?: number;
-  currentBalanceCurrency?: string;
-  interestRate?: number;
-  monthlyPayment?: number;
-  monthlyPaymentCurrency?: string;
-  paymentVariable?: boolean;
-  startDate?: string;
-  endDate?: string;
-  termMonths?: number;
-  status?: PropertyFinancingResponseStatus;
-  notes?: string;
-}
-
-export interface CreateFinancingPaymentRequest {
-  paymentDate: string;
-  totalAmount: number;
-  principalAmount?: number;
-  interestAmount?: number;
-  escrowAmount?: number;
-  extraPayment?: number;
-  currency: string;
-  status?: FinancingPaymentResponseStatus;
-  notes?: string;
-  deductFromBalance?: boolean;
-}
-
-export interface UpdateFinancingPaymentRequest {
-  paymentDate?: string;
-  totalAmount?: number;
-  principalAmount?: number;
-  interestAmount?: number;
-  escrowAmount?: number;
-  extraPayment?: number;
-  currency?: string;
-  status?: FinancingPaymentResponseStatus;
-  notes?: string;
-  deductFromBalance?: boolean;
-}
-
-export interface CreatePropertyInsuranceRequest {
-  insuranceType: PropertyInsuranceResponseInsuranceType;
-  provider?: string;
-  policyNumber?: string;
-  coverageAmount?: number;
-  coverageAmountCurrency?: string;
-  annualPremium: number;
-  annualPremiumCurrency: string;
-  paymentFrequency?: PaymentFrequency;
-  startDate?: string;
-  endDate?: string;
-  status?: PropertyInsuranceResponseStatus;
-  notes?: string;
-}
-
-export interface UpdatePropertyInsuranceRequest {
-  insuranceType?: PropertyInsuranceResponseInsuranceType;
-  provider?: string;
-  policyNumber?: string;
-  coverageAmount?: number;
-  coverageAmountCurrency?: string;
-  annualPremium?: number;
-  annualPremiumCurrency?: string;
-  paymentFrequency?: PaymentFrequency;
-  startDate?: string;
-  endDate?: string;
-  status?: PropertyInsuranceResponseStatus;
-  notes?: string;
-}
-
-export interface CreatePropertyTaxRequest {
-  taxType: PropertyTaxResponseTaxType;
-  authority?: string;
-  annualAmount: number;
-  currency: string;
-  paymentFrequency?: PaymentFrequency;
-  dueMonths?: string;
-  taxYear?: number;
-  startDate?: string;
-  endDate?: string;
-  status?: PropertyTaxResponseStatus;
-  notes?: string;
-}
-
-export interface UpdatePropertyTaxRequest {
-  taxType?: PropertyTaxResponseTaxType;
-  authority?: string;
-  annualAmount?: number;
-  currency?: string;
-  paymentFrequency?: PaymentFrequency;
-  dueMonths?: string;
-  taxYear?: number;
-  startDate?: string;
-  endDate?: string;
-  status?: PropertyTaxResponseStatus;
-  notes?: string;
-}
-
-export interface CreatePropertyFeeRequest {
-  feeType: PropertyFeeResponseFeeType;
-  name?: string;
-  annualAmount: number;
-  currency: string;
-  paymentFrequency?: PaymentFrequency;
-  dueMonths?: string;
-  startDate?: string;
-  endDate?: string;
-  status?: PropertyFeeResponseStatus;
-  notes?: string;
-}
-
-export interface UpdatePropertyFeeRequest {
-  feeType?: PropertyFeeResponseFeeType;
-  name?: string;
-  annualAmount?: number;
-  currency?: string;
-  paymentFrequency?: PaymentFrequency;
-  dueMonths?: string;
-  startDate?: string;
-  endDate?: string;
-  status?: PropertyFeeResponseStatus;
-  notes?: string;
-}
 
 // ============================================================
 // Label formatters
@@ -614,6 +308,20 @@ export const formatPaymentFrequency = (freq: PaymentFrequency): string => {
 // ============================================================
 // Short aliases (used by hooks / components)
 // ============================================================
+
+import type {
+  UpsertPropertyAcquisitionRequest,
+  CreatePropertyValuationRequest,
+  UpdatePropertyValuationRequest,
+  CreatePropertyFinancingRequest,
+  UpdatePropertyFinancingRequest,
+  CreatePropertyInsuranceRequest,
+  UpdatePropertyInsuranceRequest,
+  CreatePropertyTaxRequest,
+  UpdatePropertyTaxRequest,
+  CreatePropertyFeeRequest,
+  UpdatePropertyFeeRequest,
+} from '../generated/models';
 
 export type UpsertAcquisitionRequest = UpsertPropertyAcquisitionRequest;
 export type CreateValuationRequest = CreatePropertyValuationRequest;

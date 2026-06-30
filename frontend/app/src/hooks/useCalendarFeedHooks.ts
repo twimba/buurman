@@ -1,61 +1,56 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as calendarFeedsApi from '../api/calendarFeeds';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getUserFeeds,
+  createFeed,
+  rotateFeedToken,
+  deleteFeed,
+} from '../generated/api/calendar-feeds/calendar-feeds';
 import type { CreateCalendarFeedRequest } from '../generated/models';
-import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useCalendarFeeds = () => {
   return useQuery({
     queryKey: queryKeys.calendarFeeds.all(),
-    queryFn: calendarFeedsApi.getCalendarFeeds,
+    queryFn: () => getUserFeeds(),
   });
 };
 
 export const useCreateCalendarFeed = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: CreateCalendarFeedRequest) =>
-      calendarFeedsApi.createCalendarFeed(data),
+  return useMutationWithToast({
+    successMessage: 'Calendar feed created',
+    mutationFn: (data: CreateCalendarFeedRequest) => createFeed(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.calendarFeeds.all(),
       });
-      showToast('Calendar feed created', 'success');
     },
-    onError: (error) => showToast(getErrorMessage(error), 'error'),
   });
 };
 
 export const useRotateCalendarFeedToken = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (identifier: string) =>
-      calendarFeedsApi.rotateCalendarFeedToken(identifier),
+  return useMutationWithToast({
+    successMessage: 'Feed URL regenerated. Old URL is now invalid.',
+    mutationFn: (identifier: string) => rotateFeedToken(identifier),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.calendarFeeds.all(),
       });
-      showToast('Feed URL regenerated. Old URL is now invalid.', 'success');
     },
-    onError: (error) => showToast(getErrorMessage(error), 'error'),
   });
 };
 
 export const useDeleteCalendarFeed = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (identifier: string) =>
-      calendarFeedsApi.deleteCalendarFeed(identifier),
+  return useMutationWithToast({
+    successMessage: 'Calendar feed deleted',
+    mutationFn: (identifier: string) => deleteFeed(identifier),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.calendarFeeds.all(),
       });
-      showToast('Calendar feed deleted', 'success');
     },
-    onError: (error) => showToast(getErrorMessage(error), 'error'),
   });
 };

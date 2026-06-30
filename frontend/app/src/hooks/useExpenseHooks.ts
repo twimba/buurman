@@ -4,12 +4,24 @@ import {
   useQueryClient,
   keepPreviousData,
 } from '@tanstack/react-query';
-import * as expensesApi from '../api/expenses';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
-  CreateExpenseRequest,
-  UpdateExpenseRequest,
+  getExpenses,
+  getExpenseStats,
+  getExpense,
+  createExpense,
+  updateExpense,
+  deleteExpense,
+  getExpenseDocuments,
+  uploadExpenseDocument,
+  deleteExpenseDocument,
+  getExpenseAuditLog,
+} from '../generated/api/expenses/expenses';
+import type {
   GetExpensesParams,
-} from '../types/expense';
+  ExpenseResponseCategory,
+} from '../generated/models';
+import { CreateExpenseRequest, UpdateExpenseRequest } from '../types/expense';
 import type { PageParams } from '@/types/common';
 import { useToast } from '@buurman/ui';
 import { useAnnounce } from '@/hooks/useAnnounce';
@@ -18,10 +30,18 @@ import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 import { queryKeys } from '../lib/queryKeys';
 
-export const useExpenses = (params?: GetExpensesParams & PageParams) => {
+export const useExpenses = (
+  params?: {
+    category?: ExpenseResponseCategory;
+    propertyIdentifier?: string;
+    contactIdentifier?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  } & PageParams
+) => {
   return useQuery({
     queryKey: queryKeys.expenses.all(params),
-    queryFn: () => expensesApi.getExpenses(params),
+    queryFn: () => getExpenses(params as GetExpensesParams),
     placeholderData: keepPreviousData,
   });
 };
@@ -29,14 +49,14 @@ export const useExpenses = (params?: GetExpensesParams & PageParams) => {
 export const useExpenseStats = () => {
   return useQuery({
     queryKey: queryKeys.expenses.stats(),
-    queryFn: () => expensesApi.getExpenseStats(),
+    queryFn: () => getExpenseStats(),
   });
 };
 
 export const useExpense = (id: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.expenses.detail(id),
-    queryFn: () => expensesApi.getExpense(id ?? ''),
+    queryFn: () => getExpense(id ?? ''),
     enabled: !!id,
   });
 };
@@ -44,24 +64,20 @@ export const useExpense = (id: string | undefined) => {
 export const useExpensesByProperty = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.expenses.byProperty(propertyId),
-    queryFn: () => expensesApi.getExpensesByProperty(propertyId ?? ''),
+    queryFn: () =>
+      getExpenses({
+        propertyIdentifier: propertyId ?? '',
+        size: 1000,
+      }).then((r) => r.content ?? []),
     enabled: !!propertyId,
-  });
-};
-
-export const useExpenseSummary = (period: string) => {
-  return useQuery({
-    queryKey: queryKeys.expenses.summary(period),
-    queryFn: () => expensesApi.getExpenseSummary(period),
-    enabled: !!period,
   });
 };
 
 export const useCreateExpense = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: CreateExpenseRequest) => expensesApi.createExpense(data),
+  return useMutationWithToast({
+    mutationFn: (data: CreateExpenseRequest) => createExpense(data),
     onSuccess: (newExpense) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.expenses.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.expenses.stats() });
@@ -69,7 +85,7 @@ export const useCreateExpense = () => {
         queryKey: queryKeys.properties.all(),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.detail(newExpense.property.identifier),
+        queryKey: queryKeys.properties.detail(newExpense.property?.identifier),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.stats(),
@@ -92,18 +108,14 @@ export const useCreateExpense = () => {
       showToast('Expense created successfully', 'success');
       trackEvent(AnalyticsEvent.EXPENSE_CREATED);
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUpdateExpense = (id: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: UpdateExpenseRequest) =>
-      expensesApi.updateExpense(id, data),
+  return useMutationWithToast({
+    successMessage: 'Expense updated successfully',
+    mutationFn: (data: UpdateExpenseRequest) => updateExpense(id, data),
     onSuccess: (updatedExpense) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.expenses.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.expenses.stats() });
@@ -115,7 +127,7 @@ export const useUpdateExpense = (id: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.detail(
-          updatedExpense.property.identifier
+          updatedExpense.property?.identifier
         ),
       });
       queryClient.invalidateQueries({
@@ -136,10 +148,6 @@ export const useUpdateExpense = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.reports.propertyComparison(),
       });
-      showToast('Expense updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -149,7 +157,7 @@ export const useDeleteExpense = () => {
   const { showToast } = useToast();
   const announce = useAnnounce();
   return useMutation({
-    mutationFn: (id: string) => expensesApi.deleteExpense(id),
+    mutationFn: (id: string) => deleteExpense(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.expenses.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.expenses.stats() });
@@ -186,15 +194,15 @@ export const useDeleteExpense = () => {
 export const useExpenseDocuments = (expenseId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.expenses.documents(expenseId),
-    queryFn: () => expensesApi.getExpenseDocuments(expenseId ?? ''),
+    queryFn: () => getExpenseDocuments(expenseId ?? ''),
     enabled: !!expenseId,
   });
 };
 
 export const useUploadExpenseDocument = (expenseId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Document uploaded successfully',
     mutationFn: ({
       file,
       title,
@@ -203,7 +211,7 @@ export const useUploadExpenseDocument = (expenseId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => expensesApi.uploadExpenseDocument(expenseId, file, title, notes),
+    }) => uploadExpenseDocument(expenseId, { file }, { title, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.expenses.documents(expenseId),
@@ -215,20 +223,15 @@ export const useUploadExpenseDocument = (expenseId: string) => {
         queryKey: queryKeys.expenses.auditLog(expenseId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.documents.all() });
-      showToast('Document uploaded successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteExpenseDocument = (expenseId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (documentId: string) =>
-      expensesApi.deleteExpenseDocument(expenseId, documentId),
+  return useMutationWithToast({
+    successMessage: 'Document deleted successfully',
+    mutationFn: (documentId: string) => deleteExpenseDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.expenses.documents(expenseId),
@@ -240,10 +243,6 @@ export const useDeleteExpenseDocument = (expenseId: string) => {
         queryKey: queryKeys.expenses.auditLog(expenseId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.documents.all() });
-      showToast('Document deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -251,7 +250,7 @@ export const useDeleteExpenseDocument = (expenseId: string) => {
 export const useExpenseAuditLog = (expenseId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.expenses.auditLog(expenseId),
-    queryFn: () => expensesApi.getExpenseAuditLog(expenseId ?? ''),
+    queryFn: () => getExpenseAuditLog(expenseId ?? ''),
     enabled: !!expenseId,
   });
 };

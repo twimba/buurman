@@ -22,10 +22,11 @@ import {
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
-import { exportTakeoutGoogleSheet } from '@/api/googleSheetsExport';
+import { exportTakeoutGoogleSheet } from '@/generated/api/data-takeout/data-takeout';
+import { GOOGLE_SHEET_TAKEOUT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import type { TakeoutResponse } from '@/api/takeouts';
+import type { TakeoutResponse } from '@/generated/models';
 
 const formatFileSize = (bytes: number | null): string => {
   if (bytes === null || bytes === 0) {
@@ -125,7 +126,7 @@ const TakeoutRow = ({
                   })}
                 </span>
               )}
-              {takeout.fileSize !== null && (
+              {takeout.fileSize != null && (
                 <span>{formatFileSize(takeout.fileSize)}</span>
               )}
               {takeout.expiresAt && takeout.status === 'COMPLETED' && (
@@ -231,7 +232,10 @@ export const DataExportSection = () => {
                 <button
                   onClick={() =>
                     triggerGoogleSheet((token) =>
-                      exportTakeoutGoogleSheet(token)
+                      exportTakeoutGoogleSheet(
+                        { accessToken: token },
+                        { timeout: GOOGLE_SHEET_TAKEOUT_TIMEOUT_MS }
+                      )
                     )
                   }
                   disabled={isGoogleExporting}

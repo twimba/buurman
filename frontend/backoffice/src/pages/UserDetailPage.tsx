@@ -228,7 +228,7 @@ export const UserDetailPage = () => {
     },
     {
       label: 'Updated',
-      value: formatDateTime(user.updatedAt),
+      value: formatDateTime(user.updatedAt ?? ''),
       icon: Calendar,
     },
   ];

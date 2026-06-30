@@ -98,11 +98,12 @@ describe('usePagination', () => {
       { wrapper }
     );
 
+    // pageParams.direction is uppercased to match the API's SortDirection enum.
     expect(result.current.pageParams).toEqual({
       page: 0,
       size: 10,
       sort: 'id',
-      direction: 'desc',
+      direction: 'DESC',
     });
 
     act(() => result.current.handlePageChange(2));
@@ -112,7 +113,7 @@ describe('usePagination', () => {
       page: 0,
       size: 10,
       sort: 'name',
-      direction: 'asc',
+      direction: 'ASC',
     });
   });
 });

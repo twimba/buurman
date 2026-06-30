@@ -377,7 +377,7 @@ export const ContractPaymentsTab = ({
                             <span className="font-semibold text-text-primary">
                               {payment.currency} {payment.amount.toFixed(2)}
                             </span>
-                            {payment.receivedAmount > 0 &&
+                            {(payment.receivedAmount ?? 0) > 0 &&
                               payment.status !== PaymentStatus.PAID && (
                                 <p className="text-xs text-text-secondary">
                                   {t('payments.balance', {

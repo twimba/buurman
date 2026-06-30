@@ -1,25 +1,26 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { teamsApi } from '../api/teams';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  listTeams,
+  getTeam,
+  updateTeamName,
+  deleteTeam,
+} from '../generated/api/backoffice-teams/backoffice-teams';
+import type { ListTeamsParams } from '../generated/models';
 import type { AsyncSelectOption } from '../components/AsyncSelect';
-
-interface ListTeamsParams {
-  page?: number;
-  size?: number;
-  search?: string;
-}
 
 export const useTeams = (params?: ListTeamsParams) => {
   return useQuery({
     queryKey: ['teams', params],
-    queryFn: () => teamsApi.list(params).then((res) => res.data),
+    queryFn: () => listTeams(params),
   });
 };
 
 export const useTeam = (identifier: string) => {
   return useQuery({
     queryKey: ['teams', identifier],
-    queryFn: () => teamsApi.get(identifier).then((res) => res.data),
+    queryFn: () => getTeam(identifier),
     enabled: !!identifier,
   });
 };
@@ -27,14 +28,15 @@ export const useTeam = (identifier: string) => {
 export const useUpdateTeam = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       identifier,
       data,
     }: {
       identifier: string;
       data: { name: string };
-    }) => teamsApi.update(identifier, data).then((res) => res.data),
+    }) => updateTeamName(identifier, data),
+    errorTitle: "Couldn't update team",
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({
@@ -47,8 +49,9 @@ export const useUpdateTeam = () => {
 export const useDeleteTeam = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (identifier: string) => teamsApi.delete(identifier),
+  return useMutationWithToast({
+    mutationFn: (identifier: string) => deleteTeam(identifier),
+    errorTitle: "Couldn't delete team",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
     },
@@ -57,8 +60,8 @@ export const useDeleteTeam = () => {
 
 export const useTeamSearch = () => {
   return useCallback(async (query: string): Promise<AsyncSelectOption[]> => {
-    const res = await teamsApi.list({ search: query, size: 20 });
-    return res.data.content.map((team) => ({
+    const res = await listTeams({ search: query, size: 20 });
+    return (res.content ?? []).map((team) => ({
       value: team.identifier,
       label: team.teamName,
       sublabel: team.identifier,

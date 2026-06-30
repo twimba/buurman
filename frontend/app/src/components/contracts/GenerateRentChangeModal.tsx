@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Languages, Shield, Globe } from 'lucide-react';
 import { useGenerateRentChangeDocuments } from '@/hooks/useRentPeriodHooks';
 import { COUNTRY_OFFICIAL_LANGUAGES } from './GenerateDocumentsModal';
-import type { GenerateRentChangeDocumentsRequest } from '@/api/rentPeriods';
+import type { GenerateRentChangeDocumentsRequest } from '@/generated/models';
 import { useTranslation } from 'react-i18next';
 
 const SUPPORTED_LANGUAGES = [

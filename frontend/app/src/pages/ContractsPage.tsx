@@ -19,8 +19,12 @@ import {
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
-import { exportContractsCsv, exportContractsXlsx } from '@/api/listExports';
-import { exportContractsGoogleSheet } from '@/api/googleSheetsExport';
+import {
+  exportContractsCsv,
+  exportContractsXlsx,
+  exportContractsGoogleSheet,
+} from '@/generated/api/booklets/booklets';
+import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 
 export const ContractsPage = () => {
   const { t } = useTranslation('contracts');
@@ -126,9 +130,14 @@ export const ContractsPage = () => {
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <EntityExportControls
             filenameStem="contracts"
-            csv={exportContractsCsv}
-            xlsx={exportContractsXlsx}
-            googleSheet={exportContractsGoogleSheet}
+            csv={() => exportContractsCsv()}
+            xlsx={() => exportContractsXlsx()}
+            googleSheet={(accessToken) =>
+              exportContractsGoogleSheet(
+                { accessToken },
+                { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
+              )
+            }
           />
         </div>
       ),

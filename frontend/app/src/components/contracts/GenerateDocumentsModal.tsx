@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FileText, FileDown, Languages, Shield, Globe } from 'lucide-react';
 import { useGenerateExtensionDocuments } from '@/hooks/useContractExtensionHooks';
-import type { GenerateExtensionDocumentsRequest } from '@/api/contractExtensions';
+import type { GenerateExtensionDocumentsRequest } from '@/generated/models';
 import { useTranslation } from 'react-i18next';
 
 const SUPPORTED_LANGUAGES = [

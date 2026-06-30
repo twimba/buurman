@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.dto.response.FeatureFlagState;
 import com.buurman.generated.api.FeatureFlagsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
@@ -18,7 +19,7 @@ public class FeatureFlagController implements FeatureFlagsApi {
   private final FeatureFlagService featureFlagService;
 
   @Override
-  public Map<String, Object> getFeatureFlags() {
+  public Map<String, FeatureFlagState> getFeatureFlags() {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return featureFlagService.getAllFlags(principal);
   }

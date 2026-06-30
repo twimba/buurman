@@ -20,8 +20,12 @@ import {
   type ListPageHeaderAction,
 } from '@buurman/ui';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
-import { exportPropertiesCsv, exportPropertiesXlsx } from '@/api/listExports';
-import { exportPropertiesGoogleSheet } from '@/api/googleSheetsExport';
+import {
+  exportPropertiesCsv,
+  exportPropertiesXlsx,
+  exportPropertiesGoogleSheet,
+} from '@/generated/api/booklets/booklets';
+import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { RefreshCw } from 'lucide-react';
 
@@ -148,9 +152,14 @@ export const PropertyListPage = () => {
       render: () => (
         <EntityExportControls
           filenameStem="properties"
-          csv={exportPropertiesCsv}
-          xlsx={exportPropertiesXlsx}
-          googleSheet={exportPropertiesGoogleSheet}
+          csv={() => exportPropertiesCsv()}
+          xlsx={() => exportPropertiesXlsx()}
+          googleSheet={(accessToken) =>
+            exportPropertiesGoogleSheet(
+              { accessToken },
+              { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
+            )
+          }
         />
       ),
     },
@@ -371,8 +380,8 @@ export const PropertyListPage = () => {
               <div className="mt-6">
                 <Pagination
                   page={page}
-                  totalPages={propertiesData.totalPages}
-                  totalElements={propertiesData.totalElements}
+                  totalPages={propertiesData.totalPages ?? 0}
+                  totalElements={propertiesData.totalElements ?? 0}
                   size={size}
                   onPageChange={handlePageChange}
                   onSizeChange={handleSizeChange}

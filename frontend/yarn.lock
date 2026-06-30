@@ -4436,6 +4436,7 @@ __metadata:
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.62.0"
     vite: "npm:8.1.0"
+    vitest: "npm:4.1.9"
   languageName: unknown
   linkType: soft
 

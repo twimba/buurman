@@ -130,24 +130,21 @@ import type {
   UpdateContractRequest as GeneratedUpdateContractRequest,
 } from '../generated/models';
 
-// Derived from generated spec so top-level field names are enforced at compile time.
-// `countryMetadata` is overridden to optional: the spec marks it required but the
-// backend accepts requests without it for non-country-specific contracts.
-// `rentComponents` is overridden to RentComponentFormItem[] for form compatibility;
-// the submit function remaps to RentComponentRequest[] before sending.
+// Derived from the generated request so top-level field names stay compile-checked.
+// `rentComponents` is the only override: it's RentComponentFormItem[] (amount may be an
+// empty string while editing) for form compatibility; the hooks remap to
+// RentComponentRequest[] (dropping blank rows) before sending.
 export type CreateContractRequest = Omit<
   GeneratedCreateContractRequest,
-  'countryMetadata' | 'rentComponents'
+  'rentComponents'
 > & {
-  countryMetadata?: Record<string, unknown>;
   rentComponents?: RentComponentFormItem[];
 };
 
 export type UpdateContractRequest = Omit<
   GeneratedUpdateContractRequest,
-  'countryMetadata' | 'rentComponents'
+  'rentComponents'
 > & {
-  countryMetadata?: Record<string, unknown>;
   rentComponents?: RentComponentFormItem[];
 };
 

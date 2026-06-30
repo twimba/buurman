@@ -9,6 +9,8 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,7 +58,7 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
   }
 
   @Override
-  public byte[] exportPortfolioPdf(
+  public Resource exportPortfolioPdf(
       Optional<Integer> months, Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PortfolioDashboardResponse dashboard =
@@ -64,11 +66,12 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generatePortfolioDashboardPDF(dashboard, principal.requireTeamId());
+    return new ByteArrayResource(
+        exportService.generatePortfolioDashboardPDF(dashboard, principal.requireTeamId()));
   }
 
   @Override
-  public byte[] exportPortfolioCsv(
+  public Resource exportPortfolioCsv(
       Optional<Integer> months, Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PortfolioDashboardResponse dashboard =
@@ -76,11 +79,11 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.csv");
     httpServletResponse.setContentType("text/csv");
-    return exportService.generatePortfolioDashboardCSV(dashboard);
+    return new ByteArrayResource(exportService.generatePortfolioDashboardCSV(dashboard));
   }
 
   @Override
-  public byte[] exportPortfolioExcel(
+  public Resource exportPortfolioExcel(
       Optional<Integer> months, Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     if (featureFlagService.isDisabled(EXCEL_EXPORT, SecurityUtils.getCurrentPrincipal())) {
       throw new ForbiddenException("Excel export feature is not available");
@@ -92,7 +95,7 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
         CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.xlsx");
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    return exportService.generatePortfolioDashboardExcel(dashboard);
+    return new ByteArrayResource(exportService.generatePortfolioDashboardExcel(dashboard));
   }
 
   @Override

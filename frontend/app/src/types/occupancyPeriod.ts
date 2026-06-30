@@ -1,4 +1,11 @@
-// Enums — re-exported from generated
+// Thin re-exports of generated models + frontend-only UI label maps.
+
+import {
+  OccupancyPeriodResponseType,
+  OccupancyPeriodResponseEndReason,
+} from '../generated/models';
+
+// Enums re-exported as values (orval enums are const + type of same name).
 export {
   OccupancyPeriodResponseType as OccupancyType,
   type OccupancyPeriodResponseType,
@@ -6,79 +13,15 @@ export {
   type OccupancyPeriodResponseEndReason,
 } from '../generated/models';
 
-// Interfaces — kept manual (generated adds to optional fields)
-
-import {
-  OccupancyPeriodResponseType,
-  OccupancyPeriodResponseEndReason,
+export type {
+  OccupancyPeriodResponse,
+  CreateOccupancyPeriodRequest,
+  UpdateOccupancyPeriodRequest,
+  EndOccupancyPeriodRequest,
+  PropertyTimelineResponse,
+  TimelineEntry,
+  FinancingEntry as FinancingTimelineEntry,
 } from '../generated/models';
-
-// Request interfaces — manual (generated adds to all optional fields)
-
-export interface CreateOccupancyPeriodRequest {
-  startDate: string;
-  type: OccupancyPeriodResponseType;
-  endDate?: string;
-  occupantName?: string;
-  monthlyImputedRent?: number;
-  notes?: string;
-}
-
-export interface UpdateOccupancyPeriodRequest {
-  startDate?: string;
-  type?: OccupancyPeriodResponseType;
-  endDate?: string;
-  occupantName?: string;
-  monthlyImputedRent?: number;
-  notes?: string;
-}
-
-export interface EndOccupancyPeriodRequest {
-  endDate: string;
-  endReason?: OccupancyPeriodResponseEndReason;
-  notes?: string;
-}
-
-export interface OccupancyPeriodResponse {
-  identifier: string;
-  propertyIdentifier: string;
-  startDate: string;
-  endDate?: string;
-  type: OccupancyPeriodResponseType;
-  occupantName?: string;
-  monthlyImputedRent?: number;
-  endReason?: OccupancyPeriodResponseEndReason;
-  notes?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface TimelineEntry {
-  type: 'SELF_OCCUPANCY' | 'CONTRACT' | 'VACANCY';
-  identifier: string;
-  startDate: string;
-  endDate?: string;
-  description?: string;
-  metadata?: string;
-}
-
-export interface FinancingTimelineEntry {
-  identifier: string;
-  startDate: string;
-  endDate?: string;
-  financingType: string;
-  status: string;
-  lenderName?: string;
-  originalAmount: number;
-  originalAmountCurrency: string;
-  interestRate?: number;
-}
-
-export interface PropertyTimelineResponse {
-  acquisitionDate?: string;
-  entries: TimelineEntry[];
-  financings: FinancingTimelineEntry[];
-}
 
 export const OCCUPANCY_TYPE_LABELS: Record<
   OccupancyPeriodResponseType,

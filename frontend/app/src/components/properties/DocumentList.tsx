@@ -28,7 +28,7 @@ import {
 import { EditMetadataModal } from '../ui/EditMetadataModal';
 import { useDocumentSelection } from '@/hooks/useDocumentSelection';
 import { useBulkDownload, useUpdateDocument } from '@/hooks/useDocumentHooks';
-import { getDownloadUrl } from '@/api/documents';
+import { getDocumentDownloadUrl } from '@/generated/api/documents/documents';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 interface DocumentListProps {
@@ -125,7 +125,7 @@ export const DocumentList = ({
 
   const handleDownload = async (documentId: string) => {
     try {
-      const url = await getDownloadUrl(documentId);
+      const url = await getDocumentDownloadUrl(documentId);
       window.open(url, '_blank');
     } catch (err) {
       console.error('Download error:', err);
@@ -318,14 +318,14 @@ export const DocumentList = ({
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 mt-0.5">
-                          {getFileIcon(doc.mimeType)}
+                          {getFileIcon(doc.mimeType ?? '')}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium text-text-primary truncate">
                             {doc.title ?? doc.fileName}
                           </div>
                           <div className="mt-0.5 text-xs text-text-secondary flex items-center gap-2 flex-wrap">
-                            <span>{formatFileSize(doc.fileSize)}</span>
+                            <span>{formatFileSize(doc.fileSize ?? 0)}</span>
                             <span aria-hidden>·</span>
                             <span>{formatDate(doc.uploadedAt)}</span>
                           </div>
@@ -403,7 +403,7 @@ export const DocumentList = ({
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          {getFileIcon(doc.mimeType)}
+                          {getFileIcon(doc.mimeType ?? '')}
                           <div>
                             <div className="text-sm font-medium text-text-primary">
                               {doc.title ?? doc.fileName}
@@ -423,7 +423,7 @@ export const DocumentList = ({
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                        {formatFileSize(doc.fileSize)}
+                        {formatFileSize(doc.fileSize ?? 0)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                         {formatDate(doc.uploadedAt)}

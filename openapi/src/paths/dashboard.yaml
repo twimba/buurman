@@ -173,10 +173,10 @@ reports-export-transactions-pdf:
       "200":
         description: OK
         content:
-          "*/*":
+          application/pdf:
             schema:
               type: string
-              format: byte
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:
@@ -244,10 +244,10 @@ reports-export-transactions-csv:
       "200":
         description: OK
         content:
-          "*/*":
+          text/csv:
             schema:
               type: string
-              format: byte
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:
@@ -318,7 +318,7 @@ reports-export-transactions-excel:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
-              format: byte
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:
@@ -893,6 +893,48 @@ dashboard-upcoming-renewals:
               $ref: '#/components/schemas/ProblemDetail'
       "409":
         description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+dashboard-pending-extensions:
+  get:
+    tags:
+      - Dashboard
+    summary: Get pending contract extensions
+    description: Get draft contract extensions awaiting action
+    operationId: getPendingExtensions
+    responses:
+      "200":
+        description: Pending extensions
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContractExtensionResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
         content:
           application/json:
             schema:

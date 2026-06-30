@@ -211,7 +211,7 @@ export function RegistrationInvitationDetailPage() {
                   }
                   await updateNoteMutation.mutateAsync({
                     identifier,
-                    data: { note: noteValue || undefined },
+                    data: { note: noteValue },
                   });
                   setEditingNote(false);
                 }}

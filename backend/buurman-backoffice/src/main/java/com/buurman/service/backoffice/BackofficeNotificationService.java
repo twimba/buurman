@@ -21,6 +21,7 @@ import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
+import com.buurman.dto.response.backoffice.NotificationStatsResponse;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.security.BackofficePrincipal;
@@ -95,7 +96,7 @@ public class BackofficeNotificationService {
   }
 
   @Transactional(readOnly = true)
-  public Map<String, Object> getStats() {
+  public NotificationStatsResponse getStats() {
     long totalCount = notificationRepository.countAll();
     List<LabelCount> statusCounts = notificationRepository.countGroupedByStatus();
     List<LabelCount> channelCounts = notificationRepository.countGroupedByChannel();
@@ -112,11 +113,7 @@ public class BackofficeNotificationService {
       byChannel.put(record.label(), (long) record.count());
     }
 
-    Map<String, Object> stats = new HashMap<>();
-    stats.put("total", totalCount);
-    stats.put("byStatus", byStatus);
-    stats.put("byChannel", byChannel);
-    return stats;
+    return new NotificationStatsResponse(totalCount, byStatus, byChannel);
   }
 
   private BackofficeNotificationResponse toResponse(Notification notification) {

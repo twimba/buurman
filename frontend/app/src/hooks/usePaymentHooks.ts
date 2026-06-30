@@ -4,7 +4,30 @@ import {
   useQueryClient,
   keepPreviousData,
 } from '@tanstack/react-query';
-import * as paymentsApi from '../api/payments';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getPayments,
+  getPaymentStats,
+  getPayment,
+  getOverduePayments,
+  createPayment,
+  updatePayment,
+  deletePayment,
+  markPaymentAsPaid,
+  bulkGeneratePayments,
+  getPaymentDocuments,
+  uploadPaymentDocument,
+  deletePaymentDocument,
+  getPaymentAuditLog,
+  registerReceival,
+  getReceivals,
+  updateReceival,
+  deleteReceival,
+} from '../generated/api/payments/payments';
+import type {
+  GetPaymentsParams,
+  PaymentResponseStatus,
+} from '../generated/models';
 import {
   CreatePaymentRequest,
   CreatePaymentReceivalRequest,
@@ -12,7 +35,6 @@ import {
   UpdatePaymentRequest,
   MarkPaidRequest,
   BulkGeneratePaymentsRequest,
-  GetPaymentsParams,
 } from '../types/payment';
 import type { PageParams } from '@/types/common';
 import { useToast } from '@buurman/ui';
@@ -22,10 +44,19 @@ import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 import { queryKeys } from '../lib/queryKeys';
 
-export const usePayments = (params?: GetPaymentsParams & PageParams) => {
+export const usePayments = (
+  params?: {
+    status?: PaymentResponseStatus | 'OVERDUE';
+    contractIdentifier?: string;
+    propertyIdentifier?: string;
+    contactIdentifier?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  } & PageParams
+) => {
   return useQuery({
     queryKey: queryKeys.payments.all(params),
-    queryFn: () => paymentsApi.getPayments(params),
+    queryFn: () => getPayments(params as GetPaymentsParams),
     placeholderData: keepPreviousData,
   });
 };
@@ -33,14 +64,14 @@ export const usePayments = (params?: GetPaymentsParams & PageParams) => {
 export const usePaymentStats = () => {
   return useQuery({
     queryKey: queryKeys.payments.stats(),
-    queryFn: () => paymentsApi.getPaymentStats(),
+    queryFn: () => getPaymentStats(),
   });
 };
 
 export const usePayment = (id: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.payments.detail(id),
-    queryFn: () => paymentsApi.getPayment(id ?? ''),
+    queryFn: () => getPayment(id ?? ''),
     enabled: !!id,
   });
 };
@@ -48,14 +79,17 @@ export const usePayment = (id: string | undefined) => {
 export const useOverduePayments = () => {
   return useQuery({
     queryKey: queryKeys.payments.overdue(),
-    queryFn: () => paymentsApi.getOverduePayments(),
+    queryFn: () => getOverduePayments(),
   });
 };
 
 export const usePaymentsByContract = (contractId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.payments.byContract(contractId),
-    queryFn: () => paymentsApi.getPaymentsByContract(contractId ?? ''),
+    queryFn: () =>
+      getPayments({ contractIdentifier: contractId ?? '', size: 1000 }).then(
+        (r) => r.content ?? []
+      ),
     enabled: !!contractId,
   });
 };
@@ -63,8 +97,8 @@ export const usePaymentsByContract = (contractId: string | undefined) => {
 export const useCreatePayment = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: CreatePaymentRequest) => paymentsApi.createPayment(data),
+  return useMutationWithToast({
+    mutationFn: (data: CreatePaymentRequest) => createPayment(data),
     onSuccess: (newPayment) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
@@ -72,7 +106,7 @@ export const useCreatePayment = () => {
         queryKey: queryKeys.contracts.all(),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.contracts.detail(newPayment.contract.identifier),
+        queryKey: queryKeys.contracts.detail(newPayment.contract?.identifier),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.stats(),
@@ -90,18 +124,14 @@ export const useCreatePayment = () => {
       const verb = newPayment.status === 'PAID' ? 'registered' : 'scheduled';
       showToast(`Payment ${verb} successfully`, 'success');
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUpdatePayment = (id: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: UpdatePaymentRequest) =>
-      paymentsApi.updatePayment(id, data),
+  return useMutationWithToast({
+    successMessage: 'Payment updated successfully',
+    mutationFn: (data: UpdatePaymentRequest) => updatePayment(id, data),
     onSuccess: (updatedPayment) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
@@ -113,7 +143,7 @@ export const useUpdatePayment = (id: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.detail(
-          updatedPayment.contract.identifier
+          updatedPayment.contract?.identifier
         ),
       });
       queryClient.invalidateQueries({
@@ -128,10 +158,6 @@ export const useUpdatePayment = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.reports.incomeTrend(),
       });
-      showToast('Payment updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -141,7 +167,7 @@ export const useDeletePayment = () => {
   const { showToast } = useToast();
   const announce = useAnnounce();
   return useMutation({
-    mutationFn: (id: string) => paymentsApi.deletePayment(id),
+    mutationFn: (id: string) => deletePayment(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
@@ -175,7 +201,7 @@ export const useMarkPaymentAsPaid = () => {
   const announce = useAnnounce();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: MarkPaidRequest }) =>
-      paymentsApi.markPaymentAsPaid(id, data),
+      markPaymentAsPaid(id, data),
     onSuccess: (updatedPayment) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
@@ -187,7 +213,7 @@ export const useMarkPaymentAsPaid = () => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.detail(
-          updatedPayment.contract.identifier
+          updatedPayment.contract?.identifier
         ),
       });
       queryClient.invalidateQueries({
@@ -217,9 +243,9 @@ export const useMarkPaymentAsPaid = () => {
 export const useBulkGeneratePayments = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: BulkGeneratePaymentsRequest) =>
-      paymentsApi.bulkGeneratePayments(data),
+      bulkGeneratePayments(data),
     onSuccess: (generatedPayments) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
@@ -244,24 +270,21 @@ export const useBulkGeneratePayments = () => {
         'success'
       );
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const usePaymentDocuments = (paymentId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.payments.documents(paymentId),
-    queryFn: () => paymentsApi.getPaymentDocuments(paymentId ?? ''),
+    queryFn: () => getPaymentDocuments(paymentId ?? ''),
     enabled: !!paymentId,
   });
 };
 
 export const useUploadPaymentDocument = (paymentId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Document uploaded successfully',
     mutationFn: ({
       file,
       title,
@@ -270,7 +293,7 @@ export const useUploadPaymentDocument = (paymentId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => paymentsApi.uploadPaymentDocument(paymentId, file, title, notes),
+    }) => uploadPaymentDocument(paymentId, { file }, { title, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.payments.documents(paymentId),
@@ -282,20 +305,15 @@ export const useUploadPaymentDocument = (paymentId: string) => {
         queryKey: queryKeys.payments.auditLog(paymentId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.documents.all() });
-      showToast('Document uploaded successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeletePaymentDocument = (paymentId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (documentId: string) =>
-      paymentsApi.deletePaymentDocument(paymentId, documentId),
+  return useMutationWithToast({
+    successMessage: 'Document deleted successfully',
+    mutationFn: (documentId: string) => deletePaymentDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.payments.documents(paymentId),
@@ -307,10 +325,6 @@ export const useDeletePaymentDocument = (paymentId: string) => {
         queryKey: queryKeys.payments.auditLog(paymentId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.documents.all() });
-      showToast('Document deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -318,7 +332,7 @@ export const useDeletePaymentDocument = (paymentId: string) => {
 export const usePaymentAuditLog = (paymentId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.payments.auditLog(paymentId),
-    queryFn: () => paymentsApi.getPaymentAuditLog(paymentId ?? ''),
+    queryFn: () => getPaymentAuditLog(paymentId ?? ''),
     enabled: !!paymentId,
   });
 };
@@ -326,10 +340,10 @@ export const usePaymentAuditLog = (paymentId: string | undefined) => {
 // Receival hooks
 export const useRegisterReceival = (paymentId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Receival registered successfully',
     mutationFn: (data: CreatePaymentReceivalRequest) =>
-      paymentsApi.registerReceival(paymentId, data),
+      registerReceival(paymentId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
@@ -351,10 +365,6 @@ export const useRegisterReceival = (paymentId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.reports.incomeTrend(),
       });
-      showToast('Receival registered successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -362,22 +372,22 @@ export const useRegisterReceival = (paymentId: string) => {
 export const usePaymentReceivals = (paymentId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.payments.receivals(paymentId),
-    queryFn: () => paymentsApi.getPaymentReceivals(paymentId ?? ''),
+    queryFn: () => getReceivals(paymentId ?? ''),
     enabled: !!paymentId,
   });
 };
 
 export const useUpdatePaymentReceival = (paymentId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Receival updated successfully',
     mutationFn: ({
       receivalId,
       data,
     }: {
       receivalId: string;
       data: UpdatePaymentReceivalRequest;
-    }) => paymentsApi.updatePaymentReceival(paymentId, receivalId, data),
+    }) => updateReceival(paymentId, receivalId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
@@ -399,20 +409,15 @@ export const useUpdatePaymentReceival = (paymentId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.reports.incomeTrend(),
       });
-      showToast('Receival updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeletePaymentReceival = (paymentId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (receivalId: string) =>
-      paymentsApi.deletePaymentReceival(paymentId, receivalId),
+  return useMutationWithToast({
+    successMessage: 'Receival deleted successfully',
+    mutationFn: (receivalId: string) => deleteReceival(paymentId, receivalId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
@@ -434,10 +439,6 @@ export const useDeletePaymentReceival = (paymentId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.reports.incomeTrend(),
       });
-      showToast('Receival deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

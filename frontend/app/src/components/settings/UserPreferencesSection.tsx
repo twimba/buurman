@@ -20,7 +20,7 @@ import {
 } from '../../hooks/useUserPreferencesHooks';
 import { useTheme } from '../../context/ThemeContext';
 import { useLocale } from '../../context/LocaleContext';
-import { NotificationTypePreferenceEntry } from '../../api/users';
+import { NotificationTypePreferenceEntry } from '../../types/users';
 
 export const UserPreferencesSection = () => {
   const { t } = useTranslation('settings');

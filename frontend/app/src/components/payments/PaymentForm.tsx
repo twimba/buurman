@@ -53,7 +53,7 @@ export const PaymentForm = ({
   if (payment && payment !== lastSyncedPayment) {
     setLastSyncedPayment(payment);
     setFormData({
-      contractIdentifier: payment.contract.identifier,
+      contractIdentifier: payment.contract?.identifier ?? '',
       contactIdentifier: payment.contact?.identifier ?? undefined,
       amount: payment.amount,
       currency: payment.currency,

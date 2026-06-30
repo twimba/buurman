@@ -1,24 +1,44 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as usersApi from '../api/users';
-import { useToast } from '@buurman/ui';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getUserProfile,
+  updateUserProfile,
+  getUserTeams,
+  switchTeam,
+  setDefaultTeam,
+  leaveTeam,
+  verifyPhone,
+  resendPhoneVerification,
+  cancelPhoneVerification,
+  getPhonePolicy,
+} from '../generated/api/users/users';
+import {
+  getPreferences,
+  updatePreferences,
+  getNotificationTypePreferences,
+  updateNotificationTypePreferences,
+} from '../generated/api/user-preferences/user-preferences';
+import type {
+  UpdateUserProfileRequest,
+  UpdateUserPreferencesRequest,
+  UpdateNotificationTypePreferencesRequest,
+} from '../types/users';
 import { useAuth } from '../context/AuthContext';
-import { getErrorMessage } from '../utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useCurrentUser = () => {
   const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: queryKeys.userPreferences.profile(),
-    queryFn: usersApi.getCurrentUser,
+    queryFn: getUserProfile,
     enabled: isAuthenticated,
   });
 };
 
 export const useUpdateUserProfile = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: usersApi.updateUserProfile,
+  return useMutationWithToast({
+    mutationFn: (data: UpdateUserProfileRequest) => updateUserProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.profile(),
@@ -26,18 +46,15 @@ export const useUpdateUserProfile = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.auth.currentUser(),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useVerifyPhone = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (code: string) => usersApi.verifyPhone(code),
+  return useMutationWithToast({
+    successMessage: 'Phone number verified successfully',
+    mutationFn: (code: string) => verifyPhone({ code }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.profile(),
@@ -45,32 +62,21 @@ export const useVerifyPhone = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.auth.currentUser(),
       });
-      showToast('Phone number verified successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useResendPhoneVerification = () => {
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: usersApi.resendPhoneVerification,
-    onSuccess: () => {
-      showToast('Verification code sent', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
+  return useMutationWithToast({
+    successMessage: 'Verification code sent',
+    mutationFn: () => resendPhoneVerification(),
   });
 };
 
 export const useCancelPhoneVerification = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: usersApi.cancelPhoneVerification,
+  return useMutationWithToast({
+    mutationFn: () => cancelPhoneVerification(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.profile(),
@@ -78,9 +84,6 @@ export const useCancelPhoneVerification = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.auth.currentUser(),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -88,7 +91,7 @@ export const useCancelPhoneVerification = () => {
 export const usePhonePolicy = () => {
   return useQuery({
     queryKey: queryKeys.userPreferences.phonePolicy(),
-    queryFn: usersApi.getPhonePolicy,
+    queryFn: getPhonePolicy,
     staleTime: 10 * 60 * 1000,
   });
 };
@@ -97,23 +100,19 @@ export const useUserPreferences = () => {
   const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: queryKeys.userPreferences.preferences(),
-    queryFn: usersApi.getUserPreferences,
+    queryFn: getPreferences,
     enabled: isAuthenticated,
   });
 };
 
 export const useUpdateUserPreferences = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: usersApi.updateUserPreferences,
+  return useMutationWithToast({
+    mutationFn: (data: UpdateUserPreferencesRequest) => updatePreferences(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.preferences(),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -122,23 +121,20 @@ export const useNotificationTypePreferences = () => {
   const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: queryKeys.userPreferences.notificationTypePreferences(),
-    queryFn: usersApi.getNotificationTypePreferences,
+    queryFn: getNotificationTypePreferences,
     enabled: isAuthenticated,
   });
 };
 
 export const useUpdateNotificationTypePreferences = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: usersApi.updateNotificationTypePreferences,
+  return useMutationWithToast({
+    mutationFn: (data: UpdateNotificationTypePreferencesRequest) =>
+      updateNotificationTypePreferences(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.notificationTypePreferences(),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -147,7 +143,7 @@ export const useUserTeams = () => {
   const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: queryKeys.userPreferences.teams(),
-    queryFn: usersApi.getUserTeams,
+    queryFn: getUserTeams,
     staleTime: 5 * 60 * 1000,
     enabled: isAuthenticated,
   });
@@ -155,9 +151,8 @@ export const useUserTeams = () => {
 
 export const useSwitchTeam = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: usersApi.switchTeam,
+  return useMutationWithToast({
+    mutationFn: (teamIdentifier: string) => switchTeam({ teamIdentifier }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.teams(),
@@ -167,41 +162,30 @@ export const useSwitchTeam = () => {
         queryKey: queryKeys.auth.currentUser(),
       });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useSetDefaultTeam = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: usersApi.setDefaultTeam,
+  return useMutationWithToast({
+    mutationFn: (teamIdentifier: string) => setDefaultTeam({ teamIdentifier }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.teams(),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useLeaveTeam = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: usersApi.leaveTeam,
+  return useMutationWithToast({
+    mutationFn: (teamIdentifier: string) => leaveTeam(teamIdentifier),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.teams(),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.teams.current() });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

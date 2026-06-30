@@ -13,6 +13,7 @@ import com.buurman.dto.request.backoffice.UpdateRateLimitConfigRequest;
 import com.buurman.dto.response.backoffice.BackofficePhoneNumberPolicyResponse;
 import com.buurman.dto.response.backoffice.CountryEntry;
 import com.buurman.dto.response.backoffice.CountryGroupResponse;
+import com.buurman.dto.response.backoffice.PhonePolicyMetadataResponse;
 import com.buurman.dto.response.backoffice.RateLimitConfigResponse;
 import com.buurman.generated.backoffice.api.BackofficeSettingsApi;
 import com.buurman.security.BackofficePrincipal;
@@ -52,7 +53,7 @@ public class BackofficeSettingsController implements BackofficeSettingsApi {
   }
 
   @Override
-  public Map<String, Object> getPhonePolicyMetadata() {
+  public PhonePolicyMetadataResponse getPhonePolicyMetadata() {
     List<CountryGroupResponse> groups =
         CountryGroups.GROUPS.stream()
             .map(
@@ -65,7 +66,7 @@ public class BackofficeSettingsController implements BackofficeSettingsApi {
                             .toList()))
             .toList();
 
-    return Map.of("countryGroups", groups, "numberTypes", CountryGroups.ALL_NUMBER_TYPES);
+    return new PhonePolicyMetadataResponse(groups, CountryGroups.ALL_NUMBER_TYPES);
   }
 
   // -- Rate Limit Config --

@@ -39,7 +39,7 @@ export const ExpenseForm = ({
 
   const [formData, setFormData] = useState<CreateExpenseRequest>({
     propertyIdentifier:
-      prefilledPropertyId || expense?.property.identifier || '',
+      prefilledPropertyId || expense?.property?.identifier || '',
     contactIdentifier: expense?.contact?.identifier,
     category: expense?.category ?? ExpenseCategory.MAINTENANCE,
     amount: expense?.amount ?? 0,
@@ -53,13 +53,13 @@ export const ExpenseForm = ({
   if (expense && expense !== lastSyncedExpense) {
     setLastSyncedExpense(expense);
     setFormData({
-      propertyIdentifier: expense.property.identifier,
+      propertyIdentifier: expense.property?.identifier ?? '',
       contactIdentifier: expense.contact?.identifier,
       category: expense.category,
       amount: expense.amount,
       currency: expense.currency,
       expenseDate: expense.expenseDate,
-      description: expense.description,
+      description: expense.description ?? '',
       notes: expense.notes ?? '',
     });
   }

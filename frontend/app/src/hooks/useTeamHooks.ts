@@ -1,7 +1,29 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as teamsApi from '../api/teams';
-import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getCurrentTeam,
+  getTeamMembers,
+  getTeamPendingInvitations,
+  createInvitation,
+  resendInvitation,
+  removeMember,
+  updateMemberRole,
+  transferOwnership,
+  updateTeam,
+  getTeamSettings,
+  updateTeamSettings,
+} from '../generated/api/teams/teams';
+import {
+  getInvitation,
+  getPendingInvitations,
+  acceptInvitation,
+} from '../generated/api/invitations/invitations';
+import type {
+  CreateInvitationRequest,
+  UpdateMemberRoleRequest,
+  UpdateTeamRequest,
+  UpdateTeamSettingsRequest,
+} from '../generated/models';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 import { queryKeys } from '../lib/queryKeys';
@@ -9,14 +31,14 @@ import { queryKeys } from '../lib/queryKeys';
 export const useCurrentTeam = () => {
   return useQuery({
     queryKey: queryKeys.teams.current(),
-    queryFn: teamsApi.getCurrentTeam,
+    queryFn: () => getCurrentTeam(),
   });
 };
 
 export const useTeamMembers = (teamId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.teams.members(teamId),
-    queryFn: () => teamsApi.getTeamMembers(teamId ?? ''),
+    queryFn: () => getTeamMembers(teamId ?? ''),
     enabled: !!teamId,
   });
 };
@@ -24,17 +46,16 @@ export const useTeamMembers = (teamId: string | undefined) => {
 export const useTeamPendingInvitations = (teamId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.teams.pendingInvitations(teamId),
-    queryFn: () => teamsApi.getTeamPendingInvitations(teamId ?? ''),
+    queryFn: () => getTeamPendingInvitations(teamId ?? ''),
     enabled: !!teamId,
   });
 };
 
 export const useCreateInvitation = (teamId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: teamsApi.CreateInvitationRequest) =>
-      teamsApi.createInvitation(teamId, data),
+  return useMutationWithToast({
+    mutationFn: (data: CreateInvitationRequest) =>
+      createInvitation(teamId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.teams.members(teamId),
@@ -44,63 +65,48 @@ export const useCreateInvitation = (teamId: string) => {
       });
       trackEvent(AnalyticsEvent.TEAM_MEMBER_INVITED);
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useResendInvitation = (teamId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (token: string) => teamsApi.resendInvitation(teamId, token),
+  return useMutationWithToast({
+    successMessage: 'Invitation resent successfully',
+    mutationFn: (token: string) => resendInvitation(teamId, token),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.teams.pendingInvitations(teamId),
       });
-      showToast('Invitation resent successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useRemoveMember = (teamId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (memberId: string) => teamsApi.removeMember(teamId, memberId),
+  return useMutationWithToast({
+    mutationFn: (memberId: string) => removeMember(teamId, memberId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.teams.members(teamId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateMemberRole = (teamId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       memberId,
       data,
     }: {
       memberId: string;
-      data: teamsApi.UpdateMemberRoleRequest;
-    }) => teamsApi.updateMemberRole(teamId, memberId, data),
+      data: UpdateMemberRoleRequest;
+    }) => updateMemberRole(teamId, memberId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.teams.members(teamId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -108,7 +114,7 @@ export const useUpdateMemberRole = (teamId: string) => {
 export const useInvitation = (token: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.teams.invitation(token),
-    queryFn: () => teamsApi.getInvitation(token ?? ''),
+    queryFn: () => getInvitation(token ?? ''),
     enabled: !!token,
     retry: false,
   });
@@ -117,15 +123,14 @@ export const useInvitation = (token: string | undefined) => {
 export const usePendingInvitations = () => {
   return useQuery({
     queryKey: queryKeys.teams.pending(),
-    queryFn: teamsApi.getPendingInvitations,
+    queryFn: () => getPendingInvitations(),
   });
 };
 
 export const useAcceptInvitation = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: teamsApi.acceptInvitation,
+  return useMutationWithToast({
+    mutationFn: (token: string) => acceptInvitation(token),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.auth.currentUser(),
@@ -136,18 +141,14 @@ export const useAcceptInvitation = () => {
         queryKey: queryKeys.userPreferences.teams(),
       });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useTransferOwnership = (teamId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (newOwnerId: string) =>
-      teamsApi.transferOwnership(teamId, newOwnerId),
+      transferOwnership(teamId, { newOwnerIdentifier: newOwnerId }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.teams.members(teamId),
@@ -156,26 +157,18 @@ export const useTransferOwnership = (teamId: string) => {
         queryKey: queryKeys.userPreferences.teams(),
       });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUpdateTeam = (teamId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: teamsApi.UpdateTeamRequest) =>
-      teamsApi.updateTeam(teamId, data),
+  return useMutationWithToast({
+    mutationFn: (data: UpdateTeamRequest) => updateTeam(teamId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.teams.current() });
       queryClient.invalidateQueries({
         queryKey: queryKeys.userPreferences.teams(),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -183,24 +176,20 @@ export const useUpdateTeam = (teamId: string) => {
 export const useTeamSettings = (teamId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.teams.settings(teamId),
-    queryFn: () => teamsApi.getTeamSettings(teamId ?? ''),
+    queryFn: () => getTeamSettings(teamId ?? ''),
     enabled: !!teamId,
   });
 };
 
 export const useUpdateTeamSettings = (teamId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: teamsApi.UpdateTeamSettingsRequest) =>
-      teamsApi.updateTeamSettings(teamId, data),
+  return useMutationWithToast({
+    mutationFn: (data: UpdateTeamSettingsRequest) =>
+      updateTeamSettings(teamId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.teams.settings(teamId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

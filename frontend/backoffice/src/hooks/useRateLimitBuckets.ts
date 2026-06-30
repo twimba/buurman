@@ -1,10 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { rateLimitBucketsApi } from '../api/rateLimitBuckets';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getRateLimitSummary,
+  listRateLimitBuckets,
+  deleteRateLimitBucket,
+  deleteRateLimitBucketsByConfigKey,
+} from '../generated/api/backoffice-rate-limits/backoffice-rate-limits';
+import type { ListRateLimitBucketsParams } from '../generated/models';
 
 export const useRateLimitSummary = () => {
   return useQuery({
     queryKey: ['rateLimitSummary'],
-    queryFn: () => rateLimitBucketsApi.getSummary().then((res) => res.data),
+    queryFn: getRateLimitSummary,
     refetchInterval: 15_000,
   });
 };
@@ -17,16 +24,16 @@ export const useRateLimitBuckets = (params: {
 }) => {
   return useQuery({
     queryKey: ['rateLimitBuckets', params],
-    queryFn: () => rateLimitBucketsApi.list(params).then((res) => res.data),
+    queryFn: () => listRateLimitBuckets(params as ListRateLimitBucketsParams),
     refetchInterval: 15_000,
   });
 };
 
 export const useDeleteRateLimitBucket = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (bucketId: string) =>
-      rateLimitBucketsApi.deleteBucket(bucketId),
+  return useMutationWithToast({
+    mutationFn: (bucketId: string) => deleteRateLimitBucket(bucketId),
+    errorTitle: "Couldn't delete bucket",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rateLimitBuckets'] });
       queryClient.invalidateQueries({ queryKey: ['rateLimitSummary'] });
@@ -36,9 +43,10 @@ export const useDeleteRateLimitBucket = () => {
 
 export const useDeleteRateLimitBucketsByConfigKey = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (configKey: string) =>
-      rateLimitBucketsApi.deleteByConfigKey(configKey),
+      deleteRateLimitBucketsByConfigKey({ configKey }),
+    errorTitle: "Couldn't delete buckets",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rateLimitBuckets'] });
       queryClient.invalidateQueries({ queryKey: ['rateLimitSummary'] });

@@ -31,7 +31,7 @@ import type {
   RentRegulationRegionResponse,
   RentRegulationRuleResponse,
   CreateRuleRequest,
-} from '../api/rentRegulations';
+} from '../types';
 
 type Tab = 'overview' | 'regions' | 'rules';
 
@@ -632,7 +632,6 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
 interface RuleForm {
   year: number;
   propertyCategory: string;
-  sector: string;
   maxIncreasePercentage: string;
   maxIncreaseType: string;
   indexName: string;
@@ -648,7 +647,6 @@ interface RuleForm {
 const emptyRuleForm: RuleForm = {
   year: CURRENT_YEAR,
   propertyCategory: 'RESIDENTIAL',
-  sector: '',
   maxIncreasePercentage: '',
   maxIncreaseType: 'PERCENTAGE',
   indexName: '',
@@ -665,7 +663,6 @@ function ruleFormToRequest(form: RuleForm): CreateRuleRequest {
   return {
     year: form.year,
     propertyCategory: form.propertyCategory,
-    sector: form.sector || undefined,
     maxIncreasePercentage: form.maxIncreasePercentage
       ? Number(form.maxIncreasePercentage)
       : undefined,
@@ -687,7 +684,6 @@ function ruleToForm(rule: RentRegulationRuleResponse): RuleForm {
   return {
     year: rule.year,
     propertyCategory: rule.propertyCategory,
-    sector: rule.sector ?? '',
     maxIncreasePercentage:
       rule.maxIncreasePercentage != null
         ? String(rule.maxIncreasePercentage)
@@ -1240,22 +1236,6 @@ function RulesTab({ countryCode }: { countryCode: string }) {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-1">
-                    Sector
-                    <span className="text-text-muted font-normal ml-1">
-                      (optional)
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.sector}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, sector: e.target.value }))
-                    }
-                    className={INPUT_CLASS}
-                  />
-                </div>
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-1">
                     Frequency

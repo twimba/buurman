@@ -71,7 +71,7 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
                 {getCurrencySymbol(payment.currency)}{' '}
                 {payment.amount.toFixed(2)}
               </p>
-              {payment.receivedAmount > 0 &&
+              {(payment.receivedAmount ?? 0) > 0 &&
                 payment.status !== PaymentStatus.PAID && (
                   <p className="text-xs text-text-secondary">
                     {t('card.balance', {

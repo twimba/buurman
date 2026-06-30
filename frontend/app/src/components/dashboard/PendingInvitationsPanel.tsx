@@ -87,7 +87,7 @@ export const PendingInvitationsPanel = () => {
                   })}{' '}
                   &middot;{' '}
                   {t('dashboard.pendingInvitations.expires', {
-                    date: formatDate(inv.expiresAt),
+                    date: formatDate(inv.expiresAt ?? ''),
                   })}
                 </p>
               </div>

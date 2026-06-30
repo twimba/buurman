@@ -254,7 +254,7 @@ export const ContractPaymentInstructionSection = ({
               )}
               <p className="text-xs text-text-muted mt-2">
                 {t('overview.paymentInstructions.effectiveFrom', {
-                  date: formatDate(current.effectiveFrom),
+                  date: formatDate(current.effectiveFrom ?? ''),
                 })}
               </p>
             </div>
@@ -307,7 +307,8 @@ export const ContractPaymentInstructionSection = ({
                   !!entry.effectiveTo &&
                   !(
                     contractStatus !== ContractStatus.DRAFT &&
-                    entry.effectiveFrom < new Date().toISOString().split('T')[0]
+                    (entry.effectiveFrom ?? '') <
+                      new Date().toISOString().split('T')[0]
                   )
                 }
                 onDelete={() => {
@@ -638,7 +639,7 @@ const HistoryEntry = ({
             )}
           </div>
           <p className="text-xs text-text-muted mt-1">
-            {formatDate(entry.effectiveFrom)}
+            {formatDate(entry.effectiveFrom ?? '')}
             {entry.effectiveTo
               ? ` - ${formatDate(entry.effectiveTo)}`
               : ` - ${t('overview.paymentInstructions.present')}`}

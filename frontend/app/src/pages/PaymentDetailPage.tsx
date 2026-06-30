@@ -523,7 +523,7 @@ export const PaymentDetailPage = () => {
         <PageHeader
           title={t('detail.titlePrefix', { id: payment.identifier })}
           subtitle={t('detail.subtitlePrefix', {
-            id: payment.contract.identifier,
+            id: payment.contract?.identifier,
           })}
           backTo={backTo}
           badge={<PaymentStatusBadge status={payment.status} />}
@@ -640,7 +640,7 @@ export const PaymentDetailPage = () => {
                 onSubmit={handleUpdate}
                 onCancel={() => setIsEditing(false)}
                 isLoading={updatePaymentMutation.isPending}
-                contractIdentifier={payment.contract.identifier}
+                contractIdentifier={payment.contract?.identifier ?? ''}
               />
             </div>
           ) : (
@@ -664,7 +664,7 @@ export const PaymentDetailPage = () => {
                   </div>
 
                   {/* Received / Balance */}
-                  {payment.receivedAmount > 0 && (
+                  {(payment.receivedAmount ?? 0) > 0 && (
                     <>
                       <div className="flex items-center gap-3">
                         <ArrowDownCircle className="h-5 w-5 text-success-text" />
@@ -673,7 +673,7 @@ export const PaymentDetailPage = () => {
                             {t('detail.received')}
                           </p>
                           <p className="font-medium text-success-text text-lg">
-                            {symbol} {payment.receivedAmount.toFixed(2)}
+                            {symbol} {(payment.receivedAmount ?? 0).toFixed(2)}
                           </p>
                         </div>
                       </div>
@@ -685,12 +685,12 @@ export const PaymentDetailPage = () => {
                           </p>
                           <p
                             className={`font-medium text-lg ${
-                              payment.balance <= 0
+                              (payment.balance ?? 0) <= 0
                                 ? 'text-success-text'
                                 : 'text-warning-text'
                             }`}
                           >
-                            {symbol} {payment.balance.toFixed(2)}
+                            {symbol} {(payment.balance ?? 0).toFixed(2)}
                           </p>
                         </div>
                       </div>
@@ -738,12 +738,12 @@ export const PaymentDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/contracts/${payment.contract.identifier}`)
+                          navigate(`/contracts/${payment.contract?.identifier}`)
                         }
                         className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                       >
                         {t('detail.contractId', {
-                          id: payment.contract.identifier,
+                          id: payment.contract?.identifier,
                         })}
                       </button>
                     </div>
@@ -756,11 +756,13 @@ export const PaymentDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/properties/${payment.property.identifier}`)
+                          navigate(
+                            `/properties/${payment.property?.identifier}`
+                          )
                         }
                         className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                       >
-                        {payment.property.street}, {payment.property.city}
+                        {payment.property?.street}, {payment.property?.city}
                       </button>
                     </div>
                   </div>
@@ -772,11 +774,11 @@ export const PaymentDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/contacts/${payment.contact.identifier}`)
+                          navigate(`/contacts/${payment.contact?.identifier}`)
                         }
                         className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                       >
-                        {payment.contact.firstName} {payment.contact.lastName}
+                        {payment.contact?.firstName} {payment.contact?.lastName}
                       </button>
                     </div>
                   </div>
@@ -824,8 +826,10 @@ export const PaymentDetailPage = () => {
                         {t('detail.lastUpdated')}
                       </span>{' '}
                       <span className="text-text-primary">
-                        {formatDate(payment.updatedAt)}{' '}
-                        {new Date(payment.updatedAt).toLocaleTimeString()}
+                        {formatDate(payment.updatedAt ?? '')}{' '}
+                        {payment.updatedAt
+                          ? new Date(payment.updatedAt).toLocaleTimeString()
+                          : ''}
                       </span>
                     </div>
                   </div>
@@ -871,7 +875,7 @@ export const PaymentDetailPage = () => {
                   {t('receivals.received')}
                 </p>
                 <p className="text-lg font-semibold text-success-text">
-                  {symbol} {payment.receivedAmount.toFixed(2)}
+                  {symbol} {(payment.receivedAmount ?? 0).toFixed(2)}
                 </p>
               </div>
               <div>
@@ -880,12 +884,12 @@ export const PaymentDetailPage = () => {
                 </p>
                 <p
                   className={`text-lg font-semibold ${
-                    payment.balance <= 0
+                    (payment.balance ?? 0) <= 0
                       ? 'text-success-text'
                       : 'text-warning-text'
                   }`}
                 >
-                  {symbol} {payment.balance.toFixed(2)}
+                  {symbol} {(payment.balance ?? 0).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -1307,10 +1311,10 @@ export const PaymentDetailPage = () => {
             <h2 className="text-lg font-semibold text-text-primary mb-4">
               {t('markPaidDialog.title')}
             </h2>
-            {payment.balance > 0 && (
+            {(payment.balance ?? 0) > 0 && (
               <p className="text-sm text-text-secondary mb-4">
                 {t('markPaidDialog.balanceMessage', {
-                  amount: `${symbol} ${payment.balance.toFixed(2)}`,
+                  amount: `${symbol} ${(payment.balance ?? 0).toFixed(2)}`,
                 })}
               </p>
             )}
@@ -1377,7 +1381,7 @@ export const PaymentDetailPage = () => {
             <p className="text-sm text-text-secondary mb-4">
               {t('receivalDialog.remainingBalance')}{' '}
               <span className="font-semibold text-text-primary">
-                {symbol} {payment.balance.toFixed(2)}
+                {symbol} {(payment.balance ?? 0).toFixed(2)}
               </span>
             </p>
             <div className="space-y-4 mb-6">
@@ -1394,8 +1398,8 @@ export const PaymentDetailPage = () => {
                     setReceivalAmount(val !== undefined ? String(val) : '')
                   }
                   currency={payment.currency}
-                  max={payment.balance}
-                  placeholder={`Max: ${payment.balance.toFixed(2)}`}
+                  max={payment.balance ?? 0}
+                  placeholder={`Max: ${(payment.balance ?? 0).toFixed(2)}`}
                 />
               </div>
               <div>

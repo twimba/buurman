@@ -313,7 +313,7 @@ export const TeamSettingsSection = () => {
                           })}{' '}
                           &middot;{' '}
                           {t('teamMembers.pendingInvitations.expires', {
-                            date: formatDate(inv.expiresAt),
+                            date: formatDate(inv.expiresAt ?? ''),
                           })}
                         </p>
                       </div>

@@ -12,6 +12,10 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Serialize array query params as repeated keys without `[]` brackets
+  // (`tags=a&tags=b`) so Spring's `@RequestParam List<...>` binds them.
+  // Axios's default `tags[]=a` does NOT bind server-side.
+  paramsSerializer: { indexes: null },
 });
 
 const IMPERSONATION_STORAGE_KEY = 'buurman-impersonation';

@@ -145,7 +145,7 @@ export const MyTeamsSection = () => {
                       </div>
                       <p className="text-xs text-text-muted mt-1">
                         {t('myTeams.expires', {
-                          date: formatDate(inv.expiresAt),
+                          date: formatDate(inv.expiresAt ?? ''),
                         })}
                       </p>
                     </div>

@@ -1,13 +1,27 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { featureFlagsApi } from '../api/featureFlags';
-import type { UpdateFlagRequest } from '../api/featureFlags';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getAdminStatus,
+  getGlobalFlags,
+  getUserFlags,
+  updateGlobalFlag,
+  upsertIdentityOverride,
+  deleteIdentityOverride,
+  getTeamFlags,
+  upsertTeamOverride,
+  deleteTeamOverride,
+  getSegmentOverrides,
+  upsertSegmentOverride,
+  deleteSegmentOverride,
+} from '../generated/api/backoffice-feature-flags/backoffice-feature-flags';
+import type { UpdateFlagRequest } from '../types';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const useAdminStatus = () => {
   return useQuery({
     queryKey: ['feature-flags', 'admin-status'],
-    queryFn: () => featureFlagsApi.getAdminStatus().then((res) => res.data),
+    queryFn: getAdminStatus,
     staleTime: 5 * 60 * 1000,
   });
 };
@@ -15,29 +29,28 @@ export const useAdminStatus = () => {
 export const useGlobalFeatureFlags = () => {
   return useQuery({
     queryKey: ['feature-flags', 'global'],
-    queryFn: () => featureFlagsApi.getGlobal().then((res) => res.data),
+    queryFn: getGlobalFlags,
   });
 };
 
 export const useUserFeatureFlags = (userIdentifier: string | null) => {
   return useQuery({
     queryKey: ['feature-flags', 'user', userIdentifier],
-    queryFn: () =>
-      featureFlagsApi.getForUser(userIdentifier ?? '').then((res) => res.data),
+    queryFn: () => getUserFlags(userIdentifier ?? ''),
     enabled: !!userIdentifier,
   });
 };
 
 export const useUpdateGlobalFlag = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       flagName,
       data,
     }: {
       flagName: string;
       data: UpdateFlagRequest;
-    }) => featureFlagsApi.updateGlobalFlag(flagName, data).then((r) => r.data),
+    }) => updateGlobalFlag(flagName, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
       trackEvent(AnalyticsEvent.BO_FEATURE_FLAG_UPDATED);
@@ -47,7 +60,7 @@ export const useUpdateGlobalFlag = () => {
 
 export const useUpsertIdentityOverride = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       userIdentifier,
       teamIdentifier,
@@ -59,9 +72,7 @@ export const useUpsertIdentityOverride = () => {
       flagName: string;
       data: UpdateFlagRequest;
     }) =>
-      featureFlagsApi
-        .upsertIdentityOverride(userIdentifier, teamIdentifier, flagName, data)
-        .then((r) => r.data),
+      upsertIdentityOverride(userIdentifier, teamIdentifier, flagName, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
@@ -70,7 +81,7 @@ export const useUpsertIdentityOverride = () => {
 
 export const useDeleteIdentityOverride = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       userIdentifier,
       teamIdentifier,
@@ -79,12 +90,7 @@ export const useDeleteIdentityOverride = () => {
       userIdentifier: string;
       teamIdentifier: string;
       flagName: string;
-    }) =>
-      featureFlagsApi.deleteIdentityOverride(
-        userIdentifier,
-        teamIdentifier,
-        flagName
-      ),
+    }) => deleteIdentityOverride(userIdentifier, teamIdentifier, flagName),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
@@ -94,15 +100,14 @@ export const useDeleteIdentityOverride = () => {
 export const useTeamFeatureFlags = (teamIdentifier: string | null) => {
   return useQuery({
     queryKey: ['feature-flags', 'team', teamIdentifier],
-    queryFn: () =>
-      featureFlagsApi.getForTeam(teamIdentifier ?? '').then((res) => res.data),
+    queryFn: () => getTeamFlags(teamIdentifier ?? ''),
     enabled: !!teamIdentifier,
   });
 };
 
 export const useUpsertTeamOverride = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       teamIdentifier,
       flagName,
@@ -111,10 +116,7 @@ export const useUpsertTeamOverride = () => {
       teamIdentifier: string;
       flagName: string;
       data: UpdateFlagRequest;
-    }) =>
-      featureFlagsApi
-        .upsertTeamOverride(teamIdentifier, flagName, data)
-        .then((r) => r.data),
+    }) => upsertTeamOverride(teamIdentifier, flagName, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
@@ -123,14 +125,14 @@ export const useUpsertTeamOverride = () => {
 
 export const useDeleteTeamOverride = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       teamIdentifier,
       flagName,
     }: {
       teamIdentifier: string;
       flagName: string;
-    }) => featureFlagsApi.deleteTeamOverride(teamIdentifier, flagName),
+    }) => deleteTeamOverride(teamIdentifier, flagName),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
@@ -140,13 +142,13 @@ export const useDeleteTeamOverride = () => {
 export const useSegmentFeatureFlags = () => {
   return useQuery({
     queryKey: ['feature-flags', 'segments'],
-    queryFn: () => featureFlagsApi.getSegments().then((res) => res.data),
+    queryFn: () => getSegmentOverrides(),
   });
 };
 
 export const useUpsertSegmentOverride = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       segmentId,
       flagName,
@@ -155,10 +157,7 @@ export const useUpsertSegmentOverride = () => {
       segmentId: number;
       flagName: string;
       data: UpdateFlagRequest;
-    }) =>
-      featureFlagsApi
-        .upsertSegmentOverride(segmentId, flagName, data)
-        .then((r) => r.data),
+    }) => upsertSegmentOverride(segmentId, flagName, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
@@ -167,14 +166,14 @@ export const useUpsertSegmentOverride = () => {
 
 export const useDeleteSegmentOverride = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       segmentId,
       flagName,
     }: {
       segmentId: number;
       flagName: string;
-    }) => featureFlagsApi.deleteSegmentOverride(segmentId, flagName),
+    }) => deleteSegmentOverride(segmentId, flagName),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },

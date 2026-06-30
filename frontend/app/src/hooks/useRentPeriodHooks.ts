@@ -1,28 +1,39 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as rentPeriodsApi from '../api/rentPeriods';
-import type { GenerateRentChangeDocumentsRequest } from '../api/rentPeriods';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getRentTimeline,
+  addRentPeriod,
+  updateRentPeriod,
+  deleteRentPeriod,
+} from '../generated/api/contract-rent-periods/contract-rent-periods';
+import { generateRentChangeDocuments } from '../generated/api/contract-documents/contract-documents';
+import type { GenerateRentChangeDocumentsRequest } from '../generated/models';
 import {
   CreateRentPeriodRequest,
   UpdateRentPeriodRequest,
 } from '../types/contract';
-import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
+import { toRentComponentRequests } from '../utils/rentComponents';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useRentPeriods = (contractId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.rentPeriods.all(contractId),
-    queryFn: () => rentPeriodsApi.getRentPeriods(contractId ?? ''),
+    queryFn: () => getRentTimeline(contractId ?? ''),
     enabled: !!contractId,
   });
 };
 
 export const useAddRentPeriod = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Rent period added successfully',
     mutationFn: (data: CreateRentPeriodRequest) =>
-      rentPeriodsApi.addRentPeriod(contractId, data),
+      addRentPeriod(contractId, {
+        rentAmount: data.rentAmount,
+        effectiveFrom: data.effectiveFrom,
+        notes: data.notes,
+        components: toRentComponentRequests(data.components),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.rentPeriods.all(contractId),
@@ -44,25 +55,27 @@ export const useAddRentPeriod = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Rent period added successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateRentPeriod = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Rent period updated successfully',
     mutationFn: ({
       periodIdentifier,
       data,
     }: {
       periodIdentifier: string;
       data: UpdateRentPeriodRequest;
-    }) => rentPeriodsApi.updateRentPeriod(contractId, periodIdentifier, data),
+    }) =>
+      updateRentPeriod(contractId, periodIdentifier, {
+        rentAmount: data.rentAmount,
+        effectiveFrom: data.effectiveFrom,
+        notes: data.notes,
+        components: toRentComponentRequests(data.components),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.rentPeriods.all(contractId),
@@ -84,20 +97,16 @@ export const useUpdateRentPeriod = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Rent period updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteRentPeriod = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Rent period deleted successfully',
     mutationFn: (periodIdentifier: string) =>
-      rentPeriodsApi.deleteRentPeriod(contractId, periodIdentifier),
+      deleteRentPeriod(contractId, periodIdentifier),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.rentPeriods.all(contractId),
@@ -119,26 +128,21 @@ export const useDeleteRentPeriod = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Rent period deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useGenerateRentChangeDocuments = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Documents generated successfully',
     mutationFn: ({
       periodId,
       request,
     }: {
       periodId: string;
       request: GenerateRentChangeDocumentsRequest;
-    }) =>
-      rentPeriodsApi.generateRentChangeDocuments(contractId, periodId, request),
+    }) => generateRentChangeDocuments(contractId, periodId, request),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.documents(contractId),
@@ -146,10 +150,6 @@ export const useGenerateRentChangeDocuments = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
-      showToast('Documents generated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

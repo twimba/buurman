@@ -40,10 +40,10 @@ import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { useTeam } from '@/context/TeamContext';
 import {
-  downloadPropertyBooklet,
-  downloadPropertySummary,
-} from '@/api/properties';
-import { downloadBlob } from '@/api/listExports';
+  exportPropertyBooklet,
+  getPropertySummary,
+} from '@/generated/api/booklets/booklets';
+import { downloadBlob } from '@/utils/downloadBlob';
 import DOMPurify from 'dompurify';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
@@ -172,7 +172,7 @@ export const PropertyDetailPage = () => {
   }, [propertyIdentifier]);
 
   // WWS (NL-only)
-  const isNlProperty = property?.countryCode === 'NL';
+  const isNlProperty = property?.country === 'NL';
   const { data: latestWws } = useLatestWwsCalculation(
     isNlProperty ? id : undefined
   );
@@ -205,14 +205,14 @@ export const PropertyDetailPage = () => {
 
   const handleDownloadBooklet = async (lang: string) => {
     downloadBlob(
-      await downloadPropertyBooklet(id, lang),
+      await exportPropertyBooklet(id, { lang } as Parameters<typeof exportPropertyBooklet>[1]),
       `property-booklet-${lang}.pdf`
     );
   };
 
   const handleDownloadSummary = async (lang: string) => {
     downloadBlob(
-      await downloadPropertySummary(id, lang),
+      await getPropertySummary(id, { lang } as Parameters<typeof getPropertySummary>[1]),
       `property-${id}-summary-${lang}.pdf`
     );
   };
@@ -622,7 +622,7 @@ export const PropertyDetailPage = () => {
                     </span>
                   </div>
                   <p className="text-lg text-text-primary">
-                    {property.countryCode}
+                    {property.country}
                   </p>
                 </div>
               </div>
@@ -867,11 +867,11 @@ export const PropertyDetailPage = () => {
 
             {/* Utilities & Connections */}
             {(property.electricityConnectionType ||
-              property.electricityCapacityValue != null ||
+              property.electricityCapacityAmps != null ||
               property.waterConnectionType ||
               property.sewageType ||
               property.internetConnectionType ||
-              property.internetMaxSpeedValue != null ||
+              property.internetMaxSpeedMbps != null ||
               property.internetStatus) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
@@ -891,16 +891,13 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.electricityCapacityValue != null && (
+                  {property.electricityCapacityAmps != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         {t('detail.utilities.capacity')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {property.electricityCapacityValue}{' '}
-                        {(
-                          property.electricityCapacityUnit ?? 'A'
-                        ).toUpperCase()}
+                        {property.electricityCapacityAmps} A
                       </div>
                     </div>
                   )}
@@ -950,16 +947,13 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.internetMaxSpeedValue != null && (
+                  {property.internetMaxSpeedMbps != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         {t('detail.utilities.internetSpeed')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {property.internetMaxSpeedValue}{' '}
-                        {(
-                          property.internetMaxSpeedUnit ?? 'Mbps'
-                        ).toUpperCase()}
+                        {property.internetMaxSpeedMbps} Mbps
                       </div>
                     </div>
                   )}
@@ -1430,8 +1424,9 @@ export const PropertyDetailPage = () => {
                       {t('detail.metadata.lastUpdated')}
                     </span>{' '}
                     <span className="text-text-primary">
-                      {formatDate(property.updatedAt)} {t('detail.metadata.at')}{' '}
-                      {new Date(property.updatedAt).toLocaleTimeString()}
+                      {formatDate(property.updatedAt ?? '')}{' '}
+                      {t('detail.metadata.at')}{' '}
+                      {new Date(property.updatedAt ?? '').toLocaleTimeString()}
                     </span>
                   </div>
                 </div>

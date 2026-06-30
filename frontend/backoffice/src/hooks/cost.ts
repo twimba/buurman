@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useToast } from '@buurman/ui';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 
 import {
   addFxPair,
@@ -24,15 +24,6 @@ const CONFIG_KEY = ['bo-cost', 'config'];
 const FX_KEY = ['bo-cost', 'fx'];
 const FX_PAIRS_KEY = ['bo-cost', 'fx-pairs'];
 
-/** Best-effort human message from an Axios/HTTP error for surfacing in a toast. */
-const errorMessage = (e: unknown): string => {
-  const ax = e as {
-    response?: { data?: { message?: string } };
-    message?: string;
-  };
-  return ax?.response?.data?.message || ax?.message || 'Request failed';
-};
-
 /** Tracked currency pairs (anchored on EUR) with their latest rate. */
 export const useFxPairs = () =>
   useQuery({
@@ -44,31 +35,28 @@ export const useFxPairs = () =>
 /** Start tracking a new pair (source currency → EUR); fetches today's rate. */
 export const useAddFxPair = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (currency: string) => addFxPair({ currency }),
+    errorTitle: "Couldn't add pair",
     onSuccess: (data) => {
       queryClient.setQueryData(FX_PAIRS_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
       queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
     },
-    onError: (e) => showToast(`Couldn't add pair: ${errorMessage(e)}`, 'error'),
   });
 };
 
 /** Stop tracking a pair and remove its stored rates. */
 export const useRemoveFxPair = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (currency: string) => removeFxPair(currency),
+    errorTitle: "Couldn't remove pair",
     onSuccess: (data) => {
       queryClient.setQueryData(FX_PAIRS_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
       queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
     },
-    onError: (e) =>
-      showToast(`Couldn't remove pair: ${errorMessage(e)}`, 'error'),
   });
 };
 
@@ -82,9 +70,9 @@ export const useCostOverview = () =>
 /** Triggers a fresh snapshot of every provider, then updates the overview cache. */
 export const useRefreshCost = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast<Awaited<ReturnType<typeof refreshCost>>, void>({
     mutationFn: () => refreshCost(),
+    errorTitle: 'Cost refresh failed',
     onSuccess: (data) => {
       queryClient.setQueryData(KEY, data);
       // Keep the mission-control Cost watch panel in sync.
@@ -92,16 +80,13 @@ export const useRefreshCost = () => {
         queryKey: ['bo-dashboard', 'cost-watch'],
       });
     },
-    onError: (e) =>
-      showToast(`Cost refresh failed: ${errorMessage(e)}`, 'error'),
   });
 };
 
 /** Sets/overrides a provider's monthly EUR cost (manual fallback). */
 export const useSetManualCost = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       provider,
       amountEur,
@@ -109,14 +94,13 @@ export const useSetManualCost = () => {
       provider: string;
       amountEur: number;
     }) => setManualCost(provider, { amountEur }),
+    errorTitle: "Couldn't save cost",
     onSuccess: (data) => {
       queryClient.setQueryData(KEY, data);
       queryClient.invalidateQueries({
         queryKey: ['bo-dashboard', 'cost-watch'],
       });
     },
-    onError: (e) =>
-      showToast(`Couldn't save cost: ${errorMessage(e)}`, 'error'),
   });
 };
 
@@ -131,15 +115,13 @@ export const useCostConfig = () =>
 /** Persists provider cost parameters; re-snapshotting the affected provider happens on next refresh. */
 export const useUpdateCostConfig = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (body: UpdateCostConfigRequest) => updateCostConfig(body),
+    successMessage: 'Cost settings saved',
+    errorTitle: "Couldn't save settings",
     onSuccess: (data) => {
       queryClient.setQueryData(CONFIG_KEY, data);
-      showToast('Cost settings saved', 'success');
     },
-    onError: (e) =>
-      showToast(`Couldn't save settings: ${errorMessage(e)}`, 'error'),
   });
 };
 
@@ -162,8 +144,7 @@ export const useFxRateHistory = (currency?: string) =>
 /** Manually set/override a currency's EUR rate (optionally for a specific day). */
 export const useSetFxRate = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       currency,
       rate,
@@ -173,6 +154,7 @@ export const useSetFxRate = () => {
       rate: number;
       date?: string;
     }) => setFxRate(currency, { rate, date }),
+    errorTitle: "Couldn't save rate",
     onSuccess: (data) => {
       queryClient.setQueryData(FX_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
@@ -180,35 +162,31 @@ export const useSetFxRate = () => {
       // Costs are FX-normalized to EUR, so a rate change can move the Costs page total.
       queryClient.invalidateQueries({ queryKey: KEY });
     },
-    onError: (e) =>
-      showToast(`Couldn't save rate: ${errorMessage(e)}`, 'error'),
   });
 };
 
 /** Delete a stored rate for a currency on a specific day. */
 export const useDeleteFxRate = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({ currency, date }: { currency: string; date: string }) =>
       deleteFxRate(currency, date),
+    errorTitle: "Couldn't delete rate",
     onSuccess: (data) => {
       queryClient.setQueryData(FX_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
       queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
       queryClient.invalidateQueries({ queryKey: KEY });
     },
-    onError: (e) =>
-      showToast(`Couldn't delete rate: ${errorMessage(e)}`, 'error'),
   });
 };
 
 /** Backfill daily rates from a start date through today. */
 export const useBackfillFxRates = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (since: string) => backfillFxRates({ since }),
+    errorTitle: 'Backfill failed',
     onSuccess: (data) => {
       queryClient.setQueryData(FX_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
@@ -218,16 +196,15 @@ export const useBackfillFxRates = () => {
       });
       queryClient.invalidateQueries({ queryKey: KEY });
     },
-    onError: (e) => showToast(`Backfill failed: ${errorMessage(e)}`, 'error'),
   });
 };
 
 /** Fetch live rates on demand. */
 export const useRefreshFxRates = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast<Awaited<ReturnType<typeof refreshFxRates>>, void>({
     mutationFn: () => refreshFxRates(),
+    errorTitle: 'FX refresh failed',
     onSuccess: (data) => {
       queryClient.setQueryData(FX_KEY, data);
       queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
@@ -237,6 +214,5 @@ export const useRefreshFxRates = () => {
       });
       queryClient.invalidateQueries({ queryKey: KEY });
     },
-    onError: (e) => showToast(`FX refresh failed: ${errorMessage(e)}`, 'error'),
   });
 };

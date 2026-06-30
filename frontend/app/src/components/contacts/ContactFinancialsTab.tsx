@@ -47,7 +47,10 @@ export const ContactFinancialsTab = ({
     }
     const currency = payments[0].currency;
     const total = payments.reduce((sum, p) => sum + p.amount, 0);
-    const received = payments.reduce((sum, p) => sum + p.receivedAmount, 0);
+    const received = payments.reduce(
+      (sum, p) => sum + (p.receivedAmount ?? 0),
+      0
+    );
     return { total, received, currency };
   }, [payments]);
 
@@ -115,7 +118,7 @@ export const ContactFinancialsTab = ({
                         {t(`expenses:category.${expense.category}`)}
                       </td>
                       <td className="py-2.5 pr-4 text-text-secondary truncate max-w-[150px]">
-                        {expense.property.street}
+                        {expense.property?.street}
                       </td>
                       <td className="py-2.5 text-right font-medium text-text-primary whitespace-nowrap">
                         {getCurrencySymbol(expense.currency)}{' '}
@@ -202,7 +205,7 @@ export const ContactFinancialsTab = ({
                         {formatDate(payment.dueDate)}
                       </td>
                       <td className="py-2.5 pr-4 text-text-secondary truncate max-w-[150px]">
-                        {payment.property.street}
+                        {payment.property?.street}
                       </td>
                       <td className="py-2.5 pr-4 text-text-primary truncate max-w-[200px]">
                         {payment.notes ?? '-'}

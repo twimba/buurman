@@ -1,10 +1,33 @@
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  keepPreviousData,
-} from '@tanstack/react-query';
-import * as propertiesApi from '../api/properties';
+  getProperties,
+  getProperty,
+  createProperty,
+  updateProperty,
+  deleteProperty,
+  getPropertyDocuments,
+  getPropertyAuditLog,
+  getPropertyPhotos,
+  uploadPropertyPhoto,
+  setMainPropertyPhoto,
+  uploadPropertyDocument,
+  deletePropertyDocument,
+} from '../generated/api/properties/properties';
+import {
+  getOutdoorAreas,
+  createOutdoorArea,
+  updateOutdoorArea,
+  deleteOutdoorArea,
+} from '../generated/api/property-outdoor-areas/property-outdoor-areas';
+import {
+  getPropertyAmenities,
+  addAmenity,
+  removeAmenity,
+} from '../generated/api/property-amenities/property-amenities';
+import { getAllAmenities } from '../generated/api/amenities/amenities';
+import { getDashboard } from '../generated/api/property-dashboard/property-dashboard';
+import type { GetPropertiesParams } from '../generated/models';
 import {
   CreatePropertyRequest,
   UpdatePropertyRequest,
@@ -14,7 +37,6 @@ import {
 } from '../types/property';
 import type { PageParams } from '@/types/common';
 import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 import { queryKeys } from '../lib/queryKeys';
@@ -28,7 +50,7 @@ export const useProperties = (
 ) => {
   return useQuery({
     queryKey: queryKeys.properties.all(params),
-    queryFn: () => propertiesApi.getProperties(params),
+    queryFn: () => getProperties(params as GetPropertiesParams),
     placeholderData: keepPreviousData,
   });
 };
@@ -36,7 +58,7 @@ export const useProperties = (
 export const useProperty = (id: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.properties.detail(id),
-    queryFn: () => propertiesApi.getProperty(id ?? ''),
+    queryFn: () => getProperty(id ?? ''),
     enabled: !!id,
   });
 };
@@ -44,9 +66,8 @@ export const useProperty = (id: string | undefined) => {
 export const useCreateProperty = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: CreatePropertyRequest) =>
-      propertiesApi.createProperty(data),
+  return useMutationWithToast({
+    mutationFn: (data: CreatePropertyRequest) => createProperty(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
       queryClient.invalidateQueries({
@@ -58,18 +79,14 @@ export const useCreateProperty = () => {
       showToast('Property created successfully', 'success');
       trackEvent(AnalyticsEvent.PROPERTY_CREATED);
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUpdateProperty = (id: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: UpdatePropertyRequest) =>
-      propertiesApi.updateProperty(id, data),
+  return useMutationWithToast({
+    successMessage: 'Property updated successfully',
+    mutationFn: (data: UpdatePropertyRequest) => updateProperty(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
       queryClient.invalidateQueries({
@@ -84,10 +101,6 @@ export const useUpdateProperty = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Property updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -95,8 +108,8 @@ export const useUpdateProperty = (id: string) => {
 export const useDeleteProperty = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (id: string) => propertiesApi.deleteProperty(id),
+  return useMutationWithToast({
+    mutationFn: (id: string) => deleteProperty(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
       queryClient.invalidateQueries({
@@ -108,16 +121,13 @@ export const useDeleteProperty = () => {
       showToast('Property deleted successfully', 'success');
       trackEvent(AnalyticsEvent.PROPERTY_DELETED);
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const usePropertyDocuments = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.properties.documents(propertyId),
-    queryFn: () => propertiesApi.getPropertyDocuments(propertyId ?? ''),
+    queryFn: () => getPropertyDocuments(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -125,7 +135,7 @@ export const usePropertyDocuments = (propertyId: string | undefined) => {
 export const usePropertyAuditLog = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.properties.auditLog(propertyId),
-    queryFn: () => propertiesApi.getPropertyAuditLog(propertyId ?? ''),
+    queryFn: () => getPropertyAuditLog(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -133,15 +143,14 @@ export const usePropertyAuditLog = (propertyId: string | undefined) => {
 export const usePropertyPhotos = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.properties.photos(propertyId),
-    queryFn: () => propertiesApi.getPropertyPhotos(propertyId ?? ''),
+    queryFn: () => getPropertyPhotos(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
 
 export const useUploadPropertyPhoto = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       file,
       title,
@@ -150,7 +159,7 @@ export const useUploadPropertyPhoto = (propertyId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => propertiesApi.uploadPropertyPhoto(propertyId, file, title, notes),
+    }) => uploadPropertyPhoto(propertyId, { file }, { title, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.photos(propertyId),
@@ -165,18 +174,13 @@ export const useUploadPropertyPhoto = (propertyId: string) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
       trackEvent(AnalyticsEvent.PHOTO_UPLOADED, { entity: 'property' });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useSetMainPhoto = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (photoId: string) =>
-      propertiesApi.setMainPhoto(propertyId, photoId),
+  return useMutationWithToast({
+    mutationFn: (photoId: string) => setMainPropertyPhoto(propertyId, photoId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.photos(propertyId),
@@ -190,16 +194,12 @@ export const useSetMainPhoto = (propertyId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUploadPropertyDocument = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       file,
       title,
@@ -208,7 +208,7 @@ export const useUploadPropertyDocument = (propertyId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => propertiesApi.uploadPropertyDocument(propertyId, file, title, notes),
+    }) => uploadPropertyDocument(propertyId, { file }, { title, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.documents(propertyId),
@@ -221,18 +221,13 @@ export const useUploadPropertyDocument = (propertyId: string) => {
       });
       trackEvent(AnalyticsEvent.DOCUMENT_UPLOADED, { entity: 'property' });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useDeleteDocument = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (documentId: string) =>
-      propertiesApi.deleteDocument(documentId),
+  return useMutationWithToast({
+    mutationFn: (documentId: string) => deletePropertyDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.documents(propertyId),
@@ -244,9 +239,6 @@ export const useDeleteDocument = (propertyId: string) => {
         queryKey: queryKeys.documents.all(),
       });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
@@ -255,17 +247,16 @@ export const useDeleteDocument = (propertyId: string) => {
 export const useOutdoorAreas = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.properties.outdoorAreas(propertyId),
-    queryFn: () => propertiesApi.getOutdoorAreas(propertyId ?? ''),
+    queryFn: () => getOutdoorAreas(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
 
 export const useCreateOutdoorArea = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: OutdoorAreaRequest) =>
-      propertiesApi.createOutdoorArea(propertyId, data),
+      createOutdoorArea(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.outdoorAreas(propertyId),
@@ -276,24 +267,20 @@ export const useCreateOutdoorArea = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.auditLog(propertyId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateOutdoorArea = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       areaId,
       data,
     }: {
       areaId: string;
       data: OutdoorAreaRequest;
-    }) => propertiesApi.updateOutdoorArea(propertyId, areaId, data),
+    }) => updateOutdoorArea(propertyId, areaId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.outdoorAreas(propertyId),
@@ -304,19 +291,14 @@ export const useUpdateOutdoorArea = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.auditLog(propertyId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteOutdoorArea = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (areaId: string) =>
-      propertiesApi.deleteOutdoorArea(propertyId, areaId),
+  return useMutationWithToast({
+    mutationFn: (areaId: string) => deleteOutdoorArea(propertyId, areaId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.outdoorAreas(propertyId),
@@ -327,9 +309,6 @@ export const useDeleteOutdoorArea = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.auditLog(propertyId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -339,7 +318,7 @@ export const useDeleteOutdoorArea = (propertyId: string) => {
 export const useAmenities = (category?: string) => {
   return useQuery({
     queryKey: queryKeys.properties.amenitiesCatalog(category),
-    queryFn: () => propertiesApi.getAmenities(category),
+    queryFn: () => getAllAmenities(category ? { category } : undefined),
     staleTime: Infinity,
   });
 };
@@ -347,15 +326,14 @@ export const useAmenities = (category?: string) => {
 export const usePropertyAmenities = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.properties.amenities(propertyId),
-    queryFn: () => propertiesApi.getPropertyAmenities(propertyId ?? ''),
+    queryFn: () => getPropertyAmenities(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
 
 export const useAddPropertyAmenity = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       amenityIdentifier,
       notes,
@@ -363,7 +341,7 @@ export const useAddPropertyAmenity = (propertyId: string) => {
       amenityIdentifier: string;
       notes?: string | null;
     }) =>
-      propertiesApi.addPropertyAmenity(propertyId, amenityIdentifier, notes),
+      addAmenity(propertyId, { amenityIdentifier, notes: notes ?? undefined }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.amenities(propertyId),
@@ -374,9 +352,6 @@ export const useAddPropertyAmenity = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.auditLog(propertyId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -389,7 +364,8 @@ export const usePropertyDashboard = (
 ) => {
   return useQuery({
     queryKey: queryKeys.properties.dashboard(propertyId, months),
-    queryFn: () => propertiesApi.getPropertyDashboard(propertyId ?? '', months),
+    queryFn: () =>
+      getDashboard(propertyId ?? '', months != null ? { months } : undefined),
     enabled: !!propertyId,
     staleTime: 60_000,
   });
@@ -397,10 +373,9 @@ export const usePropertyDashboard = (
 
 export const useRemovePropertyAmenity = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (amenityIdentifier: string) =>
-      propertiesApi.removePropertyAmenity(propertyId, amenityIdentifier),
+      removeAmenity(propertyId, amenityIdentifier),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.amenities(propertyId),
@@ -411,9 +386,6 @@ export const useRemovePropertyAmenity = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.auditLog(propertyId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

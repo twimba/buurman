@@ -383,7 +383,7 @@ export const DocumentsPage = () => {
                       className="flex-1 min-w-0 flex items-start gap-3 text-left focus-ring rounded-md"
                     >
                       <div className="flex-shrink-0 mt-0.5">
-                        {getFileIcon(doc.mimeType)}
+                        {getFileIcon(doc.mimeType ?? '')}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium text-text-primary truncate">
@@ -400,7 +400,7 @@ export const DocumentsPage = () => {
                           </span>
                           <span>·</span>
                           <span className="tabular-nums">
-                            {formatFileSize(doc.fileSize)}
+                            {formatFileSize(doc.fileSize ?? 0)}
                           </span>
                           <span>·</span>
                           <span>{formatDate(doc.uploadedAt)}</span>
@@ -514,7 +514,7 @@ export const DocumentsPage = () => {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            {getFileIcon(doc.mimeType)}
+                            {getFileIcon(doc.mimeType ?? '')}
                             <div>
                               <div className="text-sm font-medium text-text-primary">
                                 {doc.title ?? doc.fileName}
@@ -562,7 +562,7 @@ export const DocumentsPage = () => {
                           </button>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                          {formatFileSize(doc.fileSize)}
+                          {formatFileSize(doc.fileSize ?? 0)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                           {formatDate(doc.uploadedAt)}
@@ -621,8 +621,8 @@ export const DocumentsPage = () => {
           {documentsData && (
             <Pagination
               page={page}
-              totalPages={documentsData.totalPages}
-              totalElements={documentsData.totalElements}
+              totalPages={documentsData.totalPages ?? 0}
+              totalElements={documentsData.totalElements ?? 0}
               size={size}
               onPageChange={handlePageChange}
               onSizeChange={handleSizeChange}

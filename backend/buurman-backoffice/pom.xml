@@ -136,6 +136,9 @@
                                 <importMapping>BackofficeUserResponse=com.buurman.dto.response.backoffice.BackofficeUserResponse</importMapping>
                                 <importMapping>UserTeamMembership=com.buurman.dto.response.backoffice.UserTeamMembership</importMapping>
                                 <importMapping>BuurmyResponse=com.buurman.dto.response.backoffice.BuurmyResponse</importMapping>
+                                <importMapping>CacheInfoResponse=com.buurman.dto.response.backoffice.CacheInfoResponse</importMapping>
+                                <importMapping>CacheEntryResponse=com.buurman.dto.response.backoffice.CacheEntryResponse</importMapping>
+                                <importMapping>CacheDetailResponse=com.buurman.dto.response.backoffice.CacheDetailResponse</importMapping>
                                 <importMapping>FeatureFlagUpdateResponse=com.buurman.dto.response.backoffice.FeatureFlagUpdateResponse</importMapping>
                                 <importMapping>JobExecutionHistoryResponse=com.buurman.dto.response.backoffice.JobExecutionHistoryResponse</importMapping>
                                 <importMapping>LoggerConfigurationResponse=com.buurman.dto.response.backoffice.LoggerConfigurationResponse</importMapping>
@@ -228,6 +231,17 @@
                                 <importMapping>DashboardLayoutResponse=com.buurman.dto.response.backoffice.dashboard.DashboardLayoutResponse</importMapping>
                                 <importMapping>SaveDashboardLayoutRequest=com.buurman.dto.request.backoffice.dashboard.SaveDashboardLayoutRequest</importMapping>
                                 <importMapping>SnoozeActionItemRequest=com.buurman.dto.request.backoffice.dashboard.SnoozeActionItemRequest</importMapping>
+                                <importMapping>PhonePolicyMetadataResponse=com.buurman.dto.response.backoffice.PhonePolicyMetadataResponse</importMapping>
+                                <importMapping>CountryGroupResponse=com.buurman.dto.response.backoffice.CountryGroupResponse</importMapping>
+                                <importMapping>CountryEntry=com.buurman.dto.response.backoffice.CountryEntry</importMapping>
+                                <importMapping>NotificationStatsResponse=com.buurman.dto.response.backoffice.NotificationStatsResponse</importMapping>
+                                <importMapping>FeatureFlagState=com.buurman.dto.response.FeatureFlagState</importMapping>
+                                <importMapping>FeatureFlagAdminStatusResponse=com.buurman.dto.response.backoffice.FeatureFlagAdminStatusResponse</importMapping>
+                                <importMapping>RateLimitBucketResponse=com.buurman.dto.response.backoffice.RateLimitBucketResponse</importMapping>
+                                <importMapping>RateLimitBucketPageResponse=com.buurman.dto.response.backoffice.RateLimitBucketPageResponse</importMapping>
+                                <importMapping>RateLimitConfigSummary=com.buurman.dto.response.backoffice.RateLimitConfigSummary</importMapping>
+                                <importMapping>RateLimitBucketSummaryResponse=com.buurman.dto.response.backoffice.RateLimitBucketSummaryResponse</importMapping>
+                                <importMapping>RateLimitBucketDeleteResponse=com.buurman.dto.response.backoffice.RateLimitBucketDeleteResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

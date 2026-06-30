@@ -89,10 +89,10 @@ portfolio-dashboard-export-pdf:
       "200":
         description: OK
         content:
-          "*/*":
+          application/pdf:
             schema:
               type: string
-              format: byte
+              format: binary
       "401":
         description: Unauthorized - missing or invalid JWT token
         content:
@@ -147,10 +147,10 @@ portfolio-dashboard-export-csv:
       "200":
         description: OK
         content:
-          "*/*":
+          text/csv:
             schema:
               type: string
-              format: byte
+              format: binary
       "401":
         description: Unauthorized - missing or invalid JWT token
         content:
@@ -281,7 +281,7 @@ portfolio-dashboard-export-excel:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
-              format: byte
+              format: binary
       "401":
         description: Unauthorized - missing or invalid JWT token
         content:

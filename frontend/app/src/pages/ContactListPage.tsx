@@ -2,7 +2,10 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useContacts, useCreateContact } from '@/hooks/useContactHooks';
-import * as contactsApi from '@/api/contacts';
+import {
+  exportContactsCsv,
+  exportContactsXlsx,
+} from '@/generated/api/booklets/booklets';
 import { ContactCard } from '@/components/contacts/ContactCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
@@ -41,7 +44,9 @@ import { ExportOptionIcon } from '@/components/common/ExportOptionIcon';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
-import { exportContactsGoogleSheet } from '@/api/googleSheetsExport';
+import { exportContactsGoogleSheet } from '@/generated/api/booklets/booklets';
+import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
+import { downloadBlob } from '@/utils/downloadBlob';
 import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 
 const CONTACT_TYPES: ContactType[] = [
@@ -226,21 +231,10 @@ export const ContactListPage = () => {
     clearLastResult: clearLastGoogleSheet,
   } = useGoogleSheetsExport();
 
-  const downloadBlob = (blob: Blob, filename: string) => {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  };
-
   const handleExportCsv = async () => {
     setIsExporting(true);
     try {
-      const blob = await contactsApi.exportContactsCsv();
+      const blob = await exportContactsCsv();
       downloadBlob(blob, 'contacts.csv');
     } catch {
       // Download error — browser handles feedback
@@ -252,7 +246,7 @@ export const ContactListPage = () => {
   const handleExportXlsx = async () => {
     setIsExporting(true);
     try {
-      const blob = await contactsApi.exportContactsXlsx();
+      const blob = await exportContactsXlsx();
       downloadBlob(blob, 'contacts.xlsx');
     } catch {
       // Download error — browser handles feedback
@@ -355,7 +349,10 @@ export const ContactListPage = () => {
                       icon: <ExportOptionIcon format="google-sheets" />,
                       onExport: () =>
                         triggerGoogleSheet((token) =>
-                          exportContactsGoogleSheet(token)
+                          exportContactsGoogleSheet(
+                            { accessToken: token },
+                            { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
+                          )
                         ),
                     },
                   ]
@@ -704,8 +701,8 @@ export const ContactListPage = () => {
               <div className="mt-6">
                 <Pagination
                   page={page}
-                  totalPages={contactsData.totalPages}
-                  totalElements={contactsData.totalElements}
+                  totalPages={contactsData.totalPages ?? 0}
+                  totalElements={contactsData.totalElements ?? 0}
                   size={size}
                   onPageChange={handlePageChange}
                   onSizeChange={handleSizeChange}

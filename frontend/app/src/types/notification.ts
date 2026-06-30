@@ -1,5 +1,9 @@
-// Enums — generated NotificationResponse uses untyped `string` for these fields,
-// so we keep manual enums for stronger typing throughout the app.
+// Canonical response type comes from the generated spec. Its enum-like fields
+// (notificationType, channel, status) are typed as `string` server-side.
+export type { NotificationResponse } from '../generated/models';
+
+// Frontend-only enums kept as VALUES for filter dropdowns, badges and label maps.
+// They mirror the backend's string values, giving stronger typing in the UI layer.
 
 export enum NotificationType {
   WELCOME = 'WELCOME',
@@ -34,28 +38,7 @@ export enum NotificationStatus {
   DEMO_BLOCKED = 'DEMO_BLOCKED',
 }
 
-export interface NotificationResponse {
-  identifier: string;
-  notificationType: NotificationType;
-  channel: NotificationChannel;
-  subject?: string;
-  body?: string;
-  recipientEmail?: string;
-  recipientPhone?: string;
-  status: NotificationStatus;
-  providerStatus?: string;
-  providerError?: string;
-  openCount: number;
-  clickCount: number;
-  firstOpenedAt?: string;
-  firstClickedAt?: string;
-  resentFromIdentifier?: string;
-  resendReason?: string;
-  demoBlocked: boolean;
-  createdAt: string;
-  statusUpdatedAt?: string;
-}
-
+// Frontend-only filter shape used by the admin notifications UI.
 export interface NotificationFilterParams {
   type?: NotificationType;
   channel?: NotificationChannel;

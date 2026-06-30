@@ -526,7 +526,8 @@ feature-flags:
           "*/*":
             schema:
               type: object
-              additionalProperties: {}
+              additionalProperties:
+                $ref: '#/components/schemas/FeatureFlagState'
       "400":
         description: Bad request - validation error or malformed input
         content:

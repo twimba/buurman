@@ -1,6 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { broadcastsApi } from '../api/broadcasts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  listBroadcastMessages,
+  createBroadcastMessage,
+  updateBroadcastMessage,
+  deleteBroadcastMessage,
+} from '../generated/api/backoffice-broadcasts/backoffice-broadcasts';
 import type {
+  BroadcastMessage,
   CreateBroadcastMessageRequest,
   UpdateBroadcastMessageRequest,
 } from '../types';
@@ -10,15 +17,16 @@ import { AnalyticsEvent } from '../constants/analyticsEvents';
 export const useBroadcasts = () => {
   return useQuery({
     queryKey: ['broadcasts'],
-    queryFn: () => broadcastsApi.list().then((res) => res.data),
+    queryFn: () => listBroadcastMessages() as Promise<BroadcastMessage[]>,
   });
 };
 
 export const useCreateBroadcast = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: CreateBroadcastMessageRequest) =>
-      broadcastsApi.create(data).then((res) => res.data),
+      createBroadcastMessage(data),
+    errorTitle: "Couldn't create broadcast",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['broadcasts'] });
       trackEvent(AnalyticsEvent.BO_BROADCAST_CREATED);
@@ -28,14 +36,15 @@ export const useCreateBroadcast = () => {
 
 export const useUpdateBroadcast = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       identifier,
       data,
     }: {
       identifier: string;
       data: UpdateBroadcastMessageRequest;
-    }) => broadcastsApi.update(identifier, data).then((res) => res.data),
+    }) => updateBroadcastMessage(identifier, data),
+    errorTitle: "Couldn't update broadcast",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['broadcasts'] });
     },
@@ -44,8 +53,9 @@ export const useUpdateBroadcast = () => {
 
 export const useDeleteBroadcast = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (identifier: string) => broadcastsApi.delete(identifier),
+  return useMutationWithToast({
+    mutationFn: (identifier: string) => deleteBroadcastMessage(identifier),
+    errorTitle: "Couldn't delete broadcast",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['broadcasts'] });
     },

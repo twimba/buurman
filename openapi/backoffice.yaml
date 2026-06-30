@@ -380,7 +380,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/RateLimitBucketPageResponse"
       security:
         - bearer-jwt: []
     delete:
@@ -400,7 +400,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/RateLimitBucketDeleteResponse"
       security:
         - bearer-jwt: []
   /backoffice/rate-limits/buckets/summary:
@@ -415,7 +415,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/RateLimitBucketSummaryResponse"
       security:
         - bearer-jwt: []
   /backoffice/rate-limits/buckets/{bucketId}:
@@ -436,7 +436,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/RateLimitBucketResponse"
       security:
         - bearer-jwt: []
     delete:
@@ -649,7 +649,8 @@ paths:
             "*/*":
               schema:
                 type: object
-                additionalProperties: {}
+                additionalProperties:
+                  $ref: "#/components/schemas/FeatureFlagState"
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -2987,8 +2988,7 @@ paths:
           content:
             "*/*":
               schema:
-                type: object
-                additionalProperties: {}
+                $ref: "#/components/schemas/PhonePolicyMetadataResponse"
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -3502,8 +3502,7 @@ paths:
           content:
             "*/*":
               schema:
-                type: object
-                additionalProperties: {}
+                $ref: "#/components/schemas/NotificationStatsResponse"
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -3616,7 +3615,8 @@ paths:
             "*/*":
               schema:
                 type: object
-                additionalProperties: {}
+                additionalProperties:
+                  $ref: "#/components/schemas/FeatureFlagState"
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -3783,8 +3783,7 @@ paths:
           content:
             "*/*":
               schema:
-                type: object
-                additionalProperties: {}
+                $ref: "#/components/schemas/FeatureFlagAdminStatusResponse"
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -5438,8 +5437,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  additionalProperties: true
+                  $ref: "#/components/schemas/CacheInfoResponse"
         "401":
           description: Unauthorized - missing or invalid JWT token
           content:
@@ -5473,8 +5471,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
+                $ref: "#/components/schemas/CacheDetailResponse"
         "401":
           description: Unauthorized - missing or invalid JWT token
           content:
@@ -6546,6 +6543,319 @@ components:
         - key
         - maxRequests
         - periodSeconds
+    PhonePolicyMetadataResponse:
+      type: object
+      properties:
+        countryGroups:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountryGroupResponse"
+        numberTypes:
+          type: array
+          items:
+            type: string
+      required:
+        - countryGroups
+        - numberTypes
+    CountryGroupResponse:
+      type: object
+      properties:
+        groupId:
+          type: string
+        groupName:
+          type: string
+        countries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountryEntry"
+      required:
+        - countries
+        - groupId
+        - groupName
+    CountryEntry:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+      required:
+        - code
+        - name
+    NotificationStatsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        byStatus:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        byChannel:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+      required:
+        - byChannel
+        - byStatus
+        - total
+    FeatureFlagState:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        value:
+          nullable: true
+      required:
+        - enabled
+    FeatureFlagAdminStatusResponse:
+      type: object
+      properties:
+        adminConfigured:
+          type: boolean
+        authMethod:
+          type: string
+      required:
+        - adminConfigured
+        - authMethod
+    CacheInfoResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        maxSize:
+          type: integer
+          format: int64
+        ttlSeconds:
+          type: integer
+          format: int32
+        refreshPolicy:
+          type: string
+        entryCount:
+          type: integer
+          format: int64
+        hitCount:
+          type: integer
+          format: int64
+        missCount:
+          type: integer
+          format: int64
+        hitRate:
+          type: number
+          format: double
+        loadCount:
+          type: integer
+          format: int64
+        averageLoadTimeMs:
+          type: number
+          format: double
+        evictionCount:
+          type: integer
+          format: int64
+        lastInvalidatedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - name
+        - type
+        - description
+        - maxSize
+        - ttlSeconds
+        - refreshPolicy
+        - entryCount
+        - hitCount
+        - missCount
+        - hitRate
+        - loadCount
+        - averageLoadTimeMs
+        - evictionCount
+    CacheEntryResponse:
+      type: object
+      properties:
+        key:
+          type: string
+        summary:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required:
+        - key
+        - summary
+        - details
+    CacheDetailResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        maxSize:
+          type: integer
+          format: int64
+        ttlSeconds:
+          type: integer
+          format: int32
+        refreshPolicy:
+          type: string
+        entryCount:
+          type: integer
+          format: int64
+        hitCount:
+          type: integer
+          format: int64
+        missCount:
+          type: integer
+          format: int64
+        hitRate:
+          type: number
+          format: double
+        loadCount:
+          type: integer
+          format: int64
+        averageLoadTimeMs:
+          type: number
+          format: double
+        evictionCount:
+          type: integer
+          format: int64
+        lastInvalidatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CacheEntryResponse"
+      required:
+        - name
+        - type
+        - description
+        - maxSize
+        - ttlSeconds
+        - refreshPolicy
+        - entryCount
+        - hitCount
+        - missCount
+        - hitRate
+        - loadCount
+        - averageLoadTimeMs
+        - evictionCount
+        - entries
+    RateLimitBucketResponse:
+      type: object
+      properties:
+        bucketId:
+          type: string
+        configKey:
+          type: string
+        clientIdentifier:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        availableTokens:
+          type: integer
+          format: int64
+          nullable: true
+        maxTokens:
+          type: integer
+          format: int64
+          nullable: true
+        refillPeriodSeconds:
+          type: integer
+          format: int32
+          nullable: true
+        configEnabled:
+          type: boolean
+          nullable: true
+        configDescription:
+          type: string
+          nullable: true
+      required:
+        - bucketId
+        - clientIdentifier
+        - configKey
+    RateLimitBucketPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/RateLimitBucketResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+      required:
+        - content
+        - page
+        - size
+        - totalElements
+    RateLimitConfigSummary:
+      type: object
+      properties:
+        configKey:
+          type: string
+        displayName:
+          type: string
+        enabled:
+          type: boolean
+        maxRequests:
+          type: integer
+          format: int32
+        periodSeconds:
+          type: integer
+          format: int32
+        activeBuckets:
+          type: integer
+          format: int64
+      required:
+        - activeBuckets
+        - configKey
+        - displayName
+        - enabled
+        - maxRequests
+        - periodSeconds
+    RateLimitBucketSummaryResponse:
+      type: object
+      properties:
+        configs:
+          type: array
+          items:
+            $ref: "#/components/schemas/RateLimitConfigSummary"
+        totalActiveBuckets:
+          type: integer
+          format: int64
+      required:
+        - configs
+        - totalActiveBuckets
+    RateLimitBucketDeleteResponse:
+      type: object
+      properties:
+        deletedCount:
+          type: integer
+          format: int32
+      required:
+        - deletedCount
     UpdatePhoneNumberPolicyRequest:
       type: object
       properties:
@@ -7622,6 +7932,13 @@ components:
           type: boolean
     TeamFlagEvaluation:
       type: object
+      required:
+        - teamIdentifier
+        - teamName
+        - role
+        - isOwner
+        - isActive
+        - flags
       properties:
         teamIdentifier:
           type: string
@@ -7635,9 +7952,14 @@ components:
           type: boolean
         flags:
           type: object
-          additionalProperties: {}
+          additionalProperties:
+            $ref: '#/components/schemas/FeatureFlagState'
     SegmentEvaluation:
       type: object
+      required:
+        - segmentId
+        - segmentKey
+        - overrides
       properties:
         segmentId:
           type: integer
@@ -7654,6 +7976,8 @@ components:
             $ref: "#/components/schemas/SegmentFlagOverride"
     SegmentFlagOverride:
       type: object
+      required:
+        - enabled
       properties:
         flagName:
           type: string

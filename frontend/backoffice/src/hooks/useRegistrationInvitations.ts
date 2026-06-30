@@ -1,10 +1,20 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
-  registrationInvitationsApi,
-  type CreateRegistrationInvitationRequest,
-  type SendRegistrationInvitationRequest,
-  type UpdateRegistrationInvitationNoteRequest,
-} from '../api/registrationInvitations';
+  listRegistrationInvitations,
+  get as getRegistrationInvitation,
+  create as createRegistrationInvitation,
+  revoke as revokeRegistrationInvitation,
+  send as sendRegistrationInvitation,
+  suggestCode,
+  updateNote,
+} from '../generated/api/backoffice-registration-invitations/backoffice-registration-invitations';
+import type {
+  CreateRegistrationInvitationRequest,
+  ListRegistrationInvitationsParams,
+  SendRegistrationInvitationRequest,
+  UpdateRegistrationInvitationNoteRequest,
+} from '../generated/models';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 
@@ -20,26 +30,24 @@ export const useRegistrationInvitations = (params?: ListParams) => {
   return useQuery({
     queryKey: ['registrationInvitations', params],
     queryFn: () =>
-      registrationInvitationsApi
-        .list(params as Record<string, unknown>)
-        .then((res) => res.data),
+      listRegistrationInvitations(params as ListRegistrationInvitationsParams),
   });
 };
 
 export const useRegistrationInvitation = (identifier: string) => {
   return useQuery({
     queryKey: ['registrationInvitations', identifier],
-    queryFn: () =>
-      registrationInvitationsApi.get(identifier).then((res) => res.data),
+    queryFn: () => getRegistrationInvitation(identifier),
     enabled: !!identifier,
   });
 };
 
 export const useCreateRegistrationInvitation = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: CreateRegistrationInvitationRequest) =>
-      registrationInvitationsApi.create(data).then((res) => res.data),
+      createRegistrationInvitation(data),
+    errorTitle: "Couldn't create invitation",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['registrationInvitations'] });
     },
@@ -48,9 +56,10 @@ export const useCreateRegistrationInvitation = () => {
 
 export const useRevokeRegistrationInvitation = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (identifier: string) =>
-      registrationInvitationsApi.revoke(identifier),
+      revokeRegistrationInvitation(identifier),
+    errorTitle: "Couldn't revoke invitation",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['registrationInvitations'] });
     },
@@ -58,14 +67,15 @@ export const useRevokeRegistrationInvitation = () => {
 };
 
 export const useSendRegistrationInvitation = () => {
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       identifier,
       data,
     }: {
       identifier: string;
       data: SendRegistrationInvitationRequest;
-    }) => registrationInvitationsApi.send(identifier, data),
+    }) => sendRegistrationInvitation(identifier, data),
+    errorTitle: "Couldn't send invitation",
     onSuccess: () => {
       trackEvent(AnalyticsEvent.BO_INVITATION_SENT);
     },
@@ -74,17 +84,15 @@ export const useSendRegistrationInvitation = () => {
 
 export const useUpdateRegistrationInvitationNote = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       identifier,
       data,
     }: {
       identifier: string;
       data: UpdateRegistrationInvitationNoteRequest;
-    }) =>
-      registrationInvitationsApi
-        .updateNote(identifier, data)
-        .then((res) => res.data),
+    }) => updateNote(identifier, data),
+    errorTitle: "Couldn't update note",
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['registrationInvitations'],
@@ -99,7 +107,7 @@ export const useUpdateRegistrationInvitationNote = () => {
 export const useSuggestCode = () => {
   return useQuery({
     queryKey: ['registrationInvitations', 'suggestCode'],
-    queryFn: registrationInvitationsApi.suggestCode,
+    queryFn: () => suggestCode().then((res) => res.code),
     staleTime: 0,
   });
 };

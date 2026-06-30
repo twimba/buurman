@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPortfolioDashboard } from '../api/dashboard';
+import { getPortfolioDashboard } from '../generated/api/portfolio-dashboard/portfolio-dashboard';
 import { queryKeys } from '../lib/queryKeys';
 
 export const usePortfolioDashboard = (
@@ -9,7 +9,12 @@ export const usePortfolioDashboard = (
 ) => {
   return useQuery({
     queryKey: queryKeys.dashboard.portfolio(months, startDate, endDate),
-    queryFn: () => getPortfolioDashboard(months, startDate, endDate),
+    queryFn: () =>
+      getPortfolioDashboard({
+        ...(months != null ? { months } : {}),
+        ...(startDate ? { startDate } : {}),
+        ...(endDate ? { endDate } : {}),
+      }),
     staleTime: 120_000,
     retry: (failureCount, error: unknown) => {
       if (

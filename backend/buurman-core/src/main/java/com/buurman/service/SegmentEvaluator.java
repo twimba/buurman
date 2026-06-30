@@ -16,6 +16,8 @@ import com.buurman.domain.SegmentAttribute;
 import com.buurman.domain.SegmentCondition;
 import com.buurman.domain.SegmentContext;
 import com.buurman.domain.SegmentDefinition;
+import com.buurman.dto.response.backoffice.CacheEntryResponse;
+import com.buurman.dto.response.backoffice.CacheInfoResponse;
 import com.buurman.repository.SegmentRepository;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
@@ -73,37 +75,32 @@ public class SegmentEvaluator {
     lastInvalidatedAt = Optional.of(Instant.now(clock));
   }
 
-  public Map<String, Object> getCacheInfo() {
+  public CacheInfoResponse getCacheInfo() {
     var stats = segmentsCache.stats();
-    Map<String, Object> info = new LinkedHashMap<>();
-    info.put("name", "segments");
-    info.put("type", "LoadingCache");
-    info.put("description", "All segment definitions for flag targeting");
-    info.put("maxSize", 1);
-    info.put("ttlSeconds", 60);
-    info.put("refreshPolicy", "refresh-after-write");
-    info.put("entryCount", segmentsCache.estimatedSize());
-    info.put("hitCount", stats.hitCount());
-    info.put("missCount", stats.missCount());
-    info.put("hitRate", stats.hitCount() + stats.missCount() > 0 ? stats.hitRate() : 0.0);
-    info.put("loadCount", stats.loadCount());
-    info.put("averageLoadTimeMs", stats.averageLoadPenalty() / 1_000_000.0);
-    info.put("evictionCount", stats.evictionCount());
-    info.put("lastInvalidatedAt", lastInvalidatedAt.orElse(null));
-    return info;
+    return new CacheInfoResponse(
+        "segments",
+        "LoadingCache",
+        "All segment definitions for flag targeting",
+        1L,
+        60,
+        "refresh-after-write",
+        segmentsCache.estimatedSize(),
+        stats.hitCount(),
+        stats.missCount(),
+        stats.hitCount() + stats.missCount() > 0 ? stats.hitRate() : 0.0,
+        stats.loadCount(),
+        stats.averageLoadPenalty() / 1_000_000.0,
+        stats.evictionCount(),
+        lastInvalidatedAt.map(Instant::toString).orElse(null));
   }
 
-  public List<Map<String, Object>> getCacheEntries() {
-    List<Map<String, Object>> entries = new ArrayList<>();
+  public List<CacheEntryResponse> getCacheEntries() {
+    List<CacheEntryResponse> entries = new ArrayList<>();
     segmentsCache
         .asMap()
         .forEach(
             (key, segments) -> {
-              Map<String, Object> entry = new LinkedHashMap<>();
-              entry.put("key", key);
-              entry.put("summary", segments.size() + " segment definitions");
-              entry.put(
-                  "details",
+              List<Map<String, Object>> details =
                   segments.stream()
                       .map(
                           s -> {
@@ -114,8 +111,9 @@ public class SegmentEvaluator {
                             detail.put("conditionCount", s.getConditions().size());
                             return detail;
                           })
-                      .toList());
-              entries.add(entry);
+                      .toList();
+              entries.add(
+                  new CacheEntryResponse(key, segments.size() + " segment definitions", details));
             });
     return entries;
   }

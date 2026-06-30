@@ -2,8 +2,9 @@ import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getContracts } from '@/api/contracts';
-import { bulkCreatePayments } from '@/api/payments';
+import { getContracts } from '@/generated/api/contracts/contracts';
+import type { GetContractsParams } from '@/generated/models';
+import { bulkCreatePayments } from '@/generated/api/payments/payments';
 import { useCreatePayment } from '@/hooks/usePaymentHooks';
 import { PaymentForm } from '@/components/payments/PaymentForm';
 import { RegisterPaymentForm } from '@/components/payments/RegisterPaymentForm';
@@ -54,7 +55,7 @@ export const PaymentCreatePage = () => {
 
   const { data: activeContracts } = useQuery({
     queryKey: ['contracts', 'ACTIVE'],
-    queryFn: () => getContracts({ status: 'ACTIVE' }),
+    queryFn: () => getContracts({ status: 'ACTIVE' } as GetContractsParams),
   });
 
   const isPrefillInvalid = useMemo(() => {
@@ -119,15 +120,15 @@ export const PaymentCreatePage = () => {
     // Mark all rows as submitting
     rows.forEach((_, i) => callbacks.onRowStart(i));
 
-    bulkCreatePayments(items)
+    bulkCreatePayments({ items })
       .then((results) => {
         let hasErrors = false;
         for (const result of results) {
           if (result.error) {
             hasErrors = true;
-            callbacks.onRowError(result.index, result.error);
+            callbacks.onRowError(result.index ?? 0, result.error);
           } else {
-            callbacks.onRowSuccess(result.index);
+            callbacks.onRowSuccess(result.index ?? 0);
           }
         }
 

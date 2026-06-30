@@ -1,8 +1,10 @@
-import { useMutation } from '@tanstack/react-query';
-import { geocodeAddress, GeocodeRequest } from '../api/geocoding';
+import {  } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import { geocode } from '../generated/api/geocoding/geocoding';
+import type { GeocodeRequest } from '../generated/models';
 
 export const useGeocode = () => {
-  return useMutation({
-    mutationFn: (data: GeocodeRequest) => geocodeAddress(data),
+  return useMutationWithToast({
+    mutationFn: (data: GeocodeRequest) => geocode(data),
   });
 };

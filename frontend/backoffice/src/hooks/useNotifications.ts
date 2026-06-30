@@ -1,7 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { notificationsApi } from '../api/notifications';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  listNotifications,
+  getNotification,
+  resendNotification,
+  getStats,
+} from '../generated/api/backoffice-notifications/backoffice-notifications';
+import type { ListNotificationsParams } from '../generated/models';
 
-interface ListNotificationsParams {
+interface ListNotificationsArgs {
   page?: number;
   size?: number;
   type?: string;
@@ -15,17 +22,17 @@ interface ListNotificationsParams {
   direction?: string;
 }
 
-export const useNotifications = (params?: ListNotificationsParams) => {
+export const useNotifications = (params?: ListNotificationsArgs) => {
   return useQuery({
     queryKey: ['notifications', params],
-    queryFn: () => notificationsApi.list(params).then((res) => res.data),
+    queryFn: () => listNotifications(params as ListNotificationsParams),
   });
 };
 
 export const useNotification = (identifier: string) => {
   return useQuery({
     queryKey: ['notifications', identifier],
-    queryFn: () => notificationsApi.get(identifier).then((res) => res.data),
+    queryFn: () => getNotification(identifier),
     enabled: !!identifier,
   });
 };
@@ -33,9 +40,9 @@ export const useNotification = (identifier: string) => {
 export const useResendNotification = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (identifier: string) =>
-      notificationsApi.resend(identifier).then((res) => res.data),
+  return useMutationWithToast({
+    mutationFn: (identifier: string) => resendNotification(identifier),
+    errorTitle: "Couldn't resend notification",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
@@ -45,6 +52,6 @@ export const useResendNotification = () => {
 export const useNotificationStats = () => {
   return useQuery({
     queryKey: ['notification-stats'],
-    queryFn: () => notificationsApi.stats().then((res) => res.data),
+    queryFn: getStats,
   });
 };

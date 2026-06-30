@@ -1,32 +1,44 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { CreateImpersonationRequest } from '../generated/models';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import type {
+  CreateImpersonationRequest,
+  ListImpersonationSessionsParams,
+} from '../generated/models';
 import {
   createImpersonationSession,
+  listImpersonationSessions,
   rejoinImpersonationSession,
   terminateImpersonationSession,
 } from '../generated/api/backoffice-impersonation/backoffice-impersonation';
 import { getUserFlags } from '../generated/api/backoffice-feature-flags/backoffice-feature-flags';
-import {
-  impersonationApi,
-  type ListImpersonationSessionsParams,
-} from '../api/impersonation';
 
-export const useImpersonationSessions = (
-  params?: ListImpersonationSessionsParams
-) => {
+interface SessionFilters {
+  adminEmail?: string;
+  targetUserEmail?: string;
+  teamIdentifier?: string;
+  status?: string;
+  mode?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
+  direction?: string;
+}
+
+export const useImpersonationSessions = (params?: SessionFilters) => {
   return useQuery({
     queryKey: ['impersonation-sessions', params],
     queryFn: () =>
-      impersonationApi.listSessions(params).then((res) => res.data),
+      listImpersonationSessions(params as ListImpersonationSessionsParams),
   });
 };
 
 export const useCreateImpersonation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: CreateImpersonationRequest) =>
       createImpersonationSession(data),
+    errorTitle: "Couldn't start impersonation",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['impersonation-sessions'] });
     },
@@ -34,7 +46,7 @@ export const useCreateImpersonation = () => {
 };
 
 export const useRejoinImpersonation = () => {
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       identifier,
       password,
@@ -42,15 +54,17 @@ export const useRejoinImpersonation = () => {
       identifier: string;
       password: string;
     }) => rejoinImpersonationSession(identifier, { password }),
+    errorTitle: "Couldn't rejoin session",
   });
 };
 
 export const useTerminateImpersonation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (identifier: string) =>
       terminateImpersonationSession(identifier),
+    errorTitle: "Couldn't terminate session",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['impersonation-sessions'] });
     },

@@ -1,241 +1,56 @@
-// Enums — re-exported from generated
+// --- API model types: re-exported from generated (source of truth) ---
+
 export {
   PropertyResponsePropertyCategory as PropertyCategory,
   type PropertyResponsePropertyCategory,
-} from '../generated/models';
-
-export {
   PropertyResponsePropertyType as PropertyType,
   type PropertyResponsePropertyType,
-} from '../generated/models';
-
-export {
   PropertyResponseStatus as PropertyStatus,
   type PropertyResponseStatus,
 } from '../generated/models';
 
-// Imports for manual interfaces and constants
+export type {
+  PropertyResponse,
+  PropertySummary,
+  CreatePropertyRequest,
+  UpdatePropertyRequest,
+  DocumentResponse,
+  PhotoResponse,
+  AmenityResponse,
+  PropertyAmenityResponse,
+  PropertyAmenityRequest,
+  ResidentialDetailsResponse,
+  CommercialDetailsResponse,
+  IndustrialDetailsResponse,
+  AgriculturalDetailsResponse,
+  ResidentialDetailsRequest,
+  CommercialDetailsRequest,
+  IndustrialDetailsRequest,
+  AgriculturalDetailsRequest,
+  PropertyDashboardResponse,
+  FutureTrendData,
+  FutureMonthDataPoint,
+  CashFlowChartData,
+  MonthlyDataPoint,
+  EquityChartData,
+  ExpenseBreakdownChartData,
+  ExpenseTimelineMonth,
+  CategorySlice,
+  OccupancyChartData,
+  OccupancyDataPoint,
+  PropertyOutdoorAreaResponse as OutdoorAreaResponse,
+  PropertyOutdoorAreaRequest as OutdoorAreaRequest,
+  SummaryMetrics as DashboardSummaryMetrics,
+  DataCompleteness as DashboardDataCompleteness,
+} from '../generated/models';
 
-import { PropertyResponsePropertyCategory } from '../generated/models';
-import { PropertyResponsePropertyType } from '../generated/models';
-import { PropertyResponseStatus } from '../generated/models';
+import {
+  PropertyResponsePropertyCategory,
+  PropertyResponsePropertyType,
+  PropertyResponseStatus,
+} from '../generated/models';
 
-// --- Category-specific detail interfaces (response) ---
-
-export interface ResidentialDetailsResponse {
-  bedrooms?: number;
-  bathrooms?: number;
-  furnished?: boolean;
-  petPolicy?: string;
-}
-
-export interface CommercialDetailsResponse {
-  usableAreaValue?: number;
-  usableAreaUnit?: string;
-  commonAreaValue?: number;
-  commonAreaUnit?: string;
-  floorLevel?: number;
-  ceilingHeightValue?: number;
-  ceilingHeightUnit?: string;
-  hasStorefront?: boolean;
-  hasSignageRights?: boolean;
-  zoningClassification?: string;
-  maxOccupancy?: number;
-  restroomCount?: number;
-  hasKitchenFacility?: boolean;
-  accessibilityCompliant?: boolean;
-}
-
-export interface IndustrialDetailsResponse {
-  clearHeightValue?: number;
-  clearHeightUnit?: string;
-  loadingDocks?: number;
-  driveInDoors?: number;
-  floorLoadCapacityValue?: number;
-  floorLoadCapacityUnit?: string;
-  powerCapacityValue?: number;
-  powerCapacityUnit?: string;
-  hasThreePhasePower?: boolean;
-  hasCrane?: boolean;
-  craneCapacityValue?: number;
-  craneCapacityUnit?: string;
-  hasHazmatCertification?: boolean;
-  hasVentilationSystem?: boolean;
-  hasClimateControl?: boolean;
-  yardAreaValue?: number;
-  yardAreaUnit?: string;
-  zoningClassification?: string;
-}
-
-export interface AgriculturalDetailsResponse {
-  totalLandAreaValue?: number;
-  totalLandAreaUnit?: string;
-  arableAreaValue?: number;
-  arableAreaUnit?: string;
-  soilType?: string;
-  hasWaterRights?: boolean;
-  waterSource?: string;
-  irrigationType?: string;
-  fencingType?: string;
-  hasOutbuildings?: boolean;
-  outbuildingDetails?: string;
-  currentUse?: string;
-  zoningClassification?: string;
-}
-
-// --- Outdoor Areas ---
-
-export interface OutdoorAreaResponse {
-  identifier: string;
-  type: string;
-  areaValue?: number;
-  areaUnit?: string;
-}
-
-// --- Amenities ---
-
-export interface AmenityResponse {
-  identifier: string;
-  name: string;
-  category: string;
-  icon?: string;
-  applicableCategories?: string[];
-}
-
-export interface PropertyAmenityResponse {
-  amenityIdentifier: string;
-  amenityName: string;
-  amenityCategory: string;
-  amenityIcon?: string;
-  notes?: string;
-}
-
-// --- Property ---
-
-export interface PropertySummary {
-  identifier: string;
-  street: string;
-  city: string;
-  postalCode: string;
-  propertyCategory: PropertyResponsePropertyCategory;
-  propertyType: PropertyResponsePropertyType;
-  status: PropertyResponseStatus;
-}
-
-export interface PropertyResponse {
-  identifier: string;
-  propertyCategory: PropertyResponsePropertyCategory;
-  propertyType: string;
-  status: string;
-  street: string;
-  city: string;
-  postalCode: string;
-  countryCode: string;
-  regionCode?: string;
-  latitude?: number;
-  longitude?: number;
-  geocodeAccuracy?: string;
-  areaValue?: number;
-  areaUnit: string;
-  mainPhotoUrl?: string;
-  mainPhotoThumbnailUrl?: string;
-
-  // Construction & Structure
-  yearBuilt?: number;
-  yearLastRenovated?: number;
-  constructionType?: string;
-  foundationType?: string;
-  roofType?: string;
-  wallConstruction?: string;
-  flooringType?: string;
-  windowType?: string;
-  numberOfFloors?: number;
-  structuralNotes?: string;
-
-  // Energy & Climate
-  energyEfficiencyRating?: string;
-  energyCertificateExpiryDate?: string;
-  heatingType?: string;
-  coolingType?: string;
-  hotWaterSystem?: string;
-  insulationNotes?: string;
-
-  // Utilities & Connections
-  electricityConnectionType?: string;
-  electricityCapacityValue?: number;
-  electricityCapacityUnit?: string;
-  waterConnectionType?: string;
-  hasGasConnection?: boolean;
-  sewageType?: string;
-  internetConnectionType?: string;
-  internetMaxSpeedValue?: number;
-  internetMaxSpeedUnit?: string;
-  internetStatus?: string;
-
-  // Parking
-  parkingSpaces?: number;
-  parkingType?: string;
-
-  // Safety & Security
-  hasSmokeDetectors?: boolean;
-  hasCoDetectors?: boolean;
-  hasFireExtinguisher?: boolean;
-  hasSprinklerSystem?: boolean;
-  hasAlarmSystem?: boolean;
-  hasSecurityCameras?: boolean;
-  hasSecureEntry?: boolean;
-  safetyNotes?: string;
-
-  // Accessibility
-  isWheelchairAccessible?: boolean;
-  hasElevator?: boolean;
-  hasStepFreeEntrance?: boolean;
-  hasAdaptedBathroom?: boolean;
-  accessibilityNotes?: string;
-
-  // Category-specific details (only one is present based on category)
-  residentialDetails?: ResidentialDetailsResponse;
-  commercialDetails?: CommercialDetailsResponse;
-  industrialDetails?: IndustrialDetailsResponse;
-  agriculturalDetails?: AgriculturalDetailsResponse;
-
-  // Nested collections (only on detail endpoint, absent on list)
-  outdoorAreas?: OutdoorAreaResponse[];
-  amenities?: PropertyAmenityResponse[];
-
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface DocumentResponse {
-  identifier: string;
-  entityType: string;
-  entityIdentifier: string;
-  fileKey: string;
-  fileName: string;
-  fileSize: number;
-  mimeType: string;
-  title?: string;
-  notes?: string;
-  uploadedAt: string;
-  downloadUrl?: string;
-}
-
-export interface PhotoResponse {
-  identifier: string;
-  entityType: string;
-  entityIdentifier: string;
-  fileKey: string;
-  fileName: string;
-  fileSize: number;
-  mimeType: string;
-  title?: string;
-  notes?: string;
-  isMainPhoto: boolean;
-  uploadedAt: string;
-  downloadUrl?: string;
-  thumbnailUrl?: string;
-}
+// --- Frontend-only types (not in the OpenAPI spec) ---
 
 export interface AuditLogEntry {
   entityType: string;
@@ -249,292 +64,6 @@ export interface AuditLogEntry {
   oldValues?: Record<string, unknown>;
   newValues?: Record<string, unknown>;
   impersonatedBy?: string;
-}
-
-// --- Request interfaces (manual — generated adds to all optional fields) ---
-
-export interface ResidentialDetailsRequest {
-  bedrooms?: number;
-  bathrooms?: number;
-  furnished?: boolean;
-  petPolicy?: string;
-}
-
-export interface CommercialDetailsRequest {
-  usableAreaValue?: number;
-  usableAreaUnit?: string;
-  commonAreaValue?: number;
-  commonAreaUnit?: string;
-  floorLevel?: number;
-  ceilingHeightValue?: number;
-  ceilingHeightUnit?: string;
-  hasStorefront?: boolean;
-  hasSignageRights?: boolean;
-  zoningClassification?: string;
-  maxOccupancy?: number;
-  restroomCount?: number;
-  hasKitchenFacility?: boolean;
-  accessibilityCompliant?: boolean;
-}
-
-export interface IndustrialDetailsRequest {
-  clearHeightValue?: number;
-  clearHeightUnit?: string;
-  loadingDocks?: number;
-  driveInDoors?: number;
-  floorLoadCapacityValue?: number;
-  floorLoadCapacityUnit?: string;
-  powerCapacityValue?: number;
-  powerCapacityUnit?: string;
-  hasThreePhasePower?: boolean;
-  hasCrane?: boolean;
-  craneCapacityValue?: number;
-  craneCapacityUnit?: string;
-  hasHazmatCertification?: boolean;
-  hasVentilationSystem?: boolean;
-  hasClimateControl?: boolean;
-  yardAreaValue?: number;
-  yardAreaUnit?: string;
-  zoningClassification?: string;
-}
-
-export interface AgriculturalDetailsRequest {
-  totalLandAreaValue?: number;
-  totalLandAreaUnit?: string;
-  arableAreaValue?: number;
-  arableAreaUnit?: string;
-  soilType?: string;
-  hasWaterRights?: boolean;
-  waterSource?: string;
-  irrigationType?: string;
-  fencingType?: string;
-  hasOutbuildings?: boolean;
-  outbuildingDetails?: string;
-  currentUse?: string;
-  zoningClassification?: string;
-}
-
-export interface OutdoorAreaRequest {
-  type: string;
-  areaValue?: number;
-  areaUnit?: string;
-}
-
-export interface PropertyAmenityRequest {
-  amenityIdentifier: string;
-  notes?: string;
-}
-
-export interface CreatePropertyRequest {
-  propertyCategory: PropertyResponsePropertyCategory;
-  propertyType: PropertyResponsePropertyType;
-  status: PropertyResponseStatus;
-  street: string;
-  city: string;
-  postalCode: string;
-  countryCode: string;
-  regionCode?: string;
-  latitude?: number;
-  longitude?: number;
-  geocodeAccuracy?: string;
-  areaValue?: number;
-  areaUnit?: string;
-  yearBuilt?: number;
-  yearLastRenovated?: number;
-  constructionType?: string;
-  foundationType?: string;
-  roofType?: string;
-  wallConstruction?: string;
-  flooringType?: string;
-  windowType?: string;
-  numberOfFloors?: number;
-  structuralNotes?: string;
-  energyEfficiencyRating?: string;
-  energyCertificateExpiryDate?: string;
-  heatingType?: string;
-  coolingType?: string;
-  hotWaterSystem?: string;
-  insulationNotes?: string;
-  electricityConnectionType?: string;
-  electricityCapacityValue?: number;
-  electricityCapacityUnit?: string;
-  waterConnectionType?: string;
-  hasGasConnection?: boolean;
-  sewageType?: string;
-  internetConnectionType?: string;
-  internetMaxSpeedValue?: number;
-  internetMaxSpeedUnit?: string;
-  internetStatus?: string;
-  parkingSpaces?: number;
-  parkingType?: string;
-  hasSmokeDetectors?: boolean;
-  hasCoDetectors?: boolean;
-  hasFireExtinguisher?: boolean;
-  hasSprinklerSystem?: boolean;
-  hasAlarmSystem?: boolean;
-  hasSecurityCameras?: boolean;
-  hasSecureEntry?: boolean;
-  safetyNotes?: string;
-  isWheelchairAccessible?: boolean;
-  hasElevator?: boolean;
-  hasStepFreeEntrance?: boolean;
-  hasAdaptedBathroom?: boolean;
-  accessibilityNotes?: string;
-  residentialDetails?: ResidentialDetailsRequest;
-  commercialDetails?: CommercialDetailsRequest;
-  industrialDetails?: IndustrialDetailsRequest;
-  agriculturalDetails?: AgriculturalDetailsRequest;
-}
-
-export interface UpdatePropertyRequest {
-  propertyType: PropertyResponsePropertyType;
-  status: PropertyResponseStatus;
-  street: string;
-  city: string;
-  postalCode: string;
-  countryCode: string;
-  regionCode?: string;
-  latitude?: number;
-  longitude?: number;
-  geocodeAccuracy?: string;
-  areaValue?: number;
-  areaUnit?: string;
-  yearBuilt?: number;
-  yearLastRenovated?: number;
-  constructionType?: string;
-  foundationType?: string;
-  roofType?: string;
-  wallConstruction?: string;
-  flooringType?: string;
-  windowType?: string;
-  numberOfFloors?: number;
-  structuralNotes?: string;
-  energyEfficiencyRating?: string;
-  energyCertificateExpiryDate?: string;
-  heatingType?: string;
-  coolingType?: string;
-  hotWaterSystem?: string;
-  insulationNotes?: string;
-  electricityConnectionType?: string;
-  electricityCapacityValue?: number;
-  electricityCapacityUnit?: string;
-  waterConnectionType?: string;
-  hasGasConnection?: boolean;
-  sewageType?: string;
-  internetConnectionType?: string;
-  internetMaxSpeedValue?: number;
-  internetMaxSpeedUnit?: string;
-  internetStatus?: string;
-  parkingSpaces?: number;
-  parkingType?: string;
-  hasSmokeDetectors?: boolean;
-  hasCoDetectors?: boolean;
-  hasFireExtinguisher?: boolean;
-  hasSprinklerSystem?: boolean;
-  hasAlarmSystem?: boolean;
-  hasSecurityCameras?: boolean;
-  hasSecureEntry?: boolean;
-  safetyNotes?: string;
-  isWheelchairAccessible?: boolean;
-  hasElevator?: boolean;
-  hasStepFreeEntrance?: boolean;
-  hasAdaptedBathroom?: boolean;
-  accessibilityNotes?: string;
-  residentialDetails?: ResidentialDetailsRequest;
-  commercialDetails?: CommercialDetailsRequest;
-  industrialDetails?: IndustrialDetailsRequest;
-  agriculturalDetails?: AgriculturalDetailsRequest;
-}
-
-// --- Property Dashboard ---
-
-export interface PropertyDashboardResponse {
-  summary: DashboardSummaryMetrics;
-  cashFlow: CashFlowChartData;
-  equity: EquityChartData;
-  expenseBreakdown: ExpenseBreakdownChartData;
-  occupancy: OccupancyChartData;
-  dataCompleteness: DashboardDataCompleteness;
-  futureTrend: FutureTrendData;
-}
-
-export interface FutureTrendData {
-  months: FutureMonthDataPoint[];
-}
-
-export interface FutureMonthDataPoint {
-  month: string;
-  expectedIncome: number;
-  expectedExpenses: number;
-  expectedNet: number;
-}
-
-export interface DashboardSummaryMetrics {
-  totalRoiPercent?: number;
-  annualizedRoiPercent?: number;
-  capRatePercent?: number;
-  cashOnCashPercent?: number;
-  monthlyCashFlow?: number;
-  annualNoi?: number;
-  totalEquity?: number;
-  equityGrowthPercent?: number;
-  occupancyRatePercent?: number;
-  grossRentMultiplier?: number;
-  currency?: string;
-}
-
-export interface CashFlowChartData {
-  months: MonthlyDataPoint[];
-}
-
-export interface MonthlyDataPoint {
-  month: string;
-  income: number;
-  expenses: number;
-  mortgage: number;
-  net: number;
-}
-
-export interface EquityChartData {
-  purchasePrice?: number;
-  currentMarketValue?: number;
-  mortgageBalance?: number;
-}
-
-export interface ExpenseBreakdownChartData {
-  categories: CategorySlice[];
-  timeline: ExpenseTimelineMonth[];
-}
-
-export interface ExpenseTimelineMonth {
-  month: string;
-  categoryAmounts: Record<string, number>;
-}
-
-export interface CategorySlice {
-  category: string;
-  amount: number;
-}
-
-export interface OccupancyChartData {
-  months: OccupancyDataPoint[];
-}
-
-export interface OccupancyDataPoint {
-  month: string;
-  tenantOccupancyPercent: number;
-  selfOccupancyPercent: number;
-}
-
-export interface DashboardDataCompleteness {
-  hasPurchasePrice: boolean;
-  hasMarketValue: boolean;
-  hasMortgageInfo: boolean;
-  hasOperatingCosts: boolean;
-  hasContracts: boolean;
-  hasPayments: boolean;
-  hasExpenses: boolean;
-  completenessPercent: number;
 }
 
 // --- Category → Sub-type mapping ---

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { getContacts } from '@/api/contacts';
+import { getContacts } from '@/generated/api/contacts/contacts';
 import { ChevronDown } from 'lucide-react';
 import { Avatar } from './Avatar';
 

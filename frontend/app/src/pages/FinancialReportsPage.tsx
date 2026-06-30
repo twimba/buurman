@@ -37,7 +37,7 @@ import { LoadingSpinner } from '@buurman/ui';
 import { MetricHint } from '@/components/common/MetricHint';
 import { useTheme } from '@/context/ThemeContext';
 import { useQuery } from '@tanstack/react-query';
-import { getProperties } from '@/api/properties';
+import { getProperties } from '@/generated/api/properties/properties';
 import { ChevronDown, ChevronUp, Filter, Check, Maximize2 } from 'lucide-react';
 import { ChartFullscreenModal } from '@/components/common/ChartFullscreenModal';
 

@@ -203,8 +203,8 @@ export const TeamDetailPage = () => {
         <IdentityCard
           icon={Clock}
           label="Last Updated"
-          value={formatDate(team.updatedAt)}
-          subtitle={formatDateTime(team.updatedAt)}
+          value={formatDate(team.updatedAt ?? '')}
+          subtitle={formatDateTime(team.updatedAt ?? '')}
           color="purple"
         />
       </div>
@@ -239,7 +239,7 @@ export const TeamDetailPage = () => {
         <DataCard
           icon={UserCheck}
           label="Contacts"
-          value={team.dataCounts.contacts}
+          value={team.dataCounts.tenants}
           color="emerald"
         />
         <DataCard
@@ -281,7 +281,7 @@ export const TeamDetailPage = () => {
               <span className="text-3xl font-bold text-success-text">
                 {team.financialSnapshot.currency
                   ? formatMoney(
-                      team.financialSnapshot.totalActiveRent,
+                      team.financialSnapshot.totalActiveRent ?? 0,
                       team.financialSnapshot.currency
                     )
                   : '\u2013'}
@@ -408,12 +408,12 @@ export const TeamDetailPage = () => {
           <div className="space-y-3">
             <SettingsRow
               label="Payments Ahead Count"
-              value={String(team.settings.paymentsAheadCount)}
+              value={String(team.settings?.paymentsAheadCount ?? '—')}
             />
             <SettingsRow
               label="Auto Generation"
               value={
-                team.settings.autoGenerationEnabled ? (
+                team.settings?.autoGenerationEnabled ? (
                   <span className="text-success-text">Enabled</span>
                 ) : (
                   <span className="text-error-text">Disabled</span>
@@ -434,17 +434,23 @@ export const TeamDetailPage = () => {
           <div className="space-y-3">
             <SettingsRow
               label="Currency"
-              value={team.settings.defaultCurrency}
+              value={team.settings?.defaultCurrency ?? '—'}
             />
             <SettingsRow
               label="Country"
-              value={team.settings.defaultCountryCode ?? '—'}
+              value={team.settings?.defaultCountry ?? '—'}
             />
-            <SettingsRow label="Timezone" value={team.settings.timezone} />
-            <SettingsRow label="Date Format" value={team.settings.dateFormat} />
+            <SettingsRow
+              label="Timezone"
+              value={team.settings?.timezone ?? '—'}
+            />
+            <SettingsRow
+              label="Date Format"
+              value={team.settings?.dateFormat ?? '—'}
+            />
             <SettingsRow
               label="Fiscal Year Start"
-              value={`Month ${team.settings.fiscalYearStartMonth}`}
+              value={`Month ${team.settings?.fiscalYearStartMonth ?? '—'}`}
             />
           </div>
         </div>

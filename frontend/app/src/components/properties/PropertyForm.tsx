@@ -32,7 +32,10 @@ import {
   PROPERTY_CATEGORY_ICONS,
   PROPERTY_TYPE_ICONS,
 } from '@/utils/propertyIcons';
-import { getCountries, getCountryDetail } from '@/api/rentRegulations';
+import {
+  listRentRegulationCountries,
+  getRentRegulationCountryDetail,
+} from '@/generated/api/rent-regulations/rent-regulations';
 
 interface PropertyFormProps {
   property?: PropertyResponse;
@@ -77,7 +80,7 @@ export const PropertyForm = ({
   const geocodeMutation = useGeocode();
   const [geocodedAddress, setGeocodedAddress] = useState(() =>
     property
-      ? `${property.street}|${property.city}|${property.postalCode}|${property.countryCode}`
+      ? `${property.street}|${property.city}|${property.postalCode}|${property.country}`
       : ''
   );
   const isEditMode = !!property;
@@ -101,7 +104,7 @@ export const PropertyForm = ({
     street: property?.street ?? '',
     city: property?.city ?? '',
     postalCode: property?.postalCode ?? '',
-    countryCode: property?.countryCode || defaultCountryCode || '',
+    country: property?.country || defaultCountryCode || '',
     regionCode: property?.regionCode,
     latitude: property?.latitude ?? undefined,
     longitude: property?.longitude ?? undefined,
@@ -126,14 +129,12 @@ export const PropertyForm = ({
     hotWaterSystem: property?.hotWaterSystem,
     insulationNotes: property?.insulationNotes,
     electricityConnectionType: property?.electricityConnectionType,
-    electricityCapacityValue: property?.electricityCapacityValue,
-    electricityCapacityUnit: property?.electricityCapacityUnit ?? 'a',
+    electricityCapacityAmps: property?.electricityCapacityAmps,
     waterConnectionType: property?.waterConnectionType,
     hasGasConnection: property?.hasGasConnection ?? false,
     sewageType: property?.sewageType,
     internetConnectionType: property?.internetConnectionType,
-    internetMaxSpeedValue: property?.internetMaxSpeedValue,
-    internetMaxSpeedUnit: property?.internetMaxSpeedUnit ?? 'mbps',
+    internetMaxSpeedMbps: property?.internetMaxSpeedMbps,
     internetStatus: property?.internetStatus,
     parkingSpaces: property?.parkingSpaces,
     parkingType: property?.parkingType,
@@ -168,20 +169,20 @@ export const PropertyForm = ({
   // Fetch rent regulation countries to know which ones have regional regulations
   const { data: regulationCountries } = useQuery({
     queryKey: ['rentRegulationCountries'],
-    queryFn: getCountries,
+    queryFn: () => listRentRegulationCountries(),
     staleTime: 5 * 60 * 1000,
   });
 
   const selectedRegCountry = regulationCountries?.find(
-    (c) => c.countryCode === formData.countryCode
+    (c) => c.countryCode === formData.country
   );
   const hasRegions = selectedRegCountry?.hasRegionalRegulations ?? false;
 
   // Fetch regions for the selected country (only if it has regional regulations)
   const { data: countryDetail } = useQuery({
-    queryKey: ['rentRegulationCountryDetail', formData.countryCode],
-    queryFn: () => getCountryDetail(formData.countryCode),
-    enabled: hasRegions && !!formData.countryCode,
+    queryKey: ['rentRegulationCountryDetail', formData.country],
+    queryFn: () => getRentRegulationCountryDetail(formData.country),
+    enabled: hasRegions && !!formData.country,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -220,7 +221,7 @@ export const PropertyForm = ({
   if (property && property.identifier !== propertyIdentifier) {
     setPropertyIdentifier(property.identifier);
     setGeocodedAddress(
-      `${property.street}|${property.city}|${property.postalCode}|${property.countryCode}`
+      `${property.street}|${property.city}|${property.postalCode}|${property.country}`
     );
     setFormData({
       propertyCategory:
@@ -231,7 +232,7 @@ export const PropertyForm = ({
       street: property.street,
       city: property.city,
       postalCode: property.postalCode,
-      countryCode: property.countryCode,
+      country: property.country,
       regionCode: property.regionCode,
       latitude: property.latitude,
       longitude: property.longitude,
@@ -255,14 +256,12 @@ export const PropertyForm = ({
       hotWaterSystem: property.hotWaterSystem,
       insulationNotes: property.insulationNotes,
       electricityConnectionType: property.electricityConnectionType,
-      electricityCapacityValue: property.electricityCapacityValue,
-      electricityCapacityUnit: property.electricityCapacityUnit ?? 'a',
+      electricityCapacityAmps: property.electricityCapacityAmps,
       waterConnectionType: property.waterConnectionType,
       hasGasConnection: property.hasGasConnection ?? false,
       sewageType: property.sewageType,
       internetConnectionType: property.internetConnectionType,
-      internetMaxSpeedValue: property.internetMaxSpeedValue,
-      internetMaxSpeedUnit: property.internetMaxSpeedUnit ?? 'mbps',
+      internetMaxSpeedMbps: property.internetMaxSpeedMbps,
       internetStatus: property.internetStatus,
       parkingSpaces: property.parkingSpaces,
       parkingType: property.parkingType,
@@ -290,21 +289,21 @@ export const PropertyForm = ({
     });
   }
 
-  const currentAddressKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.countryCode}`;
+  const currentAddressKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.country}`;
   const addressDirty =
-    !!(formData.street && formData.city && formData.countryCode) &&
+    !!(formData.street && formData.city && formData.country) &&
     currentAddressKey !== geocodedAddress;
 
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
-    const addrKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.countryCode}`;
+    const addrKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.country}`;
     const timeoutId = setTimeout(() => {
-      if (formData.street && formData.city && formData.countryCode) {
+      if (formData.street && formData.city && formData.country) {
         const hasChanged = property
           ? formData.street !== property.street ||
             formData.city !== property.city ||
             formData.postalCode !== property.postalCode ||
-            formData.countryCode !== property.countryCode
+            formData.country !== property.country
           : true;
 
         if (hasChanged) {
@@ -313,7 +312,7 @@ export const PropertyForm = ({
               street: formData.street,
               city: formData.city,
               postalCode: formData.postalCode,
-              countryCode: formData.countryCode,
+              country: formData.country,
             },
             {
               onSuccess: (result) => {
@@ -349,7 +348,7 @@ export const PropertyForm = ({
     formData.street,
     formData.city,
     formData.postalCode,
-    formData.countryCode,
+    formData.country,
     property,
   ]);
 
@@ -379,7 +378,7 @@ export const PropertyForm = ({
     if (!formData.postalCode.trim()) {
       newErrors.postalCode = t('form.validation.postalCodeRequired');
     }
-    if (!formData.countryCode.trim()) {
+    if (!formData.country.trim()) {
       newErrors.countryCode = t('form.validation.countryRequired');
     }
 
@@ -509,11 +508,11 @@ export const PropertyForm = ({
                   {t('form.country')} <span className="text-error-text">*</span>
                 </label>
                 <CountrySelector
-                  value={formData.countryCode}
+                  value={formData.country}
                   onChange={(v) => {
                     setFormData((prev) => ({
                       ...prev,
-                      countryCode: v,
+                      country: v,
                       regionCode: undefined,
                     }));
                     if (errors.countryCode) {
@@ -551,7 +550,7 @@ export const PropertyForm = ({
             </div>
 
             {/* Location Preview */}
-            {formData.street && formData.city && formData.countryCode && (
+            {formData.street && formData.city && formData.country && (
               <div className="mt-6">
                 <h4 className="text-sm font-semibold text-text-secondary mb-3">
                   {t('form.locationPreview')}
@@ -563,9 +562,7 @@ export const PropertyForm = ({
                   longitude={formData.longitude}
                   geocodeAccuracy={formData.geocodeAccuracy}
                   isGeocoding={addressDirty || geocodeMutation.isPending}
-                  defaultCountryCode={
-                    formData.countryCode || defaultCountryCode
-                  }
+                  defaultCountryCode={formData.country || defaultCountryCode}
                   onLocationChange={(lat, lng) => {
                     setFormData((prev) => ({
                       ...prev,

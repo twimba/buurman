@@ -17,7 +17,7 @@ import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { MetricHint } from '@/components/common/MetricHint';
 import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
 import { useLongPress } from '@buurman/ui';
-import type { DashboardStats } from '@/api/dashboard';
+import type { DashboardStatsResponse as DashboardStats } from '@/generated/models';
 
 interface DashboardKpiStripProps {
   stats?: DashboardStats;

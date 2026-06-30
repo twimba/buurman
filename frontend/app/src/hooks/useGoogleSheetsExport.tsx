@@ -4,7 +4,7 @@ import {
   useGoogleAccessToken,
   GoogleAccessTokenError,
 } from './useGoogleAccessToken';
-import type { GoogleSheetExportResult } from '@/api/googleSheetsExport';
+import type { GoogleSheetExportResponse as GoogleSheetExportResult } from '@/generated/models';
 
 /**
  * High-level handler for Google Sheets exports. Returns a stable `triggerExport` function plus

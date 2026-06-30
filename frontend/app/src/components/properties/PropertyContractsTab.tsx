@@ -77,7 +77,7 @@ export const PropertyContractsTab = ({
           page: currentPage,
           size: perPage,
           sort: sortField,
-          direction: sortOrder,
+          direction: sortOrder.toUpperCase() as 'ASC' | 'DESC',
         }
       : undefined
   );
@@ -94,7 +94,7 @@ export const PropertyContractsTab = ({
         const search = debouncedSearch.toLowerCase();
         return (
           contract.identifier.toLowerCase().includes(search) ||
-          `${contract.primaryContact.firstName} ${contract.primaryContact.lastName}`
+          `${contract.primaryContact?.firstName} ${contract.primaryContact?.lastName}`
             .toLowerCase()
             .includes(search) ||
           contract.contractType.toLowerCase().includes(search)
@@ -198,7 +198,7 @@ export const PropertyContractsTab = ({
                       className="block w-full text-left bg-surface-card rounded-lg border border-border-default p-4 min-h-touch hover:border-primary-300 transition-colors focus-ring"
                     >
                       <DataList
-                        title={`${contract.primaryContact.firstName} ${contract.primaryContact.lastName}`}
+                        title={`${contract.primaryContact?.firstName} ${contract.primaryContact?.lastName}`}
                         trailing={
                           <ContractStatusBadge status={contract.status} />
                         }
@@ -308,8 +308,8 @@ export const PropertyContractsTab = ({
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-text-primary">
-                            {contract.primaryContact.firstName}{' '}
-                            {contract.primaryContact.lastName}
+                            {contract.primaryContact?.firstName}{' '}
+                            {contract.primaryContact?.lastName}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { systemApi } from '../api/system';
+import { getSystemInfo } from '../generated/api/backoffice-system/backoffice-system';
 
 export const useSystemInfo = () => {
   return useQuery({
     queryKey: ['system-info'],
-    queryFn: () => systemApi.info().then((res) => res.data),
+    queryFn: getSystemInfo,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
