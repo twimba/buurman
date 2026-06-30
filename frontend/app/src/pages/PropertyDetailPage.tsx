@@ -205,14 +205,18 @@ export const PropertyDetailPage = () => {
 
   const handleDownloadBooklet = async (lang: string) => {
     downloadBlob(
-      await exportPropertyBooklet(id, { lang } as Parameters<typeof exportPropertyBooklet>[1]),
+      await exportPropertyBooklet(id, { lang } as Parameters<
+        typeof exportPropertyBooklet
+      >[1]),
       `property-booklet-${lang}.pdf`
     );
   };
 
   const handleDownloadSummary = async (lang: string) => {
     downloadBlob(
-      await getPropertySummary(id, { lang } as Parameters<typeof getPropertySummary>[1]),
+      await getPropertySummary(id, { lang } as Parameters<
+        typeof getPropertySummary
+      >[1]),
       `property-${id}-summary-${lang}.pdf`
     );
   };

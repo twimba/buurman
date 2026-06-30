@@ -5,12 +5,12 @@ import { ContractStatus } from '@/types/contract';
 import { useContracts } from '@/hooks/useContractHooks';
 import { ContractCard } from '@/components/contracts/ContractCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Plus, FileText, Filter, RefreshCw } from 'lucide-react';
+import { Plus, FileText, RefreshCw, CircleDot, X } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import {
   EmptyState,
-  FilterSheet,
+  FilterSelectPopover,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -31,9 +31,8 @@ export const ContractsPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
 
-  const statusFilters = useMemo(
+  const statusOptions = useMemo(
     () => [
-      { value: undefined, label: t('list.allStatuses') },
       { value: ContractStatus.ACTIVE, label: t('list.active') },
       { value: ContractStatus.DRAFT, label: t('list.draft') },
       {
@@ -161,44 +160,39 @@ export const ContractsPage = () => {
           }}
         />
 
-        {/* Phone: search-less trigger + sheet. md+: inline filter card. */}
-        <div className="md:hidden mb-4 flex items-center justify-end">
-          <FilterSheet
-            activeCount={statusFilter ? 1 : 0}
-            onClear={() => {
-              setStatusFilter(undefined);
+        {/* Toolbar — status filter dropdown */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <FilterSelectPopover
+            icon={CircleDot}
+            label={t('list.status')}
+            options={statusOptions}
+            value={statusFilter}
+            onChange={(value) => {
+              setStatusFilter(value);
               resetPage();
             }}
-            triggerLabel={t('list.filters')}
-            collapseBelow="lg"
-          >
-            <ContractsStatusFilterContent
-              statusFilters={statusFilters}
-              statusFilter={statusFilter}
-              setStatusFilter={setStatusFilter}
-              resetPage={resetPage}
-              t={t}
-            />
-          </FilterSheet>
-        </div>
-
-        {/* Filter Bar (md+) */}
-        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Filter className="h-5 w-5 text-text-secondary " />
-            <h2 className="font-semibold text-text-primary">
-              {t('list.filters')}
-            </h2>
-          </div>
-
-          <ContractsStatusFilterContent
-            statusFilters={statusFilters}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            resetPage={resetPage}
-            t={t}
+            allLabel={t('list.allStatuses')}
           />
         </div>
+
+        {/* Active filter chip */}
+        {statusFilter && (
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
+              {statusOptions.find((o) => o.value === statusFilter)?.label}
+              <button
+                onClick={() => {
+                  setStatusFilter(undefined);
+                  resetPage();
+                }}
+                aria-label={t('common:buttons.clear', 'Clear')}
+                className="rounded-full hover:text-primary-900 focus-ring"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          </div>
+        )}
 
         {/* Contract Count */}
         <p className="text-sm text-text-secondary mb-4">
@@ -250,43 +244,3 @@ export const ContractsPage = () => {
     </div>
   );
 };
-
-interface ContractsStatusFilterContentProps {
-  statusFilters: { label: string; value: ContractStatus | undefined }[];
-  statusFilter: ContractStatus | undefined;
-  setStatusFilter: (value: ContractStatus | undefined) => void;
-  resetPage: () => void;
-  t: (key: string) => string;
-}
-
-const ContractsStatusFilterContent = ({
-  statusFilters,
-  statusFilter,
-  setStatusFilter,
-  resetPage,
-  t,
-}: ContractsStatusFilterContentProps) => (
-  <div>
-    <label className="block text-sm font-medium text-text-secondary mb-2">
-      {t('list.status')}
-    </label>
-    <div className="flex gap-2 flex-wrap">
-      {statusFilters.map((filter) => (
-        <button
-          key={filter.label}
-          onClick={() => {
-            setStatusFilter(filter.value);
-            resetPage();
-          }}
-          className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
-            statusFilter === filter.value
-              ? 'bg-primary-500 text-white'
-              : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-          }`}
-        >
-          {filter.label}
-        </button>
-      ))}
-    </div>
-  </div>
-);

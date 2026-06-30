@@ -16,6 +16,7 @@ import {
   Eye,
   Pencil,
   Loader2,
+  X,
 } from 'lucide-react';
 import {
   useDocuments,
@@ -26,7 +27,7 @@ import {
 import { usePagination } from '@/hooks/usePagination';
 import {
   ConfirmDialog,
-  FilterSheet,
+  FilterSelectPopover,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -179,49 +180,74 @@ export const DocumentsPage = () => {
         actions={headerActions}
       />
 
-      {/* Search and Filter Bar */}
-      <div className="bg-surface-card rounded-lg shadow-sm p-4 mb-6">
-        <div className="flex items-stretch gap-3">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted" />
-            <input
-              type="text"
-              placeholder={t('documentsPage.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                resetPage();
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
-            />
-          </div>
-
-          {/* Entity Type Filter — uses FilterSheet so phone gets the
-              bottom-sheet drawer pattern (matches Payments/Expenses/
-              Properties/Contracts/Contacts); lg+ shows inline radio list. */}
-          <FilterSheet
-            activeCount={entityTypeFilter ? 1 : 0}
-            onClear={() => {
-              setEntityTypeFilter('');
+      {/* Toolbar — search + type filter on one tidy row */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted" />
+          <input
+            type="text"
+            placeholder={t('documentsPage.searchPlaceholder')}
+            aria-label={t('documentsPage.searchPlaceholder')}
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
               resetPage();
             }}
-            triggerLabel={t('documentsPage.entityTypeFilter.label', {
-              defaultValue: 'Type',
-            })}
-            collapseBelow="lg"
-          >
-            <DocumentsFilterContent
-              t={t}
-              entityTypeFilter={entityTypeFilter}
-              onChange={(next) => {
-                setEntityTypeFilter(next);
+            className="w-full h-10 pl-10 pr-9 border border-border-strong rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
                 resetPage();
               }}
-            />
-          </FilterSheet>
+              aria-label={t('common:buttons.clear', 'Clear')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-text-muted hover:text-text-secondary focus-ring"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
+
+        <FilterSelectPopover
+          icon={Folder}
+          label={t('documentsPage.entityTypeFilter.label', {
+            defaultValue: 'Type',
+          })}
+          options={ENTITY_TYPES.slice(1).map((type) => ({
+            value: type as string,
+            label: t(`documentsPage.entityTypeFilter.${type.toLowerCase()}`),
+          }))}
+          value={entityTypeFilter || undefined}
+          onChange={(next) => {
+            setEntityTypeFilter(next ?? '');
+            resetPage();
+          }}
+          allLabel={t('documentsPage.entityTypeFilter.all')}
+          align="end"
+        />
       </div>
+
+      {/* Active filter chip */}
+      {entityTypeFilter && (
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
+            {t(
+              `documentsPage.entityTypeFilter.${entityTypeFilter.toLowerCase()}`
+            )}
+            <button
+              onClick={() => {
+                setEntityTypeFilter('');
+                resetPage();
+              }}
+              aria-label={t('common:buttons.clear', 'Clear')}
+              className="rounded-full hover:text-primary-900 focus-ring"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </span>
+        </div>
+      )}
 
       {/* Document List */}
       {isLoading ? (
@@ -712,50 +738,3 @@ const ENTITY_TYPES = [
   'PAYMENT',
   'EXPENSE',
 ] as const;
-
-interface DocumentsFilterContentProps {
-  t: ReturnType<typeof useTranslation>['t'];
-  entityTypeFilter: string;
-  onChange: (next: string) => void;
-}
-
-/**
- * Filter body for DocumentsPage's FilterSheet. Renders the entity-type
- * choices as tap-chips (44 px touch targets) instead of a native <select>
- * — keeps the affordance consistent with the other 5 list pages.
- */
-const DocumentsFilterContent = ({
-  t,
-  entityTypeFilter,
-  onChange,
-}: DocumentsFilterContentProps) => (
-  <div className="space-y-4">
-    <div>
-      <label className="text-sm font-medium text-text-secondary mb-2 block">
-        {t('documentsPage.entityTypeFilter.label', {
-          defaultValue: 'Type',
-        })}
-      </label>
-      <div className="flex flex-wrap gap-2">
-        {ENTITY_TYPES.map((type) => {
-          const key = type === '' ? 'all' : type.toLowerCase();
-          const active = entityTypeFilter === type;
-          return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => onChange(type)}
-              className={`min-h-touch px-3 py-1.5 text-sm rounded-full border transition-colors ${
-                active
-                  ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
-                  : 'border-border-strong text-text-secondary hover:border-primary-400'
-              }`}
-            >
-              {t(`documentsPage.entityTypeFilter.${key}`)}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  </div>
-);

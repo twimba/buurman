@@ -14,7 +14,10 @@ describe('api client query-param serialization', () => {
   it('serializes array params as repeated keys without brackets', () => {
     const uri = client.getUri({
       url: '/contacts',
-      params: { tags: ['LANDLORD', 'TENANT'], propertyIdentifiers: ['p1', 'p2'] },
+      params: {
+        tags: ['LANDLORD', 'TENANT'],
+        propertyIdentifiers: ['p1', 'p2'],
+      },
     });
 
     expect(uri).toContain('tags=LANDLORD&tags=TENANT');

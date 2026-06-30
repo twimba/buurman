@@ -118,14 +118,18 @@ export const ContractDetailPage = () => {
 
   const handleDownloadBooklet = async (lang: string) => {
     downloadBlob(
-      await exportContractBooklet(id, { lang } as Parameters<typeof exportContractBooklet>[1]),
+      await exportContractBooklet(id, { lang } as Parameters<
+        typeof exportContractBooklet
+      >[1]),
       `contract-booklet-${lang}.pdf`
     );
   };
 
   const handleDownloadSummary = async (lang: string) => {
     downloadBlob(
-      await getContractSummary(id, { lang } as Parameters<typeof getContractSummary>[1]),
+      await getContractSummary(id, { lang } as Parameters<
+        typeof getContractSummary
+      >[1]),
       `contract-${id}-summary-${lang}.pdf`
     );
   };

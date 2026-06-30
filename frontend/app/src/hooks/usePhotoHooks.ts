@@ -1,4 +1,8 @@
-import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import { useMutationWithToast } from './useMutationWithToast';
 import {
   getAllPhotos,

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Image as ImageIcon, Filter } from 'lucide-react';
+import { Search, Image as ImageIcon, X, Folder } from 'lucide-react';
 import {
   usePhotos,
   useDeletePhoto,
@@ -10,6 +10,7 @@ import {
 import { usePagination } from '@/hooks/usePagination';
 import {
   ConfirmDialog,
+  FilterSelectPopover,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -112,53 +113,78 @@ export const PhotosPage = () => {
         actions={headerActions}
       />
 
-      {/* Search and Filter Bar */}
-      <div className="bg-surface-card rounded-lg shadow-sm p-4 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
-            <input
-              type="text"
-              placeholder={t('photosPage.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
+      {/* Toolbar — search + type filter on one tidy row */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted" />
+          <input
+            type="text"
+            placeholder={t('photosPage.searchPlaceholder')}
+            aria-label={t('photosPage.searchPlaceholder')}
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              resetPage();
+            }}
+            className="w-full h-10 pl-10 pr-9 border border-border-strong rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
                 resetPage();
               }}
-              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
-            />
-          </div>
-
-          <div className="w-full md:w-48 relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
-            <select
-              value={entityTypeFilter}
-              onChange={(e) => {
-                setEntityTypeFilter(e.target.value);
-                resetPage();
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
+              aria-label={t('common:buttons.clear', 'Clear')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-text-muted hover:text-text-secondary focus-ring"
             >
-              <option value="">{t('photosPage.entityTypeFilter.all')}</option>
-              <option value="PROPERTY">
-                {t('photosPage.entityTypeFilter.property')}
-              </option>
-              <option value="CONTACT">
-                {t('photosPage.entityTypeFilter.contact')}
-              </option>
-              <option value="CONTRACT">
-                {t('photosPage.entityTypeFilter.contract')}
-              </option>
-              <option value="PAYMENT">
-                {t('photosPage.entityTypeFilter.payment')}
-              </option>
-              <option value="EXPENSE">
-                {t('photosPage.entityTypeFilter.expense')}
-              </option>
-            </select>
-          </div>
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
+
+        <FilterSelectPopover
+          icon={Folder}
+          label={t('photosPage.entityTypeFilter.label', {
+            defaultValue: 'Type',
+          })}
+          options={[
+            'PROPERTY',
+            'CONTACT',
+            'CONTRACT',
+            'PAYMENT',
+            'EXPENSE',
+          ].map((type) => ({
+            value: type,
+            label: t(`photosPage.entityTypeFilter.${type.toLowerCase()}`),
+          }))}
+          value={entityTypeFilter || undefined}
+          onChange={(next) => {
+            setEntityTypeFilter(next ?? '');
+            resetPage();
+          }}
+          allLabel={t('photosPage.entityTypeFilter.all')}
+          align="end"
+        />
       </div>
+
+      {/* Active filter chip */}
+      {entityTypeFilter && (
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
+            {t(`photosPage.entityTypeFilter.${entityTypeFilter.toLowerCase()}`)}
+            <button
+              onClick={() => {
+                setEntityTypeFilter('');
+                resetPage();
+              }}
+              aria-label={t('common:buttons.clear', 'Clear')}
+              className="rounded-full hover:text-primary-900 focus-ring"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </span>
+        </div>
+      )}
 
       {/* Phone-only sticky selection bar (overlays bottom tab bar) */}
       <SelectionBar

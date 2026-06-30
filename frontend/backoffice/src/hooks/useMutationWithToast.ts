@@ -1,7 +1,4 @@
-import {
-  useMutation,
-  type UseMutationOptions,
-} from '@tanstack/react-query';
+import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { useToast } from '@buurman/ui';
 
 import { errorMessage } from '../utils/errorMessage';

@@ -12,7 +12,7 @@ import {
   ConfirmDialog,
   DataList,
   EmptyState,
-  FilterSheet,
+  FilterSelectPopover,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -38,13 +38,14 @@ import {
   CalendarCheck,
   DollarSign,
   AlertTriangle,
-  Filter,
   ArrowUpDown,
   Clock,
   CheckCircle,
   TrendingUp,
   Eye,
   Trash2,
+  CircleDot,
+  X,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -84,9 +85,8 @@ export const PaymentsPage = () => {
   );
   const [periodRange, setPeriodRange] = useState<PeriodDateRange | null>(null);
 
-  const statusFilters = useMemo(
+  const statusOptions = useMemo(
     () => [
-      { value: undefined, label: t('filters.allStatuses') },
       { value: PaymentStatus.PENDING, label: t('status.pending') },
       { value: PaymentStatus.PARTIALLY_PAID, label: t('status.partiallyPaid') },
       { value: PaymentStatus.PAID, label: t('status.paid') },
@@ -374,121 +374,71 @@ export const PaymentsPage = () => {
           </div>
         )}
 
-        {/* Phone: filter trigger + sheet */}
-        <div className="md:hidden mb-4 flex justify-end">
-          <FilterSheet
-            activeCount={
-              (statusFilter ? 1 : 0) +
-              (propertyFilter ? 1 : 0) +
-              (contractFilter ? 1 : 0) +
-              (periodRange ? 1 : 0)
-            }
-            onClear={() => {
-              setStatusFilter(undefined);
-              setPropertyFilter(undefined);
-              setContractFilter(undefined);
-              setPeriodRange(null);
+        {/* Toolbar — period, property, contract, and status on one tidy row */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <PeriodFilter
+            presets={['month', 'quarter', 'year', 'all', 'custom']}
+            defaultPreset="all"
+            onChange={(range) => {
+              setPeriodRange(range);
               resetPage();
             }}
-            triggerLabel={t('filters.title')}
-            collapseBelow="lg"
-          >
-            <PaymentsFilterContent
-              statusFilters={statusFilters}
-              statusFilter={statusFilter}
-              setStatusFilter={setStatusFilter}
-              propertyFilter={propertyFilter}
-              setPropertyFilter={setPropertyFilter}
-              contractFilter={contractFilter}
-              setContractFilter={setContractFilter}
-              setPeriodRange={setPeriodRange}
-              resetPage={resetPage}
-              t={t}
-            />
-          </FilterSheet>
-        </div>
-
-        {/* Filter Bar (md+) */}
-        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Filter className="h-5 w-5 text-text-secondary " />
-            <h3 className="font-semibold text-text-primary">
-              {t('filters.title')}
-            </h3>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            {/* Period Filter */}
-            <PeriodFilter
-              presets={['month', 'quarter', 'year', 'all', 'custom']}
-              defaultPreset="all"
-              onChange={(range) => {
-                setPeriodRange(range);
+          />
+          <div className="w-full sm:w-56">
+            <PropertySelector
+              value={propertyFilter ?? ''}
+              onChange={(id) => {
+                setPropertyFilter(id || undefined);
                 resetPage();
               }}
+              clearable
+              placeholder={t('filters.allProperties')}
             />
-
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Property Filter */}
-              <div className="lg:w-72">
-                <label className="block text-xs font-medium text-text-secondary mb-1">
-                  {t('filters.property')}
-                </label>
-                <PropertySelector
-                  value={propertyFilter ?? ''}
-                  onChange={(id) => {
-                    setPropertyFilter(id || undefined);
-                    resetPage();
-                  }}
-                  clearable
-                  placeholder={t('filters.allProperties')}
-                />
-              </div>
-
-              {/* Contract Filter */}
-              <div className="lg:w-72">
-                <label className="block text-xs font-medium text-text-secondary mb-1">
-                  {t('filters.contract')}
-                </label>
-                <ContractSelector
-                  value={contractFilter ?? ''}
-                  onChange={(id) => {
-                    setContractFilter(id || undefined);
-                    resetPage();
-                  }}
-                  status={undefined}
-                  clearable
-                  placeholder={t('filters.allContracts')}
-                />
-              </div>
-
-              {/* Status Filter */}
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-text-secondary mb-1">
-                  {t('filters.status')}
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  {statusFilters.map((filter) => (
-                    <button
-                      key={filter.label}
-                      onClick={() => {
-                        setStatusFilter(filter.value);
-                        resetPage();
-                      }}
-                      className={`px-4 py-2 rounded transition-colors text-sm ${
-                        statusFilter === filter.value
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                      }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
+          <div className="w-full sm:w-56">
+            <ContractSelector
+              value={contractFilter ?? ''}
+              onChange={(id) => {
+                setContractFilter(id || undefined);
+                resetPage();
+              }}
+              status={undefined}
+              clearable
+              placeholder={t('filters.allContracts')}
+            />
+          </div>
+          <FilterSelectPopover
+            icon={CircleDot}
+            label={t('filters.status')}
+            options={statusOptions}
+            value={statusFilter}
+            onChange={(value) => {
+              setStatusFilter(value);
+              resetPage();
+            }}
+            allLabel={t('filters.allStatuses')}
+          />
         </div>
+
+        {/* Active status chip — period/property/contract surface their own
+            selection inline, so only status needs a removable chip here. */}
+        {statusFilter && (
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
+              {statusOptions.find((o) => o.value === statusFilter)?.label}
+              <button
+                onClick={() => {
+                  setStatusFilter(undefined);
+                  resetPage();
+                }}
+                aria-label={t('common:buttons.clear', 'Clear')}
+                className="rounded-full hover:text-primary-900 focus-ring"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          </div>
+        )}
 
         {/* Payments — Mobile card list (<md). md+ shows the existing table below. */}
         {paymentsData?.content && paymentsData.content.length > 0 && (
@@ -764,92 +714,3 @@ export const PaymentsPage = () => {
     </div>
   );
 };
-
-interface PaymentsFilterContentProps {
-  statusFilters: { label: string; value: PaymentStatus | undefined }[];
-  statusFilter: PaymentStatus | undefined;
-  setStatusFilter: (v: PaymentStatus | undefined) => void;
-  propertyFilter: string | undefined;
-  setPropertyFilter: (v: string | undefined) => void;
-  contractFilter: string | undefined;
-  setContractFilter: (v: string | undefined) => void;
-  setPeriodRange: (range: PeriodDateRange | null) => void;
-  resetPage: () => void;
-  t: (key: string) => string;
-}
-
-const PaymentsFilterContent = ({
-  statusFilters,
-  statusFilter,
-  setStatusFilter,
-  propertyFilter,
-  setPropertyFilter,
-  contractFilter,
-  setContractFilter,
-  setPeriodRange,
-  resetPage,
-  t,
-}: PaymentsFilterContentProps) => (
-  <div className="flex flex-col gap-4">
-    <PeriodFilter
-      presets={['month', 'quarter', 'year', 'all', 'custom']}
-      defaultPreset="all"
-      onChange={(range) => {
-        setPeriodRange(range);
-        resetPage();
-      }}
-    />
-    <div>
-      <label className="block text-xs font-medium text-text-secondary mb-1">
-        {t('filters.property')}
-      </label>
-      <PropertySelector
-        value={propertyFilter ?? ''}
-        onChange={(id) => {
-          setPropertyFilter(id || undefined);
-          resetPage();
-        }}
-        clearable
-        placeholder={t('filters.allProperties')}
-      />
-    </div>
-    <div>
-      <label className="block text-xs font-medium text-text-secondary mb-1">
-        {t('filters.contract')}
-      </label>
-      <ContractSelector
-        value={contractFilter ?? ''}
-        onChange={(id) => {
-          setContractFilter(id || undefined);
-          resetPage();
-        }}
-        status={undefined}
-        clearable
-        placeholder={t('filters.allContracts')}
-      />
-    </div>
-    <div>
-      <label className="block text-xs font-medium text-text-secondary mb-1">
-        {t('filters.status')}
-      </label>
-      <div className="flex gap-2 flex-wrap">
-        {statusFilters.map((filter) => (
-          <button
-            key={filter.label}
-            onClick={() => {
-              setStatusFilter(filter.value);
-              resetPage();
-            }}
-            className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
-              statusFilter === filter.value
-                ? 'bg-primary-500 text-white'
-                : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-            }`}
-          >
-            {filter.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>
-);
