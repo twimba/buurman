@@ -297,7 +297,7 @@ export const ContactDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background flex items-center justify-center">
+      <div className="min-h-full bg-background flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -305,7 +305,7 @@ export const ContactDetailPage = () => {
 
   if (error || !contact) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('detail.failedToLoad')} />
       </div>
     );
@@ -316,7 +316,7 @@ export const ContactDetailPage = () => {
     `${contact.firstName} ${contact.lastName ?? ''}`.trim();
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader

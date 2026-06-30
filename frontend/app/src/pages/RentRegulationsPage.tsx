@@ -63,7 +63,7 @@ export const RentRegulationsPage = () => {
 
   if (countriesLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background flex items-center justify-center">
+      <div className="min-h-full bg-background flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -71,14 +71,14 @@ export const RentRegulationsPage = () => {
 
   if (countriesError) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('rentRegulations.failedToLoad')} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <div className="flex items-start justify-between mb-6">

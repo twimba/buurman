@@ -133,7 +133,7 @@ export const ExpensesPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background">
+      <div className="min-h-full bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
@@ -175,7 +175,7 @@ export const ExpensesPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('errors.loadFailed')} />
       </div>
     );
@@ -206,7 +206,7 @@ export const ExpensesPage = () => {
   ];
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-4 md:py-8">
         <ListPageHeader
           title={t('page.title')}

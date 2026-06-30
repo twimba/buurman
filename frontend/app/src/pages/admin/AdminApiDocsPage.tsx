@@ -28,7 +28,7 @@ export const AdminApiDocsPage = () => {
   const token = keycloak?.token;
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col">
+    <div className="min-h-full bg-background flex flex-col">
       <div className="px-4 pt-8 pb-4">
         <div className="flex items-center gap-3 mb-1">
           <FileCode className="h-8 w-8 text-primary-500 dark:text-primary-300" />

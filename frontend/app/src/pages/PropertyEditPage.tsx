@@ -39,7 +39,7 @@ export const PropertyEditPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-surface-page flex items-center justify-center">
+      <div className="min-h-full bg-surface-page flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -47,14 +47,14 @@ export const PropertyEditPage = () => {
 
   if (error || !property) {
     return (
-      <div className="min-h-[100dvh] bg-surface-page p-8">
+      <div className="min-h-full bg-surface-page p-8">
         <ErrorMessage message={t('edit.notFound')} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-[100dvh] bg-surface-page">
+    <div className="min-h-full bg-surface-page">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
