@@ -17,13 +17,16 @@ import {
   ChevronUp,
   Save,
   Upload,
-  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Tag,
+  UserRound,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import {
   EmptyState,
-  FilterSheet,
+  FilterSelectPopover,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -409,29 +412,63 @@ export const ContactListPage = () => {
           }}
         />
 
-        {/* Search + Filter Toggle */}
-        <div className="flex gap-3 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-text-muted" />
+        {/* Toolbar — search, filter dropdowns, and sort on one tidy row */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder={t('list.searchPlaceholder')}
               aria-label={t('list.searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
+              className="w-full h-10 pl-10 pr-9 border border-border-strong rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
             />
+            {searchTerm && (
+              <button
+                onClick={() => handleSearch('')}
+                aria-label={t('common:buttons.clear', 'Clear')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-text-muted hover:text-text-secondary focus-ring"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
-          {/* Sort cluster — hidden on phone to keep the Filter chip
-              on-screen. Sort is rarely-tapped vs Filter; surfacing it on
-              phone is handled in the upcoming filter sheet (P1-5). */}
-          <div className="hidden md:flex items-center gap-1.5">
-            <ArrowUpDown className="h-4 w-4 text-text-muted" />
+
+          {/* Contact Type — single select. Trigger label stays generic; the
+              active badge + chips row below carry "what's selected". */}
+          <FilterSelectPopover
+            icon={UserRound}
+            label={t('list.contactType')}
+            options={CONTACT_TYPES.map((type) => ({
+              value: type,
+              label: t(`enums.contactTypes.${type}`),
+            }))}
+            value={contactTypeFilter}
+            onChange={handleContactTypeChange}
+          />
+
+          {/* Tags — multi select */}
+          <FilterSelectPopover
+            icon={Tag}
+            label={t('list.tags')}
+            options={Object.values(ContactTag).map((tag) => ({
+              value: tag,
+              label: t(`enums.contactTags.${tag}`),
+            }))}
+            values={tagFilters}
+            onToggle={toggleTag}
+            panelClassName="max-h-72 overflow-y-auto"
+          />
+
+          {/* Sort — grouped control pinned to the same 40px baseline */}
+          <div className="inline-flex items-center h-10 rounded-lg border border-border-strong bg-surface-card">
             <select
               value={sort ?? 'createdAt'}
               onChange={(e) => handleSortChange(e.target.value)}
               aria-label={t('list.sortLabel')}
-              className="border border-border-strong rounded px-2 py-2 text-sm bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              className="h-full bg-transparent pl-3 pr-2 text-sm font-medium text-text-secondary rounded-l-lg focus-ring"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -439,30 +476,24 @@ export const ContactListPage = () => {
                 </option>
               ))}
             </select>
+            <span aria-hidden className="w-px h-5 bg-border-default" />
             <button
               onClick={() => handleSortChange(sort ?? 'createdAt')}
-              className="px-2 py-2 border border-border-strong rounded bg-surface-card text-text-secondary hover:border-primary-500 text-sm"
+              className="h-10 w-10 inline-flex items-center justify-center rounded-r-lg text-text-secondary hover:text-primary-600 hover:bg-surface-inset transition-colors focus-ring"
               title={
                 direction === 'asc' ? t('list.sortAsc') : t('list.sortDesc')
               }
+              aria-label={
+                direction === 'asc' ? t('list.sortAsc') : t('list.sortDesc')
+              }
             >
-              {direction === 'asc' ? '↑' : '↓'}
+              {direction === 'asc' ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
             </button>
           </div>
-          <FilterSheet
-            activeCount={(contactTypeFilter ? 1 : 0) + tagFilters.length}
-            onClear={clearFilters}
-            triggerLabel={t('list.filters')}
-            collapseBelow="lg"
-          >
-            <ContactsFilterContent
-              t={t}
-              contactTypeFilter={contactTypeFilter}
-              handleContactTypeChange={handleContactTypeChange}
-              tagFilters={tagFilters}
-              toggleTag={toggleTag}
-            />
-          </FilterSheet>
         </div>
 
         {/* Quick Add Panel */}
@@ -755,72 +786,3 @@ export const ContactListPage = () => {
     </div>
   );
 };
-
-interface ContactsFilterContentProps {
-  t: ReturnType<typeof useTranslation>['t'];
-  contactTypeFilter: ContactType | undefined;
-  handleContactTypeChange: (next: ContactType | undefined) => void;
-  tagFilters: ContactTag[];
-  toggleTag: (tag: ContactTag) => void;
-}
-
-/**
- * Filter body for ContactListPage's FilterSheet. Extracted so the same
- * markup can render inline at lg+ and inside the sheet at <lg without
- * duplication.
- */
-const ContactsFilterContent = ({
-  t,
-  contactTypeFilter,
-  handleContactTypeChange,
-  tagFilters,
-  toggleTag,
-}: ContactsFilterContentProps) => (
-  <div className="space-y-4">
-    <div>
-      <label className="text-sm font-medium text-text-secondary mb-2 block">
-        {t('list.contactType')}
-      </label>
-      <div className="flex flex-wrap gap-2">
-        {CONTACT_TYPES.map((type) => (
-          <button
-            key={type}
-            onClick={() =>
-              handleContactTypeChange(
-                contactTypeFilter === type ? undefined : type
-              )
-            }
-            className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-              contactTypeFilter === type
-                ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
-                : 'border-border-strong text-text-secondary hover:border-primary-400'
-            }`}
-          >
-            {t(`enums.contactTypes.${type}`)}
-          </button>
-        ))}
-      </div>
-    </div>
-
-    <div>
-      <label className="text-sm font-medium text-text-secondary mb-2 block">
-        {t('list.tags')}
-      </label>
-      <div className="flex flex-wrap gap-2">
-        {Object.values(ContactTag).map((tag) => (
-          <button
-            key={tag}
-            onClick={() => toggleTag(tag)}
-            className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-              tagFilters.includes(tag)
-                ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
-                : 'border-border-strong text-text-secondary hover:border-primary-400'
-            }`}
-          >
-            {t(`enums.contactTags.${tag}`)}
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>
-);

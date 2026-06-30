@@ -26,6 +26,13 @@ export { Sheet } from './components/Sheet';
 export type { SheetProps, SheetSnapPoint } from './components/Sheet';
 export { FilterSheet } from './components/FilterSheet';
 export type { FilterSheetProps } from './components/FilterSheet';
+export { FilterPopover } from './components/FilterPopover';
+export type { FilterPopoverProps } from './components/FilterPopover';
+export { FilterSelectPopover } from './components/FilterSelectPopover';
+export type {
+  FilterSelectPopoverProps,
+  FilterOption,
+} from './components/FilterSelectPopover';
 export { PullToRefresh } from './components/PullToRefresh';
 export type { PullToRefreshProps } from './components/PullToRefresh';
 export { ResponsiveTable } from './components/ResponsiveTable';

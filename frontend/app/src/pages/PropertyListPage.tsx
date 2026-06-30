@@ -6,13 +6,13 @@ import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { useProperties } from '@/hooks/usePropertyHooks';
 import { PropertyCard } from '@/components/properties/PropertyCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Plus, Home, Filter, Search, X } from 'lucide-react';
+import { Plus, Home, Search, X, Layers, CircleDot } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { useDebounce } from '@/hooks/useDebounce';
 import {
   EmptyState,
-  FilterSheet,
+  FilterSelectPopover,
   ListPageHeader,
   Pagination,
   RefreshButton,
@@ -35,30 +35,22 @@ export const PropertyListPage = () => {
   const { canEditData } = useTeam();
   const { statusLabel, categoryLabel } = usePropertyLabels();
 
-  const categoryFilters = useMemo<
-    { value: PropertyCategory | undefined; label: string }[]
-  >(
-    () => [
-      { value: undefined, label: t('list.allCategories') },
-      ...Object.values(PropertyCategory).map((cat) => ({
+  const categoryOptions = useMemo(
+    () =>
+      Object.values(PropertyCategory).map((cat) => ({
         value: cat,
         label: categoryLabel(cat),
       })),
-    ],
-    [t, categoryLabel]
+    [categoryLabel]
   );
 
-  const statusFilters = useMemo<
-    { value: PropertyStatus | undefined; label: string }[]
-  >(
-    () => [
-      { value: undefined, label: t('list.allStatuses') },
-      ...Object.values(PropertyStatus).map((status) => ({
+  const statusOptions = useMemo(
+    () =>
+      Object.values(PropertyStatus).map((status) => ({
         value: status,
         label: statusLabel(status),
       })),
-    ],
-    [t, statusLabel]
+    [statusLabel]
   );
   const [statusFilter, setStatusFilter] = useState<PropertyStatus | undefined>(
     undefined
@@ -182,11 +174,10 @@ export const PropertyListPage = () => {
           }}
         />
 
-        {/* Phone: search stays inline, filters move into FilterSheet trigger.
-            md+: FilterSheet renders inline — same filter card UX as before. */}
-        <div className="md:hidden mb-4 flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+        {/* Toolbar — search + filter dropdowns on one tidy row */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted" />
             <input
               type="text"
               value={searchQuery}
@@ -195,7 +186,8 @@ export const PropertyListPage = () => {
                 resetPage();
               }}
               placeholder={t('list.searchPlaceholder')}
-              className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              aria-label={t('list.searchPlaceholder')}
+              className="w-full h-10 pl-10 pr-9 border border-border-strong rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
             />
             {searchQuery && (
               <button
@@ -203,165 +195,83 @@ export const PropertyListPage = () => {
                   setSearchQuery('');
                   resetPage();
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
+                aria-label={t('common:buttons.clear', 'Clear')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-text-muted hover:text-text-secondary focus-ring"
               >
                 <X className="h-4 w-4" />
               </button>
             )}
           </div>
-          <FilterSheet
-            activeCount={(categoryFilter ? 1 : 0) + (statusFilter ? 1 : 0)}
-            onClear={() => {
-              setCategoryFilter(undefined);
-              setStatusFilter(undefined);
+
+          <FilterSelectPopover
+            icon={Layers}
+            label={t('list.category')}
+            options={categoryOptions}
+            value={categoryFilter}
+            onChange={(value) => {
+              setCategoryFilter(value);
               resetPage();
             }}
-            triggerLabel={t('list.filters')}
-            collapseBelow="lg"
-          >
-            <div className="space-y-4">
-              {/* Category Filter */}
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-2">
-                  {t('list.category')}
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  {categoryFilters.map((filter) => (
-                    <button
-                      key={filter.label}
-                      onClick={() => {
-                        setCategoryFilter(filter.value);
-                        resetPage();
-                      }}
-                      className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
-                        categoryFilter === filter.value
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                      }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Status Filter */}
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-2">
-                  {t('list.status')}
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  {statusFilters.map((filter) => (
-                    <button
-                      key={filter.label}
-                      onClick={() => {
-                        setStatusFilter(filter.value);
-                        resetPage();
-                      }}
-                      className={`px-4 py-2 rounded transition-colors text-sm min-h-touch ${
-                        statusFilter === filter.value
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                      }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </FilterSheet>
+            allLabel={t('list.allCategories')}
+          />
+          <FilterSelectPopover
+            icon={CircleDot}
+            label={t('list.status')}
+            options={statusOptions}
+            value={statusFilter}
+            onChange={(value) => {
+              setStatusFilter(value);
+              resetPage();
+            }}
+            allLabel={t('list.allStatuses')}
+          />
         </div>
 
-        {/* Filter Bar (md+ only — preserves the desktop card UX) */}
-        <div className="hidden md:block mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-text-secondary " />
-            <h2 className="font-semibold text-text-primary">
-              {t('list.filters')}
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  resetPage();
-                }}
-                placeholder={t('list.searchPlaceholder')}
-                className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              />
-              {searchQuery && (
+        {/* Active filter chips */}
+        {(categoryFilter || statusFilter) && (
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            {categoryFilter && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
+                {categoryLabel(categoryFilter)}
                 <button
                   onClick={() => {
-                    setSearchQuery('');
+                    setCategoryFilter(undefined);
                     resetPage();
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
+                  aria-label={t('common:buttons.clear', 'Clear')}
+                  className="rounded-full hover:text-primary-900 focus-ring"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3 w-3" />
                 </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Category Filter */}
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-2">
-                  {t('list.category')}
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  {categoryFilters.map((filter) => (
-                    <button
-                      key={filter.label}
-                      onClick={() => {
-                        setCategoryFilter(filter.value);
-                        resetPage();
-                      }}
-                      className={`px-4 py-2 rounded transition-colors text-sm ${
-                        categoryFilter === filter.value
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                      }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Status Filter */}
-              <div>
-                <label className="block text-sm font-medium text-text-secondary mb-2">
-                  {t('list.status')}
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  {statusFilters.map((filter) => (
-                    <button
-                      key={filter.label}
-                      onClick={() => {
-                        setStatusFilter(filter.value);
-                        resetPage();
-                      }}
-                      className={`px-4 py-2 rounded transition-colors text-sm ${
-                        statusFilter === filter.value
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
-                      }`}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+              </span>
+            )}
+            {statusFilter && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
+                {statusLabel(statusFilter)}
+                <button
+                  onClick={() => {
+                    setStatusFilter(undefined);
+                    resetPage();
+                  }}
+                  aria-label={t('common:buttons.clear', 'Clear')}
+                  className="rounded-full hover:text-text-primary focus-ring"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
+            <button
+              onClick={() => {
+                setCategoryFilter(undefined);
+                setStatusFilter(undefined);
+                resetPage();
+              }}
+              className="text-xs text-primary-500 hover:text-primary-600 rounded focus-ring"
+            >
+              {t('list.clearAll', 'Clear all')}
+            </button>
           </div>
-        </div>
+        )}
 
         {/* Property Count */}
         <p className="text-sm text-text-secondary mb-4">
