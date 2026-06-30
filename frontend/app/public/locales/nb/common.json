@@ -596,5 +596,27 @@
     "description": "Velg et språk for heftet ditt",
     "yourLanguage": "Ditt språk",
     "downloadFailed": "Nedlasting av hefte mislyktes"
+  },
+  "documentDownload": {
+    "button": "Last ned",
+    "title": "Last ned dokument",
+    "language": "Språk",
+    "yourLanguage": "Ditt språk",
+    "downloadFailed": "Nedlastingen mislyktes. Prøv igjen.",
+    "booklet": {
+      "label": "Fullstendig dokument",
+      "description": "Komplett dokument på flere sider."
+    },
+    "summary": {
+      "label": "Sammendragskort",
+      "description": "Oversikt på én side."
+    }
+  },
+  "summaryCard": {
+    "button": "Sammendrag",
+    "title": "Last ned sammendrag",
+    "description": "En oversikt på én side. Velg språk.",
+    "yourLanguage": "Ditt språk",
+    "downloadFailed": "Kunne ikke laste ned sammendrag"
   }
 }

@@ -3,6 +3,10 @@ package com.buurman.service.export;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Locale;
 import java.util.Map;
@@ -50,8 +54,14 @@ class DocumentTemplateServiceTest {
     engine.setTemplateResolver(resolver);
     engine.setMessageSource(messageSource);
 
-    PdfRenderer pdfRenderer = new PdfRenderer();
-    service = new DocumentTemplateService(engine, pdfRenderer);
+    // Stand-in for the real (Gotenberg) renderer: PDF generation is delegated to an external
+    // sidecar, so unit tests can't produce real PDFs. This captures the HTML and returns a
+    // %PDF-prefixed stub of it, letting the renderToPdf tests verify the service rendered the right
+    // (locale-specific) HTML and delegated correctly without a PDF engine on the classpath.
+    DocumentRenderer renderer = mock(DocumentRenderer.class);
+    when(renderer.render(anyString(), any()))
+        .thenAnswer(inv -> ("%PDF-1.7\n" + inv.getArgument(0, String.class)).getBytes(UTF_8));
+    service = new DocumentTemplateService(engine, renderer);
   }
 
   @Nested

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'lucide-react';
 
@@ -153,8 +153,9 @@ export function PeriodFilter({
     [customStartDate, onChange]
   );
 
-  // Trigger initial range on mount
-  useMemo(() => {
+  // Trigger initial range on mount (effect, not render — calling the parent's
+  // onChange during render warns "Cannot update a component while rendering …").
+  useEffect(() => {
     onChange(range);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

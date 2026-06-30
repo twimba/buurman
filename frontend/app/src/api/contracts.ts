@@ -188,6 +188,17 @@ export const downloadContractBooklet = async (
   return new Blob([response.data], { type: 'application/pdf' });
 };
 
+export const downloadContractSummary = async (
+  contractId: string,
+  lang?: string
+): Promise<Blob> => {
+  const response = await client.get(`/contracts/${contractId}/summary`, {
+    responseType: 'blob',
+    params: lang ? { lang } : undefined,
+  });
+  return new Blob([response.data], { type: 'application/pdf' });
+};
+
 export const generateContractPayments = async (
   contractId: string,
   data: GeneratePaymentsRequest

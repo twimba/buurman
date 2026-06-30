@@ -284,3 +284,14 @@ export const downloadPropertyBooklet = async (
   });
   return response.data;
 };
+
+export const downloadPropertySummary = async (
+  propertyId: string,
+  lang?: string
+): Promise<Blob> => {
+  const response = await client.get(`/properties/${propertyId}/summary`, {
+    responseType: 'blob',
+    params: lang ? { lang } : undefined,
+  });
+  return new Blob([response.data], { type: 'application/pdf' });
+};

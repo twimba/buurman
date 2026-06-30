@@ -140,7 +140,7 @@ export const AdminNotificationsPage = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

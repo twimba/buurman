@@ -21,7 +21,7 @@ import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
-import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
+import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
 import { InteractiveMap } from '@/components/common/InteractiveMap';
 import { usePropertyLabels } from '@/hooks/usePropertyLabels';
@@ -39,7 +39,11 @@ import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { useTeam } from '@/context/TeamContext';
-import { downloadPropertyBooklet } from '@/api/properties';
+import {
+  downloadPropertyBooklet,
+  downloadPropertySummary,
+} from '@/api/properties';
+import { downloadBlob } from '@/api/listExports';
 import DOMPurify from 'dompurify';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
@@ -200,21 +204,22 @@ export const PropertyDetailPage = () => {
   };
 
   const handleDownloadBooklet = async (lang: string) => {
-    const blob = await downloadPropertyBooklet(id, lang);
-    const pdfBlob = new Blob([blob], { type: 'application/pdf' });
-    const url = window.URL.createObjectURL(pdfBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `property-booklet-${lang}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    downloadBlob(
+      await downloadPropertyBooklet(id, lang),
+      `property-booklet-${lang}.pdf`
+    );
+  };
+
+  const handleDownloadSummary = async (lang: string) => {
+    downloadBlob(
+      await downloadPropertySummary(id, lang),
+      `property-${id}-summary-${lang}.pdf`
+    );
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background">
+      <div className="min-h-full bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex items-center gap-4">
@@ -254,7 +259,7 @@ export const PropertyDetailPage = () => {
 
   if (error || !property) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
@@ -264,7 +269,7 @@ export const PropertyDetailPage = () => {
   const sanitize = DOMPurify.sanitize;
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
@@ -281,7 +286,10 @@ export const PropertyDetailPage = () => {
           }
           actions={
             <>
-              <BookletDownloadButton onDownload={handleDownloadBooklet} />
+              <DocumentDownloadMenu
+                onDownloadBooklet={handleDownloadBooklet}
+                onDownloadSummary={handleDownloadSummary}
+              />
               {id && (
                 <CalendarFeedButton
                   feedType={CalendarFeedType.PROPERTY_PAYMENTS}

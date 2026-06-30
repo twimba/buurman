@@ -36,6 +36,11 @@ buurman:
   demo:
     cron: "23 */2 */12 * * ?"
 
+# Gotenberg sidecar (internal Dokploy service, no public domain).
+booklet:
+  gotenberg:
+    url: ${GOTENBERG_URL:http://gotenberg:3000}
+
 app:
   public-url: https://app.buurman.io
   api:

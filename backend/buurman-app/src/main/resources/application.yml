@@ -86,6 +86,14 @@ buurman:
     enabled: ${DEMO_DATA_ENABLED:true}
     cron: "23 1 * * * ?"
 
+# Booklet / PDF rendering: all PDFs are rendered by the Gotenberg (headless-Chromium) sidecar.
+# Local host-run backend reaches it at localhost:3000; in Docker/Dokploy it is http://gotenberg:3000.
+booklet:
+  gotenberg:
+    url: ${GOTENBERG_URL:http://localhost:3000}
+    connect-timeout: ${GOTENBERG_CONNECT_TIMEOUT:5s}
+    read-timeout: ${GOTENBERG_READ_TIMEOUT:30s}
+
 # Google Maps Configuration
 google:
   maps:

@@ -1,6 +1,7 @@
 package com.buurman.util;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Locale;
 
@@ -47,7 +48,13 @@ public final class CurrencyUtils {
 
   /**
    * Formats an amount with its currency symbol (e.g. "€1,234.56"). Returns "N/A" if amount is null.
+   *
+   * @deprecated Locale-unaware: always uses US-style grouping and prefixes the symbol, so German
+   *     renders {@code €1.234,56} as {@code €1,234.56}. Prefer {@link #formatCurrency(BigDecimal,
+   *     String, Locale)} so grouping separators, decimal marks and symbol placement follow the
+   *     reader's locale.
    */
+  @Deprecated
   public static String formatCurrency(@Nullable BigDecimal amount, String currencyCode) {
     if (amount == null) {
       return "N/A";
@@ -56,6 +63,56 @@ public final class CurrencyUtils {
     int digits = getFractionalDigits(currencyCode);
     String format = "%,." + digits + "f";
     return symbol + String.format(format, amount);
+  }
+
+  /**
+   * Formats an amount in its currency for the given locale, following CLDR rules for grouping
+   * separators, decimal marks and currency-symbol placement.
+   *
+   * <p>Examples for {@code EUR 1234.56}: {@code €1,234.56} (en), {@code 1.234,56 €} (de), {@code 1
+   * 234,56 €} (fr). Returns "N/A" if amount is null. Falls back to the locale-unaware {@link
+   * #formatCurrency(BigDecimal, String)} if the currency code is unknown.
+   */
+  public static String formatCurrency(
+      @Nullable BigDecimal amount, String currencyCode, Locale locale) {
+    if (amount == null) {
+      return "N/A";
+    }
+    try {
+      Currency currency = Currency.getInstance(currencyCode);
+      NumberFormat nf = NumberFormat.getCurrencyInstance(locale);
+      nf.setCurrency(currency);
+      int digits = currency.getDefaultFractionDigits();
+      nf.setMinimumFractionDigits(digits);
+      nf.setMaximumFractionDigits(digits);
+      return nf.format(amount);
+    } catch (IllegalArgumentException e) {
+      // Unknown ISO 4217 code — degrade to symbol (or the code) + a locale-formatted number.
+      return getCurrencySymbol(currencyCode) + formatNumber(amount, locale);
+    }
+  }
+
+  /** Formats a plain decimal for the given locale (e.g. {@code 1.234,56} in de). */
+  public static String formatNumber(@Nullable BigDecimal value, Locale locale) {
+    if (value == null) {
+      return "N/A";
+    }
+    NumberFormat nf = NumberFormat.getNumberInstance(locale);
+    nf.setMaximumFractionDigits(Math.max(2, value.scale()));
+    return nf.format(value);
+  }
+
+  /**
+   * Formats a fraction as a locale-aware percentage. Pass the fraction, not the percentage: {@code
+   * 0.055} renders as {@code 5.5%} (en) / {@code 5,5 %} (de). Returns "N/A" if null.
+   */
+  public static String formatPercent(@Nullable BigDecimal fraction, Locale locale) {
+    if (fraction == null) {
+      return "N/A";
+    }
+    NumberFormat nf = NumberFormat.getPercentInstance(locale);
+    nf.setMaximumFractionDigits(2);
+    return nf.format(fraction);
   }
 
   /**

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--/*
+  One-page A4-landscape contract "summary card" — the boarding-pass-inspired headline deliverable.
+  All money/dates/enum labels arrive pre-formatted & localized from the binder; this template only lays out.
+*/-->
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${lang}" th:dir="${dir != null ? dir : 'ltr'}">
+<head>
+  <meta charset="UTF-8"/>
+  <th:block th:replace="~{_booklet-tokens :: styles}"></th:block>
+  <style>
+    @page { size: A4 landscape; margin: 0; }
+    .ident .addr { font-size:13px; color:var(--muted); margin-top:2px; }
+    .ident .cid { font-size:11px; color:var(--c-n-400); letter-spacing:1px; margin-top:4px; }
+    /* Hero "route": landlord ──→ tenant, property as the flight label */
+    .route { background:var(--c-primary-50); border-radius:var(--radius); padding:18px 22px;
+             display:flex; align-items:center; justify-content:space-between; }
+    .route .end { flex:1; }
+    .route .end.r { text-align:right; }
+    .route .role { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-primary-600); }
+    .route .who { font-weight:800; color:var(--c-primary-800); letter-spacing:-.5px; line-height:1.05; margin-top:4px; }
+    .route .mid { flex:0 0 auto; text-align:center; padding:0 18px; }
+    .route .mid .arrow { font-size:22px; color:var(--c-primary-400); line-height:1; }
+    .route .mid .flight { font-size:10px; color:var(--muted); margin-top:4px; max-width:150px; }
+    .health { display:flex; align-items:center; gap:16px; }
+    .health .counts { display:flex; gap:14px; font-size:11px; }
+    .health .counts b { font-weight:800; }
+    .detail { display:flex; gap:24px; }
+    .iban { font-family:'Noto Sans',monospace; font-size:12px; color:var(--c-n-700); letter-spacing:.5px; }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <div th:replace="~{_booklet-components :: brandHeader(#{summary.contract.kicker})}"></div>
+
+  <div class="body">
+    <div class="main">
+
+      <!-- Identity -->
+      <div class="ident">
+        <div>
+          <div class="display display-32" th:text="${propertyAddress}">Kerkstraat 14</div>
+          <div class="cid num" th:text="${contractIdentifier}">C-2024-001</div>
+        </div>
+        <span th:replace="~{_booklet-components :: badge(${statusCode},${statusLabel})}"></span>
+      </div>
+
+      <!-- Hero route: LANDLORD ──→ TENANT -->
+      <div class="route">
+        <div class="end">
+          <div class="role" th:text="#{summary.parties.landlord}">Landlord</div>
+          <div class="who" th:classappend="${heroSizeClass}" th:text="${landlordName}">A. Bakker</div>
+        </div>
+        <div class="mid">
+          <div class="arrow">&#8594;</div>
+          <div class="flight" th:text="${propertyAddress}">Kerkstraat 14</div>
+        </div>
+        <div class="end r">
+          <div class="role" th:text="#{summary.parties.tenant}">Tenant</div>
+          <div class="who" th:classappend="${heroSizeClass}" th:text="${tenantName}">L. Santos</div>
+        </div>
+      </div>
+
+      <!-- KPI tiles (the amber/red highlight = next payment due) -->
+      <div class="kpi-row">
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.rent},${rent},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.deposit},${deposit},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.frequency},${frequencyLabel},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.term},${termLabel},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.nextDue},${nextPaymentAmount},${nextPaymentWhen},${nextPaymentDanger}? 'danger' : 'highlight')}"></div>
+      </div>
+
+      <!-- Payment health -->
+      <div class="health">
+        <div style="flex:1;">
+          <div class="label" th:text="#{summary.payments.health}">Payment health</div>
+          <div class="bar">
+            <span class="seg-paid"    th:style="'width:' + ${paidPct} + '%'"></span>
+            <span class="seg-pending" th:style="'width:' + ${pendingPct} + '%'"></span>
+            <span class="seg-overdue" th:style="'width:' + ${overduePct} + '%'"></span>
+          </div>
+        </div>
+        <div class="counts num">
+          <span style="color:var(--c-success)"><b th:text="${paidCount}">0</b> <span th:text="#{summary.payments.paid}">paid</span></span>
+          <span style="color:var(--c-warning)"><b th:text="${pendingCount}">0</b> <span th:text="#{summary.payments.pending}">pending</span></span>
+          <span style="color:var(--c-error)"><b th:text="${overdueCount}">0</b> <span th:text="#{summary.payments.overdue}">overdue</span></span>
+        </div>
+      </div>
+
+      <!-- Bottom strip: lease-term progress -->
+      <div class="detail">
+        <div class="field" style="flex:1;" th:if="${termElapsedPct != null}">
+          <div class="label" th:text="#{summary.field.term}">Term</div>
+          <div class="bar"><span class="seg-paid" th:style="'width:' + ${termElapsedPct} + '%'"></span></div>
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:5px;">
+            <span th:text="${leaseStart}">1 Jan 2024</span>
+            <span th:text="${termElapsedLabel}">42% elapsed</span>
+            <span th:text="${leaseEnd}">31 Dec 2024</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- QR / Sid perforation rail -->
+    <div class="rail">
+      <img class="qr" th:if="${qrDataUri}" th:src="${qrDataUri}" alt="QR"/>
+      <div class="sid num" th:text="${contractIdentifier}">C-2024-001</div>
+    </div>
+  </div>
+
+  <div th:replace="~{_booklet-components :: brandFooter(#{summary.tagline},${generatedDate})}"></div>
+</div>
+</body>
+</html>

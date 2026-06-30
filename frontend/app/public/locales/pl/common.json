@@ -596,5 +596,27 @@
     "description": "Wybierz język dla swojej broszury",
     "yourLanguage": "Twój język",
     "downloadFailed": "Nie udało się pobrać broszury"
+  },
+  "documentDownload": {
+    "button": "Pobierz",
+    "title": "Pobierz dokument",
+    "language": "Język",
+    "yourLanguage": "Twój język",
+    "downloadFailed": "Pobieranie nie powiodło się. Spróbuj ponownie.",
+    "booklet": {
+      "label": "Pełny dokument",
+      "description": "Pełny, wielostronicowy dokument."
+    },
+    "summary": {
+      "label": "Karta podsumowania",
+      "description": "Przegląd na jednej stronie."
+    }
+  },
+  "summaryCard": {
+    "button": "Podsumowanie",
+    "title": "Pobierz podsumowanie",
+    "description": "Przegląd na jednej stronie. Wybierz język.",
+    "yourLanguage": "Twój język",
+    "downloadFailed": "Nie udało się pobrać podsumowania"
   }
 }

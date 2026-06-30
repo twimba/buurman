@@ -117,7 +117,7 @@ export const RentIncreaseWizardPage = () => {
   const stepIndex = STEPS.findIndex((s) => s.key === step);
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <div className="mb-6">

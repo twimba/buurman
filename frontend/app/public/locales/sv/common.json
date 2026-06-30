@@ -596,5 +596,27 @@
     "description": "Välj ett språk för ditt häfte",
     "yourLanguage": "Ditt språk",
     "downloadFailed": "Det gick inte att ladda ned häftet"
+  },
+  "documentDownload": {
+    "button": "Ladda ner",
+    "title": "Ladda ner dokument",
+    "language": "Språk",
+    "yourLanguage": "Ditt språk",
+    "downloadFailed": "Nedladdningen misslyckades. Försök igen.",
+    "booklet": {
+      "label": "Fullständigt dokument",
+      "description": "Komplett dokument på flera sidor."
+    },
+    "summary": {
+      "label": "Sammanfattningskort",
+      "description": "Översikt på en sida."
+    }
+  },
+  "summaryCard": {
+    "button": "Sammanfattning",
+    "title": "Ladda ner sammanfattning",
+    "description": "En översikt på en sida. Välj språk.",
+    "yourLanguage": "Ditt språk",
+    "downloadFailed": "Det gick inte att ladda ner sammanfattningen"
   }
 }

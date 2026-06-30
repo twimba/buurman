@@ -25,7 +25,7 @@ export const SettingsPage = () => {
   ];
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-4 md:py-8">
         <ListPageHeader
           title={t('page.title')}

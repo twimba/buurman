@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!--/*
+  Redesigned multi-page contract dossier (A4 portrait), rendered by Gotenberg/Chromium.
+  All money/dates/enum labels arrive pre-formatted & localized from ContractBookletExporter#buildModel;
+  static labels resolve via the contract-scoped template engine. Rich text (terms/notes) is
+  pre-sanitized and emitted with th:utext.
+*/-->
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${lang}" th:dir="${dir != null ? dir : 'ltr'}">
+<head>
+  <meta charset="UTF-8"/>
+  <th:block th:replace="~{_booklet-tokens :: styles}"></th:block>
+  <style>
+    @page { size: A4 portrait; margin: 0; }
+    .route { background:var(--c-primary-50); border-radius:var(--radius); padding:16px 20px; margin-top:6px;
+             display:flex; align-items:center; justify-content:space-between; }
+    .route .end { flex:1; } .route .end.r { text-align:right; }
+    .route .role { font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:var(--c-primary-600); }
+    .route .who { font-size:17px; font-weight:800; color:var(--c-primary-800); margin-top:3px; }
+    .route .mid .arrow { font-size:20px; color:var(--c-primary-400); padding:0 16px; }
+  </style>
+</head>
+<body>
+
+  <!-- COVER -->
+  <div class="page">
+    <div class="page-band"><span class="t">buurman</span><span class="k" th:text="#{booklet.contract.title}">Tenancy Dossier</span></div>
+    <div class="cover">
+      <div class="eyebrow" th:text="${contractTypeLabel}">Fixed-term tenancy</div>
+      <h1 th:text="${propertyAddress}">Kerkstraat 14</h1>
+      <div class="sub" th:text="${tenantName}">Luís Santos</div>
+      <div class="cref num" th:text="${contractIdentifier}">C-2024-0187</div>
+      <div style="margin-top:16px;"><span class="badge" th:classappend="'s-' + ${#strings.toLowerCase(statusCode)}" th:text="${statusLabel}">Active</span></div>
+      <table class="sumtbl">
+        <tr><td class="k" th:text="#{cover.property}">Property</td><td th:text="${propertyAddress}">—</td></tr>
+        <tr><td class="k" th:text="#{cover.primary.contact}">Primary contact</td><td th:text="${tenantName}">—</td></tr>
+        <tr><td class="k" th:text="#{cover.current.rent}">Current rent</td><td th:text="${rent}">—</td></tr>
+        <tr><td class="k" th:text="#{cover.contract.period}">Period</td><td th:text="${period}">—</td></tr>
+        <tr><td class="k" th:text="#{cover.payment.frequency}">Frequency</td><td th:text="${frequencyLabel}">—</td></tr>
+      </table>
+      <img th:if="${qrDataUri}" th:src="${qrDataUri}" alt="QR" style="width:96px;height:96px;margin-top:26px;"/>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contractIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- CONTRACT DETAILS -->
+  <div class="page">
+    <div class="page-band"><span class="t" th:text="#{page.contract.details}">Contract details</span><span class="k num" th:text="${contractIdentifier}">C-2024-0187</span></div>
+    <div class="pad">
+      <div class="sec" th:text="#{section.contract.information}">Contract information</div>
+      <div class="grid">
+        <div class="f"><div class="l" th:text="#{field.status}">Status</div><div class="v" th:text="${statusLabel}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.contract.type}">Type</div><div class="v" th:text="${contractTypeLabel}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.start.date}">Start</div><div class="v" th:text="${startDate}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.end.date}">End</div><div class="v" th:text="${endDate}">—</div></div>
+        <div class="f" th:if="${signedDate}"><div class="l" th:text="#{field.signed.date}">Signed</div><div class="v" th:text="${signedDate}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.current.rent}">Rent</div><div class="v" th:text="${rent}">—</div></div>
+        <div class="f" th:if="${deposit}"><div class="l" th:text="#{field.deposit.amount}">Deposit</div><div class="v" th:text="${deposit}">—</div></div>
+        <div class="f" th:if="${securityDeposit}"><div class="l" th:text="#{field.security.deposit}">Security deposit</div><div class="v" th:text="${securityDeposit}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.payment.frequency}">Frequency</div><div class="v" th:text="${frequencyLabel}">—</div></div>
+        <div class="f" th:if="${dueDay}"><div class="l" th:text="#{field.payment.due.day}">Due day</div><div class="v" th:text="${dueDay}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.renewal.mode}">Renewal</div><div class="v" th:text="${renewalMode}">—</div></div>
+        <div class="f" th:if="${lateFee}"><div class="l" th:text="#{field.late.fee}">Late fee</div><div class="v" th:text="${lateFee}">—</div></div>
+      </div>
+
+      <div class="sec" th:text="#{section.property}">Property</div>
+      <div class="grid">
+        <div class="f"><div class="l" th:text="#{field.address}">Address</div><div class="v" th:text="${propertyAddress}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.property.type}">Type</div><div class="v" th:text="${propertyTypeLabel}">—</div></div>
+        <div class="f"><div class="l" th:text="#{field.category}">Category</div><div class="v" th:text="${propertyCategoryLabel}">—</div></div>
+        <div class="f" th:if="${propertyArea}"><div class="l" th:text="#{field.area}">Area</div><div class="v" th:text="${propertyArea}">—</div></div>
+      </div>
+
+      <th:block th:if="${rentPeriods != null and !rentPeriods.isEmpty()}">
+        <div class="sec" th:text="#{section.rent.history}">Rent history</div>
+        <table class="tbl">
+          <thead><tr><th th:text="#{col.effective.from}">From</th><th th:text="#{col.effective.to}">To</th><th class="r" th:text="#{col.rent.amount}">Rent</th></tr></thead>
+          <tbody><tr th:each="rp : ${rentPeriods}"><td th:text="${rp.from}">—</td><td th:text="${rp.to}">—</td><td class="r num" th:text="${rp.amount}">—</td></tr></tbody>
+        </table>
+      </th:block>
+
+      <th:block th:if="${termsHtml}">
+        <div class="sec" th:text="#{section.terms.conditions}">Terms &amp; conditions</div>
+        <div class="prose" th:utext="${termsHtml}">…</div>
+      </th:block>
+      <th:block th:if="${notesHtml}">
+        <div class="sec" th:text="#{section.notes}">Notes</div>
+        <div class="prose" th:utext="${notesHtml}">…</div>
+      </th:block>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contractIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- PARTIES -->
+  <div class="page">
+    <div class="page-band"><span class="t" th:text="#{page.contract.parties}">Parties</span><span class="k num" th:text="${contractIdentifier}">C-2024-0187</span></div>
+    <div class="pad">
+      <div class="sec" th:text="#{section.parties}">Parties</div>
+      <div class="card-item" th:each="p : ${parties}">
+        <div class="ro" th:text="${p.role}">Tenant</div>
+        <div class="nm" th:text="${p.name}">Name</div>
+        <div class="ct" th:text="${p.contact}">email · phone</div>
+      </div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contractIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- PAYMENT INSTRUCTIONS -->
+  <div class="page" th:if="${instructions != null and !instructions.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.payment.instructions}">Payment instructions</span><span class="k num" th:text="${contractIdentifier}">C-2024-0187</span></div>
+    <div class="pad">
+      <div class="card-item" th:each="pi : ${instructions}">
+        <div class="ro"><span th:text="${pi.method}">Bank transfer</span><span th:if="${pi.current}" style="color:var(--c-success); margin-left:8px;" th:text="'· ' + #{value.current}">· Current</span></div>
+        <div class="nm" th:if="${pi.name}" th:text="${pi.name}">Account</div>
+        <div class="grid" style="margin-top:8px;">
+          <div class="f" th:if="${pi.bankName}"><div class="l" th:text="#{field.bank.name}">Bank</div><div class="v" th:text="${pi.bankName}">—</div></div>
+          <div class="f" th:if="${pi.accountHolder}"><div class="l" th:text="#{field.account.holder}">Holder</div><div class="v" th:text="${pi.accountHolder}">—</div></div>
+          <div class="f" th:if="${pi.iban}"><div class="l" th:text="#{field.iban}">IBAN</div><div class="v num" th:text="${pi.iban}">—</div></div>
+          <div class="f" th:if="${pi.bic}"><div class="l" th:text="#{field.bic.swift}">BIC/SWIFT</div><div class="v num" th:text="${pi.bic}">—</div></div>
+          <div class="f" th:if="${pi.reference}"><div class="l" th:text="#{field.payment.reference}">Reference</div><div class="v" th:text="${pi.reference}">—</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contractIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- PAYMENT OVERVIEW -->
+  <div class="page">
+    <div class="page-band"><span class="t" th:text="#{page.payment.overview}">Payment overview</span><span class="k num" th:text="${contractIdentifier}">C-2024-0187</span></div>
+    <div class="pad">
+      <div class="kpi-row" style="margin-top:8px;">
+        <div th:replace="~{_booklet-components :: kpi(#{status.paid},${totalPaid},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{status.pending},${totalPending},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{status.overdue},${totalOverdue},null,${overdueCount > 0} ? 'danger' : '')}"></div>
+      </div>
+      <div class="sec" th:text="#{section.payment.history}">Payment history</div>
+      <table class="tbl" th:if="${payments != null and !payments.isEmpty()}">
+        <thead><tr>
+          <th th:text="#{col.due.date}">Due</th>
+          <th th:text="#{col.status}">Status</th>
+          <th class="r" th:text="#{col.amount}">Amount</th>
+          <th class="r" th:text="#{col.paid}">Paid</th>
+        </tr></thead>
+        <tbody>
+          <tr th:each="pm : ${payments}">
+            <td th:text="${pm.due}">—</td>
+            <td><span class="badge" style="font-size:9px;padding:2px 8px;" th:classappend="'s-' + ${#strings.toLowerCase(pm.statusCode)}" th:text="${pm.status}">Paid</span></td>
+            <td class="r num" th:text="${pm.amount}">—</td>
+            <td class="r num" th:text="${pm.paid}">—</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="prose" th:if="${payments == null or payments.isEmpty()}" th:text="#{msg.no.payments}">No payments.</div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${contractIdentifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+</body>
+</html>

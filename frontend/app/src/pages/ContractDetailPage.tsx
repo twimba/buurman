@@ -9,8 +9,12 @@ import {
   useReopenContract,
   useDuplicateContract,
 } from '@/hooks/useContractHooks';
-import { downloadContractBooklet } from '@/api/contracts';
-import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
+import {
+  downloadContractBooklet,
+  downloadContractSummary,
+} from '@/api/contracts';
+import { downloadBlob } from '@/api/listExports';
+import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
@@ -113,20 +117,22 @@ export const ContractDetailPage = () => {
   };
 
   const handleDownloadBooklet = async (lang: string) => {
-    const blob = await downloadContractBooklet(id, lang);
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `contract-booklet-${lang}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    downloadBlob(
+      await downloadContractBooklet(id, lang),
+      `contract-booklet-${lang}.pdf`
+    );
+  };
+
+  const handleDownloadSummary = async (lang: string) => {
+    downloadBlob(
+      await downloadContractSummary(id, lang),
+      `contract-${id}-summary-${lang}.pdf`
+    );
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background">
+      <div className="min-h-full bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex items-center gap-4">
@@ -161,7 +167,7 @@ export const ContractDetailPage = () => {
 
   if (error || !contract) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
@@ -178,7 +184,7 @@ export const ContractDetailPage = () => {
     contract.status === ContractStatus.EXPIRED;
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
@@ -188,7 +194,10 @@ export const ContractDetailPage = () => {
           badge={<ContractStatusBadge status={contract.status} />}
           actions={
             <>
-              <BookletDownloadButton onDownload={handleDownloadBooklet} />
+              <DocumentDownloadMenu
+                onDownloadBooklet={handleDownloadBooklet}
+                onDownloadSummary={handleDownloadSummary}
+              />
               {!canReopen && (
                 <Button
                   variant="primary"

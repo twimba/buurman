@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!--/*
+  Redesigned multi-page property dossier (A4 portrait), rendered by Gotenberg/Chromium.
+  Money/dates/enum labels arrive pre-formatted & localized from PropertyBookletExporter#buildModel;
+  static chrome resolves via the property-scoped template engine. The exporter projects every section
+  into generic {l,v} field lists / row lists so this template only lays out — no category branching,
+  no hardcoded English. Rich text (notes) is pre-sanitized and emitted with th:utext.
+*/-->
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${lang}" th:dir="${dir != null ? dir : 'ltr'}">
+<head>
+  <meta charset="UTF-8"/>
+  <th:block th:replace="~{_booklet-tokens :: styles}"></th:block>
+  <style>
+    @page { size: A4 portrait; margin: 0; }
+    .chips { margin: 2px 0 12px; }
+    .chip { display:inline-block; background:var(--c-primary-50); border:1px solid var(--c-primary-100);
+            color:var(--c-primary-600); padding:4px 11px; border-radius:999px; font-size:11px;
+            font-weight:600; margin:2px 3px 2px 0; }
+    .grp { font-size:9px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;
+           color:var(--c-n-500); margin:16px 0 6px; padding-bottom:4px; border-bottom:1px solid var(--hairline); }
+    .od { background:var(--c-success-bg); border:1px solid var(--hairline); border-left:3px solid var(--c-success);
+          border-radius:var(--radius-sm); padding:11px 16px; margin-bottom:8px; }
+    .od .ty { font-size:14px; font-weight:700; color:var(--c-success); }
+    .od .ar { font-size:12px; color:var(--c-n-500); margin-top:2px; }
+    .chk { display:flex; align-items:center; gap:10px; padding:7px 0; font-size:13px; color:var(--c-n-700);
+           border-bottom:1px solid var(--hairline); }
+    .chk:last-child { border-bottom:none; }
+    .chk .mk { flex:0 0 auto; width:18px; height:18px; border-radius:50%; display:flex; align-items:center;
+               justify-content:center; font-size:11px; font-weight:800; }
+    .chk .mk.y { background:var(--c-success-bg); color:var(--c-success); }
+    .chk .mk.n { background:var(--c-n-50); color:var(--c-n-300); }
+    .checkbox { background:var(--c-n-25); border:1px solid var(--hairline); border-radius:var(--radius-sm);
+                padding:6px 18px; margin-bottom:10px; }
+    .egrade { display:inline-flex; align-items:center; gap:12px; margin:2px 0 14px; }
+    .egrade .lt { display:inline-block; padding:7px 18px; border-radius:var(--radius-sm); color:#fff;
+                  font-size:22px; font-weight:800; letter-spacing:1px; }
+    .egrade .cap { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+    .ph-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .ph { border:1px solid var(--hairline); border-radius:var(--radius-sm); overflow:hidden; background:var(--c-n-25); }
+    .ph img { width:100%; height:128px; object-fit:cover; display:block; }
+    .ph .cap { padding:6px 9px; font-size:10px; color:var(--c-n-600); }
+    .ph .cap .tag { display:inline-block; background:var(--c-primary-50); color:var(--c-primary-600); padding:1px 6px;
+                    border-radius:3px; font-size:8px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; margin-right:5px; }
+    .yr { background:var(--c-n-25); border:1px solid var(--hairline); border-radius:var(--radius); padding:16px 20px; margin:12px 0; }
+    .yr .yh { font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--c-primary-700); margin-bottom:10px; }
+    .yr .row3 { display:flex; gap:12px; }
+    .yr .cell { flex:1; text-align:center; }
+    .yr .cell .l { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+    .yr .cell .v { font-size:21px; font-weight:800; margin-top:4px; }
+    .yr .cell .v.inc { color:var(--c-success); } .yr .cell .v.exp { color:var(--c-error); } .yr .cell .v.net { color:var(--c-primary-600); }
+    .submeta { font-size:11px; color:var(--muted); margin:2px 0 14px; letter-spacing:.4px; }
+  </style>
+</head>
+<body>
+
+  <!-- COVER -->
+  <div class="page">
+    <div class="page-band"><span class="t">buurman</span><span class="k" th:text="#{booklet.property.title}">Property Dossier</span></div>
+    <div class="cover">
+      <div class="eyebrow" th:text="${propertyTypeLabel}">Apartment</div>
+      <h1 th:text="${street}">Kerkstraat 14</h1>
+      <div class="sub" th:text="${location}">Amsterdam, NL</div>
+      <div class="cref num" th:text="${identifier}">P-0001</div>
+      <div style="margin-top:16px;"><span class="badge" th:classappend="'s-' + ${#strings.toLowerCase(statusCode)}" th:text="${statusLabel}">Occupied</span></div>
+      <table class="sumtbl">
+        <tr th:each="r : ${coverRows}"><td class="k" th:text="${r.k}">—</td><td th:text="${r.v}">—</td></tr>
+      </table>
+      <img th:if="${qrDataUri}" th:src="${qrDataUri}" alt="QR" style="width:96px;height:96px;margin-top:26px;"/>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- PROPERTY OVERVIEW -->
+  <div class="page">
+    <div class="page-band"><span class="t" th:text="#{page.property.overview}">Property overview</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <div class="sec" th:text="#{section.property.details}">Property details</div>
+      <div class="grid">
+        <div class="f" th:each="f : ${detailsFields}"><div class="l" th:text="${f.l}">Label</div><div class="v" th:text="${f.v}">—</div></div>
+      </div>
+
+      <th:block th:if="${!constructionFields.isEmpty()}">
+        <div class="sec" th:text="#{section.construction}">Construction</div>
+        <div class="grid">
+          <div class="f" th:each="f : ${constructionFields}"><div class="l" th:text="${f.l}">Label</div><div class="v" th:text="${f.v}">—</div></div>
+        </div>
+      </th:block>
+
+      <th:block th:if="${categoryTitle != null and !categoryFields.isEmpty()}">
+        <div class="sec" th:text="${categoryTitle}">Details</div>
+        <div class="grid">
+          <div class="f" th:each="f : ${categoryFields}"><div class="l" th:text="${f.l}">Label</div><div class="v" th:text="${f.v}">—</div></div>
+        </div>
+      </th:block>
+
+      <th:block th:if="${structuralNotes}">
+        <div class="sec" th:text="#{field.structural.notes}">Structural notes</div>
+        <div class="prose" th:text="${structuralNotes}">…</div>
+      </th:block>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- BUILDING SPECIFICATIONS -->
+  <div class="page" th:if="${hasBuildingSpecs}">
+    <div class="page-band"><span class="t" th:text="#{page.building.specs}">Building specifications</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <th:block th:if="${energyRating != null or !energyFields.isEmpty() or insulationNotes != null}">
+        <div class="sec" th:text="#{section.energy.climate}">Energy &amp; climate</div>
+        <div class="egrade" th:if="${energyRating}">
+          <span class="lt" th:style="'background-color:' + ${energyColor}" th:text="${energyRating}">A</span>
+          <span class="cap" th:text="#{field.energy.efficiency.rating}">Energy efficiency rating</span>
+        </div>
+        <div class="grid" th:if="${!energyFields.isEmpty()}">
+          <div class="f" th:each="f : ${energyFields}"><div class="l" th:text="${f.l}">Label</div><div class="v" th:text="${f.v}">—</div></div>
+        </div>
+        <div class="prose" th:if="${insulationNotes}" style="margin-top:12px;" th:text="${insulationNotes}">…</div>
+      </th:block>
+
+      <th:block th:if="${!utilitiesFields.isEmpty()}">
+        <div class="sec" th:text="#{section.utilities.infrastructure}">Utilities &amp; infrastructure</div>
+        <div class="grid">
+          <div class="f" th:each="f : ${utilitiesFields}"><div class="l" th:text="${f.l}">Label</div><div class="v" th:text="${f.v}">—</div></div>
+        </div>
+      </th:block>
+
+      <th:block th:if="${!parkingFields.isEmpty()}">
+        <div class="sec" th:text="#{section.parking}">Parking</div>
+        <div class="grid">
+          <div class="f" th:each="f : ${parkingFields}"><div class="l" th:text="${f.l}">Label</div><div class="v" th:text="${f.v}">—</div></div>
+        </div>
+      </th:block>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- FEATURES & OUTDOOR -->
+  <div class="page" th:if="${hasFeatures}">
+    <div class="page-band"><span class="t" th:text="#{page.features.outdoor}">Features &amp; outdoor spaces</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <th:block th:if="${!amenityGroups.isEmpty()}">
+        <div class="sec" th:text="#{section.amenities}">Amenities</div>
+        <th:block th:each="g : ${amenityGroups}">
+          <div class="grp" th:text="${g.category}">Group</div>
+          <div class="chips"><span class="chip" th:each="a : ${g.items}" th:text="${a}">Amenity</span></div>
+        </th:block>
+      </th:block>
+
+      <th:block th:if="${!outdoorAreas.isEmpty()}">
+        <div class="sec" th:text="#{section.outdoor.spaces}">Outdoor spaces</div>
+        <div class="od" th:each="o : ${outdoorAreas}">
+          <div class="ty" th:text="${o.type}">Garden</div>
+          <div class="ar" th:if="${o.area}" th:text="${o.area}">120 sqm</div>
+        </div>
+      </th:block>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- SAFETY & ACCESSIBILITY -->
+  <div class="page" th:if="${hasSafety}">
+    <div class="page-band"><span class="t" th:text="#{page.safety.accessibility}">Safety &amp; accessibility</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <th:block th:if="${!safetyChecks.isEmpty() or safetyNotes != null}">
+        <div class="sec" th:text="#{section.safety.security}">Safety &amp; security</div>
+        <div class="checkbox" th:if="${!safetyChecks.isEmpty()}">
+          <div class="chk" th:each="c : ${safetyChecks}">
+            <span class="mk" th:classappend="${c.ok} ? 'y' : 'n'" th:text="${c.ok} ? '✓' : '✕'">✓</span>
+            <span th:text="${c.label}">Smoke detectors</span>
+          </div>
+        </div>
+        <div class="prose" th:if="${safetyNotes}" th:text="${safetyNotes}">…</div>
+      </th:block>
+
+      <th:block th:if="${!accessibilityChecks.isEmpty() or accessibilityNotes != null}">
+        <div class="sec" th:text="#{section.accessibility}">Accessibility</div>
+        <div class="checkbox" th:if="${!accessibilityChecks.isEmpty()}">
+          <div class="chk" th:each="c : ${accessibilityChecks}">
+            <span class="mk" th:classappend="${c.ok} ? 'y' : 'n'" th:text="${c.ok} ? '✓' : '✕'">✓</span>
+            <span th:text="${c.label}">Elevator</span>
+          </div>
+        </div>
+        <div class="prose" th:if="${accessibilityNotes}" th:text="${accessibilityNotes}">…</div>
+      </th:block>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- PHOTO GALLERY -->
+  <div class="page" th:if="${!photos.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.photos}">Photo gallery</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <div class="submeta" th:text="#{photos.count(${photos.size()})}">Photos · 6</div>
+      <div class="ph-grid">
+        <div class="ph" th:each="p : ${photos}">
+          <img th:src="${p.src}" alt=""/>
+          <div class="cap"><span class="tag" th:if="${p.main}" th:text="#{photos.main}">Main</span><span th:text="${p.label}">Front</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- FINANCIAL OVERVIEW -->
+  <div class="page" th:if="${!financialYears.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.financial}">Financial overview</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <div class="yr" th:each="y : ${financialYears}">
+        <div class="yh" th:text="${y.year}">2024</div>
+        <div class="row3">
+          <div class="cell"><div class="l" th:text="#{financial.income}">Income</div><div class="v inc num" th:text="${y.income}">—</div></div>
+          <div class="cell"><div class="l" th:text="#{financial.expenses}">Expenses</div><div class="v exp num" th:text="${y.expenses}">—</div></div>
+          <div class="cell"><div class="l" th:text="#{financial.net}">Net profit</div><div class="v net num" th:text="${y.net}">—</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- CONTRACTS -->
+  <div class="page" th:if="${!contracts.isEmpty()}">
+    <div class="page-band"><span class="t" th:text="#{page.contracts}">Contracts</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <div class="submeta" th:text="#{contracts.count(${contracts.size()})}">Contracts · 2</div>
+      <table class="tbl">
+        <thead><tr>
+          <th th:text="#{col.contract}">Contract</th>
+          <th th:text="#{col.contact}">Contact</th>
+          <th th:text="#{col.start}">Start</th>
+          <th th:text="#{col.end}">End</th>
+          <th class="r" th:text="#{col.rent}">Rent</th>
+          <th th:text="#{col.status}">Status</th>
+        </tr></thead>
+        <tbody>
+          <tr th:each="c : ${contracts}">
+            <td class="num" th:text="${c.id}">C-0001</td>
+            <td th:text="${c.contact}">Name</td>
+            <td th:text="${c.start}">—</td>
+            <td th:text="${c.end}">—</td>
+            <td class="r num" th:text="${c.rent}">—</td>
+            <td><span class="badge" style="font-size:9px;padding:2px 8px;" th:classappend="'s-' + ${#strings.toLowerCase(c.statusCode)}" th:text="${c.statusLabel}">Active</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- INVESTMENT DASHBOARD -->
+  <div class="page" th:if="${hasDashboard}">
+    <div class="page-band"><span class="t" th:text="#{page.dashboard}">Investment dashboard</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <div class="sec" th:text="#{dashboard.key.metrics}">Key metrics</div>
+      <div class="grid three">
+        <div class="f" th:each="m : ${dashMetrics}"><div class="l" th:text="${m.l}">Metric</div><div class="v num" th:text="${m.v}">—</div></div>
+      </div>
+
+      <th:block th:if="${!cashFlow.isEmpty()}">
+        <div class="sec" th:text="#{dashboard.section.cash.flow}">Monthly cash flow</div>
+        <table class="tbl">
+          <thead><tr>
+            <th th:text="#{col.month}">Month</th>
+            <th class="r" th:text="#{col.income}">Income</th>
+            <th class="r" th:text="#{col.expenses}">Expenses</th>
+            <th class="r" th:text="#{col.mortgage}">Mortgage</th>
+            <th class="r" th:text="#{col.net}">Net</th>
+          </tr></thead>
+          <tbody>
+            <tr th:each="m : ${cashFlow}">
+              <td th:text="${m.month}">Jan</td>
+              <td class="r num" th:text="${m.income}">—</td>
+              <td class="r num" th:text="${m.expenses}">—</td>
+              <td class="r num" th:text="${m.mortgage}">—</td>
+              <td class="r num" th:style="${m.net_positive} ? 'color:var(--c-success);font-weight:700' : 'color:var(--c-error);font-weight:700'" th:text="${m.net}">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </th:block>
+
+      <th:block th:if="${!expenseBreakdown.isEmpty()}">
+        <div class="sec" th:text="#{dashboard.section.expense.breakdown}">Expense breakdown</div>
+        <table class="tbl">
+          <thead><tr><th th:text="#{col.category}">Category</th><th class="r" th:text="#{col.amount}">Amount</th></tr></thead>
+          <tbody>
+            <tr th:each="e : ${expenseBreakdown}"><td th:text="${e.category}">—</td><td class="r num" th:text="${e.amount}">—</td></tr>
+          </tbody>
+        </table>
+      </th:block>
+
+      <th:block th:if="${!equityRows.isEmpty()}">
+        <div class="sec" th:text="#{dashboard.section.equity}">Equity overview</div>
+        <table class="tbl">
+          <thead><tr><th th:text="#{col.item}">Item</th><th class="r" th:text="#{col.amount}">Amount</th></tr></thead>
+          <tbody>
+            <tr th:each="e : ${equityRows}"><td th:text="${e.l}">—</td><td class="r num" th:text="${e.v}">—</td></tr>
+          </tbody>
+        </table>
+      </th:block>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+</body>
+</html>

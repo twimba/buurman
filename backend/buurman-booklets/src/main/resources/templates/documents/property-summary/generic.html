@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--/* One-page A4-landscape property "summary card". Values arrive pre-formatted & localized. */-->
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${lang}" th:dir="${dir != null ? dir : 'ltr'}">
+<head>
+  <meta charset="UTF-8"/>
+  <th:block th:replace="~{_booklet-tokens :: styles}"></th:block>
+  <style>
+    @page { size: A4 landscape; margin: 0; }
+    .ident .pid { font-size:11px; color:var(--c-n-400); letter-spacing:1px; margin-top:4px; }
+    /* Hero occupancy strip — status word dominates, ground tinted by status */
+    .hero-strip { border-radius:var(--radius); padding:20px 24px; display:flex;
+                  align-items:baseline; justify-content:space-between; }
+    .hs-occupied { background:var(--c-success-bg); } .hs-occupied .hero { color:var(--c-success); }
+    .hs-vacant   { background:var(--c-accent-50);  } .hs-vacant .hero   { color:var(--c-accent-600); }
+    .hs-other    { background:var(--c-primary-50); } .hs-other .hero    { color:var(--c-primary-700); }
+    .hero-strip { padding:26px 28px; }
+    .hero-strip .tenure { font-size:12px; color:var(--muted); text-align:right; }
+    .detail { display:flex; gap:28px; }
+    .detail .field { flex:1; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div th:replace="~{_booklet-components :: brandHeader(#{summary.property.kicker})}"></div>
+
+  <div class="body">
+    <div class="main">
+
+      <div class="ident">
+        <div>
+          <div class="display display-32" th:text="${propertyAddress}">Kerkstraat 14</div>
+          <div class="sub" th:text="${propertyTypeLabel} + ' · ' + ${propertyCategoryLabel}">Apartment · Residential</div>
+          <div class="pid num" th:text="${propertyIdentifier}">P-001</div>
+        </div>
+        <span th:replace="~{_booklet-components :: badge(${statusCode},${statusLabel})}"></span>
+      </div>
+
+      <!-- Hero occupancy -->
+      <div class="hero-strip" th:classappend="${heroGroundClass}">
+        <div class="hero" th:classappend="${heroSizeClass}" th:text="${heroStatusWord}">OCCUPIED</div>
+        <div class="tenure" th:if="${tenure}" th:text="${tenure}">Since 2023 → Ends 2026</div>
+      </div>
+
+      <!-- KPI tiles (amber highlight = headline rent/income, or red if vacant) -->
+      <div class="kpi-row">
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.area},${area},${areaUnit},'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.bedBath},${bedBath},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.energy},${energyLabel},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(#{summary.field.year},${yearBuilt},null,'')}"></div>
+        <div th:replace="~{_booklet-components :: kpi(${isVacant} ? #{summary.property.vacant} : #{summary.field.monthlyRent},${headlineMoney},null,${isVacant} ? 'danger' : 'highlight')}"></div>
+      </div>
+
+      <!-- Detail row (wired, localized fields only) -->
+      <div class="detail">
+        <div class="field" th:if="${parking}">
+          <div class="label" th:text="#{summary.property.parking}">Parking</div>
+          <div class="v" th:text="${parking}">2 spaces · Garage</div>
+        </div>
+        <div class="field" th:if="${energyExpiry}">
+          <div class="label" th:text="#{summary.property.energyExpiry}">Energy certificate</div>
+          <div class="v" th:text="${energyExpiry}">Valid to 2030</div>
+        </div>
+        <div class="field" th:if="${renovated}">
+          <div class="label" th:text="#{summary.property.renovated}">Last renovated</div>
+          <div class="v" th:text="${renovated}">2021</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rail">
+      <img class="qr" th:if="${qrDataUri}" th:src="${qrDataUri}" alt="QR"/>
+      <div class="sid num" th:text="${propertyIdentifier}">P-001</div>
+    </div>
+  </div>
+
+  <div th:replace="~{_booklet-components :: brandFooter(#{summary.tagline},${generatedDate})}"></div>
+</div>
+</body>
+</html>

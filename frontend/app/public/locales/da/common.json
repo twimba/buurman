@@ -596,5 +596,27 @@
     "description": "Vælg et sprog til dit hæfte",
     "yourLanguage": "Dit sprog",
     "downloadFailed": "Hentning af hæfte mislykkedes"
+  },
+  "documentDownload": {
+    "button": "Download",
+    "title": "Download dokument",
+    "language": "Sprog",
+    "yourLanguage": "Dit sprog",
+    "downloadFailed": "Download mislykkedes. Prøv igen.",
+    "booklet": {
+      "label": "Fuldt dokument",
+      "description": "Komplet dokument på flere sider."
+    },
+    "summary": {
+      "label": "Oversigtskort",
+      "description": "Overblik på én side."
+    }
+  },
+  "summaryCard": {
+    "button": "Resumé",
+    "title": "Download resumé",
+    "description": "Et overblik på én side. Vælg sprog.",
+    "yourLanguage": "Dit sprog",
+    "downloadFailed": "Kunne ikke downloade resumé"
   }
 }

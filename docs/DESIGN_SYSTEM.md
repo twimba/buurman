@@ -172,7 +172,7 @@ The backoffice sidebar uses a visibly distinct indigo-tinted background (`#f5f3f
 - **Loading**: Self-host font files in production; Fontshare CDN for development
 - **Fallback stack**: `'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`
 - **Emails**: Falls back to system sans-serif (standard practice — Gmail/Outlook ignore web fonts)
-- **PDFs**: Embed Satoshi OTF/TTF files via iText7 font configuration
+- **PDFs**: Satoshi + Noto fonts baked into the Gotenberg (headless-Chromium) image; Chromium embeds them, Noto covers non-Latin scripts (e.g. Greek)
 
 **Monospace**: System monospace stack. Reserve for code blocks and identifiers only. Financial figures use `font-variant-numeric: tabular-nums` on Satoshi (no font switch needed).
 
@@ -964,17 +964,17 @@ The backoffice login page must be **immediately recognizable** as a different en
 - Logo: update `resources/img/logo.png` and `logo_square.png` to match new branding
 - Backoffice login: indigo-tinted page background (`#f5f3ff`), distinct from app login (`#fafaf9`)
 
-### Generated PDFs (iText7 via PdfRenderer)
+### Generated PDFs (Gotenberg headless-Chromium)
 
-**Location**: `backend/buurman-booklets/` (14 exporters + PdfRenderer)
+**Location**: `backend/buurman-booklets/` (exporters + `DocumentRenderer` → `GotenbergDocumentRenderer`)
 
-**Current state**: HTML-to-PDF conversion via `HtmlConverter`. Styling from inline HTML.
+**Current state**: HTML-to-PDF via the **Gotenberg** (headless-Chromium) sidecar — full modern CSS. The in-JVM iText engine has been removed.
 
 **Target state**:
 
 | Element | Value |
 |---|---|
-| Font | Satoshi (embed TTF/OTF files) |
+| Font | Satoshi + Noto (baked into the Gotenberg image; Chromium embeds them) |
 | Headings | Ocean `#0284c7` for accent, `#292524` for text |
 | Body text | `#292524` (neutral-700) |
 | Secondary text | `#57534e` (neutral-500) |
@@ -986,10 +986,9 @@ The backoffice login page must be **immediately recognizable** as a different en
 | Financial figures | `font-variant-numeric: tabular-nums`, right-aligned |
 
 **Implementation notes**:
-- Bundle Satoshi font files in `backend/buurman-app/src/main/resources/fonts/`
-- Register font with iText7's `FontProvider` before conversion
-- Create a shared HTML template/fragment for consistent PDF header, footer, and styling
-- A4 page size (already configured)
+- Fonts (Satoshi + Noto Sans/Greek) are baked into the custom Gotenberg image (`docker/gotenberg/`); Chromium resolves + embeds them, with Noto as the no-tofu fallback.
+- Shared HTML fragments live in `templates/documents/_booklet-tokens.html` + `_booklet-components.html` (header/footer/KPI/badge), consumed by the booklet & summary-card templates.
+- A4 page size + portrait/landscape driven by `PageSpec` + CSS `@page`.
 - Use CSS `@page` rules for margins and page breaks
 - Financial amounts: always right-aligned, tabular numerals, consistent decimal formatting
 
@@ -1066,8 +1065,8 @@ The backoffice login page must be **immediately recognizable** as a different en
 26. Update logo assets in both themes
 
 ### Phase 8: PDF Templates (1 PR)
-27. Bundle Satoshi font files in backend resources
-28. Register Satoshi with iText7 `FontProvider`
+27. Bake Satoshi + Noto fonts into the custom Gotenberg image (`docker/gotenberg/`)
+28. Render via the Gotenberg sidecar (`GotenbergDocumentRenderer`) — no in-JVM PDF engine
 29. Create shared PDF HTML template with consistent header/footer/styling
 30. Update all 14 booklet exporters to use design system colors and typography
 

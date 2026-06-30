@@ -596,5 +596,27 @@
     "description": "Select a language for your booklet",
     "yourLanguage": "Your language",
     "downloadFailed": "Failed to download booklet"
+  },
+  "documentDownload": {
+    "button": "Download",
+    "title": "Download document",
+    "language": "Language",
+    "yourLanguage": "Your language",
+    "downloadFailed": "Download failed. Please try again.",
+    "booklet": {
+      "label": "Full document",
+      "description": "Complete multi-page document."
+    },
+    "summary": {
+      "label": "Summary card",
+      "description": "One-page overview at a glance."
+    }
+  },
+  "summaryCard": {
+    "button": "Summary card",
+    "title": "Download summary card",
+    "description": "A one-page overview. Select a language.",
+    "yourLanguage": "Your language",
+    "downloadFailed": "Failed to download summary card"
   }
 }

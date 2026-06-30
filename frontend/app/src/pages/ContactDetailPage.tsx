@@ -19,7 +19,7 @@ import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
-import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
+import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { LoadingSpinner, RichTextDisplay } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { trackEvent } from '@/utils/analytics';
@@ -66,7 +66,8 @@ import {
   CheckCircle2,
   Shield,
 } from 'lucide-react';
-import { downloadContactBooklet } from '@/api/contacts';
+import { downloadContactBooklet, downloadContactSummary } from '@/api/contacts';
+import { downloadBlob } from '@/api/listExports';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
@@ -158,6 +159,20 @@ export const ContactDetailPage = () => {
   const setMainPhotoMutation = useSetContactMainPhoto(id);
   const deleteDocumentMutation = useDeleteContactDocument(id);
   const deletePhotoMutation = useDeletePhoto();
+
+  const handleDownloadBooklet = async (lang: string) => {
+    downloadBlob(
+      await downloadContactBooklet(id, lang),
+      `contact-booklet-${lang}.pdf`
+    );
+  };
+
+  const handleDownloadSummary = async (lang: string) => {
+    downloadBlob(
+      await downloadContactSummary(id, lang),
+      `contact-${id}-summary-${lang}.pdf`
+    );
+  };
 
   const handleDelete = async () => {
     if (!id) {
@@ -282,7 +297,7 @@ export const ContactDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background flex items-center justify-center">
+      <div className="min-h-full bg-background flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -290,7 +305,7 @@ export const ContactDetailPage = () => {
 
   if (error || !contact) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('detail.failedToLoad')} />
       </div>
     );
@@ -301,7 +316,7 @@ export const ContactDetailPage = () => {
     `${contact.firstName} ${contact.lastName ?? ''}`.trim();
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
@@ -325,18 +340,9 @@ export const ContactDetailPage = () => {
           }
           actions={
             <>
-              <BookletDownloadButton
-                onDownload={async (lang) => {
-                  const blob = await downloadContactBooklet(id, lang);
-                  const url = window.URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = `contact-booklet-${lang}.pdf`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(url);
-                }}
+              <DocumentDownloadMenu
+                onDownloadBooklet={handleDownloadBooklet}
+                onDownloadSummary={handleDownloadSummary}
               />
               {id && (
                 <CalendarFeedButton

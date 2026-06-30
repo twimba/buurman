@@ -249,22 +249,17 @@
                 <version>9.0.33</version>
             </dependency>
 
-            <!-- PDF and CSV -->
-            <dependency>
-                <groupId>com.itextpdf</groupId>
-                <artifactId>itext-core</artifactId>
-                <version>9.6.0</version>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>com.itextpdf</groupId>
-                <artifactId>html2pdf</artifactId>
-                <version>6.3.2</version>
-            </dependency>
+            <!-- CSV (PDF rendering is delegated to the Gotenberg sidecar — no in-JVM PDF engine) -->
             <dependency>
                 <groupId>com.opencsv</groupId>
                 <artifactId>opencsv</artifactId>
                 <version>5.12.0</version>
+            </dependency>
+            <!-- QR codes for summary cards (rendered to inline SVG; Apache-2.0) -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>3.5.3</version>
             </dependency>
 
             <!-- Image Thumbnails -->

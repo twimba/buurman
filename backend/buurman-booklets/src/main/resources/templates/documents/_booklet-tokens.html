@@ -1,0 +1,152 @@
+<!--/*
+  Shared design-system foundation for booklets & summary cards.
+  Mirrors frontend/packages/ui/src/styles/theme.css so the PDF and the app share one visual language.
+  Target renderer is headless Chromium (Gotenberg) — modern CSS (grid/flex/custom-props) is fair game.
+  Usage:  <th:block th:replace="~{documents/_booklet-tokens :: styles}" />
+  Fonts (Satoshi + Noto Sans/Greek) are installed in the custom Gotenberg image and resolved by family.
+*/-->
+<th:block th:fragment="styles">
+<style>
+  :root {
+    /* Brand */
+    --c-primary-50:#f0f9ff; --c-primary-100:#e0f2fe; --c-primary-500:#0284c7;
+    --c-primary-600:#0369a1; --c-primary-700:#075985; --c-primary-800:#0c4a6e; --c-primary-900:#082f49;
+    /* The one-highlight accent (amber) */
+    --c-accent-50:#fffbeb; --c-accent-200:#fde68a; --c-accent-500:#f59e0b; --c-accent-600:#d97706;
+    /* Stone neutrals */
+    --c-n-0:#ffffff; --c-n-25:#fafaf9; --c-n-50:#f5f5f4; --c-n-100:#e7e5e4; --c-n-200:#d6d3d1;
+    --c-n-300:#a8a29e; --c-n-400:#78716c; --c-n-500:#57534e; --c-n-600:#44403c; --c-n-700:#292524; --c-n-900:#171412;
+    /* Semantic */
+    --c-success:#059669; --c-success-bg:#f0fdf4; --c-warning:#d97706; --c-warning-bg:#fffbeb;
+    --c-error:#dc2626; --c-error-bg:#fef2f2; --c-info:#0284c7;
+    --radius:10px; --radius-sm:6px;
+    --ink:var(--c-n-700); --muted:var(--c-n-400); --hairline:var(--c-n-100);
+    --font:'Satoshi','Noto Sans','Helvetica Neue',Arial,sans-serif;
+  }
+
+  * { box-sizing:border-box; }
+  html { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body { margin:0; padding:0; font-family:var(--font); color:var(--ink);
+         font-size:12px; line-height:1.5; font-feature-settings:'tnum' 0; }
+  .num { font-variant-numeric:tabular-nums; font-feature-settings:'tnum' 1; }
+
+  /* ── Brand bands ─────────────────────────────────────────── */
+  .brand-band { background:var(--c-primary-800); color:#fff; display:flex; align-items:center;
+                justify-content:space-between; padding:0 24px; }
+  .brand-band .wordmark { font-weight:800; letter-spacing:.5px; font-size:16px; }
+  .brand-band .kicker { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--c-primary-200, #bae6fd); }
+  .brand-footer { background:var(--c-primary-800); color:#fff; display:flex; align-items:center;
+                  justify-content:space-between; padding:0 24px; font-size:9px; letter-spacing:.4px; }
+  .brand-footer .tagline { font-weight:600; }
+
+  /* ── Hierarchy ───────────────────────────────────────────── */
+  .display { font-weight:800; letter-spacing:-.5px; color:var(--c-primary-800); line-height:1.05; }
+  .display-40 { font-size:34px; } .display-32 { font-size:28px; }
+  .hero { font-weight:800; letter-spacing:-1px; line-height:1; }
+  .hero-l { font-size:60px; } .hero-m { font-size:46px; } .hero-s { font-size:34px; }
+  .sub { font-size:13px; color:var(--muted); }
+  .label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--c-primary-600); }
+
+  /* ── Status badge ────────────────────────────────────────── */
+  .badge { display:inline-block; padding:5px 14px; border-radius:999px; font-size:11px;
+           font-weight:700; letter-spacing:.8px; text-transform:uppercase; }
+  .s-active,.s-occupied,.s-paid       { background:var(--c-success-bg); color:var(--c-success); }
+  .s-pending,.s-pending_signature,.s-maintenance,.s-partially_paid { background:var(--c-warning-bg); color:var(--c-warning); }
+  .s-expired,.s-terminated,.s-overdue { background:var(--c-error-bg); color:var(--c-error); }
+  .s-draft,.s-vacant,.s-cancelled,.s-unavailable { background:var(--c-n-50); color:var(--c-n-500); }
+
+  /* ── KPI tiles ───────────────────────────────────────────── */
+  .kpi-row { display:flex; gap:12px; }
+  .kpi { flex:1; background:var(--c-primary-50); border-radius:var(--radius);
+         border-left:3px solid var(--c-primary-500); padding:16px 16px; min-height:82px;
+         display:flex; flex-direction:column; justify-content:center; }
+  .kpi .label { color:var(--c-primary-600); }
+  /* Money/number values fit on one line; long localized enum labels (e.g. de/fi "Vierteljährlich" /
+     "Neljännesvuosittain") wrap instead of clipping out of the fixed-width tile. */
+  .kpi .val { font-size:23px; font-weight:800; color:var(--c-n-900); margin-top:5px; line-height:1.12;
+              overflow-wrap:anywhere; }
+  /* Auto-shrink long values (money/phone/email/long enum labels) so they stay on one line instead
+     of breaking mid-digit. Applied by character count in the kpi fragment; tuned for the narrowest
+     (5-tile) summary-card row. */
+  .kpi .val.v-sm  { font-size:18px; }
+  .kpi .val.v-md  { font-size:16px; }
+  .kpi .val.v-xs  { font-size:14px; letter-spacing:-.2px; }
+  .kpi .val.v-xxs { font-size:12px; letter-spacing:-.3px; }
+  .kpi .val .unit { font-size:12px; font-weight:600; color:var(--muted); white-space:nowrap; }
+  /* The single amber highlight — at most one per page */
+  .kpi.highlight { background:var(--c-accent-50); border-left-color:var(--c-accent-500);
+                   box-shadow:0 0 0 1px var(--c-accent-200) inset; }
+  .kpi.highlight .label { color:var(--c-accent-600); }
+  .kpi.danger { background:var(--c-error-bg); border-left-color:var(--c-error); }
+  .kpi.danger .label { color:var(--c-error); }
+
+  /* ── Micro / stacked bars (only data-viz primitive) ──────── */
+  .bar { height:6px; border-radius:3px; background:var(--c-n-100); overflow:hidden; display:flex; margin-top:8px; }
+  .bar > span { display:block; height:100%; }
+  .seg-paid{ background:var(--c-success);} .seg-pending{ background:var(--c-warning);} .seg-overdue{ background:var(--c-error);}
+
+  /* ── Landscape summary-card shell (shared by the 3 summary cards) ─── */
+  .card { display:flex; flex-direction:column; height:209mm; }
+  .body { flex:1; display:flex; gap:24px; padding:30px 32px; }
+  .main { flex:1; display:flex; flex-direction:column; justify-content:space-between; gap:18px; }
+  .ident { display:flex; align-items:flex-start; justify-content:space-between; }
+
+  /* ── QR / Sid perforation rail ───────────────────────────── */
+  /* QR and the vertical Sid stack as one centred unit (a fixed gap between them), so a full-length
+     26-char identifier can never grow into the QR. The dashed edge keeps the boarding-pass feel. */
+  .rail { flex:0 0 auto; width:150px; border-left:2px dashed var(--c-n-200); padding:8px 0 8px 22px;
+          display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; }
+  .rail .qr { width:128px; height:128px; flex:0 0 auto; }
+  .rail .sid { writing-mode:vertical-rl; text-orientation:mixed; font-family:'Noto Sans',monospace;
+               font-size:11px; font-weight:700; letter-spacing:3px; color:var(--c-n-400);
+               white-space:nowrap; }
+
+  /* ── Detail rows (label stacked above value — i18n-safe) ─── */
+  .field { margin-bottom:10px; }
+  .field .v { font-size:13px; color:var(--c-n-700); }
+  .row { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--c-n-600); padding:3px 0; }
+  .row .ico { color:var(--c-primary-500); flex:0 0 auto; }
+
+  /* ── Multi-page portrait dossier shell (shared by the full booklets) ─── */
+  .page { page-break-after:always; min-height:296mm; display:flex; flex-direction:column; }
+  .page:last-child { page-break-after:auto; }
+  .pad { padding:30px 36px; flex:1; }
+  .page-band { background:var(--c-primary-800); color:#fff; height:48px; display:flex;
+               align-items:center; justify-content:space-between; padding:0 36px; flex:0 0 auto; }
+  .page-band .t { font-size:13px; font-weight:700; letter-spacing:.4px; }
+  .page-band .k { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#bae6fd; }
+  .sec { font-size:12px; font-weight:800; letter-spacing:.8px; color:var(--c-primary-700);
+         text-transform:uppercase; margin:24px 0 12px; padding-left:11px; border-left:3px solid var(--c-primary-500); }
+  .sec:first-child { margin-top:6px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 30px; }
+  .grid.three { grid-template-columns:1fr 1fr 1fr; }
+  .f .l { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--c-primary-600); }
+  .f .v { font-size:13px; color:var(--c-n-700); margin-top:3px; }
+  /* Cover */
+  .cover { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 44px; }
+  .cover .eyebrow { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--c-primary-500); font-weight:700; }
+  .cover h1 { font-size:38px; font-weight:800; color:var(--c-primary-800); letter-spacing:-1px; margin:12px 0 6px; line-height:1.05; }
+  .cover .sub { font-size:15px; color:var(--muted); margin-bottom:18px; }
+  .cover .cref { font-size:12px; color:var(--c-n-400); letter-spacing:1px; }
+  .cover .sumtbl { width:84%; max-width:480px; border-collapse:collapse; margin-top:22px; }
+  .cover .sumtbl td { padding:11px 8px; border-bottom:1px solid var(--hairline); text-align:left; font-size:13px; vertical-align:top; }
+  .cover .sumtbl td.k { color:var(--c-primary-600); font-weight:700; font-size:10px; letter-spacing:1px; text-transform:uppercase; width:44%; }
+  /* Cards (parties, instructions) */
+  .card-item { background:var(--c-n-25); border:1px solid var(--hairline); border-left:3px solid var(--c-primary-500);
+               border-radius:var(--radius-sm); padding:14px 18px; margin-bottom:10px; }
+  .card-item .nm { font-size:15px; font-weight:700; color:var(--c-n-700); }
+  .card-item .ro { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--c-primary-600); }
+  .card-item .ct { font-size:11px; color:var(--muted); margin-top:5px; }
+  /* Data table */
+  table.tbl { width:100%; border-collapse:collapse; margin-top:6px; }
+  table.tbl thead th { background:var(--c-primary-800); color:#fff; font-size:9px; letter-spacing:1px;
+                       text-transform:uppercase; text-align:left; padding:8px 12px; }
+  table.tbl thead th.r, table.tbl td.r { text-align:right; }
+  table.tbl tbody td { padding:8px 12px; border-bottom:1px solid var(--hairline); font-size:12px; color:var(--c-n-700); }
+  table.tbl tbody tr:nth-child(even) { background:var(--c-primary-50); }
+  .prose { font-size:12px; color:var(--c-n-600); line-height:1.6; background:var(--c-n-25);
+           border:1px solid var(--hairline); border-radius:var(--radius-sm); padding:14px 18px; }
+  .footer-note { flex:0 0 auto; font-size:9px; color:var(--muted); padding:10px 36px; border-top:1px solid var(--hairline);
+                 display:flex; justify-content:space-between; }
+</style>
+</th:block>

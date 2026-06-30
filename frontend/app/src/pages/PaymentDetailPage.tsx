@@ -493,7 +493,7 @@ export const PaymentDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background flex items-center justify-center">
+      <div className="min-h-full bg-background flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -501,7 +501,7 @@ export const PaymentDetailPage = () => {
 
   if (error || !payment) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('errors.loadPaymentFailed')} />
       </div>
     );
@@ -517,7 +517,7 @@ export const PaymentDetailPage = () => {
   const symbol = getCurrencySymbol(payment.currency);
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader

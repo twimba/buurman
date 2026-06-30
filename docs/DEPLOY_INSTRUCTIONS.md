@@ -200,3 +200,59 @@ make deploy-prod
 ### Rollback
 
 V059 is additive and safe to leave in place. To fully revert, redeploy the previous backend image; the new tables are unused by older code. No data migration to undo.
+
+---
+
+## Booklets v2: Gotenberg PDF Renderer Sidecar (REQUIRED)
+
+**Date**: 2026-06-29
+
+### Context
+
+All PDFs (booklets, summary cards, legal documents) are rendered by a headless-Chromium **Gotenberg** sidecar — full modern CSS, embedded brand fonts, flawless multilingual typography incl. Greek. The in-JVM iText engine (and its AGPL dependency) has been **removed**: Gotenberg is now the **sole renderer**, so the sidecar is a **hard runtime dependency** — the backend cannot produce PDFs without it. It runs as **one new internal-only container** in the Dokploy project (reached over the internal network only — **no public domain**).
+
+**Deploy the `gotenberg` service before (or together with) the backend release that removes iText.** There is no in-JVM fallback.
+
+### Prerequisites
+
+- Access to Dokploy dashboard at `https://dokploy.buurman.io`
+- The custom image `docker/gotenberg/` (bakes Noto fonts so Greek renders without tofu). Either let Dokploy build it from the repo, or build & push it to your registry. The stock `gotenberg/gotenberg:8` image also works but lacks the bundled fallback fonts.
+
+### Steps (Dokploy v0.28.6)
+
+#### 1. Create the `gotenberg` service
+
+1. Log in to `https://dokploy.buurman.io` → your **Project** → **Create Service** (Application).
+2. **Source**: either
+   - **Docker image** — `gotenberg/gotenberg:8` (quick), or your pushed `buurman-gotenberg:8`; **or**
+   - **Git / Dockerfile** — build context `docker/gotenberg/` (recommended; includes the fonts).
+3. **Command** (override): `gotenberg --api-timeout=60s`
+4. **Container Port**: `3000`
+5. **Domains**: **none** — do NOT add a public domain. Keep it internal to the project network.
+6. **Resources**: Chromium is memory-hungry; allocate ~512MB–1GB and enable restart-on-failure.
+7. Deploy the service. Confirm it's healthy: from the backend container, `curl -fsS http://gotenberg:3000/health` returns `{"status":"up"...}`.
+
+#### 2. Point the backend at it
+
+In **backend** service → **Environment**, add:
+
+| Variable | Value | Notes |
+|----------|-------|-------|
+| `GOTENBERG_URL` | `http://gotenberg:3000` | Internal service hostname (matches the service name). Required — the backend has no other PDF engine. |
+
+#### 3. Deploy and Verify
+
+```bash
+make deploy-prod
+
+# From the backend container, the sidecar must be reachable internally:
+#   curl -fsS http://gotenberg:3000/health   → status "up"
+
+# Generate a booklet and confirm a valid PDF (Greek exercises font fallback):
+#   GET https://api.buurman.io/booklets/properties/{id}?lang=el        → %PDF, no tofu
+#   GET https://api.buurman.io/properties/{id}/summary?lang=el          → %PDF (landscape card)
+```
+
+### Rollback
+
+There is no in-JVM fallback — if PDF generation breaks, fix or restart the `gotenberg` sidecar (it is stateless), or redeploy the previous backend release (the one that still bundled iText). No data or schema changes are involved.

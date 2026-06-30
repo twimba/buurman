@@ -1,0 +1,32 @@
+<!--/*
+  Reusable Thymeleaf fragments for booklets & summary cards.
+  Keep presentation here; exporters pass pre-formatted, already-localized values (BookletFormatter /
+  EnumLabelResolver) so templates never format money/dates/enums themselves.
+*/-->
+<th:block xmlns:th="http://www.thymeleaf.org">
+
+  <!--/* Top brand band: white wordmark + right-aligned kicker. */-->
+  <div th:fragment="brandHeader(kicker)" class="brand-band" style="height:56px;">
+    <span class="wordmark">buurman</span>
+    <span class="kicker" th:text="${kicker}">SUMMARY</span>
+  </div>
+
+  <!--/* Bottom brand band: tagline + localized "Generated <date> · Confidential". */-->
+  <div th:fragment="brandFooter(tagline,generatedDate)" class="brand-footer" style="height:40px;">
+    <span class="tagline" th:text="${tagline}">Your portfolio, in focus.</span>
+    <span th:text="#{summary.generatedMeta(${generatedDate})}">Generated</span>
+  </div>
+
+  <!--/* One KPI tile. variant: '' | 'highlight' (amber) | 'danger' (red).
+         The value font auto-shrinks by character count so long money / phone / email values stay on
+         one line instead of breaking mid-digit. Tuned for the narrowest (5-tile) summary-card row:
+         ≥10→18, ≥12→16, ≥14→14, ≥17→12. */-->
+  <div th:fragment="kpi(label,value,unit,variant)" class="kpi" th:classappend="${variant}">
+    <div class="label" th:text="${label}">LABEL</div>
+    <div class="val num" th:classappend="${value == null ? '' : (#strings.length(value) >= 17 ? 'v-xxs' : (#strings.length(value) >= 14 ? 'v-xs' : (#strings.length(value) >= 12 ? 'v-md' : (#strings.length(value) >= 10 ? 'v-sm' : ''))))}"><span th:text="${value}">0</span><span class="unit" th:if="${unit}" th:text="' ' + ${unit}"></span></div>
+  </div>
+
+  <!--/* Status badge: code drives the colour class (active/vacant/overdue/...). */-->
+  <span th:fragment="badge(code,text)" class="badge" th:classappend="'s-' + ${#strings.toLowerCase(code)}" th:text="${text}">STATUS</span>
+
+</th:block>

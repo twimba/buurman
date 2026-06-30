@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -230,6 +231,114 @@ class CurrencyUtilsTest {
 
       assertThat(formatted).startsWith("\u20AC");
       assertThat(formatted).contains("89");
+    }
+  }
+
+  @Nested
+  @DisplayName("formatCurrency \u2014 locale-aware")
+  class FormatCurrencyLocale {
+
+    private static final Locale EN = Locale.ENGLISH;
+    private static final Locale DE = Locale.forLanguageTag("de");
+    private static final Locale FR = Locale.forLanguageTag("fr");
+
+    @Test
+    @DisplayName("returns N/A for null amount")
+    void naForNull() {
+      assertThat(CurrencyUtils.formatCurrency(null, "EUR", DE)).isEqualTo("N/A");
+    }
+
+    @Test
+    @DisplayName("English prefixes the symbol with dot decimals")
+    void english() {
+      String formatted = CurrencyUtils.formatCurrency(new BigDecimal("1234.56"), "EUR", EN);
+
+      assertThat(formatted).startsWith("\u20AC");
+      assertThat(formatted).contains("1,234");
+      assertThat(formatted).contains(".56");
+    }
+
+    @Test
+    @DisplayName("German uses comma decimals, dot grouping and a trailing symbol")
+    void german() {
+      String formatted = CurrencyUtils.formatCurrency(new BigDecimal("1234.56"), "EUR", DE);
+
+      assertThat(formatted).contains("1.234");
+      assertThat(formatted).contains(",56");
+      assertThat(formatted).endsWith("\u20AC");
+    }
+
+    @Test
+    @DisplayName("differs across locales for the same amount")
+    void localesDiffer() {
+      BigDecimal amount = new BigDecimal("1234.56");
+
+      assertThat(CurrencyUtils.formatCurrency(amount, "EUR", EN))
+          .isNotEqualTo(CurrencyUtils.formatCurrency(amount, "EUR", DE));
+    }
+
+    @Test
+    @DisplayName("French uses comma decimals and a trailing symbol")
+    void french() {
+      String formatted = CurrencyUtils.formatCurrency(new BigDecimal("1234.56"), "EUR", FR);
+
+      assertThat(formatted).contains(",56");
+      assertThat(formatted).endsWith("\u20AC");
+    }
+
+    @Test
+    @DisplayName("falls back gracefully for an unknown currency code")
+    void unknownCurrency() {
+      String formatted = CurrencyUtils.formatCurrency(new BigDecimal("10.00"), "ZZZ", DE);
+
+      assertThat(formatted).contains("10");
+    }
+  }
+
+  @Nested
+  @DisplayName("formatNumber")
+  class FormatNumber {
+
+    @Test
+    @DisplayName("returns N/A for null")
+    void naForNull() {
+      assertThat(CurrencyUtils.formatNumber(null, Locale.ENGLISH)).isEqualTo("N/A");
+    }
+
+    @Test
+    @DisplayName("German groups with dots and decimals with comma")
+    void german() {
+      String formatted = CurrencyUtils.formatNumber(new BigDecimal("1234.56"), Locale.GERMAN);
+
+      assertThat(formatted).isEqualTo("1.234,56");
+    }
+
+    @Test
+    @DisplayName("English groups with commas and decimals with dot")
+    void english() {
+      String formatted = CurrencyUtils.formatNumber(new BigDecimal("1234.56"), Locale.ENGLISH);
+
+      assertThat(formatted).isEqualTo("1,234.56");
+    }
+  }
+
+  @Nested
+  @DisplayName("formatPercent")
+  class FormatPercent {
+
+    @Test
+    @DisplayName("returns N/A for null")
+    void naForNull() {
+      assertThat(CurrencyUtils.formatPercent(null, Locale.ENGLISH)).isEqualTo("N/A");
+    }
+
+    @Test
+    @DisplayName("formats a fraction as a percentage with the locale decimal mark")
+    void formatsFraction() {
+      assertThat(CurrencyUtils.formatPercent(new BigDecimal("0.055"), Locale.ENGLISH))
+          .contains("5.5");
+      assertThat(CurrencyUtils.formatPercent(new BigDecimal("0.055"), Locale.GERMAN))
+          .contains("5,5");
     }
   }
 }
