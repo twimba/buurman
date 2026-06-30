@@ -165,14 +165,18 @@ export const ContactDetailPage = () => {
 
   const handleDownloadBooklet = async (lang: string) => {
     downloadBlob(
-      await exportContactBooklet(id, { lang } as Parameters<typeof exportContactBooklet>[1]),
+      await exportContactBooklet(id, { lang } as Parameters<
+        typeof exportContactBooklet
+      >[1]),
       `contact-booklet-${lang}.pdf`
     );
   };
 
   const handleDownloadSummary = async (lang: string) => {
     downloadBlob(
-      await getContactSummary(id, { lang } as Parameters<typeof getContactSummary>[1]),
+      await getContactSummary(id, { lang } as Parameters<
+        typeof getContactSummary
+      >[1]),
       `contact-${id}-summary-${lang}.pdf`
     );
   };

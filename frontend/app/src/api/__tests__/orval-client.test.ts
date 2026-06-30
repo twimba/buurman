@@ -18,7 +18,11 @@ describe('customInstance (orval mutator)', () => {
   });
 
   it('passes the generated config through to the client', async () => {
-    await customInstance({ url: '/properties', method: 'GET', params: { page: 0 } });
+    await customInstance({
+      url: '/properties',
+      method: 'GET',
+      params: { page: 0 },
+    });
     expect(clientMock).toHaveBeenCalledWith(
       expect.objectContaining({ url: '/properties', method: 'GET' })
     );
@@ -27,7 +31,12 @@ describe('customInstance (orval mutator)', () => {
 
   it('merges per-call options params/headers with the generated config', async () => {
     await customInstance(
-      { url: '/x', method: 'GET', params: { page: 0 }, headers: { 'X-A': '1' } },
+      {
+        url: '/x',
+        method: 'GET',
+        params: { page: 0 },
+        headers: { 'X-A': '1' },
+      },
       { params: { size: 50 }, headers: { 'X-B': '2' }, responseType: 'blob' }
     );
     const cfg = clientMock.mock.calls[0][0];

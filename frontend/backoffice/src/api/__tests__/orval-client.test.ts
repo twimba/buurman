@@ -13,7 +13,10 @@ describe('backoffice customInstance (orval mutator)', () => {
   });
 
   it('unwraps the response data', async () => {
-    const result = await customInstance({ url: '/backoffice/teams', method: 'GET' });
+    const result = await customInstance({
+      url: '/backoffice/teams',
+      method: 'GET',
+    });
     expect(result).toEqual({ ok: true });
   });
 
@@ -29,7 +32,12 @@ describe('backoffice customInstance (orval mutator)', () => {
 
   it('merges per-call options params/headers with the generated config', async () => {
     await customInstance(
-      { url: '/backoffice/x', method: 'GET', params: { page: 0 }, headers: { 'X-A': '1' } },
+      {
+        url: '/backoffice/x',
+        method: 'GET',
+        params: { page: 0 },
+        headers: { 'X-A': '1' },
+      },
       { params: { size: 50 }, headers: { 'X-B': '2' } }
     );
     const cfg = clientMock.mock.calls[0][0];

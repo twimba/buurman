@@ -9,6 +9,10 @@ export const errorMessage = (e: unknown): string => {
   };
   const data = ax?.response?.data;
   return (
-    data?.detail || data?.message || data?.error || ax?.message || 'Request failed'
+    data?.detail ||
+    data?.message ||
+    data?.error ||
+    ax?.message ||
+    'Request failed'
   );
 };

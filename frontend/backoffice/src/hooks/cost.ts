@@ -202,17 +202,19 @@ export const useBackfillFxRates = () => {
 /** Fetch live rates on demand. */
 export const useRefreshFxRates = () => {
   const queryClient = useQueryClient();
-  return useMutationWithToast<Awaited<ReturnType<typeof refreshFxRates>>, void>({
-    mutationFn: () => refreshFxRates(),
-    errorTitle: 'FX refresh failed',
-    onSuccess: (data) => {
-      queryClient.setQueryData(FX_KEY, data);
-      queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
-      queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
-      queryClient.invalidateQueries({
-        queryKey: ['bo-dashboard', 'cost-watch'],
-      });
-      queryClient.invalidateQueries({ queryKey: KEY });
-    },
-  });
+  return useMutationWithToast<Awaited<ReturnType<typeof refreshFxRates>>, void>(
+    {
+      mutationFn: () => refreshFxRates(),
+      errorTitle: 'FX refresh failed',
+      onSuccess: (data) => {
+        queryClient.setQueryData(FX_KEY, data);
+        queryClient.invalidateQueries({ queryKey: ['bo-cost', 'fx-history'] });
+        queryClient.invalidateQueries({ queryKey: FX_PAIRS_KEY });
+        queryClient.invalidateQueries({
+          queryKey: ['bo-dashboard', 'cost-watch'],
+        });
+        queryClient.invalidateQueries({ queryKey: KEY });
+      },
+    }
+  );
 };
