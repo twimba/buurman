@@ -21,13 +21,12 @@ import com.buurman.exception.ExternalServiceException;
 import com.sun.net.httpserver.HttpServer;
 
 /**
- * Drives {@link GotenbergDocumentRenderer} against a throwaway local HTTP server (no real
- * Gotenberg) to verify the multipart request shape, brand-font attachment + {@code @font-face}
- * injection, landscape flag, and that sidecar failures surface as a 502-mapped {@link
- * ExternalServiceException}.
+ * Drives {@link DocumentRenderer} against a throwaway local HTTP server (no real Gotenberg) to
+ * verify the multipart request shape, brand-font attachment + {@code @font-face} injection,
+ * landscape flag, and that sidecar failures surface as a 502-mapped {@link ExternalServiceException}.
  */
-@DisplayName("GotenbergDocumentRenderer")
-class GotenbergDocumentRendererTest {
+@DisplayName("DocumentRenderer")
+class DocumentRendererTest {
 
   private HttpServer server;
   private volatile @Nullable String capturedBody;
@@ -54,9 +53,9 @@ class GotenbergDocumentRendererTest {
     server.stop(0);
   }
 
-  private GotenbergDocumentRenderer renderer(Resource brandFont) {
+  private DocumentRenderer renderer(Resource brandFont) {
     String baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
-    return new GotenbergDocumentRenderer(
+    return new DocumentRenderer(
         baseUrl, Duration.ofSeconds(2), Duration.ofSeconds(5), brandFont);
   }
 

@@ -1,15 +1,11 @@
 package com.buurman.service.export;
 
 /**
- * Renderer-agnostic description of the target page geometry for a generated document. Kept free of
- * any rendering-engine types so the {@link DocumentRenderer} contract stays engine-independent
- * (today: the headless-Chromium Gotenberg sidecar).
+ * Target page orientation for a generated document. Paper is always A4 (the only size the renderer
+ * emits), so this carries just the orientation; the named constants read clearly at call sites
+ * ({@code render(html, PageSpec.A4_LANDSCAPE)}).
  */
-public record PageSpec(PaperSize size, Orientation orientation) {
-
-  public enum PaperSize {
-    A4
-  }
+public record PageSpec(Orientation orientation) {
 
   public enum Orientation {
     PORTRAIT,
@@ -17,10 +13,10 @@ public record PageSpec(PaperSize size, Orientation orientation) {
   }
 
   /** Standard A4 portrait — the default for multi-page booklets and legal documents. */
-  public static final PageSpec A4_PORTRAIT = new PageSpec(PaperSize.A4, Orientation.PORTRAIT);
+  public static final PageSpec A4_PORTRAIT = new PageSpec(Orientation.PORTRAIT);
 
   /** A4 landscape — used by the one-page entity summary cards. */
-  public static final PageSpec A4_LANDSCAPE = new PageSpec(PaperSize.A4, Orientation.LANDSCAPE);
+  public static final PageSpec A4_LANDSCAPE = new PageSpec(Orientation.LANDSCAPE);
 
   public boolean isLandscape() {
     return orientation == Orientation.LANDSCAPE;
