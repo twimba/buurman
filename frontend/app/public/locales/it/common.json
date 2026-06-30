@@ -597,6 +597,21 @@
     "yourLanguage": "La tua lingua",
     "downloadFailed": "Impossibile scaricare il libretto"
   },
+  "documentDownload": {
+    "button": "Scarica",
+    "title": "Scarica documento",
+    "language": "Lingua",
+    "yourLanguage": "La tua lingua",
+    "downloadFailed": "Download non riuscito. Riprova.",
+    "booklet": {
+      "label": "Documento completo",
+      "description": "Documento completo di più pagine."
+    },
+    "summary": {
+      "label": "Scheda riepilogativa",
+      "description": "Panoramica di una pagina a colpo d'occhio."
+    }
+  },
   "summaryCard": {
     "button": "Scheda riepilogo",
     "title": "Scarica scheda riepilogo",

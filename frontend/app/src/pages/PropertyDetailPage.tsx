@@ -21,7 +21,7 @@ import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
-import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
+import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
 import { InteractiveMap } from '@/components/common/InteractiveMap';
 import { usePropertyLabels } from '@/hooks/usePropertyLabels';
@@ -219,7 +219,7 @@ export const PropertyDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background">
+      <div className="min-h-full bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex items-center gap-4">
@@ -259,7 +259,7 @@ export const PropertyDetailPage = () => {
 
   if (error || !property) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
@@ -269,7 +269,7 @@ export const PropertyDetailPage = () => {
   const sanitize = DOMPurify.sanitize;
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
@@ -286,12 +286,9 @@ export const PropertyDetailPage = () => {
           }
           actions={
             <>
-              <BookletDownloadButton onDownload={handleDownloadBooklet} />
-              <BookletDownloadButton
-                kind="summary"
-                variant="secondary"
-                icon={<FileText />}
-                onDownload={handleDownloadSummary}
+              <DocumentDownloadMenu
+                onDownloadBooklet={handleDownloadBooklet}
+                onDownloadSummary={handleDownloadSummary}
               />
               {id && (
                 <CalendarFeedButton

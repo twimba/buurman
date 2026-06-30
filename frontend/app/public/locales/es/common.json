@@ -597,6 +597,21 @@
     "yourLanguage": "Su idioma",
     "downloadFailed": "Error al descargar el folleto"
   },
+  "documentDownload": {
+    "button": "Descargar",
+    "title": "Descargar documento",
+    "language": "Idioma",
+    "yourLanguage": "Tu idioma",
+    "downloadFailed": "Error en la descarga. Inténtalo de nuevo.",
+    "booklet": {
+      "label": "Documento completo",
+      "description": "Documento completo de varias páginas."
+    },
+    "summary": {
+      "label": "Tarjeta resumen",
+      "description": "Resumen de una página de un vistazo."
+    }
+  },
   "summaryCard": {
     "button": "Resumen",
     "title": "Descargar resumen",

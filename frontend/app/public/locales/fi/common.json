@@ -597,6 +597,21 @@
     "yourLanguage": "Kielesi",
     "downloadFailed": "Vihkon lataaminen epäonnistui"
   },
+  "documentDownload": {
+    "button": "Lataa",
+    "title": "Lataa asiakirja",
+    "language": "Kieli",
+    "yourLanguage": "Kielesi",
+    "downloadFailed": "Lataus epäonnistui. Yritä uudelleen.",
+    "booklet": {
+      "label": "Koko asiakirja",
+      "description": "Täydellinen monisivuinen asiakirja."
+    },
+    "summary": {
+      "label": "Yhteenvetokortti",
+      "description": "Yhden sivun yhteenveto yhdellä silmäyksellä."
+    }
+  },
   "summaryCard": {
     "button": "Yhteenveto",
     "title": "Lataa yhteenveto",

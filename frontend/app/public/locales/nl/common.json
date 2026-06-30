@@ -597,6 +597,21 @@
     "yourLanguage": "Uw taal",
     "downloadFailed": "Downloaden van boekje mislukt"
   },
+  "documentDownload": {
+    "button": "Downloaden",
+    "title": "Document downloaden",
+    "language": "Taal",
+    "yourLanguage": "Jouw taal",
+    "downloadFailed": "Downloaden mislukt. Probeer het opnieuw.",
+    "booklet": {
+      "label": "Volledig document",
+      "description": "Volledig document met meerdere pagina's."
+    },
+    "summary": {
+      "label": "Samenvattingskaart",
+      "description": "Overzicht op één pagina."
+    }
+  },
   "summaryCard": {
     "button": "Samenvatting",
     "title": "Samenvatting downloaden",

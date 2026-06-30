@@ -597,6 +597,21 @@
     "yourLanguage": "Η γλώσσα σας",
     "downloadFailed": "Αποτυχία λήψης φυλλαδίου"
   },
+  "documentDownload": {
+    "button": "Λήψη",
+    "title": "Λήψη εγγράφου",
+    "language": "Γλώσσα",
+    "yourLanguage": "Η γλώσσα σας",
+    "downloadFailed": "Η λήψη απέτυχε. Δοκιμάστε ξανά.",
+    "booklet": {
+      "label": "Πλήρες έγγραφο",
+      "description": "Πλήρες έγγραφο πολλών σελίδων."
+    },
+    "summary": {
+      "label": "Κάρτα σύνοψης",
+      "description": "Σύνοψη μίας σελίδας με μια ματιά."
+    }
+  },
   "summaryCard": {
     "button": "Σύνοψη",
     "title": "Λήψη σύνοψης",

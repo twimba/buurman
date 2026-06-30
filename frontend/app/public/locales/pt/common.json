@@ -597,6 +597,21 @@
     "yourLanguage": "Seu idioma",
     "downloadFailed": "Falha ao baixar o caderno"
   },
+  "documentDownload": {
+    "button": "Transferir",
+    "title": "Transferir documento",
+    "language": "Idioma",
+    "yourLanguage": "O seu idioma",
+    "downloadFailed": "Falha na transferência. Tente novamente.",
+    "booklet": {
+      "label": "Documento completo",
+      "description": "Documento completo de várias páginas."
+    },
+    "summary": {
+      "label": "Cartão-resumo",
+      "description": "Visão geral de uma página."
+    }
+  },
   "summaryCard": {
     "button": "Resumo",
     "title": "Descarregar resumo",

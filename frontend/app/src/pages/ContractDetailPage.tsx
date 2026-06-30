@@ -14,7 +14,7 @@ import {
   downloadContractSummary,
 } from '@/api/contracts';
 import { downloadBlob } from '@/api/listExports';
-import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
+import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
@@ -132,7 +132,7 @@ export const ContractDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[100dvh] bg-background">
+      <div className="min-h-full bg-background">
         <div className="px-4 py-8 space-y-6">
           {/* Header skeleton */}
           <div className="flex items-center gap-4">
@@ -167,7 +167,7 @@ export const ContractDetailPage = () => {
 
   if (error || !contract) {
     return (
-      <div className="min-h-[100dvh] bg-background p-8">
+      <div className="min-h-full bg-background p-8">
         <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
@@ -184,7 +184,7 @@ export const ContractDetailPage = () => {
     contract.status === ContractStatus.EXPIRED;
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-full bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
@@ -194,12 +194,9 @@ export const ContractDetailPage = () => {
           badge={<ContractStatusBadge status={contract.status} />}
           actions={
             <>
-              <BookletDownloadButton onDownload={handleDownloadBooklet} />
-              <BookletDownloadButton
-                kind="summary"
-                variant="secondary"
-                icon={<FileText />}
-                onDownload={handleDownloadSummary}
+              <DocumentDownloadMenu
+                onDownloadBooklet={handleDownloadBooklet}
+                onDownloadSummary={handleDownloadSummary}
               />
               {!canReopen && (
                 <Button

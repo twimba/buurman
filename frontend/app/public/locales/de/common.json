@@ -597,6 +597,21 @@
     "yourLanguage": "Ihre Sprache",
     "downloadFailed": "Broschüre konnte nicht heruntergeladen werden"
   },
+  "documentDownload": {
+    "button": "Herunterladen",
+    "title": "Dokument herunterladen",
+    "language": "Sprache",
+    "yourLanguage": "Deine Sprache",
+    "downloadFailed": "Download fehlgeschlagen. Bitte erneut versuchen.",
+    "booklet": {
+      "label": "Vollständiges Dokument",
+      "description": "Vollständiges, mehrseitiges Dokument."
+    },
+    "summary": {
+      "label": "Übersichtskarte",
+      "description": "Einseitige Übersicht auf einen Blick."
+    }
+  },
   "summaryCard": {
     "button": "Übersicht",
     "title": "Übersicht herunterladen",

@@ -19,7 +19,7 @@ import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
-import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
+import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { LoadingSpinner, RichTextDisplay } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { trackEvent } from '@/utils/analytics';
@@ -340,12 +340,9 @@ export const ContactDetailPage = () => {
           }
           actions={
             <>
-              <BookletDownloadButton onDownload={handleDownloadBooklet} />
-              <BookletDownloadButton
-                kind="summary"
-                variant="secondary"
-                icon={<FileText />}
-                onDownload={handleDownloadSummary}
+              <DocumentDownloadMenu
+                onDownloadBooklet={handleDownloadBooklet}
+                onDownloadSummary={handleDownloadSummary}
               />
               {id && (
                 <CalendarFeedButton

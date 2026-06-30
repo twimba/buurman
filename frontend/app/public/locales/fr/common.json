@@ -597,6 +597,21 @@
     "yourLanguage": "Votre langue",
     "downloadFailed": "Échec du téléchargement du livret"
   },
+  "documentDownload": {
+    "button": "Télécharger",
+    "title": "Télécharger le document",
+    "language": "Langue",
+    "yourLanguage": "Votre langue",
+    "downloadFailed": "Échec du téléchargement. Veuillez réessayer.",
+    "booklet": {
+      "label": "Document complet",
+      "description": "Document complet de plusieurs pages."
+    },
+    "summary": {
+      "label": "Carte de synthèse",
+      "description": "Aperçu d'une page en un coup d'œil."
+    }
+  },
   "summaryCard": {
     "button": "Fiche récap",
     "title": "Télécharger la fiche récap",
