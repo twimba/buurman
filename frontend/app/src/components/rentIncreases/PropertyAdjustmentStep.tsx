@@ -15,15 +15,15 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
-import type { RentIncreaseItem } from '@/types/rentIncrease';
+import type { RentIncreaseItemDraft } from '@/types/rentIncrease';
 import { useTranslation } from 'react-i18next';
 
 type Strategy = 'maximum' | 'medium' | 'minimum' | 'custom';
 
 interface PropertyAdjustmentStepProps {
   contracts: RentIncreaseContractPreview[];
-  increases: RentIncreaseItem[];
-  onIncreaseChange: (increases: RentIncreaseItem[]) => void;
+  increases: RentIncreaseItemDraft[];
+  onIncreaseChange: (increases: RentIncreaseItemDraft[]) => void;
   onNext: () => void;
   onBack: () => void;
   appliedContractIds?: Set<string>;

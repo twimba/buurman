@@ -32,9 +32,10 @@ import {
 } from '../hooks/useFeatureFlags';
 import type {
   FlagMap,
+  FlagStatus,
   TeamFlagEvaluation,
   SegmentEvaluation,
-} from '../api/featureFlags';
+} from '../types';
 
 // --- Propagation banner ---
 
@@ -240,10 +241,7 @@ const ValueCell = ({ value }: { value: unknown }) => (
 
 // --- Helpers ---
 
-const isOverridden = (
-  flag: { enabled: boolean; value: unknown },
-  globalFlag?: { enabled: boolean; value: unknown }
-) => {
+const isOverridden = (flag: FlagStatus, globalFlag?: FlagStatus) => {
   if (!globalFlag) {
     return false;
   }
@@ -263,7 +261,7 @@ const GlobalFlagRow = ({
   mutating,
 }: {
   name: string;
-  flag: { enabled: boolean; value: unknown };
+  flag: FlagStatus;
   onToggle: (flagName: string, enabled: boolean) => void;
   onValueChange: (flagName: string, value: string | null) => void;
   mutating?: boolean;
@@ -307,8 +305,8 @@ const UserFlagRow = ({
   mutating,
 }: {
   name: string;
-  flag: { enabled: boolean; value: unknown };
-  globalFlag?: { enabled: boolean; value: unknown };
+  flag: FlagStatus;
+  globalFlag?: FlagStatus;
   showOverrideOnly: boolean;
   userIdentifier: string;
   teamIdentifier: string;
@@ -840,8 +838,8 @@ const TeamOverrideRow = ({
   mutating,
 }: {
   name: string;
-  flag: { enabled: boolean; value: unknown };
-  globalFlag?: { enabled: boolean; value: unknown };
+  flag: FlagStatus;
+  globalFlag?: FlagStatus;
   showOverrideOnly: boolean;
   teamIdentifier: string;
   onUpsertOverride: (
@@ -1197,8 +1195,8 @@ const SegmentOverrideRow = ({
   mutating,
 }: {
   name: string;
-  flag: { enabled: boolean; value: unknown };
-  globalFlag?: { enabled: boolean; value: unknown };
+  flag: FlagStatus;
+  globalFlag?: FlagStatus;
   showOverrideOnly: boolean;
   segmentId: number;
   onUpsertOverride: (
@@ -1302,7 +1300,7 @@ const SegmentFlagTable = ({
   onDeleteOverride,
   mutatingFlag,
 }: {
-  overrides: Record<string, { enabled: boolean; value: unknown }>;
+  overrides: Record<string, FlagStatus>;
   globalFlags?: FlagMap;
   showOverrideOnly: boolean;
   segmentId: number;
@@ -1596,8 +1594,8 @@ const SegmentDetailRow = ({
   mutating,
 }: {
   name: string;
-  flag: { enabled: boolean; value: unknown };
-  globalFlag?: { enabled: boolean; value: unknown };
+  flag: FlagStatus;
+  globalFlag?: FlagStatus;
   showOverrideOnly: boolean;
   segmentId: number;
   onUpsertOverride: (
@@ -1718,7 +1716,7 @@ const SegmentDetailTable = ({
   onDeleteOverride,
   mutatingFlag,
 }: {
-  flags: Record<string, { enabled: boolean; value: unknown }>;
+  flags: Record<string, FlagStatus>;
   globalFlags?: FlagMap;
   showOverrideOnly: boolean;
   segmentId: number;

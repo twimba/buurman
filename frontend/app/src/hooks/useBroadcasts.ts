@@ -1,11 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import * as broadcastsApi from '../api/broadcasts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getActiveBroadcasts,
+  getPublicBroadcasts,
+  dismissBroadcast,
+} from '../generated/api/broadcasts/broadcasts';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useActiveBroadcasts = (enabled = true) => {
   return useQuery({
     queryKey: queryKeys.broadcasts.active(),
-    queryFn: broadcastsApi.getActiveBroadcasts,
+    queryFn: () => getActiveBroadcasts(),
     enabled,
     staleTime: 60_000,
     refetchInterval: 5 * 60_000,
@@ -15,15 +20,15 @@ export const useActiveBroadcasts = (enabled = true) => {
 export const usePublicBroadcasts = (context: 'login' | 'register') => {
   return useQuery({
     queryKey: queryKeys.broadcasts.public(context),
-    queryFn: () => broadcastsApi.getPublicBroadcasts(context),
+    queryFn: () => getPublicBroadcasts({ context }),
     staleTime: 60_000,
   });
 };
 
 export const useDismissBroadcast = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: broadcastsApi.dismissBroadcast,
+  return useMutationWithToast({
+    mutationFn: (identifier: string) => dismissBroadcast(identifier),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.broadcasts.all() });
     },

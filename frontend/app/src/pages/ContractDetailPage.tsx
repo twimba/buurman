@@ -10,10 +10,10 @@ import {
   useDuplicateContract,
 } from '@/hooks/useContractHooks';
 import {
-  downloadContractBooklet,
-  downloadContractSummary,
-} from '@/api/contracts';
-import { downloadBlob } from '@/api/listExports';
+  exportContractBooklet,
+  getContractSummary,
+} from '@/generated/api/booklets/booklets';
+import { downloadBlob } from '@/utils/downloadBlob';
 import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button, PageHeader, Skeleton } from '@buurman/ui';
@@ -118,14 +118,14 @@ export const ContractDetailPage = () => {
 
   const handleDownloadBooklet = async (lang: string) => {
     downloadBlob(
-      await downloadContractBooklet(id, lang),
+      await exportContractBooklet(id, { lang } as Parameters<typeof exportContractBooklet>[1]),
       `contract-booklet-${lang}.pdf`
     );
   };
 
   const handleDownloadSummary = async (lang: string) => {
     downloadBlob(
-      await downloadContractSummary(id, lang),
+      await getContractSummary(id, { lang } as Parameters<typeof getContractSummary>[1]),
       `contract-${id}-summary-${lang}.pdf`
     );
   };

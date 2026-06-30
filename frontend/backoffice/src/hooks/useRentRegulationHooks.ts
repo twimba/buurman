@@ -1,28 +1,57 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
-  rentRegulationsApi,
-  type CreateCountryRequest,
-  type UpdateCountryRequest,
-  type CreateRegionRequest,
-  type UpdateRegionRequest,
-  type CreateRuleRequest,
-  type UpdateRuleRequest,
-  type BulkRuleRequest,
-} from '../api/rentRegulations';
+  getRentRegulationCatalogInfo,
+  diffRentRegulationCatalog,
+  reloadRentRegulationCatalog,
+  listBackofficeRentRegulationCountries,
+  createRentRegulationCountry,
+  updateRentRegulationCountry,
+  deleteRentRegulationCountry,
+  reviewRentRegulationCountry,
+  listRentRegulationRegions,
+  createRentRegulationRegion,
+  updateRentRegulationRegion,
+  deleteRentRegulationRegion,
+  listRentRegulationRules,
+  createRentRegulationRule,
+  bulkImportRentRegulationRules,
+  updateRentRegulationRule,
+  deleteRentRegulationRule,
+  listCountryRegulationRequests,
+  dismissCountryRegulationRequest,
+} from '../generated/api/backoffice-rent-regulations/backoffice-rent-regulations';
+import type {
+  CreateRentRegulationCountryRequest,
+  UpdateRentRegulationCountryRequest,
+  CreateRentRegulationRegionRequest,
+  UpdateRentRegulationRegionRequest,
+  CreateRentRegulationRuleRequest,
+  BulkCreateRentRegulationRulesRequest,
+} from '../generated/models';
+import type {
+  CreateCountryRequest,
+  UpdateCountryRequest,
+  CreateRegionRequest,
+  UpdateRegionRequest,
+  CreateRuleRequest,
+  UpdateRuleRequest,
+  BulkRuleRequest,
+} from '../types';
 
 // ── Bundled catalog ──────────────────────────────────────────────────
 
 export const useRentRegulationCatalogInfo = () => {
   return useQuery({
     queryKey: ['rent-regulation-catalog-info'],
-    queryFn: () => rentRegulationsApi.getCatalogInfo().then((res) => res.data),
+    queryFn: () => getRentRegulationCatalogInfo(),
   });
 };
 
 export const useRentRegulationCatalogDiff = (enabled: boolean) => {
   return useQuery({
     queryKey: ['rent-regulation-catalog-diff'],
-    queryFn: () => rentRegulationsApi.getCatalogDiff().then((res) => res.data),
+    queryFn: () => diffRentRegulationCatalog(),
     enabled,
     staleTime: 0,
   });
@@ -30,9 +59,9 @@ export const useRentRegulationCatalogDiff = (enabled: boolean) => {
 
 export const useReloadRentRegulationCatalog = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () =>
-      rentRegulationsApi.reloadCatalog().then((res) => res.data),
+  return useMutationWithToast({
+    mutationFn: () => reloadRentRegulationCatalog(),
+    errorTitle: "Couldn't reload catalog",
     onSuccess: () => {
       // The reload wipes and re-seeds everything: invalidate all reference data.
       queryClient.invalidateQueries({
@@ -52,15 +81,16 @@ export const useReloadRentRegulationCatalog = () => {
 export const useRentRegulationCountries = () => {
   return useQuery({
     queryKey: ['rent-regulation-countries'],
-    queryFn: () => rentRegulationsApi.listCountries().then((res) => res.data),
+    queryFn: () => listBackofficeRentRegulationCountries(),
   });
 };
 
 export const useCreateCountry = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: CreateCountryRequest) =>
-      rentRegulationsApi.createCountry(data).then((res) => res.data),
+      createRentRegulationCountry(data as CreateRentRegulationCountryRequest),
+    errorTitle: "Couldn't create country",
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-countries'],
@@ -71,14 +101,19 @@ export const useCreateCountry = () => {
 
 export const useUpdateCountry = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       code,
       data,
     }: {
       code: string;
       data: UpdateCountryRequest;
-    }) => rentRegulationsApi.updateCountry(code, data).then((res) => res.data),
+    }) =>
+      updateRentRegulationCountry(
+        code,
+        data as UpdateRentRegulationCountryRequest
+      ),
+    errorTitle: "Couldn't update country",
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-countries'],
@@ -89,8 +124,9 @@ export const useUpdateCountry = () => {
 
 export const useDeleteCountry = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (code: string) => rentRegulationsApi.deleteCountry(code),
+  return useMutationWithToast({
+    mutationFn: (code: string) => deleteRentRegulationCountry(code),
+    errorTitle: "Couldn't delete country",
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-countries'],
@@ -101,8 +137,9 @@ export const useDeleteCountry = () => {
 
 export const useReviewCountry = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (code: string) => rentRegulationsApi.reviewCountry(code),
+  return useMutationWithToast({
+    mutationFn: (code: string) => reviewRentRegulationCountry(code),
+    errorTitle: "Couldn't review country",
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-countries'],
@@ -116,15 +153,14 @@ export const useReviewCountry = () => {
 export const useRentRegulationRegions = (countryCode: string) => {
   return useQuery({
     queryKey: ['rent-regulation-regions', countryCode],
-    queryFn: () =>
-      rentRegulationsApi.listRegions(countryCode).then((res) => res.data),
+    queryFn: () => listRentRegulationRegions(countryCode),
     enabled: !!countryCode,
   });
 };
 
 export const useCreateRegion = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       countryCode,
       data,
@@ -132,9 +168,11 @@ export const useCreateRegion = () => {
       countryCode: string;
       data: CreateRegionRequest;
     }) =>
-      rentRegulationsApi
-        .createRegion(countryCode, data)
-        .then((res) => res.data),
+      createRentRegulationRegion(
+        countryCode,
+        data as CreateRentRegulationRegionRequest
+      ),
+    errorTitle: "Couldn't create region",
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-regions', variables.countryCode],
@@ -145,7 +183,7 @@ export const useCreateRegion = () => {
 
 export const useUpdateRegion = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       countryCode,
       regionCode,
@@ -155,9 +193,12 @@ export const useUpdateRegion = () => {
       regionCode: string;
       data: UpdateRegionRequest;
     }) =>
-      rentRegulationsApi
-        .updateRegion(countryCode, regionCode, data)
-        .then((res) => res.data),
+      updateRentRegulationRegion(
+        countryCode,
+        regionCode,
+        data as UpdateRentRegulationRegionRequest
+      ),
+    errorTitle: "Couldn't update region",
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-regions', variables.countryCode],
@@ -168,14 +209,15 @@ export const useUpdateRegion = () => {
 
 export const useDeleteRegion = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       countryCode,
       regionCode,
     }: {
       countryCode: string;
       regionCode: string;
-    }) => rentRegulationsApi.deleteRegion(countryCode, regionCode),
+    }) => deleteRentRegulationRegion(countryCode, regionCode),
+    errorTitle: "Couldn't delete region",
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-regions', variables.countryCode],
@@ -189,15 +231,14 @@ export const useDeleteRegion = () => {
 export const useRentRegulationRules = (countryCode: string) => {
   return useQuery({
     queryKey: ['rent-regulation-rules', countryCode],
-    queryFn: () =>
-      rentRegulationsApi.listRules(countryCode).then((res) => res.data),
+    queryFn: () => listRentRegulationRules(countryCode),
     enabled: !!countryCode,
   });
 };
 
 export const useCreateRule = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       countryCode,
       data,
@@ -205,7 +246,11 @@ export const useCreateRule = () => {
       countryCode: string;
       data: CreateRuleRequest;
     }) =>
-      rentRegulationsApi.createRule(countryCode, data).then((res) => res.data),
+      createRentRegulationRule(
+        countryCode,
+        data as CreateRentRegulationRuleRequest
+      ),
+    errorTitle: "Couldn't create rule",
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-rules', variables.countryCode],
@@ -216,7 +261,7 @@ export const useCreateRule = () => {
 
 export const useBulkCreateRules = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       countryCode,
       data,
@@ -224,9 +269,11 @@ export const useBulkCreateRules = () => {
       countryCode: string;
       data: BulkRuleRequest;
     }) =>
-      rentRegulationsApi
-        .bulkCreateRules(countryCode, data)
-        .then((res) => res.data),
+      bulkImportRentRegulationRules(
+        countryCode,
+        data as BulkCreateRentRegulationRulesRequest
+      ),
+    errorTitle: "Couldn't import rules",
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-rules', variables.countryCode],
@@ -237,7 +284,7 @@ export const useBulkCreateRules = () => {
 
 export const useUpdateRule = (countryCode: string) => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       identifier,
       data,
@@ -245,7 +292,11 @@ export const useUpdateRule = (countryCode: string) => {
       identifier: string;
       data: UpdateRuleRequest;
     }) =>
-      rentRegulationsApi.updateRule(identifier, data).then((res) => res.data),
+      updateRentRegulationRule(
+        identifier,
+        data as CreateRentRegulationRuleRequest
+      ),
+    errorTitle: "Couldn't update rule",
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-rules', countryCode],
@@ -256,9 +307,9 @@ export const useUpdateRule = (countryCode: string) => {
 
 export const useDeleteRule = (countryCode: string) => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (identifier: string) =>
-      rentRegulationsApi.deleteRule(identifier),
+  return useMutationWithToast({
+    mutationFn: (identifier: string) => deleteRentRegulationRule(identifier),
+    errorTitle: "Couldn't delete rule",
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-rules', countryCode],
@@ -272,16 +323,16 @@ export const useDeleteRule = (countryCode: string) => {
 export const useCountryRegulationRequests = () => {
   return useQuery({
     queryKey: ['country-regulation-requests'],
-    queryFn: () =>
-      rentRegulationsApi.listCountryRequests().then((res) => res.data),
+    queryFn: () => listCountryRegulationRequests(),
   });
 };
 
 export const useDismissCountryRequest = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (countryName: string) =>
-      rentRegulationsApi.dismissCountryRequest(countryName),
+      dismissCountryRegulationRequest(countryName),
+    errorTitle: "Couldn't dismiss request",
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['country-regulation-requests'],

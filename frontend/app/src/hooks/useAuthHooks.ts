@@ -1,5 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as authApi from '../api/auth';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  getCurrentUser,
+  register,
+  updateProfile,
+  verifyEmail,
+  verifyEmailByToken,
+  resendVerification,
+} from '../generated/api/authentication/authentication';
+import {
+  getConfig,
+  validate,
+} from '../generated/api/registration/registration';
+import type { RegisterRequest, UpdateProfileRequest } from '../types/auth';
 import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
@@ -7,40 +20,32 @@ import { queryKeys } from '../lib/queryKeys';
 export const useCurrentUser = (enabled = true) => {
   return useQuery({
     queryKey: queryKeys.auth.currentUser(),
-    queryFn: authApi.getCurrentUser,
+    queryFn: getCurrentUser,
     retry: false,
     enabled,
   });
 };
 
 export const useRegister = () => {
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: authApi.register,
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
+  return useMutationWithToast({
+    mutationFn: (data: RegisterRequest) => register(data),
   });
 };
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: authApi.updateProfile,
+  return useMutationWithToast({
+    mutationFn: (data: UpdateProfileRequest) => updateProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useVerifyEmail = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: authApi.verifyEmail,
+  return useMutationWithToast({
+    mutationFn: (code: string) => verifyEmail({ code }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
     },
@@ -49,8 +54,8 @@ export const useVerifyEmail = () => {
 
 export const useVerifyEmailByToken = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: authApi.verifyEmailByToken,
+  return useMutationWithToast({
+    mutationFn: (token: string) => verifyEmailByToken({ token }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
     },
@@ -60,7 +65,7 @@ export const useVerifyEmailByToken = () => {
 export const useResendVerification = () => {
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: authApi.resendVerificationCode,
+    mutationFn: () => resendVerification(),
     onSuccess: () => {
       showToast('Verification code sent to your email', 'success');
     },
@@ -73,13 +78,13 @@ export const useResendVerification = () => {
 export const useRegistrationConfig = () => {
   return useQuery({
     queryKey: queryKeys.auth.registrationConfig(),
-    queryFn: authApi.getRegistrationConfig,
+    queryFn: getConfig,
     staleTime: 30_000,
   });
 };
 
 export const useValidateInvitationCode = () => {
-  return useMutation({
-    mutationFn: authApi.validateInvitationCode,
+  return useMutationWithToast({
+    mutationFn: (code: string) => validate({ code }),
   });
 };

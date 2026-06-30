@@ -9,7 +9,7 @@ import {
 } from '../hooks/useSettings';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { formatDateTime } from '../utils/dateFormatting';
-import type { CountryGroupResponse } from '../api/settings';
+import type { CountryGroupResponse } from '../types';
 
 const TYPE_LABELS: Record<string, string> = {
   MOBILE: 'Mobile',

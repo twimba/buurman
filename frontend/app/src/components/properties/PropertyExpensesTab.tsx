@@ -50,7 +50,7 @@ export const PropertyExpensesTab = ({
       filtered = filtered.filter(
         (expense) =>
           expense.identifier.toLowerCase().includes(search) ||
-          expense.description.toLowerCase().includes(search) ||
+          (expense.description?.toLowerCase().includes(search) ?? false) ||
           expense.category.toLowerCase().includes(search)
       );
     }
@@ -72,8 +72,8 @@ export const PropertyExpensesTab = ({
           bVal = b.category;
           break;
         case 'description':
-          aVal = a.description;
-          bVal = b.description;
+          aVal = a.description ?? '';
+          bVal = b.description ?? '';
           break;
         default:
           return 0;

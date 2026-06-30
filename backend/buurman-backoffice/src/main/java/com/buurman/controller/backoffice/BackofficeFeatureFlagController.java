@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.backoffice.UpdateFeatureFlagRequest;
+import com.buurman.dto.response.FeatureFlagState;
+import com.buurman.dto.response.backoffice.FeatureFlagAdminStatusResponse;
 import com.buurman.dto.response.backoffice.FeatureFlagUpdateResponse;
 import com.buurman.dto.response.backoffice.SegmentEvaluation;
 import com.buurman.dto.response.backoffice.TeamFlagEvaluation;
@@ -25,12 +27,12 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   private final BackofficeFeatureFlagService featureFlagService;
 
   @Override
-  public Map<String, Object> getAdminStatus() {
-    return Map.of("adminConfigured", true, "authMethod", "builtin");
+  public FeatureFlagAdminStatusResponse getAdminStatus() {
+    return new FeatureFlagAdminStatusResponse(true, "builtin");
   }
 
   @Override
-  public Map<String, Object> getGlobalFlags() {
+  public Map<String, FeatureFlagState> getGlobalFlags() {
     return featureFlagService.getGlobalFlags();
   }
 
@@ -79,7 +81,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   }
 
   @Override
-  public Map<String, Object> getTeamFlags(TeamIdentifier teamIdentifier) {
+  public Map<String, FeatureFlagState> getTeamFlags(TeamIdentifier teamIdentifier) {
     return featureFlagService.getTeamFlags(teamIdentifier);
   }
 

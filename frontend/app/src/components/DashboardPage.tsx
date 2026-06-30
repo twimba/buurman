@@ -4,7 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
 import { usePendingExtensions } from '@/hooks/useContractExtensionHooks';
-import * as extensionsApi from '@/api/contractExtensions';
+import {
+  activateContractExtension,
+  declineContractExtension,
+} from '@/generated/api/contract-extensions/contract-extensions';
 import { useTeam } from '@/context/TeamContext';
 import { Skeleton, useToast } from '@buurman/ui';
 import { ErrorMessage } from './ErrorMessage';
@@ -54,7 +57,7 @@ export const DashboardPage = () => {
     }: {
       contractId: string;
       extensionId: string;
-    }) => extensionsApi.activateExtension(contractId, extensionId),
+    }) => activateContractExtension(contractId, extensionId),
     onSuccess: () => {
       invalidateExtensionQueries();
       showToast(t('dashboard.extensionActivated'), 'success');
@@ -71,7 +74,7 @@ export const DashboardPage = () => {
     }: {
       contractId: string;
       extensionId: string;
-    }) => extensionsApi.declineExtension(contractId, extensionId, {}),
+    }) => declineContractExtension(contractId, extensionId, {}),
     onSuccess: () => {
       invalidateExtensionQueries();
       showToast(t('dashboard.extensionDeclined'), 'success');

@@ -5,8 +5,8 @@ import { GoogleSheetExportPill } from './GoogleSheetExportPill';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
-import { downloadBlob } from '@/api/listExports';
-import type { GoogleSheetExportResult } from '@/api/googleSheetsExport';
+import { downloadBlob } from '@/utils/downloadBlob';
+import type { GoogleSheetExportResponse as GoogleSheetExportResult } from '@/generated/models';
 
 export interface EntityExportControlsProps {
   /** Base filename without extension (e.g. "properties" → "properties.csv"). */

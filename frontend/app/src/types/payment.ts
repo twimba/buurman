@@ -1,102 +1,18 @@
-import { ContractSummary } from './contract';
-import { PropertySummary, DocumentResponse } from './property';
-import { ContactSummary } from './contact';
+// Thin re-exports of generated models. Frontend-only enums/aliases kept.
 
-// Enum — re-exported from generated
 export {
   PaymentResponseStatus as PaymentStatus,
   type PaymentResponseStatus,
 } from '../generated/models';
 
-// Interfaces — kept manual (generated adds to optional fields)
-
-import type { PaymentResponseStatus } from '../generated/models';
-
-// Request interfaces — manual (generated adds to all optional fields)
-
-export interface CreatePaymentRequest {
-  contractIdentifier: string;
-  contactIdentifier?: string;
-  amount: number;
-  currency?: string;
-  dueDate: string;
-  notes?: string;
-  markAsPaid?: boolean;
-  paymentDate?: string;
-}
-
-export interface UpdatePaymentRequest {
-  contactIdentifier?: string;
-  amount?: number;
-  currency?: string;
-  dueDate?: string;
-  status?: PaymentResponseStatus;
-  notes?: string;
-}
-
-export interface MarkPaidRequest {
-  paymentDate: string;
-  notes?: string;
-}
-
-export interface CreatePaymentReceivalRequest {
-  amount: number;
-  receivalDate: string;
-  notes?: string;
-}
-
-export interface UpdatePaymentReceivalRequest {
-  amount: number;
-  receivalDate: string;
-  notes?: string;
-}
-
-export interface BulkGeneratePaymentsRequest {
-  forMonth: string;
-}
-
-export interface PaymentReceivalResponse {
-  identifier: string;
-  amount: number;
-  receivalDate: string;
-  notes?: string;
-  createdAt: string;
-}
-
-export interface PaymentResponse {
-  identifier: string;
-  contract: ContractSummary;
-  contact: ContactSummary;
-  property: PropertySummary;
-  amount: number;
-  currency: string;
-  receivedAmount: number;
-  balance: number;
-  paymentDate?: string;
-  dueDate: string;
-  status: PaymentResponseStatus;
-  notes?: string;
-  proofOfPayment?: DocumentResponse;
-  receipt?: DocumentResponse;
-  receivals: PaymentReceivalResponse[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PaymentSummary {
-  identifier: string;
-  amount: number;
-  currency: string;
-  dueDate: string;
-  paymentDate?: string;
-  status: PaymentResponseStatus;
-}
-
-export interface GetPaymentsParams {
-  status?: PaymentResponseStatus | 'OVERDUE';
-  contractIdentifier?: string;
-  propertyIdentifier?: string;
-  contactIdentifier?: string;
-  dateFrom?: string;
-  dateTo?: string;
-}
+export type {
+  PaymentResponse,
+  PaymentReceivalResponse,
+  CreatePaymentRequest,
+  UpdatePaymentRequest,
+  MarkPaidRequest,
+  CreatePaymentReceivalRequest,
+  UpdatePaymentReceivalRequest,
+  BulkGeneratePaymentsRequest,
+  GetPaymentsParams,
+} from '../generated/models';

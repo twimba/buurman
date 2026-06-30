@@ -1,20 +1,26 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
-import * as rentRegulationsApi from '../api/rentRegulations';
+import { useQuery } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  listRentRegulationCountries,
+  getRentRegulationCountryDetail,
+  getCurrentRentRegulationRules,
+  getRentRegulationRulesByYear,
+  getCurrentRegionRentRegulationRules,
+  requestCountryRegulation,
+} from '../generated/api/rent-regulations/rent-regulations';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useRentRegulationCountries = () => {
   return useQuery({
     queryKey: queryKeys.rentRegulation.countries(),
-    queryFn: rentRegulationsApi.getCountries,
+    queryFn: () => listRentRegulationCountries(),
   });
 };
 
 export const useRentRegulationCountryDetail = (code: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.rentRegulation.countryDetail(code),
-    queryFn: () => rentRegulationsApi.getCountryDetail(code ?? ''),
+    queryFn: () => getRentRegulationCountryDetail(code ?? ''),
     enabled: !!code,
   });
 };
@@ -22,7 +28,7 @@ export const useRentRegulationCountryDetail = (code: string | undefined) => {
 export const useRentRegulationCurrentRules = (code: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.rentRegulation.currentRules(code),
-    queryFn: () => rentRegulationsApi.getCurrentRules(code ?? ''),
+    queryFn: () => getCurrentRentRegulationRules(code ?? ''),
     enabled: !!code,
   });
 };
@@ -33,7 +39,8 @@ export const useRentRegulationRulesByYear = (
 ) => {
   return useQuery({
     queryKey: queryKeys.rentRegulation.rulesByYear(code, year),
-    queryFn: () => rentRegulationsApi.getRulesByYear(code ?? '', year ?? 0),
+    queryFn: () =>
+      getRentRegulationRulesByYear(code ?? '', { year: year ?? 0 }),
     enabled: !!code && !!year,
   });
 };
@@ -45,22 +52,15 @@ export const useRentRegulationRegionRules = (
   return useQuery({
     queryKey: queryKeys.rentRegulation.regionRules(code, regionCode),
     queryFn: () =>
-      rentRegulationsApi.getRegionCurrentRules(code ?? '', regionCode ?? ''),
+      getCurrentRegionRentRegulationRules(code ?? '', regionCode ?? ''),
     enabled: !!code && !!regionCode,
   });
 };
 
 export const useRequestCountryRegulation = () => {
-  const { showToast } = useToast();
-
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Your request has been submitted — thank you!',
     mutationFn: (data: { countryName: string; notes?: string }) =>
-      rentRegulationsApi.requestCountryRegulation(data),
-    onSuccess: () => {
-      showToast('Your request has been submitted — thank you!', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
+      requestCountryRegulation(data),
   });
 };

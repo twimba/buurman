@@ -40,8 +40,12 @@ import {
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
-import { exportExpensesCsv, exportExpensesXlsx } from '@/api/listExports';
-import { exportExpensesGoogleSheet } from '@/api/googleSheetsExport';
+import {
+  exportExpensesCsv,
+  exportExpensesXlsx,
+  exportExpensesGoogleSheet,
+} from '@/generated/api/booklets/booklets';
+import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import {
   PeriodFilter,
@@ -196,9 +200,14 @@ export const ExpensesPage = () => {
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <EntityExportControls
             filenameStem="expenses"
-            csv={exportExpensesCsv}
-            xlsx={exportExpensesXlsx}
-            googleSheet={exportExpensesGoogleSheet}
+            csv={() => exportExpensesCsv()}
+            xlsx={() => exportExpensesXlsx()}
+            googleSheet={(accessToken) =>
+              exportExpensesGoogleSheet(
+                { accessToken },
+                { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
+              )
+            }
           />
         </div>
       ),
@@ -470,7 +479,7 @@ export const ExpensesPage = () => {
                           },
                           {
                             label: t('table.property'),
-                            value: `${expense.property.street}, ${expense.property.city}`,
+                            value: `${expense.property?.street}, ${expense.property?.city}`,
                           },
                           {
                             label: t('table.amount'),
@@ -560,14 +569,18 @@ export const ExpensesPage = () => {
                           <ExpenseCategoryBadge category={expense.category} />
                         </td>
                         <td className="px-6 py-3">
-                          <PropertyCell
-                            propertyIdentifier={expense.property.identifier}
-                            propertyStatus={expense.property.status}
-                            propertyType={expense.property.propertyType}
-                            street={expense.property.street}
-                            city={expense.property.city}
-                            postalCode={expense.property.postalCode}
-                          />
+                          {expense.property ? (
+                            <PropertyCell
+                              propertyIdentifier={expense.property.identifier}
+                              propertyStatus={expense.property.status}
+                              propertyType={expense.property.propertyType}
+                              street={expense.property.street}
+                              city={expense.property.city}
+                              postalCode={expense.property.postalCode}
+                            />
+                          ) : (
+                            <span className="text-sm text-text-muted">—</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <span className="text-sm font-semibold text-text-primary">
@@ -610,8 +623,8 @@ export const ExpensesPage = () => {
             {expensesData && (
               <Pagination
                 page={page}
-                totalPages={expensesData.totalPages}
-                totalElements={expensesData.totalElements}
+                totalPages={expensesData.totalPages ?? 0}
+                totalElements={expensesData.totalElements ?? 0}
                 size={size}
                 onPageChange={handlePageChange}
                 onSizeChange={handleSizeChange}

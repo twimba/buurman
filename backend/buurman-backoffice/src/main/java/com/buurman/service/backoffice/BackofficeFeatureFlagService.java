@@ -18,6 +18,7 @@ import com.buurman.domain.User;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.backoffice.UpdateFeatureFlagRequest;
+import com.buurman.dto.response.FeatureFlagState;
 import com.buurman.dto.response.backoffice.FeatureFlagUpdateResponse;
 import com.buurman.dto.response.backoffice.SegmentEvaluation;
 import com.buurman.dto.response.backoffice.SegmentFlagOverride;
@@ -45,7 +46,7 @@ public class BackofficeFeatureFlagService {
   private final TeamMemberRepository teamMemberRepository;
   private final TeamRepository teamRepository;
 
-  public Map<String, Object> getGlobalFlags() {
+  public Map<String, FeatureFlagState> getGlobalFlags() {
     return featureFlagService.getAllEnvironmentFlags();
   }
 
@@ -63,7 +64,7 @@ public class BackofficeFeatureFlagService {
               team -> {
                 Sid teamSid = team.getIdentifier().orElseThrow();
 
-                Map<String, Object> flags =
+                Map<String, FeatureFlagState> flags =
                     featureFlagService.evaluateAllForUser(
                         user.getId(),
                         membership.getTeamId(),
@@ -133,7 +134,7 @@ public class BackofficeFeatureFlagService {
 
   public List<SegmentEvaluation> getSegmentOverrides() {
     List<Map<String, Object>> segments = featureFlagAdminService.listSegments();
-    Map<String, Object> globalFlags = featureFlagService.getAllEnvironmentFlags();
+    Map<String, FeatureFlagState> globalFlags = featureFlagService.getAllEnvironmentFlags();
 
     List<SegmentDefinition> dbSegments = segmentAdminService.listSegments();
     Map<String, Long> segmentKeyToId = new HashMap<>();
@@ -154,13 +155,10 @@ public class BackofficeFeatureFlagService {
 
               Map<String, SegmentFlagOverride> overrides = new HashMap<>();
               globalFlags.forEach(
-                  (flagKey, flagData) -> {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> data = (Map<String, Object>) flagData;
-                    boolean enabled = Boolean.TRUE.equals(data.get("enabled"));
-                    overrides.put(
-                        flagKey, new SegmentFlagOverride(flagKey, enabled, data.get("value")));
-                  });
+                  (flagKey, state) ->
+                      overrides.put(
+                          flagKey,
+                          new SegmentFlagOverride(flagKey, state.enabled(), state.value())));
 
               segOverrides.forEach(
                   (flagKey, overrideData) -> {
@@ -197,16 +195,16 @@ public class BackofficeFeatureFlagService {
     featureFlagAdminService.deleteSegmentOverride(flagName, segmentKey, actorId);
   }
 
-  public Map<String, Object> getTeamFlags(TeamIdentifier teamIdentifier) {
+  public Map<String, FeatureFlagState> getTeamFlags(TeamIdentifier teamIdentifier) {
     Team team = resolveTeam(teamIdentifier);
 
-    Map<String, Object> result = new HashMap<>(featureFlagService.getAllEnvironmentFlags());
+    Map<String, FeatureFlagState> result =
+        new HashMap<>(featureFlagService.getAllEnvironmentFlags());
 
     for (FeatureFlagOverride override : overrideRepo.findTeamScopeOverrides(team.getId())) {
-      Map<String, Object> flagData = new HashMap<>();
-      flagData.put("enabled", override.isEnabled());
-      flagData.put("value", override.getValue().orElse(null));
-      result.put(override.getFlagKey(), flagData);
+      result.put(
+          override.getFlagKey(),
+          new FeatureFlagState(override.isEnabled(), override.getValue().orElse(null)));
     }
 
     return result;

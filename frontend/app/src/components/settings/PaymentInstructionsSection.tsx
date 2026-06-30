@@ -63,7 +63,7 @@ export const PaymentInstructionsSection = () => {
     setEditingId(pi.identifier);
     setFormData({
       name: pi.name,
-      paymentMethod: pi.paymentMethod,
+      paymentMethod: pi.paymentMethod as PaymentMethod,
       description: pi.description ?? '',
       bankName: pi.bankName ?? '',
       accountHolderName: pi.accountHolderName ?? '',

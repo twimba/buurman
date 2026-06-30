@@ -196,7 +196,7 @@ export const ContractForm = ({
   // Look up selected property's country for metadata form
   const { data: selectedProperty } = useProperty(formData.propertyIdentifier);
   const propertyCountryCode =
-    contract?.countryCode || selectedProperty?.countryCode || undefined;
+    contract?.countryCode || selectedProperty?.country || undefined;
   const countryName = useCountryName(propertyCountryCode);
 
   // Sync currency fields when defaultCurrency loads asynchronously (create mode)

@@ -13,17 +13,18 @@ import {
 import { useTheme } from '@/context/ThemeContext';
 import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
 import {
-  exportPortfolioDashboardPDF,
-  exportPortfolioDashboardCSV,
-  exportPortfolioDashboardExcel,
-} from '@/api/dashboard';
+  exportPortfolioPdf,
+  exportPortfolioCsv,
+  exportPortfolioExcel,
+  exportPortfolioGoogleSheet,
+} from '@/generated/api/portfolio-dashboard/portfolio-dashboard';
+import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 import { Card, LoadingSpinner } from '@buurman/ui';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { ExportOptionIcon } from '@/components/common/ExportOptionIcon';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
-import { exportPortfolioDashboardGoogleSheet } from '@/api/googleSheetsExport';
 import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 import { PortfolioSummaryCards } from './PortfolioSummaryCards';
 import { PortfolioCashFlowChart } from './PortfolioCashFlowChart';
@@ -109,29 +110,22 @@ export const PortfolioDashboard = () => {
         let blob: Blob;
         let mimeType: string;
         let filename: string;
+        const exportParams = {
+          ...(activeMonths != null ? { months: activeMonths } : {}),
+          ...(activeStartDate ? { startDate: activeStartDate } : {}),
+          ...(activeEndDate ? { endDate: activeEndDate } : {}),
+        };
         if (format === 'pdf') {
-          blob = await exportPortfolioDashboardPDF(
-            activeMonths,
-            activeStartDate,
-            activeEndDate
-          );
+          blob = await exportPortfolioPdf(exportParams);
           mimeType = 'application/pdf';
           filename = 'portfolio-dashboard.pdf';
         } else if (format === 'excel') {
-          blob = await exportPortfolioDashboardExcel(
-            activeMonths,
-            activeStartDate,
-            activeEndDate
-          );
+          blob = await exportPortfolioExcel(exportParams);
           mimeType =
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
           filename = 'portfolio-dashboard.xlsx';
         } else {
-          blob = await exportPortfolioDashboardCSV(
-            activeMonths,
-            activeStartDate,
-            activeEndDate
-          );
+          blob = await exportPortfolioCsv(exportParams);
           mimeType = 'text/csv';
           filename = 'portfolio-dashboard.csv';
         }
@@ -302,11 +296,15 @@ export const PortfolioDashboard = () => {
                           icon: <ExportOptionIcon format="google-sheets" />,
                           onExport: () =>
                             triggerGoogleSheet((token) =>
-                              exportPortfolioDashboardGoogleSheet(token, {
-                                months: activeMonths,
-                                startDate: activeStartDate,
-                                endDate: activeEndDate,
-                              })
+                              exportPortfolioGoogleSheet(
+                                { accessToken: token },
+                                {
+                                  months: activeMonths,
+                                  startDate: activeStartDate,
+                                  endDate: activeEndDate,
+                                },
+                                { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
+                              )
                             ),
                         },
                       ]

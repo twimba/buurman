@@ -1,16 +1,30 @@
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  keepPreviousData,
-} from '@tanstack/react-query';
-import * as extensionsApi from '../api/contractExtensions';
+  listContractExtensions,
+  getContractExtension,
+  createContractExtension,
+  activateContractExtension,
+  confirmContractExtension,
+  declineContractExtension,
+  cancelContractExtension,
+  generateExtensionDocuments,
+} from '../generated/api/contract-extensions/contract-extensions';
+import {
+  getUpcomingRenewals,
+  getPendingExtensions,
+} from '../generated/api/dashboard/dashboard';
+import { getJurisdictionDefaults } from '../generated/api/jurisdiction-defaults/jurisdiction-defaults';
 import {
   CreateContractExtensionRequest,
   DeclineContractExtensionRequest,
 } from '../types/contractExtension';
+import type {
+  GenerateExtensionDocumentsRequest,
+  GetJurisdictionDefaultsParams,
+  GetJurisdictionDefaultsLandlordType,
+} from '../generated/models';
 import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useContractExtensions = (
@@ -20,7 +34,7 @@ export const useContractExtensions = (
 ) => {
   return useQuery({
     queryKey: queryKeys.contractExtensions.all(contractId, page, size),
-    queryFn: () => extensionsApi.listExtensions(contractId ?? '', page, size),
+    queryFn: () => listContractExtensions(contractId ?? '', { page, size }),
     enabled: !!contractId,
     placeholderData: keepPreviousData,
   });
@@ -32,18 +46,17 @@ export const useContractExtension = (
 ) => {
   return useQuery({
     queryKey: queryKeys.contractExtensions.detail(contractId, extensionId),
-    queryFn: () =>
-      extensionsApi.getExtension(contractId ?? '', extensionId ?? ''),
+    queryFn: () => getContractExtension(contractId ?? '', extensionId ?? ''),
     enabled: !!contractId && !!extensionId,
   });
 };
 
 export const useCreateExtension = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Extension created successfully',
     mutationFn: (data: CreateContractExtensionRequest) =>
-      extensionsApi.createExtension(contractId, data),
+      createContractExtension(contractId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contractExtensions.all(contractId),
@@ -60,20 +73,16 @@ export const useCreateExtension = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.stats(),
       });
-      showToast('Extension created successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useActivateExtension = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Extension activated successfully',
     mutationFn: (extensionId: string) =>
-      extensionsApi.activateExtension(contractId, extensionId),
+      activateContractExtension(contractId, extensionId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contractExtensions.all(contractId),
@@ -91,20 +100,16 @@ export const useActivateExtension = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.stats(),
       });
-      showToast('Extension activated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useConfirmExtension = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Extension confirmed successfully',
     mutationFn: (extensionId: string) =>
-      extensionsApi.confirmExtension(contractId, extensionId),
+      confirmContractExtension(contractId, extensionId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contractExtensions.all(contractId),
@@ -118,25 +123,21 @@ export const useConfirmExtension = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contractExtensions.upcomingRenewals(),
       });
-      showToast('Extension confirmed successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeclineExtension = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Extension declined',
     mutationFn: ({
       extensionId,
       request,
     }: {
       extensionId: string;
       request: DeclineContractExtensionRequest;
-    }) => extensionsApi.declineExtension(contractId, extensionId, request),
+    }) => declineContractExtension(contractId, extensionId, request),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contractExtensions.all(contractId),
@@ -150,26 +151,21 @@ export const useDeclineExtension = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contractExtensions.upcomingRenewals(),
       });
-      showToast('Extension declined', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useCancelExtension = (contractId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Extension cancelled',
     mutationFn: ({
       extensionId,
       deleteDocuments,
     }: {
       extensionId: string;
       deleteDocuments?: boolean;
-    }) =>
-      extensionsApi.cancelExtension(contractId, extensionId, deleteDocuments),
+    }) => cancelContractExtension(contractId, extensionId, { deleteDocuments }),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contractExtensions.all(contractId),
@@ -191,10 +187,6 @@ export const useCancelExtension = (contractId: string) => {
           queryKey: queryKeys.documents.all(),
         });
       }
-      showToast('Extension cancelled', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -202,19 +194,14 @@ export const useCancelExtension = (contractId: string) => {
 export const useGenerateExtensionDocuments = (contractId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       extensionId,
       request,
     }: {
       extensionId: string;
-      request: extensionsApi.GenerateExtensionDocumentsRequest;
-    }) =>
-      extensionsApi.generateExtensionDocuments(
-        contractId,
-        extensionId,
-        request
-      ),
+      request: GenerateExtensionDocumentsRequest;
+    }) => generateExtensionDocuments(contractId, extensionId, request),
     onSuccess: (docs) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.documents(contractId),
@@ -227,23 +214,20 @@ export const useGenerateExtensionDocuments = (contractId: string) => {
       });
       showToast(`${docs.length} document(s) generated successfully`, 'success');
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUpcomingRenewals = () => {
   return useQuery({
     queryKey: queryKeys.contractExtensions.upcomingRenewals(),
-    queryFn: () => extensionsApi.getUpcomingRenewals(),
+    queryFn: () => getUpcomingRenewals(),
   });
 };
 
 export const usePendingExtensions = () => {
   return useQuery({
     queryKey: queryKeys.contractExtensions.pendingExtensions(),
-    queryFn: () => extensionsApi.getPendingExtensions(),
+    queryFn: () => getPendingExtensions(),
   });
 };
 
@@ -261,12 +245,13 @@ export const useJurisdictionDefaults = (
       furnished
     ),
     queryFn: () =>
-      extensionsApi.getJurisdictionDefaults(
-        countryCode ?? '',
+      getJurisdictionDefaults({
+        countryCode: countryCode ?? '',
         regionCode,
-        landlordType,
-        furnished
-      ),
+        landlordType: landlordType as
+          GetJurisdictionDefaultsLandlordType | undefined,
+        furnished,
+      } as GetJurisdictionDefaultsParams),
     enabled: !!countryCode,
     staleTime: 1000 * 60 * 60,
   });

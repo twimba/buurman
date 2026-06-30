@@ -218,12 +218,12 @@ export const PhotosPage = () => {
         />
       </div>
 
-      {photosData && photosData.totalPages > 1 && (
+      {photosData && (photosData.totalPages ?? 0) > 1 && (
         <div className="mt-4">
           <Pagination
             page={page}
-            totalPages={photosData.totalPages}
-            totalElements={photosData.totalElements}
+            totalPages={photosData.totalPages ?? 0}
+            totalElements={photosData.totalElements ?? 0}
             size={size}
             onPageChange={handlePageChange}
             onSizeChange={handleSizeChange}

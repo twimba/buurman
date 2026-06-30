@@ -1,106 +1,22 @@
-// Enum — re-exported from generated
+// Response/request interfaces — re-exported from generated models
+export type {
+  PaymentInstructionResponse,
+  CreatePaymentInstructionRequest,
+  UpdatePaymentInstructionRequest,
+  ContractPaymentInstructionResponse,
+  CreateContractPaymentInstructionRequest,
+  UpdateContractPaymentInstructionRequest,
+} from '../generated/models';
+
+// Enum — re-exported as value (orval enum is const + type of same name)
 export {
   CreatePaymentInstructionRequestPaymentMethod as PaymentMethod,
   type CreatePaymentInstructionRequestPaymentMethod,
 } from '../generated/models';
 
-// Interfaces — kept manual (generated uses `string` for enum fields)
-
 import { CreatePaymentInstructionRequestPaymentMethod } from '../generated/models';
 
-// Request interfaces — manual (generated adds to all optional fields)
-
-export interface CreatePaymentInstructionRequest {
-  name: string;
-  description?: string;
-  paymentMethod: CreatePaymentInstructionRequestPaymentMethod;
-  bankName?: string;
-  accountHolderName?: string;
-  iban?: string;
-  bicSwift?: string;
-  accountNumber?: string;
-  routingNumber?: string;
-  paymentReference?: string;
-  additionalDetails?: string;
-  isDefault?: boolean;
-}
-
-export interface UpdatePaymentInstructionRequest {
-  name?: string;
-  description?: string;
-  paymentMethod?: CreatePaymentInstructionRequestPaymentMethod;
-  bankName?: string;
-  accountHolderName?: string;
-  iban?: string;
-  bicSwift?: string;
-  accountNumber?: string;
-  routingNumber?: string;
-  paymentReference?: string;
-  additionalDetails?: string;
-  isDefault?: boolean;
-}
-
-export interface CreateContractPaymentInstructionRequest {
-  paymentInstructionIdentifier?: string;
-  isCustom?: boolean;
-  customName?: string;
-  customDescription?: string;
-  customPaymentMethod?: string;
-  customBankName?: string;
-  customAccountHolderName?: string;
-  customIban?: string;
-  customBicSwift?: string;
-  customAccountNumber?: string;
-  customRoutingNumber?: string;
-  customPaymentReference?: string;
-  customAdditionalDetails?: string;
-  effectiveFrom: string;
-  notes?: string;
-}
-
-export type UpdateContractPaymentInstructionRequest =
-  CreateContractPaymentInstructionRequest;
-
-export interface PaymentInstructionResponse {
-  identifier: string;
-  name: string;
-  description?: string;
-  paymentMethod: CreatePaymentInstructionRequestPaymentMethod;
-  bankName?: string;
-  accountHolderName?: string;
-  iban?: string;
-  bicSwift?: string;
-  accountNumber?: string;
-  routingNumber?: string;
-  paymentReference?: string;
-  additionalDetails?: string;
-  isDefault: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ContractPaymentInstructionResponse {
-  identifier: string;
-  paymentInstructionIdentifier?: string;
-  isCustom: boolean;
-  name: string;
-  description?: string;
-  paymentMethod: string;
-  bankName?: string;
-  accountHolderName?: string;
-  iban?: string;
-  bicSwift?: string;
-  accountNumber?: string;
-  routingNumber?: string;
-  paymentReference?: string;
-  additionalDetails?: string;
-  effectiveFrom: string;
-  effectiveTo?: string;
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
+// Frontend-only label map
 export const PaymentMethodLabels: Record<
   CreatePaymentInstructionRequestPaymentMethod,
   string

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useCurrencies, splitCurrencies } from '@/hooks/useCurrencies';
+import type { CurrencyInfo } from '@/generated/models';
 import { getCurrencyFlag } from '@/utils/currencyFlags';
 import { useIsMobile } from '@/hooks/useIsMobile';
 
@@ -34,14 +35,14 @@ export const CurrencyDropdown = ({
 
   const filteredTop = topCurrencies.filter(
     (c) =>
-      c.code.toLowerCase().includes(search.toLowerCase()) ||
-      c.name.toLowerCase().includes(search.toLowerCase())
+      (c.code ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.name ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
   const filteredOther = otherCurrencies.filter(
     (c) =>
-      c.code.toLowerCase().includes(search.toLowerCase()) ||
-      c.name.toLowerCase().includes(search.toLowerCase())
+      (c.code ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.name ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
   const allFiltered = [...filteredTop, ...filteredOther];
@@ -138,7 +139,7 @@ export const CurrencyDropdown = ({
       case 'Enter':
         e.preventDefault();
         if (highlightedIndex >= 0 && highlightedIndex < allFiltered.length) {
-          handleSelect(allFiltered[highlightedIndex].code);
+          handleSelect(allFiltered[highlightedIndex].code ?? '');
         }
         break;
       case 'Escape':
@@ -151,25 +152,22 @@ export const CurrencyDropdown = ({
     }
   };
 
-  const formatCurrency = (c: { symbol: string; name: string; code: string }) =>
-    `${getCurrencyFlag(c.code)} ${c.name} (${c.code})`;
+  const formatCurrency = (c: CurrencyInfo) =>
+    `${getCurrencyFlag(c.code ?? '')} ${c.name ?? ''} (${c.code ?? ''})`;
 
   const highlightedId =
     highlightedIndex >= 0 && highlightedIndex < allFiltered.length
       ? `currency-option-${allFiltered[highlightedIndex].code}`
       : undefined;
 
-  const renderOption = (
-    currency: { symbol: string; name: string; code: string },
-    flatIndex: number
-  ) => (
+  const renderOption = (currency: CurrencyInfo, flatIndex: number) => (
     <div
       key={currency.code}
       role="option"
       aria-selected={currency.code === value}
       id={`currency-option-${currency.code}`}
       onMouseDown={(e) => e.preventDefault()}
-      onClick={() => handleSelect(currency.code)}
+      onClick={() => handleSelect(currency.code ?? '')}
       onMouseEnter={() => setHighlightedIndex(flatIndex)}
       className={`w-full text-left px-3 py-2 text-sm cursor-pointer ${
         highlightedIndex === flatIndex

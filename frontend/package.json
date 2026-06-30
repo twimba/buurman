@@ -15,7 +15,7 @@
     "dev:backoffice": "dotenv -e ../.env -- yarn workspace buurman-backoffice dev",
     "format": "yarn workspaces foreach -A -p run format",
     "lint": "yarn workspaces foreach -A -p run lint",
-    "test": "yarn workspace buurman-app test"
+    "test": "yarn workspace buurman-app test && yarn workspace buurman-backoffice test"
   },
   "engines": {
     "node": ">=22.0.0"

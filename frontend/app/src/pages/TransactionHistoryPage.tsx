@@ -20,7 +20,7 @@ import {
   RefreshButton,
 } from '@buurman/ui';
 import { PaymentStatus } from '@/types/payment';
-import client from '@/api/client';
+import { downloadBlob } from '@/utils/downloadBlob';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
@@ -28,7 +28,13 @@ import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { ExportOptionIcon } from '@/components/common/ExportOptionIcon';
 import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
-import { exportTransactionsGoogleSheet } from '@/api/googleSheetsExport';
+import {
+  exportTransactionHistoryCSV,
+  exportTransactionHistoryExcel,
+  exportTransactionHistoryPDF,
+  exportTransactionHistoryGoogleSheet,
+} from '@/generated/api/reports/reports';
+import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 
 type TransactionType = 'ALL' | 'INCOME' | 'EXPENSE';
@@ -237,32 +243,20 @@ export const TransactionHistoryPage = () => {
     }
   };
 
+  const dateRangeParams = () => ({
+    startDate: startDate || undefined,
+    endDate: endDate || undefined,
+  });
+
   const handleDownloadExcel = async () => {
     try {
-      const params: Record<string, string> = {};
-      if (startDate) {
-        params.startDate = startDate;
-      }
-      if (endDate) {
-        params.endDate = endDate;
-      }
-
-      const response = await client.get('/reports/export/transactions/excel', {
-        params,
-        responseType: 'blob',
-      });
-
-      const blob = new Blob([response.data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'transactions.xlsx';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const blob = await exportTransactionHistoryExcel(dateRangeParams());
+      downloadBlob(
+        new Blob([blob], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+        'transactions.xlsx'
+      );
     } catch (error) {
       console.error('Failed to download Excel:', error);
       alert(t('transactions.downloadFailed'));
@@ -271,28 +265,8 @@ export const TransactionHistoryPage = () => {
 
   const handleDownloadCSV = async () => {
     try {
-      const params: Record<string, string> = {};
-      if (startDate) {
-        params.startDate = startDate;
-      }
-      if (endDate) {
-        params.endDate = endDate;
-      }
-
-      const response = await client.get('/reports/export/transactions/csv', {
-        params,
-        responseType: 'blob',
-      });
-
-      const blob = new Blob([response.data], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'transactions.csv';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const blob = await exportTransactionHistoryCSV(dateRangeParams());
+      downloadBlob(new Blob([blob], { type: 'text/csv' }), 'transactions.csv');
     } catch (error) {
       console.error('Failed to download CSV:', error);
       alert(t('transactions.downloadFailed'));
@@ -301,28 +275,11 @@ export const TransactionHistoryPage = () => {
 
   const handleDownloadPDF = async () => {
     try {
-      const params: Record<string, string> = {};
-      if (startDate) {
-        params.startDate = startDate;
-      }
-      if (endDate) {
-        params.endDate = endDate;
-      }
-
-      const response = await client.get('/reports/export/transactions/pdf', {
-        params,
-        responseType: 'blob',
-      });
-
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'transaction-history.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const blob = await exportTransactionHistoryPDF(dateRangeParams());
+      downloadBlob(
+        new Blob([blob], { type: 'application/pdf' }),
+        'transaction-history.pdf'
+      );
     } catch (error) {
       console.error('Failed to download PDF:', error);
       alert(t('transactions.downloadFailed'));
@@ -384,10 +341,13 @@ export const TransactionHistoryPage = () => {
                           icon: <ExportOptionIcon format="google-sheets" />,
                           onExport: () =>
                             triggerGoogleSheet((token) =>
-                              exportTransactionsGoogleSheet(
-                                token,
-                                startDate || undefined,
-                                endDate || undefined
+                              exportTransactionHistoryGoogleSheet(
+                                { accessToken: token },
+                                {
+                                  startDate: startDate || undefined,
+                                  endDate: endDate || undefined,
+                                },
+                                { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
                               )
                             ),
                         },

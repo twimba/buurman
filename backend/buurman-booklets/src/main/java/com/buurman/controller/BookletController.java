@@ -8,6 +8,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +45,6 @@ import com.buurman.service.export.RentChangeDocumentExporter;
 import com.buurman.service.export.RentChangeDocumentGenerationService;
 import com.buurman.service.export.RentIncreaseLetterExporter;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -63,39 +64,39 @@ public class BookletController implements BookletsApi {
   private final RentChangeDocumentGenerationService rentChangeDocumentGenerationService;
   private final FeatureFlagService featureFlagService;
   private final GoogleSheetTitleResolver titleResolver;
-  private final HttpServletRequest httpServletRequest;
   private final HttpServletResponse httpServletResponse;
 
   @Override
-  public byte[] exportPropertyBooklet(PropertyIdentifier propertyIdentifier) {
+  public Resource exportPropertyBooklet(
+      PropertyIdentifier propertyIdentifier, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    Locale locale =
-        resolveLocale(Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
+    Locale locale = resolveLocale(lang.orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=property-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generatePropertyBrochurePDF(
-        propertyIdentifier, principal.requireTeamId(), locale);
+    return new ByteArrayResource(
+        exportService.generatePropertyBrochurePDF(
+            propertyIdentifier, principal.requireTeamId(), locale));
   }
 
   @Override
-  public byte[] exportContactBooklet(ContactIdentifier contactIdentifier) {
+  public Resource exportContactBooklet(ContactIdentifier contactIdentifier, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    Locale locale =
-        resolveLocale(Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
+    Locale locale = resolveLocale(lang.orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contact-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateContactReportPDF(
-        contactIdentifier, principal.requireTeamId(), locale);
+    return new ByteArrayResource(
+        exportService.generateContactReportPDF(
+            contactIdentifier, principal.requireTeamId(), locale));
   }
 
   @Override
-  public byte[] exportContactsCsv() {
+  public Resource exportContactsCsv() {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=contacts.csv");
     httpServletResponse.setContentType("text/csv");
-    return exportService.generateContactsCSV(principal.requireTeamId());
+    return new ByteArrayResource(exportService.generateContactsCSV(principal.requireTeamId()));
   }
 
   @Override
@@ -113,17 +114,17 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
-  public byte[] exportContactsXlsx() {
+  public Resource exportContactsXlsx() {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=contacts.xlsx");
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    return exportService.generateContactsExcel(principal.requireTeamId());
+    return new ByteArrayResource(exportService.generateContactsExcel(principal.requireTeamId()));
   }
 
   // ── Properties ──────────────────────────────────────────────────────────
   @Override
-  public byte[] exportPropertiesCsv() {
+  public Resource exportPropertiesCsv() {
     return downloadCsv(
         "properties.csv",
         () ->
@@ -132,7 +133,7 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
-  public byte[] exportPropertiesXlsx() {
+  public Resource exportPropertiesXlsx() {
     return downloadXlsx(
         "properties.xlsx",
         () ->
@@ -152,7 +153,7 @@ public class BookletController implements BookletsApi {
 
   // ── Payments ────────────────────────────────────────────────────────────
   @Override
-  public byte[] exportPaymentsCsv() {
+  public Resource exportPaymentsCsv() {
     return downloadCsv(
         "payments.csv",
         () ->
@@ -160,7 +161,7 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
-  public byte[] exportPaymentsXlsx() {
+  public Resource exportPaymentsXlsx() {
     return downloadXlsx(
         "payments.xlsx",
         () ->
@@ -180,7 +181,7 @@ public class BookletController implements BookletsApi {
 
   // ── Expenses ────────────────────────────────────────────────────────────
   @Override
-  public byte[] exportExpensesCsv() {
+  public Resource exportExpensesCsv() {
     return downloadCsv(
         "expenses.csv",
         () ->
@@ -188,7 +189,7 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
-  public byte[] exportExpensesXlsx() {
+  public Resource exportExpensesXlsx() {
     return downloadXlsx(
         "expenses.xlsx",
         () ->
@@ -208,7 +209,7 @@ public class BookletController implements BookletsApi {
 
   // ── Contracts ───────────────────────────────────────────────────────────
   @Override
-  public byte[] exportContractsCsv() {
+  public Resource exportContractsCsv() {
     return downloadCsv(
         "contracts.csv",
         () ->
@@ -217,7 +218,7 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
-  public byte[] exportContractsXlsx() {
+  public Resource exportContractsXlsx() {
     return downloadXlsx(
         "contracts.xlsx",
         () ->
@@ -236,17 +237,17 @@ public class BookletController implements BookletsApi {
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────
-  private byte[] downloadCsv(String filename, java.util.function.Supplier<byte[]> generator) {
+  private Resource downloadCsv(String filename, java.util.function.Supplier<byte[]> generator) {
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + filename);
     httpServletResponse.setContentType("text/csv");
-    return generator.get();
+    return new ByteArrayResource(generator.get());
   }
 
-  private byte[] downloadXlsx(String filename, java.util.function.Supplier<byte[]> generator) {
+  private Resource downloadXlsx(String filename, java.util.function.Supplier<byte[]> generator) {
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + filename);
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    return generator.get();
+    return new ByteArrayResource(generator.get());
   }
 
   @FunctionalInterface
@@ -269,15 +270,16 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
-  public byte[] exportContractBooklet(ContractIdentifier contractIdentifier) {
+  public Resource exportContractBooklet(
+      ContractIdentifier contractIdentifier, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    Locale locale =
-        resolveLocale(Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
+    Locale locale = resolveLocale(lang.orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contract-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateContractReportPDF(
-        contractIdentifier, principal.requireTeamId(), locale);
+    return new ByteArrayResource(
+        exportService.generateContractReportPDF(
+            contractIdentifier, principal.requireTeamId(), locale));
   }
 
   private static Locale resolveLocale(String lang) {
@@ -288,41 +290,38 @@ public class BookletController implements BookletsApi {
   }
 
   // ── One-page summary cards (A4 landscape) ─────────────────────────────────
-  @GetMapping("/contracts/{contractId}/summary")
-  public ResponseEntity<byte[]> getContractSummary(
-      @PathVariable ContractIdentifier contractId, @RequestParam(defaultValue = "en") String lang) {
+  @Override
+  public Resource getContractSummary(ContractIdentifier contractId, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     byte[] pdf =
         exportService.generateContractSummaryPDF(
-            contractId, principal.requireTeamId(), resolveLocale(lang));
-    return summaryResponse("contract-" + contractId.value(), pdf);
+            contractId, principal.requireTeamId(), resolveLocale(lang.orElse("en")));
+    return summaryResource("contract-" + contractId.value(), pdf);
   }
 
-  @GetMapping("/properties/{propertyId}/summary")
-  public ResponseEntity<byte[]> getPropertySummary(
-      @PathVariable PropertyIdentifier propertyId, @RequestParam(defaultValue = "en") String lang) {
+  @Override
+  public Resource getPropertySummary(PropertyIdentifier propertyId, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     byte[] pdf =
         exportService.generatePropertySummaryPDF(
-            propertyId, principal.requireTeamId(), resolveLocale(lang));
-    return summaryResponse("property-" + propertyId.value(), pdf);
+            propertyId, principal.requireTeamId(), resolveLocale(lang.orElse("en")));
+    return summaryResource("property-" + propertyId.value(), pdf);
   }
 
-  @GetMapping("/contacts/{contactId}/summary")
-  public ResponseEntity<byte[]> getContactSummary(
-      @PathVariable ContactIdentifier contactId, @RequestParam(defaultValue = "en") String lang) {
+  @Override
+  public Resource getContactSummary(ContactIdentifier contactId, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     byte[] pdf =
         exportService.generateContactSummaryPDF(
-            contactId, principal.requireTeamId(), resolveLocale(lang));
-    return summaryResponse("contact-" + contactId.value(), pdf);
+            contactId, principal.requireTeamId(), resolveLocale(lang.orElse("en")));
+    return summaryResource("contact-" + contactId.value(), pdf);
   }
 
-  private static ResponseEntity<byte[]> summaryResponse(String name, byte[] pdf) {
-    return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + name + "-summary.pdf")
-        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_PDF_VALUE)
-        .body(pdf);
+  private Resource summaryResource(String name, byte[] pdf) {
+    httpServletResponse.setHeader(
+        "Content-Disposition", "attachment; filename=" + name + "-summary.pdf");
+    httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
+    return new ByteArrayResource(pdf);
   }
 
   @GetMapping("/contracts/{contractId}/extensions/{extensionId}/addendum")

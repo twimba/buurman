@@ -417,6 +417,7 @@
                                 <importMapping>CategoryExpenseSummary=com.buurman.dto.response.CategoryExpenseSummary</importMapping>
                                 <importMapping>CompleteOnboardingRequest=com.buurman.dto.request.CompleteOnboardingRequest</importMapping>
                                 <importMapping>CommercialDetailsResponse=com.buurman.dto.response.CommercialDetailsResponse</importMapping>
+                                <importMapping>ContractExtensionResponse=com.buurman.dto.response.ContractExtensionResponse</importMapping>
                                 <importMapping>ContractPartyResponse=com.buurman.dto.response.ContractPartyResponse</importMapping>
                                 <importMapping>ContractPaymentInstructionResponse=com.buurman.dto.response.ContractPaymentInstructionResponse</importMapping>
                                 <importMapping>ContractResponse=com.buurman.dto.response.ContractResponse</importMapping>
@@ -435,6 +436,7 @@
                                 <importMapping>ExpenseResponse=com.buurman.dto.response.ExpenseResponse</importMapping>
                                 <importMapping>ExpenseStatsResponse=com.buurman.dto.response.ExpenseStatsResponse</importMapping>
                                 <importMapping>ExpenseSummaryResponse=com.buurman.dto.response.ExpenseSummaryResponse</importMapping>
+                                <importMapping>FeatureFlagState=com.buurman.dto.response.FeatureFlagState</importMapping>
                                 <importMapping>FinancialOverviewResponse=com.buurman.dto.response.FinancialOverviewResponse</importMapping>
                                 <importMapping>FinancingPaymentResponse=com.buurman.dto.response.FinancingPaymentResponse</importMapping>
                                 <importMapping>GeocodeResponse=com.buurman.dto.response.GeocodeResponse</importMapping>

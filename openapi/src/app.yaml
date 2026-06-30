@@ -457,6 +457,8 @@ paths:
     $ref: 'paths/dashboard.yaml#/dashboard-recent-activities'
   /dashboard/upcoming-renewals:
     $ref: 'paths/dashboard.yaml#/dashboard-upcoming-renewals'
+  /dashboard/pending-extensions:
+    $ref: 'paths/dashboard.yaml#/dashboard-pending-extensions'
   /imports/upload:
     $ref: 'paths/imports.yaml#/upload'
   /imports/preview:
@@ -517,6 +519,12 @@ paths:
     $ref: 'paths/documents.yaml#/booklets-property-item'
   /booklets/contract/{contractIdentifier}:
     $ref: 'paths/documents.yaml#/booklets-contract-item'
+  /contracts/{contractIdentifier}/summary:
+    $ref: 'paths/documents.yaml#/contract-summary'
+  /properties/{propertyIdentifier}/summary:
+    $ref: 'paths/documents.yaml#/property-summary'
+  /contacts/{contactIdentifier}/summary:
+    $ref: 'paths/documents.yaml#/contact-summary'
   /jurisdiction-defaults:
     $ref: 'paths/jurisdiction-defaults.yaml#/jurisdiction-defaults'
   /audit-logs:
@@ -702,7 +710,7 @@ components:
       type: string
       description: WWS calculation identifier
       example: "wws_01JGRM5N7GWRR8PQZRVP8T4M1H"
-    Entry:
+    NotificationTypePreferenceRequestEntry:
       type: object
       properties:
         notificationType:
@@ -715,13 +723,30 @@ components:
         - emailEnabled
         - notificationType
         - smsEnabled
+    NotificationTypePreferenceResponseEntry:
+      type: object
+      description: Notification-type preference as returned by the API (includes display label)
+      properties:
+        notificationType:
+          type: string
+        displayName:
+          type: string
+        emailEnabled:
+          type: boolean
+        smsEnabled:
+          type: boolean
+      required:
+        - displayName
+        - emailEnabled
+        - notificationType
+        - smsEnabled
     UpdateNotificationTypePreferencesRequest:
       type: object
       properties:
         preferences:
           type: array
           items:
-            $ref: "#/components/schemas/Entry"
+            $ref: "#/components/schemas/NotificationTypePreferenceRequestEntry"
       required:
         - preferences
     NotificationTypePreferencesResponse:
@@ -742,7 +767,7 @@ components:
         preferences:
           type: array
           items:
-            $ref: "#/components/schemas/Entry"
+            $ref: "#/components/schemas/NotificationTypePreferenceResponseEntry"
       required:
         - emailAvailable
         - globalEmailEnabled
@@ -3358,7 +3383,6 @@ components:
           type: boolean
       required:
         - contractType
-        - countryMetadata
         - paymentFrequency
         - propertyIdentifier
         - rentAmount
@@ -5793,7 +5817,6 @@ components:
           type: boolean
       required:
         - contractType
-        - countryMetadata
         - parties
         - paymentFrequency
         - propertyIdentifier
@@ -6002,6 +6025,11 @@ components:
           type: string
         registrationInvitationCode:
           type: string
+        language:
+          type: string
+          description: Initial user locale (ISO 639-1)
+          default: en
+          pattern: "[a-z]{2}"
       required:
         - email
         - firstName
@@ -6680,6 +6708,15 @@ components:
           type: boolean
       required:
         - invitationRequired
+    FeatureFlagState:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        value:
+          nullable: true
+      required:
+        - enabled
     EntityPrefixInfo:
       type: object
       properties:

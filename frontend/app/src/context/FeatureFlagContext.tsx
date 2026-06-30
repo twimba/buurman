@@ -1,7 +1,10 @@
 import { createContext, useContext, ReactNode, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getFeatureFlags, FeatureFlagsResponse } from '../api/featureFlags';
+import { getFeatureFlags } from '../generated/api/feature-flags/feature-flags';
+import type { FeatureFlagState } from '../generated/models';
 import { useAuth } from './AuthContext';
+
+type FeatureFlagsResponse = Record<string, FeatureFlagState>;
 
 interface FeatureFlagContextType {
   flags: FeatureFlagsResponse;
@@ -19,7 +22,7 @@ export const FeatureFlagProvider = ({ children }: { children: ReactNode }) => {
 
   const { data: flags = {}, isLoading } = useQuery({
     queryKey: ['feature-flags'],
-    queryFn: getFeatureFlags,
+    queryFn: () => getFeatureFlags(),
     staleTime: 60_000,
     enabled: isAuthenticated && !!token,
   });

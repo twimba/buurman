@@ -16,10 +16,7 @@ import {
   useDeleteRateLimitBucket,
   useDeleteRateLimitBucketsByConfigKey,
 } from '../hooks/useRateLimitBuckets';
-import type {
-  RateLimitConfigSummary,
-  RateLimitBucketEntry,
-} from '../api/rateLimitBuckets';
+import type { RateLimitConfigSummary, RateLimitBucketEntry } from '../types';
 
 // Format future relative time ("in 45s", "in 2m", "in 1h")
 const formatExpiresIn = (isoString: string): string => {
@@ -188,7 +185,7 @@ const BucketRow = ({
         <div className="flex items-center gap-1.5">
           <Clock className="h-3.5 w-3.5 text-text-muted" />
           <span className="text-xs text-text-secondary">
-            {formatExpiresIn(bucket.expiresAt)}
+            {bucket.expiresAt ? formatExpiresIn(bucket.expiresAt) : 'N/A'}
           </span>
         </div>
       </td>

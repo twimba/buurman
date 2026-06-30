@@ -1,5 +1,5 @@
 import { ExternalLink, X } from 'lucide-react';
-import type { GoogleSheetExportResult } from '@/api/googleSheetsExport';
+import type { GoogleSheetExportResponse as GoogleSheetExportResult } from '@/generated/models';
 
 interface GoogleSheetExportPillProps {
   result: GoogleSheetExportResult | null;

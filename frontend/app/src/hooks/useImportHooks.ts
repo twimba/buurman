@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
   uploadImportFile,
   previewImport,
@@ -13,12 +14,10 @@ import type {
   ImportExecuteRequest,
 } from '@/generated/models';
 import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '@/utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useUploadImportFile = () => {
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       file,
       headerRow = true,
@@ -26,26 +25,19 @@ export const useUploadImportFile = () => {
       file: File;
       headerRow?: boolean;
     }) => uploadImportFile({ file }, { headerRow }),
-    onError: (error: unknown) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const usePreviewImport = () => {
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (request: ImportPreviewRequest) => previewImport(request),
-    onError: (error: unknown) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useExecuteImport = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (request: ImportExecuteRequest) => executeImport(request),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
@@ -54,9 +46,6 @@ export const useExecuteImport = () => {
         `Successfully imported ${data.importedCount} contacts`,
         'success'
       );
-    },
-    onError: (error: unknown) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -79,7 +68,7 @@ export const useImportDetail = (identifier: string | null) => {
 export const useRevertImport = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (identifier: string) => revertImport(identifier),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.imports.all() });
@@ -89,18 +78,11 @@ export const useRevertImport = () => {
         'info'
       );
     },
-    onError: (error: unknown) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useDownloadErrorReport = () => {
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (identifier: string) => downloadImportErrorReport(identifier),
-    onError: (error: unknown) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };

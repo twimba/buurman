@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { X, Send, Loader2, Mail, MessageSquare } from 'lucide-react';
 import { useSendRegistrationInvitation } from '../hooks/useRegistrationInvitations';
-import type { RegistrationInvitation } from '../api/registrationInvitations';
+import type { RegistrationInvitationResponse } from '../generated/models';
 
 interface Props {
-  invitation: RegistrationInvitation;
+  invitation: Pick<RegistrationInvitationResponse, 'identifier' | 'code'>;
   onClose: () => void;
 }
 

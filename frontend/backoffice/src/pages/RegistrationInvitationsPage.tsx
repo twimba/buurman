@@ -27,7 +27,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SortableHeader } from '../components/SortableHeader';
 import { CreateRegistrationInvitationModal } from '../components/CreateRegistrationInvitationModal';
 import { SendRegistrationInvitationModal } from '../components/SendRegistrationInvitationModal';
-import type { RegistrationInvitation } from '../api/registrationInvitations';
+import type { RegistrationInvitationResponse as RegistrationInvitation } from '../generated/models';
 
 const STATUS_STYLES: Record<string, string> = {
   ACTIVE: 'bg-success-bg text-success-text border-success-border',
@@ -452,11 +452,11 @@ export function RegistrationInvitationsPage() {
             </table>
           </div>
 
-          {data && data.totalPages > 1 && (
+          {data && (data.totalPages ?? 0) > 1 && (
             <Pagination
               page={page}
-              totalPages={data.totalPages}
-              totalElements={data.totalElements}
+              totalPages={data.totalPages ?? 0}
+              totalElements={data.totalElements ?? 0}
               size={size}
               onPageChange={handlePageChange}
               onSizeChange={handleSizeChange}

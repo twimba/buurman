@@ -7,13 +7,13 @@ import {
   getPropertyComparison,
   getOccupancyTrend,
   getTaxSummary,
-} from '@/api/reports';
+} from '../generated/api/reports/reports';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useDataDateRange = () => {
   return useQuery({
     queryKey: queryKeys.reports.dataDateRange(),
-    queryFn: getDataDateRange,
+    queryFn: () => getDataDateRange(),
     staleTime: 5 * 60 * 1000,
   });
 };
@@ -33,7 +33,12 @@ export const useFinancialOverview = (
       currency
     ),
     queryFn: () =>
-      getFinancialOverview(startDate, endDate, propertyIds, currency),
+      getFinancialOverview({
+        startDate,
+        endDate,
+        propertyIdentifiers: propertyIds,
+        currency,
+      }),
     enabled,
   });
 };
@@ -46,7 +51,11 @@ export const useIncomeTrend = (
 ) => {
   return useQuery({
     queryKey: queryKeys.reports.incomeTrend(startDate, endDate, propertyIds),
-    queryFn: () => getIncomeTrend(startDate, endDate, 12, propertyIds),
+    queryFn: () =>
+      getIncomeTrend({
+        ...(startDate && endDate ? { startDate, endDate } : { months: 12 }),
+        propertyIdentifiers: propertyIds,
+      }),
     enabled,
   });
 };
@@ -63,7 +72,12 @@ export const useExpenseBreakdown = (
       endDate,
       propertyIds
     ),
-    queryFn: () => getExpenseBreakdown(startDate, endDate, propertyIds),
+    queryFn: () =>
+      getExpenseBreakdown({
+        startDate,
+        endDate,
+        propertyIdentifiers: propertyIds,
+      }),
     enabled,
   });
 };
@@ -80,7 +94,12 @@ export const usePropertyComparison = (
       endDate,
       propertyIds
     ),
-    queryFn: () => getPropertyComparison(startDate, endDate, propertyIds),
+    queryFn: () =>
+      getPropertyComparison({
+        startDate,
+        endDate,
+        propertyIdentifiers: propertyIds,
+      }),
     enabled,
   });
 };
@@ -92,7 +111,10 @@ export const useOccupancyTrend = (
 ) => {
   return useQuery({
     queryKey: queryKeys.reports.occupancyTrend(startDate, endDate),
-    queryFn: () => getOccupancyTrend(startDate, endDate),
+    queryFn: () =>
+      getOccupancyTrend(
+        startDate && endDate ? { startDate, endDate } : { months: 12 }
+      ),
     enabled,
   });
 };
@@ -100,7 +122,7 @@ export const useOccupancyTrend = (
 export const useTaxSummary = (year: number, enabled: boolean = true) => {
   return useQuery({
     queryKey: queryKeys.reports.taxSummary(year),
-    queryFn: () => getTaxSummary(year),
+    queryFn: () => getTaxSummary({ year }),
     enabled,
   });
 };

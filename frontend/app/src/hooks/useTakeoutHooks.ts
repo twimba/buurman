@@ -1,12 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
   requestTakeout,
   listTakeouts,
   getTakeout,
   deleteTakeout,
-  TakeoutResponse,
-} from '@/api/takeouts';
-import { PageResponse } from '@/types/common';
+} from '@/generated/api/data-takeout/data-takeout';
+import type { PageResponseTakeoutResponse } from '@/generated/models';
 import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
@@ -44,15 +44,15 @@ export const useRequestTakeout = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: requestTakeout,
+    mutationFn: () => requestTakeout(),
     onSuccess: (newTakeout) => {
-      queryClient.setQueryData<PageResponse<TakeoutResponse> | undefined>(
+      queryClient.setQueryData<PageResponseTakeoutResponse | undefined>(
         queryKeys.takeouts.list(),
         (old) => {
           if (!old) {
             return undefined;
           }
-          return { ...old, content: [newTakeout, ...old.content] };
+          return { ...old, content: [newTakeout, ...(old.content ?? [])] };
         }
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.takeouts.root });
@@ -69,11 +69,11 @@ export const useRequestTakeout = () => {
 
 export const useDeleteTakeout = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: deleteTakeout,
+  return useMutationWithToast({
+    successMessage: 'Data export deleted.',
+    mutationFn: (identifier: string) => deleteTakeout(identifier),
     onSuccess: (_data, identifier) => {
-      queryClient.setQueryData<PageResponse<TakeoutResponse> | undefined>(
+      queryClient.setQueryData<PageResponseTakeoutResponse | undefined>(
         queryKeys.takeouts.list(),
         (old) => {
           if (!old) {
@@ -81,15 +81,13 @@ export const useDeleteTakeout = () => {
           }
           return {
             ...old,
-            content: old.content.filter((t) => t.identifier !== identifier),
+            content: (old.content ?? []).filter(
+              (t) => t.identifier !== identifier
+            ),
           };
         }
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.takeouts.root });
-      showToast('Data export deleted.', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

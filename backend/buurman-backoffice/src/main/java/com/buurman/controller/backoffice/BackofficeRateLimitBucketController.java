@@ -1,16 +1,14 @@
 package com.buurman.controller.backoffice;
 
-import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.dto.response.backoffice.RateLimitBucketDeleteResponse;
+import com.buurman.dto.response.backoffice.RateLimitBucketPageResponse;
+import com.buurman.dto.response.backoffice.RateLimitBucketResponse;
+import com.buurman.dto.response.backoffice.RateLimitBucketSummaryResponse;
+import com.buurman.generated.backoffice.api.BackofficeRateLimitsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.service.backoffice.BackofficeRateLimitBucketService;
 
@@ -18,40 +16,43 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/backoffice/rate-limits/buckets")
-public class BackofficeRateLimitBucketController {
+public class BackofficeRateLimitBucketController implements BackofficeRateLimitsApi {
+
+  private static final int MAX_PAGE_SIZE = 200;
 
   private final BackofficeRateLimitBucketService bucketService;
 
-  @GetMapping
-  public Map<String, Object> listBuckets(
-      @RequestParam Optional<String> configKey,
-      @RequestParam Optional<String> clientIp,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "50") int size) {
-    return bucketService.listBuckets(configKey, clientIp, page, Math.min(size, 200));
+  @Override
+  public RateLimitBucketPageResponse listRateLimitBuckets(
+      Optional<String> configKey,
+      Optional<String> clientIp,
+      Optional<Integer> page,
+      Optional<Integer> size) {
+    return bucketService.listBuckets(
+        configKey, clientIp, page.orElse(0), Math.min(size.orElse(50), MAX_PAGE_SIZE));
   }
 
-  @GetMapping("/summary")
-  public Map<String, Object> getSummary() {
+  @Override
+  public RateLimitBucketSummaryResponse getRateLimitSummary() {
     return bucketService.getSummary();
   }
 
-  @GetMapping("/{bucketId}")
-  public Map<String, Object> getBucket(@PathVariable String bucketId) {
+  @Override
+  public RateLimitBucketResponse getRateLimitBucket(String bucketId) {
     return bucketService.getBucket(bucketId);
   }
 
-  @DeleteMapping("/{bucketId}")
-  public ResponseEntity<Void> deleteBucket(@PathVariable String bucketId) {
-    String actor = SecurityUtils.getBackofficePrincipal().getEmail().orElse("unknown");
-    bucketService.deleteBucket(bucketId, actor);
-    return ResponseEntity.noContent().build();
+  @Override
+  public void deleteRateLimitBucket(String bucketId) {
+    bucketService.deleteBucket(bucketId, actor());
   }
 
-  @DeleteMapping
-  public Map<String, Object> deleteBucketsByConfigKey(@RequestParam String configKey) {
-    String actor = SecurityUtils.getBackofficePrincipal().getEmail().orElse("unknown");
-    return bucketService.deleteBucketsByConfigKey(configKey, actor);
+  @Override
+  public RateLimitBucketDeleteResponse deleteRateLimitBucketsByConfigKey(String configKey) {
+    return bucketService.deleteBucketsByConfigKey(configKey, actor());
+  }
+
+  private String actor() {
+    return SecurityUtils.getBackofficePrincipal().getEmail().orElse("unknown");
   }
 }

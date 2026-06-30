@@ -1,59 +1,19 @@
-export interface ContractExtensionResponse {
-  identifier: string;
-  contractIdentifier: string;
-  extensionNumber: number;
-  previousEndDate: string;
-  newEndDate?: string;
-  previousRentAmount: number;
-  previousRentCurrency: string;
-  newRentAmount: number;
-  newRentCurrency: string;
-  rentAdjustmentType: RentAdjustmentType;
-  rentAdjustmentValue?: number;
-  status: ExtensionStatus;
-  triggerType: TriggerType;
-  notes?: string;
-  declinedReason?: string;
-  activatedAt?: string;
-  confirmedAt?: string;
-  supersededAt?: string;
-  createdAt: string;
-}
+// Thin re-exports of generated models. Frontend-only content kept below.
 
-export type ExtensionStatus =
-  'DRAFT' | 'ACTIVE' | 'SUPERSEDED' | 'CANCELLED' | 'DECLINED';
-export type TriggerType = 'MANUAL' | 'AUTO';
-export type RentAdjustmentType =
-  'NONE' | 'FIXED_PERCENTAGE' | 'FIXED_AMOUNT' | 'MANUAL';
-export type RenewalMode = 'NONE' | 'AUTOMATIC' | 'MANUAL';
-export type LandlordType = 'NATURAL_PERSON' | 'LEGAL_ENTITY';
+export type { ContractExtensionResponse } from '../generated/models';
+export type { CreateContractExtensionRequest } from '../generated/models';
+export type { DeclineContractExtensionRequest } from '../generated/models';
+export type { UpcomingRenewalResponse } from '../generated/models';
+export type { JurisdictionDefaultResponse } from '../generated/models';
 
-export interface CreateContractExtensionRequest {
-  newEndDate?: string;
-  newRentAmount?: number;
-  rentAdjustmentType?: RentAdjustmentType;
-  rentAdjustmentValue?: number;
-  notes?: string;
-}
-
-export interface DeclineContractExtensionRequest {
-  reason?: string;
-}
-
-export interface UpcomingRenewalResponse {
-  contractIdentifier: string;
-  propertyName?: string;
-  contactName?: string;
-  effectiveEndDate: string;
-  renewalMode: RenewalMode;
-  renewalTermMonths?: number;
-  currentRentAmount: number;
-  currency: string;
-  daysUntilExpiry: number;
-}
-
-export interface JurisdictionDefaultResponse {
-  countryCode: string;
-  defaults: Record<string, string>;
-  disclaimer: string;
-}
+// Enums — re-exported as values (orval enums are const + type of the same name)
+export { ExtensionStatus } from '../generated/models';
+export type { ExtensionStatus as ExtensionStatusValue } from '../generated/models';
+export { TriggerType } from '../generated/models';
+export type { TriggerType as TriggerTypeValue } from '../generated/models';
+export { RentAdjustmentType } from '../generated/models';
+export type { RentAdjustmentType as RentAdjustmentTypeValue } from '../generated/models';
+export { RenewalMode } from '../generated/models';
+export type { RenewalMode as RenewalModeValue } from '../generated/models';
+export { LandlordType } from '../generated/models';
+export type { LandlordType as LandlordTypeValue } from '../generated/models';

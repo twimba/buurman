@@ -12,6 +12,9 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Serialize array query params as repeated keys without `[]` brackets
+  // (`group=a&group=b`) so Spring's `@RequestParam List<...>` binds them.
+  paramsSerializer: { indexes: null },
 });
 
 // Request interceptor: Attach JWT token

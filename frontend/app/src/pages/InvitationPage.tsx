@@ -11,7 +11,7 @@ import {
   LogIn,
   UserPlus,
 } from 'lucide-react';
-import { getInvitation } from '../api/teams';
+import { getInvitation } from '../generated/api/invitations/invitations';
 import { useAcceptInvitation } from '../hooks/useTeamHooks';
 import { useAuth } from '../context/AuthContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -223,7 +223,7 @@ export const InvitationPage = () => {
               <span className="font-medium">
                 {t('common:invitation.expires')}
               </span>{' '}
-              {formatDate(invitation.expiresAt)}
+              {formatDate(invitation.expiresAt ?? '')}
             </p>
           </div>
         </div>

@@ -341,13 +341,13 @@ export const UsersPage = () => {
       </div>
 
       {/* Pagination */}
-      {data && data.totalElements > 0 && (
+      {data && (data.totalElements ?? 0) > 0 && (
         <div className="mt-4">
           <Pagination
-            page={data.page}
-            totalPages={data.totalPages}
-            totalElements={data.totalElements}
-            size={data.size}
+            page={data.page ?? 0}
+            totalPages={data.totalPages ?? 0}
+            totalElements={data.totalElements ?? 0}
+            size={data.size ?? 0}
             onPageChange={handlePageChange}
             onSizeChange={handleSizeChange}
           />

@@ -31,17 +31,18 @@ import {
 import { useTheme } from '@/context/ThemeContext';
 import { usePropertyDashboard } from '@/hooks/usePropertyHooks';
 import {
-  exportPropertyDashboardPDF,
-  exportPropertyDashboardCSV,
-  exportPropertyDashboardExcel,
-} from '@/api/properties';
+  exportPdf,
+  exportCsv,
+  exportExcel,
+} from '@/generated/api/property-dashboard/property-dashboard';
 import { LoadingSpinner } from '@buurman/ui';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { ExportOptionIcon } from '@/components/common/ExportOptionIcon';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { useGoogleSheetsExport } from '@/hooks/useGoogleSheetsExport';
-import { exportPropertyDashboardGoogleSheet } from '@/api/googleSheetsExport';
+import { exportPropertyDashboardGoogleSheet } from '@/generated/api/property-dashboard/property-dashboard';
+import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 import { GoogleSheetExportPill } from '@/components/common/GoogleSheetExportPill';
 import { MetricHint } from '@/components/common/MetricHint';
 import type {
@@ -328,16 +329,16 @@ export const PropertyDashboardTab = ({
       let mimeType: string;
       let ext: string;
       if (format === 'pdf') {
-        blob = await exportPropertyDashboardPDF(propertyId, months);
+        blob = await exportPdf(propertyId, { months });
         mimeType = 'application/pdf';
         ext = 'pdf';
       } else if (format === 'excel') {
-        blob = await exportPropertyDashboardExcel(propertyId, months);
+        blob = await exportExcel(propertyId, { months });
         mimeType =
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
         ext = 'xlsx';
       } else {
-        blob = await exportPropertyDashboardCSV(propertyId, months);
+        blob = await exportCsv(propertyId, { months });
         mimeType = 'text/csv';
         ext = 'csv';
       }
@@ -470,8 +471,9 @@ export const PropertyDashboardTab = ({
                         triggerGoogleSheet((token) =>
                           exportPropertyDashboardGoogleSheet(
                             propertyId,
-                            token,
-                            months
+                            { accessToken: token },
+                            { months },
+                            { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
                           )
                         ),
                     },

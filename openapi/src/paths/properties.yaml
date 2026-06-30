@@ -3578,10 +3578,10 @@ dashboard-export-pdf:
       "200":
         description: OK
         content:
-          "*/*":
+          application/pdf:
             schema:
               type: string
-              format: byte
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:
@@ -3646,10 +3646,10 @@ dashboard-export-csv:
       "200":
         description: OK
         content:
-          "*/*":
+          text/csv:
             schema:
               type: string
-              format: byte
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:
@@ -3717,7 +3717,7 @@ dashboard-export-excel:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
-              format: byte
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:

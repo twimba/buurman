@@ -4,7 +4,9 @@ export interface PageParams {
   page?: number;
   size?: number;
   sort?: string;
-  direction?: 'asc' | 'desc';
+  // Uppercase to match the API's SortDirection enum; the hook keeps a lowercase
+  // `direction` for UI (sort arrows) and uppercases it here for the request.
+  direction?: 'ASC' | 'DESC';
 }
 
 interface UsePaginationOptions {
@@ -21,7 +23,12 @@ export const usePagination = (options: UsePaginationOptions = {}) => {
     options.defaultDirection ?? 'desc'
   );
 
-  const pageParams: PageParams = { page, size, sort, direction };
+  const pageParams: PageParams = {
+    page,
+    size,
+    sort,
+    direction: direction.toUpperCase() as 'ASC' | 'DESC',
+  };
 
   const handlePageChange = useCallback(
     (newPage: number) => setPage(newPage),

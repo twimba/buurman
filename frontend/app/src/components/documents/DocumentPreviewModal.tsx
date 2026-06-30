@@ -95,7 +95,7 @@ export const DocumentPreviewModal = ({
     }
   };
 
-  const isImage = document.mimeType.startsWith('image/');
+  const isImage = document.mimeType?.startsWith('image/') ?? false;
   const isPDF = document.mimeType === 'application/pdf';
   const canPreview = isImage || isPDF;
   const showPosition =

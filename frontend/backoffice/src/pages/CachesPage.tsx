@@ -15,7 +15,7 @@ import {
   useCacheDetail,
   useInvalidateCache,
 } from '../hooks/useCaches';
-import type { CacheInfo } from '../api/caches';
+import type { CacheInfoResponse } from '../generated/models';
 
 // Helper to format relative time
 const formatRelativeTime = (isoString: string | null): string => {
@@ -149,7 +149,7 @@ const CacheEntryView = ({
 };
 
 // CacheCard component
-const CacheCard = ({ cache }: { cache: CacheInfo }) => {
+const CacheCard = ({ cache }: { cache: CacheInfoResponse }) => {
   const [expanded, setExpanded] = useState(false);
   const [showInvalidateDialog, setShowInvalidateDialog] = useState(false);
   const invalidateCache = useInvalidateCache();
@@ -263,7 +263,7 @@ const CacheCard = ({ cache }: { cache: CacheInfo }) => {
           <span>
             Last Invalidated:{' '}
             <span className="font-medium text-text-secondary">
-              {formatRelativeTime(cache.lastInvalidatedAt)}
+              {formatRelativeTime(cache.lastInvalidatedAt ?? null)}
             </span>
           </span>
         </div>

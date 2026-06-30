@@ -3,7 +3,7 @@ import { StatusBadge, type BadgeColorVariant } from '@buurman/ui';
 import { NotificationStatus } from '@/types/notification';
 
 const statusConfig: Record<
-  NotificationStatus,
+  string,
   { labelKey: string; color: BadgeColorVariant }
 > = {
   [NotificationStatus.PENDING]: {
@@ -41,7 +41,7 @@ const statusConfig: Record<
 };
 
 interface NotificationStatusBadgeProps {
-  status: NotificationStatus;
+  status: string;
 }
 
 export const NotificationStatusBadge = ({

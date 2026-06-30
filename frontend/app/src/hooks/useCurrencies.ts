@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { getCurrencies, CurrencyInfo } from '../api/reference';
+import { getCurrencies } from '../generated/api/reference/reference';
+import type { CurrencyInfo } from '../generated/models';
 import { queryKeys } from '../lib/queryKeys';
 
 export const useCurrencies = () => {
   return useQuery({
     queryKey: queryKeys.currencies.all(),
-    queryFn: getCurrencies,
+    queryFn: () => getCurrencies(),
     staleTime: Infinity,
   });
 };
@@ -45,7 +46,7 @@ export const splitCurrencies = (
   const top: CurrencyInfo[] = [];
   const other: CurrencyInfo[] = [];
   for (const c of currencies) {
-    if (TOP_SET.has(c.code)) {
+    if (c.code !== undefined && TOP_SET.has(c.code)) {
       top.push(c);
     } else {
       other.push(c);
@@ -54,9 +55,10 @@ export const splitCurrencies = (
   // Preserve the predefined order for top currencies
   top.sort(
     (a, b) =>
-      TOP_CURRENCY_CODES.indexOf(a.code) - TOP_CURRENCY_CODES.indexOf(b.code)
+      TOP_CURRENCY_CODES.indexOf(a.code ?? '') -
+      TOP_CURRENCY_CODES.indexOf(b.code ?? '')
   );
-  other.sort((a, b) => a.name.localeCompare(b.name));
+  other.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
   return { top, other };
 };
 

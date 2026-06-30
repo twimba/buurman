@@ -1,12 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
   getOnboardingStatus,
   completeOnboarding,
+} from '../generated/api/onboarding/onboarding';
+import {
   getCountryCurrencies,
   changeCurrency,
+} from '../generated/api/currency/currency';
+import type {
   CompleteOnboardingRequest,
   CurrencyChangeRequest,
-} from '../api/onboarding';
+} from '../types/onboarding';
 import { useAuth } from '../context/AuthContext';
 import { queryKeys } from '../lib/queryKeys';
 
@@ -22,7 +27,7 @@ export const useOnboardingStatus = () => {
 
 export const useCompleteOnboarding = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (request: CompleteOnboardingRequest) =>
       completeOnboarding(request),
     onSuccess: () => {
@@ -44,7 +49,7 @@ export const useCountryCurrencies = () => {
 
 export const useChangeCurrency = (teamIdentifier: string) => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (request: CurrencyChangeRequest) =>
       changeCurrency(teamIdentifier, request),
     onSuccess: () => {

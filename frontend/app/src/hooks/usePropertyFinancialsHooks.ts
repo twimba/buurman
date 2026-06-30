@@ -1,5 +1,48 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as financialsApi from '../api/propertyFinancials';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import { getFinancialSummary } from '../generated/api/property-financials/property-financials';
+import {
+  getAcquisition,
+  upsertAcquisition,
+} from '../generated/api/property-acquisitions/property-acquisitions';
+import {
+  listValuations as getValuations,
+  getLatestValuation,
+  createValuation,
+  updateValuation,
+  deleteValuation,
+} from '../generated/api/property-valuations/property-valuations';
+import {
+  listFinancings as getFinancings,
+  createFinancing,
+  updateFinancing,
+  deleteFinancing,
+  listPayments as getFinancingPayments,
+  createFinancingPayment,
+  updateFinancingPayment,
+  deleteFinancingPayment,
+  getFinancingPaymentDocuments,
+  uploadFinancingPaymentDocument,
+  deleteFinancingPaymentDocument,
+} from '../generated/api/property-financings/property-financings';
+import {
+  listInsurances as getInsurances,
+  createInsurance,
+  updateInsurance,
+  deleteInsurance,
+} from '../generated/api/property-insurances/property-insurances';
+import {
+  listTaxes as getTaxes,
+  createTax,
+  updateTax,
+  deleteTax,
+} from '../generated/api/property-taxes/property-taxes';
+import {
+  listFees as getFees,
+  createFee,
+  updateFee,
+  deleteFee,
+} from '../generated/api/property-fees/property-fees';
 import {
   UpsertAcquisitionRequest,
   CreateValuationRequest,
@@ -15,8 +58,6 @@ import {
   CreateFeeRequest,
   UpdateFeeRequest,
 } from '../types/propertyFinancials';
-import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
 
 // ---------------------------------------------------------------------------
@@ -26,7 +67,7 @@ import { queryKeys } from '../lib/queryKeys';
 export const useFinancialSummary = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.propertyFinancials.summary(propertyId),
-    queryFn: () => financialsApi.getFinancialSummary(propertyId ?? ''),
+    queryFn: () => getFinancialSummary(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -34,7 +75,7 @@ export const useFinancialSummary = (propertyId: string | undefined) => {
 export const useAcquisition = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.propertyFinancials.acquisition(propertyId),
-    queryFn: () => financialsApi.getAcquisition(propertyId ?? ''),
+    queryFn: () => getAcquisition(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -42,7 +83,7 @@ export const useAcquisition = (propertyId: string | undefined) => {
 export const useValuations = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.propertyFinancials.valuations(propertyId),
-    queryFn: () => financialsApi.getValuations(propertyId ?? ''),
+    queryFn: () => getValuations(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -50,7 +91,7 @@ export const useValuations = (propertyId: string | undefined) => {
 export const useLatestValuation = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.propertyFinancials.latestValuation(propertyId),
-    queryFn: () => financialsApi.getLatestValuation(propertyId ?? ''),
+    queryFn: () => getLatestValuation(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -58,7 +99,7 @@ export const useLatestValuation = (propertyId: string | undefined) => {
 export const useFinancings = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.propertyFinancials.financings(propertyId),
-    queryFn: () => financialsApi.getFinancings(propertyId ?? ''),
+    queryFn: () => getFinancings(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -72,8 +113,7 @@ export const useFinancingPayments = (
       propertyId,
       financingId
     ),
-    queryFn: () =>
-      financialsApi.getFinancingPayments(propertyId ?? '', financingId ?? ''),
+    queryFn: () => getFinancingPayments(propertyId ?? '', financingId ?? ''),
     enabled: !!propertyId && !!financingId,
   });
 };
@@ -81,7 +121,7 @@ export const useFinancingPayments = (
 export const useInsurances = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.propertyFinancials.insurances(propertyId),
-    queryFn: () => financialsApi.getInsurances(propertyId ?? ''),
+    queryFn: () => getInsurances(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -89,7 +129,7 @@ export const useInsurances = (propertyId: string | undefined) => {
 export const useTaxes = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.propertyFinancials.taxes(propertyId),
-    queryFn: () => financialsApi.getTaxes(propertyId ?? ''),
+    queryFn: () => getTaxes(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -97,7 +137,7 @@ export const useTaxes = (propertyId: string | undefined) => {
 export const useFees = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.propertyFinancials.fees(propertyId),
-    queryFn: () => financialsApi.getFees(propertyId ?? ''),
+    queryFn: () => getFees(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -108,10 +148,10 @@ export const useFees = (propertyId: string | undefined) => {
 
 export const useUpsertAcquisition = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Acquisition saved successfully',
     mutationFn: (data: UpsertAcquisitionRequest) =>
-      financialsApi.upsertAcquisition(propertyId, data),
+      upsertAcquisition(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.acquisition(propertyId),
@@ -122,10 +162,6 @@ export const useUpsertAcquisition = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Acquisition saved successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -136,10 +172,10 @@ export const useUpsertAcquisition = (propertyId: string) => {
 
 export const useCreateValuation = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Valuation created successfully',
     mutationFn: (data: CreateValuationRequest) =>
-      financialsApi.createValuation(propertyId, data),
+      createValuation(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.valuations(propertyId),
@@ -153,25 +189,21 @@ export const useCreateValuation = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Valuation created successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateValuation = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Valuation updated successfully',
     mutationFn: ({
       valuationId,
       data,
     }: {
       valuationId: string;
       data: UpdateValuationRequest;
-    }) => financialsApi.updateValuation(propertyId, valuationId, data),
+    }) => updateValuation(propertyId, valuationId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.valuations(propertyId),
@@ -185,20 +217,16 @@ export const useUpdateValuation = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Valuation updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteValuation = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Valuation deleted successfully',
     mutationFn: (valuationId: string) =>
-      financialsApi.deleteValuation(propertyId, valuationId),
+      deleteValuation(propertyId, valuationId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.valuations(propertyId),
@@ -212,10 +240,6 @@ export const useDeleteValuation = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Valuation deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -226,10 +250,10 @@ export const useDeleteValuation = (propertyId: string) => {
 
 export const useCreateFinancing = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Financing created successfully',
     mutationFn: (data: CreateFinancingRequest) =>
-      financialsApi.createFinancing(propertyId, data),
+      createFinancing(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.financings(propertyId),
@@ -243,25 +267,21 @@ export const useCreateFinancing = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Financing created successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateFinancing = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Financing updated successfully',
     mutationFn: ({
       financingId,
       data,
     }: {
       financingId: string;
       data: UpdateFinancingRequest;
-    }) => financialsApi.updateFinancing(propertyId, financingId, data),
+    }) => updateFinancing(propertyId, financingId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.financings(propertyId),
@@ -275,20 +295,16 @@ export const useUpdateFinancing = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Financing updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteFinancing = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Financing deleted successfully',
     mutationFn: (financingId: string) =>
-      financialsApi.deleteFinancing(propertyId, financingId),
+      deleteFinancing(propertyId, financingId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.financings(propertyId),
@@ -302,10 +318,6 @@ export const useDeleteFinancing = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Financing deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -319,10 +331,10 @@ export const useCreateFinancingPayment = (
   financingId: string
 ) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Payment created successfully',
     mutationFn: (data: CreateFinancingPaymentRequest) =>
-      financialsApi.createFinancingPayment(propertyId, financingId, data),
+      createFinancingPayment(propertyId, financingId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.financingPayments(
@@ -339,10 +351,6 @@ export const useCreateFinancingPayment = (
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Payment created successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -352,21 +360,15 @@ export const useUpdateFinancingPayment = (
   financingId: string
 ) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Payment updated successfully',
     mutationFn: ({
       paymentId,
       data,
     }: {
       paymentId: string;
       data: UpdateFinancingPaymentRequest;
-    }) =>
-      financialsApi.updateFinancingPayment(
-        propertyId,
-        financingId,
-        paymentId,
-        data
-      ),
+    }) => updateFinancingPayment(propertyId, financingId, paymentId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.financingPayments(
@@ -383,10 +385,6 @@ export const useUpdateFinancingPayment = (
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Payment updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -396,10 +394,10 @@ export const useDeleteFinancingPayment = (
   financingId: string
 ) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Payment deleted successfully',
     mutationFn: (paymentId: string) =>
-      financialsApi.deleteFinancingPayment(propertyId, financingId, paymentId),
+      deleteFinancingPayment(propertyId, financingId, paymentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.financingPayments(
@@ -416,10 +414,6 @@ export const useDeleteFinancingPayment = (
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Payment deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -440,7 +434,7 @@ export const useFinancingPaymentDocuments = (
       paymentId
     ),
     queryFn: () =>
-      financialsApi.getFinancingPaymentDocuments(
+      getFinancingPaymentDocuments(
         propertyId ?? '',
         financingId ?? '',
         paymentId ?? ''
@@ -455,8 +449,8 @@ export const useUploadFinancingPaymentDocument = (
   paymentId: string
 ) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Document uploaded successfully',
     mutationFn: ({
       file,
       title,
@@ -466,13 +460,12 @@ export const useUploadFinancingPaymentDocument = (
       title?: string;
       notes?: string;
     }) =>
-      financialsApi.uploadFinancingPaymentDocument(
+      uploadFinancingPaymentDocument(
         propertyId,
         financingId,
         paymentId,
-        file,
-        title,
-        notes
+        { file },
+        { title, notes }
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -482,10 +475,6 @@ export const useUploadFinancingPaymentDocument = (
           paymentId
         ),
       });
-      showToast('Document uploaded successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -496,14 +485,10 @@ export const useDeleteFinancingPaymentDocument = (
   paymentId: string
 ) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Document deleted successfully',
     mutationFn: (documentId: string) =>
-      financialsApi.deleteFinancingPaymentDocument(
-        propertyId,
-        financingId,
-        documentId
-      ),
+      deleteFinancingPaymentDocument(propertyId, financingId, documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.financingPaymentDocuments(
@@ -512,10 +497,6 @@ export const useDeleteFinancingPaymentDocument = (
           paymentId
         ),
       });
-      showToast('Document deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -526,10 +507,10 @@ export const useDeleteFinancingPaymentDocument = (
 
 export const useCreateInsurance = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Insurance created successfully',
     mutationFn: (data: CreateInsuranceRequest) =>
-      financialsApi.createInsurance(propertyId, data),
+      createInsurance(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.insurances(propertyId),
@@ -540,25 +521,21 @@ export const useCreateInsurance = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Insurance created successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateInsurance = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Insurance updated successfully',
     mutationFn: ({
       insuranceId,
       data,
     }: {
       insuranceId: string;
       data: UpdateInsuranceRequest;
-    }) => financialsApi.updateInsurance(propertyId, insuranceId, data),
+    }) => updateInsurance(propertyId, insuranceId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.insurances(propertyId),
@@ -569,20 +546,16 @@ export const useUpdateInsurance = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Insurance updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteInsurance = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Insurance deleted successfully',
     mutationFn: (insuranceId: string) =>
-      financialsApi.deleteInsurance(propertyId, insuranceId),
+      deleteInsurance(propertyId, insuranceId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.insurances(propertyId),
@@ -593,10 +566,6 @@ export const useDeleteInsurance = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Insurance deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -607,10 +576,9 @@ export const useDeleteInsurance = (propertyId: string) => {
 
 export const useCreateTax = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: CreateTaxRequest) =>
-      financialsApi.createTax(propertyId, data),
+  return useMutationWithToast({
+    successMessage: 'Tax record created successfully',
+    mutationFn: (data: CreateTaxRequest) => createTax(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.taxes(propertyId),
@@ -621,20 +589,16 @@ export const useCreateTax = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Tax record created successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateTax = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Tax record updated successfully',
     mutationFn: ({ taxId, data }: { taxId: string; data: UpdateTaxRequest }) =>
-      financialsApi.updateTax(propertyId, taxId, data),
+      updateTax(propertyId, taxId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.taxes(propertyId),
@@ -645,19 +609,15 @@ export const useUpdateTax = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Tax record updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteTax = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (taxId: string) => financialsApi.deleteTax(propertyId, taxId),
+  return useMutationWithToast({
+    successMessage: 'Tax record deleted successfully',
+    mutationFn: (taxId: string) => deleteTax(propertyId, taxId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.taxes(propertyId),
@@ -668,10 +628,6 @@ export const useDeleteTax = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Tax record deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -682,10 +638,9 @@ export const useDeleteTax = (propertyId: string) => {
 
 export const useCreateFee = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: CreateFeeRequest) =>
-      financialsApi.createFee(propertyId, data),
+  return useMutationWithToast({
+    successMessage: 'Fee created successfully',
+    mutationFn: (data: CreateFeeRequest) => createFee(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.fees(propertyId),
@@ -696,20 +651,16 @@ export const useCreateFee = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Fee created successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateFee = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Fee updated successfully',
     mutationFn: ({ feeId, data }: { feeId: string; data: UpdateFeeRequest }) =>
-      financialsApi.updateFee(propertyId, feeId, data),
+      updateFee(propertyId, feeId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.fees(propertyId),
@@ -720,19 +671,15 @@ export const useUpdateFee = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Fee updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteFee = (propertyId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (feeId: string) => financialsApi.deleteFee(propertyId, feeId),
+  return useMutationWithToast({
+    successMessage: 'Fee deleted successfully',
+    mutationFn: (feeId: string) => deleteFee(propertyId, feeId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.propertyFinancials.fees(propertyId),
@@ -743,10 +690,6 @@ export const useDeleteFee = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Fee deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

@@ -8,6 +8,8 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
 import java.util.Optional;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,29 +58,30 @@ public class PropertyDashboardController implements PropertyDashboardApi {
   }
 
   @Override
-  public byte[] exportPdf(PropertyIdentifier identifier, Optional<Integer> months) {
+  public Resource exportPdf(PropertyIdentifier identifier, Optional<Integer> months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PropertyDashboardResponse dashboard =
         dashboardService.getDashboard(identifier, months.orElse(null), principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generatePropertyDashboardPDF(dashboard, principal.requireTeamId());
+    return new ByteArrayResource(
+        exportService.generatePropertyDashboardPDF(dashboard, principal.requireTeamId()));
   }
 
   @Override
-  public byte[] exportCsv(PropertyIdentifier identifier, Optional<Integer> months) {
+  public Resource exportCsv(PropertyIdentifier identifier, Optional<Integer> months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PropertyDashboardResponse dashboard =
         dashboardService.getDashboard(identifier, months.orElse(null), principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".csv");
     httpServletResponse.setContentType("text/csv");
-    return exportService.generatePropertyDashboardCSV(dashboard);
+    return new ByteArrayResource(exportService.generatePropertyDashboardCSV(dashboard));
   }
 
   @Override
-  public byte[] exportExcel(PropertyIdentifier identifier, Optional<Integer> months) {
+  public Resource exportExcel(PropertyIdentifier identifier, Optional<Integer> months) {
     if (featureFlagService.isDisabled(EXCEL_EXPORT, SecurityUtils.getCurrentPrincipal())) {
       throw new ForbiddenException("Excel export feature is not available");
     }
@@ -89,7 +92,7 @@ public class PropertyDashboardController implements PropertyDashboardApi {
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".xlsx");
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    return exportService.generatePropertyDashboardExcel(dashboard);
+    return new ByteArrayResource(exportService.generatePropertyDashboardExcel(dashboard));
   }
 
   @Override

@@ -11,7 +11,7 @@ import { formatAuditValue } from '@/utils/formatAuditValue';
 import { useNavigate } from 'react-router-dom';
 import { useAllAuditLogs } from '@/hooks/useDashboard';
 import { usePagination } from '@/hooks/usePagination';
-import type { RecentActivity } from '@/api/dashboard';
+import type { RecentActivityResponse as RecentActivity } from '@/generated/models';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
   ClipboardList,
@@ -592,8 +592,8 @@ export const AuditLogPage = () => {
             {activitiesData && (
               <Pagination
                 page={page}
-                totalPages={activitiesData.totalPages}
-                totalElements={activitiesData.totalElements}
+                totalPages={activitiesData.totalPages ?? 0}
+                totalElements={activitiesData.totalElements ?? 0}
                 size={size}
                 onPageChange={handlePageChange}
                 onSizeChange={handleSizeChange}

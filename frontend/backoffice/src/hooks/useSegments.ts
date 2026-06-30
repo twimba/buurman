@@ -1,14 +1,24 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { segmentsApi } from '../api/segments';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutationWithToast } from './useMutationWithToast';
+import {
+  listSegments,
+  getSegment,
+  createSegment,
+  updateSegment,
+  deleteSegment,
+  getSegmentMatches,
+  getMatchingTeams,
+  getMatchingUsers,
+} from '../generated/api/backoffice-segments/backoffice-segments';
 import type {
   CreateSegmentRequest,
   UpdateSegmentRequest,
-} from '../api/segments';
+} from '../generated/models';
 
 export const useSegmentsList = () => {
   return useQuery({
     queryKey: ['segments'],
-    queryFn: () => segmentsApi.list().then((res) => res.data),
+    queryFn: () => listSegments(),
   });
 };
 
@@ -16,7 +26,7 @@ export const useSegmentDetail = (key: string | undefined) => {
   return useQuery({
     queryKey: ['segments', key],
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- guarded by enabled
-    queryFn: () => segmentsApi.get(key!).then((res) => res.data),
+    queryFn: () => getSegment(key!),
     enabled: !!key,
   });
 };
@@ -25,7 +35,7 @@ export const useSegmentMatches = (key: string | undefined) => {
   return useQuery({
     queryKey: ['segments', key, 'matches'],
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- guarded by enabled
-    queryFn: () => segmentsApi.getMatches(key!).then((res) => res.data),
+    queryFn: () => getSegmentMatches(key!),
     enabled: !!key,
   });
 };
@@ -37,7 +47,7 @@ export const useSegmentMatchingTeams = (
   return useQuery({
     queryKey: ['segments', key, 'matching-teams'],
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- guarded by enabled
-    queryFn: () => segmentsApi.getMatchingTeams(key!).then((res) => res.data),
+    queryFn: () => getMatchingTeams(key!),
     enabled: !!key && enabled,
   });
 };
@@ -49,16 +59,16 @@ export const useSegmentMatchingUsers = (
   return useQuery({
     queryKey: ['segments', key, 'matching-users'],
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- guarded by enabled
-    queryFn: () => segmentsApi.getMatchingUsers(key!).then((res) => res.data),
+    queryFn: () => getMatchingUsers(key!),
     enabled: !!key && enabled,
   });
 };
 
 export const useCreateSegment = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (data: CreateSegmentRequest) =>
-      segmentsApi.create(data).then((res) => res.data),
+  return useMutationWithToast({
+    mutationFn: (data: CreateSegmentRequest) => createSegment(data),
+    errorTitle: "Couldn't create segment",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['segments'] });
     },
@@ -67,9 +77,10 @@ export const useCreateSegment = () => {
 
 export const useUpdateSegment = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({ key, data }: { key: string; data: UpdateSegmentRequest }) =>
-      segmentsApi.update(key, data).then((res) => res.data),
+      updateSegment(key, data),
+    errorTitle: "Couldn't update segment",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['segments'] });
     },
@@ -78,8 +89,9 @@ export const useUpdateSegment = () => {
 
 export const useDeleteSegment = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (key: string) => segmentsApi.delete(key),
+  return useMutationWithToast({
+    mutationFn: (key: string) => deleteSegment(key),
+    errorTitle: "Couldn't delete segment",
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['segments'] });
     },

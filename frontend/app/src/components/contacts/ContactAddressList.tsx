@@ -14,7 +14,7 @@ import {
   useCreateContactAddress,
   useDeleteContactAddress,
 } from '@/hooks/useContactHooks';
-import * as contactsApi from '@/api/contacts';
+import { updateContactAddress } from '@/generated/api/contacts/contacts';
 import {
   AddressType,
   AddressStatus,
@@ -47,7 +47,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
     }: {
       addressId: string;
       data: UpdateContactAddressRequest;
-    }) => contactsApi.updateContactAddress(contactId, addressId, data),
+    }) => updateContactAddress(contactId, addressId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['contactAddresses', contactId],

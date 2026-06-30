@@ -66,8 +66,11 @@ import {
   CheckCircle2,
   Shield,
 } from 'lucide-react';
-import { downloadContactBooklet, downloadContactSummary } from '@/api/contacts';
-import { downloadBlob } from '@/api/listExports';
+import {
+  exportContactBooklet,
+  getContactSummary,
+} from '@/generated/api/booklets/booklets';
+import { downloadBlob } from '@/utils/downloadBlob';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
@@ -162,14 +165,14 @@ export const ContactDetailPage = () => {
 
   const handleDownloadBooklet = async (lang: string) => {
     downloadBlob(
-      await downloadContactBooklet(id, lang),
+      await exportContactBooklet(id, { lang } as Parameters<typeof exportContactBooklet>[1]),
       `contact-booklet-${lang}.pdf`
     );
   };
 
   const handleDownloadSummary = async (lang: string) => {
     downloadBlob(
-      await downloadContactSummary(id, lang),
+      await getContactSummary(id, { lang } as Parameters<typeof getContactSummary>[1]),
       `contact-${id}-summary-${lang}.pdf`
     );
   };
@@ -232,13 +235,21 @@ export const ContactDetailPage = () => {
         .filter((contract) => contract.status === ContractStatus.ACTIVE)
         .map((contract) => {
           const party = contract.parties?.find(
-            (p) => p.contact.identifier === id
+            (p) => p.contact?.identifier === id
           );
           return {
             property: contract.property,
             role: party?.role,
           };
         })
+        .filter(
+          (
+            item
+          ): item is {
+            property: NonNullable<typeof item.property>;
+            role: typeof item.role;
+          } => item.property != null
+        )
         .filter(
           (item, index, self) =>
             index ===
@@ -332,7 +343,7 @@ export const ContactDetailPage = () => {
           backTo="/contacts"
           avatar={
             <Avatar
-              firstName={contact.firstName}
+              firstName={contact.firstName ?? contact.displayName}
               lastName={contact.lastName}
               photoUrl={contact.mainPhotoThumbnailUrl ?? contact.mainPhotoUrl}
               size="xl"

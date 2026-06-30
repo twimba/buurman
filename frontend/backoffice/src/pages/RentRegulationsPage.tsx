@@ -35,17 +35,17 @@ import {
   useReloadRentRegulationCatalog,
 } from '../hooks/useRentRegulationHooks';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import {
-  rentRegulationsApi,
-  type RentRegulationCountryResponse,
-  type CountryRegulationRequestSummary,
-  type CountryRegulationRequester,
-  type RentRegulationReloadResult,
-  type RentRegulationCatalogDiff,
-  type RentRegulationCountryDiff,
-  type RentRegulationDiffEntry,
-  type RentRegulationDiffCounts,
-} from '../api/rentRegulations';
+import { exportRentRegulationCatalog } from '../generated/api/backoffice-rent-regulations/backoffice-rent-regulations';
+import type {
+  RentRegulationCountryResponse,
+  CountryRegulationRequestSummary,
+  CountryRegulationRequester,
+  RentRegulationReloadResult,
+  RentRegulationCatalogDiff,
+  RentRegulationCountryDiff,
+  RentRegulationDiffEntry,
+  RentRegulationDiffCounts,
+} from '../types';
 
 function groupByTeam(
   requesters: CountryRegulationRequester[]
@@ -181,8 +181,8 @@ function CountriesTab() {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const res = await rentRegulationsApi.exportCatalog();
-      const blob = new Blob([JSON.stringify(res.data, null, 2)], {
+      const res = await exportRentRegulationCatalog();
+      const blob = new Blob([JSON.stringify(res, null, 2)], {
         type: 'application/json',
       });
       const url = URL.createObjectURL(blob);
@@ -622,8 +622,8 @@ function CatalogStat({
   );
 }
 
-function countsTotal(c: RentRegulationDiffCounts): number {
-  return c.added + c.removed + c.changed;
+function countsTotal(c?: RentRegulationDiffCounts): number {
+  return (c?.added ?? 0) + (c?.removed ?? 0) + (c?.changed ?? 0);
 }
 
 function DiffCountsSummary({ diff }: { diff: RentRegulationCatalogDiff }) {
@@ -648,23 +648,20 @@ function CountLine({
   counts,
 }: {
   label: string;
-  counts: RentRegulationDiffCounts;
+  counts?: RentRegulationDiffCounts;
 }) {
   if (countsTotal(counts) === 0) {
     return null;
   }
+  const added = counts?.added ?? 0;
+  const changed = counts?.changed ?? 0;
+  const removed = counts?.removed ?? 0;
   return (
     <span className="inline-flex items-center gap-1.5 text-xs">
       <span className="text-text-secondary">{label}</span>
-      {counts.added > 0 && (
-        <span className="text-success-text">+{counts.added}</span>
-      )}
-      {counts.changed > 0 && (
-        <span className="text-primary-600">~{counts.changed}</span>
-      )}
-      {counts.removed > 0 && (
-        <span className="text-error-text">-{counts.removed}</span>
-      )}
+      {added > 0 && <span className="text-success-text">+{added}</span>}
+      {changed > 0 && <span className="text-primary-600">~{changed}</span>}
+      {removed > 0 && <span className="text-error-text">-{removed}</span>}
     </span>
   );
 }
@@ -716,7 +713,7 @@ function ReloadDiffSection({
         <CountLine label="Rules" counts={diff.rules} />
       </div>
       <div className="max-h-64 overflow-y-auto divide-y divide-border-default">
-        {diff.byCountry.map((c) => (
+        {(diff.byCountry ?? []).map((c) => (
           <CountryDiffCard key={c.countryCode} country={c} />
         ))}
       </div>
@@ -746,14 +743,14 @@ function CountryDiffCard({ country }: { country: RentRegulationCountryDiff }) {
         <span className="text-xs text-text-muted">{country.countryCode}</span>
         <span
           className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-            STATUS_BADGE[country.status] ?? ''
+            (country.status && STATUS_BADGE[country.status]) ?? ''
           }`}
         >
           {country.status}
         </span>
       </div>
       <ul className="space-y-1.5">
-        {country.changes.map((e, i) => (
+        {(country.changes ?? []).map((e, i) => (
           <DiffEntryRow key={i} entry={e} />
         ))}
       </ul>
@@ -767,7 +764,8 @@ function clip(value: string): string {
 }
 
 function DiffEntryRow({ entry }: { entry: RentRegulationDiffEntry }) {
-  const op = OP_STYLE[entry.op] ?? OP_STYLE.CHANGED;
+  const op = (entry.op ? OP_STYLE[entry.op] : undefined) ?? OP_STYLE.CHANGED;
+  const fields = entry.fields ?? [];
   return (
     <li className="text-xs">
       <div className="flex items-baseline gap-1.5">
@@ -777,21 +775,23 @@ function DiffEntryRow({ entry }: { entry: RentRegulationDiffEntry }) {
         </span>
         <span className="text-text-primary font-medium">{entry.label}</span>
       </div>
-      {entry.fields.length > 0 && (
+      {fields.length > 0 && (
         <ul className="mt-0.5 ml-4 space-y-0.5">
-          {entry.fields.map((f, i) => (
+          {fields.map((f, i) => (
             <li key={i} className="text-text-secondary">
               <span className="text-text-muted">{f.field}:</span>{' '}
               {entry.op === 'CHANGED' ? (
                 <>
                   <span className="line-through text-error-text/80">
-                    {clip(f.before)}
+                    {clip(f.before ?? '')}
                   </span>{' '}
                   <span className="text-text-muted">→</span>{' '}
-                  <span className="text-success-text">{clip(f.after)}</span>
+                  <span className="text-success-text">
+                    {clip(f.after ?? '')}
+                  </span>
                 </>
               ) : (
-                <span className="text-text-primary">{clip(f.after)}</span>
+                <span className="text-text-primary">{clip(f.after ?? '')}</span>
               )}
             </li>
           ))}

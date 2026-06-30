@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -130,28 +132,28 @@ public class ReportController implements ReportsApi {
   }
 
   @Override
-  public byte[] exportTransactionHistoryCSV(
+  public Resource exportTransactionHistoryCSV(
       Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=transactions.csv");
     httpServletResponse.setContentType("text/csv");
-    return exportService.generateTransactionHistoryCSV(
-        startDate, endDate, principal.requireTeamId());
+    return new ByteArrayResource(
+        exportService.generateTransactionHistoryCSV(startDate, endDate, principal.requireTeamId()));
   }
 
   @Override
-  public byte[] exportTransactionHistoryPDF(
+  public Resource exportTransactionHistoryPDF(
       Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateTransactionHistoryPDF(
-        startDate, endDate, principal.requireTeamId());
+    return new ByteArrayResource(
+        exportService.generateTransactionHistoryPDF(startDate, endDate, principal.requireTeamId()));
   }
 
   @Override
-  public byte[] exportTransactionHistoryExcel(
+  public Resource exportTransactionHistoryExcel(
       Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     if (featureFlagService.isDisabled(EXCEL_EXPORT, SecurityUtils.getCurrentPrincipal())) {
       throw new ForbiddenException("Excel export feature is not available");
@@ -160,8 +162,9 @@ public class ReportController implements ReportsApi {
     httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=transactions.xlsx");
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    return exportService.generateTransactionHistoryExcel(
-        startDate, endDate, principal.requireTeamId());
+    return new ByteArrayResource(
+        exportService.generateTransactionHistoryExcel(
+            startDate, endDate, principal.requireTeamId()));
   }
 
   @Override

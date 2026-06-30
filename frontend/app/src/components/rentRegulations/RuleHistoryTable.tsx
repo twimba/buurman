@@ -89,9 +89,9 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
                   </td>
                   <td className="px-4 py-3 text-text-secondary">
                     {rule.propertyCategory}
-                    {rule.sector && (
+                    {rule.propertyType && (
                       <span className="block text-xs text-text-muted">
-                        {rule.sector}
+                        {rule.propertyType}
                       </span>
                     )}
                   </td>

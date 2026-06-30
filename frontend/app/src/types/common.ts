@@ -27,7 +27,7 @@ export interface PageParams {
   page?: number;
   size?: number;
   sort?: string;
-  direction?: 'asc' | 'desc';
+  direction?: 'ASC' | 'DESC';
 }
 
 export interface BulkCreateResult<T> {

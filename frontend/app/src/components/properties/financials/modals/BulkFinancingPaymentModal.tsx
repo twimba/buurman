@@ -9,7 +9,7 @@ import {
 } from '@/components/common/BulkDataGrid';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
-import { bulkCreateFinancingPayments } from '@/api/propertyFinancials';
+import { bulkCreateFinancingPayments } from '@/generated/api/property-financings/property-financings';
 import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '@/utils/errorMessages';
 import {
@@ -100,15 +100,15 @@ export const BulkFinancingPaymentModal = ({
 
     rows.forEach((_, i) => callbacks.onRowStart(i));
 
-    bulkCreateFinancingPayments(propertyId, financingId, items)
+    bulkCreateFinancingPayments(propertyId, financingId, { items })
       .then((results) => {
         let hasErrors = false;
         for (const result of results) {
           if (result.error) {
             hasErrors = true;
-            callbacks.onRowError(result.index, result.error);
+            callbacks.onRowError(result.index ?? 0, result.error);
           } else {
-            callbacks.onRowSuccess(result.index);
+            callbacks.onRowSuccess(result.index ?? 0);
           }
         }
 

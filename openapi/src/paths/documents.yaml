@@ -902,7 +902,7 @@ booklets-contacts-csv:
           "text/csv":
             schema:
               type: string
-              format: byte
+              format: binary
       "401":
         description: Unauthorized - missing or invalid JWT token
         content:
@@ -988,7 +988,7 @@ booklets-contacts-xlsx:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
-              format: byte
+              format: binary
       "401":
         description: Unauthorized - missing or invalid JWT token
         content:
@@ -1023,7 +1023,7 @@ booklets-properties-csv:
           "text/csv":
             schema:
               type: string
-              format: byte
+              format: binary
       "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
@@ -1043,7 +1043,7 @@ booklets-properties-xlsx:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
-              format: byte
+              format: binary
       "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
@@ -1084,7 +1084,7 @@ booklets-payments-csv:
           "text/csv":
             schema:
               type: string
-              format: byte
+              format: binary
       "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
@@ -1104,7 +1104,7 @@ booklets-payments-xlsx:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
-              format: byte
+              format: binary
       "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
@@ -1145,7 +1145,7 @@ booklets-expenses-csv:
           "text/csv":
             schema:
               type: string
-              format: byte
+              format: binary
       "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
@@ -1165,7 +1165,7 @@ booklets-expenses-xlsx:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
-              format: byte
+              format: binary
       "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
@@ -1206,7 +1206,7 @@ booklets-contracts-csv:
           "text/csv":
             schema:
               type: string
-              format: byte
+              format: binary
       "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
@@ -1226,7 +1226,7 @@ booklets-contracts-xlsx:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
-              format: byte
+              format: binary
       "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
@@ -1268,14 +1268,22 @@ booklets-contact-item:
         required: true
         schema:
           $ref: '#/components/schemas/ContactIdentifier'
+      - name: lang
+        in: query
+        description: Locale for booklet content (falls back to English if unsupported)
+        required: false
+        schema:
+          type: string
+          default: en
+          enum: [en, nl, de, es, fr, pt, it, sv, fi, el, pl, da, nb]
     responses:
       "200":
         description: OK
         content:
-          "*/*":
+          application/pdf:
             schema:
               type: string
-              format: byte
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:
@@ -1329,14 +1337,22 @@ booklets-property-item:
         required: true
         schema:
           $ref: '#/components/schemas/PropertyIdentifier'
+      - name: lang
+        in: query
+        description: Locale for booklet content (falls back to English if unsupported)
+        required: false
+        schema:
+          type: string
+          default: en
+          enum: [en, nl, de, es, fr, pt, it, sv, fi, el, pl, da, nb]
     responses:
       "200":
         description: OK
         content:
-          "*/*":
+          application/pdf:
             schema:
               type: string
-              format: byte
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:
@@ -1390,14 +1406,229 @@ booklets-contract-item:
         required: true
         schema:
           $ref: '#/components/schemas/ContractIdentifier'
+      - name: lang
+        in: query
+        description: Locale for booklet content (falls back to English if unsupported)
+        required: false
+        schema:
+          type: string
+          default: en
+          enum: [en, nl, de, es, fr, pt, it, sv, fi, el, pl, da, nb]
     responses:
       "200":
         description: OK
         content:
-          "*/*":
+          application/pdf:
             schema:
               type: string
-              format: byte
+              format: binary
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+contract-summary:
+  get:
+    tags:
+      - Booklets
+    summary: Export contract one-page summary card to PDF
+    description: Download a one-page A4-landscape summary card for a contract as PDF
+    operationId: getContractSummary
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: lang
+        in: query
+        description: Locale for summary content (falls back to English if unsupported)
+        required: false
+        schema:
+          type: string
+          default: en
+          enum: [en, nl, de, es, fr, pt, it, sv, fi, el, pl, da, nb]
+    responses:
+      "200":
+        description: OK
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+property-summary:
+  get:
+    tags:
+      - Booklets
+    summary: Export property one-page summary card to PDF
+    description: Download a one-page A4-landscape summary card for a property as PDF
+    operationId: getPropertySummary
+    parameters:
+      - name: propertyIdentifier
+        in: path
+        description: Property identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/PropertyIdentifier'
+      - name: lang
+        in: query
+        description: Locale for summary content (falls back to English if unsupported)
+        required: false
+        schema:
+          type: string
+          default: en
+          enum: [en, nl, de, es, fr, pt, it, sv, fi, el, pl, da, nb]
+    responses:
+      "200":
+        description: OK
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+contact-summary:
+  get:
+    tags:
+      - Booklets
+    summary: Export contact one-page summary card to PDF
+    description: Download a one-page A4-landscape summary card for a contact as PDF
+    operationId: getContactSummary
+    parameters:
+      - name: contactIdentifier
+        in: path
+        description: Contact identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContactIdentifier'
+      - name: lang
+        in: query
+        description: Locale for summary content (falls back to English if unsupported)
+        required: false
+        schema:
+          type: string
+          default: en
+          enum: [en, nl, de, es, fr, pt, it, sv, fi, el, pl, da, nb]
+    responses:
+      "200":
+        description: OK
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
       "400":
         description: Bad request - validation error or malformed input
         content:

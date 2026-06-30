@@ -3,7 +3,6 @@ package com.buurman.controller.backoffice;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -14,6 +13,7 @@ import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
+import com.buurman.dto.response.backoffice.NotificationStatsResponse;
 import com.buurman.generated.backoffice.api.BackofficeNotificationsApi;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.security.SecurityUtils;
@@ -70,7 +70,7 @@ public class BackofficeNotificationController implements BackofficeNotifications
   }
 
   @Override
-  public Map<String, Object> getStats() {
+  public NotificationStatsResponse getStats() {
     return backofficeNotificationService.getStats();
   }
 

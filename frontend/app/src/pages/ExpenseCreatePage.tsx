@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { bulkCreateExpenses } from '@/api/expenses';
+import { bulkCreateExpenses } from '@/generated/api/expenses/expenses';
 import { useCreateExpense } from '@/hooks/useExpenseHooks';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { PropertySelector } from '@/components/common/PropertySelector';
@@ -116,15 +116,15 @@ export const ExpenseCreatePage = () => {
     // Mark all rows as submitting
     rows.forEach((_, i) => callbacks.onRowStart(i));
 
-    bulkCreateExpenses(items)
+    bulkCreateExpenses({ items })
       .then((results) => {
         let hasErrors = false;
         for (const result of results) {
           if (result.error) {
             hasErrors = true;
-            callbacks.onRowError(result.index, result.error);
+            callbacks.onRowError(result.index ?? 0, result.error);
           } else {
-            callbacks.onRowSuccess(result.index);
+            callbacks.onRowSuccess(result.index ?? 0);
           }
         }
 

@@ -22,7 +22,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import { parsePhoneNumber } from 'libphonenumber-js/max';
-import type { PhoneNumberPolicyResponse } from '@/api/users';
+import type { PhoneNumberPolicyResponse } from '@/types/users';
 
 const NUMBER_TYPE_LABELS: Record<string, string> = {
   MOBILE: 'mobile',
@@ -239,7 +239,7 @@ export const UserProfileSection = () => {
       {
         firstName: userData.firstName,
         lastName: userData.lastName,
-        phone: userData.phone || null,
+        phone: userData.phone || undefined,
       },
       {
         onSuccess: (data) => {

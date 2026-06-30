@@ -4,8 +4,42 @@ import {
   useQueryClient,
   keepPreviousData,
 } from '@tanstack/react-query';
-import * as contactsApi from '../api/contacts';
+import { useMutationWithToast } from './useMutationWithToast';
 import {
+  getContacts,
+  getContact,
+  createContact,
+  updateContact,
+  deleteContact,
+  getContactHistory,
+  getContactAuditLog,
+  getContactDocuments,
+  getContactPhotos,
+  uploadContactDocument,
+  uploadContactPhoto,
+  setContactMainPhoto,
+  deleteContactDocument,
+  getContactAddresses,
+  createContactAddress,
+  updateContactAddress,
+  deleteContactAddress,
+  getContactNotes,
+  createContactNote,
+  updateContactNote,
+  deleteContactNote,
+  pinContactNote,
+  unpinContactNote,
+  getContactRelationships,
+  createContactRelationship,
+  updateContactRelationship,
+  deleteContactRelationship,
+  addContactTag,
+  removeContactTag,
+  getContactActivity,
+  checkContactDuplicates,
+  eraseContactData,
+} from '../generated/api/contacts/contacts';
+import type {
   CreateContactRequest,
   UpdateContactRequest,
   CreateContactAddressRequest,
@@ -19,10 +53,11 @@ import {
   ContactTag,
   DuplicateCheckRequest,
   DuplicateCheckResponse,
-} from '../types/contact';
+  GetContactsParams,
+  GetContactActivityParams,
+} from '../generated/models';
 import type { PageParams } from '@/types/common';
 import { useToast } from '@buurman/ui';
-import { getErrorMessage } from '../utils/errorMessages';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 import { queryKeys } from '../lib/queryKeys';
@@ -36,7 +71,7 @@ export const useContacts = (
 ) => {
   return useQuery({
     queryKey: queryKeys.contacts.all(params),
-    queryFn: () => contactsApi.getContacts(params),
+    queryFn: () => getContacts(params as GetContactsParams),
     placeholderData: keepPreviousData,
   });
 };
@@ -44,7 +79,7 @@ export const useContacts = (
 export const useContact = (id: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contacts.detail(id),
-    queryFn: () => contactsApi.getContact(id ?? ''),
+    queryFn: () => getContact(id ?? ''),
     enabled: !!id,
   });
 };
@@ -52,8 +87,8 @@ export const useContact = (id: string | undefined) => {
 export const useCreateContact = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: CreateContactRequest) => contactsApi.createContact(data),
+  return useMutationWithToast({
+    mutationFn: (data: CreateContactRequest) => createContact(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
       queryClient.invalidateQueries({
@@ -65,18 +100,14 @@ export const useCreateContact = () => {
       showToast('Contact created successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_CREATED);
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUpdateContact = (id: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: UpdateContactRequest) =>
-      contactsApi.updateContact(id, data),
+  return useMutationWithToast({
+    successMessage: 'Contact updated successfully',
+    mutationFn: (data: UpdateContactRequest) => updateContact(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
       queryClient.invalidateQueries({
@@ -91,10 +122,6 @@ export const useUpdateContact = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.propertyDashboard(),
       });
-      showToast('Contact updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -102,8 +129,8 @@ export const useUpdateContact = (id: string) => {
 export const useDeleteContact = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (id: string) => contactsApi.deleteContact(id),
+  return useMutationWithToast({
+    mutationFn: (id: string) => deleteContact(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
       queryClient.invalidateQueries({
@@ -115,16 +142,13 @@ export const useDeleteContact = () => {
       showToast('Contact deleted successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_DELETED);
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useContactHistory = (contactId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contacts.history(contactId),
-    queryFn: () => contactsApi.getContactHistory(contactId ?? ''),
+    queryFn: () => getContactHistory(contactId ?? ''),
     enabled: !!contactId,
   });
 };
@@ -132,7 +156,7 @@ export const useContactHistory = (contactId: string | undefined) => {
 export const useContactAuditLog = (contactId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contacts.auditLog(contactId),
-    queryFn: () => contactsApi.getContactAuditLog(contactId ?? ''),
+    queryFn: () => getContactAuditLog(contactId ?? ''),
     enabled: !!contactId,
   });
 };
@@ -140,7 +164,7 @@ export const useContactAuditLog = (contactId: string | undefined) => {
 export const useContactDocuments = (contactId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contacts.documents(contactId),
-    queryFn: () => contactsApi.getContactDocuments(contactId ?? ''),
+    queryFn: () => getContactDocuments(contactId ?? ''),
     enabled: !!contactId,
   });
 };
@@ -148,15 +172,14 @@ export const useContactDocuments = (contactId: string | undefined) => {
 export const useContactPhotos = (contactId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contacts.photos(contactId),
-    queryFn: () => contactsApi.getContactPhotos(contactId ?? ''),
+    queryFn: () => getContactPhotos(contactId ?? ''),
     enabled: !!contactId,
   });
 };
 
 export const useUploadContactDocument = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       file,
       title,
@@ -165,7 +188,7 @@ export const useUploadContactDocument = (contactId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => contactsApi.uploadContactDocument(contactId, file, title, notes),
+    }) => uploadContactDocument(contactId, { file }, { title, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.documents(contactId),
@@ -177,16 +200,12 @@ export const useUploadContactDocument = (contactId: string) => {
         queryKey: queryKeys.documents.all(),
       });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUploadContactPhoto = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       file,
       title,
@@ -195,7 +214,7 @@ export const useUploadContactPhoto = (contactId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => contactsApi.uploadContactPhoto(contactId, file, title, notes),
+    }) => uploadContactPhoto(contactId, { file }, { title, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.photos(contactId),
@@ -208,18 +227,13 @@ export const useUploadContactPhoto = (contactId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useSetContactMainPhoto = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (photoId: string) =>
-      contactsApi.setContactMainPhoto(contactId, photoId),
+  return useMutationWithToast({
+    mutationFn: (photoId: string) => setContactMainPhoto(contactId, photoId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.photos(contactId),
@@ -233,18 +247,13 @@ export const useSetContactMainPhoto = (contactId: string) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
       queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useDeleteContactDocument = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (documentId: string) =>
-      contactsApi.deleteContactDocument(documentId),
+  return useMutationWithToast({
+    mutationFn: (documentId: string) => deleteContactDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.documents(contactId),
@@ -259,26 +268,22 @@ export const useDeleteContactDocument = (contactId: string) => {
         queryKey: queryKeys.documents.all(),
       });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useContactAddresses = (contactId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contacts.addresses(contactId),
-    queryFn: () => contactsApi.getContactAddresses(contactId ?? ''),
+    queryFn: () => getContactAddresses(contactId ?? ''),
     enabled: !!contactId,
   });
 };
 
 export const useCreateContactAddress = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: CreateContactAddressRequest) =>
-      contactsApi.createContactAddress(contactId, data),
+      createContactAddress(contactId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.addresses(contactId),
@@ -289,9 +294,6 @@ export const useCreateContactAddress = (contactId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.auditLog(contactId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -301,10 +303,9 @@ export const useUpdateContactAddress = (
   addressId: string
 ) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: UpdateContactAddressRequest) =>
-      contactsApi.updateContactAddress(contactId, addressId, data),
+      updateContactAddress(contactId, addressId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.addresses(contactId),
@@ -315,19 +316,15 @@ export const useUpdateContactAddress = (
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.auditLog(contactId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteContactAddress = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (addressId: string) =>
-      contactsApi.deleteContactAddress(contactId, addressId),
+      deleteContactAddress(contactId, addressId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.addresses(contactId),
@@ -338,9 +335,6 @@ export const useDeleteContactAddress = (contactId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.auditLog(contactId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -350,7 +344,7 @@ export const useDeleteContactAddress = (contactId: string) => {
 export const useContactNotes = (contactId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contacts.notes(contactId),
-    queryFn: () => contactsApi.getContactNotes(contactId ?? ''),
+    queryFn: () => getContactNotes(contactId ?? ''),
     enabled: !!contactId,
   });
 };
@@ -358,9 +352,9 @@ export const useContactNotes = (contactId: string | undefined) => {
 export const useCreateContactNote = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: CreateContactNoteRequest) =>
-      contactsApi.createContactNote(contactId, data),
+      createContactNote(contactId, data),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.notes(contactId),
@@ -377,18 +371,15 @@ export const useCreateContactNote = (contactId: string) => {
         hasFollowUp: !!variables.followUpDate,
       });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useUpdateContactNote = (contactId: string, noteId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Note updated successfully',
     mutationFn: (data: UpdateContactNoteRequest) =>
-      contactsApi.updateContactNote(contactId, noteId, data),
+      updateContactNote(contactId, noteId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.notes(contactId),
@@ -399,20 +390,15 @@ export const useUpdateContactNote = (contactId: string, noteId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.auditLog(contactId),
       });
-      showToast('Note updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteContactNote = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (noteId: string) =>
-      contactsApi.deleteContactNote(contactId, noteId),
+  return useMutationWithToast({
+    successMessage: 'Note deleted successfully',
+    mutationFn: (noteId: string) => deleteContactNote(contactId, noteId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.notes(contactId),
@@ -423,44 +409,30 @@ export const useDeleteContactNote = (contactId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.auditLog(contactId),
       });
-      showToast('Note deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const usePinContactNote = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (noteId: string) =>
-      contactsApi.pinContactNote(contactId, noteId),
+  return useMutationWithToast({
+    mutationFn: (noteId: string) => pinContactNote(contactId, noteId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.notes(contactId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUnpinContactNote = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (noteId: string) =>
-      contactsApi.unpinContactNote(contactId, noteId),
+  return useMutationWithToast({
+    mutationFn: (noteId: string) => unpinContactNote(contactId, noteId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.notes(contactId),
       });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -470,7 +442,7 @@ export const useUnpinContactNote = (contactId: string) => {
 export const useContactRelationships = (contactId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contacts.relationships(contactId),
-    queryFn: () => contactsApi.getContactRelationships(contactId ?? ''),
+    queryFn: () => getContactRelationships(contactId ?? ''),
     enabled: !!contactId,
   });
 };
@@ -478,9 +450,9 @@ export const useContactRelationships = (contactId: string | undefined) => {
 export const useCreateContactRelationship = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (data: CreateContactRelationshipRequest) =>
-      contactsApi.createContactRelationship(contactId, data),
+      createContactRelationship(contactId, data),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.relationships(contactId),
@@ -496,9 +468,6 @@ export const useCreateContactRelationship = (contactId: string) => {
         relationshipType: variables.relationshipType,
       });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
@@ -507,10 +476,10 @@ export const useUpdateContactRelationship = (
   relationshipId: string
 ) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Relationship updated successfully',
     mutationFn: (data: UpdateContactRelationshipRequest) =>
-      contactsApi.updateContactRelationship(contactId, relationshipId, data),
+      updateContactRelationship(contactId, relationshipId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.relationships(contactId),
@@ -521,20 +490,16 @@ export const useUpdateContactRelationship = (
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.auditLog(contactId),
       });
-      showToast('Relationship updated successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteContactRelationship = (contactId: string) => {
   const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
+  return useMutationWithToast({
+    successMessage: 'Relationship deleted successfully',
     mutationFn: (relationshipId: string) =>
-      contactsApi.deleteContactRelationship(contactId, relationshipId),
+      deleteContactRelationship(contactId, relationshipId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.relationships(contactId),
@@ -545,10 +510,6 @@ export const useDeleteContactRelationship = (contactId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.auditLog(contactId),
       });
-      showToast('Relationship deleted successfully', 'success');
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -558,9 +519,8 @@ export const useDeleteContactRelationship = (contactId: string) => {
 export const useAddContactTag = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: AddContactTagRequest) =>
-      contactsApi.addContactTag(contactId, data),
+  return useMutationWithToast({
+    mutationFn: (data: AddContactTagRequest) => addContactTag(contactId, data),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.detail(contactId),
@@ -575,17 +535,14 @@ export const useAddContactTag = (contactId: string) => {
       showToast('Tag added successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_TAG_ADDED, { tag: variables.tag });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
 export const useRemoveContactTag = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (tag: string) => contactsApi.removeContactTag(contactId, tag),
+  return useMutationWithToast({
+    mutationFn: (tag: string) => removeContactTag(contactId, tag),
     onSuccess: (_result, removedTag) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contacts.detail(contactId),
@@ -600,9 +557,6 @@ export const useRemoveContactTag = (contactId: string) => {
       showToast('Tag removed successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_TAG_REMOVED, { tag: removedTag });
     },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
   });
 };
 
@@ -614,7 +568,8 @@ export const useContactActivity = (
 ) => {
   return useQuery({
     queryKey: queryKeys.contacts.activity(contactId, params),
-    queryFn: () => contactsApi.getContactActivity(contactId ?? '', params),
+    queryFn: () =>
+      getContactActivity(contactId ?? '', params as GetContactActivityParams),
     enabled: !!contactId,
     placeholderData: keepPreviousData,
   });
@@ -624,7 +579,7 @@ export const useContactActivity = (
 
 export const useCheckContactDuplicates = () => {
   return useMutation<DuplicateCheckResponse, Error, DuplicateCheckRequest>({
-    mutationFn: (data) => contactsApi.checkContactDuplicates(data),
+    mutationFn: (data) => checkContactDuplicates(data),
   });
 };
 
@@ -633,8 +588,8 @@ export const useCheckContactDuplicates = () => {
 export const useEraseContactData = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (contactId: string) => contactsApi.eraseContactData(contactId),
+  return useMutationWithToast({
+    mutationFn: (contactId: string) => eraseContactData(contactId),
     onSuccess: (_data, contactId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
       queryClient.invalidateQueries({
@@ -645,9 +600,6 @@ export const useEraseContactData = () => {
       });
       showToast('Contact data erased', 'success');
       trackEvent(AnalyticsEvent.CONTACT_DATA_ERASED);
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
     },
   });
 };

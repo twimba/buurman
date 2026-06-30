@@ -123,15 +123,17 @@ export const SegmentsPage = () => {
                     </code>
                   </td>
                   <td className="px-4 py-3">
-                    {segment.conditions.length > 0 ? (
+                    {(segment.conditions?.length ?? 0) > 0 ? (
                       <div className="space-y-0.5">
-                        {segment.conditions.map((c, i) => (
+                        {(segment.conditions ?? []).map((c, i) => (
                           <div key={i} className="text-xs text-text-secondary">
                             <span className="font-medium">
-                              {ATTRIBUTE_LABELS[c.attribute] ?? c.attribute}
+                              {(c.attribute && ATTRIBUTE_LABELS[c.attribute]) ??
+                                c.attribute}
                             </span>{' '}
                             <span className="text-text-muted">
-                              {OPERATOR_LABELS[c.operator] ?? c.operator}
+                              {(c.operator && OPERATOR_LABELS[c.operator]) ??
+                                c.operator}
                             </span>{' '}
                             <span className="font-mono">{c.value}</span>
                           </div>
@@ -151,7 +153,7 @@ export const SegmentsPage = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setDeleteKey(segment.key);
+                          setDeleteKey(segment.key ?? null);
                         }}
                         className="p-1.5 rounded-md text-text-muted hover:text-error-text hover:bg-error-bg transition-colors"
                         title="Delete segment"

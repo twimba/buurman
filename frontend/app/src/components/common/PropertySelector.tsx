@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { getProperties } from '@/api/properties';
+import { getProperties } from '@/generated/api/properties/properties';
 import { PropertyCategory, PropertyResponse } from '@/types/property';
 import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { ChevronDown } from 'lucide-react';

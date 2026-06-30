@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { getContracts } from '@/api/contracts';
+import { getContracts } from '@/generated/api/contracts/contracts';
+import type { GetContractsParams } from '@/generated/models';
 import { getCurrencySymbol } from '@/utils/currencies';
 import { ChevronDown, FileText } from 'lucide-react';
 
@@ -35,20 +36,23 @@ export const ContractSelector = ({
 
   const { data: contractsData, isLoading } = useQuery({
     queryKey: ['contracts', status ?? 'ALL'],
-    queryFn: () => getContracts(status ? { status } : undefined),
+    queryFn: () =>
+      getContracts(status ? ({ status } as GetContractsParams) : undefined),
   });
   const contracts = contractsData?.content ?? [];
 
   const selectedContract = contracts.find((c) => c.identifier === value);
   const displayValue = selectedContract
-    ? `${selectedContract.property.street} — ${getCurrencySymbol(selectedContract.rentAmountCurrency)} ${selectedContract.rentAmount.toFixed(2)}/mo`
+    ? `${selectedContract.property?.street ?? ''} — ${getCurrencySymbol(selectedContract.rentAmountCurrency)} ${selectedContract.rentAmount.toFixed(2)}/mo`
     : '';
 
   const filtered = contracts.filter(
     (contract) =>
       contract.identifier.toLowerCase().includes(search.toLowerCase()) ||
-      contract.property.street.toLowerCase().includes(search.toLowerCase()) ||
-      `${contract.primaryContact.firstName} ${contract.primaryContact.lastName ?? ''}`
+      (contract.property?.street ?? '')
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      `${contract.primaryContact?.firstName ?? ''} ${contract.primaryContact?.lastName ?? ''}`
         .toLowerCase()
         .includes(search.toLowerCase())
   );
@@ -202,11 +206,11 @@ export const ContractSelector = ({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium text-text-primary">
-                      {contract.property.street}
+                      {contract.property?.street}
                     </div>
                     <div className="text-xs text-text-secondary">
-                      {contract.primaryContact.firstName}{' '}
-                      {contract.primaryContact.lastName} &middot;{' '}
+                      {contract.primaryContact?.firstName}{' '}
+                      {contract.primaryContact?.lastName} &middot;{' '}
                       {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
                       {contract.rentAmount.toFixed(2)}/mo
                     </div>

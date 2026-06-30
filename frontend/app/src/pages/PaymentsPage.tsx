@@ -58,8 +58,12 @@ import {
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
-import { exportPaymentsCsv, exportPaymentsXlsx } from '@/api/listExports';
-import { exportPaymentsGoogleSheet } from '@/api/googleSheetsExport';
+import {
+  exportPaymentsCsv,
+  exportPaymentsXlsx,
+  exportPaymentsGoogleSheet,
+} from '@/generated/api/booklets/booklets';
+import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 
 export const PaymentsPage = () => {
   const navigate = useNavigate();
@@ -210,9 +214,14 @@ export const PaymentsPage = () => {
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <EntityExportControls
             filenameStem="payments"
-            csv={exportPaymentsCsv}
-            xlsx={exportPaymentsXlsx}
-            googleSheet={exportPaymentsGoogleSheet}
+            csv={() => exportPaymentsCsv()}
+            xlsx={() => exportPaymentsXlsx()}
+            googleSheet={(accessToken) =>
+              exportPaymentsGoogleSheet(
+                { accessToken },
+                { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
+              )
+            }
           />
           <button
             onClick={() => navigate('/payments/new')}
@@ -519,7 +528,7 @@ export const PaymentsPage = () => {
                   >
                     <div className="bg-surface-card border border-border-default p-4 min-h-touch">
                       <DataList
-                        title={`${payment.property.street}`}
+                        title={`${payment.property?.street}`}
                         trailing={
                           <PaymentStatusBadge status={payment.status} />
                         }
@@ -531,9 +540,9 @@ export const PaymentsPage = () => {
                           {
                             label: 'Contact',
                             value:
-                              (payment.contact.firstName ??
-                                payment.contact.displayName) +
-                              (payment.contact.lastName
+                              (payment.contact?.firstName ??
+                                payment.contact?.displayName) +
+                              (payment.contact?.lastName
                                 ? ' ' + payment.contact.lastName
                                 : ''),
                           },
@@ -618,24 +627,29 @@ export const PaymentsPage = () => {
                           </span>
                         </td>
                         <td className="px-6 py-3">
-                          <ContractCell
-                            contractIdentifier={payment.contract.identifier}
-                            contractStatus={payment.contract.status}
-                            propertyStreet={payment.property.street}
-                            propertyCity={payment.property.city}
-                            contactFirstName={
-                              payment.contact.firstName ??
-                              payment.contact.displayName
-                            }
-                            contactLastName={payment.contact.lastName}
-                          />
+                          {payment.contract ? (
+                            <ContractCell
+                              contractIdentifier={payment.contract.identifier}
+                              contractStatus={payment.contract.status}
+                              propertyStreet={payment.property?.street ?? ''}
+                              propertyCity={payment.property?.city ?? ''}
+                              contactFirstName={
+                                payment.contact?.firstName ??
+                                payment.contact?.displayName ??
+                                ''
+                              }
+                              contactLastName={payment.contact?.lastName}
+                            />
+                          ) : (
+                            <span className="text-sm text-text-muted">—</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <div>
                             <span className="text-sm font-semibold text-text-primary">
                               {fmtMoney(payment.amount, payment.currency)}
                             </span>
-                            {payment.receivedAmount > 0 &&
+                            {(payment.receivedAmount ?? 0) > 0 &&
                               payment.status !== PaymentStatus.PAID && (
                                 <p className="text-xs text-text-secondary">
                                   {t('table.balance', {
@@ -687,8 +701,8 @@ export const PaymentsPage = () => {
             {paymentsData && (
               <Pagination
                 page={page}
-                totalPages={paymentsData.totalPages}
-                totalElements={paymentsData.totalElements}
+                totalPages={paymentsData.totalPages ?? 0}
+                totalElements={paymentsData.totalElements ?? 0}
                 size={size}
                 onPageChange={handlePageChange}
                 onSizeChange={handleSizeChange}

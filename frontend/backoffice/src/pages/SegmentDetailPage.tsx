@@ -20,7 +20,7 @@ import {
   useSegmentMatchingUsers,
 } from '../hooks/useSegments';
 import { SegmentDetailFeatureFlags } from '../components/UserFeatureFlags';
-import type { SegmentCondition } from '../api/segments';
+import type { SegmentConditionRequest as SegmentCondition } from '../generated/models';
 
 const ATTRIBUTES = [
   { value: 'is_demo', label: 'Is Demo', type: 'boolean' },
@@ -97,11 +97,13 @@ export const SegmentDetailPage = () => {
 
   // Sync form state when segment data loads (state-based tracking)
   if (segment && lastSynced !== segment.key) {
-    setLastSynced(segment.key);
-    setName(segment.name);
+    setLastSynced(segment.key ?? null);
+    setName(segment.name ?? '');
     setDescription(segment.description ?? '');
-    setPriority(segment.priority);
-    setConditions(segment.conditions.map((c) => ({ ...c })));
+    setPriority(segment.priority ?? 0);
+    setConditions(
+      (segment.conditions ?? []).map((c) => ({ ...c }) as SegmentCondition)
+    );
     setDirty(false);
   }
 

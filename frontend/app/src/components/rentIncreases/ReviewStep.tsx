@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
-import type { RentIncreaseItem } from '@/types/rentIncrease';
+import type { RentIncreaseItemDraft } from '@/types/rentIncrease';
 import { useTranslation } from 'react-i18next';
 
 interface ReviewStepProps {
   contracts: RentIncreaseContractPreview[];
-  increases: RentIncreaseItem[];
+  increases: RentIncreaseItemDraft[];
   year: number;
   onBack: () => void;
   onApply: () => void;

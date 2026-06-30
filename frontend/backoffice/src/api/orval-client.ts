@@ -5,7 +5,13 @@ export const customInstance = <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig
 ): Promise<T> => {
-  const merged = { ...config, ...options };
+  const merged = {
+    ...config,
+    ...options,
+    // Merge (not replace) params/headers so per-call options can extend the generated config.
+    params: { ...config.params, ...options?.params },
+    headers: { ...config.headers, ...options?.headers },
+  };
   // Strip /backoffice prefix — client.ts baseURL already includes it
   if (typeof merged.url === 'string' && merged.url.startsWith('/backoffice')) {
     merged.url = merged.url.slice('/backoffice'.length);
