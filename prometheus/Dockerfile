@@ -1,4 +1,4 @@
-FROM prom/prometheus:v3.12.0
+FROM prom/prometheus:v3.13.0
 
 # Render config at startup with busybox sed (see docker-entrypoint.sh) — no envsubst/gettext needed.
 USER root
