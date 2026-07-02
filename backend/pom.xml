@@ -246,7 +246,7 @@
             <dependency>
                 <groupId>com.googlecode.libphonenumber</groupId>
                 <artifactId>libphonenumber</artifactId>
-                <version>9.0.33</version>
+                <version>9.0.34</version>
             </dependency>
 
             <!-- CSV (PDF rendering is delegated to the Gotenberg sidecar — no in-JVM PDF engine) -->
