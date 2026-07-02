@@ -1395,12 +1395,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.39.3":
-  version: 1.39.3
-  resolution: "@posthog/core@npm:1.39.3"
+"@posthog/core@npm:^1.39.5":
+  version: 1.39.6
+  resolution: "@posthog/core@npm:1.39.6"
   dependencies:
     "@posthog/types": "npm:^1.392.0"
-  checksum: 10c0/7f58372b1d857df3294bdc032146573d145da877331266964fca85b552b96bbf8be94b77a0ed470cd7eb11ccb56478c4f570bf454783b62c22bc0a32516c0225
+  checksum: 10c0/ae11815dd3de8583c1638b7c02ba5fbe31becff07aed3c2f5e48042b56fe67563b1dea39b225a64bc69e2486af677e7690c5eaa052572d79b0a808cfd043cefc
   languageName: node
   linkType: hard
 
@@ -4442,7 +4442,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.7"
     lucide-react: "npm:1.23.0"
-    posthog-js: "npm:1.396.4"
+    posthog-js: "npm:1.396.5"
     prettier: "npm:3.9.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -4499,7 +4499,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.23.0"
-    posthog-js: "npm:1.396.4"
+    posthog-js: "npm:1.396.5"
     prettier: "npm:3.9.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -7866,11 +7866,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.396.4":
-  version: 1.396.4
-  resolution: "posthog-js@npm:1.396.4"
+"posthog-js@npm:1.396.5":
+  version: 1.396.5
+  resolution: "posthog-js@npm:1.396.5"
   dependencies:
-    "@posthog/core": "npm:^1.39.3"
+    "@posthog/core": "npm:^1.39.5"
     "@posthog/types": "npm:^1.392.0"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
@@ -7878,7 +7878,7 @@ __metadata:
     preact: "npm:^10.29.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.3.0"
-  checksum: 10c0/74d53faebfdd3313f3c6c92314ac661446673e0d528d4ba65c41d5d4b3f1885b9c20546802f8b9455dfd6901c9b84fcb1ff99d9267a418d3bfd90c3500510720
+  checksum: 10c0/3f05177d318e26114af596b4bf96d1a0b24b95a0c799c631183add4dc6b033eecfc1b7da99f960c28a5608ce6c64119e6dcaa458cf848c65f572d5e9bb11e4e9
   languageName: node
   linkType: hard
 
