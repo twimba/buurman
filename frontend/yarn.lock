@@ -477,9 +477,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/layers@npm:^9.3.5":
-  version: 9.3.5
-  resolution: "@deck.gl/layers@npm:9.3.5"
+"@deck.gl/layers@npm:^9.3.6":
+  version: 9.3.6
+  resolution: "@deck.gl/layers@npm:9.3.6"
   dependencies:
     "@loaders.gl/images": "npm:^4.4.3"
     "@loaders.gl/schema": "npm:^4.4.3"
@@ -488,13 +488,14 @@ __metadata:
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/polygon": "npm:^4.1.0"
     "@math.gl/web-mercator": "npm:^4.1.0"
+    "@types/geojson": "npm:^7946.0.16"
     earcut: "npm:^2.2.4"
   peerDependencies:
     "@deck.gl/core": ~9.3.0
     "@loaders.gl/core": ^4.4.3
     "@luma.gl/core": ~9.3.3
     "@luma.gl/engine": ~9.3.3
-  checksum: 10c0/0c384d727c00b3e3ea6211072e99355f289055fde04e04c8aa3eae0b94ba2999c87cbf9b43fa0aef27e13e1af28a4791e0ffa8158006ccb4bd6aa72139dcddb0
+  checksum: 10c0/a0c7796a8d2e2746704ebeb955a272e45b42ac46ef4351a1f2f9cacf93a5d47ba69ea8e6fc0088948b8d46b15528371528d2d9463d35bd76b828ae325d9d3d27
   languageName: node
   linkType: hard
 
@@ -3525,7 +3526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/geojson@npm:*, @types/geojson@npm:^7946.0.7":
+"@types/geojson@npm:*, @types/geojson@npm:^7946.0.16, @types/geojson@npm:^7946.0.7":
   version: 7946.0.16
   resolution: "@types/geojson@npm:7946.0.16"
   checksum: 10c0/1ff24a288bd5860b766b073ead337d31d73bdc715e5b50a2cee5cb0af57a1ed02cc04ef295f5fa68dc40fe3e4f104dd31282b2b818a5ba3231bc1001ba084e3c
@@ -4474,7 +4475,7 @@ __metadata:
     "@deck.gl/aggregation-layers": "npm:^9.3.6"
     "@deck.gl/core": "npm:^9.3.6"
     "@deck.gl/google-maps": "npm:^9.3.6"
-    "@deck.gl/layers": "npm:^9.3.5"
+    "@deck.gl/layers": "npm:^9.3.6"
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:10.0.1"
     "@googlemaps/markerclusterer": "npm:2.6.2"
