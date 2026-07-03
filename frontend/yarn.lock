@@ -1395,7 +1395,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.39.5":
+"@posthog/core@npm:^1.39.6":
   version: 1.39.6
   resolution: "@posthog/core@npm:1.39.6"
   dependencies:
@@ -1408,6 +1408,13 @@ __metadata:
   version: 1.392.0
   resolution: "@posthog/types@npm:1.392.0"
   checksum: 10c0/a4425af5fc62ca3d01c5b4ff0b7c4cbc215342f6ce8bf3410d225248b9637e96f438d25b66b3174a897f5df088cc4d41f7dd9c8db4adaf760a4be8e509bee059
+  languageName: node
+  linkType: hard
+
+"@posthog/types@npm:^1.392.1":
+  version: 1.392.1
+  resolution: "@posthog/types@npm:1.392.1"
+  checksum: 10c0/d91f573a9affae860c3ee179e697beb355f72f3034164f9b725df706b3182a4b6bf0930f50ac2ae006f6f652e328120728db87f1c7df1228e92973db9c8c45a9
   languageName: node
   linkType: hard
 
@@ -3525,14 +3532,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.65.2, @types/google.maps@npm:^3.48.6":
+"@types/google.maps@npm:3.65.2, @types/google.maps@npm:^3.48.6, @types/google.maps@npm:^3.64.0":
   version: 3.65.2
   resolution: "@types/google.maps@npm:3.65.2"
   checksum: 10c0/790aed74128385bfa6c8b41c6bf18b8f1901e6c7b7c806615e904e9093703a8238f8b2504027ebe714e95f9cd5b2a94fd63306f8b71907a23ba24673754843ea
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:^3.53.1, @types/google.maps@npm:^3.54.10":
+"@types/google.maps@npm:^3.53.1":
   version: 3.64.1
   resolution: "@types/google.maps@npm:3.64.1"
   checksum: 10c0/4ade621941045c7e1b1ead30e0b4025b7fccf2b4cfb7c9b5f48c31cceb964c74d17c28b6105be15b99df85c23e19b25415e9fd7bdd7b1d40b7000d22dbbb4e7e
@@ -3841,17 +3848,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vis.gl/react-google-maps@npm:1.8.3":
-  version: 1.8.3
-  resolution: "@vis.gl/react-google-maps@npm:1.8.3"
+"@vis.gl/react-google-maps@npm:1.9.0":
+  version: 1.9.0
+  resolution: "@vis.gl/react-google-maps@npm:1.9.0"
   dependencies:
     "@googlemaps/js-api-loader": "npm:^2.0.2"
-    "@types/google.maps": "npm:^3.54.10"
-    fast-deep-equal: "npm:^3.1.3"
+    "@types/google.maps": "npm:^3.64.0"
+    fast-equals: "npm:^6.0.0"
   peerDependencies:
     react: ">=16.8.0 || ^19.0 || ^19.0.0-rc"
     react-dom: ">=16.8.0 || ^19.0 || ^19.0.0-rc"
-  checksum: 10c0/68a0194b26c383227f39e330c5606a420af35136c0183e26075c28ada05379c4d327fda6d9b776fc3e5d09d156907b5a56307f684923a1eaeec90cbddb04a1e9
+  checksum: 10c0/bcb786ca369ec16da02c864906d6fb88a7687684c4c6b5097f8d10fb658a5cf783aab0027c1d227b72cfb6a4947d44c35cddeda7114c2702341da18bc64b6278
   languageName: node
   linkType: hard
 
@@ -4426,7 +4433,7 @@ __metadata:
     "@types/react-is": "npm:19.2.0"
     "@types/swagger-ui-react": "npm:5.18.0"
     "@use-gesture/react": "npm:10.3.1"
-    "@vis.gl/react-google-maps": "npm:1.8.3"
+    "@vis.gl/react-google-maps": "npm:1.9.0"
     "@vitejs/plugin-react": "npm:6.0.3"
     axios: "npm:1.18.1"
     date-fns: "npm:4.4.0"
@@ -4440,9 +4447,9 @@ __metadata:
     ical.js: "npm:2.2.1"
     jsdom: "npm:29.1.1"
     keycloak-js: "npm:26.2.4"
-    libphonenumber-js: "npm:1.13.7"
+    libphonenumber-js: "npm:1.13.8"
     lucide-react: "npm:1.23.0"
-    posthog-js: "npm:1.396.5"
+    posthog-js: "npm:1.396.6"
     prettier: "npm:3.9.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -4488,7 +4495,7 @@ __metadata:
     "@types/react": "npm:19.2.17"
     "@types/react-dom": "npm:19.2.3"
     "@types/topojson-client": "npm:3.1.5"
-    "@vis.gl/react-google-maps": "npm:1.8.3"
+    "@vis.gl/react-google-maps": "npm:1.9.0"
     "@vitejs/plugin-react": "npm:6.0.3"
     axios: "npm:1.18.1"
     cronstrue: "npm:3.24.0"
@@ -4499,7 +4506,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.23.0"
-    posthog-js: "npm:1.396.5"
+    posthog-js: "npm:1.396.6"
     prettier: "npm:3.9.4"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
@@ -5706,6 +5713,13 @@ __metadata:
   version: 5.4.0
   resolution: "fast-equals@npm:5.4.0"
   checksum: 10c0/4fdce3a8f814e78af7296ca4ebe82f4765074a6dfe557ee98c18f5d2958c3de59025fbff7556d65f250165ccef424d37f9952ee159400f8ebe5f2edb704ec80e
+  languageName: node
+  linkType: hard
+
+"fast-equals@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "fast-equals@npm:6.0.0"
+  checksum: 10c0/aae54699ce848726679a947c8bbea78f2ea0384e4e1ee213c98f10881a17bb376bd11085eda4d6c89db5285635ee2f809b126d773532fcf602be355008a9d5ed
   languageName: node
   linkType: hard
 
@@ -6940,10 +6954,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:1.13.7":
-  version: 1.13.7
-  resolution: "libphonenumber-js@npm:1.13.7"
-  checksum: 10c0/2064257e26b4a98b098f3d316e92956f0dd06a4e812e7b8b11bce036e01a987a0078a8b3e6aaba639dc98e5eef1fc8c43cf81781f208e9b84bc163cccc72c89a
+"libphonenumber-js@npm:1.13.8":
+  version: 1.13.8
+  resolution: "libphonenumber-js@npm:1.13.8"
+  checksum: 10c0/8115a709393f655c98bff70c4a6e80ad7ff402a3def177bc5042ccdd9849c900f0c766f3254c64897b4c77566108822e493b13fd6943d3b079fad5506245308e
   languageName: node
   linkType: hard
 
@@ -7866,19 +7880,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.396.5":
-  version: 1.396.5
-  resolution: "posthog-js@npm:1.396.5"
+"posthog-js@npm:1.396.6":
+  version: 1.396.6
+  resolution: "posthog-js@npm:1.396.6"
   dependencies:
-    "@posthog/core": "npm:^1.39.5"
-    "@posthog/types": "npm:^1.392.0"
+    "@posthog/core": "npm:^1.39.6"
+    "@posthog/types": "npm:^1.392.1"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.29.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.3.0"
-  checksum: 10c0/3f05177d318e26114af596b4bf96d1a0b24b95a0c799c631183add4dc6b033eecfc1b7da99f960c28a5608ce6c64119e6dcaa458cf848c65f572d5e9bb11e4e9
+  checksum: 10c0/a79e1294150fd90df06437b22380c74eb139da2810ebc9f65a668d6d7347c25d61dce408d22b569499775228a6c6252e6e2ce7200316913728569beb0ff3a439
   languageName: node
   linkType: hard
 
