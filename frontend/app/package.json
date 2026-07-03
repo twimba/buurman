@@ -45,7 +45,7 @@
     "i18next-http-backend": "4.0.0",
     "ical.js": "2.2.1",
     "keycloak-js": "26.2.4",
-    "libphonenumber-js": "1.13.7",
+    "libphonenumber-js": "1.13.8",
     "lucide-react": "1.23.0",
     "posthog-js": "1.396.6",
     "react": "19.2.7",
