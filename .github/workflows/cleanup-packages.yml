@@ -24,7 +24,7 @@ jobs:
         uses: snok/container-retention-policy@v3.0.0
         with:
           account: ${{ github.repository_owner }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GHCR_CLEANUP_TOKEN }}
           image-names: "buurman/backend buurman/app buurman/backoffice buurman/grafana buurman/prometheus buurman/keycloak"
           image-tags: "!latest !prod" # never touch the moving tags
           cut-off: 60d
