@@ -21,9 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete old package versions
-        uses: snok/container-retention-policy@v3.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: snok/container-retention-policy@v3.1.0
         with:
           account: ${{ github.repository_owner }}
           token: ${{ secrets.GITHUB_TOKEN }}
