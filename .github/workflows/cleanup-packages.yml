@@ -1,0 +1,33 @@
+name: Cleanup old package versions
+
+# Deletes GHCR container image versions older than 60 days,
+# always keeping the 2 most recent versions of each package.
+
+on:
+  schedule:
+    - cron: "0 13 * */2 *" # At 13:00 UTC in every 2nd month.
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Preview deletions without removing anything"
+        type: boolean
+        default: true
+
+permissions:
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old package versions
+        uses: snok/container-retention-policy@v3.0.0
+        with:
+          account: ${{ github.repository_owner }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: "buurman/backend buurman/app buurman/backoffice buurman/grafana buurman/prometheus buurman/keycloak"
+          image-tags: "!latest !prod" # never touch the moving tags
+          cut-off: 60d
+          keep-n-most-recent: 2
+          tag-selection: both
+          dry-run: ${{ github.event_name == 'schedule' && 'false' || inputs.dry-run }}
