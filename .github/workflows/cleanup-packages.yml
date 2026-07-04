@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           account: ${{ github.repository_owner }}
-          token: ${{ secrets.GHCR_CLEANUP_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           image-names: "buurman/backend buurman/app buurman/backoffice buurman/grafana buurman/prometheus buurman/keycloak"
           image-tags: "!latest !prod" # never touch the moving tags
           cut-off: 60d
