@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.7.6
+    image: traefik:v3.7.7
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command:
