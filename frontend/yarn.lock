@@ -339,7 +339,7 @@ __metadata:
     eslint: "npm:10.6.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    lucide-react: "npm:1.23.0"
+    lucide-react: "npm:1.24.0"
     prettier: "npm:3.9.5"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.2"
@@ -4442,7 +4442,7 @@ __metadata:
     jsdom: "npm:29.1.1"
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.8"
-    lucide-react: "npm:1.23.0"
+    lucide-react: "npm:1.24.0"
     posthog-js: "npm:1.399.1"
     prettier: "npm:3.9.5"
     react: "npm:19.2.7"
@@ -4499,7 +4499,7 @@ __metadata:
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
-    lucide-react: "npm:1.23.0"
+    lucide-react: "npm:1.24.0"
     posthog-js: "npm:1.399.1"
     prettier: "npm:3.9.5"
     react: "npm:19.2.7"
@@ -7174,12 +7174,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:1.23.0":
-  version: 1.23.0
-  resolution: "lucide-react@npm:1.23.0"
+"lucide-react@npm:1.24.0":
+  version: 1.24.0
+  resolution: "lucide-react@npm:1.24.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/1cb2108d81c9713e20dd1beb7b6ac5bfc17307d5f38388f84921cf6a124efb4b933c73929bede42f00bd08aa2df340b0904acdf4fb90206ccd52971e943e775b
+  checksum: 10c0/8bc2a7c6cfa33bfc6df5533cec12454197f9182b98da0dcb79c6f167ca99710d9360e68b4ba7959953b4c501a48a100713e1b047a18c326c955920f72b9207ee
   languageName: node
   linkType: hard
 
