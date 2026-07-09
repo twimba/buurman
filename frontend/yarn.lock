@@ -340,7 +340,7 @@ __metadata:
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
     lucide-react: "npm:1.23.0"
-    prettier: "npm:3.9.4"
+    prettier: "npm:3.9.5"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.2"
     typescript: "npm:6.0.3"
@@ -1396,26 +1396,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.39.6":
-  version: 1.39.6
-  resolution: "@posthog/core@npm:1.39.6"
+"@posthog/core@npm:^1.40.0":
+  version: 1.40.1
+  resolution: "@posthog/core@npm:1.40.1"
   dependencies:
-    "@posthog/types": "npm:^1.392.0"
-  checksum: 10c0/ae11815dd3de8583c1638b7c02ba5fbe31becff07aed3c2f5e48042b56fe67563b1dea39b225a64bc69e2486af677e7690c5eaa052572d79b0a808cfd043cefc
+    "@posthog/types": "npm:^1.393.0"
+  checksum: 10c0/614e011ea5fb2306546ffd2fc8a64699162bd083c15718e8e37d11ea2eceeadc22dd77ea027bb7b1762cf6f868a71cd3e6b11d693beb87edaffbbf748770c2f7
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:^1.392.0":
-  version: 1.392.0
-  resolution: "@posthog/types@npm:1.392.0"
-  checksum: 10c0/a4425af5fc62ca3d01c5b4ff0b7c4cbc215342f6ce8bf3410d225248b9637e96f438d25b66b3174a897f5df088cc4d41f7dd9c8db4adaf760a4be8e509bee059
-  languageName: node
-  linkType: hard
-
-"@posthog/types@npm:^1.392.1":
-  version: 1.392.1
-  resolution: "@posthog/types@npm:1.392.1"
-  checksum: 10c0/d91f573a9affae860c3ee179e697beb355f72f3034164f9b725df706b3182a4b6bf0930f50ac2ae006f6f652e328120728db87f1c7df1228e92973db9c8c45a9
+"@posthog/types@npm:^1.393.0":
+  version: 1.393.0
+  resolution: "@posthog/types@npm:1.393.0"
+  checksum: 10c0/d4958afaa91ea20aecca31478dd3151ec65de09af74b036d0fe17e798925d1fd8556324dfd11d4c05bd1f32581269764ccefac31074fedc1238b2acadafbd217
   languageName: node
   linkType: hard
 
@@ -4442,7 +4435,7 @@ __metadata:
     eslint: "npm:10.6.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    i18next: "npm:26.3.5"
+    i18next: "npm:26.3.6"
     i18next-browser-languagedetector: "npm:8.2.1"
     i18next-http-backend: "npm:4.0.0"
     ical.js: "npm:2.2.1"
@@ -4450,11 +4443,11 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.8"
     lucide-react: "npm:1.23.0"
-    posthog-js: "npm:1.398.6"
-    prettier: "npm:3.9.4"
+    posthog-js: "npm:1.399.0"
+    prettier: "npm:3.9.5"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
-    react-i18next: "npm:17.0.8"
+    react-i18next: "npm:17.0.9"
     react-is: "npm:19.2.7"
     react-router-dom: "npm:7.18.1"
     recharts: "npm:3.9.2"
@@ -4507,8 +4500,8 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.23.0"
-    posthog-js: "npm:1.398.6"
-    prettier: "npm:3.9.4"
+    posthog-js: "npm:1.399.0"
+    prettier: "npm:3.9.5"
     react: "npm:19.2.7"
     react-dom: "npm:19.2.7"
     react-router-dom: "npm:7.18.1"
@@ -6308,15 +6301,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:26.3.5":
-  version: 26.3.5
-  resolution: "i18next@npm:26.3.5"
+"i18next@npm:26.3.6":
+  version: 26.3.6
+  resolution: "i18next@npm:26.3.6"
   peerDependencies:
-    typescript: ^5 || ^6
+    typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/5aa4159138629da06e91f611ea485d7a1fc8a3d8f1a3ba03654663da0b10e629988608aec071427d89360e6bbcd013b078ce4e6c22631e2cd7c3bb9a94f1e903
+  checksum: 10c0/5920ac8fb6b647a2bdd439d121de04e5297246e52c4d95d13f5faae0824fd45b2faeb66038bcd61fc62362daa815f9c32fb992d6faa3787607d1dfe768e9a8b1
   languageName: node
   linkType: hard
 
@@ -7888,19 +7881,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.398.6":
-  version: 1.398.6
-  resolution: "posthog-js@npm:1.398.6"
+"posthog-js@npm:1.399.0":
+  version: 1.399.0
+  resolution: "posthog-js@npm:1.399.0"
   dependencies:
-    "@posthog/core": "npm:^1.39.6"
-    "@posthog/types": "npm:^1.392.1"
+    "@posthog/core": "npm:^1.40.0"
+    "@posthog/types": "npm:^1.393.0"
     core-js: "npm:^3.49.0"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.29.3"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.3.0"
-  checksum: 10c0/cbe6dc41b9a877327e5bb3e4fd2db34183604b1ca9901d00e669a30b8185c3c966bbbede7a00f5e8952856baf7ade1bdbf29d16e5bdb692eee7c2a3c03a7b175
+  checksum: 10c0/ff1e1fe5be7d6dc6f1bfec6fc4cd43fe4c3a37a1251b597d2a704ebdaa1be66e674b11111acd5284ed41bc1d4168e62b913a6fa7764028f6effed70b53b29b3f
   languageName: node
   linkType: hard
 
@@ -7925,12 +7918,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.9.4":
-  version: 3.9.4
-  resolution: "prettier@npm:3.9.4"
+"prettier@npm:3.9.5":
+  version: 3.9.5
+  resolution: "prettier@npm:3.9.5"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/dc6ec13d692745c6b7e7bf39beda9eb1b3b76c619118319bce393928c392264b1273337c75f80499695e165affefc7b3a9d2ebb18983af0a8f4dfbb2f45f6ff3
+  checksum: 10c0/0349dd9e6d8010965de6f69e6b6ee2484b8caf78c66675afced6c75ad60ff24c3a2a4f41153fb8adeaee4d8f539641b48cebc71d283cec4d146e9962126c5ceb
   languageName: node
   linkType: hard
 
@@ -8269,9 +8262,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:17.0.8":
-  version: 17.0.8
-  resolution: "react-i18next@npm:17.0.8"
+"react-i18next@npm:17.0.9":
+  version: 17.0.9
+  resolution: "react-i18next@npm:17.0.9"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
     html-parse-stringify: "npm:^3.0.1"
@@ -8279,7 +8272,7 @@ __metadata:
   peerDependencies:
     i18next: ">= 26.2.0"
     react: ">= 16.8.0"
-    typescript: ^5 || ^6
+    typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     react-dom:
       optional: true
@@ -8287,7 +8280,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/4d13d396208927ed3c80eb62db011a98dae16d93fc951bb4cb220fc5a3a5dd2f0046244fdbd197f627f595230d6fa05cc5d1c6f52b6241acd63ff818dff63acb
+  checksum: 10c0/cd7ca7c03daaa22b72341b67c66f00cdc8b694c5d84d6e1fe5ffb2e87d7b6d8941cdcf52e407d7fe7ee7b8a77192e517732d815756fec44eb258e3c8d3956329
   languageName: node
   linkType: hard
 
