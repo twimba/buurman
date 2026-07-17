@@ -4454,7 +4454,7 @@ __metadata:
     react-is: "npm:19.2.7"
     react-router-dom: "npm:7.18.1"
     recharts: "npm:3.9.2"
-    swagger-ui-react: "npm:5.32.8"
+    swagger-ui-react: "npm:5.32.9"
     tailwindcss: "npm:4.3.3"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.64.0"
@@ -4755,7 +4755,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"copy-to-clipboard@npm:^3.3.1":
+"copy-to-clipboard@npm:^3.3.3":
   version: 3.3.3
   resolution: "copy-to-clipboard@npm:3.3.3"
   dependencies:
@@ -8242,15 +8242,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-copy-to-clipboard@npm:5.1.0":
-  version: 5.1.0
-  resolution: "react-copy-to-clipboard@npm:5.1.0"
+"react-copy-to-clipboard@npm:5.1.1":
+  version: 5.1.1
+  resolution: "react-copy-to-clipboard@npm:5.1.1"
   dependencies:
-    copy-to-clipboard: "npm:^3.3.1"
+    copy-to-clipboard: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
   peerDependencies:
-    react: ^15.3.0 || 16 || 17 || 18
-  checksum: 10c0/de70d9f9c2d17cee207888ed791d4a042c300e5ca732503434d49e6745cff56c0d5ebcc82ab86237e9c2248e636d1d031b9f9cf9913ecec61d82a0e5ebc93881
+    react: ">=15.3.0"
+  checksum: 10c0/a46adefbb47508259af135c6de3b29de14a68b3874d94f76d20f079e0b3b399e1038f06a9116216805dce64d90d9d96cdab10af06969dd4b941c4b5d546b6158
   languageName: node
   linkType: hard
 
@@ -9273,9 +9273,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-react@npm:5.32.8":
-  version: 5.32.8
-  resolution: "swagger-ui-react@npm:5.32.8"
+"swagger-ui-react@npm:5.32.9":
+  version: 5.32.9
+  resolution: "swagger-ui-react@npm:5.32.9"
   dependencies:
     "@babel/runtime-corejs3": "npm:^7.27.1"
     "@scarf/scarf": "npm:=1.4.0"
@@ -9293,7 +9293,7 @@ __metadata:
     prop-types: "npm:^15.8.1"
     randexp: "npm:^0.5.3"
     randombytes: "npm:^2.1.0"
-    react-copy-to-clipboard: "npm:5.1.0"
+    react-copy-to-clipboard: "npm:5.1.1"
     react-debounce-input: "npm:=3.3.0"
     react-immutable-proptypes: "npm:2.2.0"
     react-immutable-pure-component: "npm:^2.2.0"
@@ -9314,7 +9314,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <20"
     react-dom: ">=16.8.0 <20"
-  checksum: 10c0/2a59e016e00785e21e3d3c307d0a4cdf25e80b3be67120df4ff9744f36b5c2415892bd0693baac3dd2991622976897861cde6a385cda8e141aa877a1845d9b2c
+  checksum: 10c0/3987fb028eec6faf05cf9cbb80da7cf25b4d12f14368df90a9df0ef014ea73fe8e89408e6ea3653e8825605dbd82dfa99508fb24a4774f21c86dd7e2628960bf
   languageName: node
   linkType: hard
 
