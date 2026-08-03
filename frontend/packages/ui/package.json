@@ -21,7 +21,7 @@
     "@tiptap/react": "3.29.2",
     "@tiptap/starter-kit": "3.29.2",
     "clsx": "2.1.1",
-    "dompurify": "3.4.12",
+    "dompurify": "3.4.13",
     "lucide-react": "1.27.0",
     "tailwind-merge": "3.6.0"
   },
