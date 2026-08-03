@@ -339,7 +339,7 @@ __metadata:
     eslint: "npm:10.8.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    lucide-react: "npm:1.27.0"
+    lucide-react: "npm:1.28.0"
     prettier: "npm:3.9.6"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.3"
@@ -4086,10 +4086,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.65.3":
-  version: 3.65.3
-  resolution: "@types/google.maps@npm:3.65.3"
-  checksum: 10c0/b23fe35c3e93ab4e1e30008ce916b6eed7d5b9b22375b71aa79ab809ff68e8fa27fe5f11f125e2a6b7b2a44746aadb70b27a724c33aa897bda1471789ca66670
+"@types/google.maps@npm:3.65.4":
+  version: 3.65.4
+  resolution: "@types/google.maps@npm:3.65.4"
+  checksum: 10c0/67590bec87906ee2c886837a36a0efb7a3963264f5f6b794eb14ff41c3f556ed279c9f7da84fac66540855258a0bcfda75135de39ec93af2e81af199f0e36bb0
   languageName: node
   linkType: hard
 
@@ -4988,7 +4988,7 @@ __metadata:
     "@tiptap/react": "npm:3.29.2"
     "@tiptap/starter-kit": "npm:3.29.2"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.65.3"
+    "@types/google.maps": "npm:3.65.4"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.4"
     "@types/react-is": "npm:19.2.0"
@@ -5009,7 +5009,7 @@ __metadata:
     jsdom: "npm:29.1.1"
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.10"
-    lucide-react: "npm:1.27.0"
+    lucide-react: "npm:1.28.0"
     posthog-js: "npm:1.409.5"
     prettier: "npm:3.9.6"
     react: "npm:19.2.8"
@@ -5052,7 +5052,7 @@ __metadata:
     "@tiptap/react": "npm:3.29.2"
     "@tiptap/starter-kit": "npm:3.29.2"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.65.3"
+    "@types/google.maps": "npm:3.65.4"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.4"
     "@types/topojson-client": "npm:3.1.5"
@@ -5066,7 +5066,7 @@ __metadata:
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
-    lucide-react: "npm:1.27.0"
+    lucide-react: "npm:1.28.0"
     posthog-js: "npm:1.409.5"
     prettier: "npm:3.9.6"
     react: "npm:19.2.8"
@@ -7763,12 +7763,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:1.27.0":
-  version: 1.27.0
-  resolution: "lucide-react@npm:1.27.0"
+"lucide-react@npm:1.28.0":
+  version: 1.28.0
+  resolution: "lucide-react@npm:1.28.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/18b078fed81124ee3535350c8aa1718945c94fe87d7f76c815cb49bdf39ed49f6fa53fb9b3aa56653dc8ca3523ea91c76cf3040dfb8b3497b1e6356b29f3e5c9
+  checksum: 10c0/7a18911a68d6227865ca03120e3423665478131648ffbd47d62b242ef25a5982c6312ca7041b5a4d60cf0d8ea66d0f97f50dbe848ae60ab0143471da41ef057e
   languageName: node
   linkType: hard
 
