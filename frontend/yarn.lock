@@ -421,20 +421,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/aggregation-layers@npm:^9.3.7":
-  version: 9.3.7
-  resolution: "@deck.gl/aggregation-layers@npm:9.3.7"
+"@deck.gl/aggregation-layers@npm:^9.3.8":
+  version: 9.3.8
+  resolution: "@deck.gl/aggregation-layers@npm:9.3.8"
   dependencies:
-    "@luma.gl/shadertools": "npm:^9.3.3"
+    "@luma.gl/shadertools": "npm:^9.3.5"
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/web-mercator": "npm:^4.1.0"
     d3-hexbin: "npm:^0.2.1"
   peerDependencies:
     "@deck.gl/core": ~9.3.0
     "@deck.gl/layers": ~9.3.0
-    "@luma.gl/core": ~9.3.3
-    "@luma.gl/engine": ~9.3.3
-  checksum: 10c0/ebfd12fbac14cb1192bca67e726a863e258f7a2ab204704602ab45ad037c331437b4b91e240aee62e828528d49e1a0df67b29de3fb41baaad56b56d9d50188cf
+    "@luma.gl/core": ~9.3.5
+    "@luma.gl/engine": ~9.3.5
+  checksum: 10c0/84c01ecf66d5b34d7739b5405c100de9814be7e3eeb5f3cbd98d4a5db6e77ab380f7d8b5ce262a3683475046e5f20a6fc6793d41429d00ba9b78095bfddd2b0e
   languageName: node
   linkType: hard
 
@@ -1124,6 +1124,18 @@ __metadata:
   peerDependencies:
     "@luma.gl/core": ~9.3.0
   checksum: 10c0/7e00b21b8c08d7862a2866ef08ca21ffd06560b4ba80ec231c7ab76182f5faa4c74dfc3f96ceef480a4ea205579c1ff882b3a95c77432a97dc2d3e7a54fe4ce0
+  languageName: node
+  linkType: hard
+
+"@luma.gl/shadertools@npm:^9.3.5":
+  version: 9.3.6
+  resolution: "@luma.gl/shadertools@npm:9.3.6"
+  dependencies:
+    "@math.gl/core": "npm:^4.1.0"
+    "@math.gl/types": "npm:^4.1.0"
+  peerDependencies:
+    "@luma.gl/core": ~9.3.0
+  checksum: 10c0/eec680c8a5ce560d44a5ce8dfded32dccc06b73c7c98d5f590775e51e0b1f2b4cb0376f3d752127566a1973f9625e4963804ceb2bc9220bad5a3fbd97d56c861
   languageName: node
   linkType: hard
 
@@ -4538,7 +4550,7 @@ __metadata:
   resolution: "buurman-backoffice@workspace:backoffice"
   dependencies:
     "@buurman/ui": "workspace:*"
-    "@deck.gl/aggregation-layers": "npm:^9.3.7"
+    "@deck.gl/aggregation-layers": "npm:^9.3.8"
     "@deck.gl/core": "npm:^9.3.7"
     "@deck.gl/google-maps": "npm:^9.3.7"
     "@deck.gl/layers": "npm:^9.3.7"
