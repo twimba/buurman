@@ -477,13 +477,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/layers@npm:^9.3.7":
-  version: 9.3.7
-  resolution: "@deck.gl/layers@npm:9.3.7"
+"@deck.gl/layers@npm:^9.3.8":
+  version: 9.3.8
+  resolution: "@deck.gl/layers@npm:9.3.8"
   dependencies:
     "@loaders.gl/images": "npm:^4.4.3"
     "@loaders.gl/schema": "npm:^4.4.3"
-    "@luma.gl/shadertools": "npm:^9.3.3"
+    "@luma.gl/shadertools": "npm:^9.3.5"
     "@mapbox/tiny-sdf": "npm:^2.0.5"
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/polygon": "npm:^4.1.0"
@@ -493,9 +493,9 @@ __metadata:
   peerDependencies:
     "@deck.gl/core": ~9.3.0
     "@loaders.gl/core": ^4.4.3
-    "@luma.gl/core": ~9.3.3
-    "@luma.gl/engine": ~9.3.3
-  checksum: 10c0/c1d23969ee80f6dd43bb087fc9daa59d97d300e89440fc9fb1350adc138cfa6d4df212ab10cc6d3c6ecbf78109d6c324a92db79c5fe2f16ea7a379f9109e1608
+    "@luma.gl/core": ~9.3.5
+    "@luma.gl/engine": ~9.3.5
+  checksum: 10c0/4d7403594aa8e17146d258f2d7b49f5e43969f1d0e835e6a167a7ff0fb4fcd123c775b5471a98e249f1d91f811ae7cc3ff27f6403c683a51232a533c4b725ef5
   languageName: node
   linkType: hard
 
@@ -4565,7 +4565,7 @@ __metadata:
     "@deck.gl/aggregation-layers": "npm:^9.3.8"
     "@deck.gl/core": "npm:^9.3.7"
     "@deck.gl/google-maps": "npm:^9.3.8"
-    "@deck.gl/layers": "npm:^9.3.7"
+    "@deck.gl/layers": "npm:^9.3.8"
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:10.0.1"
     "@googlemaps/markerclusterer": "npm:2.6.2"
