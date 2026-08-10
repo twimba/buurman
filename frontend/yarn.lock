@@ -462,18 +462,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/google-maps@npm:^9.3.7":
-  version: 9.3.7
-  resolution: "@deck.gl/google-maps@npm:9.3.7"
+"@deck.gl/google-maps@npm:^9.3.8":
+  version: 9.3.8
+  resolution: "@deck.gl/google-maps@npm:9.3.8"
   dependencies:
-    "@luma.gl/webgl": "npm:^9.3.3"
+    "@luma.gl/webgl": "npm:^9.3.5"
     "@math.gl/core": "npm:^4.1.0"
     "@types/google.maps": "npm:^3.48.6"
   peerDependencies:
     "@deck.gl/core": ~9.3.0
-    "@luma.gl/core": ~9.3.3
-    "@luma.gl/webgl": ~9.3.3
-  checksum: 10c0/c02245cc4ddc4e741eb4615abbd4c48ff46c4b7437e740ed9407d091f8e456a5ca71d3ce1f1c78143e00bccddf43aeac570549b102513bc5fdf9501f1368c5ef
+    "@luma.gl/core": ~9.3.5
+    "@luma.gl/webgl": ~9.3.5
+  checksum: 10c0/04da4be781ad2f9ec0a12bdbc9272421e442bb571e42852ed5dfedabc85ff62aee4fd351c10cf1008ed9216bfa2e7ea23dd98a8416cf71d33ae010363baa9188
   languageName: node
   linkType: hard
 
@@ -1148,6 +1148,18 @@ __metadata:
   peerDependencies:
     "@luma.gl/core": ~9.3.0
   checksum: 10c0/5a753f754098622191aabc1ae122e8f644d20a4d2068654b19dc2976c508cefaea73a7b1f0198ced726b836cb06e7ccb168897eaafcd8e4f5dba24e4e45ad89b
+  languageName: node
+  linkType: hard
+
+"@luma.gl/webgl@npm:^9.3.5":
+  version: 9.3.6
+  resolution: "@luma.gl/webgl@npm:9.3.6"
+  dependencies:
+    "@math.gl/types": "npm:^4.1.0"
+    "@probe.gl/env": "npm:^4.1.1"
+  peerDependencies:
+    "@luma.gl/core": ~9.3.0
+  checksum: 10c0/4cb33041868bed90429843de55db3e1979e3adc73636ede39a680dc2c201b8f148340aeedacbeee2abe04f219c27bec47f4316ef69cf91458099022ed2bb93b6
   languageName: node
   linkType: hard
 
@@ -4552,7 +4564,7 @@ __metadata:
     "@buurman/ui": "workspace:*"
     "@deck.gl/aggregation-layers": "npm:^9.3.8"
     "@deck.gl/core": "npm:^9.3.7"
-    "@deck.gl/google-maps": "npm:^9.3.7"
+    "@deck.gl/google-maps": "npm:^9.3.8"
     "@deck.gl/layers": "npm:^9.3.7"
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:10.0.1"
