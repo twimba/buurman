@@ -438,16 +438,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/core@npm:^9.3.7":
-  version: 9.3.7
-  resolution: "@deck.gl/core@npm:9.3.7"
+"@deck.gl/core@npm:^9.3.8":
+  version: 9.3.8
+  resolution: "@deck.gl/core@npm:9.3.8"
   dependencies:
     "@loaders.gl/core": "npm:^4.4.3"
     "@loaders.gl/images": "npm:^4.4.3"
-    "@luma.gl/core": "npm:^9.3.3"
-    "@luma.gl/engine": "npm:^9.3.3"
-    "@luma.gl/shadertools": "npm:^9.3.3"
-    "@luma.gl/webgl": "npm:^9.3.3"
+    "@luma.gl/core": "npm:^9.3.5"
+    "@luma.gl/engine": "npm:^9.3.5"
+    "@luma.gl/shadertools": "npm:^9.3.5"
+    "@luma.gl/webgl": "npm:^9.3.5"
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/sun": "npm:^4.1.0"
     "@math.gl/types": "npm:^4.1.0"
@@ -458,7 +458,7 @@ __metadata:
     "@types/offscreencanvas": "npm:^2019.6.4"
     gl-matrix: "npm:^3.0.0"
     mjolnir.js: "npm:^3.0.0"
-  checksum: 10c0/511383fa18408c9b6de4172f70086769320d261a3a379e79e53d0daa2b3bd9fe82ed6ef3028571b78e18b151745db0684735099db77721a98db1910b5f32fe63
+  checksum: 10c0/a7bf9d3ee74f3f6082c00c347fe5d0d0636eaf9ac4a1ed4b93bb2131aadbc90505fada8435d545ada7419cf9278c3ce60b32bd7018220e2f64a164f65b8221c8
   languageName: node
   linkType: hard
 
@@ -1087,22 +1087,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/core@npm:^9.3.3":
-  version: 9.3.5
-  resolution: "@luma.gl/core@npm:9.3.5"
+"@luma.gl/core@npm:^9.3.5":
+  version: 9.3.6
+  resolution: "@luma.gl/core@npm:9.3.6"
   dependencies:
     "@math.gl/types": "npm:^4.1.0"
     "@probe.gl/env": "npm:^4.1.1"
     "@probe.gl/log": "npm:^4.1.1"
     "@probe.gl/stats": "npm:^4.1.1"
     "@types/offscreencanvas": "npm:^2019.7.3"
-  checksum: 10c0/a43d764973463d9ee761358755dfaae85d12b5ffa955746bb6eb72fe285d1cb67af575dcdade7464005c8fbedec7d0b8af98284101cffea2d96ccbd8c7ec3bde
+  checksum: 10c0/6f9548eb286871ef73d11c1a7f31914eab4953b514aafd24f216a1ba07c06fdcf8aad2b4191e4b46116cb0165ebb3e72795c48c431c4e758f62310c6204a9014
   languageName: node
   linkType: hard
 
-"@luma.gl/engine@npm:^9.3.3":
-  version: 9.3.5
-  resolution: "@luma.gl/engine@npm:9.3.5"
+"@luma.gl/engine@npm:^9.3.5":
+  version: 9.3.6
+  resolution: "@luma.gl/engine@npm:9.3.6"
   dependencies:
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/types": "npm:^4.1.0"
@@ -1111,19 +1111,7 @@ __metadata:
   peerDependencies:
     "@luma.gl/core": ~9.3.0
     "@luma.gl/shadertools": ~9.3.0
-  checksum: 10c0/7e1404e079adbdd3c7b1787a22a2e1791bdf1f4796cbc230f8ab3e437a854f88d5bfb32792907d03bf05de3f3472f2324c300e3d99a10e5ded1e612fe21a4d53
-  languageName: node
-  linkType: hard
-
-"@luma.gl/shadertools@npm:^9.3.3":
-  version: 9.3.5
-  resolution: "@luma.gl/shadertools@npm:9.3.5"
-  dependencies:
-    "@math.gl/core": "npm:^4.1.0"
-    "@math.gl/types": "npm:^4.1.0"
-  peerDependencies:
-    "@luma.gl/core": ~9.3.0
-  checksum: 10c0/7e00b21b8c08d7862a2866ef08ca21ffd06560b4ba80ec231c7ab76182f5faa4c74dfc3f96ceef480a4ea205579c1ff882b3a95c77432a97dc2d3e7a54fe4ce0
+  checksum: 10c0/b6178528fb66654119cd079da964c550f30d23b05fc8cc9ec31124ba3eb3a03ad6a792dc68fd1589e8d43ae5e01a058c007362c7d73ca480fa01e9a9c9fcd573
   languageName: node
   linkType: hard
 
@@ -1136,18 +1124,6 @@ __metadata:
   peerDependencies:
     "@luma.gl/core": ~9.3.0
   checksum: 10c0/eec680c8a5ce560d44a5ce8dfded32dccc06b73c7c98d5f590775e51e0b1f2b4cb0376f3d752127566a1973f9625e4963804ceb2bc9220bad5a3fbd97d56c861
-  languageName: node
-  linkType: hard
-
-"@luma.gl/webgl@npm:^9.3.3":
-  version: 9.3.5
-  resolution: "@luma.gl/webgl@npm:9.3.5"
-  dependencies:
-    "@math.gl/types": "npm:^4.1.0"
-    "@probe.gl/env": "npm:^4.1.1"
-  peerDependencies:
-    "@luma.gl/core": ~9.3.0
-  checksum: 10c0/5a753f754098622191aabc1ae122e8f644d20a4d2068654b19dc2976c508cefaea73a7b1f0198ced726b836cb06e7ccb168897eaafcd8e4f5dba24e4e45ad89b
   languageName: node
   linkType: hard
 
@@ -4563,7 +4539,7 @@ __metadata:
   dependencies:
     "@buurman/ui": "workspace:*"
     "@deck.gl/aggregation-layers": "npm:^9.3.8"
-    "@deck.gl/core": "npm:^9.3.7"
+    "@deck.gl/core": "npm:^9.3.8"
     "@deck.gl/google-maps": "npm:^9.3.8"
     "@deck.gl/layers": "npm:^9.3.8"
     "@eslint/compat": "npm:2.1.0"
