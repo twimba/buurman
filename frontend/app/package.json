@@ -71,7 +71,7 @@
     "@types/react-is": "19.2.0",
     "@types/swagger-ui-react": "5.18.0",
     "@vitejs/plugin-react": "6.0.5",
-    "eslint": "10.8.0",
+    "eslint": "10.8.1",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "jsdom": "29.1.1",
