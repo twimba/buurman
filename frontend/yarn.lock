@@ -438,9 +438,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/core@npm:^9.3.8":
-  version: 9.3.8
-  resolution: "@deck.gl/core@npm:9.3.8"
+"@deck.gl/core@npm:^9.3.9":
+  version: 9.3.9
+  resolution: "@deck.gl/core@npm:9.3.9"
   dependencies:
     "@loaders.gl/core": "npm:^4.4.3"
     "@loaders.gl/images": "npm:^4.4.3"
@@ -458,7 +458,7 @@ __metadata:
     "@types/offscreencanvas": "npm:^2019.6.4"
     gl-matrix: "npm:^3.0.0"
     mjolnir.js: "npm:^3.0.0"
-  checksum: 10c0/a7bf9d3ee74f3f6082c00c347fe5d0d0636eaf9ac4a1ed4b93bb2131aadbc90505fada8435d545ada7419cf9278c3ce60b32bd7018220e2f64a164f65b8221c8
+  checksum: 10c0/3a23e521cd675279034337e6731eefc7afb57f990f8f89a198232862c1c3d03d0cc6e632400204cefb09f0fc6b79d7104cfcc2c9aa5ac3b1ca7a1e40ca40f8c6
   languageName: node
   linkType: hard
 
@@ -4532,7 +4532,7 @@ __metadata:
   dependencies:
     "@buurman/ui": "workspace:*"
     "@deck.gl/aggregation-layers": "npm:^9.3.8"
-    "@deck.gl/core": "npm:^9.3.8"
+    "@deck.gl/core": "npm:^9.3.9"
     "@deck.gl/google-maps": "npm:^9.3.8"
     "@deck.gl/layers": "npm:^9.3.8"
     "@eslint/compat": "npm:2.1.0"
