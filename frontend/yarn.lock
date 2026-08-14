@@ -477,9 +477,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/layers@npm:^9.3.9":
-  version: 9.3.9
-  resolution: "@deck.gl/layers@npm:9.3.9"
+"@deck.gl/layers@npm:^9.3.10":
+  version: 9.3.10
+  resolution: "@deck.gl/layers@npm:9.3.10"
   dependencies:
     "@loaders.gl/images": "npm:^4.4.3"
     "@loaders.gl/schema": "npm:^4.4.3"
@@ -495,7 +495,7 @@ __metadata:
     "@loaders.gl/core": ^4.4.3
     "@luma.gl/core": ~9.3.5
     "@luma.gl/engine": ~9.3.5
-  checksum: 10c0/75010df9e484c7e3f35fa45502ce0d62719e870601e0e99320c3e3c9898b9f9c133db99b0510ba9f04a09df1289b814ae8c4f5d36e614be14231df05a8cccffe
+  checksum: 10c0/c315c6f58904f4f5b8c715d8fc77d9fdc9de4044f88c2531aac42e6af7085dfd7ed3e735490b30012479063d6b01bf405e324fac13e670533f923a8e4c3e8ec7
   languageName: node
   linkType: hard
 
@@ -4548,7 +4548,7 @@ __metadata:
     "@deck.gl/aggregation-layers": "npm:^9.3.9"
     "@deck.gl/core": "npm:^9.3.10"
     "@deck.gl/google-maps": "npm:^9.3.10"
-    "@deck.gl/layers": "npm:^9.3.9"
+    "@deck.gl/layers": "npm:^9.3.10"
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:10.0.1"
     "@googlemaps/markerclusterer": "npm:2.6.2"
