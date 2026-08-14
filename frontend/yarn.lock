@@ -421,9 +421,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/aggregation-layers@npm:^9.3.9":
-  version: 9.3.9
-  resolution: "@deck.gl/aggregation-layers@npm:9.3.9"
+"@deck.gl/aggregation-layers@npm:^9.3.10":
+  version: 9.3.10
+  resolution: "@deck.gl/aggregation-layers@npm:9.3.10"
   dependencies:
     "@luma.gl/shadertools": "npm:^9.3.5"
     "@math.gl/core": "npm:^4.1.0"
@@ -434,7 +434,7 @@ __metadata:
     "@deck.gl/layers": ~9.3.0
     "@luma.gl/core": ~9.3.5
     "@luma.gl/engine": ~9.3.5
-  checksum: 10c0/26612ae66671734cefd45bee400acb8fe47e09031e84ac8b3766c06cbdc1478e66bd28b1201c4a90593a56cb832c6e2536b4a2059e0fcc05ab4842c42f72d6be
+  checksum: 10c0/75d045fef95b2b22d0dd0347da077756a56e15512317f10be2fc1e7a065daf5ee2f893be50d64193c3dae693563af29ca1111f0fb6a923b2afff75765c975829
   languageName: node
   linkType: hard
 
@@ -4545,7 +4545,7 @@ __metadata:
   resolution: "buurman-backoffice@workspace:backoffice"
   dependencies:
     "@buurman/ui": "workspace:*"
-    "@deck.gl/aggregation-layers": "npm:^9.3.9"
+    "@deck.gl/aggregation-layers": "npm:^9.3.10"
     "@deck.gl/core": "npm:^9.3.10"
     "@deck.gl/google-maps": "npm:^9.3.10"
     "@deck.gl/layers": "npm:^9.3.10"
