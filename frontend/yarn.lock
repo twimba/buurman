@@ -863,12 +863,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@full-ui/headless-calendar@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@full-ui/headless-calendar@npm:7.0.2"
+  peerDependencies:
+    temporal-polyfill: ^1.0.1
+  checksum: 10c0/53650711eb335db3a96e49a0a75cc2b40a837f37b1f9a8c3bca7e4d65b3ec08807dc62b227e6f952c287deb9275d86a199a4989266f6f0994688ccf78010de64
+  languageName: node
+  linkType: hard
+
 "@fullcalendar/core@npm:6.1.21":
   version: 6.1.21
   resolution: "@fullcalendar/core@npm:6.1.21"
   dependencies:
     preact: "npm:~10.12.1"
   checksum: 10c0/6856367e4b1aa7941badcd38198efc379aa03c34a1a6c6d97cd4d68fc6f99d26340cbe1007b247cab01af431abbc89ee78a3cb42d67f1e722655e8adca66692e
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/core@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@fullcalendar/core@npm:7.0.2"
+  peerDependencies:
+    "@full-ui/headless-calendar": 7.0.2
+    temporal-polyfill: ^1.0.1
+  checksum: 10c0/7950877fea512e130d6785876bc6820bd48d067a813199438d664b522313abd68a828f2e9c8531041c7066618b5d8c05234952c6eb817694cc14737e4af2e27b
   languageName: node
   linkType: hard
 
@@ -881,13 +900,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/icalendar@npm:6.1.21":
-  version: 6.1.21
-  resolution: "@fullcalendar/icalendar@npm:6.1.21"
+"@fullcalendar/icalendar@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@fullcalendar/icalendar@npm:7.0.2"
+  dependencies:
+    "@full-ui/headless-calendar": "npm:7.0.2"
+    "@fullcalendar/core": "npm:7.0.2"
   peerDependencies:
-    "@fullcalendar/core": ~6.1.21
-    ical.js: ^1.4.0
-  checksum: 10c0/d8bd30b7d98a1111c777502df20e35ee592ef05794922496cdb33713100e1bccec10ebe1bb223125ff1866ac2bd173a2711284840cc71227a0b9f7f6aa33d137
+    ical.js: ^2.0.0
+    temporal-polyfill: ^1.0.1
+  checksum: 10c0/b44d6a1816b46e05fb805d0f3c248681c66d6bfd52d420658fe7c5c7548e0131caf03c4177bf6d44aa5074c79ace1d9bdfb44b75f3fac311298638ede41f1c99
   languageName: node
   linkType: hard
 
@@ -4488,7 +4510,7 @@ __metadata:
     "@floating-ui/dom": "npm:1.8.0"
     "@fullcalendar/core": "npm:6.1.21"
     "@fullcalendar/daygrid": "npm:6.1.21"
-    "@fullcalendar/icalendar": "npm:6.1.21"
+    "@fullcalendar/icalendar": "npm:7.0.2"
     "@fullcalendar/react": "npm:6.1.21"
     "@playwright/test": "npm:1.62.1"
     "@tailwindcss/postcss": "npm:4.3.3"
