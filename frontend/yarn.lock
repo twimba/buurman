@@ -863,12 +863,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/core@npm:6.1.21":
-  version: 6.1.21
-  resolution: "@fullcalendar/core@npm:6.1.21"
-  dependencies:
-    preact: "npm:~10.12.1"
-  checksum: 10c0/6856367e4b1aa7941badcd38198efc379aa03c34a1a6c6d97cd4d68fc6f99d26340cbe1007b247cab01af431abbc89ee78a3cb42d67f1e722655e8adca66692e
+"@fullcalendar/core@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@fullcalendar/core@npm:7.0.2"
+  peerDependencies:
+    "@full-ui/headless-calendar": 7.0.2
+    temporal-polyfill: ^1.0.1
+  checksum: 10c0/7950877fea512e130d6785876bc6820bd48d067a813199438d664b522313abd68a828f2e9c8531041c7066618b5d8c05234952c6eb817694cc14737e4af2e27b
   languageName: node
   linkType: hard
 
@@ -4486,7 +4487,7 @@ __metadata:
     "@eslint/compat": "npm:2.1.0"
     "@eslint/js": "npm:10.0.1"
     "@floating-ui/dom": "npm:1.8.0"
-    "@fullcalendar/core": "npm:6.1.21"
+    "@fullcalendar/core": "npm:7.0.2"
     "@fullcalendar/daygrid": "npm:6.1.21"
     "@fullcalendar/icalendar": "npm:6.1.21"
     "@fullcalendar/react": "npm:6.1.21"
@@ -8142,13 +8143,6 @@ __metadata:
   version: 10.29.6
   resolution: "preact@npm:10.29.6"
   checksum: 10c0/f0434c736f61e781f7ab4e15293b2fc4fa230607dc3652801845c0378d6770ee46497440f7f75ccf4b6a450d7a64e0f22deaa685394e873a04b0d3c889b72ef3
-  languageName: node
-  linkType: hard
-
-"preact@npm:~10.12.1":
-  version: 10.12.1
-  resolution: "preact@npm:10.12.1"
-  checksum: 10c0/c77a55e897dcf298b7aa13637fed29744d3cf6c083f2832856e8551dbf27303c8b6946569736de16b05cba15c0e44ad404beb236ad9e36583a6fc5e2efad7777
   languageName: node
   linkType: hard
 
