@@ -1,4 +1,4 @@
-FROM grafana/grafana:13.1.3
+FROM grafana/grafana:13.1.4
 
 USER root
 RUN apk add --no-cache gettext
