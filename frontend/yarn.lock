@@ -445,16 +445,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/core@npm:^9.3.10":
-  version: 9.3.10
-  resolution: "@deck.gl/core@npm:9.3.10"
+"@deck.gl/core@npm:^9.3.11":
+  version: 9.3.11
+  resolution: "@deck.gl/core@npm:9.3.11"
   dependencies:
     "@loaders.gl/core": "npm:^4.4.3"
     "@loaders.gl/images": "npm:^4.4.3"
-    "@luma.gl/core": "npm:^9.3.5"
-    "@luma.gl/engine": "npm:^9.3.5"
-    "@luma.gl/shadertools": "npm:^9.3.5"
-    "@luma.gl/webgl": "npm:^9.3.5"
+    "@luma.gl/core": "npm:~9.3.5"
+    "@luma.gl/engine": "npm:~9.3.5"
+    "@luma.gl/shadertools": "npm:~9.3.5"
+    "@luma.gl/webgl": "npm:~9.3.5"
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/sun": "npm:^4.1.0"
     "@math.gl/types": "npm:^4.1.0"
@@ -465,7 +465,7 @@ __metadata:
     "@types/offscreencanvas": "npm:^2019.6.4"
     gl-matrix: "npm:^3.0.0"
     mjolnir.js: "npm:^3.0.0"
-  checksum: 10c0/7340ee21a10dd4762cceda86e62251870e33d432480924620bc467ccfd81e68d01a9f4079ef8cb0e3f59b6566b671c365e8a8aa843ae895dc24ea5f00138833b
+  checksum: 10c0/1d545b51ac8d2811a8dac97dc59c57816bd12d0986af00776016d3c426a374420eef20b247d2fec95ca528d9fd0b568c5e024c823363709b5413caba128c7044
   languageName: node
   linkType: hard
 
@@ -1094,7 +1094,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/core@npm:^9.3.5":
+"@luma.gl/core@npm:~9.3.5":
   version: 9.3.6
   resolution: "@luma.gl/core@npm:9.3.6"
   dependencies:
@@ -1107,7 +1107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/engine@npm:^9.3.5":
+"@luma.gl/engine@npm:~9.3.5":
   version: 9.3.6
   resolution: "@luma.gl/engine@npm:9.3.6"
   dependencies:
@@ -1134,7 +1134,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/webgl@npm:^9.3.5":
+"@luma.gl/webgl@npm:^9.3.5, @luma.gl/webgl@npm:~9.3.5":
   version: 9.3.6
   resolution: "@luma.gl/webgl@npm:9.3.6"
   dependencies:
@@ -3583,10 +3583,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.65.5":
-  version: 3.65.5
-  resolution: "@types/google.maps@npm:3.65.5"
-  checksum: 10c0/6b65b7466af17c1917711ee0ac360ca2360c0cd39d552032c2d0fddc0292fcb3bccf8af4f8e8c0ffca5f56802e914468e15dc8e346b84ca3cc71e2474c074ab3
+"@types/google.maps@npm:3.66.0":
+  version: 3.66.0
+  resolution: "@types/google.maps@npm:3.66.0"
+  checksum: 10c0/7601ddab4c92e4cec14eabd66f48e9ab28a30c78a33ceafdfb0cfc8643ce81b26f32abb1daab2cc2c31343460a0086df6e025b107836b91e18b7e703ab299a40
   languageName: node
   linkType: hard
 
@@ -4494,7 +4494,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.65.5"
+    "@types/google.maps": "npm:3.66.0"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.4"
     "@types/react-is": "npm:19.2.0"
@@ -4539,7 +4539,7 @@ __metadata:
   dependencies:
     "@buurman/ui": "workspace:*"
     "@deck.gl/aggregation-layers": "npm:^9.3.11"
-    "@deck.gl/core": "npm:^9.3.10"
+    "@deck.gl/core": "npm:^9.3.11"
     "@deck.gl/google-maps": "npm:^9.3.10"
     "@deck.gl/layers": "npm:^9.3.10"
     "@eslint/compat": "npm:2.1.0"
@@ -4558,7 +4558,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.65.5"
+    "@types/google.maps": "npm:3.66.0"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.4"
     "@types/topojson-client": "npm:3.1.5"
