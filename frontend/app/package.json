@@ -54,7 +54,7 @@
     "react-is": "19.2.8",
     "react-router-dom": "7.18.2",
     "recharts": "3.10.1",
-    "swagger-ui-react": "5.32.13"
+    "swagger-ui-react": "5.32.14"
   },
   "devDependencies": {
     "@eslint/compat": "2.1.0",
