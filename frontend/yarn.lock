@@ -3583,10 +3583,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.65.5":
-  version: 3.65.5
-  resolution: "@types/google.maps@npm:3.65.5"
-  checksum: 10c0/6b65b7466af17c1917711ee0ac360ca2360c0cd39d552032c2d0fddc0292fcb3bccf8af4f8e8c0ffca5f56802e914468e15dc8e346b84ca3cc71e2474c074ab3
+"@types/google.maps@npm:3.66.0":
+  version: 3.66.0
+  resolution: "@types/google.maps@npm:3.66.0"
+  checksum: 10c0/7601ddab4c92e4cec14eabd66f48e9ab28a30c78a33ceafdfb0cfc8643ce81b26f32abb1daab2cc2c31343460a0086df6e025b107836b91e18b7e703ab299a40
   languageName: node
   linkType: hard
 
@@ -4494,7 +4494,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.65.5"
+    "@types/google.maps": "npm:3.66.0"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.4"
     "@types/react-is": "npm:19.2.0"
@@ -4558,7 +4558,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.65.5"
+    "@types/google.maps": "npm:3.66.0"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.4"
     "@types/topojson-client": "npm:3.1.5"
