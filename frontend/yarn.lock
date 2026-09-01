@@ -421,11 +421,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/aggregation-layers@npm:^9.3.10":
-  version: 9.3.10
-  resolution: "@deck.gl/aggregation-layers@npm:9.3.10"
+"@deck.gl/aggregation-layers@npm:^9.3.11":
+  version: 9.3.11
+  resolution: "@deck.gl/aggregation-layers@npm:9.3.11"
   dependencies:
-    "@luma.gl/shadertools": "npm:^9.3.5"
+    "@luma.gl/shadertools": "npm:~9.3.5"
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/web-mercator": "npm:^4.1.0"
     d3-hexbin: "npm:^0.2.1"
@@ -434,7 +434,7 @@ __metadata:
     "@deck.gl/layers": ~9.3.0
     "@luma.gl/core": ~9.3.5
     "@luma.gl/engine": ~9.3.5
-  checksum: 10c0/75d045fef95b2b22d0dd0347da077756a56e15512317f10be2fc1e7a065daf5ee2f893be50d64193c3dae693563af29ca1111f0fb6a923b2afff75765c975829
+  checksum: 10c0/d7fe5ba6e87a280e63ea313878c49f460ffed3c82b192c6d519c17479cfded5dc00758c1c751bb98b053aa8066eda7a33795377c065baedd12858337dcf0cf1d
   languageName: node
   linkType: hard
 
@@ -1115,7 +1115,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/shadertools@npm:^9.3.5":
+"@luma.gl/shadertools@npm:^9.3.5, @luma.gl/shadertools@npm:~9.3.5":
   version: 9.3.6
   resolution: "@luma.gl/shadertools@npm:9.3.6"
   dependencies:
@@ -4531,7 +4531,7 @@ __metadata:
   resolution: "buurman-backoffice@workspace:backoffice"
   dependencies:
     "@buurman/ui": "workspace:*"
-    "@deck.gl/aggregation-layers": "npm:^9.3.10"
+    "@deck.gl/aggregation-layers": "npm:^9.3.11"
     "@deck.gl/core": "npm:^9.3.10"
     "@deck.gl/google-maps": "npm:^9.3.10"
     "@deck.gl/layers": "npm:^9.3.10"
