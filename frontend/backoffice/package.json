@@ -15,7 +15,7 @@
     "@deck.gl/aggregation-layers": "^9.3.11",
     "@deck.gl/core": "^9.3.11",
     "@deck.gl/google-maps": "^9.3.11",
-    "@deck.gl/layers": "^9.3.10",
+    "@deck.gl/layers": "^9.3.11",
     "@googlemaps/markerclusterer": "2.6.2",
     "@tanstack/react-query": "5.102.8",
     "@tiptap/core": "3.30.1",
