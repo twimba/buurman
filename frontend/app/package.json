@@ -50,7 +50,7 @@
     "posthog-js": "1.422.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-i18next": "17.0.12",
+    "react-i18next": "17.0.13",
     "react-is": "19.2.8",
     "react-router-dom": "7.18.3",
     "recharts": "3.10.1",
