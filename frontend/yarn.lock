@@ -3616,6 +3616,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/google.maps@npm:3.66.1":
+  version: 3.66.1
+  resolution: "@types/google.maps@npm:3.66.1"
+  checksum: 10c0/8436325c03855efefc74110bf1a2dc02a2a7af04578d2b24ae2cc911fbc508a55f03095a761367efd979f01388578def2f8f107bc1dba64b370358fd01db2250
+  languageName: node
+  linkType: hard
+
 "@types/google.maps@npm:^3.48.6, @types/google.maps@npm:^3.64.0":
   version: 3.65.2
   resolution: "@types/google.maps@npm:3.65.2"
@@ -4537,7 +4544,7 @@ __metadata:
     eslint: "npm:10.9.1"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    i18next: "npm:26.4.0"
+    i18next: "npm:26.4.1"
     i18next-browser-languagedetector: "npm:8.2.1"
     i18next-http-backend: "npm:4.0.1"
     ical.js: "npm:2.2.1"
@@ -4549,7 +4556,7 @@ __metadata:
     prettier: "npm:3.9.6"
     react: "npm:19.2.8"
     react-dom: "npm:19.2.8"
-    react-i18next: "npm:17.0.12"
+    react-i18next: "npm:17.0.13"
     react-is: "npm:19.2.8"
     react-router-dom: "npm:7.18.3"
     recharts: "npm:3.10.1"
@@ -4587,7 +4594,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.66.0"
+    "@types/google.maps": "npm:3.66.1"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.5"
     "@types/topojson-client": "npm:3.1.5"
@@ -6425,15 +6432,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:26.4.0":
-  version: 26.4.0
-  resolution: "i18next@npm:26.4.0"
+"i18next@npm:26.4.1":
+  version: 26.4.1
+  resolution: "i18next@npm:26.4.1"
   peerDependencies:
     typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/3edc8b329e61f627278b83668fae9c68d9d5d187fac9d96403b3e69f7afa42cfb7bce8d5bec345dde082483cb57528a837bb2ea3f2a9d377ff23c2b86d6afdcd
+  checksum: 10c0/d378fdef07d07b3bbaa803ca18bf663bfcb203ab4be5eb8da2f1eb49e5559efcaf731f0cf34deccfe804c465f1cab8948d58f9303afe6921bc18949cb170df5e
   languageName: node
   linkType: hard
 
@@ -8534,9 +8541,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:17.0.12":
-  version: 17.0.12
-  resolution: "react-i18next@npm:17.0.12"
+"react-i18next@npm:17.0.13":
+  version: 17.0.13
+  resolution: "react-i18next@npm:17.0.13"
   dependencies:
     "@babel/runtime": "npm:^7.29.7"
     html-parse-stringify: "npm:^4.0.1"
@@ -8552,7 +8559,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/5ad870d228a47382abc8f074fde88c18a5f9fe393ae902fb89c0ddbbc359f53001c16c6742a4032885d7396b49c72f26a6e93b690913e887ba630ba4145105e8
+  checksum: 10c0/58369886b4b49dd1c3c950de8d89811a15f1728f0805356f5003ec77ea96f2ef007ef25fb039fb241676d9f48664448d8be9dbc569bebfa06ad1cad5a76517ec
   languageName: node
   linkType: hard
 
