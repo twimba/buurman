@@ -1456,29 +1456,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/browser-common@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "@posthog/browser-common@npm:0.7.1"
+"@posthog/browser-common@npm:^0.7.2":
+  version: 0.7.2
+  resolution: "@posthog/browser-common@npm:0.7.2"
   dependencies:
-    "@posthog/core": "npm:^1.50.0"
-    "@posthog/types": "npm:^1.407.1"
-  checksum: 10c0/0c1d172c8a139303c197e9a9a6dd6e4b9ec59d47e7e4861e014d1eac56a5baa3c154dd18b242bb073fea6cff3cacce47746734f444d3ab4a4c0d9b71b2d039bd
+    "@posthog/core": "npm:^1.50.4"
+    "@posthog/types": "npm:^1.408.1"
+  checksum: 10c0/e1b3e64692f6193e8c197b4a7dce3e3733b0263026ec6d2a5b607a99e807fb5aeb6a59d759455c905311a2958e7ebcc57eb01913fdcb1c934e6ab7fb5d24b773
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.50.0, @posthog/core@npm:^1.50.2":
-  version: 1.50.2
-  resolution: "@posthog/core@npm:1.50.2"
+"@posthog/core@npm:^1.50.4, @posthog/core@npm:^1.50.5":
+  version: 1.50.5
+  resolution: "@posthog/core@npm:1.50.5"
   dependencies:
-    "@posthog/types": "npm:^1.407.1"
-  checksum: 10c0/c37a53f22523c188f469e48b24b20794f0cc0e5820317184643025e2a607191574b36651e162ae80fbf026389bb5a756a87349ac87c0f4c10434c0ead0a36a2e
+    "@posthog/types": "npm:^1.409.0"
+  checksum: 10c0/0bd8db388c0cb43bf8f55f9236bd00f33703e3840cf412eea70a07c8de2ae5a6147aaae37339d02a350704a711fe87a85524238147f43e718bfbf29aee778352
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:^1.407.1":
-  version: 1.407.1
-  resolution: "@posthog/types@npm:1.407.1"
-  checksum: 10c0/0dd4effcec2a267b92035397bc8ced875618f5e07395470c474f164510be254ed145b3aca583935fc64dd6937a9a7e60a3941414f63bb0e0a1c6acf94e9a668e
+"@posthog/types@npm:^1.408.1, @posthog/types@npm:^1.409.0":
+  version: 1.409.0
+  resolution: "@posthog/types@npm:1.409.0"
+  checksum: 10c0/ea356ea32c91fdc905e0b23e74976ac4b08d3f891679c5ba2dfc77496a5f8b7943b8057d7a8be6f4a21f8f9950d607b2708ac795e269cf5d49e18031bbe31b31
   languageName: node
   linkType: hard
 
@@ -3091,12 +3091,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:14.6.6":
-  version: 14.6.6
-  resolution: "@testing-library/user-event@npm:14.6.6"
+"@testing-library/user-event@npm:14.6.7":
+  version: 14.6.7
+  resolution: "@testing-library/user-event@npm:14.6.7"
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: 10c0/2cb82d3a364a2a29da19bb5d2a614aedaa474ac6f599a42fc28c1926056f7b91f5cec37b33452bafcb3f6b37a950024da289dea88ead3c2056c6005c91c7f942
+  checksum: 10c0/21f5e01bea2699b069947ae06d0b0fbabe0e90d2a2206b8f56a3f46126d09bd85320cba3fd3910c4d18710b1873e6966fb9021668966c615aaa14bf35d7df3ef
   languageName: node
   linkType: hard
 
@@ -3650,10 +3650,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.66.1":
-  version: 3.66.1
-  resolution: "@types/google.maps@npm:3.66.1"
-  checksum: 10c0/8436325c03855efefc74110bf1a2dc02a2a7af04578d2b24ae2cc911fbc508a55f03095a761367efd979f01388578def2f8f107bc1dba64b370358fd01db2250
+"@types/google.maps@npm:3.66.2":
+  version: 3.66.2
+  resolution: "@types/google.maps@npm:3.66.2"
+  checksum: 10c0/31cdc24a2a869983aaf274de1fcfeeb3af4a9462d7af88b09ad17feb7b74c356dc5a29071238737e62c51721490c121cc461f8469a401bbfa7c38833910043ba
   languageName: node
   linkType: hard
 
@@ -4550,7 +4550,7 @@ __metadata:
     "@testing-library/dom": "npm:10.4.1"
     "@testing-library/jest-dom": "npm:6.9.1"
     "@testing-library/react": "npm:16.3.3"
-    "@testing-library/user-event": "npm:14.6.6"
+    "@testing-library/user-event": "npm:14.6.7"
     "@tiptap/core": "npm:3.30.5"
     "@tiptap/extension-font-family": "npm:3.30.1"
     "@tiptap/extension-highlight": "npm:3.30.1"
@@ -4564,7 +4564,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.66.1"
+    "@types/google.maps": "npm:3.66.2"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.7"
     "@types/react-is": "npm:19.2.0"
@@ -4578,15 +4578,15 @@ __metadata:
     eslint: "npm:10.10.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    i18next: "npm:26.4.1"
+    i18next: "npm:26.4.2"
     i18next-browser-languagedetector: "npm:8.2.1"
-    i18next-http-backend: "npm:4.0.1"
+    i18next-http-backend: "npm:4.0.2"
     ical.js: "npm:2.2.1"
     jsdom: "npm:29.1.1"
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.12"
     lucide-react: "npm:1.39.0"
-    posthog-js: "npm:1.424.1"
+    posthog-js: "npm:1.427.2"
     prettier: "npm:3.9.6"
     react: "npm:19.2.8"
     react-dom: "npm:19.2.8"
@@ -4594,7 +4594,7 @@ __metadata:
     react-is: "npm:19.2.8"
     react-router-dom: "npm:7.18.3"
     recharts: "npm:3.10.1"
-    swagger-ui-react: "npm:5.32.14"
+    swagger-ui-react: "npm:5.32.15"
     tailwindcss: "npm:4.3.3"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.69.0"
@@ -4628,7 +4628,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.66.1"
+    "@types/google.maps": "npm:3.66.2"
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.7"
     "@types/topojson-client": "npm:3.1.5"
@@ -4643,7 +4643,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.39.0"
-    posthog-js: "npm:1.424.1"
+    posthog-js: "npm:1.427.2"
     prettier: "npm:3.9.6"
     react: "npm:19.2.8"
     react-dom: "npm:19.2.8"
@@ -6496,22 +6496,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-http-backend@npm:4.0.1":
-  version: 4.0.1
-  resolution: "i18next-http-backend@npm:4.0.1"
-  checksum: 10c0/faf837f4260842cb43cd152ff4099ff1811e75c1b4a56a24d116a60f5b5d4ab2e189821f5f9ecf58df4927d91e77ca440ba44bd51220af347db850745da44346
+"i18next-http-backend@npm:4.0.2":
+  version: 4.0.2
+  resolution: "i18next-http-backend@npm:4.0.2"
+  checksum: 10c0/23515d90f57d58505d68b7847a13c01ee1fe7668931ee4ca82499f7ea36f2740aa58125f0050ce1026b18ae16826f6c10ffb1b9e5bed358aa305dab820dbf49f
   languageName: node
   linkType: hard
 
-"i18next@npm:26.4.1":
-  version: 26.4.1
-  resolution: "i18next@npm:26.4.1"
+"i18next@npm:26.4.2":
+  version: 26.4.2
+  resolution: "i18next@npm:26.4.2"
   peerDependencies:
     typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/d378fdef07d07b3bbaa803ca18bf663bfcb203ab4be5eb8da2f1eb49e5559efcaf731f0cf34deccfe804c465f1cab8948d58f9303afe6921bc18949cb170df5e
+  checksum: 10c0/f2c9613e03e09e56a84aee939d8fbe3442a58622915e11f97e47f9ab358dfa65be783230b37a21483152711f786fccfe697d7f5ea9269c54f16179dc59960e4b
   languageName: node
   linkType: hard
 
@@ -6566,10 +6566,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immutable@npm:^4.3.9":
-  version: 4.3.9
-  resolution: "immutable@npm:4.3.9"
-  checksum: 10c0/394faa90ac8f2f62824e6c639705efdb8313787d6bc7864e28a48ee36aa2ba4b724eaf54a701ad991c278967a412b09143dd24fd19e3e2b0204eb481a5afa6ef
+"immutable@npm:^5.1.9":
+  version: 5.1.9
+  resolution: "immutable@npm:5.1.9"
+  checksum: 10c0/ae7032b60b81b682f3e7e4df13e1ec9a401a603eb81b15bb3e37331ed6666e318c71994c6936e1462eb443d32d04769396562a7e2669da22457c8ba279c03ad2
   languageName: node
   linkType: hard
 
@@ -8205,13 +8205,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.424.1":
-  version: 1.424.1
-  resolution: "posthog-js@npm:1.424.1"
+"posthog-js@npm:1.427.2":
+  version: 1.427.2
+  resolution: "posthog-js@npm:1.427.2"
   dependencies:
-    "@posthog/browser-common": "npm:^0.7.1"
-    "@posthog/core": "npm:^1.50.2"
-    "@posthog/types": "npm:^1.407.1"
+    "@posthog/browser-common": "npm:^0.7.2"
+    "@posthog/core": "npm:^1.50.5"
+    "@posthog/types": "npm:^1.409.0"
     core-js: "npm:^3.49.0"
     dompurify: "npm:^3.4.13"
     fflate: "npm:^0.4.8"
@@ -8227,7 +8227,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/961b65496c4a249bc1e1ab7767b2a8f71f26f52f446ddfd7f4d2a15041f2acf23dd37f70d239723068ea4f0671268b55bff20bdc87b852477af205a3c72968c0
+  checksum: 10c0/33a254d1963f4f4697e0fe3c4bde0e0620d8aa4bfa0066f0c1e0415e66219fa887464660e279daa7c1a9fefd20a108caab0a4b2ac1d8c838a0932f07c3391401
   languageName: node
   linkType: hard
 
@@ -8865,15 +8865,6 @@ __metadata:
     indent-string: "npm:^4.0.0"
     strip-indent: "npm:^3.0.0"
   checksum: 10c0/d64a6b5c0b50eb3ddce3ab770f866658a2b9998c678f797919ceb1b586bab9259b311407280bd80b804e2a7c7539b19238ae6a2a20c843f1a7fcff21d48c2eae
-  languageName: node
-  linkType: hard
-
-"redux-immutable@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "redux-immutable@npm:4.0.0"
-  peerDependencies:
-    immutable: ^3.8.1 || ^4.0.0-rc.1
-  checksum: 10c0/c706c9f72a1fbce92d54ab9117ab641b6d7ee69f2860ec6de827dbed5bed918d4677a0895e6564bb59011202bb5e639cf69f4e2d2d14086053b32e5c4e35f512
   languageName: node
   linkType: hard
 
@@ -9693,9 +9684,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-react@npm:5.32.14":
-  version: 5.32.14
-  resolution: "swagger-ui-react@npm:5.32.14"
+"swagger-ui-react@npm:5.32.15":
+  version: 5.32.15
+  resolution: "swagger-ui-react@npm:5.32.15"
   dependencies:
     "@babel/runtime-corejs3": "npm:^7.27.1"
     "@scarf/scarf": "npm:=1.4.0"
@@ -9706,7 +9697,7 @@ __metadata:
     deep-extend: "npm:0.6.0"
     dompurify: "npm:^3.4.13"
     ieee754: "npm:^1.2.1"
-    immutable: "npm:^4.3.9"
+    immutable: "npm:^5.1.9"
     js-file-download: "npm:^0.4.12"
     js-yaml: "npm:=4.3.1"
     lodash: "npm:^4.18.1"
@@ -9721,7 +9712,6 @@ __metadata:
     react-redux: "npm:^9.3.0"
     react-syntax-highlighter: "npm:^16.0.0"
     redux: "npm:^5.0.1"
-    redux-immutable: "npm:^4.0.0"
     remarkable: "npm:^2.0.1"
     reselect: "npm:^5.1.1"
     serialize-error: "npm:^8.1.0"
@@ -9734,7 +9724,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <20"
     react-dom: ">=16.8.0 <20"
-  checksum: 10c0/a42f92fba53f72178510ec4df76c81456ac5178992fa21dc9fb41f3b70228eafa551292dc1a61539cf508e3d5dbb57c20a926f6bebc653b949364cfcdc56ff74
+  checksum: 10c0/d523df7706f7e88f6c0c4e82e1de44cefe5a0859ba4c27dc02440997678d4bae6909eb206bff80b48e91359fd4c7acc83964be69c34ce82e4b917ff03a6bfa96
   languageName: node
   linkType: hard
 
