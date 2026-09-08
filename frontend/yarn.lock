@@ -944,12 +944,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googlemaps/js-api-loader@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@googlemaps/js-api-loader@npm:2.0.2"
+"@googlemaps/js-api-loader@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@googlemaps/js-api-loader@npm:2.1.1"
   dependencies:
     "@types/google.maps": "npm:^3.53.1"
-  checksum: 10c0/1bd8f1e117145de83a7cfca7c05cf4cfb2d9095d507497f8b0e590be94de3a6a27a7a3c80801de6f58d77e5a2ce169a6b6d9c9d0dfc20ea1039d890226318c46
+  checksum: 10c0/06cb6eaf686b838be51efd8293010b7bee42e341e9ad41b42a0ee8909cf06cc5711ba6cfdbcd0c62ff05c8ba35d8622c34130e738bc5844011c8bc457d14de64
   languageName: node
   linkType: hard
 
@@ -3650,14 +3650,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.66.2":
+"@types/google.maps@npm:3.66.2, @types/google.maps@npm:^3.65.5":
   version: 3.66.2
   resolution: "@types/google.maps@npm:3.66.2"
   checksum: 10c0/31cdc24a2a869983aaf274de1fcfeeb3af4a9462d7af88b09ad17feb7b74c356dc5a29071238737e62c51721490c121cc461f8469a401bbfa7c38833910043ba
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:^3.48.6, @types/google.maps@npm:^3.64.0":
+"@types/google.maps@npm:^3.48.6":
   version: 3.65.2
   resolution: "@types/google.maps@npm:3.65.2"
   checksum: 10c0/790aed74128385bfa6c8b41c6bf18b8f1901e6c7b7c806615e904e9093703a8238f8b2504027ebe714e95f9cd5b2a94fd63306f8b71907a23ba24673754843ea
@@ -3973,17 +3973,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vis.gl/react-google-maps@npm:1.9.0":
-  version: 1.9.0
-  resolution: "@vis.gl/react-google-maps@npm:1.9.0"
+"@vis.gl/react-google-maps@npm:1.10.0":
+  version: 1.10.0
+  resolution: "@vis.gl/react-google-maps@npm:1.10.0"
   dependencies:
-    "@googlemaps/js-api-loader": "npm:^2.0.2"
-    "@types/google.maps": "npm:^3.64.0"
-    fast-equals: "npm:^6.0.0"
+    "@googlemaps/js-api-loader": "npm:^2.1.1"
+    "@types/google.maps": "npm:^3.65.5"
+    fast-equals: "npm:^6.0.2"
   peerDependencies:
     react: ">=16.8.0 || ^19.0 || ^19.0.0-rc"
     react-dom: ">=16.8.0 || ^19.0 || ^19.0.0-rc"
-  checksum: 10c0/bcb786ca369ec16da02c864906d6fb88a7687684c4c6b5097f8d10fb658a5cf783aab0027c1d227b72cfb6a4947d44c35cddeda7114c2702341da18bc64b6278
+  checksum: 10c0/1f83a09082b36f7908981f86f91056d69d65610dc53a3d51012deae870c1913c2784e113b2217c3292e449238438792312cd1f162f0598cbbf76838c9d3a5a68
   languageName: node
   linkType: hard
 
@@ -4570,7 +4570,7 @@ __metadata:
     "@types/react-is": "npm:19.2.0"
     "@types/swagger-ui-react": "npm:5.18.0"
     "@use-gesture/react": "npm:10.3.1"
-    "@vis.gl/react-google-maps": "npm:1.9.0"
+    "@vis.gl/react-google-maps": "npm:1.10.0"
     "@vitejs/plugin-react": "npm:6.1.1"
     axios: "npm:1.20.0"
     date-fns: "npm:4.4.0"
@@ -4632,7 +4632,7 @@ __metadata:
     "@types/react": "npm:19.2.18"
     "@types/react-dom": "npm:19.2.7"
     "@types/topojson-client": "npm:3.1.5"
-    "@vis.gl/react-google-maps": "npm:1.9.0"
+    "@vis.gl/react-google-maps": "npm:1.10.0"
     "@vitejs/plugin-react": "npm:6.1.1"
     axios: "npm:1.20.0"
     cronstrue: "npm:3.24.0"
@@ -5890,10 +5890,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-equals@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "fast-equals@npm:6.0.0"
-  checksum: 10c0/aae54699ce848726679a947c8bbea78f2ea0384e4e1ee213c98f10881a17bb376bd11085eda4d6c89db5285635ee2f809b126d773532fcf602be355008a9d5ed
+"fast-equals@npm:^6.0.2":
+  version: 6.0.3
+  resolution: "fast-equals@npm:6.0.3"
+  checksum: 10c0/8b46d9960942b6ff97615ef3df64a0d1bb1fb6b21d30e10c95f501b8bbd266cc4680dfa597159fdc62c86d13e56631c26ead56758655d0c11dab1c52354d2c81
   languageName: node
   linkType: hard
 
