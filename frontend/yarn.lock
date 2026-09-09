@@ -329,7 +329,7 @@ __metadata:
     "@eslint/js": "npm:10.0.1"
     "@radix-ui/react-dialog": "npm:1.1.23"
     "@tailwindcss/postcss": "npm:4.3.3"
-    "@tiptap/core": "npm:3.31.0"
+    "@tiptap/core": "npm:3.31.1"
     "@tiptap/extension-highlight": "npm:3.30.1"
     "@tiptap/extension-link": "npm:3.30.1"
     "@tiptap/extension-placeholder": "npm:3.30.1"
@@ -3109,12 +3109,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/core@npm:3.31.0":
-  version: 3.31.0
-  resolution: "@tiptap/core@npm:3.31.0"
+"@tiptap/core@npm:3.31.1":
+  version: 3.31.1
+  resolution: "@tiptap/core@npm:3.31.1"
   peerDependencies:
-    "@tiptap/pm": 3.31.0
-  checksum: 10c0/b0682197944088fe9f745867cb889502a4364d1177c218ed22dc47a6f902288f46d7de7f43b24bdb4bb9aa51a0ace4f02e37850f7bb281db90ccd5c41d73f97f
+    "@tiptap/pm": 3.31.1
+  checksum: 10c0/c4a25b861e96e38eb93eaf1b57b236de4cc736e23f8a3b79aed1a0aab1fa03a4348904ab02861fe0140ce405ff5d43ecacbb62db4dbcc547d22e2a3f88e54751
   languageName: node
   linkType: hard
 
@@ -4551,7 +4551,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:6.9.1"
     "@testing-library/react": "npm:16.3.3"
     "@testing-library/user-event": "npm:14.6.7"
-    "@tiptap/core": "npm:3.31.0"
+    "@tiptap/core": "npm:3.31.1"
     "@tiptap/extension-font-family": "npm:3.30.1"
     "@tiptap/extension-highlight": "npm:3.30.1"
     "@tiptap/extension-link": "npm:3.30.1"
@@ -4617,7 +4617,7 @@ __metadata:
     "@googlemaps/markerclusterer": "npm:2.6.2"
     "@tailwindcss/postcss": "npm:4.3.3"
     "@tanstack/react-query": "npm:5.102.8"
-    "@tiptap/core": "npm:3.31.0"
+    "@tiptap/core": "npm:3.31.1"
     "@tiptap/extension-highlight": "npm:3.30.1"
     "@tiptap/extension-link": "npm:3.30.1"
     "@tiptap/extension-placeholder": "npm:3.30.1"
