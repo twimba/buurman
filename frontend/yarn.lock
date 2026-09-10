@@ -506,13 +506,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/layers@npm:^9.3.11":
-  version: 9.3.11
-  resolution: "@deck.gl/layers@npm:9.3.11"
+"@deck.gl/layers@npm:^9.4.0":
+  version: 9.4.0
+  resolution: "@deck.gl/layers@npm:9.4.0"
   dependencies:
     "@loaders.gl/images": "npm:^4.4.3"
     "@loaders.gl/schema": "npm:^4.4.3"
-    "@luma.gl/shadertools": "npm:~9.3.5"
+    "@luma.gl/shadertools": "npm:^9.4.0"
     "@mapbox/tiny-sdf": "npm:^2.0.5"
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/polygon": "npm:^4.1.0"
@@ -520,11 +520,11 @@ __metadata:
     "@types/geojson": "npm:^7946.0.16"
     earcut: "npm:^2.2.4"
   peerDependencies:
-    "@deck.gl/core": ~9.3.0
+    "@deck.gl/core": ~9.4.0
     "@loaders.gl/core": ^4.4.3
-    "@luma.gl/core": ~9.3.5
-    "@luma.gl/engine": ~9.3.5
-  checksum: 10c0/4b9abf26319ca23d2e1f83f87adec4c79ec62da0744b252b832b02f6f8ffc6f6195504461927ff435cc0ae8337947e461e2876d25af3068bdb7b8503526506ab
+    "@luma.gl/core": ~9.4.0
+    "@luma.gl/engine": ~9.4.0
+  checksum: 10c0/181c831fe67d295b1f3286cbdb9d44f6e86e1610c10b6315c57386045d6c4c99f5d9ab3f9d1c674d515a13c79ec0e48b33c9d29ddba1e644a460329e5dd71347
   languageName: node
   linkType: hard
 
@@ -1173,6 +1173,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@luma.gl/shadertools@npm:^9.4.0":
+  version: 9.4.0
+  resolution: "@luma.gl/shadertools@npm:9.4.0"
+  dependencies:
+    "@math.gl/core": "npm:^4.1.0"
+    "@math.gl/types": "npm:^4.1.0"
+  peerDependencies:
+    "@luma.gl/core": ~9.4.0
+  checksum: 10c0/906cfa8b4b7a1aa6a52177752fd3b2afb49745909aa4a38577033c72bd4167d0742de8ce698c4c42e32d9327026df1500d2acb2b7ebae5f28905a3244e7efe2d
+  languageName: node
+  linkType: hard
+
 "@luma.gl/shadertools@npm:~9.3.5":
   version: 9.3.6
   resolution: "@luma.gl/shadertools@npm:9.3.6"
@@ -1468,29 +1480,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/browser-common@npm:^0.7.2":
-  version: 0.7.2
-  resolution: "@posthog/browser-common@npm:0.7.2"
+"@posthog/browser-common@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@posthog/browser-common@npm:0.8.1"
   dependencies:
-    "@posthog/core": "npm:^1.50.4"
-    "@posthog/types": "npm:^1.408.1"
-  checksum: 10c0/e1b3e64692f6193e8c197b4a7dce3e3733b0263026ec6d2a5b607a99e807fb5aeb6a59d759455c905311a2958e7ebcc57eb01913fdcb1c934e6ab7fb5d24b773
+    "@posthog/core": "npm:^1.51.0"
+    "@posthog/types": "npm:^1.409.1"
+  checksum: 10c0/9b478effa03bdad5501fbd60950c0cea7a770927550242527a05c222baf20f96cb0a1322d30e8f4300b7cbe6a5300c4fbd6a6a14d02318923595f17998b213dc
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.50.4, @posthog/core@npm:^1.50.5":
-  version: 1.50.5
-  resolution: "@posthog/core@npm:1.50.5"
+"@posthog/core@npm:^1.51.0":
+  version: 1.51.0
+  resolution: "@posthog/core@npm:1.51.0"
   dependencies:
-    "@posthog/types": "npm:^1.409.0"
-  checksum: 10c0/0bd8db388c0cb43bf8f55f9236bd00f33703e3840cf412eea70a07c8de2ae5a6147aaae37339d02a350704a711fe87a85524238147f43e718bfbf29aee778352
+    "@posthog/types": "npm:^1.409.1"
+  checksum: 10c0/e5f04259f714296c3121601600d9f75e093337a227d6fd7b5aa91329daa7a0507e8c75e36e094afb752b579b71e2830a4770c89b5594c03e10b98e21984d92c1
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:^1.408.1, @posthog/types@npm:^1.409.0":
-  version: 1.409.0
-  resolution: "@posthog/types@npm:1.409.0"
-  checksum: 10c0/ea356ea32c91fdc905e0b23e74976ac4b08d3f891679c5ba2dfc77496a5f8b7943b8057d7a8be6f4a21f8f9950d607b2708ac795e269cf5d49e18031bbe31b31
+"@posthog/types@npm:^1.409.1":
+  version: 1.409.1
+  resolution: "@posthog/types@npm:1.409.1"
+  checksum: 10c0/0f1aef7ab67be676a11647f219292ab36b22c9a9080df635a50a3dc32094c8a500d91845f51c30dd03ed99e2f9591e5f3b8f077e0ea9d302b1c50e3d3d755ab1
   languageName: node
   linkType: hard
 
@@ -4598,7 +4610,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.12"
     lucide-react: "npm:1.41.0"
-    posthog-js: "npm:1.427.2"
+    posthog-js: "npm:1.428.1"
     prettier: "npm:3.9.6"
     react: "npm:19.2.8"
     react-dom: "npm:19.2.8"
@@ -4623,7 +4635,7 @@ __metadata:
     "@deck.gl/aggregation-layers": "npm:^9.3.11"
     "@deck.gl/core": "npm:^9.3.11"
     "@deck.gl/google-maps": "npm:^9.4.0"
-    "@deck.gl/layers": "npm:^9.3.11"
+    "@deck.gl/layers": "npm:^9.4.0"
     "@eslint/compat": "npm:2.1.1"
     "@eslint/js": "npm:10.0.1"
     "@googlemaps/markerclusterer": "npm:2.6.2"
@@ -4655,7 +4667,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.41.0"
-    posthog-js: "npm:1.427.2"
+    posthog-js: "npm:1.428.1"
     prettier: "npm:3.9.6"
     react: "npm:19.2.8"
     react-dom: "npm:19.2.8"
@@ -8194,13 +8206,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.427.2":
-  version: 1.427.2
-  resolution: "posthog-js@npm:1.427.2"
+"posthog-js@npm:1.428.1":
+  version: 1.428.1
+  resolution: "posthog-js@npm:1.428.1"
   dependencies:
-    "@posthog/browser-common": "npm:^0.7.2"
-    "@posthog/core": "npm:^1.50.5"
-    "@posthog/types": "npm:^1.409.0"
+    "@posthog/browser-common": "npm:^0.8.1"
+    "@posthog/core": "npm:^1.51.0"
+    "@posthog/types": "npm:^1.409.1"
     core-js: "npm:^3.49.0"
     dompurify: "npm:^3.4.13"
     fflate: "npm:^0.4.8"
@@ -8216,7 +8228,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/33a254d1963f4f4697e0fe3c4bde0e0620d8aa4bfa0066f0c1e0415e66219fa887464660e279daa7c1a9fefd20a108caab0a4b2ac1d8c838a0932f07c3391401
+  checksum: 10c0/491d1829f7c287d0a92b68212aaa0abb25f513ddcce21dab86cbcf304e0f505120e7ad37338cb9b33ec24edeea20631fd7f39a5265f76d5aa5f947dfd5353a49
   languageName: node
   linkType: hard
 
