@@ -450,20 +450,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@deck.gl/aggregation-layers@npm:^9.3.11":
-  version: 9.3.11
-  resolution: "@deck.gl/aggregation-layers@npm:9.3.11"
+"@deck.gl/aggregation-layers@npm:^9.4.0":
+  version: 9.4.0
+  resolution: "@deck.gl/aggregation-layers@npm:9.4.0"
   dependencies:
-    "@luma.gl/shadertools": "npm:~9.3.5"
+    "@luma.gl/shadertools": "npm:^9.4.0"
     "@math.gl/core": "npm:^4.1.0"
     "@math.gl/web-mercator": "npm:^4.1.0"
     d3-hexbin: "npm:^0.2.1"
   peerDependencies:
-    "@deck.gl/core": ~9.3.0
-    "@deck.gl/layers": ~9.3.0
-    "@luma.gl/core": ~9.3.5
-    "@luma.gl/engine": ~9.3.5
-  checksum: 10c0/d7fe5ba6e87a280e63ea313878c49f460ffed3c82b192c6d519c17479cfded5dc00758c1c751bb98b053aa8066eda7a33795377c065baedd12858337dcf0cf1d
+    "@deck.gl/core": ~9.4.0
+    "@deck.gl/layers": ~9.4.0
+    "@luma.gl/core": ~9.4.0
+    "@luma.gl/engine": ~9.4.0
+  checksum: 10c0/82162f54f34fcf5ef21b01dfb581d93e9f2ce2bf42244a076f6ab1b853e50bd4d0a25bd696830db1f11b808fc0055e036b671ecba9c965e4dff56b588e098108
   languageName: node
   linkType: hard
 
@@ -1200,18 +1200,6 @@ __metadata:
   peerDependencies:
     "@luma.gl/core": ~9.4.0
   checksum: 10c0/906cfa8b4b7a1aa6a52177752fd3b2afb49745909aa4a38577033c72bd4167d0742de8ce698c4c42e32d9327026df1500d2acb2b7ebae5f28905a3244e7efe2d
-  languageName: node
-  linkType: hard
-
-"@luma.gl/shadertools@npm:~9.3.5":
-  version: 9.3.6
-  resolution: "@luma.gl/shadertools@npm:9.3.6"
-  dependencies:
-    "@math.gl/core": "npm:^4.1.0"
-    "@math.gl/types": "npm:^4.1.0"
-  peerDependencies:
-    "@luma.gl/core": ~9.3.0
-  checksum: 10c0/eec680c8a5ce560d44a5ce8dfded32dccc06b73c7c98d5f590775e51e0b1f2b4cb0376f3d752127566a1973f9625e4963804ceb2bc9220bad5a3fbd97d56c861
   languageName: node
   linkType: hard
 
@@ -4661,7 +4649,7 @@ __metadata:
   resolution: "buurman-backoffice@workspace:backoffice"
   dependencies:
     "@buurman/ui": "workspace:*"
-    "@deck.gl/aggregation-layers": "npm:^9.3.11"
+    "@deck.gl/aggregation-layers": "npm:^9.4.0"
     "@deck.gl/core": "npm:^9.4.0"
     "@deck.gl/google-maps": "npm:^9.4.0"
     "@deck.gl/layers": "npm:^9.4.0"
