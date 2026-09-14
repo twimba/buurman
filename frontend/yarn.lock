@@ -4632,7 +4632,7 @@ __metadata:
     ical.js: "npm:2.2.1"
     jsdom: "npm:29.1.1"
     keycloak-js: "npm:26.2.4"
-    libphonenumber-js: "npm:1.13.12"
+    libphonenumber-js: "npm:1.13.13"
     lucide-react: "npm:1.43.0"
     posthog-js: "npm:1.428.6"
     prettier: "npm:3.9.6"
@@ -4683,7 +4683,7 @@ __metadata:
     "@vis.gl/react-google-maps": "npm:1.10.0"
     "@vitejs/plugin-react": "npm:6.1.1"
     axios: "npm:1.20.0"
-    cronstrue: "npm:3.25.0"
+    cronstrue: "npm:3.26.0"
     date-fns: "npm:4.4.0"
     dompurify: "npm:3.4.15"
     eslint: "npm:10.10.0"
@@ -4979,12 +4979,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cronstrue@npm:3.25.0":
-  version: 3.25.0
-  resolution: "cronstrue@npm:3.25.0"
+"cronstrue@npm:3.26.0":
+  version: 3.26.0
+  resolution: "cronstrue@npm:3.26.0"
   bin:
     cronstrue: bin/cli.js
-  checksum: 10c0/c23c6f0b1c596e053b21edb1a85df4130b1f7f6f9ffc747a2ba72f1eeb151e8e9ac45005179bfb6b07d224c176cc755292867f23e22ea7aadac8b200903f72d3
+  checksum: 10c0/8f4455910dd64d859b72b971e61b462c6e8dc700076b0e6fee7e6374b70b2e1998dcdf80cdd10b6b4022fd2e802a19bbb0ec686b3011d0393ba9b8db401ab564
   languageName: node
   linkType: hard
 
@@ -7172,10 +7172,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:1.13.12":
-  version: 1.13.12
-  resolution: "libphonenumber-js@npm:1.13.12"
-  checksum: 10c0/1cf4ab35ee1a926fe0da553dfa8d9f9af04c29c7d8f719f19ae3db9718c2b843a2a2ba3232926c89628bee6654e23e3f97b6228b1db9359a60e423be079e9d42
+"libphonenumber-js@npm:1.13.13":
+  version: 1.13.13
+  resolution: "libphonenumber-js@npm:1.13.13"
+  checksum: 10c0/3baa69c125ccf8c1224c29e1514f3ed7d3a31de6b1821f0d1462fea499a8b7b6abdc6ee7818ae8aeae2b32ba7b0a09c7c6294be1e512ac86aa601f5ca42bc0de
   languageName: node
   linkType: hard
 
