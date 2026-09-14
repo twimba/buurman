@@ -346,7 +346,7 @@ __metadata:
     eslint: "npm:10.10.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    lucide-react: "npm:1.43.0"
+    lucide-react: "npm:1.45.0"
     prettier: "npm:3.9.6"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.3"
@@ -1519,16 +1519,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/browser-common@npm:^0.8.2":
-  version: 0.8.2
-  resolution: "@posthog/browser-common@npm:0.8.2"
-  dependencies:
-    "@posthog/core": "npm:^1.51.0"
-    "@posthog/types": "npm:^1.409.1"
-  checksum: 10c0/b863436940326ec88dfe7b8b10f001673bc6cba6508b39048587a562cc71cb94a8b5431dc7a6399c6236f9c494c6a01229169b3acc2e5e5393d40f6475419286
-  languageName: node
-  linkType: hard
-
 "@posthog/browser-common@npm:^0.8.3":
   version: 0.8.3
   resolution: "@posthog/browser-common@npm:0.8.3"
@@ -1539,35 +1529,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.51.0":
-  version: 1.51.0
-  resolution: "@posthog/core@npm:1.51.0"
-  dependencies:
-    "@posthog/types": "npm:^1.409.1"
-  checksum: 10c0/e5f04259f714296c3121601600d9f75e093337a227d6fd7b5aa91329daa7a0507e8c75e36e094afb752b579b71e2830a4770c89b5594c03e10b98e21984d92c1
-  languageName: node
-  linkType: hard
-
 "@posthog/core@npm:^1.53.2":
   version: 1.53.2
   resolution: "@posthog/core@npm:1.53.2"
   dependencies:
     "@posthog/types": "npm:^1.411.1"
   checksum: 10c0/63248d839b140887dd7d4af81096909f9920a566f09bec945806c3ece7a8d047c3644569cee8962f100decf6b60a42188016319dd11ec87458eddbf7bcb5fd3a
-  languageName: node
-  linkType: hard
-
-"@posthog/types@npm:^1.409.1":
-  version: 1.409.1
-  resolution: "@posthog/types@npm:1.409.1"
-  checksum: 10c0/0f1aef7ab67be676a11647f219292ab36b22c9a9080df635a50a3dc32094c8a500d91845f51c30dd03ed99e2f9591e5f3b8f077e0ea9d302b1c50e3d3d755ab1
-  languageName: node
-  linkType: hard
-
-"@posthog/types@npm:^1.409.2":
-  version: 1.409.2
-  resolution: "@posthog/types@npm:1.409.2"
-  checksum: 10c0/0c3ecfcf90005015d85f1f06bacb0a5d1ac48b6a33820a0ce2e5c12bb14032388f2aba2230c2e01421787d437b6df8b002de01e06e9c67dfa65ac2325dc7e97c
   languageName: node
   linkType: hard
 
@@ -4704,7 +4671,7 @@ __metadata:
     jsdom: "npm:29.1.1"
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.13"
-    lucide-react: "npm:1.43.0"
+    lucide-react: "npm:1.45.0"
     posthog-js: "npm:1.430.2"
     prettier: "npm:3.9.6"
     react: "npm:19.3.0"
@@ -4761,8 +4728,8 @@ __metadata:
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
-    lucide-react: "npm:1.43.0"
-    posthog-js: "npm:1.428.6"
+    lucide-react: "npm:1.45.0"
+    posthog-js: "npm:1.430.2"
     prettier: "npm:3.9.6"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -7600,12 +7567,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:1.43.0":
-  version: 1.43.0
-  resolution: "lucide-react@npm:1.43.0"
+"lucide-react@npm:1.45.0":
+  version: 1.45.0
+  resolution: "lucide-react@npm:1.45.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/58619588b6e0ce44d0188d7b0021b3e85e2fd473fbc1b1ef9b6de6f9519eb46b359354747137da26ce215f5efa9435f8b9d8e20c29d4d24471f17de076cb5f79
+  checksum: 10c0/5e4e0d4170bd9318b636ab71df8a5ab6fe4b36687882223c1289e92e898f913eb5f3f4959db1e0fa865e4d9da0f5107d9c0dcaad99f84412192e606c1d7ff0a3
   languageName: node
   linkType: hard
 
@@ -8309,32 +8276,6 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/2bdafc00d96bd57b6649a52e458864a4bf58ee56cfdbe4aea1472b5cccc127e6c1ad653bd0bec50d211e650eb0b9270c80e1e72aff2e2fa40d9e7363234d6e43
-  languageName: node
-  linkType: hard
-
-"posthog-js@npm:1.428.6":
-  version: 1.428.6
-  resolution: "posthog-js@npm:1.428.6"
-  dependencies:
-    "@posthog/browser-common": "npm:^0.8.2"
-    "@posthog/core": "npm:^1.51.0"
-    "@posthog/types": "npm:^1.409.2"
-    core-js: "npm:^3.49.0"
-    dompurify: "npm:^3.4.13"
-    fflate: "npm:^0.4.8"
-    preact: "npm:^10.29.3"
-    query-selector-shadow-dom: "npm:^1.0.1"
-    web-vitals: "npm:^6.2.1"
-    web-vitals-soft-navs: "npm:web-vitals@6.2.1"
-  peerDependencies:
-    "@types/react": ">=16.8.0"
-    react: ">=16.8.0"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/8601262221c0f8725eb1a3188bf502b12e20c101b24bbed9f396ac732784ae81305cdbd3d49333d57661ee88dfb708b9b6fe5504d0bcfca8afd0cdf71ccbaf26
   languageName: node
   linkType: hard
 
