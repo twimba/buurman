@@ -35,7 +35,7 @@
     "dompurify": "3.4.15",
     "keycloak-js": "26.2.4",
     "lucide-react": "1.45.0",
-    "posthog-js": "1.430.3",
+    "posthog-js": "1.433.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router-dom": "7.18.3",

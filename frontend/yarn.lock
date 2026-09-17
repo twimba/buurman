@@ -1554,10 +1554,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@posthog/core@npm:^1.54.0":
+  version: 1.54.0
+  resolution: "@posthog/core@npm:1.54.0"
+  dependencies:
+    "@posthog/types": "npm:^1.412.0"
+  checksum: 10c0/1c98e181574606940e4ad1c6cf959369b69802b49de33d4bf69dfe290df029b98e3b0f49cae887cfb8ae0fd20e80819675bc73b3ab032ebf240a6ed65a599897
+  languageName: node
+  linkType: hard
+
 "@posthog/types@npm:^1.411.1":
   version: 1.411.1
   resolution: "@posthog/types@npm:1.411.1"
   checksum: 10c0/fd4cf6bd38abea89ff37fc2af8f329373ba6da8bfc99a1743f69f665428d43bcf6be5c3ef01196292e7b14f928df0b0de64ec3e401576ca15632c21b3b1b1703
+  languageName: node
+  linkType: hard
+
+"@posthog/types@npm:^1.412.0":
+  version: 1.412.0
+  resolution: "@posthog/types@npm:1.412.0"
+  checksum: 10c0/c0b912d808f1a21b1fe4aa3c49543e288e82569ff51017fc7f88228cf7cb7595bf476e9b2b4fc1228bd82980067a7db94fee011dc947e3ea966216dd5c37d9d5
   languageName: node
   linkType: hard
 
@@ -4688,7 +4704,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.13"
     lucide-react: "npm:1.45.0"
-    posthog-js: "npm:1.430.3"
+    posthog-js: "npm:1.433.2"
     prettier: "npm:3.9.6"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -4745,7 +4761,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.45.0"
-    posthog-js: "npm:1.430.3"
+    posthog-js: "npm:1.433.2"
     prettier: "npm:3.9.6"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -8306,13 +8322,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.430.3":
-  version: 1.430.3
-  resolution: "posthog-js@npm:1.430.3"
+"posthog-js@npm:1.433.2":
+  version: 1.433.2
+  resolution: "posthog-js@npm:1.433.2"
   dependencies:
     "@posthog/browser-common": "npm:^0.8.3"
-    "@posthog/core": "npm:^1.53.2"
-    "@posthog/types": "npm:^1.411.1"
+    "@posthog/core": "npm:^1.54.0"
+    "@posthog/types": "npm:^1.412.0"
     core-js: "npm:^3.49.0"
     dompurify: "npm:^3.4.13"
     fflate: "npm:^0.4.8"
@@ -8328,7 +8344,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/9546533d5b731abf95b178b60ac61715ccff6652110f07b2b2adc14e6a0cd11a6232a6e8dd2951f5aebbbbed35d41214e14eb877bb4ea1ed420e9226fa899c9b
+  checksum: 10c0/89b5a57602cbd02108beee5f35228e6d9d48f8f93217d58fe0d9117b5513fdccf32cd8198009d765491d9700d940db739f92a9cb20181c75c3d308c98b115bb5
   languageName: node
   linkType: hard
 
