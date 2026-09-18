@@ -3752,10 +3752,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.66.2, @types/google.maps@npm:^3.65.5":
-  version: 3.66.2
-  resolution: "@types/google.maps@npm:3.66.2"
-  checksum: 10c0/31cdc24a2a869983aaf274de1fcfeeb3af4a9462d7af88b09ad17feb7b74c356dc5a29071238737e62c51721490c121cc461f8469a401bbfa7c38833910043ba
+"@types/google.maps@npm:3.66.3":
+  version: 3.66.3
+  resolution: "@types/google.maps@npm:3.66.3"
+  checksum: 10c0/b4d8a855ef764ec35e1cc75898409f857d1e8576060ef173dc8cd1858b8b63093fc1e106e62bfbaaf55686c1e105357e839ab3a02179efce1fb448a458342a47
   languageName: node
   linkType: hard
 
@@ -3770,6 +3770,13 @@ __metadata:
   version: 3.64.1
   resolution: "@types/google.maps@npm:3.64.1"
   checksum: 10c0/4ade621941045c7e1b1ead30e0b4025b7fccf2b4cfb7c9b5f48c31cceb964c74d17c28b6105be15b99df85c23e19b25415e9fd7bdd7b1d40b7000d22dbbb4e7e
+  languageName: node
+  linkType: hard
+
+"@types/google.maps@npm:^3.65.5":
+  version: 3.66.2
+  resolution: "@types/google.maps@npm:3.66.2"
+  checksum: 10c0/31cdc24a2a869983aaf274de1fcfeeb3af4a9462d7af88b09ad17feb7b74c356dc5a29071238737e62c51721490c121cc461f8469a401bbfa7c38833910043ba
   languageName: node
   linkType: hard
 
@@ -4666,7 +4673,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.66.2"
+    "@types/google.maps": "npm:3.66.3"
     "@types/react": "npm:19.3.0"
     "@types/react-dom": "npm:19.3.0"
     "@types/react-is": "npm:19.3.0"
@@ -4730,7 +4737,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.66.2"
+    "@types/google.maps": "npm:3.66.3"
     "@types/react": "npm:19.3.0"
     "@types/react-dom": "npm:19.3.0"
     "@types/topojson-client": "npm:3.1.5"
