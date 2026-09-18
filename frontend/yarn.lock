@@ -1554,10 +1554,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@posthog/core@npm:^1.54.2":
+  version: 1.54.2
+  resolution: "@posthog/core@npm:1.54.2"
+  dependencies:
+    "@posthog/types": "npm:^1.412.0"
+  checksum: 10c0/d57dc0ac41b13ffe285322469af14f71e61d7b817b3b588c22c7c0411600935f9014062e3c8afa7caeaee7b03b2d00d0accce185842b3f56b66ecccbc6ad84a8
+  languageName: node
+  linkType: hard
+
 "@posthog/types@npm:^1.411.1":
   version: 1.411.1
   resolution: "@posthog/types@npm:1.411.1"
   checksum: 10c0/fd4cf6bd38abea89ff37fc2af8f329373ba6da8bfc99a1743f69f665428d43bcf6be5c3ef01196292e7b14f928df0b0de64ec3e401576ca15632c21b3b1b1703
+  languageName: node
+  linkType: hard
+
+"@posthog/types@npm:^1.412.0, @posthog/types@npm:^1.412.1":
+  version: 1.412.1
+  resolution: "@posthog/types@npm:1.412.1"
+  checksum: 10c0/3ceaf1741f5168e894548c125c4ab3a351a1e9336eececad8e3c04e19efd3e2992ff844522f633204946a9d196e9bc10c4bd0a079e19559045af4624ae2967b4
   languageName: node
   linkType: hard
 
@@ -3752,10 +3768,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.66.2, @types/google.maps@npm:^3.65.5":
-  version: 3.66.2
-  resolution: "@types/google.maps@npm:3.66.2"
-  checksum: 10c0/31cdc24a2a869983aaf274de1fcfeeb3af4a9462d7af88b09ad17feb7b74c356dc5a29071238737e62c51721490c121cc461f8469a401bbfa7c38833910043ba
+"@types/google.maps@npm:3.66.3":
+  version: 3.66.3
+  resolution: "@types/google.maps@npm:3.66.3"
+  checksum: 10c0/b4d8a855ef764ec35e1cc75898409f857d1e8576060ef173dc8cd1858b8b63093fc1e106e62bfbaaf55686c1e105357e839ab3a02179efce1fb448a458342a47
   languageName: node
   linkType: hard
 
@@ -3770,6 +3786,13 @@ __metadata:
   version: 3.64.1
   resolution: "@types/google.maps@npm:3.64.1"
   checksum: 10c0/4ade621941045c7e1b1ead30e0b4025b7fccf2b4cfb7c9b5f48c31cceb964c74d17c28b6105be15b99df85c23e19b25415e9fd7bdd7b1d40b7000d22dbbb4e7e
+  languageName: node
+  linkType: hard
+
+"@types/google.maps@npm:^3.65.5":
+  version: 3.66.2
+  resolution: "@types/google.maps@npm:3.66.2"
+  checksum: 10c0/31cdc24a2a869983aaf274de1fcfeeb3af4a9462d7af88b09ad17feb7b74c356dc5a29071238737e62c51721490c121cc461f8469a401bbfa7c38833910043ba
   languageName: node
   linkType: hard
 
@@ -4666,7 +4689,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.66.2"
+    "@types/google.maps": "npm:3.66.3"
     "@types/react": "npm:19.3.0"
     "@types/react-dom": "npm:19.3.0"
     "@types/react-is": "npm:19.3.0"
@@ -4688,7 +4711,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.13"
     lucide-react: "npm:1.46.0"
-    posthog-js: "npm:1.430.3"
+    posthog-js: "npm:1.433.5"
     prettier: "npm:3.9.6"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -4730,7 +4753,7 @@ __metadata:
     "@tiptap/react": "npm:3.30.1"
     "@tiptap/starter-kit": "npm:3.30.1"
     "@types/dompurify": "npm:3.2.0"
-    "@types/google.maps": "npm:3.66.2"
+    "@types/google.maps": "npm:3.66.3"
     "@types/react": "npm:19.3.0"
     "@types/react-dom": "npm:19.3.0"
     "@types/topojson-client": "npm:3.1.5"
@@ -4745,7 +4768,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.46.0"
-    posthog-js: "npm:1.430.3"
+    posthog-js: "npm:1.433.5"
     prettier: "npm:3.9.6"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -8306,13 +8329,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.430.3":
-  version: 1.430.3
-  resolution: "posthog-js@npm:1.430.3"
+"posthog-js@npm:1.433.5":
+  version: 1.433.5
+  resolution: "posthog-js@npm:1.433.5"
   dependencies:
     "@posthog/browser-common": "npm:^0.8.3"
-    "@posthog/core": "npm:^1.53.2"
-    "@posthog/types": "npm:^1.411.1"
+    "@posthog/core": "npm:^1.54.2"
+    "@posthog/types": "npm:^1.412.1"
     core-js: "npm:^3.49.0"
     dompurify: "npm:^3.4.13"
     fflate: "npm:^0.4.8"
@@ -8328,7 +8351,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/9546533d5b731abf95b178b60ac61715ccff6652110f07b2b2adc14e6a0cd11a6232a6e8dd2951f5aebbbbed35d41214e14eb877bb4ea1ed420e9226fa899c9b
+  checksum: 10c0/fb97fc7bcf475fe0816d97120d96b2ab99852f8fc7d854d27344f0c6ea7e5b4d4e1af29f892140e939a6f6af476beae3eb0c0fa06d1972ee2520e0b11d1ed6c6
   languageName: node
   linkType: hard
 
