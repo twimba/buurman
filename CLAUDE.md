@@ -16,7 +16,7 @@
 
 Buurman is a property management dashboard for small landlords (properties, tenants, contracts, finances).
 
-- **Backend**: Java 21, Spring Boot 4.0.2, Spring Security, JOOQ 3.20, Flyway, PostgreSQL
+- **Backend**: Java 25, Spring Boot 4.0.2, Spring Security, JOOQ 3.20, Flyway, PostgreSQL
 - **Frontend**: React 19, TypeScript, Vite 7, TanStack React Query 5, Tailwind CSS 4
 - **Auth**: Keycloak 26 with JWT (OAuth2 Resource Server)
 - **Storage**: AWS SDK v2 / S3 (AWRust for dev)
@@ -101,7 +101,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `backend/buurman-jooq/src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V028)
+- Convention: `V<version>__<description>.sql` (currently at V059)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -140,7 +140,7 @@ backend/
 │       ├── util/                SidGenerator, EntityPrefix, MoneyAmount, DateUtils
 │       └── config/jooq/         SidJooqConverter, MoneyMinorUnitConverter
 ├── buurman-jooq/            JOOQ codegen + Flyway migrations (0 hand-written Java)
-│   ├── src/main/resources/db/migration/  (28 SQL migrations)
+│   ├── src/main/resources/db/migration/  (59 SQL migrations)
 │   └── target/generated-sources/jooq/   (generated JOOQ records)
 ├── buurman-core/            Core module (~259 files, buurman-core)
 │   └── com.buurman
@@ -243,17 +243,32 @@ frontend/
 - `UNIQUE(team_id, identifier)` constraint
 - CHECK constraints for validation (positive amounts, date ranges)
 
-## Testing Status
+## Testing
 
-**Currently zero test coverage.** Test dependencies are configured (Spring Boot Test, Testcontainers, Vitest) but no test files exist yet.
+### Backend — JUnit 5 + Mockito + Testcontainers
+- 93 test classes across the modules; `mvn test` runs 1,036 tests (all green).
+- Integration tests (`*IntegrationTest`, 6 classes) extend `AbstractRepositoryIntegrationTest`,
+  which starts a `postgres:18-alpine` Testcontainer, applies all Flyway migrations once, and
+  truncates between tests. **Docker must be running.**
+- Run all: `cd backend && mvn test`
+- Run one: `mvn test -pl buurman-core -Dtest=ClassName#methodName`
+- Integration only: `mvn test -pl buurman-core -Dtest='*RepositoryIntegrationTest'`
 
-### Planned Strategy
-- Backend: JUnit 5 + Mockito (unit), Testcontainers (integration)
-- Frontend: Vitest + React Testing Library
-- Always test multi-tenant isolation
+### Frontend — Vitest
+- 14 test files, 105 tests. `frontend/app` runs under jsdom, `frontend/backoffice` under node.
+- Run all: `cd frontend && yarn test` (delegates to both workspaces)
+- Config: `frontend/app/vitest.config.ts` — uses `import.meta.dirname`, not `__dirname`
+  (vitest 5 / Vite native config loader).
+
+### Visual regression — Playwright
+- `frontend/app/tests/visual/public-routes.spec.ts` with committed snapshots.
+
+### Gaps worth closing
+- Multi-tenant isolation is not covered systematically — new repository tests should assert
+  that a query scoped to one `team_id` cannot see another team's rows.
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V028)
+1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V059)
 2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl buurman-jooq -am`
 3. Domain POJO in `backend/buurman-common/src/.../domain/`
 4. Request/Response DTOs in `backend/buurman-common/src/.../dto/`

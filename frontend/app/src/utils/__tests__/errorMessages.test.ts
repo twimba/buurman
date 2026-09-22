@@ -1,4 +1,5 @@
 import { AxiosError, AxiosHeaders } from 'axios';
+import type { TFunction } from 'i18next';
 import { getErrorMessage } from '../errorMessages';
 
 function createAxiosError(status: number, data?: unknown): AxiosError {
@@ -79,26 +80,43 @@ describe('getErrorMessage', () => {
   });
 
   describe('ProblemDetail format (RFC 7807)', () => {
-    it('maps detail containing "not found" to friendly message', () => {
+    // detail is shown verbatim by design (see #702): the backend owns the
+    // wording, so the client must not second-guess or rewrite it.
+    it('returns detail verbatim', () => {
       const error = createAxiosError(404, {
         detail: 'Property not found with identifier xyz',
       });
-      expect(getErrorMessage(error)).toBe('The requested item was not found.');
+      expect(getErrorMessage(error)).toBe(
+        'Property not found with identifier xyz'
+      );
     });
 
-    it('maps detail containing "duplicate key" to friendly message', () => {
+    it('returns detail verbatim regardless of status', () => {
+      const error = createAxiosError(500, {
+        detail: 'Rent cannot be scheduled before the contract starts',
+      });
+      expect(getErrorMessage(error)).toBe(
+        'Rent cannot be scheduled before the contract starts'
+      );
+    });
+
+    it('translates a known business rule detail on 409 when t is supplied', () => {
+      const error = createAxiosError(409, {
+        detail: 'Extensions can only be created for fixed-term contracts',
+      });
+      const t = ((key: string) => `translated:${key}`) as unknown as TFunction;
+      expect(getErrorMessage(error, t)).toBe(
+        'translated:errors.businessRules.extensionsFixedTermOnly'
+      );
+    });
+
+    it('falls back to the raw detail on 409 when the rule is unknown', () => {
       const error = createAxiosError(409, {
         detail: 'duplicate key value violates unique constraint',
       });
-      expect(getErrorMessage(error)).toBe('This record already exists.');
-    });
-
-    it('returns generic message for unmapped detail strings', () => {
-      const error = createAxiosError(500, {
-        detail: 'NullPointerException at line 42',
-      });
-      expect(getErrorMessage(error)).toBe(
-        'An error occurred. Please try again or contact support.'
+      const t = ((key: string) => `translated:${key}`) as unknown as TFunction;
+      expect(getErrorMessage(error, t)).toBe(
+        'duplicate key value violates unique constraint'
       );
     });
   });
@@ -130,14 +148,12 @@ describe('getErrorMessage', () => {
       expect(getErrorMessage(error)).toBe('Email: invalid');
     });
 
-    it('prefers detail over message', () => {
+    it('prefers detail over message, and returns it verbatim', () => {
       const error = createAxiosError(400, {
         detail: 'Something already exists here',
         message: 'Bad request',
       });
-      expect(getErrorMessage(error)).toBe(
-        'A record with this information already exists.'
-      );
+      expect(getErrorMessage(error)).toBe('Something already exists here');
     });
   });
 
