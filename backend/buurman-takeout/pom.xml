@@ -19,6 +19,11 @@
         <!-- Inter-module -->
         <dependency>
             <groupId>com.buurman</groupId>
+            <artifactId>buurman-jooq</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.buurman</groupId>
             <artifactId>buurman-core</artifactId>
         </dependency>
 
