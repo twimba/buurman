@@ -331,7 +331,15 @@
       "today": "Today",
       "errorMessage": "Failed to load calendar feed. The feed URL may be invalid or unreachable.",
       "emailPreview": "Email Preview",
-      "smsMessage": "SMS Message"
+      "smsMessage": "SMS Message",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "month": "Month",
+      "year": "Year",
+      "moreEvents": "+{{count}} more",
+      "dayEventCount": "{{count}} events",
+      "noEvents": "No events in this feed",
+      "noEventsHint": "Events appear here once contracts or payments are scheduled."
     }
   },
   "onboarding": {

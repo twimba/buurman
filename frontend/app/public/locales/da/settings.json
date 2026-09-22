@@ -331,7 +331,15 @@
       "today": "I dag",
       "errorMessage": "Kunne ikke indlaese kalenderfeed. Feed-URL'en kan vaere ugyldig eller utilgaengelig.",
       "emailPreview": "E-mail-forhåndsvisning",
-      "smsMessage": "SMS-besked"
+      "smsMessage": "SMS-besked",
+      "previousMonth": "Forrige måned",
+      "nextMonth": "Næste måned",
+      "month": "Måned",
+      "year": "År",
+      "moreEvents": "+{{count}} mere",
+      "dayEventCount": "{{count}} begivenheder",
+      "noEvents": "Ingen begivenheder i dette feed",
+      "noEventsHint": "Begivenheder vises her, når kontrakter eller betalinger er planlagt."
     }
   },
   "onboarding": {

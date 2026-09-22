@@ -797,45 +797,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/core@npm:6.1.21":
-  version: 6.1.21
-  resolution: "@fullcalendar/core@npm:6.1.21"
-  dependencies:
-    preact: "npm:~10.12.1"
-  checksum: 10c0/6856367e4b1aa7941badcd38198efc379aa03c34a1a6c6d97cd4d68fc6f99d26340cbe1007b247cab01af431abbc89ee78a3cb42d67f1e722655e8adca66692e
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/daygrid@npm:6.1.21":
-  version: 6.1.21
-  resolution: "@fullcalendar/daygrid@npm:6.1.21"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.21
-  checksum: 10c0/8e7a9e25b7390ec9c09970a729259a3882ebd4d5551084d532e330c7584d302e492dc1f15ae100c2430ae885485182dcd9fd75697962ffb1d7ac6f8f74e53407
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/icalendar@npm:6.1.21":
-  version: 6.1.21
-  resolution: "@fullcalendar/icalendar@npm:6.1.21"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.21
-    ical.js: ^1.4.0
-  checksum: 10c0/d8bd30b7d98a1111c777502df20e35ee592ef05794922496cdb33713100e1bccec10ebe1bb223125ff1866ac2bd173a2711284840cc71227a0b9f7f6aa33d137
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/react@npm:6.1.21":
-  version: 6.1.21
-  resolution: "@fullcalendar/react@npm:6.1.21"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.21
-    react: ^16.7.0 || ^17 || ^18 || ^19
-    react-dom: ^16.7.0 || ^17 || ^18 || ^19
-  checksum: 10c0/7103e724676ea12a43c5020e2581902394c0e3d30ace0a15319d869efc099b0a4e053aac1ab52576e8086649679f616236399996bebd5b36a131e5cb338d6ec3
-  languageName: node
-  linkType: hard
-
 "@googlemaps/js-api-loader@npm:^2.1.1":
   version: 2.1.1
   resolution: "@googlemaps/js-api-loader@npm:2.1.1"
@@ -4235,10 +4196,6 @@ __metadata:
     "@eslint/compat": "npm:2.1.1"
     "@eslint/js": "npm:10.0.1"
     "@floating-ui/dom": "npm:1.8.0"
-    "@fullcalendar/core": "npm:6.1.21"
-    "@fullcalendar/daygrid": "npm:6.1.21"
-    "@fullcalendar/icalendar": "npm:6.1.21"
-    "@fullcalendar/react": "npm:6.1.21"
     "@playwright/test": "npm:1.63.0"
     "@tailwindcss/postcss": "npm:4.3.3"
     "@tanstack/react-query": "npm:5.103.2"
@@ -7789,13 +7746,6 @@ __metadata:
   version: 10.29.6
   resolution: "preact@npm:10.29.6"
   checksum: 10c0/f0434c736f61e781f7ab4e15293b2fc4fa230607dc3652801845c0378d6770ee46497440f7f75ccf4b6a450d7a64e0f22deaa685394e873a04b0d3c889b72ef3
-  languageName: node
-  linkType: hard
-
-"preact@npm:~10.12.1":
-  version: 10.12.1
-  resolution: "preact@npm:10.12.1"
-  checksum: 10c0/c77a55e897dcf298b7aa13637fed29744d3cf6c083f2832856e8551dbf27303c8b6946569736de16b05cba15c0e44ad404beb236ad9e36583a6fc5e2efad7777
   languageName: node
   linkType: hard
 

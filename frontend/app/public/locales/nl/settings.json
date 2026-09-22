@@ -331,7 +331,15 @@
       "today": "Vandaag",
       "errorMessage": "Kan agendafeed niet laden. De feed-URL is mogelijk ongeldig of onbereikbaar.",
       "emailPreview": "E-mail voorbeeld",
-      "smsMessage": "SMS-bericht"
+      "smsMessage": "SMS-bericht",
+      "previousMonth": "Vorige maand",
+      "nextMonth": "Volgende maand",
+      "month": "Maand",
+      "year": "Jaar",
+      "moreEvents": "+{{count}} meer",
+      "dayEventCount": "{{count}} gebeurtenissen",
+      "noEvents": "Geen gebeurtenissen in deze feed",
+      "noEventsHint": "Gebeurtenissen verschijnen hier zodra contracten of betalingen zijn gepland."
     }
   },
   "onboarding": {

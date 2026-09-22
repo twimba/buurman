@@ -275,6 +275,7 @@ export const queryKeys = {
   // --- Calendar Feeds ---
   calendarFeeds: {
     all: () => k('calendarFeeds'),
+    preview: (feedUrl: string) => k('calendarFeeds', 'preview', feedUrl),
   },
 
   // --- Takeouts ---

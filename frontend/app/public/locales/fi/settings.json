@@ -331,7 +331,15 @@
       "today": "Tanaan",
       "errorMessage": "Kalenterisyotteen lataus epaonnistui. Syotteen URL voi olla virheellinen tai tavoittamattomissa.",
       "emailPreview": "Sahkopostin esikatselu",
-      "smsMessage": "Tekstiviesti"
+      "smsMessage": "Tekstiviesti",
+      "previousMonth": "Edellinen kuukausi",
+      "nextMonth": "Seuraava kuukausi",
+      "month": "Kuukausi",
+      "year": "Vuosi",
+      "moreEvents": "+{{count}} lisää",
+      "dayEventCount": "{{count}} tapahtumaa",
+      "noEvents": "Ei tapahtumia tässä syötteessä",
+      "noEventsHint": "Tapahtumat näkyvät tässä, kun sopimuksia tai maksuja on ajoitettu."
     }
   },
   "onboarding": {

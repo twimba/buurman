@@ -331,7 +331,15 @@
       "today": "Aujourd'hui",
       "errorMessage": "Échec du chargement du flux de calendrier. L'URL du flux peut être non valide ou inaccessible.",
       "emailPreview": "Aperçu de l'email",
-      "smsMessage": "Message SMS"
+      "smsMessage": "Message SMS",
+      "previousMonth": "Mois précédent",
+      "nextMonth": "Mois suivant",
+      "month": "Mois",
+      "year": "Année",
+      "moreEvents": "+{{count}} de plus",
+      "dayEventCount": "{{count}} événements",
+      "noEvents": "Aucun événement dans ce flux",
+      "noEventsHint": "Les événements apparaîtront ici une fois les contrats ou paiements planifiés."
     }
   },
   "onboarding": {

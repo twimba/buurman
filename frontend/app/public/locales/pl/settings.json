@@ -331,7 +331,15 @@
       "today": "Dzisiaj",
       "errorMessage": "Nie udało się załadować kanału kalendarza. URL kanału może być nieprawidłowy lub nieosiągalny.",
       "emailPreview": "Podgląd e-maila",
-      "smsMessage": "Wiadomość SMS"
+      "smsMessage": "Wiadomość SMS",
+      "previousMonth": "Poprzedni miesiąc",
+      "nextMonth": "Następny miesiąc",
+      "month": "Miesiąc",
+      "year": "Rok",
+      "moreEvents": "+{{count}} więcej",
+      "dayEventCount": "Wydarzenia: {{count}}",
+      "noEvents": "Brak wydarzeń w tym kanale",
+      "noEventsHint": "Wydarzenia pojawią się tutaj po zaplanowaniu umów lub płatności."
     }
   },
   "onboarding": {

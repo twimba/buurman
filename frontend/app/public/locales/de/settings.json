@@ -331,7 +331,15 @@
       "today": "Heute",
       "errorMessage": "Kalender-Feed konnte nicht geladen werden. Die Feed-URL ist möglicherweise ungültig oder nicht erreichbar.",
       "emailPreview": "E-Mail-Vorschau",
-      "smsMessage": "SMS-Nachricht"
+      "smsMessage": "SMS-Nachricht",
+      "previousMonth": "Vorheriger Monat",
+      "nextMonth": "Nächster Monat",
+      "month": "Monat",
+      "year": "Jahr",
+      "moreEvents": "+{{count}} mehr",
+      "dayEventCount": "{{count}} Termine",
+      "noEvents": "Keine Termine in diesem Feed",
+      "noEventsHint": "Termine erscheinen hier, sobald Verträge oder Zahlungen geplant sind."
     }
   },
   "onboarding": {

@@ -68,9 +68,6 @@ export default defineConfig({
           if (id.includes('node_modules/@tiptap/')) {
             return 'vendor-tiptap';
           }
-          if (id.includes('node_modules/@fullcalendar/')) {
-            return 'vendor-fullcalendar';
-          }
           if (id.includes('node_modules/@vis.gl/react-google-maps/')) {
             return 'vendor-maps';
           }

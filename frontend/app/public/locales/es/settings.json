@@ -331,7 +331,15 @@
       "today": "Hoy",
       "errorMessage": "Error al cargar feed de calendario. La URL del feed puede ser no válida o inaccesible.",
       "emailPreview": "Vista Previa de Email",
-      "smsMessage": "Mensaje SMS"
+      "smsMessage": "Mensaje SMS",
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "month": "Mes",
+      "year": "Año",
+      "moreEvents": "+{{count}} más",
+      "dayEventCount": "{{count}} eventos",
+      "noEvents": "No hay eventos en este feed",
+      "noEventsHint": "Los eventos aparecerán aquí cuando se programen contratos o pagos."
     }
   },
   "onboarding": {

@@ -331,7 +331,15 @@
       "today": "I dag",
       "errorMessage": "Kunne ikke laste kalenderstrøm. Strøm-URLen kan være ugyldig eller utilgjengelig.",
       "emailPreview": "E-postforhåndsvisning",
-      "smsMessage": "SMS-melding"
+      "smsMessage": "SMS-melding",
+      "previousMonth": "Forrige måned",
+      "nextMonth": "Neste måned",
+      "month": "Måned",
+      "year": "År",
+      "moreEvents": "+{{count}} til",
+      "dayEventCount": "{{count}} hendelser",
+      "noEvents": "Ingen hendelser i denne feeden",
+      "noEventsHint": "Hendelser vises her når kontrakter eller betalinger er planlagt."
     }
   },
   "onboarding": {

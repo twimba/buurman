@@ -331,7 +331,15 @@
       "today": "Oggi",
       "errorMessage": "Impossibile caricare il feed calendario. L'URL del feed potrebbe non essere valido o raggiungibile.",
       "emailPreview": "Anteprima email",
-      "smsMessage": "Messaggio SMS"
+      "smsMessage": "Messaggio SMS",
+      "previousMonth": "Mese precedente",
+      "nextMonth": "Mese successivo",
+      "month": "Mese",
+      "year": "Anno",
+      "moreEvents": "+{{count}} altri",
+      "dayEventCount": "{{count}} eventi",
+      "noEvents": "Nessun evento in questo feed",
+      "noEventsHint": "Gli eventi appariranno qui una volta pianificati contratti o pagamenti."
     }
   },
   "onboarding": {

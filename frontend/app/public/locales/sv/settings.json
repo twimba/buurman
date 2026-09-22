@@ -331,7 +331,15 @@
       "today": "Idag",
       "errorMessage": "Det gick inte att ladda kalenderflode. Flodes-URL:en kan vara ogiltig eller otillganglig.",
       "emailPreview": "E-postforhandsvisning",
-      "smsMessage": "SMS-meddelande"
+      "smsMessage": "SMS-meddelande",
+      "previousMonth": "Föregående månad",
+      "nextMonth": "Nästa månad",
+      "month": "Månad",
+      "year": "År",
+      "moreEvents": "+{{count}} till",
+      "dayEventCount": "{{count}} händelser",
+      "noEvents": "Inga händelser i detta flöde",
+      "noEventsHint": "Händelser visas här när avtal eller betalningar har schemalagts."
     }
   },
   "onboarding": {
