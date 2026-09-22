@@ -13,8 +13,8 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      { find: '@/i18n', replacement: path.resolve(__dirname, './src/test/i18n.mock.ts') },
-      { find: '@', replacement: path.resolve(__dirname, './src') },
+      { find: '@/i18n', replacement: path.resolve(import.meta.dirname, './src/test/i18n.mock.ts') },
+      { find: '@', replacement: path.resolve(import.meta.dirname, './src') },
     ],
   },
 });
