@@ -34,7 +34,7 @@
     "date-fns": "4.4.0",
     "dompurify": "3.4.15",
     "keycloak-js": "26.2.4",
-    "lucide-react": "1.46.0",
+    "lucide-react": "1.47.0",
     "posthog-js": "1.434.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
