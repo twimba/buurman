@@ -286,10 +286,11 @@ frontend/
 ## Development Workflow
 
 ### First-Time Setup (one-time)
-1. Install mkcert: `brew install mkcert nss` (macOS) — see [mkcert docs](https://github.com/FiloSottile/mkcert) for other OS
-2. Install local CA: `mkcert -install` (may prompt for sudo password)
-3. Generate certificates: `bash scripts/setup-local-certs.sh`
-4. Wildcard DNS for `*.local.buurman.io` (see below)
+1. Toolchain: `brew install mise`, activate it in your shell (`mise activate <bash|zsh|fish>`), then `mise install` in the repo root — this provisions the JDK, Maven and Node versions pinned in `mise.toml`. Follow with `corepack enable` for Yarn 4.
+2. Install mkcert: `brew install mkcert nss` (macOS) — see [mkcert docs](https://github.com/FiloSottile/mkcert) for other OS
+3. Install local CA: `mkcert -install` (may prompt for sudo password)
+4. Generate certificates: `bash scripts/setup-local-certs.sh`
+5. Wildcard DNS for `*.local.buurman.io` (see below)
 
 #### Wildcard DNS (dnsmasq)
 
@@ -329,7 +330,7 @@ sibling of `app.local.buurman.io`, not a deeper level.
 1. `make dev` (infrastructure + Traefik only, backend/app excluded)
 2. Wait ~30s for PostgreSQL + Keycloak
 3. `cd backend && mvn spring-boot:run` (backend on 8081)
-4. `cd frontend && yarn dev` (app on 5173, backoffice on 5174)
+4. `cd frontend && yarn install && yarn generate:api && yarn dev` (app on 5173, backoffice on 5174) — the generated API clients are gitignored, so `yarn generate:api` is required on a fresh clone and after every `make bundle-openapi`
 5. Access everything via the same HTTPS URLs — Traefik routes to your host machine:
    - App: https://app.local.buurman.io | API: https://api.local.buurman.io
    - Keycloak: https://keycloak.local.buurman.io | Mailpit: https://mailpit.local.buurman.io

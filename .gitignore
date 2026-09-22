@@ -53,3 +53,7 @@ tests/bdd/.env.bdd
 htmlcov/
 .coverage
 .playwright-mcp/
+
+# Per-machine mise overrides (mise.toml itself is committed)
+mise.local.toml
+.mise.local.toml

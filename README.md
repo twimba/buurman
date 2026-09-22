@@ -23,8 +23,23 @@
 ## Prerequisites
 
 - **Docker & Docker Compose** (required for all setups)
-- **Java 21** + **Maven 3.9+** (for local backend development)
+- **Java 25** + **Maven 3.9+** (for local backend development)
 - **Node.js 22+** + **Yarn 4** (for local app development)
+
+The JDK, Maven and Node versions are pinned in `mise.toml`. With
+[mise](https://mise.jdx.dev) installed they are provisioned and activated per
+directory:
+
+```bash
+brew install mise
+echo 'eval "$(mise activate bash)"' >> ~/.bashrc   # zsh: mise activate zsh
+                                                   # fish: mise activate fish
+mise install                                       # run inside the repo
+corepack enable                                    # Yarn 4, pinned in frontend/package.json
+```
+
+Installing the toolchain another way is fine — `mise.toml` is then just the
+version reference.
 
 ## Quick Start
 
