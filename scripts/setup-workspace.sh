@@ -336,7 +336,7 @@ if [ ! -f "$CERT_FILE" ]; then
   bash "$SCRIPT_DIR/setup-local-certs.sh"
 fi
 
-DNS_HOSTS="${HP}app.local.buurman.io ${HP}api.local.buurman.io ${HP}keycloak.local.buurman.io ${HP}awrust.local.buurman.io ${HP}mailpit.local.buurman.io ${HP}traefik.local.buurman.io ${HP}prometheus.local.buurman.io ${HP}grafana.local.buurman.io"
+DNS_HOSTS="${HP}app.local.buurman.io ${HP}api.local.buurman.io ${HP}backoffice.local.buurman.io ${HP}keycloak.local.buurman.io ${HP}awrust.local.buurman.io ${HP}mailpit.local.buurman.io ${HP}traefik.local.buurman.io ${HP}prometheus.local.buurman.io ${HP}grafana.local.buurman.io"
 UNRESOLVED_HOSTS=""
 for h in $DNS_HOSTS; do
   if ! dscacheutil -q host -a name "$h" | grep -q 'ip_address'; then
@@ -351,8 +351,19 @@ echo ""
 echo "=== Setup Complete ==="
 echo ""
 if [ -n "$UNRESOLVED_HOSTS" ]; then
-  echo "DNS: Add these to /etc/hosts:"
-  echo "  127.0.0.1${UNRESOLVED_HOSTS}"
+  echo "DNS: these hostnames do not resolve yet:"
+  echo " ${UNRESOLVED_HOSTS}"
+  echo ""
+  echo "  Recommended - wildcard every workspace at once with dnsmasq:"
+  echo "    brew install dnsmasq"
+  echo "    echo 'address=/local.buurman.io/127.0.0.1' >> \"\$(brew --prefix)/etc/dnsmasq.conf\""
+  echo "    sudo brew services start dnsmasq"
+  echo "    sudo mkdir -p /etc/resolver"
+  echo "    echo 'nameserver 127.0.0.1' | sudo tee /etc/resolver/local.buurman.io"
+  echo "  (see the Wildcard DNS section of CLAUDE.md)"
+  echo ""
+  echo "  Or add to /etc/hosts:"
+  echo "    127.0.0.1${UNRESOLVED_HOSTS}"
   echo ""
 fi
 echo "Start infrastructure:"
