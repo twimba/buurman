@@ -1554,7 +1554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.54.5, @posthog/core@npm:^1.55.0":
+"@posthog/core@npm:^1.55.0":
   version: 1.55.1
   resolution: "@posthog/core@npm:1.55.1"
   dependencies:
@@ -4668,7 +4668,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.13"
     lucide-react: "npm:1.46.0"
-    posthog-js: "npm:1.434.1"
+    posthog-js: "npm:1.434.2"
     prettier: "npm:3.9.8"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -8272,32 +8272,6 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/9fe44215a6628d89c8a75184b92f5b2f77e16f9e5b13b39b9009bb7e8e6eccddf82c8854bae922db1f17ace6ef3445073fe38abff513caeb03e5285b1b55620a
-  languageName: node
-  linkType: hard
-
-"posthog-js@npm:1.434.1":
-  version: 1.434.1
-  resolution: "posthog-js@npm:1.434.1"
-  dependencies:
-    "@posthog/browser-common": "npm:^0.9.0"
-    "@posthog/core": "npm:^1.54.5"
-    "@posthog/types": "npm:^1.412.2"
-    core-js: "npm:^3.49.0"
-    dompurify: "npm:^3.4.13"
-    fflate: "npm:^0.4.8"
-    preact: "npm:^10.29.3"
-    query-selector-shadow-dom: "npm:^1.0.1"
-    web-vitals: "npm:^6.2.1"
-    web-vitals-soft-navs: "npm:web-vitals@6.2.1"
-  peerDependencies:
-    "@types/react": ">=16.8.0"
-    react: ">=16.8.0"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/00f658f26ad40a16d0e9f9fac48563ba4f96dbe324b73ea658f7930ed116fb964df542162f03ebf266a6c877478be81a1094ec90e604047656d1541267afc487
   languageName: node
   linkType: hard
 
