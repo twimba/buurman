@@ -286,9 +286,44 @@ frontend/
 ## Development Workflow
 
 ### First-Time Setup (one-time)
-1. Install mkcert: `brew install mkcert` (macOS) — see [mkcert docs](https://github.com/FiloSottile/mkcert) for other OS
+1. Install mkcert: `brew install mkcert nss` (macOS) — see [mkcert docs](https://github.com/FiloSottile/mkcert) for other OS
 2. Install local CA: `mkcert -install` (may prompt for sudo password)
 3. Generate certificates: `bash scripts/setup-local-certs.sh`
+4. Wildcard DNS for `*.local.buurman.io` (see below)
+
+#### Wildcard DNS (dnsmasq)
+
+Every hostname — base (`app`, `api`, `keycloak`, `awrust`, `mailpit`, `traefik`,
+`prometheus`, `grafana`, `backoffice`) and per-workspace (`w1-` … `w9-` prefixes,
+see `.conductor/setup.md`) — must resolve to `127.0.0.1`. That is ~90 names, so
+wildcard them instead of listing them in `/etc/hosts`:
+
+```bash
+brew install dnsmasq
+echo 'address=/local.buurman.io/127.0.0.1' >> "$(brew --prefix)/etc/dnsmasq.conf"
+sudo brew services start dnsmasq
+sudo mkdir -p /etc/resolver
+echo 'nameserver 127.0.0.1' | sudo tee /etc/resolver/local.buurman.io
+```
+
+Only the `local.buurman.io` suffix is affected. Verify with
+`dscacheutil -q host -a name w7-app.local.buurman.io` — `dig` and `nslookup`
+bypass `/etc/resolver` and will report NXDOMAIN even when resolution works.
+
+**Do not uncomment `port=` in `dnsmasq.conf`.** Homebrew's caveat is real: on
+current macOS, an `/etc/resolver` entry pointing at `127.0.0.1` is ignored when
+dnsmasq listens on a non-53 port. Running it as root (`sudo brew services`) on
+the default port 53 is what makes the scoped resolver work. If port 53 is
+unavailable, bind a loopback alias instead:
+
+```bash
+sudo ifconfig lo0 alias 10.0.0.1 up          # re-add after reboot
+echo 'listen-address=10.0.0.1' >> "$(brew --prefix)/etc/dnsmasq.conf"
+echo 'nameserver 10.0.0.1' | sudo tee /etc/resolver/local.buurman.io
+```
+
+The mkcert wildcard cert covers all of these — `w7-app.local.buurman.io` is a
+sibling of `app.local.buurman.io`, not a deeper level.
 
 ### Starting Local Development
 1. `make dev` (infrastructure + Traefik only, backend/app excluded)
@@ -306,7 +341,7 @@ frontend/
 ### Common Issues
 - **Port 80/443 conflict**: Traefik needs both — check for other web servers
 - **TLS cert errors**: Run `bash scripts/setup-local-certs.sh` (requires mkcert)
-- **DNS resolution**: All `*.local.buurman.io` must resolve to `127.0.0.1`
+- **DNS resolution**: All `*.local.buurman.io` must resolve to `127.0.0.1` — use the dnsmasq wildcard above, not `/etc/hosts`. If names stop resolving, check `sudo lsof -nP -iUDP:53` shows dnsmasq and that `/etc/resolver/local.buurman.io` exists
 - **Database connection**: Ensure PostgreSQL container running (`postgresql.local.buurman.io:5432`)
 - **JWT validation**: Check Keycloak running at `https://keycloak.local.buurman.io` and realm configured
 - **CORS errors**: Verify SecurityConfig allowed origin includes `https://app.local.buurman.io`

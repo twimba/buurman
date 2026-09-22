@@ -31,13 +31,19 @@ This generates:
 Ensure the workspace hostnames resolve to 127.0.0.1. Check if they already do:
 
 ```bash
-ping -c1 w<N>-app.local.buurman.io
+dscacheutil -q host -a name w<N>-app.local.buurman.io
 ```
 
-If not, add to `/etc/hosts`:
+If you set up the dnsmasq wildcard from the First-Time Setup section of
+`CLAUDE.md`, every workspace hostname already resolves and there is nothing to
+do here — that is the recommended path, since nine workspaces times nine
+hostnames is ~90 `/etc/hosts` entries.
+
+Without the wildcard, add to `/etc/hosts` (note `backoffice`, which the Traefik
+routing uses but the setup script's DNS check omits):
 
 ```
-127.0.0.1 w<N>-app.local.buurman.io w<N>-api.local.buurman.io w<N>-keycloak.local.buurman.io w<N>-awrust.local.buurman.io w<N>-mailpit.local.buurman.io w<N>-traefik.local.buurman.io w<N>-prometheus.local.buurman.io w<N>-grafana.local.buurman.io
+127.0.0.1 w<N>-app.local.buurman.io w<N>-api.local.buurman.io w<N>-backoffice.local.buurman.io w<N>-keycloak.local.buurman.io w<N>-awrust.local.buurman.io w<N>-mailpit.local.buurman.io w<N>-traefik.local.buurman.io w<N>-prometheus.local.buurman.io w<N>-grafana.local.buurman.io
 ```
 
 ### Step 4: Start services
