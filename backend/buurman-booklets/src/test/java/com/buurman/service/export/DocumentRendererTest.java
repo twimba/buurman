@@ -23,7 +23,8 @@ import com.sun.net.httpserver.HttpServer;
 /**
  * Drives {@link DocumentRenderer} against a throwaway local HTTP server (no real Gotenberg) to
  * verify the multipart request shape, brand-font attachment + {@code @font-face} injection,
- * landscape flag, and that sidecar failures surface as a 502-mapped {@link ExternalServiceException}.
+ * landscape flag, and that sidecar failures surface as a 502-mapped {@link
+ * ExternalServiceException}.
  */
 @DisplayName("DocumentRenderer")
 class DocumentRendererTest {
@@ -55,8 +56,7 @@ class DocumentRendererTest {
 
   private DocumentRenderer renderer(Resource brandFont) {
     String baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
-    return new DocumentRenderer(
-        baseUrl, Duration.ofSeconds(2), Duration.ofSeconds(5), brandFont);
+    return new DocumentRenderer(baseUrl, Duration.ofSeconds(2), Duration.ofSeconds(5), brandFont);
   }
 
   @Test

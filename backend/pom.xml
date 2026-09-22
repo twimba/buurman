@@ -39,13 +39,13 @@
         <testcontainers.version>2.0.5</testcontainers.version>
         <testcontainers-jooq-codegen-maven-plugin.version>0.0.4</testcontainers-jooq-codegen-maven-plugin.version>
         <keycloak.version>26.0.12</keycloak.version>
-        <aws-sdk.version>2.55.0</aws-sdk.version>
+        <aws-sdk.version>2.55.1</aws-sdk.version>
         <lombok.version>1.18.48</lombok.version>
         <spotless.version>3.10.2</spotless.version>
         <google-java-format.version>1.34.1</google-java-format.version>
         <error-prone.version>2.50.0</error-prone.version>
         <nullaway.version>0.14.1</nullaway.version>
-        <jspecify.version>1.0.0</jspecify.version>
+        <jspecify.version>1.0.1</jspecify.version>
         <bucket4j.version>8.20.0</bucket4j.version>
         <swagger-annotations.version>2.2.55</swagger-annotations.version>
         <poi.version>5.5.1</poi.version>
@@ -218,7 +218,7 @@
             <dependency>
                 <groupId>com.logtail</groupId>
                 <artifactId>logback-logtail</artifactId>
-                <version>0.3.5</version>
+                <version>0.3.6</version>
             </dependency>
 
             <!-- Documentation -->

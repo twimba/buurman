@@ -18,14 +18,15 @@ import org.springframework.web.client.RestClient;
 import com.buurman.exception.ExternalServiceException;
 
 /**
- * Renders a self-contained HTML document to PDF bytes via a <a href="https://gotenberg.dev">Gotenberg</a>
- * (headless-Chromium) sidecar over HTTP — the sole PDF engine for booklets, summary cards and legal
- * documents. Chromium gives the full modern CSS/typography ceiling (grid, flexbox, embedded
- * WOFF2/variable fonts, flawless multilingual shaping). Intentionally a single concrete renderer:
- * Gotenberg is the only engine (no in-JVM iText).
+ * Renders a self-contained HTML document to PDF bytes via a <a
+ * href="https://gotenberg.dev">Gotenberg</a> (headless-Chromium) sidecar over HTTP — the sole PDF
+ * engine for booklets, summary cards and legal documents. Chromium gives the full modern
+ * CSS/typography ceiling (grid, flexbox, embedded WOFF2/variable fonts, flawless multilingual
+ * shaping). Intentionally a single concrete renderer: Gotenberg is the only engine (no in-JVM
+ * iText).
  *
- * <p>The sidecar URL is {@code booklet.gotenberg.url} (Docker/Dokploy: {@code http://gotenberg:3000};
- * local host-run backend: {@code http://localhost:3000}).
+ * <p>The sidecar URL is {@code booklet.gotenberg.url} (Docker/Dokploy: {@code
+ * http://gotenberg:3000}; local host-run backend: {@code http://localhost:3000}).
  *
  * <p>Fonts: the <b>brand</b> face (Satoshi) is shipped with each request — its WOFF2 is attached as
  * a sibling asset and an {@code @font-face} is injected into the HTML head, so Chromium embeds it
