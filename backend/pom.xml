@@ -39,7 +39,7 @@
         <testcontainers.version>2.0.5</testcontainers.version>
         <testcontainers-jooq-codegen-maven-plugin.version>0.0.4</testcontainers-jooq-codegen-maven-plugin.version>
         <keycloak.version>26.0.12</keycloak.version>
-        <aws-sdk.version>2.55.1</aws-sdk.version>
+        <aws-sdk.version>2.55.3</aws-sdk.version>
         <lombok.version>1.18.48</lombok.version>
         <spotless.version>3.10.2</spotless.version>
         <google-java-format.version>1.34.1</google-java-format.version>
@@ -49,8 +49,8 @@
         <bucket4j.version>8.20.0</bucket4j.version>
         <swagger-annotations.version>2.2.55</swagger-annotations.version>
         <poi.version>5.5.1</poi.version>
-        <google-api-services-sheets.version>v4-rev20250603-2.0.0</google-api-services-sheets.version>
-        <google-api-services-drive.version>v3-rev20260428-2.0.0</google-api-services-drive.version>
+        <google-api-services-sheets.version>v4-rev20260610-2.0.0</google-api-services-sheets.version>
+        <google-api-services-drive.version>v3-rev20260901-2.0.0</google-api-services-drive.version>
         <google-auth-library.version>1.52.0</google-auth-library.version>
         <!-- Default empty argLine; JaCoCo's prepare-agent goal overrides this. -->
         <argLine/>
