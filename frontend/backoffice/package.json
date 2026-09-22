@@ -45,7 +45,6 @@
     "@eslint/compat": "2.1.1",
     "@eslint/js": "10.0.1",
     "@tailwindcss/postcss": "4.3.3",
-    "@types/dompurify": "3.2.0",
     "@types/google.maps": "3.66.3",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
