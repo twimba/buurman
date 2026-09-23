@@ -841,5 +841,95 @@
       "FIXED_AMOUNT": "Valor fixo",
       "MANUAL": "Manual"
     }
+  },
+  "deposit": {
+    "title": "Caução",
+    "empty": "Ainda não há caução registada.",
+    "emptyWithAgreed": "Caução acordada de {{amount}} — ainda não registada como recebida.",
+    "record": "Registar caução",
+    "amount": "Valor",
+    "refundable": "Reembolsável",
+    "receivedDate": "Recebida em",
+    "heldWhere": "Guardada em",
+    "returnDueDate": "Devolver até",
+    "returned": "Devolvida",
+    "deductions": "Deduções",
+    "addDeduction": "Adicionar dedução",
+    "removeDeduction": "Remover dedução",
+    "noDeductions": "Sem deduções",
+    "notes": "Notas",
+    "return": "Devolver caução",
+    "forfeit": "Reter",
+    "status": {
+      "EXPECTED": "Esperada",
+      "HELD": "Retida",
+      "PARTIALLY_RETURNED": "Parcialmente devolvida",
+      "RETURNED": "Devolvida",
+      "FORFEITED": "Perdida"
+    },
+    "editDialog": {
+      "titleNew": "Registar caução",
+      "titleEdit": "Editar caução",
+      "receivedHelp": "Deixe vazio enquanto a caução ainda for esperada.",
+      "heldWherePlaceholder": "ex.: Conta poupança separada, serviço de escrow"
+    },
+    "deductionDialog": {
+      "title": "Adicionar dedução",
+      "message": "Reembolsável após as deduções existentes: {{refundable}}.",
+      "date": "Data",
+      "reason": "Motivo",
+      "reasonPlaceholder": "ex.: Repintar a sala após danos",
+      "confirm": "Adicionar dedução"
+    },
+    "returnDialog": {
+      "title": "Devolver caução",
+      "message": "Valor reembolsável: {{refundable}}. Devolver menos regista uma devolução parcial.",
+      "date": "Data da devolução",
+      "amount": "Valor devolvido",
+      "amountHelp": "Deixe vazio para devolver todo o valor reembolsável.",
+      "confirm": "Registar devolução"
+    },
+    "forfeitDialog": {
+      "title": "Reter caução",
+      "message": "Toda a caução fica com o senhorio. Isto encerra a caução e não pode ser anulado.",
+      "reason": "Motivo",
+      "confirm": "Reter"
+    },
+    "toasts": {
+      "saved": "Caução guardada",
+      "deductionAdded": "Dedução adicionada",
+      "deductionRemoved": "Dedução removida",
+      "returned": "Devolução registada",
+      "forfeited": "Caução retida"
+    }
+  },
+  "paymentPlans": {
+    "title": "Planos de pagamento",
+    "summary": "{{total}} em {{count}} prestações {{frequency}}",
+    "from": "a partir de {{date}}",
+    "covers": "cobre {{count}} pagamento",
+    "covers_other": "cobre {{count}} pagamentos",
+    "progress": "{{paid}} pago · {{remaining}} em falta",
+    "cancel": "Cancelar plano",
+    "cancelledBecause": "Cancelado: {{reason}}",
+    "frequency": {
+      "WEEKLY": "semanais",
+      "BIWEEKLY": "quinzenais",
+      "MONTHLY": "mensais"
+    },
+    "status": {
+      "ACTIVE": "Ativo",
+      "COMPLETED": "Concluído",
+      "CANCELLED": "Cancelado"
+    },
+    "cancelDialog": {
+      "title": "Cancelar plano de pagamento",
+      "message": "As prestações em aberto são canceladas e o restante por pagar de {{remaining}} passa a um único pagamento com vencimento hoje. Os lembretes do contrato são retomados.",
+      "reason": "Motivo",
+      "confirm": "Cancelar plano"
+    },
+    "toasts": {
+      "cancelled": "Plano de pagamento cancelado"
+    }
   }
 }

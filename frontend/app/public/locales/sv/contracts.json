@@ -841,5 +841,95 @@
       "FIXED_AMOUNT": "Fast belopp",
       "MANUAL": "Manuell"
     }
+  },
+  "deposit": {
+    "title": "Deposition",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Väntad",
+      "HELD": "Innehas",
+      "PARTIALLY_RETURNED": "Delvis återbetald",
+      "RETURNED": "Återbetald",
+      "FORFEITED": "Förverkad"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    }
+  },
+  "paymentPlans": {
+    "title": "Avbetalningsplaner",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "veckovisa",
+      "BIWEEKLY": "varannan vecka",
+      "MONTHLY": "månatliga"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
+    }
   }
 }

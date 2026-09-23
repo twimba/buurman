@@ -156,7 +156,8 @@
     "types": {
       "WRITE_OFF": "Avskrivning",
       "CREDIT": "Tillgodohavande använt",
-      "PAYMENT": "Betalning"
+      "PAYMENT": "Betalning",
+      "PLAN": "Moved to payment plan"
     }
   },
   "history": {
@@ -218,7 +219,9 @@
     "done": "Klar",
     "markPaid": "Markera betald",
     "sendReminders": "Skicka påminnelser",
-    "cancel": "Avbryt betalningar"
+    "cancel": "Avbryt betalningar",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
   },
   "arrears": {
     "title": "Förfallna belopp",
@@ -282,7 +285,8 @@
   },
   "types": {
     "LATE_FEE": "Förseningsavgift",
-    "RENT": "Hyra"
+    "RENT": "Hyra",
+    "INSTALMENT": "Delbetalning"
   },
   "cancelDialog": {
     "title": "Avbryt betalning",
@@ -322,5 +326,23 @@
       "OVERPAYMENT": "Överbetalning",
       "CREDIT_NOTE": "Kreditnota"
     }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

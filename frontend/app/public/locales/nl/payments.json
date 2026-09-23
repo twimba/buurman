@@ -156,7 +156,8 @@
     "types": {
       "WRITE_OFF": "Afboeking",
       "CREDIT": "Tegoed toegepast",
-      "PAYMENT": "Betaling"
+      "PAYMENT": "Betaling",
+      "PLAN": "Naar betalingsregeling"
     }
   },
   "history": {
@@ -217,7 +218,9 @@
     "done": "Klaar",
     "markPaid": "Markeer betaald",
     "sendReminders": "Herinneringen sturen",
-    "cancel": "Betalingen annuleren"
+    "cancel": "Betalingen annuleren",
+    "paymentPlan": "Betalingsregeling",
+    "paymentPlanHint": "Selecteer openstaande betalingen van één contract om een regeling te maken."
   },
   "arrears": {
     "title": "Achterstanden",
@@ -281,7 +284,8 @@
   },
   "types": {
     "LATE_FEE": "Boete",
-    "RENT": "Huur"
+    "RENT": "Huur",
+    "INSTALMENT": "Termijn"
   },
   "cancelDialog": {
     "title": "Betaling annuleren",
@@ -321,5 +325,23 @@
       "OVERPAYMENT": "Te veel betaald",
       "CREDIT_NOTE": "Creditnota"
     }
+  },
+  "paymentPlanDialog": {
+    "title": "Betalingsregeling maken",
+    "message": "{{count}} betalingen met {{total}} openstaand worden in een regeling ondergebracht en vervangen door termijnen.",
+    "instalments": "Termijnen",
+    "frequency": "Frequentie",
+    "frequencies": {
+      "WEEKLY": "Wekelijks",
+      "BIWEEKLY": "Om de twee weken",
+      "MONTHLY": "Maandelijks"
+    },
+    "startDate": "Eerste termijn vervalt op",
+    "preview": "{{count}} termijnen van ongeveer {{amount}}",
+    "pauseReminders": "Huurdersherinneringen pauzeren tot de laatste termijn",
+    "pauseRemindersHelp": "Aanbevolen: de huurder betaalt zoals afgesproken, dus de ladder hoeft niet aan te manen.",
+    "notes": "Notities (optioneel)",
+    "confirm": "Regeling maken",
+    "created": "Betalingsregeling gemaakt"
   }
 }

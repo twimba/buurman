@@ -156,7 +156,8 @@
     "types": {
       "WRITE_OFF": "Luottotappio",
       "CREDIT": "Hyvitys käytetty",
-      "PAYMENT": "Maksu"
+      "PAYMENT": "Maksu",
+      "PLAN": "Moved to payment plan"
     }
   },
   "history": {
@@ -217,7 +218,9 @@
     "done": "Valmis",
     "markPaid": "Merkitse maksetuksi",
     "sendReminders": "Lähetä muistutukset",
-    "cancel": "Peruuta maksut"
+    "cancel": "Peruuta maksut",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
   },
   "arrears": {
     "title": "Maksurästit",
@@ -281,7 +284,8 @@
   },
   "types": {
     "LATE_FEE": "Viivästysmaksu",
-    "RENT": "Vuokra"
+    "RENT": "Vuokra",
+    "INSTALMENT": "Erä"
   },
   "cancelDialog": {
     "title": "Peruuta maksu",
@@ -321,5 +325,23 @@
       "OVERPAYMENT": "Liikamaksu",
       "CREDIT_NOTE": "Hyvityslasku"
     }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

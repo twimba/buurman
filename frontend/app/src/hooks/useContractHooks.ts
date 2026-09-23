@@ -23,6 +23,15 @@ import {
   addParty,
   removeParty,
   changePrimaryContact,
+  getContractDeposits,
+  upsertContractDeposit,
+  addDepositDeduction,
+  removeDepositDeduction,
+  returnContractDeposit,
+  forfeitContractDeposit,
+  getContractPaymentPlans,
+  createContractPaymentPlan,
+  cancelContractPaymentPlan,
 } from '../generated/api/contracts/contracts';
 import {
   CreateContractRequest,
@@ -32,6 +41,12 @@ import {
   ChangePrimaryContactRequest,
   CountryMetadataSchema,
   ContractResponse,
+  UpsertDepositRequest,
+  CreateDepositDeductionRequest,
+  ReturnDepositRequest,
+  ForfeitDepositRequest,
+  CreatePaymentPlanRequest,
+  CancelPaymentPlanRequest,
 } from '../types/contract';
 import type { PageResponse, PageParams } from '@/types/common';
 import type { GetContractsParams } from '../generated/models';
@@ -452,6 +467,123 @@ export const useChangePrimaryContact = (contractId: string) => {
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+    },
+  });
+};
+
+// --- Deposits (BUUR-101) ---
+
+export const useContractDeposit = (contractId: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.contracts.deposit(contractId),
+    queryFn: async () => (await getContractDeposits(contractId ?? ''))[0] ?? null,
+    enabled: !!contractId,
+  });
+};
+
+const useDepositMutation = <TVars>(
+  contractId: string,
+  fn: (vars: TVars) => Promise<unknown>,
+  successMessage: string
+) => {
+  const queryClient = useQueryClient();
+  return useMutationWithToast({
+    mutationFn: fn,
+    successMessage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.deposit(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+    },
+  });
+};
+
+export const useUpsertDeposit = (contractId: string, successMessage: string) =>
+  useDepositMutation(
+    contractId,
+    (data: UpsertDepositRequest) => upsertContractDeposit(contractId, data),
+    successMessage
+  );
+
+export const useAddDepositDeduction = (contractId: string, successMessage: string) =>
+  useDepositMutation(
+    contractId,
+    (data: CreateDepositDeductionRequest) => addDepositDeduction(contractId, data),
+    successMessage
+  );
+
+export const useRemoveDepositDeduction = (contractId: string, successMessage: string) =>
+  useDepositMutation(
+    contractId,
+    (deductionId: string) => removeDepositDeduction(contractId, deductionId),
+    successMessage
+  );
+
+export const useReturnDeposit = (contractId: string, successMessage: string) =>
+  useDepositMutation(
+    contractId,
+    (data: ReturnDepositRequest) => returnContractDeposit(contractId, data),
+    successMessage
+  );
+
+export const useForfeitDeposit = (contractId: string, successMessage: string) =>
+  useDepositMutation(
+    contractId,
+    (data: ForfeitDepositRequest) => forfeitContractDeposit(contractId, data),
+    successMessage
+  );
+
+// --- Payment plans (BUUR-101) ---
+
+export const useContractPaymentPlans = (contractId: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.contracts.paymentPlans(contractId),
+    queryFn: () => getContractPaymentPlans(contractId ?? ''),
+    enabled: !!contractId,
+  });
+};
+
+const invalidateAfterPlanChange = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  contractId: string
+) => {
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.contracts.paymentPlans(contractId),
+  });
+  queryClient.invalidateQueries({ queryKey: queryKeys.contracts.detail(contractId) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.contracts.paymentsByContract(contractId),
+  });
+};
+
+export const useCreatePaymentPlan = (contractId: string, successMessage: string) => {
+  const queryClient = useQueryClient();
+  return useMutationWithToast({
+    mutationFn: (data: CreatePaymentPlanRequest) =>
+      createContractPaymentPlan(contractId, data),
+    successMessage,
+    onSuccess: () => {
+      invalidateAfterPlanChange(queryClient, contractId);
+      trackEvent(AnalyticsEvent.PAYMENT_PLAN_CREATED);
+    },
+  });
+};
+
+export const useCancelPaymentPlan = (contractId: string, successMessage: string) => {
+  const queryClient = useQueryClient();
+  return useMutationWithToast({
+    mutationFn: ({ planId, data }: { planId: string; data: CancelPaymentPlanRequest }) =>
+      cancelContractPaymentPlan(contractId, planId, data),
+    successMessage,
+    onSuccess: () => {
+      invalidateAfterPlanChange(queryClient, contractId);
+      trackEvent(AnalyticsEvent.PAYMENT_PLAN_CANCELLED);
     },
   });
 };

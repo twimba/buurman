@@ -30,7 +30,8 @@ public class Payment {
   /** What the payment is for: regular rent, or a late fee charged on an overdue rent payment. */
   public enum PaymentType {
     RENT,
-    LATE_FEE
+    LATE_FEE,
+    INSTALMENT
   }
 
   private UUID id;
@@ -53,6 +54,10 @@ public class Payment {
   @Builder.Default private Optional<Instant> waivedAt = Optional.empty();
   @Builder.Default private Optional<UUID> waivedBy = Optional.empty();
   @Builder.Default private Optional<String> waiveReason = Optional.empty();
+
+  /** For INSTALMENT payments: the plan they belong to. */
+  @Builder.Default private Optional<UUID> paymentPlanId = Optional.empty();
+
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

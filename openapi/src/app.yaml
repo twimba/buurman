@@ -301,6 +301,20 @@ paths:
     $ref: 'paths/contracts.yaml#/parties-change-primary'
   /contracts/{identifier}/generate-payments:
     $ref: 'paths/contracts.yaml#/generate-payments'
+  /contracts/{identifier}/deposit:
+    $ref: 'paths/contracts.yaml#/deposits'
+  /contracts/{identifier}/deposit/deductions:
+    $ref: 'paths/contracts.yaml#/deposit-deductions'
+  /contracts/{identifier}/deposit/deductions/{deductionIdentifier}:
+    $ref: 'paths/contracts.yaml#/deposit-deductions-item'
+  /contracts/{identifier}/deposit/return:
+    $ref: 'paths/contracts.yaml#/deposit-return'
+  /contracts/{identifier}/deposit/forfeit:
+    $ref: 'paths/contracts.yaml#/deposit-forfeit'
+  /contracts/{identifier}/payment-plans:
+    $ref: 'paths/contracts.yaml#/payment-plans'
+  /contracts/{identifier}/payment-plans/{planIdentifier}/cancel:
+    $ref: 'paths/contracts.yaml#/payment-plans-cancel'
   /contracts/{identifier}/duplicate:
     $ref: 'paths/contracts.yaml#/duplicate'
   /contracts/{identifier}/documents:
@@ -688,6 +702,12 @@ components:
     ContactCreditIdentifier:
       type: string
       description: Contact credit identifier
+    DepositDeductionIdentifier:
+      type: string
+      description: Deposit deduction identifier
+    PaymentPlanIdentifier:
+      type: string
+      description: Payment plan identifier
     PaymentReceivalIdentifier:
       type: string
       description: Payment receival identifier
@@ -3025,8 +3045,8 @@ components:
           format: date-time
         receivalType:
           type: string
-          enum: [PAYMENT, WRITE_OFF, CREDIT]
-          description: How the balance was settled — money received, written off, or an applied credit
+          enum: [PAYMENT, WRITE_OFF, CREDIT, PLAN]
+          description: How the balance was settled — money received, written off, an applied credit, or moved into a payment plan
       required:
         - amount
         - createdAt
@@ -3092,6 +3112,9 @@ components:
           format: date-time
         waiveReason:
           type: string
+        paymentPlanIdentifier:
+          type: string
+          description: For INSTALMENT payments, the plan they belong to
         createdAt:
           type: string
           format: date-time
@@ -7416,7 +7439,7 @@ components:
     PaymentType:
       type: string
       description: RENT for regular rent, LATE_FEE for a fee charged on an overdue rent payment
-      enum: [RENT, LATE_FEE]
+      enum: [RENT, LATE_FEE, INSTALMENT]
     CancelPaymentRequest:
       type: object
       properties:
@@ -7532,6 +7555,215 @@ components:
         - currency
         - source
         - createdAt
+    PaymentSummary:
+      type: object
+      description: Compact payment reference used inside other resources
+      properties:
+        identifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        paymentDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [PENDING, PARTIALLY_PAID, PAID, OVERDUE, CANCELLED]
+      required: [identifier, amount, currency, dueDate, status]
+    DepositDeductionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        reason:
+          type: string
+        deductionDate:
+          type: string
+          format: date
+      required: [identifier, amount, currency, reason, deductionDate]
+    DepositResponse:
+      type: object
+      description: The tenant deposit for a contract and what happened to it
+      properties:
+        identifier:
+          type: string
+        contractIdentifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        receivedDate:
+          type: string
+          format: date
+        heldWhere:
+          type: string
+        status:
+          type: string
+          enum: [EXPECTED, HELD, PARTIALLY_RETURNED, RETURNED, FORFEITED]
+        returnDueDate:
+          type: string
+          format: date
+        returnedDate:
+          type: string
+          format: date
+        returnedAmount:
+          type: number
+        deductionsTotal:
+          type: number
+        refundable:
+          type: number
+          description: amount minus deductions minus what was already returned
+        notes:
+          type: string
+        deductions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DepositDeductionResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [identifier, contractIdentifier, amount, currency, status, returnedAmount, deductionsTotal, refundable, deductions, createdAt]
+    UpsertDepositRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        receivedDate:
+          type: string
+          format: date
+        heldWhere:
+          type: string
+          maxLength: 255
+        returnDueDate:
+          type: string
+          format: date
+        notes:
+          type: string
+          maxLength: 2000
+      required: [amount]
+    CreateDepositDeductionRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+          maxLength: 1000
+        deductionDate:
+          type: string
+          format: date
+      required: [amount, reason]
+    ReturnDepositRequest:
+      type: object
+      properties:
+        returnedDate:
+          type: string
+          format: date
+        returnedAmount:
+          type: number
+          description: Defaults to the refundable amount
+        notes:
+          type: string
+          maxLength: 2000
+      required: [returnedDate]
+    ForfeitDepositRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required: [reason]
+    PaymentPlanResponse:
+      type: object
+      description: An agreed instalment schedule for an overdue balance
+      properties:
+        identifier:
+          type: string
+        contractIdentifier:
+          type: string
+        totalAmount:
+          type: number
+        currency:
+          type: string
+        instalmentCount:
+          type: integer
+          format: int32
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [WEEKLY, BIWEEKLY, MONTHLY]
+        status:
+          type: string
+          enum: [ACTIVE, COMPLETED, CANCELLED]
+        notes:
+          type: string
+        cancelReason:
+          type: string
+        paidAmount:
+          type: number
+        remainingAmount:
+          type: number
+        instalments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
+        coveredPaymentIdentifiers:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [identifier, contractIdentifier, totalAmount, currency, instalmentCount, startDate, frequency, status, paidAmount, remainingAmount, instalments, coveredPaymentIdentifiers, createdAt]
+    CreatePaymentPlanRequest:
+      type: object
+      properties:
+        paymentIdentifiers:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        instalmentCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 36
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [WEEKLY, BIWEEKLY, MONTHLY]
+        notes:
+          type: string
+          maxLength: 2000
+        pauseReminders:
+          type: boolean
+          description: Pause tenant reminders on the contract until the last instalment is due (default true)
+      required: [paymentIdentifiers, instalmentCount, startDate]
+    CancelPaymentPlanRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required: [reason]
     ReminderTone:
       type: string
       description: How strongly a tenant reminder is worded

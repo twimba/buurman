@@ -17,6 +17,8 @@ import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.domain.identifier.CountryRequestIdentifier;
 import com.buurman.domain.identifier.DataImportIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
+import com.buurman.domain.identifier.DepositDeductionIdentifier;
+import com.buurman.domain.identifier.DepositIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
@@ -26,6 +28,7 @@ import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.domain.identifier.PaymentInstructionIdentifier;
+import com.buurman.domain.identifier.PaymentPlanIdentifier;
 import com.buurman.domain.identifier.PaymentReceivalIdentifier;
 import com.buurman.domain.identifier.PaymentReminderIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
@@ -132,6 +135,18 @@ public class SidGenerator {
 
   public static ContactCreditIdentifier newContactCreditId() {
     return ContactCreditIdentifier.of(generateRaw(EntityPrefix.CCR));
+  }
+
+  public static DepositIdentifier newDepositId() {
+    return DepositIdentifier.of(generateRaw(EntityPrefix.DEP));
+  }
+
+  public static DepositDeductionIdentifier newDepositDeductionId() {
+    return DepositDeductionIdentifier.of(generateRaw(EntityPrefix.DDD));
+  }
+
+  public static PaymentPlanIdentifier newPaymentPlanId() {
+    return PaymentPlanIdentifier.of(generateRaw(EntityPrefix.PPL));
   }
 
   public static PhotoIdentifier newPhotoId() {

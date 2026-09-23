@@ -841,5 +841,95 @@
       "FIXED_AMOUNT": "Vast bedrag",
       "MANUAL": "Handmatig"
     }
+  },
+  "deposit": {
+    "title": "Borg",
+    "empty": "Nog geen borg vastgelegd.",
+    "emptyWithAgreed": "Afgesproken borg van {{amount}} — nog niet als ontvangen vastgelegd.",
+    "record": "Borg vastleggen",
+    "amount": "Bedrag",
+    "refundable": "Terug te betalen",
+    "receivedDate": "Ontvangen op",
+    "heldWhere": "Bewaard bij",
+    "returnDueDate": "Terugbetalen vóór",
+    "returned": "Terugbetaald",
+    "deductions": "Inhoudingen",
+    "addDeduction": "Inhouding toevoegen",
+    "removeDeduction": "Inhouding verwijderen",
+    "noDeductions": "Geen inhoudingen",
+    "notes": "Notities",
+    "return": "Borg terugbetalen",
+    "forfeit": "Verbeurd verklaren",
+    "status": {
+      "EXPECTED": "Verwacht",
+      "HELD": "In bewaring",
+      "PARTIALLY_RETURNED": "Deels terugbetaald",
+      "RETURNED": "Terugbetaald",
+      "FORFEITED": "Verbeurd"
+    },
+    "editDialog": {
+      "titleNew": "Borg vastleggen",
+      "titleEdit": "Borg bewerken",
+      "receivedHelp": "Laat leeg zolang de borg nog verwacht wordt.",
+      "heldWherePlaceholder": "bijv. Aparte spaarrekening, derdenrekening"
+    },
+    "deductionDialog": {
+      "title": "Inhouding toevoegen",
+      "message": "Terug te betalen na bestaande inhoudingen: {{refundable}}.",
+      "date": "Datum",
+      "reason": "Reden",
+      "reasonPlaceholder": "bijv. Woonkamer overschilderen na schade",
+      "confirm": "Inhouding toevoegen"
+    },
+    "returnDialog": {
+      "title": "Borg terugbetalen",
+      "message": "Terug te betalen bedrag: {{refundable}}. Minder terugbetalen wordt als gedeeltelijke terugbetaling vastgelegd.",
+      "date": "Terugbetaaldatum",
+      "amount": "Terugbetaald bedrag",
+      "amountHelp": "Laat leeg om het volledige bedrag terug te betalen.",
+      "confirm": "Terugbetaling vastleggen"
+    },
+    "forfeitDialog": {
+      "title": "Borg verbeurd verklaren",
+      "message": "De volledige borg blijft bij de verhuurder. Dit sluit de borg af en kan niet ongedaan worden gemaakt.",
+      "reason": "Reden",
+      "confirm": "Verbeurd verklaren"
+    },
+    "toasts": {
+      "saved": "Borg opgeslagen",
+      "deductionAdded": "Inhouding toegevoegd",
+      "deductionRemoved": "Inhouding verwijderd",
+      "returned": "Terugbetaling vastgelegd",
+      "forfeited": "Borg verbeurd verklaard"
+    }
+  },
+  "paymentPlans": {
+    "title": "Betalingsregelingen",
+    "summary": "{{total}} in {{count}} {{frequency}} termijnen",
+    "from": "vanaf {{date}}",
+    "covers": "dekt {{count}} betaling",
+    "covers_other": "dekt {{count}} betalingen",
+    "progress": "{{paid}} betaald · {{remaining}} resterend",
+    "cancel": "Regeling annuleren",
+    "cancelledBecause": "Geannuleerd: {{reason}}",
+    "frequency": {
+      "WEEKLY": "wekelijkse",
+      "BIWEEKLY": "tweewekelijkse",
+      "MONTHLY": "maandelijkse"
+    },
+    "status": {
+      "ACTIVE": "Actief",
+      "COMPLETED": "Afgerond",
+      "CANCELLED": "Geannuleerd"
+    },
+    "cancelDialog": {
+      "title": "Betalingsregeling annuleren",
+      "message": "Openstaande termijnen worden geannuleerd en het onbetaalde restant van {{remaining}} wordt één betaling die vandaag vervalt. Herinneringen op het contract worden hervat.",
+      "reason": "Reden",
+      "confirm": "Regeling annuleren"
+    },
+    "toasts": {
+      "cancelled": "Betalingsregeling geannuleerd"
+    }
   }
 }

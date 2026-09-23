@@ -34,6 +34,7 @@ public interface PaymentMapper {
   @Mapping(target = "waivedAt", ignore = true)
   @Mapping(target = "waivedBy", ignore = true)
   @Mapping(target = "waiveReason", ignore = true)
+  @Mapping(target = "paymentPlanId", ignore = true)
   @Mapping(
       target = "amount",
       expression = "java(com.buurman.util.MoneyAmount.of(request.amount(), request.currency()))")
@@ -48,6 +49,7 @@ public interface PaymentMapper {
   @Mapping(target = "balance", ignore = true)
   @Mapping(target = "receivals", ignore = true)
   @Mapping(target = "parentPaymentIdentifier", ignore = true)
+  @Mapping(target = "paymentPlanIdentifier", ignore = true)
   @Mapping(target = "amount", expression = "java(payment.getAmount().value())")
   @Mapping(target = "currency", expression = "java(payment.getAmount().currency())")
   PaymentResponse toResponse(Payment payment);
@@ -76,6 +78,7 @@ public interface PaymentMapper {
   @Mapping(target = "waivedAt", ignore = true)
   @Mapping(target = "waivedBy", ignore = true)
   @Mapping(target = "waiveReason", ignore = true)
+  @Mapping(target = "paymentPlanId", ignore = true)
   @Mapping(
       target = "amount",
       expression =

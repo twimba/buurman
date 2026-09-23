@@ -23,7 +23,8 @@ public class PaymentReceival {
   public enum ReceivalType {
     PAYMENT,
     WRITE_OFF,
-    CREDIT
+    CREDIT,
+    PLAN
   }
 
   private UUID id;
@@ -35,6 +36,7 @@ public class PaymentReceival {
   @Builder.Default private Optional<String> notes = Optional.empty();
   @Builder.Default private ReceivalType receivalType = ReceivalType.PAYMENT;
   @Builder.Default private Optional<UUID> creditId = Optional.empty();
+  @Builder.Default private Optional<UUID> paymentPlanId = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

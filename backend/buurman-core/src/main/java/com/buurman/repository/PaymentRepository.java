@@ -266,6 +266,7 @@ public class PaymentRepository {
           .set(PAYMENTS.PAYMENT_TYPE, payment.getPaymentType().name())
           .set(PAYMENTS.PARENT_PAYMENT_ID, payment.getParentPaymentId().orElse(null))
           .set(PAYMENTS.CANCEL_REASON, payment.getCancelReason().orElse(null))
+          .set(PAYMENTS.PAYMENT_PLAN_ID, payment.getPaymentPlanId().orElse(null))
           .set(PAYMENTS.CREATED_AT, createdAt)
           .set(PAYMENTS.UPDATED_AT, updatedAt)
           .set(PAYMENTS.CREATED_BY, payment.getCreatedBy())
@@ -526,6 +527,23 @@ public class PaymentRepository {
                 .eq(teamId)
                 .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
                 .and(PAYMENTS.DUE_DATE.le(dueDateInclusive))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .orderBy(PAYMENTS.DUE_DATE.asc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  public List<Payment> findByPaymentPlanId(UUID planId, UUID teamId) {
+    return dsl
+        .selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS
+                .PAYMENT_PLAN_ID
+                .eq(planId)
+                .and(PAYMENTS.TEAM_ID.eq(teamId))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.DUE_DATE.asc())
         .fetch()

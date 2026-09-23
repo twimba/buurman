@@ -10,6 +10,8 @@ import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/mo
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { ConfirmDialog, RichTextDisplay } from '@buurman/ui';
 import { RentTimeline } from '@/components/contracts/RentTimeline';
+import { DepositCard } from '@/components/contracts/DepositCard';
+import { PaymentPlansCard } from '@/components/contracts/PaymentPlansCard';
 import { useTeam } from '@/context/TeamContext';
 import {
   Home,
@@ -717,6 +719,12 @@ export const ContractOverviewTab = ({
           </div>
         </div>
       )}
+
+      {/* Deposit lifecycle */}
+      <DepositCard contract={contract} contractId={contractId} />
+
+      {/* Payment plans */}
+      <PaymentPlansCard contractId={contractId} />
 
       {/* Additional Terms */}
       {(contract.terminationNoticeDays ||

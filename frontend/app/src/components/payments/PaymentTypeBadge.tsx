@@ -16,7 +16,7 @@ export const PaymentTypeBadge = ({ type, className }: PaymentTypeBadgeProps) => 
   return (
     <StatusBadge
       label={t(`types.${type}`)}
-      color="amber"
+      color={type === 'INSTALMENT' ? 'blue' : 'amber'}
       shape="pill"
       className={className}
     />

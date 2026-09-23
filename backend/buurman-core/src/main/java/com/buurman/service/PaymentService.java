@@ -46,6 +46,7 @@ import com.buurman.domain.ContactCredit;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
+import com.buurman.domain.PaymentPlan;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
@@ -88,6 +89,7 @@ import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
+import com.buurman.repository.PaymentPlanRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -111,6 +113,7 @@ public class PaymentService {
   private final PaymentRepository paymentRepository;
   private final PaymentReceivalRepository receivalRepository;
   private final ContactCreditRepository creditRepository;
+  private final PaymentPlanRepository paymentPlanRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
   private final ContactRepository contactRepository;
@@ -522,6 +525,7 @@ public class PaymentService {
         newState,
         auditService.getChangedFields(oldState, newState));
 
+    refreshPlanCompletion(updatedPayment, teamId, principal.getUserId());
     sendPaymentPaidNotification(updatedPayment, teamId, principal);
 
     return newState;
@@ -645,6 +649,7 @@ public class PaymentService {
     sendReceivalNotification(payment, applied, teamId, principal);
 
     if (payment.getStatus() == PAID) {
+      refreshPlanCompletion(payment, teamId, principal.getUserId());
       sendPaymentPaidNotification(payment, teamId, principal);
     }
 
@@ -956,6 +961,7 @@ public class PaymentService {
         changedFields);
     metricsService.incrementCounter("payment.credit.applied.total");
     if (payment.getStatus() == PAID) {
+      refreshPlanCompletion(payment, teamId, principal.getUserId());
       sendPaymentPaidNotification(payment, teamId, principal);
     }
     return newState;
@@ -1404,7 +1410,8 @@ public class PaymentService {
               parentIdentifier(payment, teamId),
               base.cancelReason(),
               base.waivedAt(),
-              base.waiveReason()));
+              base.waiveReason(),
+              planIdentifier(payment, teamId)));
     }
     return responses;
   }
@@ -1479,7 +1486,8 @@ public class PaymentService {
           parentIdentifier(payment, teamId),
           response.cancelReason(),
           response.waivedAt(),
-          response.waiveReason());
+          response.waiveReason(),
+          planIdentifier(payment, teamId));
     }
 
     return new PaymentResponse(
@@ -1504,7 +1512,35 @@ public class PaymentService {
         parentIdentifier(payment, teamId),
         response.cancelReason(),
         response.waivedAt(),
-        response.waiveReason());
+        response.waiveReason(),
+        planIdentifier(payment, teamId));
+  }
+
+  private Optional<Sid> planIdentifier(Payment payment, UUID teamId) {
+    return payment
+        .getPaymentPlanId()
+        .flatMap(id -> paymentPlanRepository.findByIdAndTeamId(id, teamId))
+        .flatMap(PaymentPlan::getIdentifier);
+  }
+
+  /** An instalment reaching PAID completes its plan once every instalment is paid. */
+  private void refreshPlanCompletion(Payment payment, UUID teamId, UUID userId) {
+    payment
+        .getPaymentPlanId()
+        .flatMap(id -> paymentPlanRepository.findByIdAndTeamId(id, teamId))
+        .filter(plan -> plan.getStatus() == PaymentPlan.PlanStatus.ACTIVE)
+        .ifPresent(
+            plan -> {
+              boolean allPaid =
+                  paymentRepository.findByPaymentPlanId(plan.getId(), teamId).stream()
+                      .allMatch(p -> p.getStatus() == PAID || p.getStatus() == CANCELLED);
+              if (allPaid) {
+                plan.setStatus(PaymentPlan.PlanStatus.COMPLETED);
+                plan.setUpdatedBy(userId);
+                paymentPlanRepository.save(plan);
+                metricsService.incrementCounter("payment.plan.completed.total");
+              }
+            });
   }
 
   private Optional<Sid> parentIdentifier(Payment payment, UUID teamId) {

@@ -40,6 +40,8 @@ public class PaymentRecordMapper {
     payment.setWaivedAt(Optional.ofNullable(record.getWaivedAt()).map(dt -> dt.toInstant(UTC)));
     payment.setWaivedBy(Optional.ofNullable(record.getWaivedBy()));
     payment.setWaiveReason(Optional.ofNullable(record.getWaiveReason()));
+    payment.setPaymentPlanId(Optional.ofNullable(record.getPaymentPlanId()));
+    payment.setPaymentPlanId(Optional.ofNullable(record.getPaymentPlanId()));
     payment.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     payment.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     payment.setCreatedBy(record.getCreatedBy());

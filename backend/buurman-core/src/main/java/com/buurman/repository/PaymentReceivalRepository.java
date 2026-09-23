@@ -46,6 +46,7 @@ public class PaymentReceivalRepository {
   private static final Field<String> NOTES = field("notes", String.class);
   private static final Field<String> RECEIVAL_TYPE = field("receival_type", String.class);
   private static final Field<UUID> CREDIT_ID = field("credit_id", UUID.class);
+  private static final Field<UUID> PLAN_ID = field("payment_plan_id", UUID.class);
   private static final Field<LocalDateTime> CREATED_AT = field("created_at", LocalDateTime.class);
   private static final Field<LocalDateTime> UPDATED_AT = field("updated_at", LocalDateTime.class);
   private static final Field<UUID> CREATED_BY = field("created_by", UUID.class);
@@ -112,6 +113,14 @@ public class PaymentReceivalRepository {
     return MoneyAmount.sumToMajorUnits(sum, currency);
   }
 
+  /** Payments settled into a plan (distinct payment ids of PLAN receivals for the plan). */
+  public List<UUID> findPaymentIdsByPlanId(UUID planId, UUID teamId) {
+    return dsl.selectDistinct(PAYMENT_ID)
+        .from(TABLE)
+        .where(PLAN_ID.eq(planId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .fetch(PAYMENT_ID);
+  }
+
   public void save(PaymentReceival receival) {
     LocalDateTime now = LocalDateTime.now(clock);
 
@@ -128,6 +137,7 @@ public class PaymentReceivalRepository {
         .set(NOTES, receival.getNotes().orElse(null))
         .set(RECEIVAL_TYPE, receival.getReceivalType().name())
         .set(CREDIT_ID, receival.getCreditId().orElse(null))
+        .set(PLAN_ID, receival.getPaymentPlanId().orElse(null))
         .set(CREATED_AT, now)
         .set(UPDATED_AT, now)
         .set(CREATED_BY, receival.getCreatedBy())
@@ -194,6 +204,7 @@ public class PaymentReceivalRepository {
             .map(PaymentReceival.ReceivalType::valueOf)
             .orElse(PaymentReceival.ReceivalType.PAYMENT));
     receival.setCreditId(Optional.ofNullable(record.get(CREDIT_ID)));
+    receival.setPaymentPlanId(Optional.ofNullable(record.get(PLAN_ID)));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {
       receival.setCreatedAt(createdAt);

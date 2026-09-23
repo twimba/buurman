@@ -43,6 +43,7 @@ import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
+import com.buurman.repository.PaymentPlanRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -64,6 +65,7 @@ class PaymentServiceTest {
   @Mock private PaymentRepository paymentRepository;
   @Mock private PaymentReceivalRepository receivalRepository;
   @Mock private ContactCreditRepository creditRepository;
+  @Mock private PaymentPlanRepository paymentPlanRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContactRepository contactRepository;
@@ -103,6 +105,7 @@ class PaymentServiceTest {
             paymentRepository,
             receivalRepository,
             creditRepository,
+            paymentPlanRepository,
             contractRepository,
             propertyRepository,
             contactRepository,
@@ -428,6 +431,7 @@ class PaymentServiceTest {
                     Optional.empty(),
                     Optional.empty(),
                     Optional.empty(),
+                    Optional.empty(),
                     Optional.empty());
               });
       when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
@@ -487,7 +491,8 @@ class PaymentServiceTest {
                     Optional.empty(),
                     p.getCancelReason(),
                     p.getWaivedAt(),
-                    p.getWaiveReason());
+                    p.getWaiveReason(),
+                    Optional.empty());
               });
       when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
       org.mockito.Mockito.lenient()

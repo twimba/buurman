@@ -156,7 +156,8 @@
     "types": {
       "WRITE_OFF": "Διαγραφή",
       "CREDIT": "Πίστωση χρησιμοποιήθηκε",
-      "PAYMENT": "Πληρωμή"
+      "PAYMENT": "Πληρωμή",
+      "PLAN": "Moved to payment plan"
     }
   },
   "history": {
@@ -218,7 +219,9 @@
     "done": "Τέλος",
     "markPaid": "Σήμανση ως πληρωμένο",
     "sendReminders": "Αποστολή υπενθυμίσεων",
-    "cancel": "Ακύρωση πληρωμών"
+    "cancel": "Ακύρωση πληρωμών",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
   },
   "arrears": {
     "title": "Καθυστερήσεις",
@@ -282,7 +285,8 @@
   },
   "types": {
     "LATE_FEE": "Πρόστιμο καθυστέρησης",
-    "RENT": "Ενοίκιο"
+    "RENT": "Ενοίκιο",
+    "INSTALMENT": "Δόση"
   },
   "cancelDialog": {
     "title": "Ακύρωση πληρωμής",
@@ -322,5 +326,23 @@
       "OVERPAYMENT": "Υπερπληρωμή",
       "CREDIT_NOTE": "Πιστωτικό σημείωμα"
     }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

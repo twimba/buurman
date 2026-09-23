@@ -156,7 +156,8 @@
     "types": {
       "WRITE_OFF": "Stralcio",
       "CREDIT": "Credito usato",
-      "PAYMENT": "Pagamento"
+      "PAYMENT": "Pagamento",
+      "PLAN": "Moved to payment plan"
     }
   },
   "history": {
@@ -218,7 +219,9 @@
     "done": "Fatto",
     "markPaid": "Segna pagato",
     "sendReminders": "Invia promemoria",
-    "cancel": "Annulla pagamenti"
+    "cancel": "Annulla pagamenti",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
   },
   "arrears": {
     "title": "Arretrati",
@@ -282,7 +285,8 @@
   },
   "types": {
     "LATE_FEE": "Penale di mora",
-    "RENT": "Affitto"
+    "RENT": "Affitto",
+    "INSTALMENT": "Rata"
   },
   "cancelDialog": {
     "title": "Annulla pagamento",
@@ -322,5 +326,23 @@
       "OVERPAYMENT": "Pagamento in eccesso",
       "CREDIT_NOTE": "Nota di credito"
     }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

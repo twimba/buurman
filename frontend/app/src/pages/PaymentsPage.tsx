@@ -14,6 +14,7 @@ import {
 } from '@/hooks/usePaymentHooks';
 import { PaymentTypeBadge } from '@/components/payments/PaymentTypeBadge';
 import { ReasonDialog } from '@/components/payments/ReasonDialog';
+import { CreatePaymentPlanDialog } from '@/components/payments/CreatePaymentPlanDialog';
 import { usePaymentSelection } from '@/hooks/usePaymentSelection';
 import { ArrearsPanel } from '@/components/payments/ArrearsPanel';
 import { BulkMarkPaidDialog } from '@/components/payments/BulkMarkPaidDialog';
@@ -93,6 +94,7 @@ export const PaymentsPage = () => {
   const bulkRemindersMutation = useBulkSendPaymentReminders();
   const bulkCancelMutation = useBulkCancelPayments();
   const [showBulkCancel, setShowBulkCancel] = useState(false);
+  const [showPlanDialog, setShowPlanDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [showBulkMarkPaid, setShowBulkMarkPaid] = useState(false);
@@ -190,6 +192,23 @@ export const PaymentsPage = () => {
     exitSelection();
   };
 
+  const selectedPayments = (paymentsData?.content ?? []).filter((p) =>
+    selected.has(p.identifier)
+  );
+  const planContract =
+    selectedPayments.length > 0 &&
+    selectedPayments.every(
+      (p) =>
+        p.contract?.identifier === selectedPayments[0].contract?.identifier &&
+        p.paymentType !== 'INSTALMENT'
+    )
+      ? selectedPayments[0].contract?.identifier
+      : undefined;
+  const planOutstanding = selectedPayments.reduce(
+    (acc, p) => acc + (p.balance ?? p.amount),
+    0
+  );
+
   const handleBulkCancel = async (reason: string) => {
     await bulkCancelMutation.mutateAsync({ identifiers: selectedIds, reason });
     setShowBulkCancel(false);
@@ -208,6 +227,12 @@ export const PaymentsPage = () => {
       icon: Send,
       onClick: () => setReminderTargets(selectedIds),
       disabled: bulkRemindersMutation.isPending,
+    },
+    {
+      label: t('selection.paymentPlan'),
+      icon: ListChecks,
+      onClick: () => setShowPlanDialog(true),
+      disabled: !planContract,
     },
     {
       label: t('selection.cancel'),
@@ -694,6 +719,15 @@ export const PaymentsPage = () => {
                       {t('selection.sendReminders')}
                     </button>
                     <button
+                      onClick={() => setShowPlanDialog(true)}
+                      disabled={!planContract}
+                      title={planContract ? undefined : t('selection.paymentPlanHint')}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset transition-colors disabled:opacity-50 focus-ring"
+                    >
+                      <ListChecks className="h-4 w-4" />
+                      {t('selection.paymentPlan')}
+                    </button>
+                    <button
                       onClick={() => setShowBulkCancel(true)}
                       disabled={bulkCancelMutation.isPending}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-surface-card border border-error-border rounded-md hover:bg-error-bg transition-colors disabled:opacity-50 focus-ring"
@@ -940,6 +974,22 @@ export const PaymentsPage = () => {
           isLoading={bulkMarkPaidMutation.isPending}
           onConfirm={handleBulkMarkPaid}
           onClose={() => setShowBulkMarkPaid(false)}
+        />
+      )}
+
+      {showPlanDialog && planContract && (
+        <CreatePaymentPlanDialog
+          open={showPlanDialog}
+          contractIdentifier={planContract}
+          paymentIdentifiers={selectedIds}
+          totalOutstanding={planOutstanding}
+          currency={selectedPayments[0]?.currency ?? statsCurrency}
+          formatMoney={fmtMoney}
+          onCreated={() => {
+            setShowPlanDialog(false);
+            exitSelection();
+          }}
+          onClose={() => setShowPlanDialog(false)}
         />
       )}
 

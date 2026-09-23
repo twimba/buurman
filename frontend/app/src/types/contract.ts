@@ -219,3 +219,16 @@ export interface CountryMetadataSchema {
   fields: MetadataFieldSchema[];
   groups: MetadataGroupSchema[];
 }
+
+// Deposits & payment plans (BUUR-101)
+export type {
+  DepositResponse,
+  DepositDeductionResponse,
+  UpsertDepositRequest,
+  CreateDepositDeductionRequest,
+  ReturnDepositRequest,
+  ForfeitDepositRequest,
+  PaymentPlanResponse,
+  CreatePaymentPlanRequest,
+  CancelPaymentPlanRequest,
+} from '../generated/models';

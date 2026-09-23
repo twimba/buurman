@@ -99,6 +99,9 @@ export const queryKeys = {
       k('contract-metadata-schema', countryCode),
     paymentsByContract: (contractId?: string) =>
       k('paymentsByContract', contractId),
+    deposit: (contractId?: string) => k('contractDeposit', contractId),
+    paymentPlans: (contractId?: string) =>
+      k('contractPaymentPlans', contractId),
   },
 
   // --- Contract Extensions ---

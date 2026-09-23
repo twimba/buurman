@@ -156,7 +156,8 @@
     "types": {
       "WRITE_OFF": "Abate",
       "CREDIT": "Crédito aplicado",
-      "PAYMENT": "Pagamento"
+      "PAYMENT": "Pagamento",
+      "PLAN": "Movido para plano de pagamento"
     }
   },
   "history": {
@@ -218,7 +219,9 @@
     "done": "Concluído",
     "markPaid": "Marcar como pago",
     "sendReminders": "Enviar lembretes",
-    "cancel": "Cancelar pagamentos"
+    "cancel": "Cancelar pagamentos",
+    "paymentPlan": "Plano de pagamento",
+    "paymentPlanHint": "Selecione pagamentos em aberto de um único contrato para criar um plano."
   },
   "arrears": {
     "title": "Atrasos",
@@ -282,7 +285,8 @@
   },
   "types": {
     "LATE_FEE": "Multa por atraso",
-    "RENT": "Renda"
+    "RENT": "Renda",
+    "INSTALMENT": "Prestação"
   },
   "cancelDialog": {
     "title": "Cancelar pagamento",
@@ -322,5 +326,23 @@
       "OVERPAYMENT": "Pagamento em excesso",
       "CREDIT_NOTE": "Nota de crédito"
     }
+  },
+  "paymentPlanDialog": {
+    "title": "Criar plano de pagamento",
+    "message": "{{count}} pagamentos com {{total}} em falta são incluídos num plano e substituídos por prestações.",
+    "instalments": "Prestações",
+    "frequency": "Frequência",
+    "frequencies": {
+      "WEEKLY": "Semanal",
+      "BIWEEKLY": "Quinzenal",
+      "MONTHLY": "Mensal"
+    },
+    "startDate": "Primeira prestação vence em",
+    "preview": "{{count}} prestações de cerca de {{amount}}",
+    "pauseReminders": "Pausar lembretes ao inquilino até à última prestação",
+    "pauseRemindersHelp": "Recomendado: o inquilino está a pagar como acordado, por isso a escada não o deve perseguir.",
+    "notes": "Notas (opcional)",
+    "confirm": "Criar plano",
+    "created": "Plano de pagamento criado"
   }
 }

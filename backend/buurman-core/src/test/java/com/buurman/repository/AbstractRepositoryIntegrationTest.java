@@ -56,6 +56,9 @@ abstract class AbstractRepositoryIntegrationTest {
     dsl.deleteFrom(DSL.table("payment_receivals")).execute();
     dsl.deleteFrom(DSL.table("contact_credits")).execute();
     dsl.deleteFrom(DSL.table("payments")).execute();
+    dsl.deleteFrom(DSL.table("payment_plans")).execute();
+    dsl.deleteFrom(DSL.table("deposit_deductions")).execute();
+    dsl.deleteFrom(DSL.table("deposits")).execute();
     dsl.deleteFrom(DSL.table("contract_rent_periods")).execute();
     dsl.deleteFrom(DSL.table("contract_rent_components")).execute();
     dsl.deleteFrom(DSL.table("contract_payment_instructions")).execute();

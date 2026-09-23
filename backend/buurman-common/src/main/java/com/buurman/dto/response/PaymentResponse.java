@@ -33,4 +33,5 @@ public record PaymentResponse(
     Optional<Sid> parentPaymentIdentifier,
     Optional<String> cancelReason,
     Optional<Instant> waivedAt,
-    Optional<String> waiveReason) {}
+    Optional<String> waiveReason,
+    Optional<Sid> paymentPlanIdentifier) {}

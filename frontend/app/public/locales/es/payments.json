@@ -156,7 +156,8 @@
     "types": {
       "WRITE_OFF": "Baja",
       "CREDIT": "Crédito aplicado",
-      "PAYMENT": "Pago"
+      "PAYMENT": "Pago",
+      "PLAN": "Moved to payment plan"
     }
   },
   "history": {
@@ -218,7 +219,9 @@
     "done": "Listo",
     "markPaid": "Marcar pagado",
     "sendReminders": "Enviar recordatorios",
-    "cancel": "Cancelar pagos"
+    "cancel": "Cancelar pagos",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
   },
   "arrears": {
     "title": "Impagos",
@@ -282,7 +285,8 @@
   },
   "types": {
     "LATE_FEE": "Recargo por demora",
-    "RENT": "Alquiler"
+    "RENT": "Alquiler",
+    "INSTALMENT": "Cuota"
   },
   "cancelDialog": {
     "title": "Cancelar pago",
@@ -322,5 +326,23 @@
       "OVERPAYMENT": "Pago en exceso",
       "CREDIT_NOTE": "Nota de crédito"
     }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }
