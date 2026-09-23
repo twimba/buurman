@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Antiguo Inquilino",
       "REFERRED": "Referido"
     }
+  },
+  "credits": {
+    "title": "Créditos",
+    "add": "Añadir nota de crédito",
+    "empty": "Sin créditos: los pagos en exceso y las notas de crédito aparecen aquí",
+    "openTotal": "Crédito abierto: {{amount}}",
+    "date": "Fecha",
+    "source": "Origen",
+    "reason": "Motivo",
+    "amount": "Importe",
+    "remaining": "Restante",
+    "refund": "Reembolsar",
+    "refundedOn": "Reembolsado el {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Pago en exceso",
+      "CREDIT_NOTE": "Nota de crédito"
+    },
+    "createDialog": {
+      "title": "Añadir nota de crédito",
+      "message": "Dinero que debe a este contacto. Puede aplicarse a un pago posterior o reembolsarse.",
+      "reasonPlaceholder": "p. ej. Compensación por avería de la caldera en marzo",
+      "confirm": "Añadir crédito"
+    },
+    "refundDialog": {
+      "title": "Reembolsar crédito",
+      "message": "Registra que el restante {{amount}} se devolvió al contacto.",
+      "date": "Fecha de reembolso",
+      "notes": "Notas (opcional)",
+      "confirm": "Marcar como reembolsado"
+    }
   }
 }

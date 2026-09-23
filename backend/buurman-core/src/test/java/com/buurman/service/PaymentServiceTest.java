@@ -39,6 +39,7 @@ import com.buurman.mapper.PaymentMapper;
 import com.buurman.mapper.PaymentReceivalMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.AuditLogRepository;
+import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
@@ -62,6 +63,7 @@ class PaymentServiceTest {
 
   @Mock private PaymentRepository paymentRepository;
   @Mock private PaymentReceivalRepository receivalRepository;
+  @Mock private ContactCreditRepository creditRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContactRepository contactRepository;
@@ -100,6 +102,7 @@ class PaymentServiceTest {
         new PaymentService(
             paymentRepository,
             receivalRepository,
+            creditRepository,
             contractRepository,
             propertyRepository,
             contactRepository,
@@ -420,6 +423,11 @@ class PaymentServiceTest {
                     Optional.empty(),
                     List.of(),
                     p.getCreatedAt(),
+                    Optional.empty(),
+                    p.getPaymentType(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
                     Optional.empty());
               });
       when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
@@ -442,6 +450,152 @@ class PaymentServiceTest {
           .hasValueSatisfying(r -> assertThat(r.status()).isEqualTo(PaymentStatus.PAID));
       assertThat(results.get(1).identifier()).isEqualTo(paidId.value());
       assertThat(results.get(1).error()).hasValueSatisfying(e -> assertThat(e).contains("already"));
+    }
+  }
+
+  @Nested
+  @DisplayName("adjustments")
+  class Adjustments {
+
+    private final PaymentIdentifier id = PaymentIdentifier.of("pay_01JTEST0000000000000000AD");
+
+    private void stubEnrich() {
+      when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+      when(paymentMapper.toResponse(any(Payment.class)))
+          .thenAnswer(
+              inv -> {
+                Payment p = inv.getArgument(0);
+                return new com.buurman.dto.response.PaymentResponse(
+                    p.getIdentifier().orElseThrow(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    p.getAmount().value(),
+                    p.getAmount().currency(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    p.getPaymentDate(),
+                    p.getDueDate(),
+                    p.getStatus(),
+                    p.getNotes(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    List.of(),
+                    p.getCreatedAt(),
+                    Optional.empty(),
+                    p.getPaymentType(),
+                    Optional.empty(),
+                    p.getCancelReason(),
+                    p.getWaivedAt(),
+                    p.getWaiveReason());
+              });
+      when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
+      org.mockito.Mockito.lenient()
+          .when(receivalRepository.findByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID))
+          .thenReturn(List.of());
+    }
+
+    @Test
+    @DisplayName("cancel records the reason and refuses paid or partially received payments")
+    void cancel() {
+      Payment pending =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PENDING);
+      pending.setIdentifier(Optional.of(id));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(pending);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      stubEnrich();
+
+      var response =
+          service.cancelPayment(
+              id, new com.buurman.dto.request.CancelPaymentRequest("Tenant moved out"), principal);
+      assertThat(response.status()).isEqualTo(PaymentStatus.CANCELLED);
+      assertThat(response.cancelReason()).contains("Tenant moved out");
+
+      Payment partial =
+          buildPayment(
+              new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PARTIALLY_PAID);
+      partial.setIdentifier(Optional.of(id));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(partial);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(new BigDecimal("100.00"));
+      org.assertj.core.api.Assertions.assertThatThrownBy(
+              () ->
+                  service.cancelPayment(
+                      id, new com.buurman.dto.request.CancelPaymentRequest("x"), principal))
+          .isInstanceOf(com.buurman.exception.BusinessRuleException.class)
+          .hasMessageContaining("write off");
+    }
+
+    @Test
+    @DisplayName("write-off settles the balance with a WRITE_OFF receival")
+    void writeOff() {
+      Payment overdue =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 1, 1), PaymentStatus.OVERDUE);
+      overdue.setIdentifier(Optional.of(id));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(overdue);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(new BigDecimal("400.00"))
+          .thenReturn(new BigDecimal("1000.00"));
+      stubEnrich();
+
+      var response =
+          service.writeOffPayment(
+              id,
+              new com.buurman.dto.request.WriteOffPaymentRequest(
+                  "Bad debt", Optional.of(LocalDate.of(2026, 2, 28))),
+              principal);
+
+      org.mockito.ArgumentCaptor<com.buurman.domain.PaymentReceival> captor =
+          org.mockito.ArgumentCaptor.forClass(com.buurman.domain.PaymentReceival.class);
+      verify(receivalRepository).save(captor.capture());
+      assertThat(captor.getValue().getReceivalType())
+          .isEqualTo(com.buurman.domain.PaymentReceival.ReceivalType.WRITE_OFF);
+      assertThat(captor.getValue().getAmount().value()).isEqualByComparingTo("600.00");
+      assertThat(captor.getValue().getReceivalDate()).isEqualTo(LocalDate.of(2026, 2, 28));
+      assertThat(response.status()).isEqualTo(PaymentStatus.PAID);
+    }
+
+    @Test
+    @DisplayName("an overpayment settles the balance and books the excess as a tenant credit")
+    void overpaymentBecomesCredit() {
+      UUID contactId = UUID.randomUUID();
+      Payment pending =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PENDING);
+      pending.setIdentifier(Optional.of(id));
+      pending.setContactId(Optional.of(contactId));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(pending);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO)
+          .thenReturn(BigDecimal.ZERO)
+          .thenReturn(new BigDecimal("1000.00"))
+          .thenReturn(new BigDecimal("1000.00"));
+      when(creditRepository.save(any(com.buurman.domain.ContactCredit.class)))
+          .thenAnswer(inv -> inv.getArgument(0));
+      org.mockito.Mockito.lenient()
+          .when(appProperties.email())
+          .thenReturn(new AppProperties.Email("no-reply@test", "Buurman", "https://app.test"));
+      stubEnrich();
+
+      service.registerReceival(
+          id,
+          new com.buurman.dto.request.CreatePaymentReceivalRequest(
+              new BigDecimal("1250.00"), LocalDate.of(2026, 2, 3), Optional.empty()),
+          principal);
+
+      org.mockito.ArgumentCaptor<com.buurman.domain.PaymentReceival> rc =
+          org.mockito.ArgumentCaptor.forClass(com.buurman.domain.PaymentReceival.class);
+      verify(receivalRepository).save(rc.capture());
+      assertThat(rc.getValue().getAmount().value()).isEqualByComparingTo("1000.00");
+      org.mockito.ArgumentCaptor<com.buurman.domain.ContactCredit> cc =
+          org.mockito.ArgumentCaptor.forClass(com.buurman.domain.ContactCredit.class);
+      verify(creditRepository).save(cc.capture());
+      assertThat(cc.getValue().getAmount().value()).isEqualByComparingTo("250.00");
+      assertThat(cc.getValue().getRemainingAmount()).isEqualByComparingTo("250.00");
+      assertThat(cc.getValue().getContactId()).isEqualTo(contactId);
+      assertThat(cc.getValue().getSource())
+          .isEqualTo(com.buurman.domain.ContactCredit.CreditSource.OVERPAYMENT);
+      assertThat(cc.getValue().getSourcePaymentId()).contains(PAYMENT_ID);
     }
   }
 }

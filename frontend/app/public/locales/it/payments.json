@@ -8,7 +8,11 @@
     "registerPayment": "Registra pagamento",
     "registerReceival": "Registra incasso",
     "markAsPaid": "Segna come pagato",
-    "sendReminder": "Invia promemoria"
+    "sendReminder": "Invia promemoria",
+    "applyCredit": "Usa credito",
+    "waiveLateFee": "Condona penale",
+    "writeOff": "Stralcia",
+    "cancelPayment": "Annulla pagamento"
   },
   "stats": {
     "pendingPayments": "Pagamenti in attesa",
@@ -148,7 +152,12 @@
     "receivalDate": "Data dell'incasso",
     "notesOptional": "Note (facoltativo)",
     "notesPlaceholder": "Aggiunga note su questo incasso...",
-    "register": "Registra"
+    "register": "Registra",
+    "types": {
+      "WRITE_OFF": "Stralcio",
+      "CREDIT": "Credito usato",
+      "PAYMENT": "Pagamento"
+    }
   },
   "history": {
     "title": "Cronologia del pagamento",
@@ -208,7 +217,8 @@
     "select": "Seleziona",
     "done": "Fatto",
     "markPaid": "Segna pagato",
-    "sendReminders": "Invia promemoria"
+    "sendReminders": "Invia promemoria",
+    "cancel": "Annulla pagamenti"
   },
   "arrears": {
     "title": "Arretrati",
@@ -263,6 +273,54 @@
   "toasts": {
     "reminderSent": "Promemoria inviato a {{email}}",
     "bulkMarkPaid": "{{success}} segnati come pagati, {{failed}} ignorati",
-    "bulkReminders": "{{success}} promemoria inviati, {{failed}} ignorati"
+    "bulkReminders": "{{success}} promemoria inviati, {{failed}} ignorati",
+    "cancelled": "Pagamento annullato",
+    "bulkCancelled": "{{success}} annullati, {{failed}} ignorati",
+    "lateFeeWaived": "Penale condonata",
+    "writtenOff": "Saldo stralciato",
+    "creditApplied": "Credito usato"
+  },
+  "types": {
+    "LATE_FEE": "Penale di mora",
+    "RENT": "Affitto"
+  },
+  "cancelDialog": {
+    "title": "Annulla pagamento",
+    "titleBulk": "Annulla {{count}} pagamenti",
+    "message": "Il pagamento viene segnato come annullato e non conta più come in sospeso. I pagamenti con incassi registrati non possono essere annullati: stralcia il saldo.",
+    "messageBulk": "Ogni pagamento aperto selezionato viene annullato con questo motivo. I pagamenti saldati o con incassi vengono ignorati.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "es. Inquilino uscito il 15",
+    "confirm": "Annulla pagamento",
+    "confirmBulk": "Annulla {{count}} pagamenti"
+  },
+  "waiveDialog": {
+    "title": "Condona penale di mora",
+    "message": "La penale di {{amount}} viene annullata e non addebitata.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "es. Primo ritardo, cortesia",
+    "confirm": "Condona penale"
+  },
+  "writeOffDialog": {
+    "title": "Stralcia saldo",
+    "message": "Il residuo di {{amount}} viene chiuso senza incasso. Registrato come stralcio, non può essere annullato.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "es. Credito inesigibile dopo l’uscita dell’inquilino",
+    "date": "Data di stralcio",
+    "confirm": "Stralcia"
+  },
+  "applyCreditDialog": {
+    "title": "Usa credito dell’inquilino",
+    "message": "Saldo aperto: {{balance}}. Scegli quale credito usare e quanto.",
+    "credit": "Credito",
+    "amount": "Importo (max {{max}})",
+    "confirm": "Usa {{amount}}",
+    "none": "Questo inquilino non ha crediti aperti in questa valuta."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Pagamento in eccesso",
+      "CREDIT_NOTE": "Nota di credito"
+    }
   }
 }

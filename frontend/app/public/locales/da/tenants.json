@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Tidligere lejer",
       "REFERRED": "Henvist"
     }
+  },
+  "credits": {
+    "title": "Tilgodehavender",
+    "add": "Tilføj kreditnota",
+    "empty": "Ingen tilgodehavender — overbetalinger og kreditnotaer vises her",
+    "openTotal": "Åbent tilgodehavende: {{amount}}",
+    "date": "Dato",
+    "source": "Kilde",
+    "reason": "Begrundelse",
+    "amount": "Beløb",
+    "remaining": "Resterende",
+    "refund": "Refundér",
+    "refundedOn": "Refunderet {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Overbetaling",
+      "CREDIT_NOTE": "Kreditnota"
+    },
+    "createDialog": {
+      "title": "Tilføj kreditnota",
+      "message": "Penge, du skylder denne kontakt. Kan bruges på en senere betaling eller refunderes.",
+      "reasonPlaceholder": "f.eks. Kompensation for fyrnedbrud i marts",
+      "confirm": "Tilføj"
+    },
+    "refundDialog": {
+      "title": "Refundér tilgodehavende",
+      "message": "Registrerer, at de resterende {{amount}} er betalt tilbage til kontakten.",
+      "date": "Refusionsdato",
+      "notes": "Noter (valgfrit)",
+      "confirm": "Markér som refunderet"
+    }
   }
 }

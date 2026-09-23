@@ -762,6 +762,13 @@ export const ContractOverviewTab = ({
                 </p>
                 <p className="font-medium text-text-primary">
                   {contract.lateFeePercentage}%
+                  <span className="ml-2 text-sm font-normal text-text-secondary">
+                    {contract.lateFeeEnabled
+                      ? t('overview.lateFeeActive', {
+                          count: contract.lateFeeGraceDays ?? 0,
+                        })
+                      : t('overview.lateFeeInactive')}
+                  </span>
                 </p>
               </div>
             )}

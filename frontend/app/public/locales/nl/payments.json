@@ -8,7 +8,11 @@
     "registerPayment": "Betaling registreren",
     "registerReceival": "Ontvangst registreren",
     "markAsPaid": "Markeer als betaald",
-    "sendReminder": "Herinnering sturen"
+    "sendReminder": "Herinnering sturen",
+    "applyCredit": "Tegoed toepassen",
+    "waiveLateFee": "Boete kwijtschelden",
+    "writeOff": "Afboeken",
+    "cancelPayment": "Betaling annuleren"
   },
   "stats": {
     "pendingPayments": "Openstaande betalingen",
@@ -148,7 +152,12 @@
     "receivalDate": "Ontvangstdatum",
     "notesOptional": "Notities (optioneel)",
     "notesPlaceholder": "Opmerkingen over deze ontvangst toevoegen...",
-    "register": "Registreren"
+    "register": "Registreren",
+    "types": {
+      "WRITE_OFF": "Afboeking",
+      "CREDIT": "Tegoed toegepast",
+      "PAYMENT": "Betaling"
+    }
   },
   "history": {
     "title": "Betalingsgeschiedenis",
@@ -207,7 +216,8 @@
     "select": "Selecteren",
     "done": "Klaar",
     "markPaid": "Markeer betaald",
-    "sendReminders": "Herinneringen sturen"
+    "sendReminders": "Herinneringen sturen",
+    "cancel": "Betalingen annuleren"
   },
   "arrears": {
     "title": "Achterstanden",
@@ -262,6 +272,54 @@
   "toasts": {
     "reminderSent": "Herinnering verstuurd naar {{email}}",
     "bulkMarkPaid": "{{success}} als betaald gemarkeerd, {{failed}} overgeslagen",
-    "bulkReminders": "{{success}} herinneringen verstuurd, {{failed}} overgeslagen"
+    "bulkReminders": "{{success}} herinneringen verstuurd, {{failed}} overgeslagen",
+    "cancelled": "Betaling geannuleerd",
+    "bulkCancelled": "{{success}} geannuleerd, {{failed}} overgeslagen",
+    "lateFeeWaived": "Boete kwijtgescholden",
+    "writtenOff": "Saldo afgeboekt",
+    "creditApplied": "Tegoed toegepast"
+  },
+  "types": {
+    "LATE_FEE": "Boete",
+    "RENT": "Huur"
+  },
+  "cancelDialog": {
+    "title": "Betaling annuleren",
+    "titleBulk": "{{count}} betalingen annuleren",
+    "message": "De betaling wordt als geannuleerd gemarkeerd en telt niet meer als openstaand. Betalingen met geregistreerde ontvangsten kunnen niet worden geannuleerd — boek dan het saldo af.",
+    "messageBulk": "Elke geselecteerde openstaande betaling wordt met deze reden geannuleerd. Betaalde betalingen en betalingen met ontvangsten worden overgeslagen.",
+    "reason": "Reden",
+    "reasonPlaceholder": "bijv. Huurder is op de 15e vertrokken",
+    "confirm": "Betaling annuleren",
+    "confirmBulk": "{{count}} betalingen annuleren"
+  },
+  "waiveDialog": {
+    "title": "Boete kwijtschelden",
+    "message": "De boete van {{amount}} wordt geannuleerd en niet in rekening gebracht.",
+    "reason": "Reden",
+    "reasonPlaceholder": "bijv. Eerste te late betaling, coulance",
+    "confirm": "Kwijtschelden"
+  },
+  "writeOffDialog": {
+    "title": "Saldo afboeken",
+    "message": "Het resterende {{amount}} wordt gesloten zonder ontvangst. Dit wordt als afboeking vastgelegd en kan niet ongedaan worden gemaakt.",
+    "reason": "Reden",
+    "reasonPlaceholder": "bijv. Oninbaar na vertrek huurder",
+    "date": "Afboekdatum",
+    "confirm": "Afboeken"
+  },
+  "applyCreditDialog": {
+    "title": "Huurderstegoed toepassen",
+    "message": "Openstaand saldo: {{balance}}. Kies welk tegoed u gebruikt en hoeveel ervan.",
+    "credit": "Tegoed",
+    "amount": "Bedrag (max {{max}})",
+    "confirm": "{{amount}} toepassen",
+    "none": "Deze huurder heeft geen open tegoed in deze valuta."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Te veel betaald",
+      "CREDIT_NOTE": "Creditnota"
+    }
   }
 }

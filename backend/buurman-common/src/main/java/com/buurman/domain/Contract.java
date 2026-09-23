@@ -67,6 +67,11 @@ public class Contract {
   @Builder.Default private Optional<Integer> paymentDueDay = Optional.empty();
   @Builder.Default private Integer terminationNoticeDays = 30;
   @Builder.Default private Optional<BigDecimal> lateFeePercentage = Optional.empty();
+
+  /** Charge {@code lateFeePercentage} once a rent payment is overdue past the grace period. */
+  @Builder.Default private Boolean lateFeeEnabled = false;
+
+  @Builder.Default private Integer lateFeeGraceDays = 0;
   private ContractStatus status;
   @Builder.Default private Optional<String> termsAndConditions = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();

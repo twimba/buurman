@@ -8755,6 +8755,331 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /payments/{identifier}/cancel:
+    post:
+      tags:
+        - Payments
+      summary: Cancel a payment
+      description: >-
+        Cancels an open payment with a reason (Admin/Editor). Payments with registered receivals cannot be cancelled; write off the balance instead.
+      operationId: cancelPayment
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelPaymentRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/waive-late-fee:
+    post:
+      tags:
+        - Payments
+      summary: Waive a late fee
+      description: >-
+        Cancels a charged LATE_FEE payment with a reason (Admin/Editor). Paid fees cannot be waived.
+      operationId: waiveLateFee
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaiveLateFeeRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/write-off:
+    post:
+      tags:
+        - Payments
+      summary: Write off the open balance
+      description: >-
+        Closes the remaining balance without money received, recorded as a WRITE_OFF receival (Admin/Editor).
+      operationId: writeOffPayment
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WriteOffPaymentRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/apply-credit:
+    post:
+      tags:
+        - Payments
+      summary: Apply a tenant credit
+      description: >-
+        Settles (part of) the open balance from a credit the tenant holds, recorded as a CREDIT receival (Admin/Editor).
+      operationId: applyCreditToPayment
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyCreditRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/bulk-cancel:
+    post:
+      tags:
+        - Payments
+      summary: Cancel several payments
+      description: >-
+        Cancels each selected open payment with the same reason (Admin/Editor); outcomes reported per identifier.
+      operationId: bulkCancelPayments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCancelPaymentsRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BulkActionResultPaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /payment-instructions:
     get:
       tags:
@@ -17461,6 +17786,202 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /contacts/{contactIdentifier}/credits:
+    get:
+      tags:
+        - Contacts
+      summary: List credits
+      description: Credits owed to this contact — overpayments and credit notes — with remaining balances
+      operationId: getContactCredits
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactCreditResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Contacts
+      summary: Create a credit note
+      description: Records money the landlord owes this contact, usable on later payments or refundable (Admin/Editor)
+      operationId: createContactCredit
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactCreditRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactCreditResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/credits/{creditIdentifier}/refund:
+    post:
+      tags:
+        - Contacts
+      summary: Refund a credit
+      description: Marks the remaining balance of a credit as paid back to the contact (Admin/Editor)
+      operationId: refundContactCredit
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: creditIdentifier
+          in: path
+          description: Credit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactCreditIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundContactCreditRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactCreditResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contacts/{contactIdentifier}/notes/{noteIdentifier}:
     put:
       tags:
@@ -19921,6 +20442,9 @@ components:
     PaymentInstructionIdentifier:
       type: string
       description: Payment instruction identifier
+    ContactCreditIdentifier:
+      type: string
+      description: Contact credit identifier
     PaymentReceivalIdentifier:
       type: string
       description: Payment receival identifier
@@ -22256,6 +22780,10 @@ components:
         createdAt:
           type: string
           format: date-time
+        receivalType:
+          type: string
+          enum: [PAYMENT, WRITE_OFF, CREDIT]
+          description: How the balance was settled — money received, written off, or an applied credit
       required:
         - amount
         - createdAt
@@ -22309,6 +22837,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PaymentReceivalResponse"
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
+        parentPaymentIdentifier:
+          type: string
+          description: For LATE_FEE payments, the rent payment the fee was charged on
+        cancelReason:
+          type: string
+        waivedAt:
+          type: string
+          format: date-time
+        waiveReason:
+          type: string
         createdAt:
           type: string
           format: date-time
@@ -22630,6 +23170,13 @@ components:
           type: string
           format: date
           description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -23035,6 +23582,13 @@ components:
           type: string
           format: date
           description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -25079,6 +25633,13 @@ components:
           type: string
           format: date
           description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -26609,6 +27170,125 @@ components:
         - overdueCount
         - pendingAmount
         - pendingCount
+    PaymentType:
+      type: string
+      description: RENT for regular rent, LATE_FEE for a fee charged on an overdue rent payment
+      enum: [RENT, LATE_FEE]
+    CancelPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - reason
+    BulkCancelPaymentsRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - identifiers
+        - reason
+    WaiveLateFeeRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - reason
+    WriteOffPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        writeOffDate:
+          type: string
+          format: date
+      required:
+        - reason
+    ApplyCreditRequest:
+      type: object
+      properties:
+        creditIdentifier:
+          $ref: '#/components/schemas/ContactCreditIdentifier'
+        amount:
+          type: number
+          description: Defaults to the smaller of the open balance and the remaining credit
+      required:
+        - creditIdentifier
+    CreateContactCreditRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+          maxLength: 1000
+        contractIdentifier:
+          $ref: '#/components/schemas/ContractIdentifier'
+      required:
+        - amount
+        - reason
+    RefundContactCreditRequest:
+      type: object
+      properties:
+        refundDate:
+          type: string
+          format: date
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - refundDate
+    ContactCreditResponse:
+      type: object
+      description: Money owed to a contact from an overpayment or a credit note
+      properties:
+        identifier:
+          type: string
+        contactIdentifier:
+          type: string
+        contractIdentifier:
+          type: string
+        amount:
+          type: number
+        remainingAmount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+          enum: [OVERPAYMENT, CREDIT_NOTE]
+        reason:
+          type: string
+        sourcePaymentIdentifier:
+          type: string
+        refundedAt:
+          type: string
+          format: date-time
+        refundNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - contactIdentifier
+        - amount
+        - remainingAmount
+        - currency
+        - source
+        - createdAt
     ReminderTone:
       type: string
       description: How strongly a tenant reminder is worded

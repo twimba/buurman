@@ -24,4 +24,16 @@ export type {
   BulkSendPaymentRemindersRequest,
   BulkActionResultPaymentResponse,
   BulkActionResultPaymentReminderResponse,
+  CancelPaymentRequest,
+  BulkCancelPaymentsRequest,
+  WaiveLateFeeRequest,
+  WriteOffPaymentRequest,
+  ApplyCreditRequest,
+  ContactCreditResponse,
+  CreateContactCreditRequest,
+  RefundContactCreditRequest,
+} from '../generated/models';
+export {
+  PaymentType,
+  PaymentReceivalResponseReceivalType as ReceivalType,
 } from '../generated/models';

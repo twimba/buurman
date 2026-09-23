@@ -8,7 +8,11 @@
     "registerPayment": "Registrer betaling",
     "registerReceival": "Registrer mottak",
     "markAsPaid": "Merk som betalt",
-    "sendReminder": "Send påminnelse"
+    "sendReminder": "Send påminnelse",
+    "applyCredit": "Bruk tilgodehavende",
+    "waiveLateFee": "Frafall gebyr",
+    "writeOff": "Avskriv",
+    "cancelPayment": "Kanseller betaling"
   },
   "stats": {
     "pendingPayments": "Ventende betalinger",
@@ -148,7 +152,12 @@
     "receivalDate": "Mottaksdato",
     "notesOptional": "Notater (valgfritt)",
     "notesPlaceholder": "Legg til notater om dette mottaket...",
-    "register": "Registrer"
+    "register": "Registrer",
+    "types": {
+      "WRITE_OFF": "Avskrivning",
+      "CREDIT": "Tilgodehavende brukt",
+      "PAYMENT": "Betaling"
+    }
   },
   "history": {
     "title": "Betalingshistorikk",
@@ -207,7 +216,8 @@
     "select": "Velg",
     "done": "Ferdig",
     "markPaid": "Merk betalt",
-    "sendReminders": "Send påminnelser"
+    "sendReminders": "Send påminnelser",
+    "cancel": "Kanseller betalinger"
   },
   "arrears": {
     "title": "Restanser",
@@ -262,6 +272,54 @@
   "toasts": {
     "reminderSent": "Påminnelse sendt til {{email}}",
     "bulkMarkPaid": "{{success}} merket som betalt, {{failed}} hoppet over",
-    "bulkReminders": "{{success}} påminnelser sendt, {{failed}} hoppet over"
+    "bulkReminders": "{{success}} påminnelser sendt, {{failed}} hoppet over",
+    "cancelled": "Betaling kansellert",
+    "bulkCancelled": "{{success}} kansellert, {{failed}} hoppet over",
+    "lateFeeWaived": "Purregebyr frafalt",
+    "writtenOff": "Saldo avskrevet",
+    "creditApplied": "Tilgodehavende brukt"
+  },
+  "types": {
+    "LATE_FEE": "Purregebyr",
+    "RENT": "Husleie"
+  },
+  "cancelDialog": {
+    "title": "Kanseller betaling",
+    "titleBulk": "Kanseller {{count}} betalinger",
+    "message": "Betalingen merkes som kansellert og teller ikke lenger som utestående. Betalinger med registrerte innbetalinger kan ikke kanselleres — avskriv saldoen i stedet.",
+    "messageBulk": "Hver valgt åpen betaling kanselleres med denne begrunnelsen. Betalte betalinger og betalinger med innbetalinger hoppes over.",
+    "reason": "Begrunnelse",
+    "reasonPlaceholder": "f.eks. Leietaker flyttet ut den 15.",
+    "confirm": "Kanseller betaling",
+    "confirmBulk": "Kanseller {{count}} betalinger"
+  },
+  "waiveDialog": {
+    "title": "Frafall purregebyr",
+    "message": "Gebyret på {{amount}} kanselleres og belastes ikke.",
+    "reason": "Begrunnelse",
+    "reasonPlaceholder": "f.eks. Første forsinkelse, kulanse",
+    "confirm": "Frafall gebyr"
+  },
+  "writeOffDialog": {
+    "title": "Avskriv saldo",
+    "message": "Gjenstående {{amount}} lukkes uten innbetaling. Dette registreres som avskrivning og kan ikke angres.",
+    "reason": "Begrunnelse",
+    "reasonPlaceholder": "f.eks. Uerholdelig fordring etter utflytting",
+    "date": "Avskrivningsdato",
+    "confirm": "Avskriv"
+  },
+  "applyCreditDialog": {
+    "title": "Bruk leietakerens tilgodehavende",
+    "message": "Åpen saldo: {{balance}}. Velg tilgodehavende og beløp.",
+    "credit": "Tilgodehavende",
+    "amount": "Beløp (maks {{max}})",
+    "confirm": "Bruk {{amount}}",
+    "none": "Leietakeren har ingen åpne tilgodehavender i denne valutaen."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Overbetaling",
+      "CREDIT_NOTE": "Kreditnota"
+    }
   }
 }

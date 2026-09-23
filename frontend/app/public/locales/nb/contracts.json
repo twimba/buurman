@@ -197,7 +197,9 @@
     "tenantReminders": "Leietakerpåminnelser",
     "remindersOn": "Aktivert",
     "remindersOff": "Av",
-    "remindersPausedUntil": "På pause til {{date}}"
+    "remindersPausedUntil": "På pause til {{date}}",
+    "lateFeeActive": "belastes etter {{count}} dager",
+    "lateFeeInactive": "belastes ikke"
   },
   "payments": {
     "title": "Betalinger",
@@ -394,7 +396,10 @@
     "tenantReminders": "Betalingspåminnelser til leietaker",
     "tenantRemindersHelp": "Tillat påminnelses-e-poster for denne kontrakten. Leietakerkontakten må også ha samtykket; ellers sendes ingenting.",
     "remindersPausedUntil": "Sett påminnelser på pause til",
-    "remindersPausedUntilHelp": "Ingen påminnelser sendes før denne datoen, f.eks. under en nedbetalingsavtale."
+    "remindersPausedUntilHelp": "Ingen påminnelser sendes før denne datoen, f.eks. under en nedbetalingsavtale.",
+    "lateFeeEnabled": "Belast purregebyr",
+    "lateFeeEnabledHelp": "Legger til en egen gebyrbetaling når en husleie fortsatt er åpen etter henstandsperioden. Av som standard.",
+    "lateFeeGraceDays": "Henstandsperiode (dager)"
   },
   "statusChange": {
     "title": "Endre kontraktstatus",

@@ -197,7 +197,9 @@
     "tenantReminders": "Lejerpåmindelser",
     "remindersOn": "Aktiveret",
     "remindersOff": "Fra",
-    "remindersPausedUntil": "På pause indtil {{date}}"
+    "remindersPausedUntil": "På pause indtil {{date}}",
+    "lateFeeActive": "opkræves efter {{count}} dage",
+    "lateFeeInactive": "opkræves ikke"
   },
   "payments": {
     "title": "Betalinger",
@@ -394,7 +396,10 @@
     "tenantReminders": "Betalingspåmindelser til lejer",
     "tenantRemindersHelp": "Tillad påmindelsesmails for denne kontrakt. Lejerkontakten skal også have givet samtykke; ellers sendes intet.",
     "remindersPausedUntil": "Sæt påmindelser på pause indtil",
-    "remindersPausedUntilHelp": "Der sendes ingen påmindelser før denne dato, f.eks. under en afdragsordning."
+    "remindersPausedUntilHelp": "Der sendes ingen påmindelser før denne dato, f.eks. under en afdragsordning.",
+    "lateFeeEnabled": "Opkræv rykkergebyr",
+    "lateFeeEnabledHelp": "Tilføjer en separat gebyrbetaling, når en husleje stadig er åben efter henstandsperioden. Slået fra som standard.",
+    "lateFeeGraceDays": "Henstandsperiode (dage)"
   },
   "statusChange": {
     "title": "Skift kontraktstatus",

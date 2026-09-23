@@ -197,7 +197,9 @@
     "tenantReminders": "Tenant reminders",
     "remindersOn": "Enabled",
     "remindersOff": "Off",
-    "remindersPausedUntil": "Paused until {{date}}"
+    "remindersPausedUntil": "Paused until {{date}}",
+    "lateFeeActive": "charged after {{count}} days",
+    "lateFeeInactive": "not charged"
   },
   "payments": {
     "title": "Payments",
@@ -394,7 +396,10 @@
     "tenantReminders": "Tenant payment reminders",
     "tenantRemindersHelp": "Allow reminder emails for this contract. The tenant contact must also have opted in; nothing is sent otherwise.",
     "remindersPausedUntil": "Pause reminders until",
-    "remindersPausedUntilHelp": "No reminders are sent until this date, e.g. while a payment plan is agreed."
+    "remindersPausedUntilHelp": "No reminders are sent until this date, e.g. while a payment plan is agreed.",
+    "lateFeeEnabled": "Charge late fees",
+    "lateFeeEnabledHelp": "Adds a separate late-fee payment once a rent payment is still open after the grace period. Off by default.",
+    "lateFeeGraceDays": "Grace period (days)"
   },
   "statusChange": {
     "title": "Change Contract Status",

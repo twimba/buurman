@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Entinen vuokralainen",
       "REFERRED": "Suositeltu"
     }
+  },
+  "credits": {
+    "title": "Hyvitykset",
+    "add": "Lisää hyvityslasku",
+    "empty": "Ei hyvityksiä – liikamaksut ja hyvityslaskut näkyvät tässä",
+    "openTotal": "Avoin hyvitys: {{amount}}",
+    "date": "Päivä",
+    "source": "Lähde",
+    "reason": "Syy",
+    "amount": "Summa",
+    "remaining": "Jäljellä",
+    "refund": "Palauta",
+    "refundedOn": "Palautettu {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Liikamaksu",
+      "CREDIT_NOTE": "Hyvityslasku"
+    },
+    "createDialog": {
+      "title": "Lisää hyvityslasku",
+      "message": "Raha, jonka olet velkaa tälle yhteystiedolle. Voidaan käyttää myöhempään maksuun tai palauttaa.",
+      "reasonPlaceholder": "esim. Korvaus lämmityskatkosta maaliskuussa",
+      "confirm": "Lisää hyvitys"
+    },
+    "refundDialog": {
+      "title": "Palauta hyvitys",
+      "message": "Kirjaa, että jäljellä oleva {{amount}} on maksettu takaisin.",
+      "date": "Palautuspäivä",
+      "notes": "Muistiinpanot (valinnainen)",
+      "confirm": "Merkitse palautetuksi"
+    }
   }
 }

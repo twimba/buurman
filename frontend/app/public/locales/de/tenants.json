@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Ehemaliger Mieter",
       "REFERRED": "Empfohlen"
     }
+  },
+  "credits": {
+    "title": "Guthaben",
+    "add": "Gutschrift hinzufügen",
+    "empty": "Keine Guthaben — Überzahlungen und Gutschriften erscheinen hier",
+    "openTotal": "Offenes Guthaben: {{amount}}",
+    "date": "Datum",
+    "source": "Quelle",
+    "reason": "Grund",
+    "amount": "Betrag",
+    "remaining": "Verbleibend",
+    "refund": "Erstatten",
+    "refundedOn": "Erstattet am {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Überzahlung",
+      "CREDIT_NOTE": "Gutschrift"
+    },
+    "createDialog": {
+      "title": "Gutschrift hinzufügen",
+      "message": "Geld, das Sie diesem Kontakt schulden. Es kann mit einer späteren Zahlung verrechnet oder erstattet werden.",
+      "reasonPlaceholder": "z. B. Entschädigung für Heizungsausfall im März",
+      "confirm": "Guthaben hinzufügen"
+    },
+    "refundDialog": {
+      "title": "Guthaben erstatten",
+      "message": "Hält fest, dass die verbleibenden {{amount}} an den Kontakt zurückgezahlt wurden.",
+      "date": "Erstattungsdatum",
+      "notes": "Notizen (optional)",
+      "confirm": "Als erstattet markieren"
+    }
   }
 }

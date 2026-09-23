@@ -28,6 +28,11 @@ import {
   sendPaymentReminder,
   bulkMarkPaymentsAsPaid,
   bulkSendPaymentReminders,
+  cancelPayment,
+  bulkCancelPayments,
+  waiveLateFee,
+  writeOffPayment,
+  applyCreditToPayment,
 } from '../generated/api/payments/payments';
 import type {
   GetPaymentsParams,
@@ -43,6 +48,11 @@ import {
   SendPaymentReminderRequest,
   BulkMarkPaidRequest,
   BulkSendPaymentRemindersRequest,
+  CancelPaymentRequest,
+  BulkCancelPaymentsRequest,
+  WaiveLateFeeRequest,
+  WriteOffPaymentRequest,
+  ApplyCreditRequest,
 } from '../types/payment';
 import { useTranslation } from 'react-i18next';
 import type { PageParams } from '@/types/common';
@@ -563,6 +573,106 @@ export const useBulkSendPaymentReminders = () => {
       showToast(message, failed > 0 && success === 0 ? 'error' : 'success');
       announce(message);
       trackEvent(AnalyticsEvent.PAYMENTS_BULK_REMINDERS_SENT);
+    },
+    onError: (error) => {
+      const message = getErrorMessage(error);
+      showToast(message, 'error');
+      announce(message, { assertive: true });
+    },
+  });
+};
+
+// --- Cancellations, late fees, write-offs, credits (BUUR-101) ---
+
+const usePaymentActionMutation = <TVars extends { id: string }>(
+  fn: (vars: TVars) => Promise<import('../types/payment').PaymentResponse>,
+  successKey: string,
+  event: (typeof AnalyticsEvent)[keyof typeof AnalyticsEvent]
+) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const announce = useAnnounce();
+  const { t } = useTranslation('payments');
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: (updated, { id }) => {
+      invalidatePaymentViews(queryClient);
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.detail(id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.auditLog(id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.receivals(id) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.detail(updated.contract?.identifier),
+      });
+      if (updated.contact?.identifier) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.contacts.credits(updated.contact.identifier),
+        });
+      }
+      const message = t(successKey);
+      showToast(message, 'success');
+      announce(message);
+      trackEvent(event);
+    },
+    onError: (error) => {
+      const message = getErrorMessage(error);
+      showToast(message, 'error');
+      announce(message, { assertive: true });
+    },
+  });
+};
+
+export const useCancelPayment = () =>
+  usePaymentActionMutation(
+    ({ id, data }: { id: string; data: CancelPaymentRequest }) =>
+      cancelPayment(id, data),
+    'toasts.cancelled',
+    AnalyticsEvent.PAYMENT_CANCELLED
+  );
+
+export const useWaiveLateFee = () =>
+  usePaymentActionMutation(
+    ({ id, data }: { id: string; data: WaiveLateFeeRequest }) =>
+      waiveLateFee(id, data),
+    'toasts.lateFeeWaived',
+    AnalyticsEvent.LATE_FEE_WAIVED
+  );
+
+export const useWriteOffPayment = () =>
+  usePaymentActionMutation(
+    ({ id, data }: { id: string; data: WriteOffPaymentRequest }) =>
+      writeOffPayment(id, data),
+    'toasts.writtenOff',
+    AnalyticsEvent.PAYMENT_WRITTEN_OFF
+  );
+
+export const useApplyCredit = () =>
+  usePaymentActionMutation(
+    ({ id, data }: { id: string; data: ApplyCreditRequest }) =>
+      applyCreditToPayment(id, data),
+    'toasts.creditApplied',
+    AnalyticsEvent.CREDIT_APPLIED
+  );
+
+export const useBulkCancelPayments = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const announce = useAnnounce();
+  const { t } = useTranslation('payments');
+  return useMutation({
+    mutationFn: (data: BulkCancelPaymentsRequest) => bulkCancelPayments(data),
+    onSuccess: (results) => {
+      invalidatePaymentViews(queryClient);
+      results.forEach((r) =>
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.payments.detail(r.identifier),
+        })
+      );
+      const success = results.filter((r) => !r.error).length;
+      const failed = results.length - success;
+      const message = t('toasts.bulkCancelled', { success, failed });
+      showToast(message, failed > 0 && success === 0 ? 'error' : 'success');
+      announce(message);
+      trackEvent(AnalyticsEvent.PAYMENTS_BULK_CANCELLED);
     },
     onError: (error) => {
       const message = getErrorMessage(error);

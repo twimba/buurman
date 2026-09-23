@@ -197,7 +197,9 @@
     "tenantReminders": "Recordatorios al inquilino",
     "remindersOn": "Activados",
     "remindersOff": "Desactivados",
-    "remindersPausedUntil": "En pausa hasta {{date}}"
+    "remindersPausedUntil": "En pausa hasta {{date}}",
+    "lateFeeActive": "se cobra tras {{count}} días",
+    "lateFeeInactive": "no se cobra"
   },
   "payments": {
     "title": "Pagos",
@@ -394,7 +396,10 @@
     "tenantReminders": "Recordatorios de pago al inquilino",
     "tenantRemindersHelp": "Permitir correos de recordatorio para este contrato. El contacto del inquilino también debe haber dado su consentimiento; de lo contrario no se envía nada.",
     "remindersPausedUntil": "Pausar recordatorios hasta",
-    "remindersPausedUntilHelp": "No se envían recordatorios hasta esta fecha, p. ej. durante un plan de pago."
+    "remindersPausedUntilHelp": "No se envían recordatorios hasta esta fecha, p. ej. durante un plan de pago.",
+    "lateFeeEnabled": "Cobrar recargo por demora",
+    "lateFeeEnabledHelp": "Añade un pago de recargo independiente cuando un alquiler sigue abierto tras el periodo de gracia. Desactivado por defecto.",
+    "lateFeeGraceDays": "Periodo de gracia (días)"
   },
   "statusChange": {
     "title": "Cambiar Estado del Contrato",

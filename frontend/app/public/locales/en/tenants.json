@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Former Tenant",
       "REFERRED": "Referred"
     }
+  },
+  "credits": {
+    "title": "Credits",
+    "add": "Add credit note",
+    "empty": "No credits — overpayments and credit notes appear here",
+    "openTotal": "Open credit: {{amount}}",
+    "date": "Date",
+    "source": "Source",
+    "reason": "Reason",
+    "amount": "Amount",
+    "remaining": "Remaining",
+    "refund": "Refund",
+    "refundedOn": "Refunded {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Overpayment",
+      "CREDIT_NOTE": "Credit note"
+    },
+    "createDialog": {
+      "title": "Add credit note",
+      "message": "Money you owe this contact. It can be applied to a later payment or refunded.",
+      "reasonPlaceholder": "e.g. Compensation for boiler outage in March",
+      "confirm": "Add credit"
+    },
+    "refundDialog": {
+      "title": "Refund credit",
+      "message": "Records that the remaining {{amount}} was paid back to the contact.",
+      "date": "Refund date",
+      "notes": "Notes (optional)",
+      "confirm": "Mark as refunded"
+    }
   }
 }

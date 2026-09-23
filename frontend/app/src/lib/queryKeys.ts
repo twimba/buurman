@@ -83,6 +83,7 @@ export const queryKeys = {
     photos: (contactId?: string) => k('contactPhotos', contactId),
     addresses: (contactId?: string) => k('contactAddresses', contactId),
     notes: (contactId?: string) => k('contactNotes', contactId),
+    credits: (contactId?: string) => k('contactCredits', contactId),
     relationships: (contactId?: string) => k('contactRelationships', contactId),
     activity: (contactId?: string, params?: unknown) =>
       k('contactActivity', contactId, params),

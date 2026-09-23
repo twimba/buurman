@@ -197,7 +197,9 @@
     "tenantReminders": "Huurdersherinneringen",
     "remindersOn": "Ingeschakeld",
     "remindersOff": "Uit",
-    "remindersPausedUntil": "Gepauzeerd tot {{date}}"
+    "remindersPausedUntil": "Gepauzeerd tot {{date}}",
+    "lateFeeActive": "na {{count}} dagen in rekening gebracht",
+    "lateFeeInactive": "niet in rekening gebracht"
   },
   "payments": {
     "title": "Betalingen",
@@ -394,7 +396,10 @@
     "tenantReminders": "Betalingsherinneringen aan huurder",
     "tenantRemindersHelp": "Sta herinneringsmails voor dit contract toe. Het huurderscontact moet ook toestemming hebben gegeven; anders wordt niets verstuurd.",
     "remindersPausedUntil": "Herinneringen pauzeren tot",
-    "remindersPausedUntilHelp": "Tot deze datum worden geen herinneringen verstuurd, bijv. tijdens een betalingsregeling."
+    "remindersPausedUntilHelp": "Tot deze datum worden geen herinneringen verstuurd, bijv. tijdens een betalingsregeling.",
+    "lateFeeEnabled": "Boete bij te late betaling",
+    "lateFeeEnabledHelp": "Voegt een aparte boetebetaling toe zodra een huurbetaling na de respijtperiode nog openstaat. Standaard uit.",
+    "lateFeeGraceDays": "Respijtperiode (dagen)"
   },
   "statusChange": {
     "title": "Contractstatus wijzigen",

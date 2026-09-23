@@ -15,10 +15,13 @@ import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.domain.identifier.PaymentReceivalIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.dto.request.ApplyCreditRequest;
+import com.buurman.dto.request.BulkCancelPaymentsRequest;
 import com.buurman.dto.request.BulkCreatePaymentsRequest;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.BulkMarkPaidRequest;
 import com.buurman.dto.request.BulkSendPaymentRemindersRequest;
+import com.buurman.dto.request.CancelPaymentRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.MarkPaidRequest;
@@ -26,6 +29,8 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.SendPaymentReminderRequest;
 import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
+import com.buurman.dto.request.WaiveLateFeeRequest;
+import com.buurman.dto.request.WriteOffPaymentRequest;
 import com.buurman.dto.response.BulkActionResult;
 import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.DocumentResponse;
@@ -39,6 +44,7 @@ import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.PaymentsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.LateFeeService;
 import com.buurman.service.PaymentArrearsService;
 import com.buurman.service.PaymentReminderService;
 import com.buurman.service.PaymentService;
@@ -52,6 +58,44 @@ public class PaymentController implements PaymentsApi {
   private final PaymentService paymentService;
   private final PaymentArrearsService paymentArrearsService;
   private final PaymentReminderService paymentReminderService;
+  private final LateFeeService lateFeeService;
+
+  @Override
+  public PaymentResponse cancelPayment(
+      PaymentIdentifier identifier, CancelPaymentRequest cancelPaymentRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.cancelPayment(identifier, cancelPaymentRequest, principal);
+  }
+
+  @Override
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public List<BulkActionResult> bulkCancelPayments(
+      BulkCancelPaymentsRequest bulkCancelPaymentsRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return (List) paymentService.bulkCancelPayments(bulkCancelPaymentsRequest, principal);
+  }
+
+  @Override
+  public PaymentResponse waiveLateFee(
+      PaymentIdentifier identifier, WaiveLateFeeRequest waiveLateFeeRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    lateFeeService.waiveLateFee(identifier, waiveLateFeeRequest, principal);
+    return paymentService.getPayment(identifier, principal);
+  }
+
+  @Override
+  public PaymentResponse writeOffPayment(
+      PaymentIdentifier identifier, WriteOffPaymentRequest writeOffPaymentRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.writeOffPayment(identifier, writeOffPaymentRequest, principal);
+  }
+
+  @Override
+  public PaymentResponse applyCreditToPayment(
+      PaymentIdentifier identifier, ApplyCreditRequest applyCreditRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.applyCredit(identifier, applyCreditRequest, principal);
+  }
 
   @Override
   public PaymentArrearsResponse getPaymentArrears() {

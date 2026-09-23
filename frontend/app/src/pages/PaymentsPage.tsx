@@ -10,7 +10,10 @@ import {
   usePaymentArrears,
   useBulkMarkPaymentsAsPaid,
   useBulkSendPaymentReminders,
+  useBulkCancelPayments,
 } from '@/hooks/usePaymentHooks';
+import { PaymentTypeBadge } from '@/components/payments/PaymentTypeBadge';
+import { ReasonDialog } from '@/components/payments/ReasonDialog';
 import { usePaymentSelection } from '@/hooks/usePaymentSelection';
 import { ArrearsPanel } from '@/components/payments/ArrearsPanel';
 import { BulkMarkPaidDialog } from '@/components/payments/BulkMarkPaidDialog';
@@ -88,6 +91,8 @@ export const PaymentsPage = () => {
   const markPaidMutation = useMarkPaymentAsPaid();
   const bulkMarkPaidMutation = useBulkMarkPaymentsAsPaid();
   const bulkRemindersMutation = useBulkSendPaymentReminders();
+  const bulkCancelMutation = useBulkCancelPayments();
+  const [showBulkCancel, setShowBulkCancel] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [showBulkMarkPaid, setShowBulkMarkPaid] = useState(false);
@@ -185,6 +190,12 @@ export const PaymentsPage = () => {
     exitSelection();
   };
 
+  const handleBulkCancel = async (reason: string) => {
+    await bulkCancelMutation.mutateAsync({ identifiers: selectedIds, reason });
+    setShowBulkCancel(false);
+    exitSelection();
+  };
+
   const bulkActions: SelectionBarAction[] = [
     {
       label: t('selection.markPaid'),
@@ -197,6 +208,13 @@ export const PaymentsPage = () => {
       icon: Send,
       onClick: () => setReminderTargets(selectedIds),
       disabled: bulkRemindersMutation.isPending,
+    },
+    {
+      label: t('selection.cancel'),
+      icon: X,
+      tone: 'danger',
+      onClick: () => setShowBulkCancel(true),
+      disabled: bulkCancelMutation.isPending,
     },
   ];
 
@@ -611,7 +629,10 @@ export const PaymentsPage = () => {
                         }
                         title={`${payment.property?.street}`}
                         trailing={
-                          <PaymentStatusBadge status={payment.status} />
+                          <span className="inline-flex items-center gap-1">
+                            <PaymentTypeBadge type={payment.paymentType} />
+                            <PaymentStatusBadge status={payment.status} />
+                          </span>
                         }
                         items={[
                           {
@@ -671,6 +692,14 @@ export const PaymentsPage = () => {
                     >
                       <Send className="h-4 w-4" />
                       {t('selection.sendReminders')}
+                    </button>
+                    <button
+                      onClick={() => setShowBulkCancel(true)}
+                      disabled={bulkCancelMutation.isPending}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-surface-card border border-error-border rounded-md hover:bg-error-bg transition-colors disabled:opacity-50 focus-ring"
+                    >
+                      <X className="h-4 w-4" />
+                      {t('selection.cancel')}
                     </button>
                     <button
                       onClick={exitSelection}
@@ -778,8 +807,9 @@ export const PaymentsPage = () => {
                           {formatDate(payment.dueDate)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-medium text-text-primary">
+                          <span className="text-sm font-medium text-text-primary inline-flex items-center gap-2">
                             #{payment.identifier}
+                            <PaymentTypeBadge type={payment.paymentType} />
                           </span>
                         </td>
                         <td className="px-6 py-3">
@@ -910,6 +940,21 @@ export const PaymentsPage = () => {
           isLoading={bulkMarkPaidMutation.isPending}
           onConfirm={handleBulkMarkPaid}
           onClose={() => setShowBulkMarkPaid(false)}
+        />
+      )}
+
+      {showBulkCancel && (
+        <ReasonDialog
+          open={showBulkCancel}
+          title={t('cancelDialog.titleBulk', { count: selectedIds.length })}
+          message={t('cancelDialog.messageBulk')}
+          reasonLabel={t('cancelDialog.reason')}
+          reasonPlaceholder={t('cancelDialog.reasonPlaceholder')}
+          confirmLabel={t('cancelDialog.confirmBulk', { count: selectedIds.length })}
+          variant="danger"
+          isLoading={bulkCancelMutation.isPending}
+          onConfirm={handleBulkCancel}
+          onClose={() => setShowBulkCancel(false)}
         />
       )}
 

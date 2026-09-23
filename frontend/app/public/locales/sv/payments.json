@@ -8,7 +8,11 @@
     "registerPayment": "Registrera betalning",
     "registerReceival": "Registrera mottagning",
     "markAsPaid": "Markera som betald",
-    "sendReminder": "Skicka påminnelse"
+    "sendReminder": "Skicka påminnelse",
+    "applyCredit": "Använd tillgodohavande",
+    "waiveLateFee": "Efterskänk avgift",
+    "writeOff": "Skriv av",
+    "cancelPayment": "Avbryt betalning"
   },
   "stats": {
     "pendingPayments": "Vantande betalningar",
@@ -148,7 +152,12 @@
     "receivalDate": "Mottagningsdatum",
     "notesOptional": "Anteckningar (valfritt)",
     "notesPlaceholder": "Lagg till anteckningar om denna mottagning...",
-    "register": "Registrera"
+    "register": "Registrera",
+    "types": {
+      "WRITE_OFF": "Avskrivning",
+      "CREDIT": "Tillgodohavande använt",
+      "PAYMENT": "Betalning"
+    }
   },
   "history": {
     "title": "Betalningshistorik",
@@ -208,7 +217,8 @@
     "select": "Välj",
     "done": "Klar",
     "markPaid": "Markera betald",
-    "sendReminders": "Skicka påminnelser"
+    "sendReminders": "Skicka påminnelser",
+    "cancel": "Avbryt betalningar"
   },
   "arrears": {
     "title": "Förfallna belopp",
@@ -263,6 +273,54 @@
   "toasts": {
     "reminderSent": "Påminnelse skickad till {{email}}",
     "bulkMarkPaid": "{{success}} markerade som betalda, {{failed}} överhoppade",
-    "bulkReminders": "{{success}} påminnelser skickade, {{failed}} överhoppade"
+    "bulkReminders": "{{success}} påminnelser skickade, {{failed}} överhoppade",
+    "cancelled": "Betalning avbruten",
+    "bulkCancelled": "{{success}} avbrutna, {{failed}} överhoppade",
+    "lateFeeWaived": "Förseningsavgift efterskänkt",
+    "writtenOff": "Saldo avskrivet",
+    "creditApplied": "Tillgodohavande använt"
+  },
+  "types": {
+    "LATE_FEE": "Förseningsavgift",
+    "RENT": "Hyra"
+  },
+  "cancelDialog": {
+    "title": "Avbryt betalning",
+    "titleBulk": "Avbryt {{count}} betalningar",
+    "message": "Betalningen markeras som avbruten och räknas inte längre som utestående. Betalningar med registrerade inbetalningar kan inte avbrytas – skriv av saldot i stället.",
+    "messageBulk": "Varje vald öppen betalning avbryts med denna anledning. Betalda betalningar och betalningar med inbetalningar hoppas över.",
+    "reason": "Anledning",
+    "reasonPlaceholder": "t.ex. Hyresgästen flyttade ut den 15:e",
+    "confirm": "Avbryt betalning",
+    "confirmBulk": "Avbryt {{count}} betalningar"
+  },
+  "waiveDialog": {
+    "title": "Efterskänk förseningsavgift",
+    "message": "Avgiften på {{amount}} avbryts och debiteras inte.",
+    "reason": "Anledning",
+    "reasonPlaceholder": "t.ex. Första förseningen, goodwill",
+    "confirm": "Efterskänk avgift"
+  },
+  "writeOffDialog": {
+    "title": "Skriv av saldo",
+    "message": "Återstående {{amount}} stängs utan inbetalning. Detta registreras som avskrivning och kan inte ångras.",
+    "reason": "Anledning",
+    "reasonPlaceholder": "t.ex. Osäker fordran efter utflytt",
+    "date": "Avskrivningsdatum",
+    "confirm": "Skriv av"
+  },
+  "applyCreditDialog": {
+    "title": "Använd hyresgästens tillgodohavande",
+    "message": "Öppet saldo: {{balance}}. Välj vilket tillgodohavande som ska användas och hur mycket.",
+    "credit": "Tillgodohavande",
+    "amount": "Belopp (max {{max}})",
+    "confirm": "Använd {{amount}}",
+    "none": "Hyresgästen har inget öppet tillgodohavande i denna valuta."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Överbetalning",
+      "CREDIT_NOTE": "Kreditnota"
+    }
   }
 }

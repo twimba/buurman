@@ -8,7 +8,11 @@
     "registerPayment": "Registrer betaling",
     "registerReceival": "Registrer modtagelse",
     "markAsPaid": "Marker som betalt",
-    "sendReminder": "Send påmindelse"
+    "sendReminder": "Send påmindelse",
+    "applyCredit": "Brug tilgodehavende",
+    "waiveLateFee": "Eftergiv gebyr",
+    "writeOff": "Afskriv",
+    "cancelPayment": "Annullér betaling"
   },
   "stats": {
     "pendingPayments": "Afventende betalinger",
@@ -148,7 +152,12 @@
     "receivalDate": "Modtagelsesdato",
     "notesOptional": "Noter (valgfrit)",
     "notesPlaceholder": "Tilfoej noter om denne modtagelse...",
-    "register": "Registrer"
+    "register": "Registrer",
+    "types": {
+      "WRITE_OFF": "Afskrivning",
+      "CREDIT": "Tilgodehavende brugt",
+      "PAYMENT": "Betaling"
+    }
   },
   "history": {
     "title": "Betalingshistorik",
@@ -207,7 +216,8 @@
     "select": "Vælg",
     "done": "Færdig",
     "markPaid": "Markér betalt",
-    "sendReminders": "Send påmindelser"
+    "sendReminders": "Send påmindelser",
+    "cancel": "Annullér betalinger"
   },
   "arrears": {
     "title": "Restancer",
@@ -262,6 +272,54 @@
   "toasts": {
     "reminderSent": "Påmindelse sendt til {{email}}",
     "bulkMarkPaid": "{{success}} markeret som betalt, {{failed}} sprunget over",
-    "bulkReminders": "{{success}} påmindelser sendt, {{failed}} sprunget over"
+    "bulkReminders": "{{success}} påmindelser sendt, {{failed}} sprunget over",
+    "cancelled": "Betaling annulleret",
+    "bulkCancelled": "{{success}} annulleret, {{failed}} sprunget over",
+    "lateFeeWaived": "Rykkergebyr eftergivet",
+    "writtenOff": "Saldo afskrevet",
+    "creditApplied": "Tilgodehavende brugt"
+  },
+  "types": {
+    "LATE_FEE": "Rykkergebyr",
+    "RENT": "Husleje"
+  },
+  "cancelDialog": {
+    "title": "Annullér betaling",
+    "titleBulk": "Annullér {{count}} betalinger",
+    "message": "Betalingen markeres som annulleret og tæller ikke længere som udestående. Betalinger med registrerede indbetalinger kan ikke annulleres — afskriv i stedet saldoen.",
+    "messageBulk": "Hver valgt åben betaling annulleres med denne begrundelse. Betalte betalinger og betalinger med indbetalinger springes over.",
+    "reason": "Begrundelse",
+    "reasonPlaceholder": "f.eks. Lejer fraflyttede den 15.",
+    "confirm": "Annullér betaling",
+    "confirmBulk": "Annullér {{count}} betalinger"
+  },
+  "waiveDialog": {
+    "title": "Eftergiv rykkergebyr",
+    "message": "Gebyret på {{amount}} annulleres og opkræves ikke.",
+    "reason": "Begrundelse",
+    "reasonPlaceholder": "f.eks. Første forsinkelse, kulance",
+    "confirm": "Eftergiv gebyr"
+  },
+  "writeOffDialog": {
+    "title": "Afskriv saldo",
+    "message": "De resterende {{amount}} lukkes uden indbetaling. Dette registreres som afskrivning og kan ikke fortrydes.",
+    "reason": "Begrundelse",
+    "reasonPlaceholder": "f.eks. Uerholdelig fordring efter fraflytning",
+    "date": "Afskrivningsdato",
+    "confirm": "Afskriv"
+  },
+  "applyCreditDialog": {
+    "title": "Brug lejers tilgodehavende",
+    "message": "Åben saldo: {{balance}}. Vælg tilgodehavende og beløb.",
+    "credit": "Tilgodehavende",
+    "amount": "Beløb (maks. {{max}})",
+    "confirm": "Brug {{amount}}",
+    "none": "Lejeren har intet åbent tilgodehavende i denne valuta."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Overbetaling",
+      "CREDIT_NOTE": "Kreditnota"
+    }
   }
 }

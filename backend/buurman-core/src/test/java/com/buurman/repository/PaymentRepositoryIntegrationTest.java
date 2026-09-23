@@ -309,6 +309,50 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     }
 
     @Test
+    @DisplayName("late fee candidates respect the contract opt-in, grace period and one-fee rule")
+    void lateFeeCandidates() {
+      LocalDate today = LocalDate.of(2026, 3, 1);
+      dsl.update(com.buurman.jooq.generated.Tables.CONTRACTS)
+          .set(com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_ENABLED, true)
+          .set(com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_GRACE_DAYS, 5)
+          .set(
+              com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_PERCENTAGE,
+              new BigDecimal("2.50"))
+          .where(com.buurman.jooq.generated.Tables.CONTRACTS.ID.eq(contractIdA))
+          .execute();
+      Payment pastGrace =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), today.minusDays(6)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), today.minusDays(5)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_B_ID, contractIdB, USER_ID, new BigDecimal("1000.00"), today.minusDays(30)));
+
+      List<Payment> candidates = repo.findLateFeeCandidates(today);
+      assertThat(candidates).extracting(Payment::getId).containsExactly(pastGrace.getId());
+      assertThat(repo.hasLateFee(pastGrace.getId(), TEAM_A_ID)).isFalse();
+
+      Payment fee =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("25.00"), today);
+      fee.setPaymentType(Payment.PaymentType.LATE_FEE);
+      fee.setParentPaymentId(Optional.of(pastGrace.getId()));
+      Payment savedFee = repo.save(fee);
+      assertThat(repo.hasLateFee(pastGrace.getId(), TEAM_A_ID)).isTrue();
+      Payment reloaded =
+          repo.getByIdentifierAndTeamId(savedFee.getIdentifier().orElseThrow(), TEAM_A_ID);
+      assertThat(reloaded.getPaymentType()).isEqualTo(Payment.PaymentType.LATE_FEE);
+      assertThat(reloaded.getParentPaymentId()).contains(pastGrace.getId());
+      // Late fees are never themselves candidates
+      assertThat(repo.findLateFeeCandidates(today.plusDays(30)))
+          .extracting(Payment::getId)
+          .doesNotContain(savedFee.getId());
+    }
+
+    @Test
     @DisplayName("findOverduePayments excludes paid payments")
     void findOverdueExcludesPaid() {
       Payment p =

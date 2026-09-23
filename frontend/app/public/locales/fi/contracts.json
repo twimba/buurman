@@ -197,7 +197,9 @@
     "tenantReminders": "Vuokralaismuistutukset",
     "remindersOn": "Käytössä",
     "remindersOff": "Pois",
-    "remindersPausedUntil": "Keskeytetty {{date}} asti"
+    "remindersPausedUntil": "Keskeytetty {{date}} asti",
+    "lateFeeActive": "veloitetaan {{count}} päivän jälkeen",
+    "lateFeeInactive": "ei veloiteta"
   },
   "payments": {
     "title": "Maksut",
@@ -394,7 +396,10 @@
     "tenantReminders": "Maksumuistutukset vuokralaiselle",
     "tenantRemindersHelp": "Salli muistutussähköpostit tälle sopimukselle. Myös vuokralaisen yhteystiedon on annettava suostumus; muuten mitään ei lähetetä.",
     "remindersPausedUntil": "Keskeytä muistutukset asti",
-    "remindersPausedUntilHelp": "Muistutuksia ei lähetetä ennen tätä päivää, esim. maksusuunnitelman aikana."
+    "remindersPausedUntilHelp": "Muistutuksia ei lähetetä ennen tätä päivää, esim. maksusuunnitelman aikana.",
+    "lateFeeEnabled": "Veloita viivästysmaksu",
+    "lateFeeEnabledHelp": "Lisää erillisen maksun, kun vuokra on yhä avoinna karenssiajan jälkeen. Oletuksena pois päältä.",
+    "lateFeeGraceDays": "Karenssiaika (päivää)"
   },
   "statusChange": {
     "title": "Vaihda sopimuksen tila",

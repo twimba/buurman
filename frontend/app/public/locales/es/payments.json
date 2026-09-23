@@ -8,7 +8,11 @@
     "registerPayment": "Registrar Pago",
     "registerReceival": "Registrar Recibo",
     "markAsPaid": "Marcar como Pagado",
-    "sendReminder": "Enviar recordatorio"
+    "sendReminder": "Enviar recordatorio",
+    "applyCredit": "Aplicar crédito",
+    "waiveLateFee": "Condonar recargo",
+    "writeOff": "Dar de baja",
+    "cancelPayment": "Cancelar pago"
   },
   "stats": {
     "pendingPayments": "Pagos Pendientes",
@@ -148,7 +152,12 @@
     "receivalDate": "Fecha de Recibo",
     "notesOptional": "Notas (Opcional)",
     "notesPlaceholder": "Añadir notas sobre este recibo...",
-    "register": "Registrar"
+    "register": "Registrar",
+    "types": {
+      "WRITE_OFF": "Baja",
+      "CREDIT": "Crédito aplicado",
+      "PAYMENT": "Pago"
+    }
   },
   "history": {
     "title": "Historial de Pagos",
@@ -208,7 +217,8 @@
     "select": "Seleccionar",
     "done": "Listo",
     "markPaid": "Marcar pagado",
-    "sendReminders": "Enviar recordatorios"
+    "sendReminders": "Enviar recordatorios",
+    "cancel": "Cancelar pagos"
   },
   "arrears": {
     "title": "Impagos",
@@ -263,6 +273,54 @@
   "toasts": {
     "reminderSent": "Recordatorio enviado a {{email}}",
     "bulkMarkPaid": "{{success}} marcados como pagados, {{failed}} omitidos",
-    "bulkReminders": "{{success}} recordatorios enviados, {{failed}} omitidos"
+    "bulkReminders": "{{success}} recordatorios enviados, {{failed}} omitidos",
+    "cancelled": "Pago cancelado",
+    "bulkCancelled": "{{success}} cancelados, {{failed}} omitidos",
+    "lateFeeWaived": "Recargo condonado",
+    "writtenOff": "Saldo dado de baja",
+    "creditApplied": "Crédito aplicado"
+  },
+  "types": {
+    "LATE_FEE": "Recargo por demora",
+    "RENT": "Alquiler"
+  },
+  "cancelDialog": {
+    "title": "Cancelar pago",
+    "titleBulk": "Cancelar {{count}} pagos",
+    "message": "El pago se marca como cancelado y deja de contar como pendiente. Los pagos con cobros registrados no se pueden cancelar: dé de baja el saldo en su lugar.",
+    "messageBulk": "Cada pago abierto seleccionado se cancela con este motivo. Los pagos pagados o con cobros se omiten.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "p. ej. El inquilino se fue el día 15",
+    "confirm": "Cancelar pago",
+    "confirmBulk": "Cancelar {{count}} pagos"
+  },
+  "waiveDialog": {
+    "title": "Condonar recargo por demora",
+    "message": "El recargo de {{amount}} se cancela y no se cobrará.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "p. ej. Primer retraso, buena voluntad",
+    "confirm": "Condonar recargo"
+  },
+  "writeOffDialog": {
+    "title": "Dar de baja el saldo",
+    "message": "El resto de {{amount}} se cierra sin cobro. Queda registrado como baja y no se puede deshacer.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "p. ej. Deuda incobrable tras la salida del inquilino",
+    "date": "Fecha de baja",
+    "confirm": "Dar de baja"
+  },
+  "applyCreditDialog": {
+    "title": "Aplicar crédito del inquilino",
+    "message": "Saldo pendiente: {{balance}}. Elija qué crédito usar y cuánto.",
+    "credit": "Crédito",
+    "amount": "Importe (máx. {{max}})",
+    "confirm": "Aplicar {{amount}}",
+    "none": "Este inquilino no tiene crédito abierto en esta moneda."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Pago en exceso",
+      "CREDIT_NOTE": "Nota de crédito"
+    }
   }
 }

@@ -369,6 +369,8 @@ public class ContractService {
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
             .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
             .remindersPausedUntil(contract.getRemindersPausedUntil())
+            .lateFeeEnabled(contract.getLateFeeEnabled())
+            .lateFeeGraceDays(contract.getLateFeeGraceDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -629,6 +631,8 @@ public class ContractService {
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
             .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
             .remindersPausedUntil(contract.getRemindersPausedUntil())
+            .lateFeeEnabled(contract.getLateFeeEnabled())
+            .lateFeeGraceDays(contract.getLateFeeGraceDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -781,6 +785,8 @@ public class ContractService {
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
             .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
             .remindersPausedUntil(contract.getRemindersPausedUntil())
+            .lateFeeEnabled(contract.getLateFeeEnabled())
+            .lateFeeGraceDays(contract.getLateFeeGraceDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -1077,7 +1083,9 @@ public class ContractService {
         contract.getCreatedAt(),
         Optional.of(contract.getUpdatedAt()),
         contract.getTenantRemindersEnabled(),
-        contract.getRemindersPausedUntil());
+        contract.getRemindersPausedUntil(),
+        contract.getLateFeeEnabled(),
+        contract.getLateFeeGraceDays());
   }
 
   /** Batch build responses for a list of contracts (avoids N+1 for parties and contacts). */
@@ -1211,7 +1219,9 @@ public class ContractService {
                   contract.getCreatedAt(),
                   Optional.of(contract.getUpdatedAt()),
                   contract.getTenantRemindersEnabled(),
-                  contract.getRemindersPausedUntil());
+                  contract.getRemindersPausedUntil(),
+                  contract.getLateFeeEnabled(),
+                  contract.getLateFeeGraceDays());
             })
         .toList();
   }

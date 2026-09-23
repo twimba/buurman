@@ -8,7 +8,11 @@
     "registerPayment": "Zarejestruj płatność",
     "registerReceival": "Zarejestruj wpłatę",
     "markAsPaid": "Oznacz jako opłacone",
-    "sendReminder": "Wyślij przypomnienie"
+    "sendReminder": "Wyślij przypomnienie",
+    "applyCredit": "Użyj nadpłaty",
+    "waiveLateFee": "Umorz opłatę",
+    "writeOff": "Odpisz",
+    "cancelPayment": "Anuluj płatność"
   },
   "stats": {
     "pendingPayments": "Oczekujące płatności",
@@ -148,7 +152,12 @@
     "receivalDate": "Data wpłaty",
     "notesOptional": "Notatki (opcjonalne)",
     "notesPlaceholder": "Dodaj uwagi dotyczące tej wpłaty...",
-    "register": "Zarejestruj"
+    "register": "Zarejestruj",
+    "types": {
+      "WRITE_OFF": "Odpis",
+      "CREDIT": "Nadpłata użyta",
+      "PAYMENT": "Płatność"
+    }
   },
   "history": {
     "title": "Historia płatności",
@@ -207,7 +216,8 @@
     "select": "Zaznacz",
     "done": "Gotowe",
     "markPaid": "Oznacz jako opłacone",
-    "sendReminders": "Wyślij przypomnienia"
+    "sendReminders": "Wyślij przypomnienia",
+    "cancel": "Anuluj płatności"
   },
   "arrears": {
     "title": "Zaległości",
@@ -262,6 +272,54 @@
   "toasts": {
     "reminderSent": "Przypomnienie wysłano do {{email}}",
     "bulkMarkPaid": "Oznaczono jako opłacone: {{success}}, pominięto: {{failed}}",
-    "bulkReminders": "Wysłano przypomnień: {{success}}, pominięto: {{failed}}"
+    "bulkReminders": "Wysłano przypomnień: {{success}}, pominięto: {{failed}}",
+    "cancelled": "Płatność anulowana",
+    "bulkCancelled": "Anulowano: {{success}}, pominięto: {{failed}}",
+    "lateFeeWaived": "Opłata umorzona",
+    "writtenOff": "Saldo odpisane",
+    "creditApplied": "Nadpłata użyta"
+  },
+  "types": {
+    "LATE_FEE": "Opłata za zwłokę",
+    "RENT": "Czynsz"
+  },
+  "cancelDialog": {
+    "title": "Anuluj płatność",
+    "titleBulk": "Anuluj {{count}} płatności",
+    "message": "Płatność zostanie oznaczona jako anulowana i przestanie być zaległością. Płatności z zarejestrowanymi wpłatami nie można anulować — zamiast tego odpisz saldo.",
+    "messageBulk": "Każda zaznaczona otwarta płatność zostanie anulowana z tym powodem. Opłacone płatności i płatności z wpłatami zostaną pominięte.",
+    "reason": "Powód",
+    "reasonPlaceholder": "np. Najemca wyprowadził się 15-go",
+    "confirm": "Anuluj płatność",
+    "confirmBulk": "Anuluj {{count}} płatności"
+  },
+  "waiveDialog": {
+    "title": "Umorz opłatę za zwłokę",
+    "message": "Opłata {{amount}} zostanie anulowana i nie będzie naliczona.",
+    "reason": "Powód",
+    "reasonPlaceholder": "np. Pierwsze opóźnienie, dobra wola",
+    "confirm": "Umorz opłatę"
+  },
+  "writeOffDialog": {
+    "title": "Odpisz saldo",
+    "message": "Pozostałe {{amount}} zostanie zamknięte bez wpłaty. Zostanie to zapisane jako odpis i nie można tego cofnąć.",
+    "reason": "Powód",
+    "reasonPlaceholder": "np. Nieściągalna należność po wyprowadzce",
+    "date": "Data odpisu",
+    "confirm": "Odpisz"
+  },
+  "applyCreditDialog": {
+    "title": "Użyj nadpłaty najemcy",
+    "message": "Otwarte saldo: {{balance}}. Wybierz nadpłatę i kwotę.",
+    "credit": "Nadpłata",
+    "amount": "Kwota (maks. {{max}})",
+    "confirm": "Użyj {{amount}}",
+    "none": "Ten najemca nie ma otwartej nadpłaty w tej walucie."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Nadpłata",
+      "CREDIT_NOTE": "Nota kredytowa"
+    }
   }
 }

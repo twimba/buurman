@@ -8,6 +8,7 @@ import static com.buurman.domain.Payment.PaymentStatus.OVERDUE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
+import static com.buurman.util.SidGenerator.newContactCreditId;
 import static com.buurman.util.SidGenerator.newPaymentId;
 import static com.buurman.util.SidGenerator.newPaymentReceivalId;
 import static java.math.BigDecimal.ZERO;
@@ -41,25 +42,31 @@ import org.springframework.web.multipart.MultipartFile;
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.Contact;
+import com.buurman.domain.ContactCredit;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
+import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.domain.identifier.PaymentReceivalIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.dto.request.ApplyCreditRequest;
+import com.buurman.dto.request.BulkCancelPaymentsRequest;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.BulkMarkPaidRequest;
+import com.buurman.dto.request.CancelPaymentRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.MarkPaidRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
+import com.buurman.dto.request.WriteOffPaymentRequest;
 import com.buurman.dto.response.BulkActionResult;
 import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.ContactSummary;
@@ -77,6 +84,7 @@ import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.PaymentMapper;
 import com.buurman.mapper.PaymentReceivalMapper;
 import com.buurman.mapper.PropertyMapper;
+import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
@@ -102,6 +110,7 @@ public class PaymentService {
 
   private final PaymentRepository paymentRepository;
   private final PaymentReceivalRepository receivalRepository;
+  private final ContactCreditRepository creditRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
   private final ContactRepository contactRepository;
@@ -548,20 +557,61 @@ public class PaymentService {
         receivalRepository.sumByPaymentIdAndTeamId(paymentId, teamId, currency);
     BigDecimal currentBalance = payment.getAmount().value().subtract(currentReceived);
 
-    if (request.amount().compareTo(currentBalance) > 0) {
-      throw new BusinessRuleException(
-          "Receival amount ("
-              + request.amount()
-              + ") exceeds remaining balance ("
-              + currentBalance
-              + ")");
+    // An amount above the open balance is not an error: the balance is settled and the
+    // excess becomes a credit the tenant can use on a later payment or have refunded.
+    BigDecimal applied = request.amount().min(currentBalance);
+    BigDecimal excess = request.amount().subtract(currentBalance);
+    if (excess.signum() > 0) {
+      UUID contactId =
+          payment
+              .getContactId()
+              .or(
+                  () ->
+                      contractPartyService
+                          .findPrimaryContactForContract(payment.getContractId(), teamId)
+                          .map(Contact::getId))
+              .orElseThrow(
+                  () ->
+                      new BusinessRuleException(
+                          "Receival amount ("
+                              + request.amount()
+                              + ") exceeds remaining balance ("
+                              + currentBalance
+                              + ") and no tenant contact is linked to hold the credit"));
+      ContactCredit credit =
+          ContactCredit.builder()
+              .identifier(Optional.of(newContactCreditId()))
+              .teamId(teamId)
+              .contactId(contactId)
+              .contractId(Optional.of(payment.getContractId()))
+              .amount(MoneyAmount.of(excess, currency))
+              .remainingAmount(excess)
+              .source(ContactCredit.CreditSource.OVERPAYMENT)
+              .reason(
+                  Optional.of(
+                      "Overpayment on payment "
+                          + payment.getIdentifier().map(Object::toString).orElse("")))
+              .sourcePaymentId(Optional.of(paymentId))
+              .createdBy(principal.getUserId())
+              .updatedBy(principal.getUserId())
+              .build();
+      ContactCredit savedCredit = creditRepository.save(credit);
+      auditService.logCreate(
+          teamId, "CONTACT_CREDIT", savedCredit.getId(), principal.getUserId(), savedCredit);
+      metricsService.incrementCounter("contact.credit.created.total", "source", "OVERPAYMENT");
+      log.info(
+          "Overpayment of {} {} on payment {} recorded as credit {}",
+          excess,
+          currency,
+          payment.getIdentifier().orElseThrow(),
+          savedCredit.getIdentifier().orElseThrow());
     }
 
     PaymentReceival receival = new PaymentReceival();
     receival.setIdentifier(Optional.of(newPaymentReceivalId()));
     receival.setTeamId(teamId);
     receival.setPaymentId(paymentId);
-    receival.setAmount(MoneyAmount.of(request.amount(), currency));
+    receival.setAmount(MoneyAmount.of(applied, currency));
     receival.setReceivalDate(request.receivalDate());
     receival.setNotes(request.notes());
     receival.setCreatedBy(principal.getUserId());
@@ -585,11 +635,14 @@ public class PaymentService {
         principal.getUserId());
 
     Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
-    changedFields.put("receivalRegistered", request.amount() + " on " + request.receivalDate());
+    changedFields.put("receivalRegistered", applied + " on " + request.receivalDate());
+    if (excess.signum() > 0) {
+      changedFields.put("overpaymentCredited", excess.toPlainString());
+    }
     auditService.logUpdate(
         teamId, "PAYMENT", paymentId, principal.getUserId(), oldState, newState, changedFields);
 
-    sendReceivalNotification(payment, request.amount(), teamId, principal);
+    sendReceivalNotification(payment, applied, teamId, principal);
 
     if (payment.getStatus() == PAID) {
       sendPaymentPaidNotification(payment, teamId, principal);
@@ -755,6 +808,222 @@ public class PaymentService {
     payment.setUpdatedBy(principal.getUserId());
     payment.setUpdatedAt(clock.instant());
     paymentRepository.save(payment);
+  }
+
+  /** Closes the open balance without money changing hands (bad debt, goodwill). */
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public PaymentResponse writeOffPayment(
+      PaymentIdentifier identifier, WriteOffPaymentRequest request, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
+    if (payment.getStatus() == PAID) {
+      throw new BusinessRuleException("Payment is already fully paid");
+    }
+    if (payment.getStatus() == CANCELLED) {
+      throw new BusinessRuleException("Cannot write off a cancelled payment");
+    }
+    String currency = payment.getAmount().currency();
+    BigDecimal balance =
+        payment
+            .getAmount()
+            .value()
+            .subtract(
+                receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId, currency));
+    if (balance.signum() <= 0) {
+      throw new BusinessRuleException("Payment has no outstanding balance");
+    }
+    PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
+    PaymentReceival writeOff = new PaymentReceival();
+    writeOff.setIdentifier(Optional.of(newPaymentReceivalId()));
+    writeOff.setTeamId(teamId);
+    writeOff.setPaymentId(payment.getId());
+    writeOff.setAmount(MoneyAmount.of(balance, currency));
+    writeOff.setReceivalDate(request.writeOffDate().orElse(LocalDate.now(clock)));
+    writeOff.setNotes(Optional.of("Write-off: " + request.reason()));
+    writeOff.setReceivalType(PaymentReceival.ReceivalType.WRITE_OFF);
+    writeOff.setCreatedBy(principal.getUserId());
+    writeOff.setUpdatedBy(principal.getUserId());
+    writeOff.setCreatedAt(clock.instant());
+    writeOff.setUpdatedAt(clock.instant());
+    receivalRepository.save(writeOff);
+    recalculatePaymentStatus(payment, principal);
+    PaymentResponse newState = enrichPaymentResponse(payment, teamId);
+    Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
+    changedFields.put("writtenOff", balance + " " + currency + ": " + request.reason());
+    auditService.logUpdate(
+        teamId,
+        "PAYMENT",
+        payment.getId(),
+        principal.getUserId(),
+        oldState,
+        newState,
+        changedFields);
+    metricsService.incrementCounter("payment.written_off.total");
+    metricsService.incrementCounterBy(
+        "payment.written_off.amount.total", balance.doubleValue(), "currency", currency);
+    log.info(
+        "Wrote off {} {} on payment {} by user {}",
+        balance,
+        currency,
+        payment.getIdentifier().orElseThrow(),
+        principal.getUserId());
+    return newState;
+  }
+
+  /** Settles (part of) the open balance from a credit the tenant holds. */
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public PaymentResponse applyCredit(
+      PaymentIdentifier identifier, ApplyCreditRequest request, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
+    if (payment.getStatus() == PAID) {
+      throw new BusinessRuleException("Payment is already fully paid");
+    }
+    if (payment.getStatus() == CANCELLED) {
+      throw new BusinessRuleException("Cannot apply credit to a cancelled payment");
+    }
+    ContactCredit credit =
+        creditRepository.getByIdentifierAndTeamId(request.creditIdentifier(), teamId);
+    UUID payerContactId =
+        payment
+            .getContactId()
+            .or(
+                () ->
+                    contractPartyService
+                        .findPrimaryContactForContract(payment.getContractId(), teamId)
+                        .map(Contact::getId))
+            .orElseThrow(
+                () -> new BusinessRuleException("No tenant contact is linked to this payment"));
+    if (!credit.getContactId().equals(payerContactId)) {
+      throw new BusinessRuleException("Credit belongs to a different contact");
+    }
+    String currency = payment.getAmount().currency();
+    if (!credit.getAmount().currency().equals(currency)) {
+      throw new BusinessRuleException("Credit currency does not match the payment currency");
+    }
+    BigDecimal balance =
+        payment
+            .getAmount()
+            .value()
+            .subtract(
+                receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId, currency));
+    BigDecimal maxApplicable = balance.min(credit.getRemainingAmount());
+    if (maxApplicable.signum() <= 0) {
+      throw new BusinessRuleException("Nothing to apply: no open balance or credit exhausted");
+    }
+    BigDecimal amount = request.amount().orElse(maxApplicable);
+    if (amount.compareTo(maxApplicable) > 0) {
+      throw new BusinessRuleException(
+          "Amount " + amount + " exceeds the applicable maximum of " + maxApplicable);
+    }
+    validateCurrencyDecimals(amount, currency);
+
+    PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
+    PaymentReceival applied = new PaymentReceival();
+    applied.setIdentifier(Optional.of(newPaymentReceivalId()));
+    applied.setTeamId(teamId);
+    applied.setPaymentId(payment.getId());
+    applied.setAmount(MoneyAmount.of(amount, currency));
+    applied.setReceivalDate(LocalDate.now(clock));
+    applied.setNotes(Optional.of("Credit " + credit.getIdentifier().orElseThrow() + " applied"));
+    applied.setReceivalType(PaymentReceival.ReceivalType.CREDIT);
+    applied.setCreditId(Optional.of(credit.getId()));
+    applied.setCreatedBy(principal.getUserId());
+    applied.setUpdatedBy(principal.getUserId());
+    applied.setCreatedAt(clock.instant());
+    applied.setUpdatedAt(clock.instant());
+    receivalRepository.save(applied);
+
+    credit.setRemainingAmount(credit.getRemainingAmount().subtract(amount));
+    credit.setUpdatedBy(principal.getUserId());
+    credit.setUpdatedAt(clock.instant());
+    creditRepository.save(credit);
+
+    recalculatePaymentStatus(payment, principal);
+    PaymentResponse newState = enrichPaymentResponse(payment, teamId);
+    Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
+    changedFields.put(
+        "creditApplied", amount + " " + currency + " from " + credit.getIdentifier().orElseThrow());
+    auditService.logUpdate(
+        teamId,
+        "PAYMENT",
+        payment.getId(),
+        principal.getUserId(),
+        oldState,
+        newState,
+        changedFields);
+    metricsService.incrementCounter("payment.credit.applied.total");
+    if (payment.getStatus() == PAID) {
+      sendPaymentPaidNotification(payment, teamId, principal);
+    }
+    return newState;
+  }
+
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public PaymentResponse cancelPayment(
+      PaymentIdentifier identifier, CancelPaymentRequest request, UserPrincipal principal) {
+    return performCancel(identifier, request.reason(), principal);
+  }
+
+  /** Cancels each open payment in its own transaction and reports per-identifier outcomes. */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public List<BulkActionResult<PaymentResponse>> bulkCancelPayments(
+      BulkCancelPaymentsRequest request, UserPrincipal principal) {
+    TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+    List<BulkActionResult<PaymentResponse>> results = new ArrayList<>();
+    for (PaymentIdentifier identifier : request.identifiers().stream().distinct().toList()) {
+      try {
+        PaymentResponse response =
+            txTemplate.execute(status -> performCancel(identifier, request.reason(), principal));
+        results.add(BulkActionResult.success(identifier.value(), response));
+      } catch (Exception e) {
+        log.warn("Bulk cancel failed for payment {}: {}", identifier, e.getMessage());
+        results.add(BulkActionResult.error(identifier.value(), extractPaymentErrorMessage(e)));
+      }
+    }
+    return results;
+  }
+
+  private PaymentResponse performCancel(
+      PaymentIdentifier identifier, String reason, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
+    if (payment.getStatus() == PAID) {
+      throw new BusinessRuleException("A paid payment cannot be cancelled");
+    }
+    if (payment.getStatus() == CANCELLED) {
+      throw new BusinessRuleException("Payment is already cancelled");
+    }
+    BigDecimal received =
+        receivalRepository.sumByPaymentIdAndTeamId(
+            payment.getId(), teamId, payment.getAmount().currency());
+    if (received.signum() > 0) {
+      throw new BusinessRuleException(
+          "A payment with registered receivals cannot be cancelled; write off the balance instead");
+    }
+    PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
+    Payment.PaymentStatus oldStatus = payment.getStatus();
+    payment.setStatus(CANCELLED);
+    payment.setCancelReason(Optional.of(reason));
+    payment.setUpdatedBy(principal.getUserId());
+    payment.setUpdatedAt(clock.instant());
+    Payment saved = paymentRepository.save(payment);
+    PaymentResponse newState = enrichPaymentResponse(saved, teamId);
+    Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
+    changedFields.put("cancelReason", reason);
+    auditService.logUpdate(
+        teamId, "PAYMENT", saved.getId(), principal.getUserId(), oldState, newState, changedFields);
+    metricsService.incrementCounter(
+        "payment.status.changed.total", "from_status", oldStatus.name(), "to_status", "CANCELLED");
+    log.info(
+        "Cancelled payment {} by user {}: {}",
+        saved.getIdentifier().orElseThrow(),
+        principal.getUserId(),
+        reason);
+    return newState;
   }
 
   // --- End receival operations ---
@@ -1130,7 +1399,12 @@ public class PaymentService {
               Optional.ofNullable(receipt),
               receivalResponses,
               base.createdAt(),
-              base.updatedAt()));
+              base.updatedAt(),
+              base.paymentType(),
+              parentIdentifier(payment, teamId),
+              base.cancelReason(),
+              base.waivedAt(),
+              base.waiveReason()));
     }
     return responses;
   }
@@ -1200,7 +1474,12 @@ public class PaymentService {
           Optional.ofNullable(receipt),
           receivalResponses,
           response.createdAt(),
-          response.updatedAt());
+          response.updatedAt(),
+          response.paymentType(),
+          parentIdentifier(payment, teamId),
+          response.cancelReason(),
+          response.waivedAt(),
+          response.waiveReason());
     }
 
     return new PaymentResponse(
@@ -1220,7 +1499,19 @@ public class PaymentService {
         response.receipt(),
         receivalResponses,
         response.createdAt(),
-        response.updatedAt());
+        response.updatedAt(),
+        response.paymentType(),
+        parentIdentifier(payment, teamId),
+        response.cancelReason(),
+        response.waivedAt(),
+        response.waiveReason());
+  }
+
+  private Optional<Sid> parentIdentifier(Payment payment, UUID teamId) {
+    return payment
+        .getParentPaymentId()
+        .flatMap(id -> paymentRepository.findByIdAndTeamId(id, teamId))
+        .flatMap(Payment::getIdentifier);
   }
 
   private void validateCurrencyDecimals(

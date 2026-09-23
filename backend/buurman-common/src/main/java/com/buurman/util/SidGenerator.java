@@ -5,6 +5,7 @@ import com.buurman.domain.identifier.AmenityIdentifier;
 import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.domain.identifier.CalendarFeedIdentifier;
 import com.buurman.domain.identifier.ContactAddressIdentifier;
+import com.buurman.domain.identifier.ContactCreditIdentifier;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContactNoteIdentifier;
 import com.buurman.domain.identifier.ContactRelationshipIdentifier;
@@ -127,6 +128,10 @@ public class SidGenerator {
 
   public static PaymentReminderIdentifier newPaymentReminderId() {
     return PaymentReminderIdentifier.of(generateRaw(EntityPrefix.PRM));
+  }
+
+  public static ContactCreditIdentifier newContactCreditId() {
+    return ContactCreditIdentifier.of(generateRaw(EntityPrefix.CCR));
   }
 
   public static PhotoIdentifier newPhotoId() {

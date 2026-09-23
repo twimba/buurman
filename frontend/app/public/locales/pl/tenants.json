@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Były najemca",
       "REFERRED": "Polecony"
     }
+  },
+  "credits": {
+    "title": "Nadpłaty i noty",
+    "add": "Dodaj notę kredytową",
+    "empty": "Brak nadpłat — nadpłaty i noty kredytowe pojawią się tutaj",
+    "openTotal": "Otwarta nadpłata: {{amount}}",
+    "date": "Data",
+    "source": "Źródło",
+    "reason": "Powód",
+    "amount": "Kwota",
+    "remaining": "Pozostało",
+    "refund": "Zwróć",
+    "refundedOn": "Zwrócono {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Nadpłata",
+      "CREDIT_NOTE": "Nota kredytowa"
+    },
+    "createDialog": {
+      "title": "Dodaj notę kredytową",
+      "message": "Kwota, którą jesteś winien temu kontaktowi. Można ją zaliczyć na późniejszą płatność lub zwrócić.",
+      "reasonPlaceholder": "np. Rekompensata za awarię kotła w marcu",
+      "confirm": "Dodaj"
+    },
+    "refundDialog": {
+      "title": "Zwrot nadpłaty",
+      "message": "Zapisuje, że pozostałe {{amount}} zwrócono kontaktowi.",
+      "date": "Data zwrotu",
+      "notes": "Uwagi (opcjonalnie)",
+      "confirm": "Oznacz jako zwrócone"
+    }
   }
 }

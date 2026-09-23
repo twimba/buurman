@@ -8,7 +8,11 @@
     "registerPayment": "Registar Pagamento",
     "registerReceival": "Registar Recebimento",
     "markAsPaid": "Marcar como Pago",
-    "sendReminder": "Enviar lembrete"
+    "sendReminder": "Enviar lembrete",
+    "applyCredit": "Aplicar crédito",
+    "waiveLateFee": "Perdoar multa",
+    "writeOff": "Abater",
+    "cancelPayment": "Cancelar pagamento"
   },
   "stats": {
     "pendingPayments": "Pagamentos Pendentes",
@@ -148,7 +152,12 @@
     "receivalDate": "Data de Recebimento",
     "notesOptional": "Notas (Opcional)",
     "notesPlaceholder": "Adicionar notas sobre este recebimento...",
-    "register": "Registar"
+    "register": "Registar",
+    "types": {
+      "WRITE_OFF": "Abate",
+      "CREDIT": "Crédito aplicado",
+      "PAYMENT": "Pagamento"
+    }
   },
   "history": {
     "title": "Histórico de Pagamentos",
@@ -208,7 +217,8 @@
     "select": "Selecionar",
     "done": "Concluído",
     "markPaid": "Marcar como pago",
-    "sendReminders": "Enviar lembretes"
+    "sendReminders": "Enviar lembretes",
+    "cancel": "Cancelar pagamentos"
   },
   "arrears": {
     "title": "Atrasos",
@@ -263,6 +273,54 @@
   "toasts": {
     "reminderSent": "Lembrete enviado para {{email}}",
     "bulkMarkPaid": "{{success}} marcados como pagos, {{failed}} ignorados",
-    "bulkReminders": "{{success}} lembretes enviados, {{failed}} ignorados"
+    "bulkReminders": "{{success}} lembretes enviados, {{failed}} ignorados",
+    "cancelled": "Pagamento cancelado",
+    "bulkCancelled": "{{success}} cancelados, {{failed}} ignorados",
+    "lateFeeWaived": "Multa perdoada",
+    "writtenOff": "Saldo abatido",
+    "creditApplied": "Crédito aplicado"
+  },
+  "types": {
+    "LATE_FEE": "Multa por atraso",
+    "RENT": "Renda"
+  },
+  "cancelDialog": {
+    "title": "Cancelar pagamento",
+    "titleBulk": "Cancelar {{count}} pagamentos",
+    "message": "O pagamento fica marcado como cancelado e deixa de contar como em dívida. Pagamentos com recebimentos registados não podem ser cancelados — abata o saldo em vez disso.",
+    "messageBulk": "Cada pagamento em aberto selecionado é cancelado com este motivo. Pagamentos pagos ou com recebimentos são ignorados.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "ex.: Inquilino saiu no dia 15",
+    "confirm": "Cancelar pagamento",
+    "confirmBulk": "Cancelar {{count}} pagamentos"
+  },
+  "waiveDialog": {
+    "title": "Perdoar multa por atraso",
+    "message": "A multa de {{amount}} é cancelada e não será cobrada.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "ex.: Primeiro atraso, boa vontade",
+    "confirm": "Perdoar multa"
+  },
+  "writeOffDialog": {
+    "title": "Abater saldo",
+    "message": "O restante {{amount}} é encerrado sem recebimento. Fica registado como abate e não pode ser anulado.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "ex.: Dívida incobrável após saída do inquilino",
+    "date": "Data do abate",
+    "confirm": "Abater"
+  },
+  "applyCreditDialog": {
+    "title": "Aplicar crédito do inquilino",
+    "message": "Saldo em aberto: {{balance}}. Escolha o crédito a usar e o valor.",
+    "credit": "Crédito",
+    "amount": "Valor (máx. {{max}})",
+    "confirm": "Aplicar {{amount}}",
+    "none": "Este inquilino não tem crédito em aberto nesta moeda."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Pagamento em excesso",
+      "CREDIT_NOTE": "Nota de crédito"
+    }
   }
 }

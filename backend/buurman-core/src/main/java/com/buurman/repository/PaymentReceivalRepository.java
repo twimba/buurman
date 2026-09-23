@@ -44,6 +44,8 @@ public class PaymentReceivalRepository {
   private static final Field<String> CURRENCY = field("currency", String.class);
   private static final Field<LocalDate> RECEIVAL_DATE = field("receival_date", LocalDate.class);
   private static final Field<String> NOTES = field("notes", String.class);
+  private static final Field<String> RECEIVAL_TYPE = field("receival_type", String.class);
+  private static final Field<UUID> CREDIT_ID = field("credit_id", UUID.class);
   private static final Field<LocalDateTime> CREATED_AT = field("created_at", LocalDateTime.class);
   private static final Field<LocalDateTime> UPDATED_AT = field("updated_at", LocalDateTime.class);
   private static final Field<UUID> CREATED_BY = field("created_by", UUID.class);
@@ -124,6 +126,8 @@ public class PaymentReceivalRepository {
         .set(CURRENCY, receival.getAmount().currency())
         .set(RECEIVAL_DATE, receival.getReceivalDate())
         .set(NOTES, receival.getNotes().orElse(null))
+        .set(RECEIVAL_TYPE, receival.getReceivalType().name())
+        .set(CREDIT_ID, receival.getCreditId().orElse(null))
         .set(CREATED_AT, now)
         .set(UPDATED_AT, now)
         .set(CREATED_BY, receival.getCreatedBy())
@@ -185,6 +189,11 @@ public class PaymentReceivalRepository {
       receival.setReceivalDate(receivalDate);
     }
     receival.setNotes(Optional.ofNullable(record.get(NOTES)));
+    receival.setReceivalType(
+        Optional.ofNullable(record.get(RECEIVAL_TYPE))
+            .map(PaymentReceival.ReceivalType::valueOf)
+            .orElse(PaymentReceival.ReceivalType.PAYMENT));
+    receival.setCreditId(Optional.ofNullable(record.get(CREDIT_ID)));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {
       receival.setCreatedAt(createdAt);

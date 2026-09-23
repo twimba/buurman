@@ -8,7 +8,11 @@
     "registerPayment": "Enregistrer un paiement",
     "registerReceival": "Enregistrer un encaissement",
     "markAsPaid": "Marquer comme payé",
-    "sendReminder": "Envoyer un rappel"
+    "sendReminder": "Envoyer un rappel",
+    "applyCredit": "Utiliser un avoir",
+    "waiveLateFee": "Annuler la pénalité",
+    "writeOff": "Passer en perte",
+    "cancelPayment": "Annuler le paiement"
   },
   "stats": {
     "pendingPayments": "Paiements en attente",
@@ -148,7 +152,12 @@
     "receivalDate": "Date d'encaissement",
     "notesOptional": "Notes (Optionnel)",
     "notesPlaceholder": "Ajouter des notes sur cet encaissement...",
-    "register": "Enregistrer"
+    "register": "Enregistrer",
+    "types": {
+      "WRITE_OFF": "Perte",
+      "CREDIT": "Avoir utilisé",
+      "PAYMENT": "Paiement"
+    }
   },
   "history": {
     "title": "Historique des paiements",
@@ -208,7 +217,8 @@
     "select": "Sélectionner",
     "done": "Terminé",
     "markPaid": "Marquer payé",
-    "sendReminders": "Envoyer des rappels"
+    "sendReminders": "Envoyer des rappels",
+    "cancel": "Annuler les paiements"
   },
   "arrears": {
     "title": "Impayés",
@@ -263,6 +273,54 @@
   "toasts": {
     "reminderSent": "Rappel envoyé à {{email}}",
     "bulkMarkPaid": "{{success}} marqués comme payés, {{failed}} ignorés",
-    "bulkReminders": "{{success}} rappels envoyés, {{failed}} ignorés"
+    "bulkReminders": "{{success}} rappels envoyés, {{failed}} ignorés",
+    "cancelled": "Paiement annulé",
+    "bulkCancelled": "{{success}} annulés, {{failed}} ignorés",
+    "lateFeeWaived": "Pénalité annulée",
+    "writtenOff": "Solde passé en perte",
+    "creditApplied": "Avoir utilisé"
+  },
+  "types": {
+    "LATE_FEE": "Pénalité de retard",
+    "RENT": "Loyer"
+  },
+  "cancelDialog": {
+    "title": "Annuler le paiement",
+    "titleBulk": "Annuler {{count}} paiements",
+    "message": "Le paiement est marqué comme annulé et ne compte plus comme impayé. Les paiements avec des encaissements enregistrés ne peuvent pas être annulés — passez le solde en perte.",
+    "messageBulk": "Chaque paiement ouvert sélectionné est annulé avec ce motif. Les paiements réglés ou avec encaissements sont ignorés.",
+    "reason": "Motif",
+    "reasonPlaceholder": "ex. Le locataire est parti le 15",
+    "confirm": "Annuler le paiement",
+    "confirmBulk": "Annuler {{count}} paiements"
+  },
+  "waiveDialog": {
+    "title": "Annuler la pénalité de retard",
+    "message": "La pénalité de {{amount}} est annulée et ne sera pas facturée.",
+    "reason": "Motif",
+    "reasonPlaceholder": "ex. Premier retard, geste commercial",
+    "confirm": "Annuler la pénalité"
+  },
+  "writeOffDialog": {
+    "title": "Passer le solde en perte",
+    "message": "Le reste de {{amount}} est clôturé sans encaissement. Ceci est enregistré comme perte et ne peut pas être annulé.",
+    "reason": "Motif",
+    "reasonPlaceholder": "ex. Créance irrécouvrable après le départ du locataire",
+    "date": "Date de passage en perte",
+    "confirm": "Passer en perte"
+  },
+  "applyCreditDialog": {
+    "title": "Utiliser un avoir du locataire",
+    "message": "Solde ouvert : {{balance}}. Choisissez l’avoir à utiliser et le montant.",
+    "credit": "Avoir",
+    "amount": "Montant (max {{max}})",
+    "confirm": "Utiliser {{amount}}",
+    "none": "Ce locataire n’a aucun avoir ouvert dans cette devise."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Trop-perçu",
+      "CREDIT_NOTE": "Avoir"
+    }
   }
 }

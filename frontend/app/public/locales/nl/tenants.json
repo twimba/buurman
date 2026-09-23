@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Voormalig Huurder",
       "REFERRED": "Doorverwezen"
     }
+  },
+  "credits": {
+    "title": "Tegoeden",
+    "add": "Creditnota toevoegen",
+    "empty": "Geen tegoeden — te veel betaalde bedragen en creditnota’s verschijnen hier",
+    "openTotal": "Open tegoed: {{amount}}",
+    "date": "Datum",
+    "source": "Bron",
+    "reason": "Reden",
+    "amount": "Bedrag",
+    "remaining": "Resterend",
+    "refund": "Terugbetalen",
+    "refundedOn": "Terugbetaald {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Te veel betaald",
+      "CREDIT_NOTE": "Creditnota"
+    },
+    "createDialog": {
+      "title": "Creditnota toevoegen",
+      "message": "Geld dat u dit contact verschuldigd bent. Het kan op een latere betaling worden toegepast of worden terugbetaald.",
+      "reasonPlaceholder": "bijv. Compensatie voor cv-storing in maart",
+      "confirm": "Tegoed toevoegen"
+    },
+    "refundDialog": {
+      "title": "Tegoed terugbetalen",
+      "message": "Legt vast dat het resterende {{amount}} aan het contact is terugbetaald.",
+      "date": "Terugbetaaldatum",
+      "notes": "Notities (optioneel)",
+      "confirm": "Als terugbetaald markeren"
+    }
   }
 }

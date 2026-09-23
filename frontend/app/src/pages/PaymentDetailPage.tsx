@@ -21,7 +21,15 @@ import {
   useDeletePaymentReceival,
   usePaymentReminders,
   useSendPaymentReminder,
+  useCancelPayment,
+  useWaiveLateFee,
+  useWriteOffPayment,
+  useApplyCredit,
 } from '@/hooks/usePaymentHooks';
+import { useContactCredits } from '@/hooks/useContactHooks';
+import { PaymentTypeBadge } from '@/components/payments/PaymentTypeBadge';
+import { ReasonDialog } from '@/components/payments/ReasonDialog';
+import { ApplyCreditDialog } from '@/components/payments/ApplyCreditDialog';
 import { PaymentRemindersList } from '@/components/payments/PaymentRemindersList';
 import { SendReminderDialog } from '@/components/payments/SendReminderDialog';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -275,6 +283,12 @@ const ReceivalsTable = ({
                       {symbol} {receival.amount.toFixed(2)}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary max-w-xs">
+                      {receival.receivalType &&
+                        receival.receivalType !== 'PAYMENT' && (
+                          <span className="inline-block mb-1 px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
+                            {t(`receivals.types.${receival.receivalType}`)}
+                          </span>
+                        )}
                       {receival.notes ? (
                         <RichTextDisplay
                           content={receival.notes}
@@ -359,6 +373,10 @@ export const PaymentDetailPage = () => {
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
   const [showReceivalModal, setShowReceivalModal] = useState(false);
   const [showReminderModal, setShowReminderModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showWaiveModal, setShowWaiveModal] = useState(false);
+  const [showWriteOffModal, setShowWriteOffModal] = useState(false);
+  const [showApplyCreditModal, setShowApplyCreditModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Open the relevant action modal when arriving from an email deep link
@@ -421,6 +439,9 @@ export const PaymentDetailPage = () => {
   const RECEIVALS_PER_PAGE = 10;
 
   const { data: payment, isLoading, error } = usePayment(id);
+  const { data: contactCredits = [] } = useContactCredits(
+    payment?.contact?.identifier
+  );
   const {
     data: auditLog = [],
     isLoading: auditLoading,
@@ -435,6 +456,10 @@ export const PaymentDetailPage = () => {
   const updatePaymentMutation = useUpdatePayment(id);
   const markPaidMutation = useMarkPaymentAsPaid();
   const sendReminderMutation = useSendPaymentReminder();
+  const cancelMutation = useCancelPayment();
+  const waiveMutation = useWaiveLateFee();
+  const writeOffMutation = useWriteOffPayment();
+  const applyCreditMutation = useApplyCredit();
   const { data: reminders = [], isLoading: remindersLoading } =
     usePaymentReminders(id);
   const uploadDocumentMutation = useUploadPaymentDocument(id);
@@ -526,6 +551,9 @@ export const PaymentDetailPage = () => {
     payment.status === PaymentStatus.PARTIALLY_PAID ||
     payment.status === PaymentStatus.OVERDUE;
   const canRegisterReceival = canMarkPaid;
+  const openCredits = contactCredits.filter(
+    (c) => c.remainingAmount > 0 && c.currency === payment.currency
+  );
   const symbol = getCurrencySymbol(payment.currency);
   const fmtMoney = (value: number, currency: string) => {
     try {
@@ -548,7 +576,12 @@ export const PaymentDetailPage = () => {
             id: payment.contract?.identifier,
           })}
           backTo={backTo}
-          badge={<PaymentStatusBadge status={payment.status} />}
+          badge={
+            <span className="inline-flex items-center gap-2">
+              <PaymentTypeBadge type={payment.paymentType} />
+              <PaymentStatusBadge status={payment.status} />
+            </span>
+          }
           actions={
             <>
               {canRegisterReceival && (
@@ -593,6 +626,43 @@ export const PaymentDetailPage = () => {
                   disabled={!canEditData}
                 >
                   {t('common:buttons.edit')}
+                </Button>
+              )}
+              {canMarkPaid && openCredits.length > 0 && (
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowApplyCreditModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.applyCredit')}
+                </Button>
+              )}
+              {canMarkPaid && payment.paymentType === 'LATE_FEE' && (
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowWaiveModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.waiveLateFee')}
+                </Button>
+              )}
+              {canMarkPaid && (
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowWriteOffModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.writeOff')}
+                </Button>
+              )}
+              {canMarkPaid && (payment.receivedAmount ?? 0) === 0 && (
+                <Button
+                  variant="secondary"
+                  leftIcon={<X />}
+                  onClick={() => setShowCancelModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.cancelPayment')}
                 </Button>
               )}
               {canDelete && (
@@ -1386,6 +1456,86 @@ export const PaymentDetailPage = () => {
             setActiveTab('reminders');
           }}
           onClose={() => setShowReminderModal(false)}
+        />
+      )}
+
+      {showCancelModal && (
+        <ReasonDialog
+          open={showCancelModal}
+          title={t('cancelDialog.title')}
+          message={t('cancelDialog.message')}
+          reasonLabel={t('cancelDialog.reason')}
+          reasonPlaceholder={t('cancelDialog.reasonPlaceholder')}
+          confirmLabel={t('cancelDialog.confirm')}
+          variant="danger"
+          isLoading={cancelMutation.isPending}
+          onConfirm={async (reason) => {
+            await cancelMutation.mutateAsync({ id, data: { reason } });
+            setShowCancelModal(false);
+          }}
+          onClose={() => setShowCancelModal(false)}
+        />
+      )}
+
+      {showWaiveModal && (
+        <ReasonDialog
+          open={showWaiveModal}
+          title={t('waiveDialog.title')}
+          message={t('waiveDialog.message', {
+            amount: fmtMoney(payment.balance ?? payment.amount, payment.currency),
+          })}
+          reasonLabel={t('waiveDialog.reason')}
+          reasonPlaceholder={t('waiveDialog.reasonPlaceholder')}
+          confirmLabel={t('waiveDialog.confirm')}
+          isLoading={waiveMutation.isPending}
+          onConfirm={async (reason) => {
+            await waiveMutation.mutateAsync({ id, data: { reason } });
+            setShowWaiveModal(false);
+          }}
+          onClose={() => setShowWaiveModal(false)}
+        />
+      )}
+
+      {showWriteOffModal && (
+        <ReasonDialog
+          open={showWriteOffModal}
+          title={t('writeOffDialog.title')}
+          message={t('writeOffDialog.message', {
+            amount: fmtMoney(payment.balance ?? payment.amount, payment.currency),
+          })}
+          reasonLabel={t('writeOffDialog.reason')}
+          reasonPlaceholder={t('writeOffDialog.reasonPlaceholder')}
+          dateLabel={t('writeOffDialog.date')}
+          confirmLabel={t('writeOffDialog.confirm')}
+          variant="danger"
+          isLoading={writeOffMutation.isPending}
+          onConfirm={async (reason, date) => {
+            await writeOffMutation.mutateAsync({
+              id,
+              data: { reason, writeOffDate: date },
+            });
+            setShowWriteOffModal(false);
+          }}
+          onClose={() => setShowWriteOffModal(false)}
+        />
+      )}
+
+      {showApplyCreditModal && (
+        <ApplyCreditDialog
+          open={showApplyCreditModal}
+          credits={openCredits}
+          balance={payment.balance ?? payment.amount}
+          currency={payment.currency}
+          formatMoney={fmtMoney}
+          isLoading={applyCreditMutation.isPending}
+          onConfirm={async (creditIdentifier, amount) => {
+            await applyCreditMutation.mutateAsync({
+              id,
+              data: { creditIdentifier, amount },
+            });
+            setShowApplyCreditModal(false);
+          }}
+          onClose={() => setShowApplyCreditModal(false)}
         />
       )}
 

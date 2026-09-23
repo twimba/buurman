@@ -59,7 +59,10 @@ public record CreateContractRequest(
     @Nullable Map<String, Object> countryMetadata,
     Optional<List<@Valid RentComponentRequest>> rentComponents,
     Optional<Boolean> tenantRemindersEnabled,
-    Optional<LocalDate> remindersPausedUntil) {
+    Optional<LocalDate> remindersPausedUntil,
+    Optional<Boolean> lateFeeEnabled,
+    Optional<@PositiveOrZero(message = "Grace days must be zero or positive") Integer>
+        lateFeeGraceDays) {
 
   @AssertTrue(message = "End date must be after start date") public boolean isEndDateAfterStartDate() {
     return endDate.isEmpty() || !endDate.get().isBefore(startDate);

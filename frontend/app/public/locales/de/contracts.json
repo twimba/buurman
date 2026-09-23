@@ -197,7 +197,9 @@
     "tenantReminders": "Mietererinnerungen",
     "remindersOn": "Aktiviert",
     "remindersOff": "Aus",
-    "remindersPausedUntil": "Pausiert bis {{date}}"
+    "remindersPausedUntil": "Pausiert bis {{date}}",
+    "lateFeeActive": "nach {{count}} Tagen berechnet",
+    "lateFeeInactive": "nicht berechnet"
   },
   "payments": {
     "title": "Zahlungen",
@@ -394,7 +396,10 @@
     "tenantReminders": "Zahlungserinnerungen an Mieter",
     "tenantRemindersHelp": "Erinnerungs-E-Mails für diesen Vertrag erlauben. Der Mieterkontakt muss ebenfalls zugestimmt haben; sonst wird nichts gesendet.",
     "remindersPausedUntil": "Erinnerungen pausieren bis",
-    "remindersPausedUntilHelp": "Bis zu diesem Datum werden keine Erinnerungen gesendet, z. B. während einer Ratenvereinbarung."
+    "remindersPausedUntilHelp": "Bis zu diesem Datum werden keine Erinnerungen gesendet, z. B. während einer Ratenvereinbarung.",
+    "lateFeeEnabled": "Mahngebühren berechnen",
+    "lateFeeEnabledHelp": "Legt eine separate Gebührenzahlung an, sobald eine Mietzahlung nach der Karenzzeit noch offen ist. Standardmäßig aus.",
+    "lateFeeGraceDays": "Karenzzeit (Tage)"
   },
   "statusChange": {
     "title": "Vertragsstatus ändern",

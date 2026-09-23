@@ -55,7 +55,10 @@ public record UpdateContractRequest(
     @Nullable Map<String, Object> countryMetadata,
     Optional<List<@Valid RentComponentRequest>> rentComponents,
     Optional<Boolean> tenantRemindersEnabled,
-    Optional<LocalDate> remindersPausedUntil) {
+    Optional<LocalDate> remindersPausedUntil,
+    Optional<Boolean> lateFeeEnabled,
+    Optional<@PositiveOrZero(message = "Grace days must be zero or positive") Integer>
+        lateFeeGraceDays) {
 
   // Bean Validation evaluates all constraints simultaneously, so @AssertTrue can run even when
   // @NotNull fails — null guards prevent NPE in that case.

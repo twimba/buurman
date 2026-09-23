@@ -152,6 +152,8 @@ export const ContractForm = ({
     paymentDueDay: contract?.paymentDueDay ?? 1,
     terminationNoticeDays: contract?.terminationNoticeDays ?? 30,
     lateFeePercentage: contract?.lateFeePercentage ?? undefined,
+    lateFeeEnabled: contract?.lateFeeEnabled ?? false,
+    lateFeeGraceDays: contract?.lateFeeGraceDays ?? 0,
     termsAndConditions: contract?.termsAndConditions ?? '',
     notes: contract?.notes ?? '',
     countryMetadata: contract?.countryMetadata ?? undefined,
@@ -1104,6 +1106,59 @@ export const ContractForm = ({
                     {errors.paymentDueDay}
                   </p>
                 )}
+              </div>
+
+              <div className="lg:col-span-2 flex items-start justify-between gap-4 rounded-md border border-border-default p-4">
+                <div>
+                  <label
+                    htmlFor="lateFeeEnabled"
+                    className="text-sm font-medium text-text-primary"
+                  >
+                    {t('form.lateFeeEnabled')}
+                  </label>
+                  <p className="text-sm text-text-secondary">
+                    {t('form.lateFeeEnabledHelp')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  id="lateFeeEnabled"
+                  role="switch"
+                  aria-checked={formData.lateFeeEnabled ?? false}
+                  onClick={() =>
+                    handleChange('lateFeeEnabled', !(formData.lateFeeEnabled ?? false))
+                  }
+                  disabled={isLoading}
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-ring ${
+                    formData.lateFeeEnabled ? 'bg-primary-500' : 'bg-surface-inset'
+                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.lateFeeEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.lateFeeGraceDays')}
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="90"
+                  value={formData.lateFeeGraceDays ?? 0}
+                  onChange={(e) =>
+                    handleChange(
+                      'lateFeeGraceDays',
+                      e.target.value ? parseInt(e.target.value) : 0
+                    )
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  disabled={isLoading || !formData.lateFeeEnabled}
+                />
               </div>
 
               <div>

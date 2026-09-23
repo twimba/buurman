@@ -197,7 +197,9 @@
     "tenantReminders": "Rappels au locataire",
     "remindersOn": "Activés",
     "remindersOff": "Désactivés",
-    "remindersPausedUntil": "Suspendus jusqu’au {{date}}"
+    "remindersPausedUntil": "Suspendus jusqu’au {{date}}",
+    "lateFeeActive": "facturée après {{count}} jours",
+    "lateFeeInactive": "non facturée"
   },
   "payments": {
     "title": "Paiements",
@@ -394,7 +396,10 @@
     "tenantReminders": "Rappels de paiement au locataire",
     "tenantRemindersHelp": "Autoriser les e-mails de rappel pour ce contrat. Le contact locataire doit aussi avoir donné son accord ; sinon rien n’est envoyé.",
     "remindersPausedUntil": "Suspendre les rappels jusqu’au",
-    "remindersPausedUntilHelp": "Aucun rappel n’est envoyé jusqu’à cette date, par ex. pendant un échéancier convenu."
+    "remindersPausedUntilHelp": "Aucun rappel n’est envoyé jusqu’à cette date, par ex. pendant un échéancier convenu.",
+    "lateFeeEnabled": "Facturer des pénalités de retard",
+    "lateFeeEnabledHelp": "Ajoute un paiement de pénalité distinct lorsqu’un loyer reste impayé après le délai de grâce. Désactivé par défaut.",
+    "lateFeeGraceDays": "Délai de grâce (jours)"
   },
   "statusChange": {
     "title": "Changer le statut du contrat",

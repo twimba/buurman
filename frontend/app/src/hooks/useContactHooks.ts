@@ -25,6 +25,9 @@ import {
   deleteContactAddress,
   getContactNotes,
   createContactNote,
+  getContactCredits,
+  createContactCredit,
+  refundContactCredit,
   updateContactNote,
   deleteContactNote,
   pinContactNote,
@@ -55,6 +58,8 @@ import type {
   DuplicateCheckResponse,
   GetContactsParams,
   GetContactActivityParams,
+  CreateContactCreditRequest,
+  RefundContactCreditRequest,
 } from '../generated/models';
 import type { PageParams } from '@/types/common';
 import { useToast } from '@buurman/ui';
@@ -600,6 +605,49 @@ export const useEraseContactData = () => {
       });
       showToast('Contact data erased', 'success');
       trackEvent(AnalyticsEvent.CONTACT_DATA_ERASED);
+    },
+  });
+};
+
+// --- Credits (BUUR-101) ---
+
+export const useContactCredits = (contactId: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.contacts.credits(contactId),
+    queryFn: () => getContactCredits(contactId ?? ''),
+    enabled: !!contactId,
+  });
+};
+
+export const useCreateContactCredit = (contactId: string) => {
+  const queryClient = useQueryClient();
+  return useMutationWithToast({
+    mutationFn: (data: CreateContactCreditRequest) =>
+      createContactCredit(contactId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.credits(contactId),
+      });
+      trackEvent(AnalyticsEvent.CREDIT_NOTE_CREATED);
+    },
+  });
+};
+
+export const useRefundContactCredit = (contactId: string) => {
+  const queryClient = useQueryClient();
+  return useMutationWithToast({
+    mutationFn: ({
+      creditId,
+      data,
+    }: {
+      creditId: string;
+      data: RefundContactCreditRequest;
+    }) => refundContactCredit(contactId, creditId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.credits(contactId),
+      });
+      trackEvent(AnalyticsEvent.CREDIT_REFUNDED);
     },
   });
 };

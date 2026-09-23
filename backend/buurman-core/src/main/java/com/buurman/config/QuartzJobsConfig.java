@@ -13,6 +13,7 @@ import com.buurman.job.AutoExtensionJob;
 import com.buurman.job.DatabaseMetricsRefreshJob;
 import com.buurman.job.ExecutionHistoryCleanupJob;
 import com.buurman.job.ImpersonationSessionCleanupJob;
+import com.buurman.job.LateFeeJob;
 import com.buurman.job.PaymentDunningJob;
 import com.buurman.job.PaymentGenerationJob;
 import com.buurman.job.RateLimitCleanupJob;
@@ -41,6 +42,26 @@ public class QuartzJobsConfig {
     return TriggerBuilder.newTrigger()
         .forJob(paymentGenerationJobDetail)
         .withIdentity("paymentGenerationTrigger", "scheduling")
+        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+        .build();
+  }
+
+  // ── Late Fees ───────────────────────────────────────────────────────────
+
+  @Bean
+  public JobDetail lateFeeJobDetail() {
+    return JobBuilder.newJob(LateFeeJob.class)
+        .withIdentity("lateFeeJob", "scheduling")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger lateFeeTrigger(
+      JobDetail lateFeeJobDetail, @Value("${scheduling.late-fees.cron}") String cron) {
+    return TriggerBuilder.newTrigger()
+        .forJob(lateFeeJobDetail)
+        .withIdentity("lateFeeTrigger", "scheduling")
         .withSchedule(CronScheduleBuilder.cronSchedule(cron))
         .build();
   }

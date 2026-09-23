@@ -105,6 +105,8 @@ export interface ContractResponse {
   requiresTenantConfirmation?: boolean;
   tenantRemindersEnabled?: boolean;
   remindersPausedUntil?: string;
+  lateFeeEnabled?: boolean;
+  lateFeeGraceDays?: number;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;

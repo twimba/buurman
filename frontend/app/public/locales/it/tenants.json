@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Ex inquilino",
       "REFERRED": "Referenziato"
     }
+  },
+  "credits": {
+    "title": "Crediti",
+    "add": "Aggiungi nota di credito",
+    "empty": "Nessun credito: pagamenti in eccesso e note di credito compaiono qui",
+    "openTotal": "Credito aperto: {{amount}}",
+    "date": "Data",
+    "source": "Origine",
+    "reason": "Motivo",
+    "amount": "Importo",
+    "remaining": "Residuo",
+    "refund": "Rimborsa",
+    "refundedOn": "Rimborsato il {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Pagamento in eccesso",
+      "CREDIT_NOTE": "Nota di credito"
+    },
+    "createDialog": {
+      "title": "Aggiungi nota di credito",
+      "message": "Denaro che devi a questo contatto. Può essere usato per un pagamento successivo o rimborsato.",
+      "reasonPlaceholder": "es. Compensazione per guasto caldaia a marzo",
+      "confirm": "Aggiungi credito"
+    },
+    "refundDialog": {
+      "title": "Rimborsa credito",
+      "message": "Registra che il residuo di {{amount}} è stato restituito al contatto.",
+      "date": "Data del rimborso",
+      "notes": "Note (facoltativo)",
+      "confirm": "Segna come rimborsato"
+    }
   }
 }

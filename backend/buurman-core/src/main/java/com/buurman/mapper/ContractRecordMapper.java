@@ -47,6 +47,8 @@ public class ContractRecordMapper {
     contract.setTerminationNoticeDays(
         record.getTerminationNoticeDays() != null ? record.getTerminationNoticeDays() : 30);
     contract.setLateFeePercentage(Optional.ofNullable(record.getLateFeePercentage()));
+    contract.setLateFeeEnabled(Optional.ofNullable(record.getLateFeeEnabled()).orElse(false));
+    contract.setLateFeeGraceDays(Optional.ofNullable(record.getLateFeeGraceDays()).orElse(0));
     contract.setStatus(Contract.ContractStatus.valueOf(record.getStatus()));
     contract.setTermsAndConditions(Optional.ofNullable(record.getTermsAndConditions()));
     contract.setNotes(Optional.ofNullable(record.getNotes()));

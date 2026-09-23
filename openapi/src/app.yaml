@@ -263,6 +263,16 @@ paths:
     $ref: 'paths/payments.yaml#/payments-arrears'
   /payments/{identifier}/reminders:
     $ref: 'paths/payments.yaml#/payments-reminders'
+  /payments/{identifier}/cancel:
+    $ref: 'paths/payments.yaml#/payments-cancel'
+  /payments/{identifier}/waive-late-fee:
+    $ref: 'paths/payments.yaml#/payments-waive-late-fee'
+  /payments/{identifier}/write-off:
+    $ref: 'paths/payments.yaml#/payments-write-off'
+  /payments/{identifier}/apply-credit:
+    $ref: 'paths/payments.yaml#/payments-apply-credit'
+  /payments/bulk-cancel:
+    $ref: 'paths/payments.yaml#/payments-bulk-cancel'
   /payment-instructions:
     $ref: 'paths/payments.yaml#/payment-instructions'
   /notifications/{identifier}/resend:
@@ -545,6 +555,10 @@ paths:
     $ref: 'paths/contacts.yaml#/documents-item'
   /contacts/{contactIdentifier}/notes:
     $ref: 'paths/contacts.yaml#/notes'
+  /contacts/{contactIdentifier}/credits:
+    $ref: 'paths/contacts.yaml#/credits'
+  /contacts/{contactIdentifier}/credits/{creditIdentifier}/refund:
+    $ref: 'paths/contacts.yaml#/credits-refund'
   /contacts/{contactIdentifier}/notes/{noteIdentifier}:
     $ref: 'paths/contacts.yaml#/notes-item'
   /contacts/{contactIdentifier}/notes/{noteIdentifier}/pin:
@@ -671,6 +685,9 @@ components:
     PaymentInstructionIdentifier:
       type: string
       description: Payment instruction identifier
+    ContactCreditIdentifier:
+      type: string
+      description: Contact credit identifier
     PaymentReceivalIdentifier:
       type: string
       description: Payment receival identifier
@@ -3006,6 +3023,10 @@ components:
         createdAt:
           type: string
           format: date-time
+        receivalType:
+          type: string
+          enum: [PAYMENT, WRITE_OFF, CREDIT]
+          description: How the balance was settled — money received, written off, or an applied credit
       required:
         - amount
         - createdAt
@@ -3059,6 +3080,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PaymentReceivalResponse"
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
+        parentPaymentIdentifier:
+          type: string
+          description: For LATE_FEE payments, the rent payment the fee was charged on
+        cancelReason:
+          type: string
+        waivedAt:
+          type: string
+          format: date-time
+        waiveReason:
+          type: string
         createdAt:
           type: string
           format: date-time
@@ -3380,6 +3413,13 @@ components:
           type: string
           format: date
           description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -3785,6 +3825,13 @@ components:
           type: string
           format: date
           description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -5829,6 +5876,13 @@ components:
           type: string
           format: date
           description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -7359,6 +7413,125 @@ components:
         - overdueCount
         - pendingAmount
         - pendingCount
+    PaymentType:
+      type: string
+      description: RENT for regular rent, LATE_FEE for a fee charged on an overdue rent payment
+      enum: [RENT, LATE_FEE]
+    CancelPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - reason
+    BulkCancelPaymentsRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - identifiers
+        - reason
+    WaiveLateFeeRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - reason
+    WriteOffPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        writeOffDate:
+          type: string
+          format: date
+      required:
+        - reason
+    ApplyCreditRequest:
+      type: object
+      properties:
+        creditIdentifier:
+          $ref: '#/components/schemas/ContactCreditIdentifier'
+        amount:
+          type: number
+          description: Defaults to the smaller of the open balance and the remaining credit
+      required:
+        - creditIdentifier
+    CreateContactCreditRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+          maxLength: 1000
+        contractIdentifier:
+          $ref: '#/components/schemas/ContractIdentifier'
+      required:
+        - amount
+        - reason
+    RefundContactCreditRequest:
+      type: object
+      properties:
+        refundDate:
+          type: string
+          format: date
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - refundDate
+    ContactCreditResponse:
+      type: object
+      description: Money owed to a contact from an overpayment or a credit note
+      properties:
+        identifier:
+          type: string
+        contactIdentifier:
+          type: string
+        contractIdentifier:
+          type: string
+        amount:
+          type: number
+        remainingAmount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+          enum: [OVERPAYMENT, CREDIT_NOTE]
+        reason:
+          type: string
+        sourcePaymentIdentifier:
+          type: string
+        refundedAt:
+          type: string
+          format: date-time
+        refundNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - contactIdentifier
+        - amount
+        - remainingAmount
+        - currency
+        - source
+        - createdAt
     ReminderTone:
       type: string
       description: How strongly a tenant reminder is worded

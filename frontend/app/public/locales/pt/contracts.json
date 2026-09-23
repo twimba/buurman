@@ -197,7 +197,9 @@
     "tenantReminders": "Lembretes ao inquilino",
     "remindersOn": "Ativados",
     "remindersOff": "Desligados",
-    "remindersPausedUntil": "Em pausa até {{date}}"
+    "remindersPausedUntil": "Em pausa até {{date}}",
+    "lateFeeActive": "cobrada após {{count}} dias",
+    "lateFeeInactive": "não cobrada"
   },
   "payments": {
     "title": "Pagamentos",
@@ -394,7 +396,10 @@
     "tenantReminders": "Lembretes de pagamento ao inquilino",
     "tenantRemindersHelp": "Permitir e-mails de lembrete para este contrato. O contacto do inquilino também tem de ter dado consentimento; caso contrário nada é enviado.",
     "remindersPausedUntil": "Pausar lembretes até",
-    "remindersPausedUntilHelp": "Não são enviados lembretes até esta data, p. ex. durante um plano de pagamento."
+    "remindersPausedUntilHelp": "Não são enviados lembretes até esta data, p. ex. durante um plano de pagamento.",
+    "lateFeeEnabled": "Cobrar multa por atraso",
+    "lateFeeEnabledHelp": "Adiciona um pagamento de multa separado quando uma renda continua em aberto após o período de carência. Desligado por defeito.",
+    "lateFeeGraceDays": "Período de carência (dias)"
   },
   "statusChange": {
     "title": "Alterar Estado do Contrato",

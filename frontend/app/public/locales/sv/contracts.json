@@ -197,7 +197,9 @@
     "tenantReminders": "Hyresgästpåminnelser",
     "remindersOn": "Aktiverade",
     "remindersOff": "Av",
-    "remindersPausedUntil": "Pausade till {{date}}"
+    "remindersPausedUntil": "Pausade till {{date}}",
+    "lateFeeActive": "debiteras efter {{count}} dagar",
+    "lateFeeInactive": "debiteras inte"
   },
   "payments": {
     "title": "Betalningar",
@@ -394,7 +396,10 @@
     "tenantReminders": "Betalningspåminnelser till hyresgäst",
     "tenantRemindersHelp": "Tillåt påminnelsemejl för detta avtal. Hyresgästkontakten måste också ha samtyckt; annars skickas inget.",
     "remindersPausedUntil": "Pausa påminnelser till",
-    "remindersPausedUntilHelp": "Inga påminnelser skickas fram till detta datum, t.ex. under en avbetalningsplan."
+    "remindersPausedUntilHelp": "Inga påminnelser skickas fram till detta datum, t.ex. under en avbetalningsplan.",
+    "lateFeeEnabled": "Ta ut förseningsavgift",
+    "lateFeeEnabledHelp": "Lägger till en separat avgiftsbetalning när en hyra fortfarande är obetald efter respittiden. Avstängt som standard.",
+    "lateFeeGraceDays": "Respittid (dagar)"
   },
   "statusChange": {
     "title": "Andra kontraktsstatus",

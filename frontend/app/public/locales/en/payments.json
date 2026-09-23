@@ -8,7 +8,11 @@
     "registerPayment": "Register Payment",
     "registerReceival": "Register Receival",
     "markAsPaid": "Mark as Paid",
-    "sendReminder": "Send Reminder"
+    "sendReminder": "Send Reminder",
+    "applyCredit": "Apply credit",
+    "waiveLateFee": "Waive fee",
+    "writeOff": "Write off",
+    "cancelPayment": "Cancel payment"
   },
   "stats": {
     "pendingPayments": "Pending Payments",
@@ -148,7 +152,12 @@
     "receivalDate": "Receival Date",
     "notesOptional": "Notes (Optional)",
     "notesPlaceholder": "Add notes about this receival...",
-    "register": "Register"
+    "register": "Register",
+    "types": {
+      "WRITE_OFF": "Write-off",
+      "CREDIT": "Credit applied",
+      "PAYMENT": "Payment"
+    }
   },
   "history": {
     "title": "Payment History",
@@ -207,7 +216,8 @@
     "select": "Select",
     "done": "Done",
     "markPaid": "Mark paid",
-    "sendReminders": "Send reminders"
+    "sendReminders": "Send reminders",
+    "cancel": "Cancel payments"
   },
   "arrears": {
     "title": "Arrears",
@@ -262,6 +272,54 @@
   "toasts": {
     "reminderSent": "Reminder sent to {{email}}",
     "bulkMarkPaid": "{{success}} marked as paid, {{failed}} skipped",
-    "bulkReminders": "{{success}} reminders sent, {{failed}} skipped"
+    "bulkReminders": "{{success}} reminders sent, {{failed}} skipped",
+    "cancelled": "Payment cancelled",
+    "bulkCancelled": "{{success}} cancelled, {{failed}} skipped",
+    "lateFeeWaived": "Late fee waived",
+    "writtenOff": "Balance written off",
+    "creditApplied": "Credit applied"
+  },
+  "types": {
+    "LATE_FEE": "Late fee",
+    "RENT": "Rent"
+  },
+  "cancelDialog": {
+    "title": "Cancel payment",
+    "titleBulk": "Cancel {{count}} payments",
+    "message": "The payment is marked as cancelled and no longer counts as outstanding. Payments with registered receivals cannot be cancelled — write off the balance instead.",
+    "messageBulk": "Each selected open payment is cancelled with this reason. Paid payments and payments with receivals are skipped.",
+    "reason": "Reason",
+    "reasonPlaceholder": "e.g. Tenant moved out on the 15th",
+    "confirm": "Cancel payment",
+    "confirmBulk": "Cancel {{count}} payments"
+  },
+  "waiveDialog": {
+    "title": "Waive late fee",
+    "message": "The fee of {{amount}} is cancelled and will not be charged.",
+    "reason": "Reason",
+    "reasonPlaceholder": "e.g. First late payment, goodwill",
+    "confirm": "Waive fee"
+  },
+  "writeOffDialog": {
+    "title": "Write off balance",
+    "message": "The remaining {{amount}} is closed without money received. This is recorded as a write-off and cannot be undone.",
+    "reason": "Reason",
+    "reasonPlaceholder": "e.g. Bad debt after tenant left",
+    "date": "Write-off date",
+    "confirm": "Write off"
+  },
+  "applyCreditDialog": {
+    "title": "Apply tenant credit",
+    "message": "Open balance: {{balance}}. Choose which credit to use and how much of it.",
+    "credit": "Credit",
+    "amount": "Amount (max {{max}})",
+    "confirm": "Apply {{amount}}",
+    "none": "This tenant has no open credit in this currency."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Overpayment",
+      "CREDIT_NOTE": "Credit note"
+    }
   }
 }

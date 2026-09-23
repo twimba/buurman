@@ -473,5 +473,35 @@
       "FORMER_TENANT": "Ancien Locataire",
       "REFERRED": "Référé"
     }
+  },
+  "credits": {
+    "title": "Avoirs",
+    "add": "Ajouter un avoir",
+    "empty": "Aucun avoir — les trop-perçus et avoirs apparaîtront ici",
+    "openTotal": "Avoir ouvert : {{amount}}",
+    "date": "Date",
+    "source": "Origine",
+    "reason": "Motif",
+    "amount": "Montant",
+    "remaining": "Restant",
+    "refund": "Rembourser",
+    "refundedOn": "Remboursé le {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Trop-perçu",
+      "CREDIT_NOTE": "Avoir"
+    },
+    "createDialog": {
+      "title": "Ajouter un avoir",
+      "message": "Somme que vous devez à ce contact. Elle peut être imputée à un paiement ultérieur ou remboursée.",
+      "reasonPlaceholder": "ex. Compensation pour la panne de chaudière en mars",
+      "confirm": "Ajouter l’avoir"
+    },
+    "refundDialog": {
+      "title": "Rembourser l’avoir",
+      "message": "Enregistre que le reste de {{amount}} a été remboursé au contact.",
+      "date": "Date de remboursement",
+      "notes": "Notes (facultatif)",
+      "confirm": "Marquer comme remboursé"
+    }
   }
 }

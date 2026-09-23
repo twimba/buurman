@@ -197,7 +197,9 @@
     "tenantReminders": "Przypomnienia dla najemcy",
     "remindersOn": "Włączone",
     "remindersOff": "Wyłączone",
-    "remindersPausedUntil": "Wstrzymane do {{date}}"
+    "remindersPausedUntil": "Wstrzymane do {{date}}",
+    "lateFeeActive": "naliczana po {{count}} dniach",
+    "lateFeeInactive": "nienaliczana"
   },
   "payments": {
     "title": "Płatności",
@@ -394,7 +396,10 @@
     "tenantReminders": "Przypomnienia o płatności dla najemcy",
     "tenantRemindersHelp": "Zezwól na e-maile z przypomnieniem dla tej umowy. Kontakt najemcy również musi wyrazić zgodę; w przeciwnym razie nic nie zostanie wysłane.",
     "remindersPausedUntil": "Wstrzymaj przypomnienia do",
-    "remindersPausedUntilHelp": "Do tej daty nie są wysyłane przypomnienia, np. w trakcie uzgodnionego planu spłat."
+    "remindersPausedUntilHelp": "Do tej daty nie są wysyłane przypomnienia, np. w trakcie uzgodnionego planu spłat.",
+    "lateFeeEnabled": "Naliczaj opłaty za zwłokę",
+    "lateFeeEnabledHelp": "Dodaje osobną płatność opłaty, gdy czynsz pozostaje nieopłacony po okresie karencji. Domyślnie wyłączone.",
+    "lateFeeGraceDays": "Okres karencji (dni)"
   },
   "statusChange": {
     "title": "Zmień status umowy",

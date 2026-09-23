@@ -59,4 +59,6 @@ public record ContractResponse(
     Instant createdAt,
     Optional<Instant> updatedAt,
     Boolean tenantRemindersEnabled,
-    Optional<LocalDate> remindersPausedUntil) {}
+    Optional<LocalDate> remindersPausedUntil,
+    Boolean lateFeeEnabled,
+    Integer lateFeeGraceDays) {}

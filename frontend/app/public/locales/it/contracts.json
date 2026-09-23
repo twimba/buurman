@@ -197,7 +197,9 @@
     "tenantReminders": "Promemoria all’inquilino",
     "remindersOn": "Attivi",
     "remindersOff": "Disattivati",
-    "remindersPausedUntil": "Sospesi fino al {{date}}"
+    "remindersPausedUntil": "Sospesi fino al {{date}}",
+    "lateFeeActive": "applicata dopo {{count}} giorni",
+    "lateFeeInactive": "non applicata"
   },
   "payments": {
     "title": "Pagamenti",
@@ -394,7 +396,10 @@
     "tenantReminders": "Promemoria di pagamento all’inquilino",
     "tenantRemindersHelp": "Consenti e-mail di promemoria per questo contratto. Anche il contatto dell’inquilino deve aver acconsentito; altrimenti non viene inviato nulla.",
     "remindersPausedUntil": "Sospendi i promemoria fino al",
-    "remindersPausedUntilHelp": "Nessun promemoria viene inviato fino a questa data, ad es. durante un piano di rientro."
+    "remindersPausedUntilHelp": "Nessun promemoria viene inviato fino a questa data, ad es. durante un piano di rientro.",
+    "lateFeeEnabled": "Applica penali di mora",
+    "lateFeeEnabledHelp": "Aggiunge un pagamento di penale separato quando un affitto resta aperto oltre il periodo di tolleranza. Disattivato per impostazione predefinita.",
+    "lateFeeGraceDays": "Periodo di tolleranza (giorni)"
   },
   "statusChange": {
     "title": "Cambia stato del contratto",
