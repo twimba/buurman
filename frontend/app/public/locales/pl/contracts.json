@@ -193,7 +193,11 @@
       "created": "Utworzono:",
       "lastUpdated": "Ostatnia aktualizacja:",
       "at": "o"
-    }
+    },
+    "tenantReminders": "Przypomnienia dla najemcy",
+    "remindersOn": "Włączone",
+    "remindersOff": "Wyłączone",
+    "remindersPausedUntil": "Wstrzymane do {{date}}"
   },
   "payments": {
     "title": "Płatności",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Ustaw kraj dla wybranej nieruchomości, aby zobaczyć pola regulacyjne specyficzne dla kraju.",
     "dismissDuplicateWarning": "Przejrzyj ostrzeżenie o duplikacie powyżej i odrzuć je, aby kontynuować",
     "dismissDuplicateFirst": "Najpierw odrzuć ostrzeżenie o duplikacie",
-    "change": "Zmień"
+    "change": "Zmień",
+    "tenantReminders": "Przypomnienia o płatności dla najemcy",
+    "tenantRemindersHelp": "Zezwól na e-maile z przypomnieniem do najemcy z tej umowy. Domyślnie wyłączone.",
+    "remindersPausedUntil": "Wstrzymaj przypomnienia do",
+    "remindersPausedUntilHelp": "Do tej daty nie są wysyłane przypomnienia, np. w trakcie uzgodnionego planu spłat."
   },
   "statusChange": {
     "title": "Zmień status umowy",

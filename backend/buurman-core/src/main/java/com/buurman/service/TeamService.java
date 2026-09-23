@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.PaymentReminderStep;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
@@ -31,9 +32,11 @@ import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
+import com.buurman.dto.request.UpdateReminderSettingsRequest;
 import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
+import com.buurman.dto.response.ReminderSettingsResponse;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamPreferencesResponse;
 import com.buurman.dto.response.TeamResponse;
@@ -507,6 +510,46 @@ public class TeamService {
         .findByTeamId(teamId)
         .map(TeamPreferences::getDefaultCurrency)
         .orElse("EUR");
+  }
+
+  public ReminderSettingsResponse getReminderSettings(
+      TeamIdentifier teamIdentifier, UserPrincipal principal) {
+    Team team = resolveTeam(teamIdentifier);
+    if (!team.getId().equals(principal.requireTeamId())) {
+      throw new ForbiddenException("Access denied");
+    }
+    TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
+    return new ReminderSettingsResponse(
+        prefs.isAutomaticRemindersEnabled(), prefs.getPaymentReminderSteps());
+  }
+
+  @Transactional
+  @PreAuthorize("hasRole('TEAM_ADMIN')")
+  public ReminderSettingsResponse updateReminderSettings(
+      TeamIdentifier teamIdentifier,
+      UpdateReminderSettingsRequest request,
+      UserPrincipal principal) {
+    Team team = resolveTeam(teamIdentifier);
+    if (!team.getId().equals(principal.requireTeamId())
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
+      throw new ForbiddenException("Access denied");
+    }
+    List<PaymentReminderStep> steps =
+        request.steps().stream()
+            .map(st -> new PaymentReminderStep(st.offsetDays(), st.tone(), st.enabled()))
+            .sorted(java.util.Comparator.comparingInt(PaymentReminderStep::offsetDays))
+            .toList();
+    long distinctOffsets = steps.stream().map(PaymentReminderStep::offsetDays).distinct().count();
+    if (distinctOffsets != steps.size()) {
+      throw new BusinessRuleException("Each reminder step must have a different day offset");
+    }
+    TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
+    prefs.setAutomaticRemindersEnabled(request.automaticRemindersEnabled());
+    prefs.setPaymentReminderSteps(steps);
+    TeamPreferences saved = teamPreferencesRepository.save(prefs);
+    metricsService.incrementCounter("team.reminder_settings.updated.total");
+    return new ReminderSettingsResponse(
+        saved.isAutomaticRemindersEnabled(), saved.getPaymentReminderSteps());
   }
 
   private TeamPreferencesResponse toPreferencesResponse(TeamPreferences prefs) {

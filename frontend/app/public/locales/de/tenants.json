@@ -131,7 +131,10 @@
       "guarantor": "Bürge",
       "overdue": "Überfällig",
       "pending": "Ausstehend"
-    }
+    },
+    "paymentReminders": "Zahlungserinnerungen",
+    "paymentRemindersOn": "Zugestimmt",
+    "paymentRemindersOff": "Nicht zugestimmt"
   },
   "card": {
     "allPaid": "Alles bezahlt",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Firmenname ist erforderlich",
       "invalidEmail": "E-Mail-Adresse muss gültig sein",
       "invalidInvoiceEmail": "Rechnungs-E-Mail muss gültig sein"
-    }
+    },
+    "paymentReminders": "Zahlungserinnerungen an diesen Kontakt senden",
+    "paymentRemindersHelp": "Ausdrückliche Zustimmung zu Erinnerungs-E-Mails bei überfälliger Miete, für alle Verträge. Standardmäßig aus."
   },
   "addresses": {
     "title": "Adressen",

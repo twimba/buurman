@@ -131,7 +131,10 @@
       "guarantor": "Guarantor",
       "overdue": "Overdue",
       "pending": "Pending"
-    }
+    },
+    "paymentReminders": "Payment reminders",
+    "paymentRemindersOn": "Opted in",
+    "paymentRemindersOff": "Not opted in"
   },
   "card": {
     "allPaid": "All paid",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Business name is required",
       "invalidEmail": "Email must be valid",
       "invalidInvoiceEmail": "Invoice email must be valid"
-    }
+    },
+    "paymentReminders": "Send payment reminders to this contact",
+    "paymentRemindersHelp": "Explicit consent to receive reminder emails about overdue rent, for all their contracts. Off by default."
   },
   "addresses": {
     "title": "Addresses",

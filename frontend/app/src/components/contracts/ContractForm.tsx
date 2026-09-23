@@ -161,6 +161,8 @@ export const ContractForm = ({
     landlordNoticeDays: contract?.landlordNoticeDays ?? 30,
     tenantNoticeDays: contract?.tenantNoticeDays ?? 30,
     requiresTenantConfirmation: contract?.requiresTenantConfirmation ?? false,
+    tenantRemindersEnabled: contract?.tenantRemindersEnabled ?? false,
+    remindersPausedUntil: contract?.remindersPausedUntil ?? undefined,
     rentAdjustmentType: contract?.rentAdjustmentType ?? 'NONE',
     rentAdjustmentValue: contract?.rentAdjustmentValue ?? undefined,
     landlordType: contract?.landlordType ?? undefined,
@@ -983,6 +985,72 @@ export const ContractForm = ({
             <h3 className="text-lg font-semibold text-text-primary mb-4">
               {t('form.paymentTerms')}
             </h3>
+
+            {/* Tenant reminders — opt-in, off by default */}
+            <div className="mb-4 rounded-md border border-border-default p-4 space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <label
+                    htmlFor="tenantRemindersEnabled"
+                    className="text-sm font-medium text-text-primary"
+                  >
+                    {t('form.tenantReminders')}
+                  </label>
+                  <p className="text-sm text-text-secondary">
+                    {t('form.tenantRemindersHelp')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  id="tenantRemindersEnabled"
+                  role="switch"
+                  aria-checked={formData.tenantRemindersEnabled ?? false}
+                  onClick={() =>
+                    handleChange(
+                      'tenantRemindersEnabled',
+                      !(formData.tenantRemindersEnabled ?? false)
+                    )
+                  }
+                  disabled={isLoading}
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-ring ${
+                    formData.tenantRemindersEnabled
+                      ? 'bg-primary-500'
+                      : 'bg-surface-inset'
+                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.tenantRemindersEnabled
+                        ? 'translate-x-6'
+                        : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              {formData.tenantRemindersEnabled && (
+                <div className="max-w-xs">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('form.remindersPausedUntil')}
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.remindersPausedUntil ?? ''}
+                    onChange={(e) =>
+                      handleChange(
+                        'remindersPausedUntil',
+                        e.target.value || undefined
+                      )
+                    }
+                    className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                    disabled={isLoading}
+                  />
+                  <p className="text-xs text-text-muted mt-1">
+                    {t('form.remindersPausedUntilHelp')}
+                  </p>
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">

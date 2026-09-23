@@ -131,7 +131,10 @@
       "guarantor": "Garante",
       "overdue": "Vencido",
       "pending": "Pendiente"
-    }
+    },
+    "paymentReminders": "Recordatorios de pago",
+    "paymentRemindersOn": "Con consentimiento",
+    "paymentRemindersOff": "Sin consentimiento"
   },
   "card": {
     "allPaid": "Todo pagado",
@@ -196,7 +199,9 @@
       "businessNameRequired": "El nombre comercial es obligatorio",
       "invalidEmail": "El email debe ser válido",
       "invalidInvoiceEmail": "El email de facturación debe ser válido"
-    }
+    },
+    "paymentReminders": "Enviar recordatorios de pago a este contacto",
+    "paymentRemindersHelp": "Consentimiento explícito para recibir correos de recordatorio sobre alquileres vencidos, en todos sus contratos. Desactivado por defecto."
   },
   "addresses": {
     "title": "Direcciones",

@@ -57,7 +57,9 @@ public record CreateContractRequest(
     Optional<String> termsAndConditions,
     Optional<String> notes,
     @Nullable Map<String, Object> countryMetadata,
-    Optional<List<@Valid RentComponentRequest>> rentComponents) {
+    Optional<List<@Valid RentComponentRequest>> rentComponents,
+    Optional<Boolean> tenantRemindersEnabled,
+    Optional<LocalDate> remindersPausedUntil) {
 
   @AssertTrue(message = "End date must be after start date") public boolean isEndDateAfterStartDate() {
     return endDate.isEmpty() || !endDate.get().isBefore(startDate);

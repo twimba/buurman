@@ -9,9 +9,11 @@ import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.TransferOwnershipRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
+import com.buurman.dto.request.UpdateReminderSettingsRequest;
 import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
+import com.buurman.dto.response.ReminderSettingsResponse;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamPreferencesResponse;
 import com.buurman.dto.response.TeamResponse;
@@ -87,6 +89,20 @@ public class TeamController implements TeamsApi {
       TeamIdentifier teamIdentifier, UpdateTeamSettingsRequest updateTeamSettingsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateTeamPreferences(teamIdentifier, updateTeamSettingsRequest, principal);
+  }
+
+  @Override
+  public ReminderSettingsResponse getReminderSettings(TeamIdentifier teamIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return teamService.getReminderSettings(teamIdentifier, principal);
+  }
+
+  @Override
+  public ReminderSettingsResponse updateReminderSettings(
+      TeamIdentifier teamIdentifier, UpdateReminderSettingsRequest updateReminderSettingsRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return teamService.updateReminderSettings(
+        teamIdentifier, updateReminderSettingsRequest, principal);
   }
 
   @Override

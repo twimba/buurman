@@ -193,7 +193,11 @@
       "created": "Aangemaakt:",
       "lastUpdated": "Laatst bijgewerkt:",
       "at": "om"
-    }
+    },
+    "tenantReminders": "Huurdersherinneringen",
+    "remindersOn": "Ingeschakeld",
+    "remindersOff": "Uit",
+    "remindersPausedUntil": "Gepauzeerd tot {{date}}"
   },
   "payments": {
     "title": "Betalingen",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Stel een land in op het geselecteerde pand om landspecifieke regelgevingsvelden te zien.",
     "dismissDuplicateWarning": "Bekijk de duplicaatwaarschuwing hierboven en sluit deze om door te gaan",
     "dismissDuplicateFirst": "Sluit eerst de duplicaatwaarschuwing",
-    "change": "Wijzigen"
+    "change": "Wijzigen",
+    "tenantReminders": "Betalingsherinneringen aan huurder",
+    "tenantRemindersHelp": "Sta herinneringsmails aan de huurder van dit contract toe. Standaard uit.",
+    "remindersPausedUntil": "Herinneringen pauzeren tot",
+    "remindersPausedUntilHelp": "Tot deze datum worden geen herinneringen verstuurd, bijv. tijdens een betalingsregeling."
   },
   "statusChange": {
     "title": "Contractstatus wijzigen",

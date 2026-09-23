@@ -193,7 +193,11 @@
       "created": "Opprettet:",
       "lastUpdated": "Sist oppdatert:",
       "at": "kl."
-    }
+    },
+    "tenantReminders": "Leietakerpåminnelser",
+    "remindersOn": "Aktivert",
+    "remindersOff": "Av",
+    "remindersPausedUntil": "På pause til {{date}}"
   },
   "payments": {
     "title": "Betalinger",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Angi et land for den valgte eiendommen for å se landsspesifikke regulatoriske felt.",
     "dismissDuplicateWarning": "Gjennomgå duplikatadvarselen ovenfor og avvis den for å fortsette",
     "dismissDuplicateFirst": "Avvis duplikatadvarselen først",
-    "change": "Endre"
+    "change": "Endre",
+    "tenantReminders": "Betalingspåminnelser til leietaker",
+    "tenantRemindersHelp": "Tillat påminnelses-e-poster til leietakeren i denne kontrakten. Av som standard.",
+    "remindersPausedUntil": "Sett påminnelser på pause til",
+    "remindersPausedUntilHelp": "Ingen påminnelser sendes før denne datoen, f.eks. under en nedbetalingsavtale."
   },
   "statusChange": {
     "title": "Endre kontraktstatus",

@@ -387,5 +387,38 @@
       "completed": "Completata",
       "failed": "Non riuscita"
     }
+  },
+  "tenantReminders": {
+    "title": "Promemoria agli inquilini",
+    "subtitle": "E-mail automatiche di promemoria di pagamento agli inquilini (solleciti graduali)",
+    "consentNotice": "I promemoria non vengono mai inviati senza il consenso dell’inquilino: attivali sul contratto o sul contatto. Tutto qui è disattivato per impostazione predefinita.",
+    "automatic": {
+      "label": "Promemoria automatici",
+      "description": "Eseguire ogni mattina la scala sottostante per i pagamenti aperti degli inquilini che hanno acconsentito"
+    },
+    "steps": {
+      "title": "Scala dei solleciti",
+      "description": "Ogni passo invia un’e-mail quando un pagamento raggiunge il numero di giorni indicato dopo la scadenza. Un pagamento riceve al massimo un passo al giorno.",
+      "empty": "Nessun passo configurato: non verrà inviato nulla automaticamente.",
+      "useDefaults": "Usa la scala consigliata",
+      "add": "Aggiungi passo",
+      "remove": "Rimuovi passo",
+      "enabled": "Passo attivo",
+      "offsetDays": "Giorni rispetto alla scadenza",
+      "tone": "Tono",
+      "duplicateOffsets": "Ogni passo deve avere un numero di giorni diverso."
+    },
+    "offset": {
+      "before": "{{count}} giorno prima della scadenza",
+      "before_other": "{{count}} giorni prima della scadenza",
+      "onDue": "alla data di scadenza",
+      "after": "{{count}} giorno dopo la scadenza",
+      "after_other": "{{count}} giorni dopo la scadenza"
+    },
+    "tones": {
+      "FRIENDLY": "Cordiale",
+      "FIRM": "Deciso",
+      "FINAL": "Ultimo avviso"
+    }
   }
 }

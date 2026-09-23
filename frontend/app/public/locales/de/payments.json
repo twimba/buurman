@@ -230,7 +230,8 @@
     "remindAll": "Alle erinnern ({{count}})",
     "showAll": "Alle {{count}} Mieter anzeigen",
     "showLess": "Weniger anzeigen",
-    "noContact": "Kein Kontakt verknüpft"
+    "noContact": "Kein Kontakt verknüpft",
+    "remindersDisabled": "Erinnerungen sind für diesen Mieter nicht aktiviert — im Vertrag oder Kontakt einschalten."
   },
   "bulkMarkPaidDialog": {
     "title": "{{count}} Zahlungen als bezahlt markieren",

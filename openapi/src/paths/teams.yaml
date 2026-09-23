@@ -829,3 +829,129 @@ teams-members-item:
               $ref: '#/components/schemas/ProblemDetail'
     security:
       - bearer-jwt: []
+
+teams-reminder-settings:
+  get:
+    tags:
+      - Teams
+    summary: Get tenant reminder settings
+    description: Dunning ladder configuration — whether automatic tenant reminders run and which steps they send
+    operationId: getReminderSettings
+    parameters:
+      - name: teamIdentifier
+        in: path
+        description: Team identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TeamIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReminderSettingsResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+  put:
+    tags:
+      - Teams
+    summary: Update tenant reminder settings
+    description: >-
+      Configure the dunning ladder (Admin only). Automatic reminders are off by default and, even
+      when on, only reach tenants whose contract or contact has reminders explicitly enabled.
+    operationId: updateReminderSettings
+    parameters:
+      - name: teamIdentifier
+        in: path
+        description: Team identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/TeamIdentifier'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateReminderSettingsRequest'
+      required: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReminderSettingsResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

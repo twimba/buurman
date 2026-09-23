@@ -81,11 +81,23 @@ export const ArrearsPanel = ({
             size="sm"
             leftIcon={<Send />}
             isLoading={sendingFor === null ? false : sendingFor?.length === arrears.paymentCount}
+            disabled={!arrears.contacts.some((c) => c.remindersEnabled)}
+            title={
+              arrears.contacts.some((c) => c.remindersEnabled)
+                ? undefined
+                : t('arrears.remindersDisabled')
+            }
             onClick={() =>
-              onSendReminders(arrears.contacts.flatMap((c) => c.paymentIdentifiers))
+              onSendReminders(
+                arrears.contacts
+                  .filter((c) => c.remindersEnabled)
+                  .flatMap((c) => c.paymentIdentifiers)
+              )
             }
           >
-            {t('arrears.remindAll', { count: arrears.contactCount })}
+            {t('arrears.remindAll', {
+              count: arrears.contacts.filter((c) => c.remindersEnabled).length,
+            })}
           </Button>
         )}
       </div>
@@ -169,6 +181,12 @@ export const ArrearsPanel = ({
                   size="sm"
                   leftIcon={<Send />}
                   isLoading={isSending}
+                  disabled={!row.remindersEnabled}
+                  title={
+                    row.remindersEnabled
+                      ? undefined
+                      : t('arrears.remindersDisabled')
+                  }
                   onClick={() => onSendReminders(row.paymentIdentifiers)}
                   aria-label={t('arrears.sendReminderTo', {
                     name: tenantName(row),

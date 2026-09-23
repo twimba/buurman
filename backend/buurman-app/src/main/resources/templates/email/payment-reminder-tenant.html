@@ -8,16 +8,19 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div th:replace="~{_email-base :: header}"></div>
         <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
-            <h1 th:text="${isOverdue} ? #{email.payment-reminder-tenant.heading.overdue} : #{email.payment-reminder-tenant.heading.due}" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Payment Reminder</h1>
+            <h1 th:text="${isFinal} ? #{email.payment-reminder-tenant.heading.final} : (${isOverdue} ? #{email.payment-reminder-tenant.heading.overdue} : #{email.payment-reminder-tenant.heading.due})" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Payment Reminder</h1>
 
             <p th:text="#{email.payment-reminder-tenant.greeting(${contactName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
                 Dear Tenant,
             </p>
 
-            <p th:if="${isOverdue}" th:text="#{email.payment-reminder-tenant.body.overdue(${propertyName}, ${daysOverdue})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+            <p th:if="${isFinal}" th:text="#{email.payment-reminder-tenant.body.final(${propertyName}, ${daysOverdue})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0; font-weight: 600;">
+                This is a final reminder before further steps are taken.
+            </p>
+            <p th:if="${isOverdue and !isFinal}" th:text="#{email.payment-reminder-tenant.body.overdue(${propertyName}, ${daysOverdue})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
                 Our records show that the rent payment for the property is overdue.
             </p>
-            <p th:unless="${isOverdue}" th:text="#{email.payment-reminder-tenant.body.due(${propertyName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+            <p th:if="${!isOverdue and !isFinal}" th:text="#{email.payment-reminder-tenant.body.due(${propertyName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
                 This is a friendly reminder that a rent payment is due.
             </p>
 

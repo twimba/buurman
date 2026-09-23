@@ -131,7 +131,10 @@
       "guarantor": "Εγγυητής",
       "overdue": "Εκπρόθεσμο",
       "pending": "Σε εκκρεμότητα"
-    }
+    },
+    "paymentReminders": "Υπενθυμίσεις πληρωμής",
+    "paymentRemindersOn": "Με συγκατάθεση",
+    "paymentRemindersOff": "Χωρίς συγκατάθεση"
   },
   "card": {
     "allPaid": "Όλα πληρωμένα",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Η επωνυμία επιχείρησης είναι υποχρεωτική",
       "invalidEmail": "Το email πρέπει να είναι έγκυρο",
       "invalidInvoiceEmail": "Το email τιμολογίων πρέπει να είναι έγκυρο"
-    }
+    },
+    "paymentReminders": "Αποστολή υπενθυμίσεων πληρωμής σε αυτήν την επαφή",
+    "paymentRemindersHelp": "Ρητή συγκατάθεση για email υπενθύμισης καθυστερημένου ενοικίου, για όλα τα συμβόλαιά της. Απενεργοποιημένο από προεπιλογή."
   },
   "addresses": {
     "title": "Διευθύνσεις",

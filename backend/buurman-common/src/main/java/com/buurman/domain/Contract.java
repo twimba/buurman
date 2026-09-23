@@ -87,6 +87,13 @@ public class Contract {
   @Builder.Default private Optional<LandlordType> landlordType = Optional.empty();
   @Builder.Default private Optional<String> regionCode = Optional.empty();
   @Builder.Default private List<String> documentLanguages = List.of("en");
+
+  /** Tenant-facing payment reminders for this contract. Off by default. */
+  @Builder.Default private Boolean tenantRemindersEnabled = false;
+
+  /** While set and in the future, no tenant reminder (manual or automatic) is sent. */
+  @Builder.Default private Optional<LocalDate> remindersPausedUntil = Optional.empty();
+
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

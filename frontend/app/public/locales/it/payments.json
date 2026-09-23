@@ -231,7 +231,8 @@
     "remindAll": "Sollecita tutti ({{count}})",
     "showAll": "Mostra tutti i {{count}} inquilini",
     "showLess": "Mostra meno",
-    "noContact": "Nessun contatto collegato"
+    "noContact": "Nessun contatto collegato",
+    "remindersDisabled": "I promemoria non sono attivi per questo inquilino: attivali sul contratto o sul contatto."
   },
   "bulkMarkPaidDialog": {
     "title": "Segna {{count}} pagamenti come pagati",

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.PaymentReminder;
+import com.buurman.domain.ReminderTone;
 import com.buurman.domain.Sid;
 import com.buurman.util.SkipTestCoverage;
 
@@ -20,4 +21,6 @@ public record PaymentReminderResponse(
     String currency,
     Optional<String> notes,
     Optional<String> sentByName,
+    Optional<Integer> stepOffsetDays,
+    Optional<ReminderTone> tone,
     Instant sentAt) {}

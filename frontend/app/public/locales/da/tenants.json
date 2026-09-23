@@ -131,7 +131,10 @@
       "guarantor": "Kautionist",
       "overdue": "Forfalden",
       "pending": "Afventer"
-    }
+    },
+    "paymentReminders": "Betalingspåmindelser",
+    "paymentRemindersOn": "Samtykke givet",
+    "paymentRemindersOff": "Intet samtykke"
   },
   "card": {
     "allPaid": "Alle betalt",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Virksomhedsnavn er paakraevet",
       "invalidEmail": "E-mail skal vaere gyldig",
       "invalidInvoiceEmail": "Faktura-e-mail skal vaere gyldig"
-    }
+    },
+    "paymentReminders": "Send betalingspåmindelser til denne kontakt",
+    "paymentRemindersHelp": "Udtrykkeligt samtykke til påmindelsesmails om forfalden husleje, for alle deres kontrakter. Slået fra som standard."
   },
   "addresses": {
     "title": "Adresser",

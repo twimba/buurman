@@ -193,7 +193,11 @@
       "created": "Skapad:",
       "lastUpdated": "Senast uppdaterad:",
       "at": "kl"
-    }
+    },
+    "tenantReminders": "Hyresgästpåminnelser",
+    "remindersOn": "Aktiverade",
+    "remindersOff": "Av",
+    "remindersPausedUntil": "Pausade till {{date}}"
   },
   "payments": {
     "title": "Betalningar",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Ange ett land för den valda fastigheten för att se landsspecifika regulatoriska fält.",
     "dismissDuplicateWarning": "Granska dubblettvarningen ovan och avfärda den för att fortsätta",
     "dismissDuplicateFirst": "Avfärda dubblettvarningen först",
-    "change": "Ändra"
+    "change": "Ändra",
+    "tenantReminders": "Betalningspåminnelser till hyresgäst",
+    "tenantRemindersHelp": "Tillåt påminnelsemejl till hyresgästen i detta avtal. Avstängt som standard.",
+    "remindersPausedUntil": "Pausa påminnelser till",
+    "remindersPausedUntilHelp": "Inga påminnelser skickas fram till detta datum, t.ex. under en avbetalningsplan."
   },
   "statusChange": {
     "title": "Andra kontraktsstatus",

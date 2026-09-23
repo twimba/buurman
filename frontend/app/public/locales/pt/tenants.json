@@ -131,7 +131,10 @@
       "guarantor": "Fiador",
       "overdue": "Em atraso",
       "pending": "Pendente"
-    }
+    },
+    "paymentReminders": "Lembretes de pagamento",
+    "paymentRemindersOn": "Com consentimento",
+    "paymentRemindersOff": "Sem consentimento"
   },
   "card": {
     "allPaid": "Tudo pago",
@@ -196,7 +199,9 @@
       "businessNameRequired": "O nome comercial é obrigatório",
       "invalidEmail": "O email deve ser válido",
       "invalidInvoiceEmail": "O email de faturação deve ser válido"
-    }
+    },
+    "paymentReminders": "Enviar lembretes de pagamento a este contacto",
+    "paymentRemindersHelp": "Consentimento explícito para receber e-mails de lembrete sobre rendas em atraso, em todos os seus contratos. Desligado por defeito."
   },
   "addresses": {
     "title": "Moradas",

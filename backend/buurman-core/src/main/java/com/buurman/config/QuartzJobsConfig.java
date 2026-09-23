@@ -13,6 +13,7 @@ import com.buurman.job.AutoExtensionJob;
 import com.buurman.job.DatabaseMetricsRefreshJob;
 import com.buurman.job.ExecutionHistoryCleanupJob;
 import com.buurman.job.ImpersonationSessionCleanupJob;
+import com.buurman.job.PaymentDunningJob;
 import com.buurman.job.PaymentGenerationJob;
 import com.buurman.job.RateLimitCleanupJob;
 import com.buurman.job.ThumbnailBackfillJob;
@@ -40,6 +41,26 @@ public class QuartzJobsConfig {
     return TriggerBuilder.newTrigger()
         .forJob(paymentGenerationJobDetail)
         .withIdentity("paymentGenerationTrigger", "scheduling")
+        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+        .build();
+  }
+
+  // ── Payment Dunning Ladder ──────────────────────────────────────────────
+
+  @Bean
+  public JobDetail paymentDunningJobDetail() {
+    return JobBuilder.newJob(PaymentDunningJob.class)
+        .withIdentity("paymentDunningJob", "scheduling")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger paymentDunningTrigger(
+      JobDetail paymentDunningJobDetail, @Value("${scheduling.payment-dunning.cron}") String cron) {
+    return TriggerBuilder.newTrigger()
+        .forJob(paymentDunningJobDetail)
+        .withIdentity("paymentDunningTrigger", "scheduling")
         .withSchedule(CronScheduleBuilder.cronSchedule(cron))
         .build();
   }

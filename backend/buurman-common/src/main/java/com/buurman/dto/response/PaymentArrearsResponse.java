@@ -38,5 +38,6 @@ public record PaymentArrearsResponse(
       int daysOverdue,
       Optional<Instant> lastReminderAt,
       int reminderCount,
-      List<Sid> paymentIdentifiers) {}
+      List<Sid> paymentIdentifiers,
+      boolean remindersEnabled) {}
 }

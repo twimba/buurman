@@ -63,6 +63,9 @@ public class ContractRecordMapper {
     contract.setLandlordNoticeDays(record.getLandlordNoticeDays());
     contract.setTenantNoticeDays(record.getTenantNoticeDays());
     contract.setRequiresTenantConfirmation(record.getRequiresTenantConfirmation());
+    contract.setTenantRemindersEnabled(
+        Optional.ofNullable(record.getTenantRemindersEnabled()).orElse(false));
+    contract.setRemindersPausedUntil(Optional.ofNullable(record.getRemindersPausedUntil()));
     contract.setRentAdjustmentType(
         com.buurman.domain.ContractExtension.RentAdjustmentType.valueOf(
             record.getRentAdjustmentType()));

@@ -12,6 +12,8 @@ import {
   updateTeam,
   getTeamSettings,
   updateTeamSettings,
+  getReminderSettings,
+  updateReminderSettings,
 } from '../generated/api/teams/teams';
 import {
   getInvitation,
@@ -23,6 +25,7 @@ import type {
   UpdateMemberRoleRequest,
   UpdateTeamRequest,
   UpdateTeamSettingsRequest,
+  UpdateReminderSettingsRequest,
 } from '../generated/models';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
@@ -189,6 +192,27 @@ export const useUpdateTeamSettings = (teamId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.teams.settings(teamId),
+      });
+    },
+  });
+};
+
+export const useReminderSettings = (teamId: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.teams.reminderSettings(teamId),
+    queryFn: () => getReminderSettings(teamId ?? ''),
+    enabled: !!teamId,
+  });
+};
+
+export const useUpdateReminderSettings = (teamId: string) => {
+  const queryClient = useQueryClient();
+  return useMutationWithToast({
+    mutationFn: (data: UpdateReminderSettingsRequest) =>
+      updateReminderSettings(teamId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.teams.reminderSettings(teamId),
       });
     },
   });

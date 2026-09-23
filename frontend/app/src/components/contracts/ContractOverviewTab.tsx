@@ -719,12 +719,30 @@ export const ContractOverviewTab = ({
       )}
 
       {/* Additional Terms */}
-      {(contract.terminationNoticeDays || contract.lateFeePercentage) && (
+      {(contract.terminationNoticeDays ||
+        contract.lateFeePercentage ||
+        contract.tenantRemindersEnabled !== undefined) && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <h2 className="text-lg font-semibold text-text-primary mb-4">
             {t('overview.additionalTerms')}
           </h2>
           <div className="space-y-3">
+            <div>
+              <p className="text-sm text-text-secondary">
+                {t('overview.tenantReminders')}
+              </p>
+              <p className="font-medium text-text-primary">
+                {!contract.tenantRemindersEnabled
+                  ? t('overview.remindersOff')
+                  : contract.remindersPausedUntil &&
+                      contract.remindersPausedUntil >=
+                        new Date().toISOString().slice(0, 10)
+                    ? t('overview.remindersPausedUntil', {
+                        date: formatDate(contract.remindersPausedUntil),
+                      })
+                    : t('overview.remindersOn')}
+              </p>
+            </div>
             {contract.terminationNoticeDays && (
               <div>
                 <p className="text-sm text-text-secondary">

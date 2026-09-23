@@ -242,6 +242,8 @@ public class ContractRepository {
           .set(CONTRACTS.LANDLORD_NOTICE_DAYS, contract.getLandlordNoticeDays())
           .set(CONTRACTS.TENANT_NOTICE_DAYS, contract.getTenantNoticeDays())
           .set(CONTRACTS.REQUIRES_TENANT_CONFIRMATION, contract.getRequiresTenantConfirmation())
+          .set(CONTRACTS.TENANT_REMINDERS_ENABLED, contract.getTenantRemindersEnabled())
+          .set(CONTRACTS.REMINDERS_PAUSED_UNTIL, contract.getRemindersPausedUntil().orElse(null))
           .set(CONTRACTS.RENT_ADJUSTMENT_TYPE, contract.getRentAdjustmentType().name())
           .set(CONTRACTS.RENT_ADJUSTMENT_VALUE, contract.getRentAdjustmentValue().orElse(null))
           .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
@@ -293,6 +295,9 @@ public class ContractRepository {
               .set(CONTRACTS.LANDLORD_NOTICE_DAYS, contract.getLandlordNoticeDays())
               .set(CONTRACTS.TENANT_NOTICE_DAYS, contract.getTenantNoticeDays())
               .set(CONTRACTS.REQUIRES_TENANT_CONFIRMATION, contract.getRequiresTenantConfirmation())
+              .set(CONTRACTS.TENANT_REMINDERS_ENABLED, contract.getTenantRemindersEnabled())
+              .set(
+                  CONTRACTS.REMINDERS_PAUSED_UNTIL, contract.getRemindersPausedUntil().orElse(null))
               .set(CONTRACTS.RENT_ADJUSTMENT_TYPE, contract.getRentAdjustmentType().name())
               .set(CONTRACTS.RENT_ADJUSTMENT_VALUE, contract.getRentAdjustmentValue().orElse(null))
               .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))

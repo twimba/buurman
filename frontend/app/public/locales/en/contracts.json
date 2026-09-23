@@ -193,7 +193,11 @@
       "created": "Created:",
       "lastUpdated": "Last Updated:",
       "at": "at"
-    }
+    },
+    "tenantReminders": "Tenant reminders",
+    "remindersOn": "Enabled",
+    "remindersOff": "Off",
+    "remindersPausedUntil": "Paused until {{date}}"
   },
   "payments": {
     "title": "Payments",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Set a country on the selected property to see country-specific regulatory fields.",
     "dismissDuplicateWarning": "Review the duplicate warning above and dismiss it to continue",
     "dismissDuplicateFirst": "Dismiss the duplicate warning first",
-    "change": "Change"
+    "change": "Change",
+    "tenantReminders": "Tenant payment reminders",
+    "tenantRemindersHelp": "Allow reminder emails to the tenant of this contract. Off by default.",
+    "remindersPausedUntil": "Pause reminders until",
+    "remindersPausedUntilHelp": "No reminders are sent until this date, e.g. while a payment plan is agreed."
   },
   "statusChange": {
     "title": "Change Contract Status",

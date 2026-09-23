@@ -387,5 +387,38 @@
       "completed": "Slutford",
       "failed": "Misslyckad"
     }
+  },
+  "tenantReminders": {
+    "title": "Hyresgästpåminnelser",
+    "subtitle": "Automatiska betalningspåminnelser via e-post till hyresgäster (påminnelsetrappa)",
+    "consentNotice": "Påminnelser skickas aldrig utan hyresgästens samtycke: aktivera dem på avtalet eller kontakten. Allt här är avstängt som standard.",
+    "automatic": {
+      "label": "Automatiska påminnelser",
+      "description": "Kör trappan nedan varje morgon för öppna betalningar från hyresgäster som samtyckt"
+    },
+    "steps": {
+      "title": "Påminnelsetrappa",
+      "description": "Varje steg skickar ett mejl när en betalning nått angivet antal dagar efter förfallodatum. En betalning får högst ett steg per dag.",
+      "empty": "Inga steg konfigurerade — inget skickas automatiskt.",
+      "useDefaults": "Använd rekommenderad trappa",
+      "add": "Lägg till steg",
+      "remove": "Ta bort steg",
+      "enabled": "Steg aktivt",
+      "offsetDays": "Dagar i förhållande till förfallodatum",
+      "tone": "Ton",
+      "duplicateOffsets": "Varje steg behöver ett annat antal dagar."
+    },
+    "offset": {
+      "before": "{{count}} dag före förfallodatum",
+      "before_other": "{{count}} dagar före förfallodatum",
+      "onDue": "på förfallodagen",
+      "after": "{{count}} dag efter förfallodatum",
+      "after_other": "{{count}} dagar efter förfallodatum"
+    },
+    "tones": {
+      "FRIENDLY": "Vänlig",
+      "FIRM": "Bestämd",
+      "FINAL": "Sista påminnelse"
+    }
   }
 }

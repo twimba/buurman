@@ -230,7 +230,8 @@
     "remindAll": "Påminn alle ({{count}})",
     "showAll": "Vis alle {{count}} leietakere",
     "showLess": "Vis færre",
-    "noContact": "Ingen kontakt tilknyttet"
+    "noContact": "Ingen kontakt tilknyttet",
+    "remindersDisabled": "Påminnelser er ikke aktivert for denne leietakeren — aktiver dem på kontrakten eller kontakten."
   },
   "bulkMarkPaidDialog": {
     "title": "Merk {{count}} betalinger som betalt",

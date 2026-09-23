@@ -231,7 +231,8 @@
     "remindAll": "Recordar a todos ({{count}})",
     "showAll": "Mostrar los {{count}} inquilinos",
     "showLess": "Mostrar menos",
-    "noContact": "Sin contacto vinculado"
+    "noContact": "Sin contacto vinculado",
+    "remindersDisabled": "Los recordatorios no están activados para este inquilino: actívelos en el contrato o en el contacto."
   },
   "bulkMarkPaidDialog": {
     "title": "Marcar {{count}} pagos como pagados",

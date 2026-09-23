@@ -193,7 +193,11 @@
       "created": "Luotu:",
       "lastUpdated": "Viimeksi paivitetty:",
       "at": "klo"
-    }
+    },
+    "tenantReminders": "Vuokralaismuistutukset",
+    "remindersOn": "Käytössä",
+    "remindersOff": "Pois",
+    "remindersPausedUntil": "Keskeytetty {{date}} asti"
   },
   "payments": {
     "title": "Maksut",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Aseta maa valitulle kiinteistölle nähdäksesi maakohtaiset sääntelykentät.",
     "dismissDuplicateWarning": "Tarkista yllä oleva kaksoiskappalevaroitus ja sulje se jatkaaksesi",
     "dismissDuplicateFirst": "Sulje ensin kaksoiskappalevaroitus",
-    "change": "Muuta"
+    "change": "Muuta",
+    "tenantReminders": "Maksumuistutukset vuokralaiselle",
+    "tenantRemindersHelp": "Salli muistutussähköpostit tämän sopimuksen vuokralaiselle. Oletuksena pois päältä.",
+    "remindersPausedUntil": "Keskeytä muistutukset asti",
+    "remindersPausedUntilHelp": "Muistutuksia ei lähetetä ennen tätä päivää, esim. maksusuunnitelman aikana."
   },
   "statusChange": {
     "title": "Vaihda sopimuksen tila",

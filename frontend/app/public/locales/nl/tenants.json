@@ -131,7 +131,10 @@
       "guarantor": "Borg",
       "overdue": "Achterstallig",
       "pending": "In afwachting"
-    }
+    },
+    "paymentReminders": "Betalingsherinneringen",
+    "paymentRemindersOn": "Toestemming gegeven",
+    "paymentRemindersOff": "Geen toestemming"
   },
   "card": {
     "allPaid": "Alles betaald",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Handelsnaam is verplicht",
       "invalidEmail": "E-mailadres moet geldig zijn",
       "invalidInvoiceEmail": "Factuur-e-mail moet geldig zijn"
-    }
+    },
+    "paymentReminders": "Betalingsherinneringen naar dit contact sturen",
+    "paymentRemindersHelp": "Expliciete toestemming voor herinneringsmails over achterstallige huur, voor al hun contracten. Standaard uit."
   },
   "addresses": {
     "title": "Adressen",

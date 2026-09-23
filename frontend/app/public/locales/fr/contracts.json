@@ -193,7 +193,11 @@
       "created": "Créé :",
       "lastUpdated": "Dernière mise à jour :",
       "at": "à"
-    }
+    },
+    "tenantReminders": "Rappels au locataire",
+    "remindersOn": "Activés",
+    "remindersOff": "Désactivés",
+    "remindersPausedUntil": "Suspendus jusqu’au {{date}}"
   },
   "payments": {
     "title": "Paiements",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Définissez un pays sur le bien sélectionné pour voir les champs réglementaires spécifiques au pays.",
     "dismissDuplicateWarning": "Examinez l'avertissement de doublon ci-dessus et ignorez-le pour continuer",
     "dismissDuplicateFirst": "Ignorez d'abord l'avertissement de doublon",
-    "change": "Modifier"
+    "change": "Modifier",
+    "tenantReminders": "Rappels de paiement au locataire",
+    "tenantRemindersHelp": "Autoriser les e-mails de rappel au locataire de ce contrat. Désactivé par défaut.",
+    "remindersPausedUntil": "Suspendre les rappels jusqu’au",
+    "remindersPausedUntilHelp": "Aucun rappel n’est envoyé jusqu’à cette date, par ex. pendant un échéancier convenu."
   },
   "statusChange": {
     "title": "Changer le statut du contrat",

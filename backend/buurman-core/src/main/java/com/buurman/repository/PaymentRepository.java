@@ -504,6 +504,28 @@ public class PaymentRepository {
         .toList();
   }
 
+  /**
+   * Open payments (PENDING / PARTIALLY_PAID / OVERDUE) due on or before the given date, oldest
+   * first. The dunning scheduler uses this with {@code today - minOffset} so pre-due steps work.
+   */
+  public List<Payment> findOpenPaymentsDueOnOrBefore(UUID teamId, LocalDate dueDateInclusive) {
+    return dsl
+        .selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
+                .and(PAYMENTS.DUE_DATE.le(dueDateInclusive))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .orderBy(PAYMENTS.DUE_DATE.asc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
   public record OverduePaymentRow(
       UUID paymentId,
       Sid identifier,

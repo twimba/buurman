@@ -193,7 +193,11 @@
       "created": "Creado:",
       "lastUpdated": "Última Actualización:",
       "at": "a las"
-    }
+    },
+    "tenantReminders": "Recordatorios al inquilino",
+    "remindersOn": "Activados",
+    "remindersOff": "Desactivados",
+    "remindersPausedUntil": "En pausa hasta {{date}}"
   },
   "payments": {
     "title": "Pagos",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Establezca un país en la propiedad seleccionada para ver los campos regulatorios específicos del país.",
     "dismissDuplicateWarning": "Revise la advertencia de duplicado anterior y descártela para continuar",
     "dismissDuplicateFirst": "Descarte primero la advertencia de duplicado",
-    "change": "Cambiar"
+    "change": "Cambiar",
+    "tenantReminders": "Recordatorios de pago al inquilino",
+    "tenantRemindersHelp": "Permitir correos de recordatorio al inquilino de este contrato. Desactivado por defecto.",
+    "remindersPausedUntil": "Pausar recordatorios hasta",
+    "remindersPausedUntilHelp": "No se envían recordatorios hasta esta fecha, p. ej. durante un plan de pago."
   },
   "statusChange": {
     "title": "Cambiar Estado del Contrato",

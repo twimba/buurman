@@ -193,7 +193,11 @@
       "created": "Creato:",
       "lastUpdated": "Ultimo aggiornamento:",
       "at": "alle"
-    }
+    },
+    "tenantReminders": "Promemoria all’inquilino",
+    "remindersOn": "Attivi",
+    "remindersOff": "Disattivati",
+    "remindersPausedUntil": "Sospesi fino al {{date}}"
   },
   "payments": {
     "title": "Pagamenti",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Imposta un paese sulla proprietà selezionata per visualizzare i campi normativi specifici del paese.",
     "dismissDuplicateWarning": "Esamina l'avviso di duplicato sopra e ignoralo per continuare",
     "dismissDuplicateFirst": "Ignora prima l'avviso di duplicato",
-    "change": "Modifica"
+    "change": "Modifica",
+    "tenantReminders": "Promemoria di pagamento all’inquilino",
+    "tenantRemindersHelp": "Consenti e-mail di promemoria all’inquilino di questo contratto. Disattivato per impostazione predefinita.",
+    "remindersPausedUntil": "Sospendi i promemoria fino al",
+    "remindersPausedUntilHelp": "Nessun promemoria viene inviato fino a questa data, ad es. durante un piano di rientro."
   },
   "statusChange": {
     "title": "Cambia stato del contratto",

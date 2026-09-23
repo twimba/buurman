@@ -131,6 +131,8 @@ paths:
     $ref: 'paths/teams.yaml#/teams-item'
   /teams/{teamIdentifier}/settings:
     $ref: 'paths/teams.yaml#/teams-settings'
+  /teams/{teamIdentifier}/reminder-settings:
+    $ref: 'paths/teams.yaml#/teams-reminder-settings'
   /teams/{teamIdentifier}/members/{userIdentifier}/role:
     $ref: 'paths/teams.yaml#/teams-members-role'
   /properties/{propertyIdentifier}/outdoor-areas/{areaIdentifier}:
@@ -988,6 +990,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
         website:
           type: string
         dateOfBirth:
@@ -1208,6 +1213,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
           format: email
         website:
           type: string
@@ -3365,6 +3373,13 @@ components:
           minimum: 0
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -3763,6 +3778,13 @@ components:
           type: integer
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -4734,6 +4756,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
         website:
           type: string
         dateOfBirth:
@@ -5797,6 +5822,13 @@ components:
           minimum: 0
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -7327,6 +7359,53 @@ components:
         - overdueCount
         - pendingAmount
         - pendingCount
+    ReminderTone:
+      type: string
+      description: How strongly a tenant reminder is worded
+      enum: [FRIENDLY, FIRM, FINAL]
+    PaymentReminderStep:
+      type: object
+      description: One rung of the dunning ladder, relative to the payment due date
+      properties:
+        offsetDays:
+          type: integer
+          format: int32
+          minimum: -30
+          maximum: 365
+          description: Days after the due date (negative = before)
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+        enabled:
+          type: boolean
+      required:
+        - offsetDays
+        - tone
+        - enabled
+    ReminderSettingsResponse:
+      type: object
+      properties:
+        automaticRemindersEnabled:
+          type: boolean
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentReminderStep'
+      required:
+        - automaticRemindersEnabled
+        - steps
+    UpdateReminderSettingsRequest:
+      type: object
+      properties:
+        automaticRemindersEnabled:
+          type: boolean
+        steps:
+          type: array
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/PaymentReminderStep'
+      required:
+        - automaticRemindersEnabled
+        - steps
     PaymentReminderResponse:
       type: object
       description: One reminder sent to a tenant about an outstanding payment
@@ -7353,6 +7432,12 @@ components:
           type: string
         sentByName:
           type: string
+        stepOffsetDays:
+          type: integer
+          format: int32
+          description: Ladder step (days relative to due date) for AUTOMATIC reminders
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
         sentAt:
           type: string
           format: date-time
@@ -7480,6 +7565,9 @@ components:
           type: array
           items:
             type: string
+        remindersEnabled:
+          type: boolean
+          description: Whether tenant reminders may currently be sent to this tenant
       required:
         - outstanding
         - paymentCount
@@ -7487,6 +7575,7 @@ components:
         - daysOverdue
         - reminderCount
         - paymentIdentifiers
+        - remindersEnabled
     PaymentArrearsResponse:
       type: object
       properties:

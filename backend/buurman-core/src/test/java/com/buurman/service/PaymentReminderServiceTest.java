@@ -39,6 +39,8 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.Payment.PaymentStatus;
 import com.buurman.domain.PaymentReminder;
 import com.buurman.domain.PaymentReminder.ReminderType;
+import com.buurman.domain.PaymentReminderStep;
+import com.buurman.domain.ReminderTone;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamRole;
@@ -59,6 +61,7 @@ import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+import com.buurman.util.Constants;
 import com.buurman.util.MoneyAmount;
 
 @ExtendWith(MockitoExtension.class)
@@ -157,10 +160,13 @@ class PaymentReminderServiceTest {
   }
 
   private void stubHappyPath(Payment payment, BigDecimal received) {
-    when(paymentRepository.getByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID)).thenReturn(payment);
+    org.mockito.Mockito.lenient()
+        .when(paymentRepository.getByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID))
+        .thenReturn(payment);
     when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
         .thenReturn(received);
-    when(contractRepository.findByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+    org.mockito.Mockito.lenient()
+        .when(contractRepository.findByIdAndTeamId(CONTRACT_ID, TEAM_ID))
         .thenReturn(
             Optional.of(
                 Contract.builder()
@@ -168,6 +174,7 @@ class PaymentReminderServiceTest {
                     .teamId(TEAM_ID)
                     .propertyId(UUID.randomUUID())
                     .documentLanguages(List.of("nl", "en"))
+                    .tenantRemindersEnabled(true)
                     .build()));
     org.mockito.Mockito.lenient()
         .when(contactRepository.findByIdAndTeamId(CONTACT_ID, TEAM_ID))
@@ -307,6 +314,7 @@ class PaymentReminderServiceTest {
                       .id(CONTRACT_ID)
                       .teamId(TEAM_ID)
                       .propertyId(UUID.randomUUID())
+                      .tenantRemindersEnabled(true)
                       .build()));
       when(contactRepository.findByIdAndTeamId(CONTACT_ID, TEAM_ID))
           .thenReturn(Optional.of(contact(Optional.empty())));
@@ -334,6 +342,111 @@ class PaymentReminderServiceTest {
           ArgumentCaptor.forClass(SendNotificationRequest.class);
       verify(notificationService).send(captor.capture());
       assertThat(captor.getValue().recipientEmail()).contains("primary@example.com");
+    }
+
+    @Test
+    @DisplayName("refuses to email a tenant when neither contract nor contact opted in")
+    void refusesWithoutOptIn() {
+      Payment p = payment(PaymentStatus.OVERDUE, TODAY.minusDays(3));
+      when(paymentRepository.getByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID)).thenReturn(p);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      when(contractRepository.findByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(
+              Optional.of(
+                  Contract.builder()
+                      .id(CONTRACT_ID)
+                      .teamId(TEAM_ID)
+                      .propertyId(UUID.randomUUID())
+                      .build()));
+      when(contactRepository.findByIdAndTeamId(CONTACT_ID, TEAM_ID))
+          .thenReturn(Optional.of(contact(Optional.of("jan@example.com"))));
+
+      assertThatThrownBy(
+              () ->
+                  service.sendReminder(PAYMENT_SID, SendPaymentReminderRequest.empty(), principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("not enabled");
+      verify(notificationService, never()).send(any());
+      verify(reminderRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("contact-level opt-in is enough when the contract flag is off")
+    void contactOptInSuffices() {
+      Payment p = payment(PaymentStatus.OVERDUE, TODAY.minusDays(3));
+      stubHappyPath(p, BigDecimal.ZERO);
+      when(contractRepository.findByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(
+              Optional.of(
+                  Contract.builder()
+                      .id(CONTRACT_ID)
+                      .teamId(TEAM_ID)
+                      .propertyId(UUID.randomUUID())
+                      .tenantRemindersEnabled(false)
+                      .build()));
+      Contact optedIn = contact(Optional.of("jan@example.com"));
+      optedIn.setPaymentRemindersEnabled(true);
+      when(contactRepository.findByIdAndTeamId(CONTACT_ID, TEAM_ID))
+          .thenReturn(Optional.of(optedIn));
+
+      service.sendReminder(PAYMENT_SID, SendPaymentReminderRequest.empty(), principal);
+
+      verify(notificationService).send(any());
+    }
+
+    @Test
+    @DisplayName("a paused contract blocks reminders even when opted in")
+    void pausedContractBlocks() {
+      Payment p = payment(PaymentStatus.OVERDUE, TODAY.minusDays(3));
+      when(paymentRepository.getByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID)).thenReturn(p);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      when(contractRepository.findByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(
+              Optional.of(
+                  Contract.builder()
+                      .id(CONTRACT_ID)
+                      .teamId(TEAM_ID)
+                      .propertyId(UUID.randomUUID())
+                      .tenantRemindersEnabled(true)
+                      .remindersPausedUntil(Optional.of(TODAY.plusDays(10)))
+                      .build()));
+      when(contactRepository.findByIdAndTeamId(CONTACT_ID, TEAM_ID))
+          .thenReturn(Optional.of(contact(Optional.of("jan@example.com"))));
+
+      assertThatThrownBy(
+              () ->
+                  service.sendReminder(PAYMENT_SID, SendPaymentReminderRequest.empty(), principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("paused");
+      verify(notificationService, never()).send(any());
+    }
+
+    @Test
+    @DisplayName("automatic sends record the ladder step and tone with no sender name")
+    void automaticRecordsStep() {
+      Payment p = payment(PaymentStatus.OVERDUE, TODAY.minusDays(20));
+      stubHappyPath(p, BigDecimal.ZERO);
+
+      PaymentReminderResponse response =
+          service.sendAutomatic(p, new PaymentReminderStep(14, ReminderTone.FINAL, true));
+
+      ArgumentCaptor<PaymentReminder> captor = ArgumentCaptor.forClass(PaymentReminder.class);
+      verify(reminderRepository).save(captor.capture());
+      assertThat(captor.getValue().getReminderType()).isEqualTo(ReminderType.AUTOMATIC);
+      assertThat(captor.getValue().getStepOffsetDays()).contains(14);
+      assertThat(captor.getValue().getTone()).contains(ReminderTone.FINAL);
+      assertThat(captor.getValue().getCreatedBy()).isEqualTo(Constants.SYSTEM_USER_ID);
+      assertThat(response.sentByName()).isEmpty();
+      assertThat(response.tone()).contains(ReminderTone.FINAL);
+
+      ArgumentCaptor<SendNotificationRequest> sent =
+          ArgumentCaptor.forClass(SendNotificationRequest.class);
+      verify(notificationService).send(sent.capture());
+      assertThat(sent.getValue().templateVariables())
+          .containsEntry("tone", "FINAL")
+          .containsEntry("isFinal", true);
     }
   }
 }

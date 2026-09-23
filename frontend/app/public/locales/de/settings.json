@@ -387,5 +387,38 @@
       "completed": "Abgeschlossen",
       "failed": "Fehlgeschlagen"
     }
+  },
+  "tenantReminders": {
+    "title": "Mietererinnerungen",
+    "subtitle": "Automatische Zahlungserinnerungen per E-Mail an Mieter (Mahnstufen)",
+    "consentNotice": "Erinnerungen werden nur mit Zustimmung des Mieters gesendet: Aktivieren Sie sie im Vertrag oder beim Kontakt. Alles hier ist standardmäßig aus.",
+    "automatic": {
+      "label": "Automatische Erinnerungen",
+      "description": "Die Stufen unten jeden Morgen für offene Zahlungen zugestimmter Mieter ausführen"
+    },
+    "steps": {
+      "title": "Mahnstufen",
+      "description": "Jede Stufe sendet eine E-Mail, sobald eine Zahlung die angegebene Anzahl Tage nach Fälligkeit erreicht. Eine Zahlung erhält höchstens eine Stufe pro Tag.",
+      "empty": "Keine Stufen konfiguriert — es wird nichts automatisch gesendet.",
+      "useDefaults": "Empfohlene Stufen verwenden",
+      "add": "Stufe hinzufügen",
+      "remove": "Stufe entfernen",
+      "enabled": "Stufe aktiv",
+      "offsetDays": "Tage relativ zur Fälligkeit",
+      "tone": "Tonfall",
+      "duplicateOffsets": "Jede Stufe braucht eine andere Tagesanzahl."
+    },
+    "offset": {
+      "before": "{{count}} Tag vor Fälligkeit",
+      "before_other": "{{count}} Tage vor Fälligkeit",
+      "onDue": "am Fälligkeitstag",
+      "after": "{{count}} Tag nach Fälligkeit",
+      "after_other": "{{count}} Tage nach Fälligkeit"
+    },
+    "tones": {
+      "FRIENDLY": "Freundlich",
+      "FIRM": "Bestimmt",
+      "FINAL": "Letzte Mahnung"
+    }
   }
 }

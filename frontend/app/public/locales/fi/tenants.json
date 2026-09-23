@@ -131,7 +131,10 @@
       "guarantor": "Takaaja",
       "overdue": "Myohassa",
       "pending": "Odottaa"
-    }
+    },
+    "paymentReminders": "Maksumuistutukset",
+    "paymentRemindersOn": "Suostumus annettu",
+    "paymentRemindersOff": "Ei suostumusta"
   },
   "card": {
     "allPaid": "Kaikki maksettu",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Yrityksen nimi on pakollinen",
       "invalidEmail": "Sahkopostiosoitteen on oltava kelvollinen",
       "invalidInvoiceEmail": "Laskutussahkopostin on oltava kelvollinen"
-    }
+    },
+    "paymentReminders": "Lähetä maksumuistutuksia tälle yhteystiedolle",
+    "paymentRemindersHelp": "Nimenomainen suostumus vastaanottaa muistutussähköposteja myöhässä olevasta vuokrasta kaikissa sopimuksissa. Oletuksena pois päältä."
   },
   "addresses": {
     "title": "Osoitteet",

@@ -131,7 +131,10 @@
       "guarantor": "Garant",
       "overdue": "En retard",
       "pending": "En attente"
-    }
+    },
+    "paymentReminders": "Rappels de paiement",
+    "paymentRemindersOn": "Accord donné",
+    "paymentRemindersOff": "Pas d’accord"
   },
   "card": {
     "allPaid": "Tout payé",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Le nom commercial est obligatoire",
       "invalidEmail": "L'email doit être valide",
       "invalidInvoiceEmail": "L'email de facturation doit être valide"
-    }
+    },
+    "paymentReminders": "Envoyer des rappels de paiement à ce contact",
+    "paymentRemindersHelp": "Accord explicite pour recevoir des e-mails de rappel de loyer impayé, pour tous ses contrats. Désactivé par défaut."
   },
   "addresses": {
     "title": "Adresses",

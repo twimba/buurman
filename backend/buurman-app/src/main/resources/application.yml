@@ -169,6 +169,8 @@ scheduling:
     outbox-push-cron: "*/30 * * * * ?"
   payment-generation:
     cron: "0 0 * * * ?"
+  payment-dunning:
+    cron: "0 30 8 * * ?"
   notification-reminders:
     contract-expiry-cron: "0 0 0 * * ?"
     payment-reminder-cron: "0 0 0 * * ?"

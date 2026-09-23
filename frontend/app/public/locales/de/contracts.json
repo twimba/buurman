@@ -193,7 +193,11 @@
       "created": "Erstellt:",
       "lastUpdated": "Zuletzt aktualisiert:",
       "at": "um"
-    }
+    },
+    "tenantReminders": "Mietererinnerungen",
+    "remindersOn": "Aktiviert",
+    "remindersOff": "Aus",
+    "remindersPausedUntil": "Pausiert bis {{date}}"
   },
   "payments": {
     "title": "Zahlungen",
@@ -386,7 +390,11 @@
     "setCountryForFields": "Legen Sie ein Land für die ausgewählte Immobilie fest, um länderspezifische Regulierungsfelder zu sehen.",
     "dismissDuplicateWarning": "Überprüfen Sie die obige Duplikatwarnung und schließen Sie sie, um fortzufahren",
     "dismissDuplicateFirst": "Schließen Sie zuerst die Duplikatwarnung",
-    "change": "Ändern"
+    "change": "Ändern",
+    "tenantReminders": "Zahlungserinnerungen an Mieter",
+    "tenantRemindersHelp": "Erinnerungs-E-Mails an den Mieter dieses Vertrags erlauben. Standardmäßig aus.",
+    "remindersPausedUntil": "Erinnerungen pausieren bis",
+    "remindersPausedUntilHelp": "Bis zu diesem Datum werden keine Erinnerungen gesendet, z. B. während einer Ratenvereinbarung."
   },
   "statusChange": {
     "title": "Vertragsstatus ändern",

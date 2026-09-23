@@ -38,6 +38,10 @@ public class Contact {
   @Builder.Default private Optional<LocalDate> idExpiryDate = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();
   @Builder.Default private DataRetentionStatus dataRetentionStatus = DataRetentionStatus.ACTIVE;
+
+  /** Explicit consent to receive tenant-facing payment reminder emails. Off by default. */
+  @Builder.Default private Boolean paymentRemindersEnabled = false;
+
   @Builder.Default private List<ContactTag> tags = List.of();
   private Instant createdAt;
   private Instant updatedAt;

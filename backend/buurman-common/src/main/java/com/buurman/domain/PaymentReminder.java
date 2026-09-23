@@ -39,6 +39,11 @@ public class PaymentReminder {
   @Builder.Default private int daysOverdue = 0;
   private MoneyAmount outstandingAmount;
   @Builder.Default private Optional<String> notes = Optional.empty();
+
+  /** Ladder step (days relative to due date) that produced an AUTOMATIC reminder. */
+  @Builder.Default private Optional<Integer> stepOffsetDays = Optional.empty();
+
+  @Builder.Default private Optional<ReminderTone> tone = Optional.empty();
   private Instant sentAt;
   private Instant createdAt;
   private Instant updatedAt;

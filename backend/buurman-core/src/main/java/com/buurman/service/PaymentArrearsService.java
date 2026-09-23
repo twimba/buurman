@@ -136,7 +136,15 @@ public class PaymentArrearsService {
               daysOverdue(oldest.dueDate(), today),
               lastReminderAt,
               reminderCount,
-              group.stream().map(OverduePaymentRow::identifier).toList()));
+              group.stream().map(OverduePaymentRow::identifier).toList(),
+              contract
+                  .map(
+                      c ->
+                          PaymentReminderService.remindersEnabled(
+                              c,
+                              tenantContacts.getOrDefault(entry.getKey(), Optional.empty()),
+                              today))
+                  .orElse(false)));
     }
     contactArrears.sort(Comparator.comparing(ContactArrears::outstanding).reversed());
 

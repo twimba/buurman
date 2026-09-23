@@ -334,6 +334,10 @@
                                 <schemaMapping>ArrearsAgeingBucket=com.buurman.dto.response.PaymentArrearsResponse.AgeingBucket</schemaMapping>
                                 <schemaMapping>ContactArrears=com.buurman.dto.response.PaymentArrearsResponse.ContactArrears</schemaMapping>
                                 <schemaMapping>PaymentReminderResponse=com.buurman.dto.response.PaymentReminderResponse</schemaMapping>
+                                <schemaMapping>ReminderTone=com.buurman.domain.ReminderTone</schemaMapping>
+                                <schemaMapping>PaymentReminderStep=com.buurman.domain.PaymentReminderStep</schemaMapping>
+                                <schemaMapping>ReminderSettingsResponse=com.buurman.dto.response.ReminderSettingsResponse</schemaMapping>
+                                <schemaMapping>UpdateReminderSettingsRequest=com.buurman.dto.request.UpdateReminderSettingsRequest</schemaMapping>
                                 <schemaMapping>SendPaymentReminderRequest=com.buurman.dto.request.SendPaymentReminderRequest</schemaMapping>
                                 <schemaMapping>BulkMarkPaidRequest=com.buurman.dto.request.BulkMarkPaidRequest</schemaMapping>
                                 <schemaMapping>BulkSendPaymentRemindersRequest=com.buurman.dto.request.BulkSendPaymentRemindersRequest</schemaMapping>
@@ -576,6 +580,10 @@
                                 <importMapping>ArrearsAgeingBucket=com.buurman.dto.response.PaymentArrearsResponse.AgeingBucket</importMapping>
                                 <importMapping>ContactArrears=com.buurman.dto.response.PaymentArrearsResponse.ContactArrears</importMapping>
                                 <importMapping>PaymentReminderResponse=com.buurman.dto.response.PaymentReminderResponse</importMapping>
+                                <importMapping>ReminderTone=com.buurman.domain.ReminderTone</importMapping>
+                                <importMapping>PaymentReminderStep=com.buurman.domain.PaymentReminderStep</importMapping>
+                                <importMapping>ReminderSettingsResponse=com.buurman.dto.response.ReminderSettingsResponse</importMapping>
+                                <importMapping>UpdateReminderSettingsRequest=com.buurman.dto.request.UpdateReminderSettingsRequest</importMapping>
                                 <importMapping>SendPaymentReminderRequest=com.buurman.dto.request.SendPaymentReminderRequest</importMapping>
                                 <importMapping>BulkMarkPaidRequest=com.buurman.dto.request.BulkMarkPaidRequest</importMapping>
                                 <importMapping>BulkSendPaymentRemindersRequest=com.buurman.dto.request.BulkSendPaymentRemindersRequest</importMapping>

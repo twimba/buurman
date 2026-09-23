@@ -367,6 +367,8 @@ public class ContractService {
             .landlordNoticeDays(contract.getLandlordNoticeDays())
             .tenantNoticeDays(contract.getTenantNoticeDays())
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
+            .remindersPausedUntil(contract.getRemindersPausedUntil())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -625,6 +627,8 @@ public class ContractService {
             .landlordNoticeDays(contract.getLandlordNoticeDays())
             .tenantNoticeDays(contract.getTenantNoticeDays())
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
+            .remindersPausedUntil(contract.getRemindersPausedUntil())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -775,6 +779,8 @@ public class ContractService {
             .landlordNoticeDays(contract.getLandlordNoticeDays())
             .tenantNoticeDays(contract.getTenantNoticeDays())
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
+            .remindersPausedUntil(contract.getRemindersPausedUntil())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -1069,7 +1075,9 @@ public class ContractService {
         extensionsRemaining,
         componentResponses,
         contract.getCreatedAt(),
-        Optional.of(contract.getUpdatedAt()));
+        Optional.of(contract.getUpdatedAt()),
+        contract.getTenantRemindersEnabled(),
+        contract.getRemindersPausedUntil());
   }
 
   /** Batch build responses for a list of contracts (avoids N+1 for parties and contacts). */
@@ -1201,7 +1209,9 @@ public class ContractService {
                   extensionsRemaining,
                   componentResponses,
                   contract.getCreatedAt(),
-                  Optional.of(contract.getUpdatedAt()));
+                  Optional.of(contract.getUpdatedAt()),
+                  contract.getTenantRemindersEnabled(),
+                  contract.getRemindersPausedUntil());
             })
         .toList();
   }

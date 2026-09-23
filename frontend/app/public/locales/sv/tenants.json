@@ -131,7 +131,10 @@
       "guarantor": "Borgensman",
       "overdue": "Forsenad",
       "pending": "Vantande"
-    }
+    },
+    "paymentReminders": "Betalningspåminnelser",
+    "paymentRemindersOn": "Samtycke lämnat",
+    "paymentRemindersOff": "Inget samtycke"
   },
   "card": {
     "allPaid": "Allt betalt",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Foretagsnamn ar obligatoriskt",
       "invalidEmail": "E-postadressen maste vara giltig",
       "invalidInvoiceEmail": "Faktura-e-posten maste vara giltig"
-    }
+    },
+    "paymentReminders": "Skicka betalningspåminnelser till denna kontakt",
+    "paymentRemindersHelp": "Uttryckligt samtycke till påminnelsemejl om försenad hyra, för alla deras avtal. Avstängt som standard."
   },
   "addresses": {
     "title": "Adresser",

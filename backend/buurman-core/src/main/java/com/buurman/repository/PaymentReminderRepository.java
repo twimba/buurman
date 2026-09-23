@@ -11,9 +11,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.PaymentReminder;
+import com.buurman.domain.ReminderTone;
 import com.buurman.jooq.generated.tables.records.PaymentRemindersRecord;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.MoneyAmount;
@@ -80,6 +83,24 @@ public class PaymentReminderRepository {
 
   public record ReminderSummary(Optional<Instant> lastSentAt, int count) {}
 
+  /** Ladder step offsets already sent automatically for a payment, for idempotent scheduling. */
+  public Set<Integer> findAutomaticStepOffsets(UUID paymentId, UUID teamId) {
+    return new HashSet<>(
+        dsl.select(PAYMENT_REMINDERS.STEP_OFFSET_DAYS)
+            .from(PAYMENT_REMINDERS)
+            .where(
+                PAYMENT_REMINDERS
+                    .PAYMENT_ID
+                    .eq(paymentId)
+                    .and(PAYMENT_REMINDERS.TEAM_ID.eq(teamId))
+                    .and(
+                        PAYMENT_REMINDERS.REMINDER_TYPE.eq(
+                            PaymentReminder.ReminderType.AUTOMATIC.name()))
+                    .and(PAYMENT_REMINDERS.STEP_OFFSET_DAYS.isNotNull())
+                    .and(PAYMENT_REMINDERS.DELETED_AT.isNull()))
+            .fetch(PAYMENT_REMINDERS.STEP_OFFSET_DAYS));
+  }
+
   public PaymentReminder save(PaymentReminder reminder) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
@@ -98,6 +119,8 @@ public class PaymentReminderRepository {
         .set(PAYMENT_REMINDERS.OUTSTANDING_AMOUNT, reminder.getOutstandingAmount().toMinorUnits())
         .set(PAYMENT_REMINDERS.CURRENCY, reminder.getOutstandingAmount().currency())
         .set(PAYMENT_REMINDERS.NOTES, reminder.getNotes().orElse(null))
+        .set(PAYMENT_REMINDERS.STEP_OFFSET_DAYS, reminder.getStepOffsetDays().orElse(null))
+        .set(PAYMENT_REMINDERS.TONE, reminder.getTone().map(Enum::name).orElse(null))
         .set(PAYMENT_REMINDERS.SENT_AT, sentAt)
         .set(PAYMENT_REMINDERS.CREATED_AT, now)
         .set(PAYMENT_REMINDERS.UPDATED_AT, now)
@@ -130,6 +153,8 @@ public class PaymentReminderRepository {
     reminder.setDaysOverdue(Optional.ofNullable(record.getDaysOverdue()).orElse(0));
     reminder.setOutstandingAmount(MoneyAmount.of(major, currency));
     reminder.setNotes(Optional.ofNullable(record.getNotes()));
+    reminder.setStepOffsetDays(Optional.ofNullable(record.getStepOffsetDays()));
+    reminder.setTone(Optional.ofNullable(record.getTone()).map(ReminderTone::valueOf));
     reminder.setSentAt(record.getSentAt().toInstant(UTC));
     reminder.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     reminder.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));

@@ -36,6 +36,8 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReminder;
 import com.buurman.domain.PaymentReminder.ReminderType;
+import com.buurman.domain.PaymentReminderStep;
+import com.buurman.domain.ReminderTone;
 import com.buurman.domain.User;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.dto.request.BulkSendPaymentRemindersRequest;
@@ -57,6 +59,7 @@ import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+import com.buurman.util.Constants;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.MoneyAmount;
 
@@ -67,6 +70,9 @@ import lombok.extern.slf4j.Slf4j;
  * Tenant-facing payment reminders. A reminder is an email to the tenant linked to a payment, with
  * the outstanding balance and the landlord's payment instructions, recorded in the payment's
  * communications timeline.
+ *
+ * <p>Reminders are opt-in: nothing is ever sent unless the contract or the tenant contact has
+ * explicitly enabled them, and never while the contract's reminders are paused.
  */
 @Service
 @Slf4j
@@ -97,7 +103,17 @@ public class PaymentReminderService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentReminderResponse sendReminder(
       PaymentIdentifier identifier, SendPaymentReminderRequest request, UserPrincipal principal) {
-    return performSend(identifier, request, principal);
+    UUID teamId = principal.requireTeamId();
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
+    return send(
+        payment,
+        teamId,
+        ReminderType.MANUAL,
+        Optional.empty(),
+        Optional.empty(),
+        request.notes(),
+        principal.getUserId(),
+        Optional.of(principal.getName()));
   }
 
   /**
@@ -112,7 +128,7 @@ public class PaymentReminderService {
     for (PaymentIdentifier identifier : request.identifiers().stream().distinct().toList()) {
       try {
         PaymentReminderResponse response =
-            txTemplate.execute(status -> performSend(identifier, single, principal));
+            txTemplate.execute(status -> sendReminder(identifier, single, principal));
         results.add(BulkActionResult.success(identifier.value(), response));
       } catch (Exception e) {
         log.warn("Bulk reminder failed for payment {}: {}", identifier, e.getMessage());
@@ -120,6 +136,23 @@ public class PaymentReminderService {
       }
     }
     return results;
+  }
+
+  /**
+   * Sends a ladder step on behalf of the scheduler. Same eligibility rules as a manual send; the
+   * step offset is recorded so the scheduler never repeats it.
+   */
+  @Transactional
+  public PaymentReminderResponse sendAutomatic(Payment payment, PaymentReminderStep step) {
+    return send(
+        payment,
+        payment.getTeamId(),
+        ReminderType.AUTOMATIC,
+        Optional.of(step.offsetDays()),
+        Optional.of(step.tone()),
+        Optional.empty(),
+        Constants.SYSTEM_USER_ID,
+        Optional.empty());
   }
 
   @Transactional(readOnly = true)
@@ -135,18 +168,42 @@ public class PaymentReminderService {
             r ->
                 toResponse(
                     r,
-                    names.computeIfAbsent(
-                        r.getCreatedBy(),
-                        id -> userRepository.findById(id).map(User::getFullName))))
+                    r.getReminderType() == ReminderType.AUTOMATIC
+                        ? Optional.empty()
+                        : names.computeIfAbsent(
+                            r.getCreatedBy(),
+                            id -> userRepository.findById(id).map(User::getFullName))))
         .toList();
   }
 
-  private PaymentReminderResponse performSend(
-      PaymentIdentifier identifier, SendPaymentReminderRequest request, UserPrincipal principal) {
-    UUID teamId = principal.requireTeamId();
+  /**
+   * Whether tenant reminders may be sent for this contract/contact pair today. Enabled on the
+   * contract or on the contact is enough; a pause on the contract blocks both.
+   */
+  public static boolean remindersEnabled(
+      Contract contract, Optional<Contact> contact, LocalDate today) {
+    boolean paused =
+        contract.getRemindersPausedUntil().map(until -> !until.isBefore(today)).orElse(false);
+    if (paused) {
+      return false;
+    }
+    boolean onContract = Boolean.TRUE.equals(contract.getTenantRemindersEnabled());
+    boolean onContact =
+        contact.map(c -> Boolean.TRUE.equals(c.getPaymentRemindersEnabled())).orElse(false);
+    return onContract || onContact;
+  }
+
+  private PaymentReminderResponse send(
+      Payment payment,
+      UUID teamId,
+      ReminderType type,
+      Optional<Integer> stepOffsetDays,
+      Optional<ReminderTone> requestedTone,
+      Optional<String> notes,
+      UUID actorUserId,
+      Optional<String> actorName) {
     LocalDate today = LocalDate.now(clock);
 
-    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
     if (payment.getStatus() == PAID) {
       throw new BusinessRuleException("Payment is already paid");
     }
@@ -175,6 +232,14 @@ public class PaymentReminderService {
             .orElseThrow(
                 () -> new BusinessRuleException("No tenant contact is linked to this payment"));
 
+    if (!remindersEnabled(contract, Optional.of(contact), today)) {
+      throw new BusinessRuleException(
+          contract.getRemindersPausedUntil().map(u -> !u.isBefore(today)).orElse(false)
+              ? "Reminders for this contract are paused until "
+                  + contract.getRemindersPausedUntil().orElseThrow()
+              : "Tenant reminders are not enabled for this contract or contact");
+    }
+
     String email =
         contact
             .getInvoiceEmail()
@@ -186,6 +251,8 @@ public class PaymentReminderService {
                         "Tenant " + contact.getDisplayName() + " has no email address"));
 
     int daysOverdue = (int) Math.max(0, ChronoUnit.DAYS.between(payment.getDueDate(), today));
+    ReminderTone tone =
+        requestedTone.orElse(daysOverdue > 0 ? ReminderTone.FIRM : ReminderTone.FRIENDLY);
     String languageTag = contract.getDocumentLanguages().stream().findFirst().orElse("en");
     Locale locale = Locale.forLanguageTag(languageTag);
     String propertyName =
@@ -215,7 +282,9 @@ public class PaymentReminderService {
             .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale)));
     variables.put("daysOverdue", daysOverdue);
     variables.put("isOverdue", daysOverdue > 0);
-    variables.put("notes", request.notes().filter(n -> !n.isBlank()).orElse(""));
+    variables.put("tone", tone.name());
+    variables.put("isFinal", tone == ReminderTone.FINAL);
+    variables.put("notes", notes.filter(n -> !n.isBlank()).orElse(""));
     variables.put("baseUrl", appProperties.email().baseUrl());
     variables.put("primaryUrl", paymentUrl);
     variables.putAll(paymentInstructionVariables(contract.getId(), teamId));
@@ -229,8 +298,11 @@ public class PaymentReminderService {
             .templateName(TEMPLATE_NAME)
             .templateVariables(variables)
             .languageTag(Optional.of(languageTag))
-            .urgency(daysOverdue > 0 ? NotificationUrgency.URGENT : NotificationUrgency.NORMAL)
-            .createdBy(principal.getUserId())
+            .urgency(
+                tone == ReminderTone.FRIENDLY
+                    ? NotificationUrgency.NORMAL
+                    : NotificationUrgency.URGENT)
+            .createdBy(actorUserId)
             .build());
 
     PaymentReminder reminder =
@@ -239,30 +311,32 @@ public class PaymentReminderService {
             .teamId(teamId)
             .paymentId(payment.getId())
             .contactId(Optional.of(contact.getId()))
-            .reminderType(ReminderType.MANUAL)
+            .reminderType(type)
             .channel(NotificationChannel.EMAIL)
             .recipientEmail(Optional.of(email))
             .daysOverdue(daysOverdue)
             .outstandingAmount(MoneyAmount.of(outstanding, currency))
-            .notes(request.notes().filter(n -> !n.isBlank()))
+            .notes(notes.filter(n -> !n.isBlank()))
+            .stepOffsetDays(stepOffsetDays)
+            .tone(Optional.of(tone))
             .sentAt(clock.instant())
-            .createdBy(principal.getUserId())
-            .updatedBy(principal.getUserId())
+            .createdBy(actorUserId)
+            .updatedBy(actorUserId)
             .build();
     reminderRepository.save(reminder);
 
-    PaymentReminderResponse response = toResponse(reminder, Optional.of(principal.getName()));
-    auditService.logCreate(
-        teamId, "PAYMENT_REMINDER", reminder.getId(), principal.getUserId(), response);
+    PaymentReminderResponse response = toResponse(reminder, actorName);
+    auditService.logCreate(teamId, "PAYMENT_REMINDER", reminder.getId(), actorUserId, response);
     metricsService.incrementCounter(
-        "payment.reminder.sent.total", "type", ReminderType.MANUAL.name(), "channel", "EMAIL");
+        "payment.reminder.sent.total", "type", type.name(), "channel", "EMAIL");
     log.info(
-        "Sent payment reminder {} for payment {} to contact {} ({} days overdue) by user {}",
+        "Sent {} payment reminder {} ({}) for payment {} to contact {} ({} days overdue)",
+        type,
         reminder.getIdentifier().orElseThrow(),
-        identifier,
+        tone,
+        payment.getIdentifier().map(Object::toString).orElse("?"),
         contact.getIdentifier().map(Object::toString).orElse("?"),
-        daysOverdue,
-        principal.getUserId());
+        daysOverdue);
     return response;
   }
 
@@ -337,6 +411,8 @@ public class PaymentReminderService {
         reminder.getOutstandingAmount().currency(),
         reminder.getNotes(),
         sentByName,
+        reminder.getStepOffsetDays(),
+        reminder.getTone(),
         reminder.getSentAt());
   }
 

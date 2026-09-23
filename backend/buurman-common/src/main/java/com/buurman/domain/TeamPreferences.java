@@ -1,6 +1,7 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +36,10 @@ public class TeamPreferences {
 
   // Takeout settings
   @Builder.Default private int takeoutRetentionDays = 30;
+
+  // Dunning ladder: automatic tenant reminders (off by default) and the steps to send
+  @Builder.Default private boolean automaticRemindersEnabled = false;
+  @Builder.Default private List<PaymentReminderStep> paymentReminderSteps = List.of();
 
   // Onboarding
   @Builder.Default private Optional<Instant> onboardingCompletedAt = Optional.empty();

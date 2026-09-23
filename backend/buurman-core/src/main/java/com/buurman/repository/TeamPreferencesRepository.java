@@ -12,12 +12,17 @@ import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.PaymentReminderStep;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.jooq.generated.tables.records.TeamPreferencesRecord;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +37,7 @@ public class TeamPreferencesRepository {
 
   private final DSLContext dsl;
   private final Clock clock;
+  private final ObjectMapper objectMapper;
 
   public Optional<TeamPreferences> findByTeamId(UUID teamId) {
     return dsl.selectFrom(TEAM_PREFERENCES)
@@ -67,6 +73,8 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
           .set(DEFAULT_LANGUAGE, prefs.getDefaultLanguage())
           .set(TEAM_PREFERENCES.TAKEOUT_RETENTION_DAYS, prefs.getTakeoutRetentionDays())
+          .set(TEAM_PREFERENCES.AUTOMATIC_REMINDERS_ENABLED, prefs.isAutomaticRemindersEnabled())
+          .set(TEAM_PREFERENCES.PAYMENT_REMINDER_STEPS, toJsonb(prefs.getPaymentReminderSteps()))
           .set(
               TEAM_PREFERENCES.ONBOARDING_COMPLETED_AT,
               prefs
@@ -90,6 +98,8 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
           .set(DEFAULT_LANGUAGE, prefs.getDefaultLanguage())
           .set(TEAM_PREFERENCES.TAKEOUT_RETENTION_DAYS, prefs.getTakeoutRetentionDays())
+          .set(TEAM_PREFERENCES.AUTOMATIC_REMINDERS_ENABLED, prefs.isAutomaticRemindersEnabled())
+          .set(TEAM_PREFERENCES.PAYMENT_REMINDER_STEPS, toJsonb(prefs.getPaymentReminderSteps()))
           .set(
               TEAM_PREFERENCES.ONBOARDING_COMPLETED_AT,
               prefs
@@ -102,6 +112,38 @@ public class TeamPreferencesRepository {
       prefs.setUpdatedAt(now.toInstant(UTC));
     }
     return prefs;
+  }
+
+  /** Non-demo team IDs whose dunning ladder is switched on. */
+  public List<UUID> findTeamIdsWithAutomaticRemindersEnabled() {
+    return List.copyOf(
+        dsl.select(TEAM_PREFERENCES.TEAM_ID)
+            .from(TEAM_PREFERENCES)
+            .join(TEAMS)
+            .on(TEAMS.ID.eq(TEAM_PREFERENCES.TEAM_ID))
+            .where(TEAM_PREFERENCES.AUTOMATIC_REMINDERS_ENABLED.isTrue())
+            .and(TEAMS.DEMO.isFalse())
+            .fetch(TEAM_PREFERENCES.TEAM_ID));
+  }
+
+  private JSONB toJsonb(List<PaymentReminderStep> steps) {
+    try {
+      return JSONB.jsonb(objectMapper.writeValueAsString(steps));
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException("Failed to serialize payment reminder steps", e);
+    }
+  }
+
+  private List<PaymentReminderStep> fromJsonb(JSONB jsonb) {
+    if (jsonb == null || jsonb.data() == null || jsonb.data().isBlank()) {
+      return List.of();
+    }
+    try {
+      return List.copyOf(
+          objectMapper.readValue(jsonb.data(), new TypeReference<List<PaymentReminderStep>>() {}));
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException("Failed to parse payment reminder steps", e);
+    }
   }
 
   /** Find all non-demo team IDs where auto payment generation is enabled. */
@@ -137,6 +179,9 @@ public class TeamPreferencesRepository {
     prefs.setFiscalYearStartMonth(record.getFiscalYearStartMonth());
     prefs.setDefaultLanguage(Optional.ofNullable(record.get(DEFAULT_LANGUAGE)).orElse("en"));
     prefs.setTakeoutRetentionDays(record.getTakeoutRetentionDays());
+    prefs.setAutomaticRemindersEnabled(
+        Optional.ofNullable(record.getAutomaticRemindersEnabled()).orElse(false));
+    prefs.setPaymentReminderSteps(fromJsonb(record.getPaymentReminderSteps()));
     prefs.setOnboardingCompletedAt(
         Optional.ofNullable(record.getOnboardingCompletedAt()).map(ldt -> ldt.toInstant(UTC)));
     prefs.setCreatedAt(record.getCreatedAt().toInstant(UTC));

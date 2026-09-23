@@ -387,5 +387,38 @@
       "completed": "Ukończony",
       "failed": "Nieudany"
     }
+  },
+  "tenantReminders": {
+    "title": "Przypomnienia dla najemców",
+    "subtitle": "Automatyczne e-maile z przypomnieniem o płatności do najemców (ścieżka monitowania)",
+    "consentNotice": "Przypomnienia nigdy nie są wysyłane bez zgody najemcy: włącz je w umowie lub w kontakcie. Wszystko tutaj jest domyślnie wyłączone.",
+    "automatic": {
+      "label": "Automatyczne przypomnienia",
+      "description": "Uruchamiaj poniższą ścieżkę każdego ranka dla otwartych płatności najemców, którzy wyrazili zgodę"
+    },
+    "steps": {
+      "title": "Ścieżka przypomnień",
+      "description": "Każdy krok wysyła jeden e-mail, gdy płatność osiągnie podaną liczbę dni po terminie. Płatność otrzymuje najwyżej jeden krok dziennie.",
+      "empty": "Brak skonfigurowanych kroków — nic nie zostanie wysłane automatycznie.",
+      "useDefaults": "Użyj zalecanej ścieżki",
+      "add": "Dodaj krok",
+      "remove": "Usuń krok",
+      "enabled": "Krok aktywny",
+      "offsetDays": "Dni względem terminu",
+      "tone": "Ton",
+      "duplicateOffsets": "Każdy krok musi mieć inną liczbę dni."
+    },
+    "offset": {
+      "before": "{{count}} dzień przed terminem",
+      "before_other": "{{count}} dni przed terminem",
+      "onDue": "w dniu terminu",
+      "after": "{{count}} dzień po terminie",
+      "after_other": "{{count}} dni po terminie"
+    },
+    "tones": {
+      "FRIENDLY": "Przyjazny",
+      "FIRM": "Stanowczy",
+      "FINAL": "Ostateczne wezwanie"
+    }
   }
 }

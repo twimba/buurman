@@ -131,7 +131,10 @@
       "guarantor": "Garante",
       "overdue": "Scaduto",
       "pending": "In attesa"
-    }
+    },
+    "paymentReminders": "Promemoria di pagamento",
+    "paymentRemindersOn": "Consenso dato",
+    "paymentRemindersOff": "Nessun consenso"
   },
   "card": {
     "allPaid": "Tutto pagato",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Il nome dell'attività è obbligatorio",
       "invalidEmail": "L'email deve essere valida",
       "invalidInvoiceEmail": "L'email di fatturazione deve essere valida"
-    }
+    },
+    "paymentReminders": "Invia promemoria di pagamento a questo contatto",
+    "paymentRemindersHelp": "Consenso esplicito a ricevere e-mail di promemoria per affitti scaduti, per tutti i suoi contratti. Disattivato per impostazione predefinita."
   },
   "addresses": {
     "title": "Indirizzi",

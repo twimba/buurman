@@ -231,7 +231,8 @@
     "remindAll": "Relancer tous ({{count}})",
     "showAll": "Afficher les {{count}} locataires",
     "showLess": "Afficher moins",
-    "noContact": "Aucun contact lié"
+    "noContact": "Aucun contact lié",
+    "remindersDisabled": "Les rappels ne sont pas activés pour ce locataire — activez-les sur le contrat ou le contact."
   },
   "bulkMarkPaidDialog": {
     "title": "Marquer {{count}} paiements comme payés",

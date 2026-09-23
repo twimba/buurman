@@ -65,6 +65,7 @@ import {
   ShieldAlert,
   CheckCircle2,
   Shield,
+  BellRing,
 } from 'lucide-react';
 import {
   exportContactBooklet,
@@ -748,6 +749,19 @@ export const ContactDetailPage = () => {
                             {t('detail.notSet')}
                           </span>
                         )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <BellRing className="h-5 w-5 text-text-muted" />
+                    <div>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.paymentReminders')}
+                      </p>
+                      <p className="font-medium text-text-primary">
+                        {contact.paymentRemindersEnabled
+                          ? t('detail.paymentRemindersOn')
+                          : t('detail.paymentRemindersOff')}
                       </p>
                     </div>
                   </div>

@@ -387,5 +387,38 @@
       "completed": "Fullført",
       "failed": "Mislykket"
     }
+  },
+  "tenantReminders": {
+    "title": "Leietakerpåminnelser",
+    "subtitle": "Automatiske betalingspåminnelser på e-post til leietakere (purretrapp)",
+    "consentNotice": "Påminnelser sendes aldri uten leietakerens samtykke: aktiver dem på kontrakten eller kontakten. Alt her er av som standard.",
+    "automatic": {
+      "label": "Automatiske påminnelser",
+      "description": "Kjør trappen nedenfor hver morgen for åpne betalinger fra leietakere som har samtykket"
+    },
+    "steps": {
+      "title": "Purretrapp",
+      "description": "Hvert trinn sender én e-post når en betaling har nådd angitt antall dager etter forfall. En betaling får maks ett trinn per dag.",
+      "empty": "Ingen trinn konfigurert — ingenting sendes automatisk.",
+      "useDefaults": "Bruk anbefalt trapp",
+      "add": "Legg til trinn",
+      "remove": "Fjern trinn",
+      "enabled": "Trinn aktivt",
+      "offsetDays": "Dager i forhold til forfallsdato",
+      "tone": "Tone",
+      "duplicateOffsets": "Hvert trinn må ha ulikt antall dager."
+    },
+    "offset": {
+      "before": "{{count}} dag før forfall",
+      "before_other": "{{count}} dager før forfall",
+      "onDue": "på forfallsdagen",
+      "after": "{{count}} dag etter forfall",
+      "after_other": "{{count}} dager etter forfall"
+    },
+    "tones": {
+      "FRIENDLY": "Vennlig",
+      "FIRM": "Bestemt",
+      "FINAL": "Siste påminnelse"
+    }
   }
 }
