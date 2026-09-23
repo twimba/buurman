@@ -7,7 +7,14 @@ import {
   usePaymentStats,
   useDeletePayment,
   useMarkPaymentAsPaid,
+  usePaymentArrears,
+  useBulkMarkPaymentsAsPaid,
+  useBulkSendPaymentReminders,
 } from '@/hooks/usePaymentHooks';
+import { usePaymentSelection } from '@/hooks/usePaymentSelection';
+import { ArrearsPanel } from '@/components/payments/ArrearsPanel';
+import { BulkMarkPaidDialog } from '@/components/payments/BulkMarkPaidDialog';
+import { SendReminderDialog } from '@/components/payments/SendReminderDialog';
 import {
   ConfirmDialog,
   DataList,
@@ -16,9 +23,11 @@ import {
   ListPageHeader,
   Pagination,
   RefreshButton,
+  SelectionBar,
   Skeleton,
   SwipeAction,
   type ListPageHeaderAction,
+  type SelectionBarAction,
   type SwipeActionItem,
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
@@ -46,6 +55,10 @@ import {
   Trash2,
   CircleDot,
   X,
+  CheckSquare,
+  Square,
+  Send,
+  ListChecks,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -73,7 +86,14 @@ export const PaymentsPage = () => {
   const { formatDate } = useFormatDate();
   const deletePaymentMutation = useDeletePayment();
   const markPaidMutation = useMarkPaymentAsPaid();
+  const bulkMarkPaidMutation = useBulkMarkPaymentsAsPaid();
+  const bulkRemindersMutation = useBulkSendPaymentReminders();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [showBulkMarkPaid, setShowBulkMarkPaid] = useState(false);
+  const [reminderTargets, setReminderTargets] = useState<string[] | null>(
+    null
+  );
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>(
     undefined
   );
@@ -122,6 +142,63 @@ export const PaymentsPage = () => {
   });
 
   const { data: paymentStats } = usePaymentStats();
+  const { data: arrears } = usePaymentArrears();
+
+  const isActionable = (status: PaymentStatus) =>
+    status !== PaymentStatus.PAID && status !== PaymentStatus.CANCELLED;
+  const actionableIds = useMemo(
+    () =>
+      (paymentsData?.content ?? [])
+        .filter((p) => isActionable(p.status))
+        .map((p) => p.identifier),
+    [paymentsData]
+  );
+  const { selected, toggle, toggleAll, allVisibleSelected, clear } =
+    usePaymentSelection(actionableIds);
+  const selectedIds = Array.from(selected);
+  const hasSelection = selectedIds.length > 0;
+
+  const exitSelection = () => {
+    clear();
+    setSelectionMode(false);
+  };
+
+  const handleBulkMarkPaid = async (paymentDate: string, notes?: string) => {
+    await bulkMarkPaidMutation.mutateAsync({
+      identifiers: selectedIds,
+      paymentDate,
+      notes,
+    });
+    setShowBulkMarkPaid(false);
+    exitSelection();
+  };
+
+  const handleSendReminders = async (notes?: string) => {
+    if (!reminderTargets || reminderTargets.length === 0) {
+      return;
+    }
+    await bulkRemindersMutation.mutateAsync({
+      identifiers: reminderTargets,
+      notes,
+    });
+    setReminderTargets(null);
+    exitSelection();
+  };
+
+  const bulkActions: SelectionBarAction[] = [
+    {
+      label: t('selection.markPaid'),
+      icon: CheckCircle,
+      onClick: () => setShowBulkMarkPaid(true),
+      disabled: bulkMarkPaidMutation.isPending,
+    },
+    {
+      label: t('selection.sendReminders'),
+      icon: Send,
+      onClick: () => setReminderTargets(selectedIds),
+      disabled: bulkRemindersMutation.isPending,
+    },
+  ];
 
   const statsCurrency = paymentStats?.currency ?? '';
 
@@ -205,6 +282,13 @@ export const PaymentsPage = () => {
       onClick: () => navigate('/payments/new'),
       showOn: 'mobile',
       disabled: !canEditData,
+    },
+    {
+      label: selectionMode ? t('selection.done') : t('selection.select'),
+      icon: ListChecks,
+      onClick: () => (selectionMode ? exitSelection() : setSelectionMode(true)),
+      showOn: 'mobile',
+      disabled: !canEditData || actionableIds.length === 0,
     },
     {
       label: 'desktop-actions',
@@ -374,6 +458,17 @@ export const PaymentsPage = () => {
           </div>
         )}
 
+        {/* Arrears — who is behind, by how much, and for how long */}
+        {arrears && (
+          <ArrearsPanel
+            arrears={arrears}
+            formatMoney={fmtMoney}
+            canEdit={canEditData}
+            onSendReminders={(ids) => setReminderTargets(ids)}
+            sendingFor={bulkRemindersMutation.isPending ? reminderTargets : null}
+          />
+        )}
+
         {/* Toolbar — period, property, contract, and status on one tidy row */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <PeriodFilter
@@ -440,6 +535,18 @@ export const PaymentsPage = () => {
           </div>
         )}
 
+        {/* Phone-only sticky selection bar (overlays bottom tab bar) */}
+        <SelectionBar
+          open={hasSelection}
+          count={selectedIds.length}
+          label={t('selection.selected', { count: selectedIds.length }).replace(
+            String(selectedIds.length),
+            '{{count}}'
+          )}
+          onCancel={exitSelection}
+          actions={bulkActions}
+        />
+
         {/* Payments — Mobile card list (<md). md+ shows the existing table below. */}
         {paymentsData?.content && paymentsData.content.length > 0 && (
           <ul className="md:hidden space-y-3 mb-4">
@@ -470,14 +577,38 @@ export const PaymentsPage = () => {
                   onAction: () => setDeleteTarget(payment.identifier),
                 });
               }
+              const isSelected = selected.has(payment.identifier);
               return (
                 <li key={`m-${payment.identifier}`}>
                   <SwipeAction
-                    leftActions={leftActions}
-                    onClick={() => navigate(`/payments/${payment.identifier}`)}
+                    leftActions={selectionMode ? [] : leftActions}
+                    onClick={() =>
+                      selectionMode
+                        ? isUnpaid && toggle(payment.identifier)
+                        : navigate(`/payments/${payment.identifier}`)
+                    }
                   >
-                    <div className="bg-surface-card border border-border-default p-4 min-h-touch">
+                    <div
+                      className={`bg-surface-card border p-4 min-h-touch ${
+                        isSelected
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-950'
+                          : 'border-border-default'
+                      }`}
+                    >
                       <DataList
+                        leading={
+                          selectionMode ? (
+                            isSelected ? (
+                              <CheckSquare className="h-5 w-5 text-primary-500" />
+                            ) : (
+                              <Square
+                                className={`h-5 w-5 ${
+                                  isUnpaid ? 'text-text-muted' : 'text-border-default'
+                                }`}
+                              />
+                            )
+                          ) : undefined
+                        }
                         title={`${payment.property?.street}`}
                         trailing={
                           <PaymentStatusBadge status={payment.status} />
@@ -519,10 +650,59 @@ export const PaymentsPage = () => {
         {paymentsData?.content && paymentsData.content.length > 0 ? (
           <>
             <div className="hidden md:block bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
+              {canEditData && hasSelection && (
+                <div className="px-6 py-3 border-b border-border-default bg-primary-50 dark:bg-primary-950 flex items-center justify-between gap-3">
+                  <span className="text-sm font-medium text-text-primary">
+                    {t('selection.selected', { count: selectedIds.length })}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowBulkMarkPaid(true)}
+                      disabled={bulkMarkPaidMutation.isPending}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-success rounded-md hover:opacity-90 transition-colors disabled:opacity-50 focus-ring"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      {t('selection.markPaid')}
+                    </button>
+                    <button
+                      onClick={() => setReminderTargets(selectedIds)}
+                      disabled={bulkRemindersMutation.isPending}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset transition-colors disabled:opacity-50 focus-ring"
+                    >
+                      <Send className="h-4 w-4" />
+                      {t('selection.sendReminders')}
+                    </button>
+                    <button
+                      onClick={exitSelection}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text-secondary rounded-md hover:bg-surface-inset transition-colors focus-ring"
+                    >
+                      <X className="h-4 w-4" />
+                      {t('common:buttons.cancel')}
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-border-default">
                   <thead className="bg-surface-page">
                     <tr>
+                      {canEditData && (
+                        <th className="pl-6 pr-2 py-3 w-10">
+                          <button
+                            type="button"
+                            onClick={toggleAll}
+                            disabled={actionableIds.length === 0}
+                            aria-label={t('selection.selectAll')}
+                            className="text-text-secondary hover:text-primary-500 disabled:opacity-40 focus-ring rounded"
+                          >
+                            {allVisibleSelected ? (
+                              <CheckSquare className="h-5 w-5 text-primary-500" />
+                            ) : (
+                              <Square className="h-5 w-5" />
+                            )}
+                          </button>
+                        </th>
+                      )}
                       <th
                         className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                         onClick={() => handleSortChange('dueDate')}
@@ -563,11 +743,37 @@ export const PaymentsPage = () => {
                     {paymentsData.content.map((payment) => (
                       <tr
                         key={payment.identifier}
-                        className="hover:bg-primary-50 cursor-pointer"
+                        className={`cursor-pointer ${
+                          selected.has(payment.identifier)
+                            ? 'bg-primary-50 dark:bg-primary-950'
+                            : 'hover:bg-primary-50'
+                        }`}
                         onClick={() =>
                           navigate(`/payments/${payment.identifier}`)
                         }
                       >
+                        {canEditData && (
+                          <td className="pl-6 pr-2 py-4 w-10">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggle(payment.identifier);
+                              }}
+                              disabled={!isActionable(payment.status)}
+                              aria-label={t('selection.selectRow', {
+                                id: payment.identifier,
+                              })}
+                              className="text-text-secondary hover:text-primary-500 disabled:opacity-30 focus-ring rounded"
+                            >
+                              {selected.has(payment.identifier) ? (
+                                <CheckSquare className="h-5 w-5 text-primary-500" />
+                              ) : (
+                                <Square className="h-5 w-5" />
+                              )}
+                            </button>
+                          </td>
+                        )}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                           {formatDate(payment.dueDate)}
                         </td>
@@ -696,6 +902,26 @@ export const PaymentsPage = () => {
           </div>
         )}
       </div>
+
+      {showBulkMarkPaid && (
+        <BulkMarkPaidDialog
+          open={showBulkMarkPaid}
+          count={selectedIds.length}
+          isLoading={bulkMarkPaidMutation.isPending}
+          onConfirm={handleBulkMarkPaid}
+          onClose={() => setShowBulkMarkPaid(false)}
+        />
+      )}
+
+      {reminderTargets && (
+        <SendReminderDialog
+          open={reminderTargets.length > 0}
+          count={reminderTargets.length}
+          isLoading={bulkRemindersMutation.isPending}
+          onConfirm={handleSendReminders}
+          onClose={() => setReminderTargets(null)}
+        />
+      )}
 
       {deleteTarget && (
         <ConfirmDialog

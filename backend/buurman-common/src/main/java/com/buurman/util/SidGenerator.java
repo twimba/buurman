@@ -26,6 +26,7 @@ import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.domain.identifier.PaymentInstructionIdentifier;
 import com.buurman.domain.identifier.PaymentReceivalIdentifier;
+import com.buurman.domain.identifier.PaymentReminderIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.domain.identifier.PropertyAcquisitionIdentifier;
 import com.buurman.domain.identifier.PropertyFeeIdentifier;
@@ -122,6 +123,10 @@ public class SidGenerator {
 
   public static PaymentReceivalIdentifier newPaymentReceivalId() {
     return PaymentReceivalIdentifier.of(generateRaw(EntityPrefix.PRE));
+  }
+
+  public static PaymentReminderIdentifier newPaymentReminderId() {
+    return PaymentReminderIdentifier.of(generateRaw(EntityPrefix.PRM));
   }
 
   public static PhotoIdentifier newPhotoId() {

@@ -185,6 +185,18 @@ public class PaymentRepository {
         .toList();
   }
 
+  /**
+   * A payment is overdue when it still has an open balance (PENDING, PARTIALLY_PAID or a stored
+   * OVERDUE status) and its due date is strictly in the past. Shared by every overdue query so the
+   * list filter, the stats card, the arrears view and the reminder job agree.
+   */
+  private Condition overdueCondition(LocalDate today) {
+    return PAYMENTS
+        .STATUS
+        .in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name())
+        .and(PAYMENTS.DUE_DATE.lt(today));
+  }
+
   public List<Payment> findOverduePayments(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
     return dsl
@@ -193,8 +205,7 @@ public class PaymentRepository {
             PAYMENTS
                 .TEAM_ID
                 .eq(teamId)
-                .and(PAYMENTS.STATUS.eq(PENDING.name()))
-                .and(PAYMENTS.DUE_DATE.lt(today))
+                .and(overdueCondition(today))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.DUE_DATE.asc())
         .fetch()
@@ -348,10 +359,7 @@ public class PaymentRepository {
     Condition condition = PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       if ("OVERDUE".equalsIgnoreCase(status)) {
-        condition =
-            condition
-                .and(PAYMENTS.STATUS.eq(PENDING.name()))
-                .and(PAYMENTS.DUE_DATE.lt(LocalDate.now(clock)));
+        condition = condition.and(overdueCondition(LocalDate.now(clock)));
       } else {
         condition = condition.and(PAYMENTS.STATUS.eq(status));
       }
@@ -416,21 +424,128 @@ public class PaymentRepository {
                     r.value1() != null ? r.value1() : 0, Optional.ofNullable(r.value2())));
   }
 
+  /**
+   * Overdue stats count every past-due payment with an open balance; the total is what is still
+   * outstanding (amount minus receivals), not the face value.
+   */
   public Optional<AmountStats> getOverdueStats(UUID teamId) {
-    return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
+    var receivals = receivedPerPaymentSubquery(teamId);
+    Field<UUID> rPaymentId = requireNonNull(receivals.field("r_payment_id", UUID.class));
+    Field<BigDecimal> received = requireNonNull(receivals.field("received", BigDecimal.class));
+    Field<Long> rawAmount = field("payments.amount", Long.class);
+    return dsl.select(
+            count().as("count"),
+            sum(rawAmount.minus(DSL.coalesce(received, BigDecimal.ZERO))).as("total"))
         .from(PAYMENTS)
+        .leftJoin(receivals)
+        .on(rPaymentId.eq(PAYMENTS.ID))
         .where(
             PAYMENTS
                 .TEAM_ID
                 .eq(teamId)
-                .and(PAYMENTS.STATUS.eq(PENDING.name()))
-                .and(PAYMENTS.DUE_DATE.lt(LocalDate.now(clock)))
+                .and(overdueCondition(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(
             r ->
                 new AmountStats(
                     r.value1() != null ? r.value1() : 0, Optional.ofNullable(r.value2())));
+  }
+
+  /**
+   * One row per overdue payment with its open balance, for the arrears view. Kept as a flat
+   * projection rather than domain objects so the service can age and group without N+1 lookups.
+   */
+  public List<OverduePaymentRow> findOverdueRows(UUID teamId) {
+    LocalDate today = LocalDate.now(clock);
+    var receivals = receivedPerPaymentSubquery(teamId);
+    Field<UUID> rPaymentId = requireNonNull(receivals.field("r_payment_id", UUID.class));
+    Field<BigDecimal> received = requireNonNull(receivals.field("received", BigDecimal.class));
+    Field<Long> rawAmount = field("payments.amount", Long.class);
+    return dsl
+        .select(
+            PAYMENTS.ID,
+            PAYMENTS.IDENTIFIER,
+            PAYMENTS.CONTRACT_ID,
+            PAYMENTS.CONTACT_ID,
+            PAYMENTS.CURRENCY,
+            rawAmount.as("amount_minor"),
+            DSL.coalesce(received, BigDecimal.ZERO).as("received"),
+            PAYMENTS.DUE_DATE)
+        .from(PAYMENTS)
+        .leftJoin(receivals)
+        .on(rPaymentId.eq(PAYMENTS.ID))
+        .where(
+            PAYMENTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(overdueCondition(today))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .orderBy(PAYMENTS.DUE_DATE.asc())
+        .fetch()
+        .stream()
+        .map(
+            r -> {
+              String currency = r.get(PAYMENTS.CURRENCY);
+              BigDecimal amount =
+                  MoneyAmount.sumToMajorUnits(r.get("amount_minor", BigDecimal.class), currency);
+              BigDecimal receivedMajor =
+                  MoneyAmount.sumToMajorUnits(r.get("received", BigDecimal.class), currency);
+              return new OverduePaymentRow(
+                  r.get(PAYMENTS.ID),
+                  r.get(PAYMENTS.IDENTIFIER),
+                  r.get(PAYMENTS.CONTRACT_ID),
+                  Optional.ofNullable(r.get(PAYMENTS.CONTACT_ID)),
+                  currency,
+                  amount.subtract(receivedMajor),
+                  r.get(PAYMENTS.DUE_DATE));
+            })
+        .filter(row -> row.outstanding().compareTo(BigDecimal.ZERO) > 0)
+        .toList();
+  }
+
+  public record OverduePaymentRow(
+      UUID paymentId,
+      Sid identifier,
+      UUID contractId,
+      Optional<UUID> contactId,
+      String currency,
+      BigDecimal outstanding,
+      LocalDate dueDate) {}
+
+  public List<Payment> findByIdentifiersAndTeamId(Collection<Sid> identifiers, UUID teamId) {
+    if (identifiers.isEmpty()) {
+      return List.of();
+    }
+    return dsl
+        .selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(PAYMENTS.IDENTIFIER.in(identifiers))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  /**
+   * sum(receivals) per payment for the team, aliased as (r_payment_id, received) in minor units.
+   */
+  private Table<?> receivedPerPaymentSubquery(UUID teamId) {
+    Table<?> receivalsTable = table("payment_receivals");
+    Field<UUID> rPaymentId = field("payment_id", UUID.class);
+    Field<UUID> rTeamId = field("team_id", UUID.class);
+    Field<Long> rAmount = field("amount", Long.class);
+    Field<LocalDateTime> rDeletedAt = field("deleted_at", LocalDateTime.class);
+    return dsl.select(rPaymentId.as("r_payment_id"), sum(rAmount).as("received"))
+        .from(receivalsTable)
+        .where(rDeletedAt.isNull().and(rTeamId.eq(teamId)))
+        .groupBy(rPaymentId)
+        .asTable("r");
   }
 
   public List<MonthlyAmount> getMonthlyPaidTrend(UUID teamId, int months) {

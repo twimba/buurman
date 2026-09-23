@@ -253,6 +253,14 @@ paths:
     $ref: 'paths/payments.yaml#/payments-bulk'
   /payments/bulk-generate:
     $ref: 'paths/payments.yaml#/payments-bulk-generate'
+  /payments/bulk-mark-paid:
+    $ref: 'paths/payments.yaml#/payments-bulk-mark-paid'
+  /payments/bulk-reminders:
+    $ref: 'paths/payments.yaml#/payments-bulk-reminders'
+  /payments/arrears:
+    $ref: 'paths/payments.yaml#/payments-arrears'
+  /payments/{identifier}/reminders:
+    $ref: 'paths/payments.yaml#/payments-reminders'
   /payment-instructions:
     $ref: 'paths/payments.yaml#/payment-instructions'
   /notifications/{identifier}/resend:
@@ -7319,6 +7327,197 @@ components:
         - overdueCount
         - pendingAmount
         - pendingCount
+    PaymentReminderResponse:
+      type: object
+      description: One reminder sent to a tenant about an outstanding payment
+      properties:
+        identifier:
+          type: string
+        reminderType:
+          type: string
+          enum: [MANUAL, AUTOMATIC]
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        recipientEmail:
+          type: string
+        daysOverdue:
+          type: integer
+          format: int32
+        outstandingAmount:
+          type: number
+          description: Balance still open when the reminder was sent (major units)
+        currency:
+          type: string
+        notes:
+          type: string
+        sentByName:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - reminderType
+        - channel
+        - daysOverdue
+        - outstandingAmount
+        - currency
+        - sentAt
+    SendPaymentReminderRequest:
+      type: object
+      properties:
+        notes:
+          type: string
+          maxLength: 1000
+          description: Optional personal message included in the email
+    BulkMarkPaidRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        paymentDate:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - identifiers
+        - paymentDate
+    BulkSendPaymentRemindersRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - identifiers
+    BulkActionResultPaymentResponse:
+      type: object
+      description: Outcome of a bulk action for one payment, keyed by its identifier
+      properties:
+        identifier:
+          type: string
+        result:
+          $ref: '#/components/schemas/PaymentResponse'
+        error:
+          type: string
+      required:
+        - identifier
+    BulkActionResultPaymentReminderResponse:
+      type: object
+      description: Outcome of a bulk reminder send for one payment, keyed by its identifier
+      properties:
+        identifier:
+          type: string
+        result:
+          $ref: '#/components/schemas/PaymentReminderResponse'
+        error:
+          type: string
+      required:
+        - identifier
+    ArrearsAgeingBucket:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Human key such as "1-30" or "91+"
+        fromDays:
+          type: integer
+          format: int32
+        toDays:
+          type: integer
+          format: int32
+          description: Absent for the open-ended last bucket
+        amount:
+          type: number
+        count:
+          type: integer
+          format: int32
+      required:
+        - key
+        - fromDays
+        - amount
+        - count
+    ContactArrears:
+      type: object
+      description: Everything one tenant owes past due
+      properties:
+        contact:
+          $ref: '#/components/schemas/ContactSummary'
+        property:
+          $ref: '#/components/schemas/PropertySummary'
+        contractIdentifier:
+          type: string
+        outstanding:
+          type: number
+        paymentCount:
+          type: integer
+          format: int32
+        oldestDueDate:
+          type: string
+          format: date
+        daysOverdue:
+          type: integer
+          format: int32
+        lastReminderAt:
+          type: string
+          format: date-time
+        reminderCount:
+          type: integer
+          format: int32
+        paymentIdentifiers:
+          type: array
+          items:
+            type: string
+      required:
+        - outstanding
+        - paymentCount
+        - oldestDueDate
+        - daysOverdue
+        - reminderCount
+        - paymentIdentifiers
+    PaymentArrearsResponse:
+      type: object
+      properties:
+        currency:
+          type: string
+        totalOutstanding:
+          type: number
+        paymentCount:
+          type: integer
+          format: int32
+        contactCount:
+          type: integer
+          format: int32
+        oldestDaysOverdue:
+          type: integer
+          format: int32
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArrearsAgeingBucket'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactArrears'
+      required:
+        - totalOutstanding
+        - paymentCount
+        - contactCount
+        - oldestDaysOverdue
+        - buckets
+        - contacts
     PageResponseNotificationResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata

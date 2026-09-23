@@ -7,7 +7,8 @@
     "schedulePayment": "Zaplanuj płatność",
     "registerPayment": "Zarejestruj płatność",
     "registerReceival": "Zarejestruj wpłatę",
-    "markAsPaid": "Oznacz jako opłacone"
+    "markAsPaid": "Oznacz jako opłacone",
+    "sendReminder": "Wyślij przypomnienie"
   },
   "stats": {
     "pendingPayments": "Oczekujące płatności",
@@ -128,7 +129,8 @@
     "details": "Szczegóły",
     "receivals": "Wpłaty",
     "documents": "Dokumenty",
-    "history": "Historia"
+    "history": "Historia",
+    "reminders": "Przypomnienia"
   },
   "receivals": {
     "title": "Wpłaty ({{count}})",
@@ -190,11 +192,75 @@
     "deleteReceival": "Usuń wpłatę",
     "save": "Zapisz",
     "previous": "Poprzednia",
-    "next": "Następna"
+    "next": "Następna",
+    "sendReminder": "Wyślij najemcy e-mail w sprawie tej płatności"
   },
   "errors": {
     "loadFailed": "Nie udało się załadować płatności",
     "loadPaymentFailed": "Nie udało się załadować płatności",
     "loadHistoryFailed": "Nie udało się załadować historii"
+  },
+  "selection": {
+    "selected": "Wybrano: {{count}}",
+    "selectAll": "Zaznacz wszystkie nieopłacone na tej stronie",
+    "selectRow": "Zaznacz płatność {{id}}",
+    "select": "Zaznacz",
+    "done": "Gotowe",
+    "markPaid": "Oznacz jako opłacone",
+    "sendReminders": "Wyślij przypomnienia"
+  },
+  "arrears": {
+    "title": "Zaległości",
+    "summary": "{{amount}} zaległości od {{count}} najemcy",
+    "summary_other": "{{amount}} zaległości od {{count}} najemców",
+    "oldest": "najstarsza {{days}} dni po terminie",
+    "bucket": {
+      "1-30": "1–30 dni",
+      "31-60": "31–60 dni",
+      "61-90": "61–90 dni",
+      "91+": "Ponad 90 dni"
+    },
+    "payments": "{{count}} płatność",
+    "payments_other": "{{count}} płatności",
+    "lastReminded": "ostatnie przypomnienie {{when}} ({{count}}×)",
+    "neverReminded": "brak przypomnień",
+    "daysOverdue": "{{days}} dni po terminie",
+    "sendReminder": "Wyślij przypomnienie",
+    "sendReminderTo": "Wyślij przypomnienie do {{name}}",
+    "remindAll": "Przypomnij wszystkim ({{count}})",
+    "showAll": "Pokaż wszystkich najemców ({{count}})",
+    "showLess": "Pokaż mniej",
+    "noContact": "Brak powiązanego kontaktu"
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Oznacz {{count}} płatności jako opłacone",
+    "message": "Każda zaznaczona płatność zostanie oznaczona jako w pełni opłacona w wybranym dniu. Płatności już opłacone lub anulowane zostaną pominięte.",
+    "confirm": "Oznacz {{count}} jako opłacone"
+  },
+  "sendReminderDialog": {
+    "title": "Wyślij przypomnienie o płatności",
+    "titleBulk": "Wyślij {{count}} przypomnień",
+    "message": "Najemca otrzyma e-mail z kwotą do zapłaty, terminem i Twoimi danymi do przelewu, w języku umowy.",
+    "messageBulk": "Każdy najemca otrzyma e-mail z kwotą do zapłaty, terminem i Twoimi danymi do przelewu. Płatności bez adresu e-mail najemcy zostaną pominięte.",
+    "notesLabel": "Wiadomość osobista (opcjonalnie)",
+    "notesPlaceholder": "np. Prosimy o przelew do piątku.",
+    "confirm": "Wyślij przypomnienie",
+    "confirmBulk": "Wyślij {{count}} przypomnień"
+  },
+  "reminders": {
+    "title": "Wysłane przypomnienia",
+    "empty": "Nie wysłano jeszcze przypomnień",
+    "emptySubtitle": "Przypomnienia wysłane do najemcy pojawią się tutaj",
+    "sentBy": "przez {{name}}",
+    "automatic": "Automatyczne przypomnienie",
+    "manual": "Przypomnienie",
+    "daysOverdue": "{{days}} dni po terminie",
+    "outstanding": "Do zapłaty {{amount}}",
+    "to": "do {{email}}"
+  },
+  "toasts": {
+    "reminderSent": "Przypomnienie wysłano do {{email}}",
+    "bulkMarkPaid": "Oznaczono jako opłacone: {{success}}, pominięto: {{failed}}",
+    "bulkReminders": "Wysłano przypomnień: {{success}}, pominięto: {{failed}}"
   }
 }

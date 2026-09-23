@@ -19,7 +19,11 @@ import {
   useRegisterReceival,
   useUpdatePaymentReceival,
   useDeletePaymentReceival,
+  usePaymentReminders,
+  useSendPaymentReminder,
 } from '@/hooks/usePaymentHooks';
+import { PaymentRemindersList } from '@/components/payments/PaymentRemindersList';
+import { SendReminderDialog } from '@/components/payments/SendReminderDialog';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
@@ -40,6 +44,7 @@ import {
   ChevronUp,
   ChevronDown,
   Trash2,
+  Send,
   Calendar,
   DollarSign,
   Home,
@@ -353,6 +358,7 @@ export const PaymentDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
   const [showReceivalModal, setShowReceivalModal] = useState(false);
+  const [showReminderModal, setShowReminderModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Open the relevant action modal when arriving from an email deep link
@@ -369,6 +375,8 @@ export const PaymentDetailPage = () => {
       setShowMarkPaidModal(true);
     } else if (action === 'record-receival') {
       setShowReceivalModal(true);
+    } else if (action === 'send-reminder') {
+      setShowReminderModal(true);
     }
     setSearchParams(
       (prev) => {
@@ -382,6 +390,7 @@ export const PaymentDetailPage = () => {
     'details',
     'receivals',
     'documents',
+    'reminders',
     'history',
   ] as const);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
@@ -425,6 +434,9 @@ export const PaymentDetailPage = () => {
   const deletePaymentMutation = useDeletePayment();
   const updatePaymentMutation = useUpdatePayment(id);
   const markPaidMutation = useMarkPaymentAsPaid();
+  const sendReminderMutation = useSendPaymentReminder();
+  const { data: reminders = [], isLoading: remindersLoading } =
+    usePaymentReminders(id);
   const uploadDocumentMutation = useUploadPaymentDocument(id);
   const deleteDocumentMutation = useDeletePaymentDocument(id);
   const registerReceivalMutation = useRegisterReceival(id);
@@ -515,6 +527,16 @@ export const PaymentDetailPage = () => {
     payment.status === PaymentStatus.OVERDUE;
   const canRegisterReceival = canMarkPaid;
   const symbol = getCurrencySymbol(payment.currency);
+  const fmtMoney = (value: number, currency: string) => {
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency,
+      }).format(value);
+    } catch {
+      return `${currency} ${value.toFixed(2)}`;
+    }
+  };
 
   return (
     <div className="min-h-full bg-background">
@@ -547,6 +569,17 @@ export const PaymentDetailPage = () => {
                   disabled={!canEditData}
                 >
                   {t('actions.markAsPaid')}
+                </Button>
+              )}
+              {canMarkPaid && (
+                <Button
+                  variant="secondary"
+                  leftIcon={<Send />}
+                  onClick={() => setShowReminderModal(true)}
+                  disabled={!canEditData}
+                  title={t('tooltips.sendReminder')}
+                >
+                  {t('actions.sendReminder')}
                 </Button>
               )}
               {canEdit && !isEditing && (
@@ -612,6 +645,18 @@ export const PaymentDetailPage = () => {
               <FileText className="h-4 w-4" />
               {t('tabs.documents')}{' '}
               {documents.length > 0 && `(${documents.length})`}
+            </button>
+            <button
+              onClick={() => setActiveTab('reminders')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'reminders'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Send className="h-4 w-4" />
+              {t('tabs.reminders')}{' '}
+              {reminders.length > 0 && `(${reminders.length})`}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -950,6 +995,37 @@ export const PaymentDetailPage = () => {
             isDeleting={deleteDocumentMutation.isPending}
             readOnly={!canEditData}
           />
+        )}
+
+        {activeTab === 'reminders' && (
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <div className="flex items-center justify-between mb-4 gap-3">
+              <h2 className="text-xl font-semibold text-text-primary">
+                {t('reminders.title')}
+              </h2>
+              {canMarkPaid && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<Send />}
+                  onClick={() => setShowReminderModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.sendReminder')}
+                </Button>
+              )}
+            </div>
+            {remindersLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <PaymentRemindersList
+                reminders={reminders}
+                formatMoney={fmtMoney}
+              />
+            )}
+          </div>
         )}
 
         {activeTab === 'history' && (
@@ -1294,6 +1370,23 @@ export const PaymentDetailPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showReminderModal && id && (
+        <SendReminderDialog
+          open={showReminderModal}
+          count={1}
+          isLoading={sendReminderMutation.isPending}
+          onConfirm={async (notes) => {
+            await sendReminderMutation.mutateAsync({
+              id,
+              data: notes ? { notes } : undefined,
+            });
+            setShowReminderModal(false);
+            setActiveTab('reminders');
+          }}
+          onClose={() => setShowReminderModal(false)}
+        />
       )}
 
       {/* Mark Paid Modal */}

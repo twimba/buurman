@@ -406,6 +406,11 @@ public class NotificationServiceImpl implements NotificationService {
   }
 
   private Locale resolveRecipientLocale(SendNotificationRequest request) {
+    // 0. Explicit override from the caller (e.g. a tenant email in the contract's language)
+    Optional<String> explicit = request.languageTag().filter(tag -> !tag.isBlank());
+    if (explicit.isPresent()) {
+      return Locale.forLanguageTag(explicit.get());
+    }
     // 1. User preference (highest priority)
     Optional<String> userLang =
         request

@@ -15,4 +15,13 @@ export type {
   UpdatePaymentReceivalRequest,
   BulkGeneratePaymentsRequest,
   GetPaymentsParams,
+  PaymentArrearsResponse,
+  ArrearsAgeingBucket,
+  ContactArrears,
+  PaymentReminderResponse,
+  SendPaymentReminderRequest,
+  BulkMarkPaidRequest,
+  BulkSendPaymentRemindersRequest,
+  BulkActionResultPaymentResponse,
+  BulkActionResultPaymentReminderResponse,
 } from '../generated/models';

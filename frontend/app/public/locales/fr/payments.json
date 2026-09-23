@@ -7,7 +7,8 @@
     "schedulePayment": "Planifier un paiement",
     "registerPayment": "Enregistrer un paiement",
     "registerReceival": "Enregistrer un encaissement",
-    "markAsPaid": "Marquer comme payé"
+    "markAsPaid": "Marquer comme payé",
+    "sendReminder": "Envoyer un rappel"
   },
   "stats": {
     "pendingPayments": "Paiements en attente",
@@ -128,7 +129,8 @@
     "details": "Détails",
     "receivals": "Encaissements",
     "documents": "Documents",
-    "history": "Historique"
+    "history": "Historique",
+    "reminders": "Rappels"
   },
   "receivals": {
     "title": "Encaissements ({{count}})",
@@ -190,11 +192,76 @@
     "deleteReceival": "Supprimer l'encaissement",
     "save": "Enregistrer",
     "previous": "Précédent",
-    "next": "Suivant"
+    "next": "Suivant",
+    "sendReminder": "Envoyer un e-mail au locataire au sujet de ce paiement"
   },
   "errors": {
     "loadFailed": "Échec du chargement des paiements",
     "loadPaymentFailed": "Échec du chargement du paiement",
     "loadHistoryFailed": "Échec du chargement de l'historique"
+  },
+  "selection": {
+    "selected": "{{count}} sélectionné",
+    "selected_other": "{{count}} sélectionnés",
+    "selectAll": "Sélectionner tous les impayés de cette page",
+    "selectRow": "Sélectionner le paiement {{id}}",
+    "select": "Sélectionner",
+    "done": "Terminé",
+    "markPaid": "Marquer payé",
+    "sendReminders": "Envoyer des rappels"
+  },
+  "arrears": {
+    "title": "Impayés",
+    "summary": "{{amount}} dus par {{count}} locataire",
+    "summary_other": "{{amount}} dus par {{count}} locataires",
+    "oldest": "le plus ancien a {{days}} jours de retard",
+    "bucket": {
+      "1-30": "1–30 jours",
+      "31-60": "31–60 jours",
+      "61-90": "61–90 jours",
+      "91+": "Plus de 90 jours"
+    },
+    "payments": "{{count}} paiement",
+    "payments_other": "{{count}} paiements",
+    "lastReminded": "dernier rappel {{when}} ({{count}}×)",
+    "neverReminded": "jamais relancé",
+    "daysOverdue": "{{days}} jours de retard",
+    "sendReminder": "Envoyer un rappel",
+    "sendReminderTo": "Envoyer un rappel à {{name}}",
+    "remindAll": "Relancer tous ({{count}})",
+    "showAll": "Afficher les {{count}} locataires",
+    "showLess": "Afficher moins",
+    "noContact": "Aucun contact lié"
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Marquer {{count}} paiements comme payés",
+    "message": "Chaque paiement sélectionné est marqué comme entièrement payé à la date choisie. Les paiements déjà payés ou annulés sont ignorés.",
+    "confirm": "Marquer {{count}} comme payés"
+  },
+  "sendReminderDialog": {
+    "title": "Envoyer un rappel de paiement",
+    "titleBulk": "Envoyer {{count}} rappels",
+    "message": "Le locataire reçoit un e-mail avec le montant restant dû, la date d’échéance et vos coordonnées de paiement, dans la langue du contrat.",
+    "messageBulk": "Chaque locataire reçoit un e-mail avec son montant restant dû, la date d’échéance et vos coordonnées de paiement. Les paiements sans adresse e-mail du locataire sont ignorés.",
+    "notesLabel": "Message personnel (facultatif)",
+    "notesPlaceholder": "ex. Merci de virer le montant avant vendredi.",
+    "confirm": "Envoyer le rappel",
+    "confirmBulk": "Envoyer {{count}} rappels"
+  },
+  "reminders": {
+    "title": "Rappels envoyés",
+    "empty": "Aucun rappel envoyé pour l’instant",
+    "emptySubtitle": "Les rappels envoyés au locataire apparaîtront ici",
+    "sentBy": "par {{name}}",
+    "automatic": "Rappel automatique",
+    "manual": "Rappel",
+    "daysOverdue": "{{days}} jours de retard",
+    "outstanding": "Restant dû {{amount}}",
+    "to": "à {{email}}"
+  },
+  "toasts": {
+    "reminderSent": "Rappel envoyé à {{email}}",
+    "bulkMarkPaid": "{{success}} marqués comme payés, {{failed}} ignorés",
+    "bulkReminders": "{{success}} rappels envoyés, {{failed}} ignorés"
   }
 }

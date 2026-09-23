@@ -8324,6 +8324,312 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /payments/bulk-mark-paid:
+    post:
+      tags:
+        - Payments
+      summary: Mark several payments as paid
+      description: >-
+        Marks each selected payment as fully paid on the given date (Admin/Editor). Each payment is
+        processed independently; the response reports success or the error per identifier.
+      operationId: bulkMarkPaymentsAsPaid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMarkPaidRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BulkActionResultPaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/bulk-reminders:
+    post:
+      tags:
+        - Payments
+      summary: Send reminders for several payments
+      description: >-
+        Emails the tenant of each selected outstanding payment (Admin/Editor). Each reminder is
+        processed independently; the response reports success or the error per identifier.
+      operationId: bulkSendPaymentReminders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkSendPaymentRemindersRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BulkActionResultPaymentReminderResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/arrears:
+    get:
+      tags:
+        - Payments
+      summary: Get arrears overview
+      description: >-
+        Every past-due payment with an open balance, aged into 1-30 / 31-60 / 61-90 / 91+ day
+        buckets and grouped by the tenant who owes it, with last-reminder information.
+      operationId: getPaymentArrears
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentArrearsResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/reminders:
+    get:
+      tags:
+        - Payments
+      summary: List reminders sent for a payment
+      description: Communications timeline of reminders sent to the tenant, newest first
+      operationId: getPaymentReminders
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentReminderResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Payments
+      summary: Send a payment reminder to the tenant
+      description: >-
+        Emails the tenant linked to the payment (or the contract's primary contact) with the
+        outstanding balance and the landlord's payment instructions, in the contract's document
+        language (Admin/Editor). Fails if the payment is paid, cancelled or the contact has no email.
+      operationId: sendPaymentReminder
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPaymentReminderRequest'
+        required: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReminderResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /payment-instructions:
     get:
       tags:
@@ -26148,6 +26454,197 @@ components:
         - overdueCount
         - pendingAmount
         - pendingCount
+    PaymentReminderResponse:
+      type: object
+      description: One reminder sent to a tenant about an outstanding payment
+      properties:
+        identifier:
+          type: string
+        reminderType:
+          type: string
+          enum: [MANUAL, AUTOMATIC]
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        recipientEmail:
+          type: string
+        daysOverdue:
+          type: integer
+          format: int32
+        outstandingAmount:
+          type: number
+          description: Balance still open when the reminder was sent (major units)
+        currency:
+          type: string
+        notes:
+          type: string
+        sentByName:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - reminderType
+        - channel
+        - daysOverdue
+        - outstandingAmount
+        - currency
+        - sentAt
+    SendPaymentReminderRequest:
+      type: object
+      properties:
+        notes:
+          type: string
+          maxLength: 1000
+          description: Optional personal message included in the email
+    BulkMarkPaidRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        paymentDate:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - identifiers
+        - paymentDate
+    BulkSendPaymentRemindersRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - identifiers
+    BulkActionResultPaymentResponse:
+      type: object
+      description: Outcome of a bulk action for one payment, keyed by its identifier
+      properties:
+        identifier:
+          type: string
+        result:
+          $ref: '#/components/schemas/PaymentResponse'
+        error:
+          type: string
+      required:
+        - identifier
+    BulkActionResultPaymentReminderResponse:
+      type: object
+      description: Outcome of a bulk reminder send for one payment, keyed by its identifier
+      properties:
+        identifier:
+          type: string
+        result:
+          $ref: '#/components/schemas/PaymentReminderResponse'
+        error:
+          type: string
+      required:
+        - identifier
+    ArrearsAgeingBucket:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Human key such as "1-30" or "91+"
+        fromDays:
+          type: integer
+          format: int32
+        toDays:
+          type: integer
+          format: int32
+          description: Absent for the open-ended last bucket
+        amount:
+          type: number
+        count:
+          type: integer
+          format: int32
+      required:
+        - key
+        - fromDays
+        - amount
+        - count
+    ContactArrears:
+      type: object
+      description: Everything one tenant owes past due
+      properties:
+        contact:
+          $ref: '#/components/schemas/ContactSummary'
+        property:
+          $ref: '#/components/schemas/PropertySummary'
+        contractIdentifier:
+          type: string
+        outstanding:
+          type: number
+        paymentCount:
+          type: integer
+          format: int32
+        oldestDueDate:
+          type: string
+          format: date
+        daysOverdue:
+          type: integer
+          format: int32
+        lastReminderAt:
+          type: string
+          format: date-time
+        reminderCount:
+          type: integer
+          format: int32
+        paymentIdentifiers:
+          type: array
+          items:
+            type: string
+      required:
+        - outstanding
+        - paymentCount
+        - oldestDueDate
+        - daysOverdue
+        - reminderCount
+        - paymentIdentifiers
+    PaymentArrearsResponse:
+      type: object
+      properties:
+        currency:
+          type: string
+        totalOutstanding:
+          type: number
+        paymentCount:
+          type: integer
+          format: int32
+        contactCount:
+          type: integer
+          format: int32
+        oldestDaysOverdue:
+          type: integer
+          format: int32
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArrearsAgeingBucket'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactArrears'
+      required:
+        - totalOutstanding
+        - paymentCount
+        - contactCount
+        - oldestDaysOverdue
+        - buckets
+        - contacts
     PageResponseNotificationResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata

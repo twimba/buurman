@@ -38,6 +38,7 @@ public class EmailSubjectResolver {
             getVar(variables, "memberName", "Someone"), getVar(variables, "teamName", "your team")
           };
       case "payment-reminder",
+          "payment-reminder-tenant",
           "contract-expiry",
           "property-created",
           "contract-created",

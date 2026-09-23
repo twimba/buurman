@@ -23,6 +23,11 @@ import {
   getReceivals,
   updateReceival,
   deleteReceival,
+  getPaymentArrears,
+  getPaymentReminders,
+  sendPaymentReminder,
+  bulkMarkPaymentsAsPaid,
+  bulkSendPaymentReminders,
 } from '../generated/api/payments/payments';
 import type {
   GetPaymentsParams,
@@ -35,7 +40,11 @@ import {
   UpdatePaymentRequest,
   MarkPaidRequest,
   BulkGeneratePaymentsRequest,
+  SendPaymentReminderRequest,
+  BulkMarkPaidRequest,
+  BulkSendPaymentRemindersRequest,
 } from '../types/payment';
+import { useTranslation } from 'react-i18next';
 import type { PageParams } from '@/types/common';
 import { useToast } from '@buurman/ui';
 import { useAnnounce } from '@/hooks/useAnnounce';
@@ -439,6 +448,126 @@ export const useDeletePaymentReceival = (paymentId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.reports.incomeTrend(),
       });
+    },
+  });
+};
+
+// --- Arrears & reminders (BUUR-101) ---
+
+export const usePaymentArrears = () => {
+  return useQuery({
+    queryKey: queryKeys.payments.arrears(),
+    queryFn: () => getPaymentArrears(),
+  });
+};
+
+export const usePaymentReminders = (paymentId: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.payments.reminders(paymentId),
+    queryFn: () => getPaymentReminders(paymentId ?? ''),
+    enabled: !!paymentId,
+  });
+};
+
+/** Invalidate everything a payment-state change touches (lists, stats, arrears, dashboards). */
+const invalidatePaymentViews = (
+  queryClient: ReturnType<typeof useQueryClient>
+) => {
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
+  queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats() });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.dashboard.propertyDashboard(),
+  });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.reports.financialOverview(),
+  });
+  queryClient.invalidateQueries({ queryKey: queryKeys.reports.incomeTrend() });
+};
+
+export const useSendPaymentReminder = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const announce = useAnnounce();
+  const { t } = useTranslation('payments');
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data?: SendPaymentReminderRequest }) =>
+      sendPaymentReminder(id, data),
+    onSuccess: (reminder, { id }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.reminders(id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.auditLog(id) });
+      const message = t('toasts.reminderSent', {
+        email: reminder.recipientEmail ?? '',
+      });
+      showToast(message, 'success');
+      announce(message);
+      trackEvent(AnalyticsEvent.PAYMENT_REMINDER_SENT);
+    },
+    onError: (error) => {
+      const message = getErrorMessage(error);
+      showToast(message, 'error');
+      announce(message, { assertive: true });
+    },
+  });
+};
+
+export const useBulkMarkPaymentsAsPaid = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const announce = useAnnounce();
+  const { t } = useTranslation('payments');
+  return useMutation({
+    mutationFn: (data: BulkMarkPaidRequest) => bulkMarkPaymentsAsPaid(data),
+    onSuccess: (results) => {
+      invalidatePaymentViews(queryClient);
+      results.forEach((r) =>
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.payments.detail(r.identifier),
+        })
+      );
+      const success = results.filter((r) => !r.error).length;
+      const failed = results.length - success;
+      const message = t('toasts.bulkMarkPaid', { success, failed });
+      showToast(message, failed > 0 && success === 0 ? 'error' : 'success');
+      announce(message);
+      trackEvent(AnalyticsEvent.PAYMENTS_BULK_MARKED_PAID);
+    },
+    onError: (error) => {
+      const message = getErrorMessage(error);
+      showToast(message, 'error');
+      announce(message, { assertive: true });
+    },
+  });
+};
+
+export const useBulkSendPaymentReminders = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const announce = useAnnounce();
+  const { t } = useTranslation('payments');
+  return useMutation({
+    mutationFn: (data: BulkSendPaymentRemindersRequest) =>
+      bulkSendPaymentReminders(data),
+    onSuccess: (results) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
+      results.forEach((r) =>
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.payments.reminders(r.identifier),
+        })
+      );
+      const success = results.filter((r) => !r.error).length;
+      const failed = results.length - success;
+      const message = t('toasts.bulkReminders', { success, failed });
+      showToast(message, failed > 0 && success === 0 ? 'error' : 'success');
+      announce(message);
+      trackEvent(AnalyticsEvent.PAYMENTS_BULK_REMINDERS_SENT);
+    },
+    onError: (error) => {
+      const message = getErrorMessage(error);
+      showToast(message, 'error');
+      announce(message, { assertive: true });
     },
   });
 };

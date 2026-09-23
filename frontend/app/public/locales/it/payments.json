@@ -7,7 +7,8 @@
     "schedulePayment": "Programma pagamento",
     "registerPayment": "Registra pagamento",
     "registerReceival": "Registra incasso",
-    "markAsPaid": "Segna come pagato"
+    "markAsPaid": "Segna come pagato",
+    "sendReminder": "Invia promemoria"
   },
   "stats": {
     "pendingPayments": "Pagamenti in attesa",
@@ -128,7 +129,8 @@
     "details": "Dettagli",
     "receivals": "Incassi",
     "documents": "Documenti",
-    "history": "Cronologia"
+    "history": "Cronologia",
+    "reminders": "Promemoria"
   },
   "receivals": {
     "title": "Incassi ({{count}})",
@@ -190,11 +192,76 @@
     "deleteReceival": "Elimina incasso",
     "save": "Salva",
     "previous": "Precedente",
-    "next": "Successivo"
+    "next": "Successivo",
+    "sendReminder": "Invia un'e-mail all'inquilino su questo pagamento"
   },
   "errors": {
     "loadFailed": "Impossibile caricare i pagamenti",
     "loadPaymentFailed": "Impossibile caricare il pagamento",
     "loadHistoryFailed": "Impossibile caricare la cronologia"
+  },
+  "selection": {
+    "selected": "{{count}} selezionato",
+    "selected_other": "{{count}} selezionati",
+    "selectAll": "Seleziona tutti i non pagati di questa pagina",
+    "selectRow": "Seleziona pagamento {{id}}",
+    "select": "Seleziona",
+    "done": "Fatto",
+    "markPaid": "Segna pagato",
+    "sendReminders": "Invia promemoria"
+  },
+  "arrears": {
+    "title": "Arretrati",
+    "summary": "{{amount}} in sospeso da {{count}} inquilino",
+    "summary_other": "{{amount}} in sospeso da {{count}} inquilini",
+    "oldest": "il più vecchio con {{days}} giorni di ritardo",
+    "bucket": {
+      "1-30": "1–30 giorni",
+      "31-60": "31–60 giorni",
+      "61-90": "61–90 giorni",
+      "91+": "Oltre 90 giorni"
+    },
+    "payments": "{{count}} pagamento",
+    "payments_other": "{{count}} pagamenti",
+    "lastReminded": "ultimo promemoria {{when}} ({{count}}×)",
+    "neverReminded": "mai sollecitato",
+    "daysOverdue": "{{days}} giorni di ritardo",
+    "sendReminder": "Invia promemoria",
+    "sendReminderTo": "Invia promemoria a {{name}}",
+    "remindAll": "Sollecita tutti ({{count}})",
+    "showAll": "Mostra tutti i {{count}} inquilini",
+    "showLess": "Mostra meno",
+    "noContact": "Nessun contatto collegato"
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Segna {{count}} pagamenti come pagati",
+    "message": "Ogni pagamento selezionato viene segnato come interamente pagato alla data scelta. I pagamenti già pagati o annullati vengono ignorati.",
+    "confirm": "Segna {{count}} come pagati"
+  },
+  "sendReminderDialog": {
+    "title": "Invia promemoria di pagamento",
+    "titleBulk": "Invia {{count}} promemoria",
+    "message": "L'inquilino riceve un'e-mail con l'importo residuo, la data di scadenza e i tuoi dati di pagamento, nella lingua del contratto.",
+    "messageBulk": "Ogni inquilino riceve un'e-mail con il proprio importo residuo, la data di scadenza e i tuoi dati di pagamento. I pagamenti senza e-mail dell'inquilino vengono ignorati.",
+    "notesLabel": "Messaggio personale (facoltativo)",
+    "notesPlaceholder": "es. Si prega di effettuare il bonifico entro venerdì.",
+    "confirm": "Invia promemoria",
+    "confirmBulk": "Invia {{count}} promemoria"
+  },
+  "reminders": {
+    "title": "Promemoria inviati",
+    "empty": "Nessun promemoria inviato finora",
+    "emptySubtitle": "I promemoria inviati all'inquilino appariranno qui",
+    "sentBy": "da {{name}}",
+    "automatic": "Promemoria automatico",
+    "manual": "Promemoria",
+    "daysOverdue": "{{days}} giorni di ritardo",
+    "outstanding": "Residuo {{amount}}",
+    "to": "a {{email}}"
+  },
+  "toasts": {
+    "reminderSent": "Promemoria inviato a {{email}}",
+    "bulkMarkPaid": "{{success}} segnati come pagati, {{failed}} ignorati",
+    "bulkReminders": "{{success}} promemoria inviati, {{failed}} ignorati"
   }
 }

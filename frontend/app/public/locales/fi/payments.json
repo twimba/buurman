@@ -7,7 +7,8 @@
     "schedulePayment": "Ajoita maksu",
     "registerPayment": "Kirjaa maksu",
     "registerReceival": "Kirjaa vastaanotto",
-    "markAsPaid": "Merkitse maksetuksi"
+    "markAsPaid": "Merkitse maksetuksi",
+    "sendReminder": "Lähetä muistutus"
   },
   "stats": {
     "pendingPayments": "Odottavat maksut",
@@ -128,7 +129,8 @@
     "details": "Tiedot",
     "receivals": "Vastaanotot",
     "documents": "Asiakirjat",
-    "history": "Historia"
+    "history": "Historia",
+    "reminders": "Muistutukset"
   },
   "receivals": {
     "title": "Vastaanotot ({{count}})",
@@ -190,11 +192,75 @@
     "deleteReceival": "Poista vastaanotto",
     "save": "Tallenna",
     "previous": "Edellinen",
-    "next": "Seuraava"
+    "next": "Seuraava",
+    "sendReminder": "Lähetä vuokralaiselle sähköposti tästä maksusta"
   },
   "errors": {
     "loadFailed": "Maksujen lataus epaonnistui",
     "loadPaymentFailed": "Maksun lataus epaonnistui",
     "loadHistoryFailed": "Historian lataus epaonnistui"
+  },
+  "selection": {
+    "selected": "{{count}} valittu",
+    "selectAll": "Valitse kaikki sivun maksamattomat",
+    "selectRow": "Valitse maksu {{id}}",
+    "select": "Valitse",
+    "done": "Valmis",
+    "markPaid": "Merkitse maksetuksi",
+    "sendReminders": "Lähetä muistutukset"
+  },
+  "arrears": {
+    "title": "Maksurästit",
+    "summary": "{{amount}} avoinna {{count}} vuokralaiselta",
+    "summary_other": "{{amount}} avoinna {{count}} vuokralaiselta",
+    "oldest": "vanhin {{days}} päivää myöhässä",
+    "bucket": {
+      "1-30": "1–30 päivää",
+      "31-60": "31–60 päivää",
+      "61-90": "61–90 päivää",
+      "91+": "Yli 90 päivää"
+    },
+    "payments": "{{count}} maksu",
+    "payments_other": "{{count}} maksua",
+    "lastReminded": "viimeksi muistutettu {{when}} ({{count}}×)",
+    "neverReminded": "ei muistutettu",
+    "daysOverdue": "{{days}} päivää myöhässä",
+    "sendReminder": "Lähetä muistutus",
+    "sendReminderTo": "Lähetä muistutus: {{name}}",
+    "remindAll": "Muistuta kaikkia ({{count}})",
+    "showAll": "Näytä kaikki {{count}} vuokralaista",
+    "showLess": "Näytä vähemmän",
+    "noContact": "Ei liitettyä yhteystietoa"
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Merkitse {{count}} maksua maksetuksi",
+    "message": "Jokainen valittu maksu merkitään kokonaan maksetuksi valittuna päivänä. Jo maksetut tai perutut maksut ohitetaan.",
+    "confirm": "Merkitse {{count}} maksetuksi"
+  },
+  "sendReminderDialog": {
+    "title": "Lähetä maksumuistutus",
+    "titleBulk": "Lähetä {{count}} muistutusta",
+    "message": "Vuokralainen saa sähköpostin, jossa on avoin summa, eräpäivä ja maksutietosi sopimuksen kielellä.",
+    "messageBulk": "Jokainen vuokralainen saa sähköpostin, jossa on avoin summa, eräpäivä ja maksutietosi. Maksut ilman vuokralaisen sähköpostiosoitetta ohitetaan.",
+    "notesLabel": "Henkilökohtainen viesti (valinnainen)",
+    "notesPlaceholder": "esim. Maksathan summan perjantaihin mennessä.",
+    "confirm": "Lähetä muistutus",
+    "confirmBulk": "Lähetä {{count}} muistutusta"
+  },
+  "reminders": {
+    "title": "Lähetetyt muistutukset",
+    "empty": "Muistutuksia ei ole vielä lähetetty",
+    "emptySubtitle": "Vuokralaiselle lähettämäsi muistutukset näkyvät tässä",
+    "sentBy": "lähettäjä {{name}}",
+    "automatic": "Automaattinen muistutus",
+    "manual": "Muistutus",
+    "daysOverdue": "{{days}} päivää myöhässä",
+    "outstanding": "Avoinna {{amount}}",
+    "to": "osoitteeseen {{email}}"
+  },
+  "toasts": {
+    "reminderSent": "Muistutus lähetetty osoitteeseen {{email}}",
+    "bulkMarkPaid": "{{success}} merkitty maksetuksi, {{failed}} ohitettu",
+    "bulkReminders": "{{success}} muistutusta lähetetty, {{failed}} ohitettu"
   }
 }

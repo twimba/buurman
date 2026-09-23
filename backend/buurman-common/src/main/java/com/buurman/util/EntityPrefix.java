@@ -17,6 +17,7 @@ public enum EntityPrefix {
   GRP("GRP", "Generated Reports"),
   NTF("NTF", "Notifications"),
   PRE("PRE", "Payment Receivals"),
+  PRM("PRM", "Payment Reminders"),
   PAY("PAY", "Payments"),
   PIN("PIN", "Payment Instructions"),
   PHO("PHO", "Photos"),

@@ -1542,3 +1542,313 @@ payments-documents-item:
               $ref: '#/components/schemas/ProblemDetail'
     security:
       - bearer-jwt: []
+
+payments-arrears:
+  get:
+    tags:
+      - Payments
+    summary: Get arrears overview
+    description: >-
+      Every past-due payment with an open balance, aged into 1-30 / 31-60 / 61-90 / 91+ day
+      buckets and grouped by the tenant who owes it, with last-reminder information.
+    operationId: getPaymentArrears
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentArrearsResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+payments-bulk-mark-paid:
+  post:
+    tags:
+      - Payments
+    summary: Mark several payments as paid
+    description: >-
+      Marks each selected payment as fully paid on the given date (Admin/Editor). Each payment is
+      processed independently; the response reports success or the error per identifier.
+    operationId: bulkMarkPaymentsAsPaid
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BulkMarkPaidRequest'
+      required: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BulkActionResultPaymentResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+payments-bulk-reminders:
+  post:
+    tags:
+      - Payments
+    summary: Send reminders for several payments
+    description: >-
+      Emails the tenant of each selected outstanding payment (Admin/Editor). Each reminder is
+      processed independently; the response reports success or the error per identifier.
+    operationId: bulkSendPaymentReminders
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BulkSendPaymentRemindersRequest'
+      required: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BulkActionResultPaymentReminderResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+payments-reminders:
+  get:
+    tags:
+      - Payments
+    summary: List reminders sent for a payment
+    description: Communications timeline of reminders sent to the tenant, newest first
+    operationId: getPaymentReminders
+    parameters:
+      - name: identifier
+        in: path
+        description: Payment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/PaymentIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentReminderResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+  post:
+    tags:
+      - Payments
+    summary: Send a payment reminder to the tenant
+    description: >-
+      Emails the tenant linked to the payment (or the contract's primary contact) with the
+      outstanding balance and the landlord's payment instructions, in the contract's document
+      language (Admin/Editor). Fails if the payment is paid, cancelled or the contact has no email.
+    operationId: sendPaymentReminder
+    parameters:
+      - name: identifier
+        in: path
+        description: Payment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/PaymentIdentifier'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SendPaymentReminderRequest'
+      required: false
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentReminderResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

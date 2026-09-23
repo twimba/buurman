@@ -328,6 +328,15 @@
                                 <schemaMapping>BulkCreateResultExpenseResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
                                 <schemaMapping>BulkCreateResultFinancingPaymentResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
                                 <schemaMapping>BulkCreateResultPaymentResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
+                                <schemaMapping>BulkActionResultPaymentResponse=com.buurman.dto.response.BulkActionResult</schemaMapping>
+                                <schemaMapping>BulkActionResultPaymentReminderResponse=com.buurman.dto.response.BulkActionResult</schemaMapping>
+                                <schemaMapping>PaymentArrearsResponse=com.buurman.dto.response.PaymentArrearsResponse</schemaMapping>
+                                <schemaMapping>ArrearsAgeingBucket=com.buurman.dto.response.PaymentArrearsResponse.AgeingBucket</schemaMapping>
+                                <schemaMapping>ContactArrears=com.buurman.dto.response.PaymentArrearsResponse.ContactArrears</schemaMapping>
+                                <schemaMapping>PaymentReminderResponse=com.buurman.dto.response.PaymentReminderResponse</schemaMapping>
+                                <schemaMapping>SendPaymentReminderRequest=com.buurman.dto.request.SendPaymentReminderRequest</schemaMapping>
+                                <schemaMapping>BulkMarkPaidRequest=com.buurman.dto.request.BulkMarkPaidRequest</schemaMapping>
+                                <schemaMapping>BulkSendPaymentRemindersRequest=com.buurman.dto.request.BulkSendPaymentRemindersRequest</schemaMapping>
                                 <schemaMapping>AmenityIdentifier=com.buurman.domain.identifier.AmenityIdentifier</schemaMapping>
                                 <schemaMapping>CalendarFeedIdentifier=com.buurman.domain.identifier.CalendarFeedIdentifier</schemaMapping>
                                 <schemaMapping>ContractIdentifier=com.buurman.domain.identifier.ContractIdentifier</schemaMapping>
@@ -563,6 +572,15 @@
                                 <importMapping>IndustrialDetailsRequest=com.buurman.dto.request.IndustrialDetailsRequest</importMapping>
                                 <!-- LinkTenantToPropertyRequest removed in BUUR-77 contacts rework -->
                                 <importMapping>MarkPaidRequest=com.buurman.dto.request.MarkPaidRequest</importMapping>
+                                <importMapping>PaymentArrearsResponse=com.buurman.dto.response.PaymentArrearsResponse</importMapping>
+                                <importMapping>ArrearsAgeingBucket=com.buurman.dto.response.PaymentArrearsResponse.AgeingBucket</importMapping>
+                                <importMapping>ContactArrears=com.buurman.dto.response.PaymentArrearsResponse.ContactArrears</importMapping>
+                                <importMapping>PaymentReminderResponse=com.buurman.dto.response.PaymentReminderResponse</importMapping>
+                                <importMapping>SendPaymentReminderRequest=com.buurman.dto.request.SendPaymentReminderRequest</importMapping>
+                                <importMapping>BulkMarkPaidRequest=com.buurman.dto.request.BulkMarkPaidRequest</importMapping>
+                                <importMapping>BulkSendPaymentRemindersRequest=com.buurman.dto.request.BulkSendPaymentRemindersRequest</importMapping>
+                                <importMapping>BulkActionResultPaymentResponse=com.buurman.dto.response.BulkActionResult</importMapping>
+                                <importMapping>BulkActionResultPaymentReminderResponse=com.buurman.dto.response.BulkActionResult</importMapping>
                                 <importMapping>NotificationFilterRequest=com.buurman.dto.request.NotificationFilterRequest</importMapping>
                                 <importMapping>PropertyAmenityRequest=com.buurman.dto.request.PropertyAmenityRequest</importMapping>
                                 <importMapping>PropertyOutdoorAreaRequest=com.buurman.dto.request.PropertyOutdoorAreaRequest</importMapping>

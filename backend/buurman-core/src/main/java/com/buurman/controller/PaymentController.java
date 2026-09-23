@@ -17,22 +17,30 @@ import com.buurman.domain.identifier.PaymentReceivalIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.BulkCreatePaymentsRequest;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
+import com.buurman.dto.request.BulkMarkPaidRequest;
+import com.buurman.dto.request.BulkSendPaymentRemindersRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.MarkPaidRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.SendPaymentReminderRequest;
 import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
+import com.buurman.dto.response.BulkActionResult;
 import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
+import com.buurman.dto.response.PaymentArrearsResponse;
 import com.buurman.dto.response.PaymentReceivalResponse;
+import com.buurman.dto.response.PaymentReminderResponse;
 import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.PaymentStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.PaymentsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.PaymentArrearsService;
+import com.buurman.service.PaymentReminderService;
 import com.buurman.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +50,47 @@ import lombok.RequiredArgsConstructor;
 public class PaymentController implements PaymentsApi {
 
   private final PaymentService paymentService;
+  private final PaymentArrearsService paymentArrearsService;
+  private final PaymentReminderService paymentReminderService;
+
+  @Override
+  public PaymentArrearsResponse getPaymentArrears() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentArrearsService.getArrears(principal);
+  }
+
+  @Override
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public List<BulkActionResult> bulkMarkPaymentsAsPaid(BulkMarkPaidRequest bulkMarkPaidRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return (List) paymentService.bulkMarkPaymentsAsPaid(bulkMarkPaidRequest, principal);
+  }
+
+  @Override
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public List<BulkActionResult> bulkSendPaymentReminders(
+      BulkSendPaymentRemindersRequest bulkSendPaymentRemindersRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return (List)
+        paymentReminderService.bulkSendReminders(bulkSendPaymentRemindersRequest, principal);
+  }
+
+  @Override
+  public List<PaymentReminderResponse> getPaymentReminders(PaymentIdentifier identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentReminderService.getReminders(identifier, principal);
+  }
+
+  @Override
+  public PaymentReminderResponse sendPaymentReminder(
+      PaymentIdentifier identifier,
+      Optional<SendPaymentReminderRequest> sendPaymentReminderRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentReminderService.sendReminder(
+        identifier,
+        sendPaymentReminderRequest.orElseGet(SendPaymentReminderRequest::empty),
+        principal);
+  }
 
   @Override
   public PaymentResponse createPayment(CreatePaymentRequest createPaymentRequest) {

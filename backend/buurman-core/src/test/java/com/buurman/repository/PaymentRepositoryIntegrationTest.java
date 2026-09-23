@@ -226,6 +226,89 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     }
 
     @Test
+    @DisplayName("findOverduePayments includes partially paid and stored-OVERDUE payments past due")
+    void findOverdueIncludesPartiallyPaidAndOverdueStatus() {
+      Payment partial =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1));
+      partial.setStatus(PaymentStatus.PARTIALLY_PAID);
+      repo.save(partial);
+      Payment stored =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("900.00"), LocalDate.of(2026, 1, 15));
+      stored.setStatus(PaymentStatus.OVERDUE);
+      repo.save(stored);
+      Payment cancelled =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("800.00"), LocalDate.of(2026, 1, 1));
+      cancelled.setStatus(PaymentStatus.CANCELLED);
+      repo.save(cancelled);
+
+      List<Payment> overdue = repo.findOverduePayments(TEAM_A_ID);
+
+      assertThat(overdue)
+          .extracting(Payment::getStatus)
+          .containsExactly(PaymentStatus.OVERDUE, PaymentStatus.PARTIALLY_PAID);
+    }
+
+    @Test
+    @DisplayName("findOverdueRows nets receivals off the balance and drops fully covered payments")
+    void findOverdueRowsNetsReceivals() {
+      PaymentReceivalRepository receivals = new PaymentReceivalRepository(dsl, CLOCK);
+      Payment partial =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("1000.00"),
+                  LocalDate.of(2026, 2, 1)));
+      Payment covered =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("300.00"),
+                  LocalDate.of(2026, 1, 1)));
+      Payment otherTeam =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_B_ID,
+                  contractIdB,
+                  USER_ID,
+                  new BigDecimal("400.00"),
+                  LocalDate.of(2026, 1, 1)));
+      receivals.save(receival(partial, new BigDecimal("250.00")));
+      receivals.save(receival(covered, new BigDecimal("300.00")));
+
+      List<PaymentRepository.OverduePaymentRow> rows = repo.findOverdueRows(TEAM_A_ID);
+
+      assertThat(rows).hasSize(1);
+      assertThat(rows.getFirst().paymentId()).isEqualTo(partial.getId());
+      assertThat(rows.getFirst().outstanding()).isEqualByComparingTo("750.00");
+      assertThat(rows.getFirst().identifier()).isEqualTo(partial.getIdentifier().orElseThrow());
+      assertThat(rows).noneMatch(r -> r.paymentId().equals(otherTeam.getId()));
+
+      assertThat(repo.getOverdueStats(TEAM_A_ID)).isPresent();
+      assertThat(repo.getOverdueStats(TEAM_A_ID).orElseThrow().count()).isEqualTo(2);
+      assertThat(repo.getOverdueStats(TEAM_A_ID).orElseThrow().total())
+          .hasValueSatisfying(total -> assertThat(total).isEqualByComparingTo("75000"));
+    }
+
+    private com.buurman.domain.PaymentReceival receival(Payment payment, BigDecimal amount) {
+      com.buurman.domain.PaymentReceival r = new com.buurman.domain.PaymentReceival();
+      r.setIdentifier(Optional.of(com.buurman.util.SidGenerator.newPaymentReceivalId()));
+      r.setTeamId(payment.getTeamId());
+      r.setPaymentId(payment.getId());
+      r.setAmount(com.buurman.util.MoneyAmount.of(amount, "EUR"));
+      r.setReceivalDate(LocalDate.of(2026, 2, 15));
+      r.setCreatedBy(USER_ID);
+      r.setUpdatedBy(USER_ID);
+      return r;
+    }
+
+    @Test
     @DisplayName("findOverduePayments excludes paid payments")
     void findOverdueExcludesPaid() {
       Payment p =

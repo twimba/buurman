@@ -7,7 +7,8 @@
     "schedulePayment": "Programar Pago",
     "registerPayment": "Registrar Pago",
     "registerReceival": "Registrar Recibo",
-    "markAsPaid": "Marcar como Pagado"
+    "markAsPaid": "Marcar como Pagado",
+    "sendReminder": "Enviar recordatorio"
   },
   "stats": {
     "pendingPayments": "Pagos Pendientes",
@@ -128,7 +129,8 @@
     "details": "Detalles",
     "receivals": "Recibos",
     "documents": "Documentos",
-    "history": "Historial"
+    "history": "Historial",
+    "reminders": "Recordatorios"
   },
   "receivals": {
     "title": "Recibos ({{count}})",
@@ -190,11 +192,76 @@
     "deleteReceival": "Eliminar recibo",
     "save": "Guardar",
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "sendReminder": "Enviar un correo al inquilino sobre este pago"
   },
   "errors": {
     "loadFailed": "Error al cargar pagos",
     "loadPaymentFailed": "Error al cargar pago",
     "loadHistoryFailed": "Error al cargar historial"
+  },
+  "selection": {
+    "selected": "{{count}} seleccionado",
+    "selected_other": "{{count}} seleccionados",
+    "selectAll": "Seleccionar todos los impagados de esta página",
+    "selectRow": "Seleccionar pago {{id}}",
+    "select": "Seleccionar",
+    "done": "Listo",
+    "markPaid": "Marcar pagado",
+    "sendReminders": "Enviar recordatorios"
+  },
+  "arrears": {
+    "title": "Impagos",
+    "summary": "{{amount}} pendientes de {{count}} inquilino",
+    "summary_other": "{{amount}} pendientes de {{count}} inquilinos",
+    "oldest": "el más antiguo con {{days}} días de retraso",
+    "bucket": {
+      "1-30": "1–30 días",
+      "31-60": "31–60 días",
+      "61-90": "61–90 días",
+      "91+": "Más de 90 días"
+    },
+    "payments": "{{count}} pago",
+    "payments_other": "{{count}} pagos",
+    "lastReminded": "último recordatorio {{when}} ({{count}}×)",
+    "neverReminded": "sin recordatorios",
+    "daysOverdue": "{{days}} días de retraso",
+    "sendReminder": "Enviar recordatorio",
+    "sendReminderTo": "Enviar recordatorio a {{name}}",
+    "remindAll": "Recordar a todos ({{count}})",
+    "showAll": "Mostrar los {{count}} inquilinos",
+    "showLess": "Mostrar menos",
+    "noContact": "Sin contacto vinculado"
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Marcar {{count}} pagos como pagados",
+    "message": "Cada pago seleccionado se marca como pagado en su totalidad en la fecha elegida. Los pagos ya pagados o cancelados se omiten.",
+    "confirm": "Marcar {{count}} como pagados"
+  },
+  "sendReminderDialog": {
+    "title": "Enviar recordatorio de pago",
+    "titleBulk": "Enviar {{count}} recordatorios",
+    "message": "El inquilino recibe un correo con el importe pendiente, la fecha de vencimiento y sus datos de pago, en el idioma del contrato.",
+    "messageBulk": "Cada inquilino recibe un correo con su importe pendiente, la fecha de vencimiento y sus datos de pago. Los pagos sin correo del inquilino se omiten.",
+    "notesLabel": "Mensaje personal (opcional)",
+    "notesPlaceholder": "p. ej. Por favor, transfiera el importe antes del viernes.",
+    "confirm": "Enviar recordatorio",
+    "confirmBulk": "Enviar {{count}} recordatorios"
+  },
+  "reminders": {
+    "title": "Recordatorios enviados",
+    "empty": "Aún no se han enviado recordatorios",
+    "emptySubtitle": "Los recordatorios que envíe al inquilino aparecerán aquí",
+    "sentBy": "por {{name}}",
+    "automatic": "Recordatorio automático",
+    "manual": "Recordatorio",
+    "daysOverdue": "{{days}} días de retraso",
+    "outstanding": "Pendiente {{amount}}",
+    "to": "a {{email}}"
+  },
+  "toasts": {
+    "reminderSent": "Recordatorio enviado a {{email}}",
+    "bulkMarkPaid": "{{success}} marcados como pagados, {{failed}} omitidos",
+    "bulkReminders": "{{success}} recordatorios enviados, {{failed}} omitidos"
   }
 }

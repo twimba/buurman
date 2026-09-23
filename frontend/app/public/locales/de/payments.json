@@ -7,7 +7,8 @@
     "schedulePayment": "Zahlung planen",
     "registerPayment": "Zahlung registrieren",
     "registerReceival": "Eingang registrieren",
-    "markAsPaid": "Als bezahlt markieren"
+    "markAsPaid": "Als bezahlt markieren",
+    "sendReminder": "Erinnerung senden"
   },
   "stats": {
     "pendingPayments": "Ausstehende Zahlungen",
@@ -128,7 +129,8 @@
     "details": "Details",
     "receivals": "Eingänge",
     "documents": "Dokumente",
-    "history": "Verlauf"
+    "history": "Verlauf",
+    "reminders": "Erinnerungen"
   },
   "receivals": {
     "title": "Eingänge ({{count}})",
@@ -190,11 +192,75 @@
     "deleteReceival": "Eingang löschen",
     "save": "Speichern",
     "previous": "Zurück",
-    "next": "Weiter"
+    "next": "Weiter",
+    "sendReminder": "Mieter per E-Mail an diese Zahlung erinnern"
   },
   "errors": {
     "loadFailed": "Zahlungen konnten nicht geladen werden",
     "loadPaymentFailed": "Zahlung konnte nicht geladen werden",
     "loadHistoryFailed": "Verlauf konnte nicht geladen werden"
+  },
+  "selection": {
+    "selected": "{{count}} ausgewählt",
+    "selectAll": "Alle offenen auf dieser Seite auswählen",
+    "selectRow": "Zahlung {{id}} auswählen",
+    "select": "Auswählen",
+    "done": "Fertig",
+    "markPaid": "Als bezahlt markieren",
+    "sendReminders": "Erinnerungen senden"
+  },
+  "arrears": {
+    "title": "Rückstände",
+    "summary": "{{amount}} offen bei {{count}} Mieter",
+    "summary_other": "{{amount}} offen bei {{count}} Mietern",
+    "oldest": "älteste {{days}} Tage überfällig",
+    "bucket": {
+      "1-30": "1–30 Tage",
+      "31-60": "31–60 Tage",
+      "61-90": "61–90 Tage",
+      "91+": "Über 90 Tage"
+    },
+    "payments": "{{count}} Zahlung",
+    "payments_other": "{{count}} Zahlungen",
+    "lastReminded": "zuletzt erinnert {{when}} ({{count}}×)",
+    "neverReminded": "noch nie erinnert",
+    "daysOverdue": "{{days}} Tage überfällig",
+    "sendReminder": "Erinnerung senden",
+    "sendReminderTo": "Erinnerung an {{name}} senden",
+    "remindAll": "Alle erinnern ({{count}})",
+    "showAll": "Alle {{count}} Mieter anzeigen",
+    "showLess": "Weniger anzeigen",
+    "noContact": "Kein Kontakt verknüpft"
+  },
+  "bulkMarkPaidDialog": {
+    "title": "{{count}} Zahlungen als bezahlt markieren",
+    "message": "Jede ausgewählte Zahlung wird zum gewählten Datum als vollständig bezahlt markiert. Bereits bezahlte oder stornierte Zahlungen werden übersprungen.",
+    "confirm": "{{count}} als bezahlt markieren"
+  },
+  "sendReminderDialog": {
+    "title": "Zahlungserinnerung senden",
+    "titleBulk": "{{count}} Erinnerungen senden",
+    "message": "Der Mieter erhält eine E-Mail mit dem offenen Betrag, dem Fälligkeitsdatum und Ihren Zahlungsdaten in der Vertragssprache.",
+    "messageBulk": "Jeder Mieter erhält eine E-Mail mit seinem offenen Betrag, dem Fälligkeitsdatum und Ihren Zahlungsdaten. Zahlungen ohne E-Mail-Adresse des Mieters werden übersprungen.",
+    "notesLabel": "Persönliche Nachricht (optional)",
+    "notesPlaceholder": "z. B. Bitte überweisen Sie den Betrag bis Freitag.",
+    "confirm": "Erinnerung senden",
+    "confirmBulk": "{{count}} Erinnerungen senden"
+  },
+  "reminders": {
+    "title": "Gesendete Erinnerungen",
+    "empty": "Noch keine Erinnerungen gesendet",
+    "emptySubtitle": "Erinnerungen an den Mieter erscheinen hier",
+    "sentBy": "von {{name}}",
+    "automatic": "Automatische Erinnerung",
+    "manual": "Erinnerung",
+    "daysOverdue": "{{days}} Tage überfällig",
+    "outstanding": "Offen {{amount}}",
+    "to": "an {{email}}"
+  },
+  "toasts": {
+    "reminderSent": "Erinnerung an {{email}} gesendet",
+    "bulkMarkPaid": "{{success}} als bezahlt markiert, {{failed}} übersprungen",
+    "bulkReminders": "{{success}} Erinnerungen gesendet, {{failed}} übersprungen"
   }
 }

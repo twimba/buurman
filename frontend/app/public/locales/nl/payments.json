@@ -7,7 +7,8 @@
     "schedulePayment": "Betaling plannen",
     "registerPayment": "Betaling registreren",
     "registerReceival": "Ontvangst registreren",
-    "markAsPaid": "Markeer als betaald"
+    "markAsPaid": "Markeer als betaald",
+    "sendReminder": "Herinnering sturen"
   },
   "stats": {
     "pendingPayments": "Openstaande betalingen",
@@ -128,7 +129,8 @@
     "details": "Details",
     "receivals": "Ontvangsten",
     "documents": "Documenten",
-    "history": "Geschiedenis"
+    "history": "Geschiedenis",
+    "reminders": "Herinneringen"
   },
   "receivals": {
     "title": "Ontvangsten ({{count}})",
@@ -190,11 +192,75 @@
     "deleteReceival": "Ontvangst verwijderen",
     "save": "Opslaan",
     "previous": "Vorige",
-    "next": "Volgende"
+    "next": "Volgende",
+    "sendReminder": "E-mail de huurder over deze betaling"
   },
   "errors": {
     "loadFailed": "Kan betalingen niet laden",
     "loadPaymentFailed": "Kan betaling niet laden",
     "loadHistoryFailed": "Kan geschiedenis niet laden"
+  },
+  "selection": {
+    "selected": "{{count}} geselecteerd",
+    "selectAll": "Alle onbetaalde op deze pagina selecteren",
+    "selectRow": "Betaling {{id}} selecteren",
+    "select": "Selecteren",
+    "done": "Klaar",
+    "markPaid": "Markeer betaald",
+    "sendReminders": "Herinneringen sturen"
+  },
+  "arrears": {
+    "title": "Achterstanden",
+    "summary": "{{amount}} openstaand bij {{count}} huurder",
+    "summary_other": "{{amount}} openstaand bij {{count}} huurders",
+    "oldest": "oudste {{days}} dagen te laat",
+    "bucket": {
+      "1-30": "1–30 dagen",
+      "31-60": "31–60 dagen",
+      "61-90": "61–90 dagen",
+      "91+": "Meer dan 90 dagen"
+    },
+    "payments": "{{count}} betaling",
+    "payments_other": "{{count}} betalingen",
+    "lastReminded": "laatst herinnerd {{when}} ({{count}}×)",
+    "neverReminded": "nog nooit herinnerd",
+    "daysOverdue": "{{days}} dagen te laat",
+    "sendReminder": "Herinnering sturen",
+    "sendReminderTo": "Herinnering sturen naar {{name}}",
+    "remindAll": "Iedereen herinneren ({{count}})",
+    "showAll": "Alle {{count}} huurders tonen",
+    "showLess": "Minder tonen",
+    "noContact": "Geen contact gekoppeld"
+  },
+  "bulkMarkPaidDialog": {
+    "title": "{{count}} betalingen als betaald markeren",
+    "message": "Elke geselecteerde betaling wordt op de gekozen datum als volledig betaald gemarkeerd. Al betaalde of geannuleerde betalingen worden overgeslagen.",
+    "confirm": "{{count}} als betaald markeren"
+  },
+  "sendReminderDialog": {
+    "title": "Betalingsherinnering sturen",
+    "titleBulk": "{{count}} herinneringen sturen",
+    "message": "De huurder ontvangt een e-mail met het openstaande bedrag, de vervaldatum en uw betaalgegevens, in de taal van het contract.",
+    "messageBulk": "Elke huurder ontvangt een e-mail met het openstaande bedrag, de vervaldatum en uw betaalgegevens. Betalingen zonder e-mailadres van de huurder worden overgeslagen.",
+    "notesLabel": "Persoonlijk bericht (optioneel)",
+    "notesPlaceholder": "bijv. Wilt u het bedrag vóór vrijdag overmaken?",
+    "confirm": "Herinnering sturen",
+    "confirmBulk": "{{count}} herinneringen sturen"
+  },
+  "reminders": {
+    "title": "Verstuurde herinneringen",
+    "empty": "Nog geen herinneringen verstuurd",
+    "emptySubtitle": "Herinneringen die u naar de huurder stuurt verschijnen hier",
+    "sentBy": "door {{name}}",
+    "automatic": "Automatische herinnering",
+    "manual": "Herinnering",
+    "daysOverdue": "{{days}} dagen te laat",
+    "outstanding": "Openstaand {{amount}}",
+    "to": "naar {{email}}"
+  },
+  "toasts": {
+    "reminderSent": "Herinnering verstuurd naar {{email}}",
+    "bulkMarkPaid": "{{success}} als betaald gemarkeerd, {{failed}} overgeslagen",
+    "bulkReminders": "{{success}} herinneringen verstuurd, {{failed}} overgeslagen"
   }
 }

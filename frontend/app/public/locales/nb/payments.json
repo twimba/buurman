@@ -7,7 +7,8 @@
     "schedulePayment": "Planlegg betaling",
     "registerPayment": "Registrer betaling",
     "registerReceival": "Registrer mottak",
-    "markAsPaid": "Merk som betalt"
+    "markAsPaid": "Merk som betalt",
+    "sendReminder": "Send påminnelse"
   },
   "stats": {
     "pendingPayments": "Ventende betalinger",
@@ -128,7 +129,8 @@
     "details": "Detaljer",
     "receivals": "Mottak",
     "documents": "Dokumenter",
-    "history": "Historikk"
+    "history": "Historikk",
+    "reminders": "Påminnelser"
   },
   "receivals": {
     "title": "Mottak ({{count}})",
@@ -190,11 +192,75 @@
     "deleteReceival": "Slett mottak",
     "save": "Lagre",
     "previous": "Forrige",
-    "next": "Neste"
+    "next": "Neste",
+    "sendReminder": "Send leietakeren en e-post om denne betalingen"
   },
   "errors": {
     "loadFailed": "Kunne ikke laste betalinger",
     "loadPaymentFailed": "Kunne ikke laste betaling",
     "loadHistoryFailed": "Kunne ikke laste historikk"
+  },
+  "selection": {
+    "selected": "{{count}} valgt",
+    "selectAll": "Velg alle ubetalte på siden",
+    "selectRow": "Velg betaling {{id}}",
+    "select": "Velg",
+    "done": "Ferdig",
+    "markPaid": "Merk betalt",
+    "sendReminders": "Send påminnelser"
+  },
+  "arrears": {
+    "title": "Restanser",
+    "summary": "{{amount}} utestående fra {{count}} leietaker",
+    "summary_other": "{{amount}} utestående fra {{count}} leietakere",
+    "oldest": "eldste {{days}} dager forsinket",
+    "bucket": {
+      "1-30": "1–30 dager",
+      "31-60": "31–60 dager",
+      "61-90": "61–90 dager",
+      "91+": "Over 90 dager"
+    },
+    "payments": "{{count}} betaling",
+    "payments_other": "{{count}} betalinger",
+    "lastReminded": "sist påminnet {{when}} ({{count}}×)",
+    "neverReminded": "aldri påminnet",
+    "daysOverdue": "{{days}} dager forsinket",
+    "sendReminder": "Send påminnelse",
+    "sendReminderTo": "Send påminnelse til {{name}}",
+    "remindAll": "Påminn alle ({{count}})",
+    "showAll": "Vis alle {{count}} leietakere",
+    "showLess": "Vis færre",
+    "noContact": "Ingen kontakt tilknyttet"
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Merk {{count}} betalinger som betalt",
+    "message": "Hver valgt betaling merkes som fullt betalt på valgt dato. Allerede betalte eller kansellerte betalinger hoppes over.",
+    "confirm": "Merk {{count}} som betalt"
+  },
+  "sendReminderDialog": {
+    "title": "Send betalingspåminnelse",
+    "titleBulk": "Send {{count}} påminnelser",
+    "message": "Leietakeren får en e-post med utestående beløp, forfallsdato og betalingsinformasjonen din, på kontraktens språk.",
+    "messageBulk": "Hver leietaker får en e-post med sitt utestående beløp, forfallsdato og betalingsinformasjonen din. Betalinger uten leietakerens e-postadresse hoppes over.",
+    "notesLabel": "Personlig melding (valgfritt)",
+    "notesPlaceholder": "f.eks. Vennligst overfør beløpet innen fredag.",
+    "confirm": "Send påminnelse",
+    "confirmBulk": "Send {{count}} påminnelser"
+  },
+  "reminders": {
+    "title": "Sendte påminnelser",
+    "empty": "Ingen påminnelser sendt ennå",
+    "emptySubtitle": "Påminnelser du sender til leietakeren vises her",
+    "sentBy": "av {{name}}",
+    "automatic": "Automatisk påminnelse",
+    "manual": "Påminnelse",
+    "daysOverdue": "{{days}} dager forsinket",
+    "outstanding": "Utestående {{amount}}",
+    "to": "til {{email}}"
+  },
+  "toasts": {
+    "reminderSent": "Påminnelse sendt til {{email}}",
+    "bulkMarkPaid": "{{success}} merket som betalt, {{failed}} hoppet over",
+    "bulkReminders": "{{success}} påminnelser sendt, {{failed}} hoppet over"
   }
 }

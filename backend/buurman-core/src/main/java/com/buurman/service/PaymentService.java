@@ -53,12 +53,14 @@ import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.domain.identifier.PaymentReceivalIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
+import com.buurman.dto.request.BulkMarkPaidRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.MarkPaidRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
+import com.buurman.dto.response.BulkActionResult;
 import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.ContactSummary;
 import com.buurman.dto.response.ContractSummary;
@@ -410,6 +412,37 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse markPaymentAsPaid(
+      PaymentIdentifier identifier, MarkPaidRequest request, UserPrincipal principal) {
+    return performMarkPaid(identifier, request, principal);
+  }
+
+  /**
+   * Marks each payment paid in its own transaction and reports per-identifier outcomes, so one
+   * already-paid or cancelled payment in the selection does not roll back the others.
+   */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public List<BulkActionResult<PaymentResponse>> bulkMarkPaymentsAsPaid(
+      BulkMarkPaidRequest request, UserPrincipal principal) {
+    TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+    MarkPaidRequest single = new MarkPaidRequest(request.paymentDate(), request.notes());
+    List<BulkActionResult<PaymentResponse>> results = new ArrayList<>();
+    for (PaymentIdentifier identifier : request.identifiers().stream().distinct().toList()) {
+      try {
+        PaymentResponse response =
+            txTemplate.execute(status -> performMarkPaid(identifier, single, principal));
+        results.add(BulkActionResult.success(identifier.value(), response));
+      } catch (Exception e) {
+        log.warn("Bulk mark-paid failed for payment {}: {}", identifier, e.getMessage());
+        results.add(BulkActionResult.error(identifier.value(), extractPaymentErrorMessage(e)));
+      }
+    }
+    metricsService.incrementCounterBy(
+        "payment.bulk.marked.paid.total",
+        results.stream().filter(BulkActionResult::isSuccess).count());
+    return results;
+  }
+
+  private PaymentResponse performMarkPaid(
       PaymentIdentifier identifier, MarkPaidRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 

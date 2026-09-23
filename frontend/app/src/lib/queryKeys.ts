@@ -132,6 +132,8 @@ export const queryKeys = {
     documents: (paymentId?: string) => k('paymentDocuments', paymentId),
     auditLog: (paymentId?: string) => k('paymentAuditLog', paymentId),
     receivals: (paymentId?: string) => k('paymentReceivals', paymentId),
+    reminders: (paymentId?: string) => k('paymentReminders', paymentId),
+    arrears: () => k('paymentArrears'),
   },
 
   // --- Payment Instructions ---

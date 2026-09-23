@@ -1,6 +1,8 @@
 package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +31,7 @@ import com.buurman.domain.Payment.PaymentStatus;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Sid;
 import com.buurman.domain.TeamRole;
+import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.mapper.ContactMapper;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.DocumentMapper;
@@ -369,6 +372,76 @@ class PaymentServiceTest {
       invokeUpdateStatus(payment, LocalDate.of(2026, 3, 1));
 
       assertThat(payment.getStatus()).isEqualTo(PaymentStatus.PARTIALLY_PAID);
+    }
+  }
+
+  @Nested
+  @DisplayName("bulkMarkPaymentsAsPaid")
+  class BulkMarkPaid {
+
+    @Test
+    @DisplayName("reports success per identifier and isolates failures")
+    void reportsPerIdentifier() {
+      when(transactionManager.getTransaction(any()))
+          .thenReturn(new org.springframework.transaction.support.SimpleTransactionStatus());
+
+      PaymentIdentifier okId = PaymentIdentifier.of("pay_01JTEST0000000000000000OK");
+      PaymentIdentifier paidId = PaymentIdentifier.of("pay_01JTEST00000000000000PAID");
+      Payment pending =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PENDING);
+      pending.setIdentifier(Optional.of(okId));
+      Payment alreadyPaid =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PAID);
+      alreadyPaid.setIdentifier(Optional.of(paidId));
+
+      when(paymentRepository.getByIdentifierAndTeamId(okId, TEAM_ID)).thenReturn(pending);
+      when(paymentRepository.getByIdentifierAndTeamId(paidId, TEAM_ID)).thenReturn(alreadyPaid);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+      when(paymentMapper.toResponse(any(Payment.class)))
+          .thenAnswer(
+              inv -> {
+                Payment p = inv.getArgument(0);
+                return new com.buurman.dto.response.PaymentResponse(
+                    p.getIdentifier().orElseThrow(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    p.getAmount().value(),
+                    p.getAmount().currency(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    p.getPaymentDate(),
+                    p.getDueDate(),
+                    p.getStatus(),
+                    p.getNotes(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    List.of(),
+                    p.getCreatedAt(),
+                    Optional.empty());
+              });
+      when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
+      when(receivalRepository.findByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID)).thenReturn(List.of());
+      org.mockito.Mockito.lenient()
+          .when(appProperties.email())
+          .thenReturn(new AppProperties.Email("no-reply@test", "Buurman", "https://app.test"));
+
+      List<com.buurman.dto.response.BulkActionResult<com.buurman.dto.response.PaymentResponse>>
+          results =
+              service.bulkMarkPaymentsAsPaid(
+                  new com.buurman.dto.request.BulkMarkPaidRequest(
+                      List.of(okId, paidId, okId), LocalDate.of(2026, 2, 28), Optional.empty()),
+                  principal);
+
+      assertThat(results).hasSize(2);
+      assertThat(results.get(0).identifier()).isEqualTo(okId.value());
+      assertThat(results.get(0).isSuccess()).isTrue();
+      assertThat(results.get(0).result())
+          .hasValueSatisfying(r -> assertThat(r.status()).isEqualTo(PaymentStatus.PAID));
+      assertThat(results.get(1).identifier()).isEqualTo(paidId.value());
+      assertThat(results.get(1).error()).hasValueSatisfying(e -> assertThat(e).contains("already"));
     }
   }
 }
