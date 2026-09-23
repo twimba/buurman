@@ -201,7 +201,7 @@
       "invalidInvoiceEmail": "Laskutussahkopostin on oltava kelvollinen"
     },
     "paymentReminders": "Lähetä maksumuistutuksia tälle yhteystiedolle",
-    "paymentRemindersHelp": "Nimenomainen suostumus vastaanottaa muistutussähköposteja myöhässä olevasta vuokrasta kaikissa sopimuksissa. Oletuksena pois päältä."
+    "paymentRemindersHelp": "Nimenomainen suostumus vastaanottaa muistutussähköposteja myöhässä olevasta vuokrasta. Muistutuksia lähetetään vain sopimuksille, joissa ne on myös otettu käyttöön."
   },
   "addresses": {
     "title": "Osoitteet",

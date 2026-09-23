@@ -156,6 +156,7 @@ class PaymentReminderServiceTest {
     c.setIdentifier(Optional.of(Sid.of("cnt_01JTEST000000000000000001")));
     c.setDisplayName("Jan Jansen");
     c.setEmail(email);
+    c.setPaymentRemindersEnabled(true);
     return c;
   }
 
@@ -366,16 +367,47 @@ class PaymentReminderServiceTest {
               () ->
                   service.sendReminder(PAYMENT_SID, SendPaymentReminderRequest.empty(), principal))
           .isInstanceOf(BusinessRuleException.class)
-          .hasMessageContaining("not enabled");
+          .hasMessageContaining("not enabled on this contract");
       verify(notificationService, never()).send(any());
       verify(reminderRepository, never()).save(any());
     }
 
     @Test
-    @DisplayName("contact-level opt-in is enough when the contract flag is off")
-    void contactOptInSuffices() {
+    @DisplayName("the contract flag alone is not enough: the contact must have opted in too")
+    void contractFlagAloneIsNotEnough() {
       Payment p = payment(PaymentStatus.OVERDUE, TODAY.minusDays(3));
-      stubHappyPath(p, BigDecimal.ZERO);
+      when(paymentRepository.getByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID)).thenReturn(p);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      when(contractRepository.findByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(
+              Optional.of(
+                  Contract.builder()
+                      .id(CONTRACT_ID)
+                      .teamId(TEAM_ID)
+                      .propertyId(UUID.randomUUID())
+                      .tenantRemindersEnabled(true)
+                      .build()));
+      Contact notOptedIn = contact(Optional.of("jan@example.com"));
+      notOptedIn.setPaymentRemindersEnabled(false);
+      when(contactRepository.findByIdAndTeamId(CONTACT_ID, TEAM_ID))
+          .thenReturn(Optional.of(notOptedIn));
+
+      assertThatThrownBy(
+              () ->
+                  service.sendReminder(PAYMENT_SID, SendPaymentReminderRequest.empty(), principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("has not opted in");
+      verify(notificationService, never()).send(any());
+    }
+
+    @Test
+    @DisplayName("contact-level opt-in alone is not enough when the contract flag is off")
+    void contactOptInAloneIsNotEnough() {
+      Payment p = payment(PaymentStatus.OVERDUE, TODAY.minusDays(3));
+      when(paymentRepository.getByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID)).thenReturn(p);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
       when(contractRepository.findByIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(
               Optional.of(
@@ -385,14 +417,15 @@ class PaymentReminderServiceTest {
                       .propertyId(UUID.randomUUID())
                       .tenantRemindersEnabled(false)
                       .build()));
-      Contact optedIn = contact(Optional.of("jan@example.com"));
-      optedIn.setPaymentRemindersEnabled(true);
       when(contactRepository.findByIdAndTeamId(CONTACT_ID, TEAM_ID))
-          .thenReturn(Optional.of(optedIn));
+          .thenReturn(Optional.of(contact(Optional.of("jan@example.com"))));
 
-      service.sendReminder(PAYMENT_SID, SendPaymentReminderRequest.empty(), principal);
-
-      verify(notificationService).send(any());
+      assertThatThrownBy(
+              () ->
+                  service.sendReminder(PAYMENT_SID, SendPaymentReminderRequest.empty(), principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("not enabled on this contract");
+      verify(notificationService, never()).send(any());
     }
 
     @Test

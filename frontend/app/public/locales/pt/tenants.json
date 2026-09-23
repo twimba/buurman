@@ -201,7 +201,7 @@
       "invalidInvoiceEmail": "O email de faturação deve ser válido"
     },
     "paymentReminders": "Enviar lembretes de pagamento a este contacto",
-    "paymentRemindersHelp": "Consentimento explícito para receber e-mails de lembrete sobre rendas em atraso, em todos os seus contratos. Desligado por defeito."
+    "paymentRemindersHelp": "Consentimento explícito para receber e-mails de lembrete sobre rendas em atraso. Os lembretes só são enviados para contratos que também tenham lembretes ativados."
   },
   "addresses": {
     "title": "Moradas",

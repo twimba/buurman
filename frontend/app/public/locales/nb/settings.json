@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Leietakerpåminnelser",
     "subtitle": "Automatiske betalingspåminnelser på e-post til leietakere (purretrapp)",
-    "consentNotice": "Påminnelser sendes aldri uten leietakerens samtykke: aktiver dem på kontrakten eller kontakten. Alt her er av som standard.",
+    "consentNotice": "Påminnelser sendes aldri med mindre både kontrakten har påminnelser aktivert og leietakerkontakten har samtykket. Alt her er av som standard.",
     "automatic": {
       "label": "Automatiske påminnelser",
       "description": "Kjør trappen nedenfor hver morgen for åpne betalinger fra leietakere som har samtykket"

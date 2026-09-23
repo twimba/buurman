@@ -232,7 +232,7 @@
     "showAll": "Mostrar los {{count}} inquilinos",
     "showLess": "Mostrar menos",
     "noContact": "Sin contacto vinculado",
-    "remindersDisabled": "Los recordatorios no están activados para este inquilino: actívelos en el contrato o en el contacto."
+    "remindersDisabled": "Los recordatorios requieren la opción del contrato y el consentimiento del inquilino: actívelos en el contrato y en el contacto."
   },
   "bulkMarkPaidDialog": {
     "title": "Marcar {{count}} pagos como pagados",

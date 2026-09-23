@@ -392,7 +392,7 @@
     "dismissDuplicateFirst": "Sulje ensin kaksoiskappalevaroitus",
     "change": "Muuta",
     "tenantReminders": "Maksumuistutukset vuokralaiselle",
-    "tenantRemindersHelp": "Salli muistutussähköpostit tämän sopimuksen vuokralaiselle. Oletuksena pois päältä.",
+    "tenantRemindersHelp": "Salli muistutussähköpostit tälle sopimukselle. Myös vuokralaisen yhteystiedon on annettava suostumus; muuten mitään ei lähetetä.",
     "remindersPausedUntil": "Keskeytä muistutukset asti",
     "remindersPausedUntilHelp": "Muistutuksia ei lähetetä ennen tätä päivää, esim. maksusuunnitelman aikana."
   },

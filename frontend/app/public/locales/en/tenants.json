@@ -201,7 +201,7 @@
       "invalidInvoiceEmail": "Invoice email must be valid"
     },
     "paymentReminders": "Send payment reminders to this contact",
-    "paymentRemindersHelp": "Explicit consent to receive reminder emails about overdue rent, for all their contracts. Off by default."
+    "paymentRemindersHelp": "Explicit consent to receive reminder emails about overdue rent. Reminders are only sent for contracts that also have reminders enabled."
   },
   "addresses": {
     "title": "Addresses",

@@ -231,7 +231,7 @@
     "showAll": "Vis alle {{count}} leietakere",
     "showLess": "Vis færre",
     "noContact": "Ingen kontakt tilknyttet",
-    "remindersDisabled": "Påminnelser er ikke aktivert for denne leietakeren — aktiver dem på kontrakten eller kontakten."
+    "remindersDisabled": "Påminnelser krever både kontraktinnstillingen og leietakerens samtykke — aktiver dem på kontrakten og kontakten."
   },
   "bulkMarkPaidDialog": {
     "title": "Merk {{count}} betalinger som betalt",

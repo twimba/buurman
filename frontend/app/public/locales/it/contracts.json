@@ -392,7 +392,7 @@
     "dismissDuplicateFirst": "Ignora prima l'avviso di duplicato",
     "change": "Modifica",
     "tenantReminders": "Promemoria di pagamento all’inquilino",
-    "tenantRemindersHelp": "Consenti e-mail di promemoria all’inquilino di questo contratto. Disattivato per impostazione predefinita.",
+    "tenantRemindersHelp": "Consenti e-mail di promemoria per questo contratto. Anche il contatto dell’inquilino deve aver acconsentito; altrimenti non viene inviato nulla.",
     "remindersPausedUntil": "Sospendi i promemoria fino al",
     "remindersPausedUntilHelp": "Nessun promemoria viene inviato fino a questa data, ad es. durante un piano di rientro."
   },

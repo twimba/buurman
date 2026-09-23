@@ -392,7 +392,7 @@
     "dismissDuplicateFirst": "Schließen Sie zuerst die Duplikatwarnung",
     "change": "Ändern",
     "tenantReminders": "Zahlungserinnerungen an Mieter",
-    "tenantRemindersHelp": "Erinnerungs-E-Mails an den Mieter dieses Vertrags erlauben. Standardmäßig aus.",
+    "tenantRemindersHelp": "Erinnerungs-E-Mails für diesen Vertrag erlauben. Der Mieterkontakt muss ebenfalls zugestimmt haben; sonst wird nichts gesendet.",
     "remindersPausedUntil": "Erinnerungen pausieren bis",
     "remindersPausedUntilHelp": "Bis zu diesem Datum werden keine Erinnerungen gesendet, z. B. während einer Ratenvereinbarung."
   },

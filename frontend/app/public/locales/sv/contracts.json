@@ -392,7 +392,7 @@
     "dismissDuplicateFirst": "Avfärda dubblettvarningen först",
     "change": "Ändra",
     "tenantReminders": "Betalningspåminnelser till hyresgäst",
-    "tenantRemindersHelp": "Tillåt påminnelsemejl till hyresgästen i detta avtal. Avstängt som standard.",
+    "tenantRemindersHelp": "Tillåt påminnelsemejl för detta avtal. Hyresgästkontakten måste också ha samtyckt; annars skickas inget.",
     "remindersPausedUntil": "Pausa påminnelser till",
     "remindersPausedUntilHelp": "Inga påminnelser skickas fram till detta datum, t.ex. under en avbetalningsplan."
   },

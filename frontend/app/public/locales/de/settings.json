@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Mietererinnerungen",
     "subtitle": "Automatische Zahlungserinnerungen per E-Mail an Mieter (Mahnstufen)",
-    "consentNotice": "Erinnerungen werden nur mit Zustimmung des Mieters gesendet: Aktivieren Sie sie im Vertrag oder beim Kontakt. Alles hier ist standardmäßig aus.",
+    "consentNotice": "Erinnerungen werden nur gesendet, wenn sowohl der Vertrag Erinnerungen aktiviert hat als auch der Mieterkontakt zugestimmt hat. Alles hier ist standardmäßig aus.",
     "automatic": {
       "label": "Automatische Erinnerungen",
       "description": "Die Stufen unten jeden Morgen für offene Zahlungen zugestimmter Mieter ausführen"

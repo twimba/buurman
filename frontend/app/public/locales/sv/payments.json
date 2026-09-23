@@ -232,7 +232,7 @@
     "showAll": "Visa alla {{count}} hyresgäster",
     "showLess": "Visa färre",
     "noContact": "Ingen kontakt kopplad",
-    "remindersDisabled": "Påminnelser är inte aktiverade för denna hyresgäst — aktivera dem på avtalet eller kontakten."
+    "remindersDisabled": "Påminnelser kräver både avtalsinställningen och hyresgästens samtycke — aktivera dem på avtalet och kontakten."
   },
   "bulkMarkPaidDialog": {
     "title": "Markera {{count}} betalningar som betalda",

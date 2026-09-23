@@ -231,7 +231,7 @@
     "showAll": "Pokaż wszystkich najemców ({{count}})",
     "showLess": "Pokaż mniej",
     "noContact": "Brak powiązanego kontaktu",
-    "remindersDisabled": "Przypomnienia nie są włączone dla tego najemcy — włącz je w umowie lub kontakcie."
+    "remindersDisabled": "Przypomnienia wymagają zarówno opcji w umowie, jak i zgody najemcy — włącz je w umowie i w kontakcie."
   },
   "bulkMarkPaidDialog": {
     "title": "Oznacz {{count}} płatności jako opłacone",

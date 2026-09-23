@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Tenant Reminders",
     "subtitle": "Automatic payment reminder emails to tenants (dunning ladder)",
-    "consentNotice": "Reminders are never sent unless a tenant has opted in: enable them on the contract or on the contact. Everything here is off by default.",
+    "consentNotice": "Reminders are never sent unless both the contract has reminders enabled and the tenant contact has opted in. Everything here is off by default.",
     "automatic": {
       "label": "Automatic reminders",
       "description": "Run the ladder below every morning for open payments of opted-in tenants"

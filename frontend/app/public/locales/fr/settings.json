@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Rappels aux locataires",
     "subtitle": "E-mails automatiques de rappel de paiement aux locataires (relances graduées)",
-    "consentNotice": "Aucun rappel n’est envoyé sans l’accord du locataire : activez-les sur le contrat ou sur le contact. Tout est désactivé par défaut.",
+    "consentNotice": "Aucun rappel n’est envoyé sans que le contrat ait les rappels activés et que le contact locataire ait donné son accord. Tout est désactivé par défaut.",
     "automatic": {
       "label": "Rappels automatiques",
       "description": "Exécuter chaque matin l’échelle ci-dessous pour les paiements ouverts des locataires ayant donné leur accord"

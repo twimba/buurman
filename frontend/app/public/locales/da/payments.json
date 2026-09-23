@@ -231,7 +231,7 @@
     "showAll": "Vis alle {{count}} lejere",
     "showLess": "Vis færre",
     "noContact": "Ingen kontakt tilknyttet",
-    "remindersDisabled": "Påmindelser er ikke aktiveret for denne lejer — slå dem til på kontrakten eller kontakten."
+    "remindersDisabled": "Påmindelser kræver både kontraktindstillingen og lejerens samtykke — slå dem til på kontrakten og kontakten."
   },
   "bulkMarkPaidDialog": {
     "title": "Markér {{count}} betalinger som betalt",

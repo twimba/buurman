@@ -231,7 +231,7 @@
     "showAll": "Show all {{count}} tenants",
     "showLess": "Show less",
     "noContact": "No contact linked",
-    "remindersDisabled": "Reminders are not enabled for this tenant — turn them on in the contract or contact."
+    "remindersDisabled": "Reminders require both the contract flag and the tenant’s consent — enable them on the contract and the contact."
   },
   "bulkMarkPaidDialog": {
     "title": "Mark {{count}} payments as paid",

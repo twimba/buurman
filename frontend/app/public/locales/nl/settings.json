@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Huurdersherinneringen",
     "subtitle": "Automatische betalingsherinneringen per e-mail aan huurders (aanmaningsladder)",
-    "consentNotice": "Herinneringen worden nooit verstuurd tenzij een huurder heeft ingestemd: schakel ze in op het contract of op het contact. Alles hier staat standaard uit.",
+    "consentNotice": "Herinneringen worden nooit verstuurd tenzij zowel het contract herinneringen heeft ingeschakeld als het huurderscontact toestemming heeft gegeven. Alles hier staat standaard uit.",
     "automatic": {
       "label": "Automatische herinneringen",
       "description": "Voer de onderstaande ladder elke ochtend uit voor openstaande betalingen van ingestemde huurders"

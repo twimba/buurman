@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Przypomnienia dla najemców",
     "subtitle": "Automatyczne e-maile z przypomnieniem o płatności do najemców (ścieżka monitowania)",
-    "consentNotice": "Przypomnienia nigdy nie są wysyłane bez zgody najemcy: włącz je w umowie lub w kontakcie. Wszystko tutaj jest domyślnie wyłączone.",
+    "consentNotice": "Przypomnienia nigdy nie są wysyłane, chyba że umowa ma włączone przypomnienia i kontakt najemcy wyraził zgodę. Wszystko tutaj jest domyślnie wyłączone.",
     "automatic": {
       "label": "Automatyczne przypomnienia",
       "description": "Uruchamiaj poniższą ścieżkę każdego ranka dla otwartych płatności najemców, którzy wyrazili zgodę"

@@ -392,7 +392,7 @@
     "dismissDuplicateFirst": "Descarte primero la advertencia de duplicado",
     "change": "Cambiar",
     "tenantReminders": "Recordatorios de pago al inquilino",
-    "tenantRemindersHelp": "Permitir correos de recordatorio al inquilino de este contrato. Desactivado por defecto.",
+    "tenantRemindersHelp": "Permitir correos de recordatorio para este contrato. El contacto del inquilino también debe haber dado su consentimiento; de lo contrario no se envía nada.",
     "remindersPausedUntil": "Pausar recordatorios hasta",
     "remindersPausedUntilHelp": "No se envían recordatorios hasta esta fecha, p. ej. durante un plan de pago."
   },

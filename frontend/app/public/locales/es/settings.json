@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Recordatorios a inquilinos",
     "subtitle": "Correos automáticos de recordatorio de pago a los inquilinos (escala de reclamación)",
-    "consentNotice": "Nunca se envían recordatorios sin el consentimiento del inquilino: actívelos en el contrato o en el contacto. Todo aquí está desactivado por defecto.",
+    "consentNotice": "Nunca se envían recordatorios a menos que el contrato tenga los recordatorios activados y el contacto del inquilino haya dado su consentimiento. Todo aquí está desactivado por defecto.",
     "automatic": {
       "label": "Recordatorios automáticos",
       "description": "Ejecutar la escala siguiente cada mañana para pagos abiertos de inquilinos que hayan dado su consentimiento"

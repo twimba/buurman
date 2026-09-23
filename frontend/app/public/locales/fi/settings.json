@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Vuokralaismuistutukset",
     "subtitle": "Automaattiset maksumuistutukset sähköpostitse vuokralaisille (muistutusportaat)",
-    "consentNotice": "Muistutuksia ei koskaan lähetetä ilman vuokralaisen suostumusta: ota ne käyttöön sopimuksessa tai yhteystiedossa. Kaikki on oletuksena pois päältä.",
+    "consentNotice": "Muistutuksia ei koskaan lähetetä, ellei sekä sopimuksessa ole muistutukset käytössä että vuokralainen ole antanut suostumusta. Kaikki on oletuksena pois päältä.",
     "automatic": {
       "label": "Automaattiset muistutukset",
       "description": "Suorita alla olevat portaat joka aamu suostumuksen antaneiden vuokralaisten avoimille maksuille"

@@ -232,7 +232,7 @@
     "showAll": "Mostra tutti i {{count}} inquilini",
     "showLess": "Mostra meno",
     "noContact": "Nessun contatto collegato",
-    "remindersDisabled": "I promemoria non sono attivi per questo inquilino: attivali sul contratto o sul contatto."
+    "remindersDisabled": "I promemoria richiedono l’opzione sul contratto e il consenso dell’inquilino: attivali sul contratto e sul contatto."
   },
   "bulkMarkPaidDialog": {
     "title": "Segna {{count}} pagamenti come pagati",

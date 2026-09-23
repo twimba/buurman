@@ -231,7 +231,7 @@
     "showAll": "Näytä kaikki {{count}} vuokralaista",
     "showLess": "Näytä vähemmän",
     "noContact": "Ei liitettyä yhteystietoa",
-    "remindersDisabled": "Muistutukset eivät ole käytössä tälle vuokralaiselle — ota ne käyttöön sopimuksessa tai yhteystiedossa."
+    "remindersDisabled": "Muistutukset vaativat sekä sopimuksen asetuksen että vuokralaisen suostumuksen — ota ne käyttöön sopimuksessa ja yhteystiedossa."
   },
   "bulkMarkPaidDialog": {
     "title": "Merkitse {{count}} maksua maksetuksi",

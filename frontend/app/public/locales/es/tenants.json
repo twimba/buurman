@@ -201,7 +201,7 @@
       "invalidInvoiceEmail": "El email de facturación debe ser válido"
     },
     "paymentReminders": "Enviar recordatorios de pago a este contacto",
-    "paymentRemindersHelp": "Consentimiento explícito para recibir correos de recordatorio sobre alquileres vencidos, en todos sus contratos. Desactivado por defecto."
+    "paymentRemindersHelp": "Consentimiento explícito para recibir correos de recordatorio sobre alquileres vencidos. Solo se envían para contratos que también tengan los recordatorios activados."
   },
   "addresses": {
     "title": "Direcciones",

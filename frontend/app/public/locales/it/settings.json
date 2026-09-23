@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Promemoria agli inquilini",
     "subtitle": "E-mail automatiche di promemoria di pagamento agli inquilini (solleciti graduali)",
-    "consentNotice": "I promemoria non vengono mai inviati senza il consenso dell’inquilino: attivali sul contratto o sul contatto. Tutto qui è disattivato per impostazione predefinita.",
+    "consentNotice": "I promemoria non vengono mai inviati a meno che il contratto li abbia attivati e il contatto dell’inquilino abbia acconsentito. Tutto qui è disattivato per impostazione predefinita.",
     "automatic": {
       "label": "Promemoria automatici",
       "description": "Eseguire ogni mattina la scala sottostante per i pagamenti aperti degli inquilini che hanno acconsentito"

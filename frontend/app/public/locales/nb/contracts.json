@@ -392,7 +392,7 @@
     "dismissDuplicateFirst": "Avvis duplikatadvarselen først",
     "change": "Endre",
     "tenantReminders": "Betalingspåminnelser til leietaker",
-    "tenantRemindersHelp": "Tillat påminnelses-e-poster til leietakeren i denne kontrakten. Av som standard.",
+    "tenantRemindersHelp": "Tillat påminnelses-e-poster for denne kontrakten. Leietakerkontakten må også ha samtykket; ellers sendes ingenting.",
     "remindersPausedUntil": "Sett påminnelser på pause til",
     "remindersPausedUntilHelp": "Ingen påminnelser sendes før denne datoen, f.eks. under en nedbetalingsavtale."
   },

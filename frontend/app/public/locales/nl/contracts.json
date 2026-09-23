@@ -392,7 +392,7 @@
     "dismissDuplicateFirst": "Sluit eerst de duplicaatwaarschuwing",
     "change": "Wijzigen",
     "tenantReminders": "Betalingsherinneringen aan huurder",
-    "tenantRemindersHelp": "Sta herinneringsmails aan de huurder van dit contract toe. Standaard uit.",
+    "tenantRemindersHelp": "Sta herinneringsmails voor dit contract toe. Het huurderscontact moet ook toestemming hebben gegeven; anders wordt niets verstuurd.",
     "remindersPausedUntil": "Herinneringen pauzeren tot",
     "remindersPausedUntilHelp": "Tot deze datum worden geen herinneringen verstuurd, bijv. tijdens een betalingsregeling."
   },

@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Hyresgästpåminnelser",
     "subtitle": "Automatiska betalningspåminnelser via e-post till hyresgäster (påminnelsetrappa)",
-    "consentNotice": "Påminnelser skickas aldrig utan hyresgästens samtycke: aktivera dem på avtalet eller kontakten. Allt här är avstängt som standard.",
+    "consentNotice": "Påminnelser skickas aldrig om inte både avtalet har påminnelser aktiverade och hyresgästkontakten har samtyckt. Allt här är avstängt som standard.",
     "automatic": {
       "label": "Automatiska påminnelser",
       "description": "Kör trappan nedan varje morgon för öppna betalningar från hyresgäster som samtyckt"

@@ -201,7 +201,7 @@
       "invalidInvoiceEmail": "Faktura-e-post må være gyldig"
     },
     "paymentReminders": "Send betalingspåminnelser til denne kontakten",
-    "paymentRemindersHelp": "Uttrykkelig samtykke til påminnelses-e-poster om forfalt husleie, for alle kontraktene deres. Av som standard."
+    "paymentRemindersHelp": "Uttrykkelig samtykke til påminnelses-e-poster om forfalt husleie. Påminnelser sendes bare for kontrakter der de også er aktivert."
   },
   "addresses": {
     "title": "Adresser",

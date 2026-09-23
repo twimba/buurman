@@ -201,7 +201,7 @@
       "invalidInvoiceEmail": "Adres e-mail do faktur musi być prawidłowy"
     },
     "paymentReminders": "Wysyłaj przypomnienia o płatności do tego kontaktu",
-    "paymentRemindersHelp": "Wyraźna zgoda na e-maile z przypomnieniem o zaległym czynszu, dla wszystkich umów. Domyślnie wyłączone."
+    "paymentRemindersHelp": "Wyraźna zgoda na e-maile z przypomnieniem o zaległym czynszu. Przypomnienia są wysyłane tylko dla umów, w których również są włączone."
   },
   "addresses": {
     "title": "Adresy",

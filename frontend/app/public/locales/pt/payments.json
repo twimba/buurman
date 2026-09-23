@@ -232,7 +232,7 @@
     "showAll": "Mostrar todos os {{count}} inquilinos",
     "showLess": "Mostrar menos",
     "noContact": "Sem contacto associado",
-    "remindersDisabled": "Os lembretes não estão ativados para este inquilino — ative-os no contrato ou no contacto."
+    "remindersDisabled": "Os lembretes exigem a opção no contrato e o consentimento do inquilino — ative-os no contrato e no contacto."
   },
   "bulkMarkPaidDialog": {
     "title": "Marcar {{count}} pagamentos como pagos",

@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Lembretes a inquilinos",
     "subtitle": "E-mails automáticos de lembrete de pagamento aos inquilinos (escada de cobrança)",
-    "consentNotice": "Nunca são enviados lembretes sem consentimento do inquilino: ative-os no contrato ou no contacto. Tudo aqui está desligado por defeito.",
+    "consentNotice": "Nunca são enviados lembretes sem que o contrato tenha lembretes ativados e o contacto do inquilino tenha dado consentimento. Tudo aqui está desligado por defeito.",
     "automatic": {
       "label": "Lembretes automáticos",
       "description": "Executar a escada abaixo todas as manhãs para pagamentos em aberto de inquilinos com consentimento"

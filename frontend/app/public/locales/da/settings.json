@@ -391,7 +391,7 @@
   "tenantReminders": {
     "title": "Lejerpåmindelser",
     "subtitle": "Automatiske betalingspåmindelser pr. e-mail til lejere (rykkertrappe)",
-    "consentNotice": "Påmindelser sendes aldrig uden lejerens samtykke: aktivér dem på kontrakten eller kontakten. Alt her er slået fra som standard.",
+    "consentNotice": "Påmindelser sendes aldrig, medmindre både kontrakten har påmindelser aktiveret og lejerkontakten har givet samtykke. Alt her er slået fra som standard.",
     "automatic": {
       "label": "Automatiske påmindelser",
       "description": "Kør trappen nedenfor hver morgen for åbne betalinger fra lejere, der har givet samtykke"

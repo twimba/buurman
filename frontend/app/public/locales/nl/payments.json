@@ -231,7 +231,7 @@
     "showAll": "Alle {{count}} huurders tonen",
     "showLess": "Minder tonen",
     "noContact": "Geen contact gekoppeld",
-    "remindersDisabled": "Herinneringen zijn niet ingeschakeld voor deze huurder — schakel ze in op het contract of contact."
+    "remindersDisabled": "Herinneringen vereisen zowel de contractinstelling als de toestemming van de huurder — schakel ze in op het contract en het contact."
   },
   "bulkMarkPaidDialog": {
     "title": "{{count}} betalingen als betaald markeren",

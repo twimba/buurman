@@ -392,7 +392,7 @@
     "dismissDuplicateFirst": "Afvis duplikatadvarslen først",
     "change": "Skift",
     "tenantReminders": "Betalingspåmindelser til lejer",
-    "tenantRemindersHelp": "Tillad påmindelsesmails til lejeren på denne kontrakt. Slået fra som standard.",
+    "tenantRemindersHelp": "Tillad påmindelsesmails for denne kontrakt. Lejerkontakten skal også have givet samtykke; ellers sendes intet.",
     "remindersPausedUntil": "Sæt påmindelser på pause indtil",
     "remindersPausedUntilHelp": "Der sendes ingen påmindelser før denne dato, f.eks. under en afdragsordning."
   },

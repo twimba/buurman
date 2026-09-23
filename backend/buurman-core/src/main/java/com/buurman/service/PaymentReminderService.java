@@ -177,20 +177,24 @@ public class PaymentReminderService {
   }
 
   /**
-   * Whether tenant reminders may be sent for this contract/contact pair today. Enabled on the
-   * contract or on the contact is enough; a pause on the contract blocks both.
+   * Whether tenant reminders may be sent for this contract/contact pair today. Both the contract
+   * flag and the contact's own consent are required, and a pause on the contract blocks all sends.
    */
   public static boolean remindersEnabled(
       Contract contract, Optional<Contact> contact, LocalDate today) {
-    boolean paused =
-        contract.getRemindersPausedUntil().map(until -> !until.isBefore(today)).orElse(false);
-    if (paused) {
-      return false;
-    }
-    boolean onContract = Boolean.TRUE.equals(contract.getTenantRemindersEnabled());
-    boolean onContact =
-        contact.map(c -> Boolean.TRUE.equals(c.getPaymentRemindersEnabled())).orElse(false);
-    return onContract || onContact;
+    return !isPaused(contract, today) && contractEnabled(contract) && contactOptedIn(contact);
+  }
+
+  static boolean isPaused(Contract contract, LocalDate today) {
+    return contract.getRemindersPausedUntil().map(until -> !until.isBefore(today)).orElse(false);
+  }
+
+  static boolean contractEnabled(Contract contract) {
+    return Boolean.TRUE.equals(contract.getTenantRemindersEnabled());
+  }
+
+  static boolean contactOptedIn(Optional<Contact> contact) {
+    return contact.map(c -> Boolean.TRUE.equals(c.getPaymentRemindersEnabled())).orElse(false);
   }
 
   private PaymentReminderResponse send(
@@ -232,12 +236,17 @@ public class PaymentReminderService {
             .orElseThrow(
                 () -> new BusinessRuleException("No tenant contact is linked to this payment"));
 
-    if (!remindersEnabled(contract, Optional.of(contact), today)) {
+    if (isPaused(contract, today)) {
       throw new BusinessRuleException(
-          contract.getRemindersPausedUntil().map(u -> !u.isBefore(today)).orElse(false)
-              ? "Reminders for this contract are paused until "
-                  + contract.getRemindersPausedUntil().orElseThrow()
-              : "Tenant reminders are not enabled for this contract or contact");
+          "Reminders for this contract are paused until "
+              + contract.getRemindersPausedUntil().orElseThrow());
+    }
+    if (!contractEnabled(contract)) {
+      throw new BusinessRuleException("Tenant reminders are not enabled on this contract");
+    }
+    if (!contactOptedIn(Optional.of(contact))) {
+      throw new BusinessRuleException(
+          "Tenant " + contact.getDisplayName() + " has not opted in to payment reminders");
     }
 
     String email =

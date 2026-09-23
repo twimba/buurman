@@ -201,7 +201,7 @@
       "invalidInvoiceEmail": "Faktura-e-posten maste vara giltig"
     },
     "paymentReminders": "Skicka betalningspåminnelser till denna kontakt",
-    "paymentRemindersHelp": "Uttryckligt samtycke till påminnelsemejl om försenad hyra, för alla deras avtal. Avstängt som standard."
+    "paymentRemindersHelp": "Uttryckligt samtycke till påminnelsemejl om försenad hyra. Påminnelser skickas bara för avtal där de också är aktiverade."
   },
   "addresses": {
     "title": "Adresser",

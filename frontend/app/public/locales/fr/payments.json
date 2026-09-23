@@ -232,7 +232,7 @@
     "showAll": "Afficher les {{count}} locataires",
     "showLess": "Afficher moins",
     "noContact": "Aucun contact lié",
-    "remindersDisabled": "Les rappels ne sont pas activés pour ce locataire — activez-les sur le contrat ou le contact."
+    "remindersDisabled": "Les rappels exigent l’option du contrat et l’accord du locataire — activez-les sur le contrat et le contact."
   },
   "bulkMarkPaidDialog": {
     "title": "Marquer {{count}} paiements comme payés",
