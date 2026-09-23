@@ -1,4 +1,3 @@
-import posthog from 'posthog-js';
 import { createAnalytics } from '@buurman/ui';
 import type { AnalyticsEventName } from '../constants/analyticsEvents';
 
@@ -24,10 +23,8 @@ export function identifyUser({
   teamIdentifier: string;
   role: string;
 }): void {
-  if (!analytics.isInitialized()) {
-    return;
-  }
-
-  posthog.identify(userIdentifier, { role });
-  posthog.group('team', teamIdentifier);
+  // No isInitialized() guard: posthog-js is loaded lazily, and the facade
+  // queues these until it resolves so identification is never dropped.
+  analytics.identify(userIdentifier, { role });
+  analytics.group('team', teamIdentifier);
 }

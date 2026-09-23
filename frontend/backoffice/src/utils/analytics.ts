@@ -1,4 +1,3 @@
-import posthog from 'posthog-js';
 import { createAnalytics } from '@buurman/ui';
 import type { AnalyticsEventName } from '../constants/analyticsEvents';
 
@@ -20,9 +19,6 @@ export function trackEvent(
  * /users/me API, so the Keycloak sub claim is the only stable identifier.
  */
 export function identifyUser(userSub: string): void {
-  if (!analytics.isInitialized()) {
-    return;
-  }
-
-  posthog.identify(userSub);
+  // Queued by the facade if posthog-js has not finished loading yet.
+  analytics.identify(userSub);
 }
