@@ -40,6 +40,30 @@ public class DemoPhotoGenerator {
 
   private static final String RESOURCE_BASE = "classpath:demo/photos/";
 
+  /**
+   * Bundled photo formats, in discovery order. WebP carries the demo imagery — it is ~30% smaller
+   * than the equivalent JPEG at the same dimensions, which matters because these resources ship
+   * inside the application jar.
+   *
+   * <p>Insertion-ordered so the photo pool, and therefore the generated demo data, is reproducible
+   * across runs.
+   */
+  private static final Map<String, String> EXTENSION_MIME_TYPES = new LinkedHashMap<>();
+
+  static {
+    EXTENSION_MIME_TYPES.put(".webp", "image/webp");
+    EXTENSION_MIME_TYPES.put(".jpg", "image/jpeg");
+    EXTENSION_MIME_TYPES.put(".png", "image/png");
+  }
+
+  private static String extensionFor(String mimeType) {
+    return EXTENSION_MIME_TYPES.entrySet().stream()
+        .filter(entry -> entry.getValue().equals(mimeType))
+        .map(Map.Entry::getKey)
+        .findFirst()
+        .orElse(".jpg");
+  }
+
   private static final List<String> ALL_CATEGORIES =
       List.of(
           "exteriors",
@@ -374,7 +398,7 @@ public class DemoPhotoGenerator {
         continue;
       }
 
-      String ext = photoFile.mimeType.equals("image/png") ? ".png" : ".jpg";
+      String ext = extensionFor(photoFile.mimeType);
       String fileName = slot.title.toLowerCase(Locale.ROOT).replace(" ", "-") + ext;
 
       tasks.add(
@@ -573,9 +597,9 @@ public class DemoPhotoGenerator {
     for (String category : ALL_CATEGORIES) {
       List<PhotoFile> images = new ArrayList<>();
       try {
-        for (String ext : List.of("*.jpg", "*.png")) {
-          Resource[] resources = resolver.getResources(RESOURCE_BASE + category + "/" + ext);
-          String mimeType = ext.equals("*.png") ? "image/png" : "image/jpeg";
+        for (String ext : EXTENSION_MIME_TYPES.keySet()) {
+          Resource[] resources = resolver.getResources(RESOURCE_BASE + category + "/*" + ext);
+          String mimeType = EXTENSION_MIME_TYPES.get(ext);
           for (Resource resource : resources) {
             images.add(new PhotoFile(resource.getContentAsByteArray(), mimeType));
           }
