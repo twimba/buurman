@@ -77,7 +77,14 @@ export default defineConfig({
           if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
             return 'vendor-i18n';
           }
-          if (id.includes('node_modules/date-fns/') || id.includes('node_modules/keycloak-js/') || id.includes('node_modules/dompurify/') || id.includes('node_modules/libphonenumber-js/')) {
+          // Kept out of vendor-utils: that chunk is eager because keycloak-js
+          // is needed at startup, while phone parsing is only reached from
+          // lazy form routes. Its metadata is large enough to be worth its own
+          // chunk rather than riding along on every first visit.
+          if (id.includes('node_modules/libphonenumber-js/')) {
+            return 'vendor-phone';
+          }
+          if (id.includes('node_modules/date-fns/') || id.includes('node_modules/keycloak-js/') || id.includes('node_modules/dompurify/')) {
             return 'vendor-utils';
           }
         },
