@@ -288,7 +288,15 @@
     "manual": "Recordatorio",
     "daysOverdue": "{{days}} días de retraso",
     "outstanding": "Pendiente {{amount}}",
-    "to": "a {{email}}"
+    "to": "a {{email}}",
+    "delivery": {
+      "QUEUED": "En cola",
+      "SENT": "Enviado",
+      "DELIVERED": "Entregado",
+      "FAILED": "Entrega fallida",
+      "BLOCKED": "No enviado (demo)",
+      "UNKNOWN": "Desconocido"
+    }
   },
   "toasts": {
     "reminderSent": "Recordatorio enviado a {{email}}",

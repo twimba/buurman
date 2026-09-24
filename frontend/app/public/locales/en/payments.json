@@ -287,7 +287,15 @@
     "manual": "Reminder",
     "daysOverdue": "{{days}} days overdue",
     "outstanding": "Outstanding {{amount}}",
-    "to": "to {{email}}"
+    "to": "to {{email}}",
+    "delivery": {
+      "QUEUED": "Queued",
+      "SENT": "Sent",
+      "DELIVERED": "Delivered",
+      "FAILED": "Delivery failed",
+      "BLOCKED": "Not sent (demo)",
+      "UNKNOWN": "Unknown"
+    }
   },
   "toasts": {
     "reminderSent": "Reminder sent to {{email}}",

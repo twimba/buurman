@@ -34,6 +34,7 @@ import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractPaymentInstruction;
 import com.buurman.domain.Document;
+import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationUrgency;
 import com.buurman.domain.Payment;
@@ -41,6 +42,7 @@ import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReminder;
 import com.buurman.domain.PaymentReminder.ReminderType;
 import com.buurman.domain.PaymentReminderStep;
+import com.buurman.domain.ReminderDeliveryStatus;
 import com.buurman.domain.ReminderTone;
 import com.buurman.domain.Sid;
 import com.buurman.domain.User;
@@ -187,6 +189,13 @@ public class PaymentReminderService {
     List<PaymentReminder> reminders =
         reminderRepository.findByPaymentIdAndTeamId(payment.getId(), teamId);
     Map<UUID, Optional<String>> names = new HashMap<>();
+    Map<UUID, NotificationService.DeliveryState> delivery =
+        notificationService.deliveryStates(
+            reminders.stream()
+                .map(PaymentReminder::getNotificationId)
+                .flatMap(Optional::stream)
+                .toList(),
+            teamId);
     return reminders.stream()
         .map(
             r ->
@@ -196,7 +205,12 @@ public class PaymentReminderService {
                         ? Optional.empty()
                         : names.computeIfAbsent(
                             r.getCreatedBy(),
-                            id -> userRepository.findById(id).map(User::getFullName))))
+                            id -> userRepository.findById(id).map(User::getFullName)),
+                    r.getNotificationId()
+                        .map(delivery::get)
+                        .map(d -> ReminderDeliveryStatus.from(d.status()))
+                        .orElse(ReminderDeliveryStatus.UNKNOWN),
+                    r.getNotificationId().map(delivery::get).flatMap(d -> d.error())))
         .toList();
   }
 
@@ -400,22 +414,25 @@ public class PaymentReminderService {
           metricsService.incrementCounter("payment.formal_notice.generated.total");
         });
 
-    notificationService.send(
-        SendNotificationRequest.builder()
-            .teamId(Optional.of(teamId))
-            .notificationType(PAYMENT_REMINDER)
-            .recipientContactId(Optional.of(contact.getId()))
-            .recipientEmail(Optional.of(email))
-            .templateName(TEMPLATE_NAME)
-            .templateVariables(variables)
-            .languageTag(Optional.of(languageTag))
-            .urgency(
-                tone == ReminderTone.FRIENDLY
-                    ? NotificationUrgency.NORMAL
-                    : NotificationUrgency.URGENT)
-            .createdBy(actorUserId)
-            .attachments(attachments)
-            .build());
+    List<Notification> created =
+        notificationService.send(
+            SendNotificationRequest.builder()
+                .teamId(Optional.of(teamId))
+                .notificationType(PAYMENT_REMINDER)
+                .recipientContactId(Optional.of(contact.getId()))
+                .recipientEmail(Optional.of(email))
+                .templateName(TEMPLATE_NAME)
+                .templateVariables(variables)
+                .languageTag(Optional.of(languageTag))
+                .urgency(
+                    tone == ReminderTone.FRIENDLY
+                        ? NotificationUrgency.NORMAL
+                        : NotificationUrgency.URGENT)
+                .createdBy(actorUserId)
+                .attachments(attachments)
+                .build());
+    Optional<Notification> emailNotification =
+        created.stream().filter(n -> n.getChannel() == NotificationChannel.EMAIL).findFirst();
 
     PaymentReminder reminder =
         PaymentReminder.builder()
@@ -431,13 +448,21 @@ public class PaymentReminderService {
             .notes(notes.filter(n -> !n.isBlank()))
             .stepOffsetDays(stepOffsetDays)
             .tone(Optional.of(tone))
+            .notificationId(emailNotification.map(Notification::getId))
             .sentAt(clock.instant())
             .createdBy(actorUserId)
             .updatedBy(actorUserId)
             .build();
     reminderRepository.save(reminder);
 
-    PaymentReminderResponse response = toResponse(reminder, actorName);
+    PaymentReminderResponse response =
+        toResponse(
+            reminder,
+            actorName,
+            emailNotification
+                .map(n -> ReminderDeliveryStatus.from(n.getStatus()))
+                .orElse(ReminderDeliveryStatus.UNKNOWN),
+            Optional.empty());
     auditService.logCreate(teamId, "PAYMENT_REMINDER", reminder.getId(), actorUserId, response);
     metricsService.incrementCounter(
         "payment.reminder.sent.total", "type", type.name(), "channel", "EMAIL");
@@ -564,7 +589,10 @@ public class PaymentReminderService {
   }
 
   private static PaymentReminderResponse toResponse(
-      PaymentReminder reminder, Optional<String> sentByName) {
+      PaymentReminder reminder,
+      Optional<String> sentByName,
+      ReminderDeliveryStatus deliveryStatus,
+      Optional<String> deliveryError) {
     return new PaymentReminderResponse(
         reminder.getIdentifier().orElseThrow(),
         reminder.getReminderType(),
@@ -577,7 +605,9 @@ public class PaymentReminderService {
         sentByName,
         reminder.getStepOffsetDays(),
         reminder.getTone(),
-        reminder.getSentAt());
+        reminder.getSentAt(),
+        deliveryStatus,
+        deliveryError);
   }
 
   /** Only rule/validation messages are safe to echo back; anything else stays generic. */

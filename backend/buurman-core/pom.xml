@@ -335,6 +335,7 @@
                                 <schemaMapping>ContactArrears=com.buurman.dto.response.PaymentArrearsResponse.ContactArrears</schemaMapping>
                                 <schemaMapping>PaymentReminderResponse=com.buurman.dto.response.PaymentReminderResponse</schemaMapping>
                                 <schemaMapping>ReminderTone=com.buurman.domain.ReminderTone</schemaMapping>
+                                <schemaMapping>ReminderDeliveryStatus=com.buurman.domain.ReminderDeliveryStatus</schemaMapping>
                                 <schemaMapping>GenerateExtensionDocumentsRequest=com.buurman.dto.request.GenerateExtensionDocumentsRequest</schemaMapping>
                                 <schemaMapping>GenerateRentChangeDocumentsRequest=com.buurman.dto.request.GenerateRentChangeDocumentsRequest</schemaMapping>
                                 <schemaMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</schemaMapping>
@@ -607,6 +608,7 @@
                                 <importMapping>ContactArrears=com.buurman.dto.response.PaymentArrearsResponse.ContactArrears</importMapping>
                                 <importMapping>PaymentReminderResponse=com.buurman.dto.response.PaymentReminderResponse</importMapping>
                                 <importMapping>ReminderTone=com.buurman.domain.ReminderTone</importMapping>
+                                <importMapping>ReminderDeliveryStatus=com.buurman.domain.ReminderDeliveryStatus</importMapping>
                                 <importMapping>GenerateExtensionDocumentsRequest=com.buurman.dto.request.GenerateExtensionDocumentsRequest</importMapping>
                                 <importMapping>GenerateRentChangeDocumentsRequest=com.buurman.dto.request.GenerateRentChangeDocumentsRequest</importMapping>
                                 <importMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</importMapping>

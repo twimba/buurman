@@ -63,6 +63,43 @@ import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 import { queryKeys } from '../lib/queryKeys';
 
+/**
+ * Invalidate what a payment change touches. Lists and stats always; arrears, dashboards and
+ * reports only when money or status moved (`financial`), since those are the expensive queries.
+ */
+const invalidatePaymentViews = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  { financial = true, contractId }: { financial?: boolean; contractId?: string } = {}
+) => {
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
+  if (contractId) {
+    queryClient.invalidateQueries({ queryKey: queryKeys.contracts.detail(contractId) });
+  }
+  if (!financial) {
+    return;
+  }
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
+  queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats() });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.dashboard.propertyDashboard(),
+  });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.reports.financialOverview(),
+  });
+  queryClient.invalidateQueries({ queryKey: queryKeys.reports.incomeTrend() });
+};
+
+/** Detail, audit log and receivals of one payment. */
+const invalidatePaymentDetail = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  id: string
+) => {
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.detail(id) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.auditLog(id) });
+  queryClient.invalidateQueries({ queryKey: queryKeys.payments.receivals(id) });
+};
+
 export const usePayments = (
   params?: {
     status?: PaymentResponseStatus | 'OVERDUE';
@@ -119,26 +156,10 @@ export const useCreatePayment = () => {
   return useMutationWithToast({
     mutationFn: (data: CreatePaymentRequest) => createPayment(data),
     onSuccess: (newPayment) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.contracts.all(),
+      invalidatePaymentViews(queryClient, {
+        contractId: newPayment.contract?.identifier,
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.contracts.detail(newPayment.contract?.identifier),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.stats(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.propertyDashboard(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.financialOverview(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.incomeTrend(),
-      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
       trackEvent(AnalyticsEvent.PAYMENT_CREATED);
       const verb = newPayment.status === 'PAID' ? 'registered' : 'scheduled';
       showToast(`Payment ${verb} successfully`, 'success');
@@ -152,31 +173,10 @@ export const useUpdatePayment = (id: string) => {
     successMessage: 'Payment updated successfully',
     mutationFn: (data: UpdatePaymentRequest) => updatePayment(id, data),
     onSuccess: (updatedPayment) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.payments.detail(id),
+      invalidatePaymentViews(queryClient, {
+        contractId: updatedPayment.contract?.identifier,
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.payments.auditLog(id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.contracts.detail(
-          updatedPayment.contract?.identifier
-        ),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.stats(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.propertyDashboard(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.financialOverview(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.incomeTrend(),
-      });
+      invalidatePaymentDetail(queryClient, id);
     },
   });
 };
@@ -188,21 +188,8 @@ export const useDeletePayment = () => {
   return useMutation({
     mutationFn: (id: string) => deletePayment(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
+      invalidatePaymentViews(queryClient);
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.stats(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.propertyDashboard(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.financialOverview(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.incomeTrend(),
-      });
       showToast('Payment deleted successfully', 'success');
       announce('Payment deleted');
     },
@@ -222,31 +209,10 @@ export const useMarkPaymentAsPaid = () => {
     mutationFn: ({ id, data }: { id: string; data: MarkPaidRequest }) =>
       markPaymentAsPaid(id, data),
     onSuccess: (updatedPayment) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.payments.detail(updatedPayment.identifier),
+      invalidatePaymentViews(queryClient, {
+        contractId: updatedPayment.contract?.identifier,
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.payments.auditLog(updatedPayment.identifier),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.contracts.detail(
-          updatedPayment.contract?.identifier
-        ),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.stats(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.propertyDashboard(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.financialOverview(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.incomeTrend(),
-      });
+      invalidatePaymentDetail(queryClient, updatedPayment.identifier);
       showToast('Payment marked as paid successfully', 'success');
       announce('Payment marked as paid');
       trackEvent(AnalyticsEvent.PAYMENT_MARKED_PAID);
@@ -266,21 +232,8 @@ export const useBulkGeneratePayments = () => {
     mutationFn: (data: BulkGeneratePaymentsRequest) =>
       bulkGeneratePayments(data),
     onSuccess: (generatedPayments) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
+      invalidatePaymentViews(queryClient);
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.stats(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.dashboard.propertyDashboard(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.financialOverview(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.reports.incomeTrend(),
-      });
       trackEvent(AnalyticsEvent.PAYMENTS_GENERATED, {
         count: generatedPayments.length,
       });
@@ -479,23 +432,6 @@ export const usePaymentReminders = (paymentId: string | undefined) => {
   });
 };
 
-/** Invalidate everything a payment-state change touches (lists, stats, arrears, dashboards). */
-const invalidatePaymentViews = (
-  queryClient: ReturnType<typeof useQueryClient>
-) => {
-  queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
-  queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
-  queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
-  queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.stats() });
-  queryClient.invalidateQueries({
-    queryKey: queryKeys.dashboard.propertyDashboard(),
-  });
-  queryClient.invalidateQueries({
-    queryKey: queryKeys.reports.financialOverview(),
-  });
-  queryClient.invalidateQueries({ queryKey: queryKeys.reports.incomeTrend() });
-};
-
 export const useSendPaymentReminder = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
@@ -505,6 +441,7 @@ export const useSendPaymentReminder = () => {
     mutationFn: ({ id, data }: { id: string; data?: SendPaymentReminderRequest }) =>
       sendPaymentReminder(id, data),
     onSuccess: (reminder, { id }) => {
+      // Not a financial change: the timeline and the arrears "last reminded" column only.
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.reminders(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.auditLog(id) });
@@ -596,13 +533,10 @@ const usePaymentActionMutation = <TVars extends { id: string }>(
   return useMutation({
     mutationFn: fn,
     onSuccess: (updated, { id }) => {
-      invalidatePaymentViews(queryClient);
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.detail(id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.auditLog(id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.receivals(id) });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.contracts.detail(updated.contract?.identifier),
+      invalidatePaymentViews(queryClient, {
+        contractId: updated.contract?.identifier,
       });
+      invalidatePaymentDetail(queryClient, id);
       if (updated.contact?.identifier) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.contacts.credits(updated.contact.identifier),

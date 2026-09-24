@@ -44,6 +44,10 @@ public class PaymentReminder {
   @Builder.Default private Optional<Integer> stepOffsetDays = Optional.empty();
 
   @Builder.Default private Optional<ReminderTone> tone = Optional.empty();
+
+  /** The notification that carries the email; empty for legacy rows. */
+  @Builder.Default private Optional<UUID> notificationId = Optional.empty();
+
   private Instant sentAt;
   private Instant createdAt;
   private Instant updatedAt;

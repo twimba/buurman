@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.document.DocumentLocale;
 import com.buurman.domain.Contact;
-import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractPaymentInstruction;
 import com.buurman.domain.Payment;
@@ -127,22 +126,16 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
     UUID teamId = data.contract().getTeamId();
     Property property =
         propertyRepository.getByIdAndTeamId(data.contract().getPropertyId(), teamId);
-    Optional<ContactAddress> address = helper.findMailingAddress(data.contact().getId(), teamId);
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
+    DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     LocalDate today = LocalDate.now(clock);
     String currency = data.payment().getAmount().currency();
     BigDecimal received = data.payment().getAmount().value().subtract(data.outstanding());
 
-    Map<String, Object> vars = new HashMap<>();
-    vars.put("generatedDate", today.format(dateFmt));
+    Map<String, Object> vars =
+        LetterExporterHelper.headerVariables(data.contract(), today, dateFmt);
     vars.put("paymentIdentifier", data.payment().getIdentifier().map(Object::toString).orElse(""));
-    vars.put(
-        "contractIdentifier", data.contract().getIdentifier().map(Object::toString).orElse(""));
-    vars.put("primaryContactName", data.contact().getDisplayName());
-    vars.put("contactAddress", helper.buildAddressMap(address).orElse(null));
-    vars.put(
-        "propertyAddress",
-        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity());
+    vars.putAll(helper.addressee(data.contact(), teamId).variables());
+    vars.put("propertyAddress", LetterExporterHelper.propertyAddress(property));
     vars.put(
         "amount",
         CurrencyUtils.formatCurrency(data.payment().getAmount().value(), currency, locale));
@@ -158,13 +151,7 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
     vars.put("deadline", today.plusDays(deadlineDays).format(dateFmt));
     vars.put("deadlineDays", deadlineDays);
     vars.putAll(paymentInstructionVariables(data.contract().getId(), teamId));
-    Optional<String> countryCode = data.contract().getCountryCode();
-    vars.put("countryCode", countryCode.orElse(null));
-    vars.put(
-        "legalClause",
-        helper
-            .resolveLegalClause(messageSource, "notice.legal.", countryCode, locale)
-            .orElse(null));
+    vars.putAll(helper.legalVariables(messageSource, "notice.legal.", data.contract(), locale));
     return documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, vars);
   }
 

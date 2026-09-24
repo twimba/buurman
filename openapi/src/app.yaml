@@ -7797,6 +7797,10 @@ components:
           type: string
           maxLength: 1000
       required: [reason]
+    ReminderDeliveryStatus:
+      type: string
+      description: Delivery state of the email behind a reminder
+      enum: [QUEUED, SENT, DELIVERED, FAILED, BLOCKED, UNKNOWN]
     ReminderTone:
       type: string
       description: How strongly a tenant reminder is worded
@@ -7876,6 +7880,11 @@ components:
           description: Ladder step (days relative to due date) for AUTOMATIC reminders
         tone:
           $ref: '#/components/schemas/ReminderTone'
+        deliveryStatus:
+          $ref: '#/components/schemas/ReminderDeliveryStatus'
+        deliveryError:
+          type: string
+          description: Provider error when delivery failed
         sentAt:
           type: string
           format: date-time
@@ -7886,6 +7895,7 @@ components:
         - daysOverdue
         - outstandingAmount
         - currency
+        - deliveryStatus
         - sentAt
     SendPaymentReminderRequest:
       type: object

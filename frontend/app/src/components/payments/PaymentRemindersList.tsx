@@ -1,8 +1,20 @@
 import { useTranslation } from 'react-i18next';
 import { Bot, Mail, Send, UserRound } from 'lucide-react';
-import { EmptyState } from '@buurman/ui';
+import { EmptyState, StatusBadge, type BadgeColorVariant } from '@buurman/ui';
 import type { PaymentReminderResponse } from '@/types/payment';
 import { useFormatDate } from '@/hooks/useFormatDate';
+
+const deliveryColor: Record<
+  NonNullable<PaymentReminderResponse['deliveryStatus']>,
+  BadgeColorVariant
+> = {
+  QUEUED: 'gray',
+  SENT: 'blue',
+  DELIVERED: 'emerald',
+  FAILED: 'red',
+  BLOCKED: 'amber',
+  UNKNOWN: 'gray',
+};
 
 interface PaymentRemindersListProps {
   reminders: PaymentReminderResponse[];
@@ -51,13 +63,24 @@ export const PaymentRemindersList = ({
                   </span>
                 )}
               </p>
-              <time
-                dateTime={reminder.sentAt}
-                title={formatDateTime(reminder.sentAt)}
-                className="text-xs text-text-muted"
-              >
-                {formatRelative(reminder.sentAt)}
-              </time>
+              <span className="flex items-center gap-2">
+                {reminder.deliveryStatus && reminder.deliveryStatus !== 'UNKNOWN' && (
+                  <span title={reminder.deliveryError ?? undefined}>
+                    <StatusBadge
+                      label={t(`reminders.delivery.${reminder.deliveryStatus}`)}
+                      color={deliveryColor[reminder.deliveryStatus]}
+                      shape="pill"
+                    />
+                  </span>
+                )}
+                <time
+                  dateTime={reminder.sentAt}
+                  title={formatDateTime(reminder.sentAt)}
+                  className="text-xs text-text-muted"
+                >
+                  {formatRelative(reminder.sentAt)}
+                </time>
+              </span>
             </div>
             <p className="mt-1 text-sm text-text-secondary flex flex-wrap items-center gap-x-2">
               {reminder.recipientEmail && (

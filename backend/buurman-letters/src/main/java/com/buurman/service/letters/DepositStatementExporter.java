@@ -4,11 +4,9 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,8 +14,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.buurman.domain.Contact;
-import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Deposit;
 import com.buurman.domain.DepositDeduction;
@@ -73,14 +69,10 @@ public class DepositStatementExporter {
             .orElseThrow(() -> new NotFoundException("No deposit recorded for this contract"));
     List<DepositDeduction> deductions = depositRepository.findDeductions(deposit.getId(), teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
-    LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
-    Optional<Contact> primaryContact =
-        helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
-    Optional<ContactAddress> address =
-        primaryContact.flatMap(c -> helper.findMailingAddress(c.getId(), teamId));
+    LetterExporterHelper.Addressee addressee = helper.addressee(contract.getId(), teamId);
 
     Locale locale = LetterTemplateService.resolveLocale(lang);
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
+    DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     String currency = deposit.getAmount().currency();
     BigDecimal deductionsTotal =
         deductions.stream()
@@ -94,15 +86,11 @@ public class DepositStatementExporter {
             .subtract(deposit.getReturnedAmount())
             .max(BigDecimal.ZERO);
 
-    Map<String, Object> vars = new HashMap<>();
-    vars.put("generatedDate", LocalDate.now(clock).format(dateFmt));
+    Map<String, Object> vars =
+        LetterExporterHelper.headerVariables(contract, LocalDate.now(clock), dateFmt);
     vars.put("depositIdentifier", deposit.getIdentifier().map(Object::toString).orElse(""));
-    vars.put("contractIdentifier", contract.getIdentifier().map(Object::toString).orElse(""));
-    vars.put("primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
-    vars.put("contactAddress", helper.buildAddressMap(address).orElse(null));
-    vars.put(
-        "propertyAddress",
-        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity());
+    vars.putAll(addressee.variables());
+    vars.put("propertyAddress", LetterExporterHelper.propertyAddress(property));
     vars.put("contractStart", contract.getStartDate().format(dateFmt));
     vars.put("contractEnd", contract.getEndDate().map(d -> d.format(dateFmt)).orElse(null));
     vars.put("status", deposit.getStatus().name());
@@ -136,13 +124,7 @@ public class DepositStatementExporter {
         deposit.getStatus() == Deposit.DepositStatus.RETURNED
             || deposit.getStatus() == Deposit.DepositStatus.FORFEITED);
     vars.put("notes", deposit.getNotes().orElse(null));
-    Optional<String> countryCode = contract.getCountryCode();
-    vars.put("countryCode", countryCode.orElse(null));
-    vars.put(
-        "legalClause",
-        helper
-            .resolveLegalClause(messageSource, "deposit.legal.", countryCode, locale)
-            .orElse(null));
+    vars.putAll(helper.legalVariables(messageSource, "deposit.legal.", contract, locale));
     return documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, vars);
   }
 }

@@ -288,7 +288,15 @@
     "manual": "Lembrete",
     "daysOverdue": "{{days}} dias de atraso",
     "outstanding": "Em falta {{amount}}",
-    "to": "para {{email}}"
+    "to": "para {{email}}",
+    "delivery": {
+      "QUEUED": "Em fila",
+      "SENT": "Enviado",
+      "DELIVERED": "Entregue",
+      "FAILED": "Entrega falhou",
+      "BLOCKED": "Não enviado (demo)",
+      "UNKNOWN": "Desconhecido"
+    }
   },
   "toasts": {
     "reminderSent": "Lembrete enviado para {{email}}",

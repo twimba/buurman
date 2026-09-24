@@ -287,7 +287,15 @@
     "manual": "Herinnering",
     "daysOverdue": "{{days}} dagen te laat",
     "outstanding": "Openstaand {{amount}}",
-    "to": "naar {{email}}"
+    "to": "naar {{email}}",
+    "delivery": {
+      "QUEUED": "In wachtrij",
+      "SENT": "Verzonden",
+      "DELIVERED": "Afgeleverd",
+      "FAILED": "Bezorging mislukt",
+      "BLOCKED": "Niet verzonden (demo)",
+      "UNKNOWN": "Onbekend"
+    }
   },
   "toasts": {
     "reminderSent": "Herinnering verstuurd naar {{email}}",

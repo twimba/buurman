@@ -41,6 +41,10 @@ public class ContactCredit {
   private CreditSource source;
   @Builder.Default private Optional<String> reason = Optional.empty();
   @Builder.Default private Optional<UUID> sourcePaymentId = Optional.empty();
+
+  /** The receival whose excess created this credit; reversing it reverses the credit. */
+  @Builder.Default private Optional<UUID> sourceReceivalId = Optional.empty();
+
   @Builder.Default private Optional<Instant> refundedAt = Optional.empty();
   @Builder.Default private Optional<String> refundNotes = Optional.empty();
   private Instant createdAt;

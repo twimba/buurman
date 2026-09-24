@@ -574,51 +574,25 @@ public class PaymentService {
     // excess becomes a credit the tenant can use on a later payment or have refunded.
     BigDecimal applied = request.amount().min(currentBalance);
     BigDecimal excess = request.amount().subtract(currentBalance);
-    if (excess.signum() > 0) {
-      UUID contactId =
-          payment
-              .getContactId()
-              .or(
-                  () ->
-                      contractPartyService
-                          .findPrimaryContactForContract(payment.getContractId(), teamId)
-                          .map(Contact::getId))
-              .orElseThrow(
-                  () ->
-                      new BusinessRuleException(
-                          "Receival amount ("
-                              + request.amount()
-                              + ") exceeds remaining balance ("
-                              + currentBalance
-                              + ") and no tenant contact is linked to hold the credit"));
-      ContactCredit credit =
-          ContactCredit.builder()
-              .identifier(Optional.of(newContactCreditId()))
-              .teamId(teamId)
-              .contactId(contactId)
-              .contractId(Optional.of(payment.getContractId()))
-              .amount(MoneyAmount.of(excess, currency))
-              .remainingAmount(excess)
-              .source(ContactCredit.CreditSource.OVERPAYMENT)
-              .reason(
-                  Optional.of(
-                      "Overpayment on payment "
-                          + payment.getIdentifier().map(Object::toString).orElse("")))
-              .sourcePaymentId(Optional.of(paymentId))
-              .createdBy(principal.getUserId())
-              .updatedBy(principal.getUserId())
-              .build();
-      ContactCredit savedCredit = creditRepository.save(credit);
-      auditService.logCreate(
-          teamId, "CONTACT_CREDIT", savedCredit.getId(), principal.getUserId(), savedCredit);
-      metricsService.incrementCounter("contact.credit.created.total", "source", "OVERPAYMENT");
-      log.info(
-          "Overpayment of {} {} on payment {} recorded as credit {}",
-          excess,
-          currency,
-          payment.getIdentifier().orElseThrow(),
-          savedCredit.getIdentifier().orElseThrow());
-    }
+    Optional<UUID> creditContactId =
+        excess.signum() > 0
+            ? Optional.of(
+                payment
+                    .getContactId()
+                    .or(
+                        () ->
+                            contractPartyService
+                                .findPrimaryContactForContract(payment.getContractId(), teamId)
+                                .map(Contact::getId))
+                    .orElseThrow(
+                        () ->
+                            new BusinessRuleException(
+                                "Receival amount ("
+                                    + request.amount()
+                                    + ") exceeds remaining balance ("
+                                    + currentBalance
+                                    + ") and no tenant contact is linked to hold the credit")))
+            : Optional.empty();
 
     PaymentReceival receival = new PaymentReceival();
     receival.setIdentifier(Optional.of(newPaymentReceivalId()));
@@ -635,6 +609,38 @@ public class PaymentService {
     receivalRepository.save(receival);
 
     metricsService.incrementCounter("payment.receival.total", "action", "registered");
+
+    creditContactId.ifPresent(
+        contactId -> {
+          ContactCredit credit =
+              ContactCredit.builder()
+                  .identifier(Optional.of(newContactCreditId()))
+                  .teamId(teamId)
+                  .contactId(contactId)
+                  .contractId(Optional.of(payment.getContractId()))
+                  .amount(MoneyAmount.of(excess, currency))
+                  .remainingAmount(excess)
+                  .source(ContactCredit.CreditSource.OVERPAYMENT)
+                  .reason(
+                      Optional.of(
+                          "Overpayment on payment "
+                              + payment.getIdentifier().map(Object::toString).orElse("")))
+                  .sourcePaymentId(Optional.of(paymentId))
+                  .sourceReceivalId(Optional.ofNullable(receival.getId()))
+                  .createdBy(principal.getUserId())
+                  .updatedBy(principal.getUserId())
+                  .build();
+          ContactCredit savedCredit = creditRepository.save(credit);
+          auditService.logCreate(
+              teamId, "CONTACT_CREDIT", savedCredit.getId(), principal.getUserId(), savedCredit);
+          metricsService.incrementCounter("contact.credit.created.total", "source", "OVERPAYMENT");
+          log.info(
+              "Overpayment of {} {} on payment {} recorded as credit {}",
+              excess,
+              currency,
+              payment.getIdentifier().orElseThrow(),
+              savedCredit.getIdentifier().orElseThrow());
+        });
 
     // Recalculate payment status
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
@@ -697,6 +703,15 @@ public class PaymentService {
         receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
             receivalIdentifier, paymentId, teamId);
     requireManualReceival(receival);
+    creditRepository
+        .findBySourceReceivalIdAndTeamId(receival.getId(), teamId)
+        .ifPresent(
+            c -> {
+              throw new BusinessRuleException(
+                  "This receival created tenant credit "
+                      + c.getIdentifier().map(Object::toString).orElse("")
+                      + "; delete it and register the corrected amount instead");
+            });
 
     // Validate new amount: total received minus old amount plus new amount must not exceed payment
     // amount
@@ -760,10 +775,34 @@ public class PaymentService {
         receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
             receivalIdentifier, paymentId, teamId);
     requireManualReceival(receival);
+    Optional<ContactCredit> producedCredit =
+        creditRepository.findBySourceReceivalIdAndTeamId(receival.getId(), teamId);
+    producedCredit.ifPresent(
+        c -> {
+          boolean touched =
+              c.getRemainingAmount().compareTo(c.getAmount().value()) < 0
+                  || c.getRefundedAt().isPresent();
+          if (touched) {
+            throw new BusinessRuleException(
+                "This receival created tenant credit "
+                    + c.getIdentifier().map(Object::toString).orElse("")
+                    + " that has already been applied or refunded; reverse that first");
+          }
+        });
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
     receivalRepository.softDeleteByIdAndTeamId(receival.getId(), teamId);
+    producedCredit.ifPresent(
+        c -> {
+          creditRepository.softDeleteByIdAndTeamId(c.getId(), teamId, principal.getUserId());
+          auditService.logDelete(teamId, "CONTACT_CREDIT", c.getId(), principal.getUserId(), c);
+          metricsService.incrementCounter("contact.credit.reversed.total");
+          log.info(
+              "Reversed credit {} together with its source receival {}",
+              c.getIdentifier().map(Object::toString).orElse("?"),
+              receivalIdentifier);
+        });
 
     metricsService.incrementCounter("payment.receival.total", "action", "deleted");
 
@@ -780,6 +819,8 @@ public class PaymentService {
     Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
     changedFields.put(
         "receivalDeleted", receival.getAmount().value() + " from " + receival.getReceivalDate());
+    producedCredit.ifPresent(
+        c -> changedFields.put("creditReversed", c.getAmount().value().toPlainString()));
     auditService.logUpdate(
         teamId, "PAYMENT", paymentId, principal.getUserId(), oldState, newState, changedFields);
 

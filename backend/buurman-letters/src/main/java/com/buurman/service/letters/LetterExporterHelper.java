@@ -3,6 +3,8 @@ package com.buurman.service.letters;
 import static java.util.stream.Collectors.toMap;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +24,7 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.domain.Property;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.exception.BadRequestException;
 import com.buurman.repository.ContactAddressRepository;
@@ -47,6 +50,64 @@ class LetterExporterHelper {
     this.contractPartyService = contractPartyService;
     this.contactRepository = contactRepository;
     this.contactAddressRepository = contactAddressRepository;
+  }
+
+  /** Every letter prints dates the same way. */
+  static DateTimeFormatter letterDateFormatter(Locale locale) {
+    return DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
+  }
+
+  /** Street, postal code and city on one line. */
+  static String propertyAddress(Property property) {
+    return property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
+  }
+
+  /** Variables every letter starts with: generation date and the contract reference. */
+  static Map<String, Object> headerVariables(
+      Contract contract, LocalDate today, DateTimeFormatter dateFmt) {
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("generatedDate", today.format(dateFmt));
+    vars.put(
+        "contractIdentifier",
+        contract
+            .getIdentifier()
+            .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
+            .value());
+    return vars;
+  }
+
+  /** Country code plus the country-specific legal clause under the given key prefix. */
+  Map<String, Object> legalVariables(
+      MessageSource messageSource, String keyPrefix, Contract contract, Locale locale) {
+    Map<String, Object> vars = new HashMap<>();
+    Optional<String> countryCode = contract.getCountryCode();
+    vars.put("countryCode", countryCode.orElse(null));
+    vars.put(
+        "legalClause",
+        resolveLegalClause(messageSource, keyPrefix, countryCode, locale).orElse(null));
+    return vars;
+  }
+
+  /** The tenant a letter is addressed to, with their mailing address when known. */
+  record Addressee(Optional<Contact> contact, Optional<ContactAddress> address) {
+    Map<String, Object> variables() {
+      Map<String, Object> vars = new HashMap<>();
+      vars.put("primaryContactName", contact.map(Contact::getDisplayName).orElse(null));
+      vars.put("contactAddress", buildAddressMap(address).orElse(null));
+      return vars;
+    }
+  }
+
+  /** The contract's primary tenant as addressee. */
+  Addressee addressee(UUID contractId, UUID teamId) {
+    PartyData partyData = loadPartyData(contractId, teamId);
+    Optional<Contact> primary = findPrimaryContact(partyData.parties(), partyData.contactMap());
+    return new Addressee(primary, primary.flatMap(c -> findMailingAddress(c.getId(), teamId)));
+  }
+
+  /** A specific contact as addressee (e.g. the payer of a payment). */
+  Addressee addressee(Contact contact, UUID teamId) {
+    return new Addressee(Optional.of(contact), findMailingAddress(contact.getId(), teamId));
   }
 
   /** Loads contract parties and resolves their contacts into a map. */
@@ -112,7 +173,7 @@ class LetterExporterHelper {
   }
 
   /** Builds an address map for template rendering, or empty if no address. */
-  Optional<Map<String, String>> buildAddressMap(Optional<ContactAddress> address) {
+  static Optional<Map<String, String>> buildAddressMap(Optional<ContactAddress> address) {
     return address.map(
         a -> {
           Map<String, String> addrMap = new HashMap<>();

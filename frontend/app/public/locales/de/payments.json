@@ -287,7 +287,15 @@
     "manual": "Erinnerung",
     "daysOverdue": "{{days}} Tage überfällig",
     "outstanding": "Offen {{amount}}",
-    "to": "an {{email}}"
+    "to": "an {{email}}",
+    "delivery": {
+      "QUEUED": "In Warteschlange",
+      "SENT": "Gesendet",
+      "DELIVERED": "Zugestellt",
+      "FAILED": "Zustellung fehlgeschlagen",
+      "BLOCKED": "Nicht gesendet (Demo)",
+      "UNKNOWN": "Unbekannt"
+    }
   },
   "toasts": {
     "reminderSent": "Erinnerung an {{email}} gesendet",

@@ -287,7 +287,15 @@
     "manual": "Påmindelse",
     "daysOverdue": "{{days}} dage forsinket",
     "outstanding": "Udestående {{amount}}",
-    "to": "til {{email}}"
+    "to": "til {{email}}",
+    "delivery": {
+      "QUEUED": "I kø",
+      "SENT": "Sendt",
+      "DELIVERED": "Leveret",
+      "FAILED": "Levering mislykkedes",
+      "BLOCKED": "Ikke sendt (demo)",
+      "UNKNOWN": "Ukendt"
+    }
   },
   "toasts": {
     "reminderSent": "Påmindelse sendt til {{email}}",

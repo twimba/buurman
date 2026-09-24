@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jooq.impl.DSL;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,6 +95,47 @@ class PaymentReminderRepositoryIntegrationTest extends AbstractRepositoryIntegra
     assertThat(r.getNotes()).contains("first notice");
     assertThat(r.getSentAt()).isEqualTo(sentAt);
     assertThat(r.getCreatedBy()).isEqualTo(USER_ID);
+  }
+
+  @Test
+  @DisplayName("a ladder step whose email failed does not count as sent")
+  void failedDeliveryIsRetried() {
+    UUID okNotification = insertNotification(TEAM_A_ID, "SENT");
+    UUID failedNotification = insertNotification(TEAM_A_ID, "FAILED");
+    repo.save(automatic(paymentA, TEAM_A_ID, 0, okNotification));
+    repo.save(automatic(paymentA, TEAM_A_ID, 7, failedNotification));
+    repo.save(automatic(paymentA, TEAM_A_ID, 14, null));
+
+    assertThat(repo.findAutomaticStepOffsets(paymentA.getId(), TEAM_A_ID))
+        .containsExactlyInAnyOrder(0, 14);
+    assertThat(
+            repo.findAutomaticStepOffsetsByPaymentIds(List.of(paymentA.getId()), TEAM_A_ID)
+                .get(paymentA.getId()))
+        .containsExactlyInAnyOrder(0, 14);
+  }
+
+  private PaymentReminder automatic(
+      Payment payment, UUID teamId, int offset, @Nullable UUID notificationId) {
+    PaymentReminder r = reminder(payment, teamId, Instant.parse("2026-02-20T10:00:00Z"), offset);
+    r.setReminderType(ReminderType.AUTOMATIC);
+    r.setStepOffsetDays(Optional.of(offset));
+    r.setNotificationId(Optional.ofNullable(notificationId));
+    return r;
+  }
+
+  private UUID insertNotification(UUID teamId, String status) {
+    UUID id = UUID.randomUUID();
+    dsl.insertInto(DSL.table("notifications"))
+        .set(DSL.field("id", UUID.class), id)
+        .set(DSL.field("identifier", String.class), SidGenerator.newNotificationId().value())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("notification_type", String.class), "PAYMENT_REMINDER")
+        .set(DSL.field("channel", String.class), "EMAIL")
+        .set(DSL.field("content_template", String.class), "payment-reminder-tenant")
+        .set(DSL.field("body", String.class), "test")
+        .set(DSL.field("status", String.class), status)
+        .execute();
+    return id;
   }
 
   @Test

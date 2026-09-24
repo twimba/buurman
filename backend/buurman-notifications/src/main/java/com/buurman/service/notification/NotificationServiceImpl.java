@@ -14,6 +14,7 @@ import static com.buurman.util.FeatureFlags.EMAIL_NOTIFICATIONS;
 import static com.buurman.util.FeatureFlags.SMS_NOTIFICATIONS;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -93,7 +94,8 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Override
   @Transactional
-  public void send(SendNotificationRequest request) {
+  public List<Notification> send(SendNotificationRequest request) {
+    List<Notification> created = new ArrayList<>();
     request = resolveRecipientPhone(request);
     List<NotificationChannel> channels = resolveChannels(request);
 
@@ -136,7 +138,7 @@ public class NotificationServiceImpl implements NotificationService {
 
       if (deliveryBlocked) {
         notification.setStatus(DEMO_BLOCKED);
-        notificationRepository.save(notification);
+        created.add(notificationRepository.save(notification));
         log.info(
             "Demo-blocked {} notification type {} for team {}",
             channel,
@@ -147,6 +149,7 @@ public class NotificationServiceImpl implements NotificationService {
 
       notification.setStatus(PENDING);
       notification = notificationRepository.save(notification);
+      created.add(notification);
 
       NotificationOutbox outbox = new NotificationOutbox();
       outbox.setNotificationId(notification.getId());
@@ -177,6 +180,13 @@ public class NotificationServiceImpl implements NotificationService {
 
       outboxRepository.save(outbox);
     }
+    return created;
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Map<UUID, DeliveryState> deliveryStates(Collection<UUID> notificationIds, UUID teamId) {
+    return notificationRepository.findDeliveryStatesByIdsAndTeamId(notificationIds, teamId);
   }
 
   @Override

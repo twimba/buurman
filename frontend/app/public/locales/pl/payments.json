@@ -287,7 +287,15 @@
     "manual": "Przypomnienie",
     "daysOverdue": "{{days}} dni po terminie",
     "outstanding": "Do zapłaty {{amount}}",
-    "to": "do {{email}}"
+    "to": "do {{email}}",
+    "delivery": {
+      "QUEUED": "W kolejce",
+      "SENT": "Wysłano",
+      "DELIVERED": "Dostarczono",
+      "FAILED": "Dostarczenie nie powiodło się",
+      "BLOCKED": "Nie wysłano (demo)",
+      "UNKNOWN": "Nieznany"
+    }
   },
   "toasts": {
     "reminderSent": "Przypomnienie wysłano do {{email}}",

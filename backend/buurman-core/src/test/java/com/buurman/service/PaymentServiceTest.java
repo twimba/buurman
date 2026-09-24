@@ -577,6 +577,14 @@ class PaymentServiceTest {
           .thenReturn(new BigDecimal("1000.00"));
       when(creditRepository.save(any(com.buurman.domain.ContactCredit.class)))
           .thenAnswer(inv -> inv.getArgument(0));
+      UUID receivalId = UUID.randomUUID();
+      org.mockito.Mockito.doAnswer(
+              inv -> {
+                inv.getArgument(0, PaymentReceival.class).setId(receivalId);
+                return null;
+              })
+          .when(receivalRepository)
+          .save(any(PaymentReceival.class));
       org.mockito.Mockito.lenient()
           .when(appProperties.email())
           .thenReturn(new AppProperties.Email("no-reply@test", "Buurman", "https://app.test"));
@@ -601,6 +609,105 @@ class PaymentServiceTest {
       assertThat(cc.getValue().getSource())
           .isEqualTo(com.buurman.domain.ContactCredit.CreditSource.OVERPAYMENT);
       assertThat(cc.getValue().getSourcePaymentId()).contains(PAYMENT_ID);
+      assertThat(cc.getValue().getSourceReceivalId()).contains(receivalId);
+    }
+
+    // --- reversing a receival that produced a credit ---
+
+    private final PaymentIdentifier reversalId =
+        PaymentIdentifier.of("pay_01JTEST0000000000000000AE");
+    private final com.buurman.domain.identifier.PaymentReceivalIdentifier receivalSid =
+        com.buurman.domain.identifier.PaymentReceivalIdentifier.of(
+            com.buurman.util.SidGenerator.newPaymentReceivalId().value());
+    private final UUID receivalId = UUID.randomUUID();
+
+    private PaymentReceival receival() {
+      PaymentReceival r = new PaymentReceival();
+      r.setId(receivalId);
+      r.setIdentifier(Optional.of(com.buurman.domain.Sid.of(receivalSid.value())));
+      r.setTeamId(TEAM_ID);
+      r.setPaymentId(PAYMENT_ID);
+      r.setAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"));
+      r.setReceivalDate(LocalDate.of(2026, 2, 3));
+      return r;
+    }
+
+    private com.buurman.domain.ContactCredit credit(String remaining) {
+      return com.buurman.domain.ContactCredit.builder()
+          .id(UUID.randomUUID())
+          .identifier(Optional.of(com.buurman.util.SidGenerator.newContactCreditId()))
+          .teamId(TEAM_ID)
+          .contactId(UUID.randomUUID())
+          .amount(MoneyAmount.of(new BigDecimal("250.00"), "EUR"))
+          .remainingAmount(new BigDecimal(remaining))
+          .source(com.buurman.domain.ContactCredit.CreditSource.OVERPAYMENT)
+          .sourcePaymentId(Optional.of(PAYMENT_ID))
+          .sourceReceivalId(Optional.of(receivalId))
+          .createdBy(USER_ID)
+          .updatedBy(USER_ID)
+          .build();
+    }
+
+    private void stubPayment() {
+      Payment paid =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PAID);
+      paid.setIdentifier(Optional.of(reversalId));
+      when(paymentRepository.getByIdentifierAndTeamId(reversalId, TEAM_ID)).thenReturn(paid);
+      when(receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
+              receivalSid, PAYMENT_ID, TEAM_ID))
+          .thenReturn(receival());
+    }
+
+    @Test
+    @DisplayName("deleting the receival reverses an untouched credit")
+    void deleteReversesUnusedCredit() {
+      stubPayment();
+      com.buurman.domain.ContactCredit unused = credit("250.00");
+      when(creditRepository.findBySourceReceivalIdAndTeamId(receivalId, TEAM_ID))
+          .thenReturn(Optional.of(unused));
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      stubEnrich();
+
+      service.deleteReceival(reversalId, receivalSid, principal);
+
+      verify(receivalRepository).softDeleteByIdAndTeamId(receivalId, TEAM_ID);
+      verify(creditRepository).softDeleteByIdAndTeamId(unused.getId(), TEAM_ID, USER_ID);
+    }
+
+    @Test
+    @DisplayName("deleting the receival is refused once the credit was applied")
+    void deleteRefusedWhenCreditUsed() {
+      stubPayment();
+      when(creditRepository.findBySourceReceivalIdAndTeamId(receivalId, TEAM_ID))
+          .thenReturn(Optional.of(credit("100.00")));
+
+      org.assertj.core.api.Assertions.assertThatThrownBy(
+              () -> service.deleteReceival(reversalId, receivalSid, principal))
+          .isInstanceOf(com.buurman.exception.BusinessRuleException.class)
+          .hasMessageContaining("already been applied");
+      verify(receivalRepository, org.mockito.Mockito.never()).softDeleteByIdAndTeamId(any(), any());
+      verify(creditRepository, org.mockito.Mockito.never())
+          .softDeleteByIdAndTeamId(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("editing a receival that produced a credit is refused")
+    void updateRefused() {
+      stubPayment();
+      when(creditRepository.findBySourceReceivalIdAndTeamId(receivalId, TEAM_ID))
+          .thenReturn(Optional.of(credit("250.00")));
+
+      org.assertj.core.api.Assertions.assertThatThrownBy(
+              () ->
+                  service.updateReceival(
+                      reversalId,
+                      receivalSid,
+                      new com.buurman.dto.request.UpdatePaymentReceivalRequest(
+                          new BigDecimal("900.00"), LocalDate.of(2026, 2, 3), Optional.empty()),
+                      principal))
+          .isInstanceOf(com.buurman.exception.BusinessRuleException.class)
+          .hasMessageContaining("delete it and register");
     }
   }
 }

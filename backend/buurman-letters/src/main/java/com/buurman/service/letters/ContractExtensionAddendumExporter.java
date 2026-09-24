@@ -5,7 +5,6 @@ import static com.buurman.document.DocumentFormatting.formatEnumValue;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -92,11 +91,11 @@ public class ContractExtensionAddendumExporter {
       List<ContractParty> parties,
       Map<UUID, Contact> contactMap,
       Locale locale) {
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
-    String generatedDate = LocalDate.now(clock).format(dateFmt);
+    DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     String ccy = extension.getNewRentAmount().currency();
 
-    Map<String, Object> vars = new HashMap<>();
+    Map<String, Object> vars =
+        LetterExporterHelper.headerVariables(contract, LocalDate.now(clock), dateFmt);
 
     // Cover page
     vars.put("extensionNumber", extension.getExtensionNumber());
@@ -108,24 +107,14 @@ public class ContractExtensionAddendumExporter {
             .value());
     vars.put("extensionStatus", extension.getStatus().name());
     vars.put("extensionStatusDisplay", formatEnumValue(extension.getStatus().name()));
-    vars.put("generatedDate", generatedDate);
-
     vars.put("propertyAddress", property.getStreet() + ", " + property.getCity());
-    vars.put(
-        "propertyFullAddress",
-        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity());
+    vars.put("propertyFullAddress", LetterExporterHelper.propertyAddress(property));
 
     // Contacts
     vars.put("primaryContactName", helper.findPrimaryContactName(parties, contactMap));
     vars.put("contactNames", helper.buildContactNamesList(parties, contactMap));
 
     // Contract
-    vars.put(
-        "contractIdentifier",
-        contract
-            .getIdentifier()
-            .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
-            .value());
     vars.put("contractStartDate", DocumentFormatting.formatDate(contract.getStartDate(), dateFmt));
     vars.put(
         "contractEndDate",
@@ -176,12 +165,7 @@ public class ContractExtensionAddendumExporter {
     // Notes
     vars.put("notes", extension.getNotes().filter(n -> !n.isBlank()).orElse(null));
 
-    // Country-specific legal clause
-    Optional<String> countryCode = contract.getCountryCode();
-    vars.put("countryCode", countryCode.orElse(null));
-    vars.put(
-        "legalClause",
-        helper.resolveLegalClause(messageSource, "legal.", countryCode, locale).orElse(null));
+    vars.putAll(helper.legalVariables(messageSource, "legal.", contract, locale));
 
     return vars;
   }

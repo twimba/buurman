@@ -74,6 +74,28 @@ public class ContactCreditRepository {
         .orElseThrow(() -> new NotFoundException("Credit not found"));
   }
 
+  public Optional<ContactCredit> findBySourceReceivalIdAndTeamId(UUID receivalId, UUID teamId) {
+    return dsl.selectFrom(CONTACT_CREDITS)
+        .where(
+            CONTACT_CREDITS
+                .SOURCE_RECEIVAL_ID
+                .eq(receivalId)
+                .and(CONTACT_CREDITS.TEAM_ID.eq(teamId))
+                .and(CONTACT_CREDITS.DELETED_AT.isNull()))
+        .fetchOptional()
+        .map(this::toDomain);
+  }
+
+  public void softDeleteByIdAndTeamId(UUID id, UUID teamId, UUID userId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(CONTACT_CREDITS)
+        .set(CONTACT_CREDITS.DELETED_AT, now)
+        .set(CONTACT_CREDITS.UPDATED_AT, now)
+        .set(CONTACT_CREDITS.UPDATED_BY, userId)
+        .where(CONTACT_CREDITS.ID.eq(id).and(CONTACT_CREDITS.TEAM_ID.eq(teamId)))
+        .execute();
+  }
+
   public ContactCredit save(ContactCredit credit) {
     LocalDateTime now = LocalDateTime.now(clock);
     long remainingMinor =
@@ -92,6 +114,7 @@ public class ContactCreditRepository {
           .set(CONTACT_CREDITS.SOURCE, credit.getSource().name())
           .set(CONTACT_CREDITS.REASON, credit.getReason().orElse(null))
           .set(CONTACT_CREDITS.SOURCE_PAYMENT_ID, credit.getSourcePaymentId().orElse(null))
+          .set(CONTACT_CREDITS.SOURCE_RECEIVAL_ID, credit.getSourceReceivalId().orElse(null))
           .set(CONTACT_CREDITS.CREATED_AT, now)
           .set(CONTACT_CREDITS.UPDATED_AT, now)
           .set(CONTACT_CREDITS.CREATED_BY, credit.getCreatedBy())
@@ -137,6 +160,7 @@ public class ContactCreditRepository {
     credit.setSource(ContactCredit.CreditSource.valueOf(record.getSource()));
     credit.setReason(Optional.ofNullable(record.getReason()));
     credit.setSourcePaymentId(Optional.ofNullable(record.getSourcePaymentId()));
+    credit.setSourceReceivalId(Optional.ofNullable(record.getSourceReceivalId()));
     credit.setRefundedAt(Optional.ofNullable(record.getRefundedAt()).map(dt -> dt.toInstant(UTC)));
     credit.setRefundNotes(Optional.ofNullable(record.getRefundNotes()));
     credit.setCreatedAt(record.getCreatedAt().toInstant(UTC));

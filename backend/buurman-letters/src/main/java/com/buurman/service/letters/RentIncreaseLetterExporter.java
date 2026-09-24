@@ -5,7 +5,6 @@ import static com.buurman.document.DocumentFormatting.formatEnumValue;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -17,8 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.buurman.document.DocumentFormatting;
-import com.buurman.domain.Contact;
-import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Property;
@@ -74,16 +71,11 @@ public class RentIncreaseLetterExporter {
     LetterExporterHelper.validateContractOwnership(contractIdentifier, contract, "Extension");
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
-    LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
-
-    Optional<Contact> primaryContact =
-        helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
-    Optional<ContactAddress> address =
-        primaryContact.flatMap(c -> helper.findMailingAddress(c.getId(), teamId));
+    LetterExporterHelper.Addressee addressee = helper.addressee(contract.getId(), teamId);
 
     Locale locale = LetterTemplateService.resolveLocale(lang);
     Map<String, Object> variables =
-        buildTemplateVariables(extension, contract, property, primaryContact, address, locale);
+        buildTemplateVariables(extension, contract, property, addressee, locale);
 
     return documentTemplateService.renderToPdf("rent-increase-letter", locale, variables);
   }
@@ -92,16 +84,14 @@ public class RentIncreaseLetterExporter {
       ContractExtension extension,
       Contract contract,
       Property property,
-      Optional<Contact> primaryContact,
-      Optional<ContactAddress> contactAddress,
+      LetterExporterHelper.Addressee addressee,
       Locale locale) {
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
-    String generatedDate = LocalDate.now(clock).format(dateFmt);
+    DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     String ccy = extension.getNewRentAmount().currency();
 
-    Map<String, Object> vars = new HashMap<>();
+    Map<String, Object> vars =
+        LetterExporterHelper.headerVariables(contract, LocalDate.now(clock), dateFmt);
 
-    vars.put("generatedDate", generatedDate);
     vars.put(
         "extensionIdentifier",
         extension
@@ -110,13 +100,8 @@ public class RentIncreaseLetterExporter {
             .value());
     vars.put("extensionNumber", extension.getExtensionNumber());
 
-    // Addressee
-    vars.put("primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
-    vars.put("contactAddress", helper.buildAddressMap(contactAddress).orElse(null));
-
-    // Property
-    String propertyAddress =
-        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
+    vars.putAll(addressee.variables());
+    String propertyAddress = LetterExporterHelper.propertyAddress(property);
     vars.put("propertyAddress", propertyAddress);
 
     // Rent
@@ -150,20 +135,7 @@ public class RentIncreaseLetterExporter {
         "newEndDate",
         extension.getNewEndDate().map(d -> DocumentFormatting.formatDate(d, dateFmt)).orElse(null));
 
-    // Contract
-    vars.put(
-        "contractIdentifier",
-        contract
-            .getIdentifier()
-            .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
-            .value());
-
-    // Country-specific legal clause
-    Optional<String> countryCode = contract.getCountryCode();
-    vars.put("countryCode", countryCode.orElse(null));
-    vars.put(
-        "legalClause",
-        helper.resolveLegalClause(messageSource, "legal.", countryCode, locale).orElse(null));
+    vars.putAll(helper.legalVariables(messageSource, "legal.", contract, locale));
 
     return vars;
   }

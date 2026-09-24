@@ -1,5 +1,6 @@
 package com.buurman.repository;
 
+import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_REMINDERS;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Objects.requireNonNull;
@@ -19,10 +20,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.NotificationChannel;
+import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.PaymentReminder;
 import com.buurman.domain.ReminderTone;
 import com.buurman.jooq.generated.tables.records.PaymentRemindersRecord;
@@ -89,6 +92,8 @@ public class PaymentReminderRepository {
     return new HashSet<>(
         dsl.select(PAYMENT_REMINDERS.STEP_OFFSET_DAYS)
             .from(PAYMENT_REMINDERS)
+            .leftJoin(NOTIFICATIONS)
+            .on(NOTIFICATIONS.ID.eq(PAYMENT_REMINDERS.NOTIFICATION_ID))
             .where(
                 PAYMENT_REMINDERS
                     .PAYMENT_ID
@@ -98,7 +103,8 @@ public class PaymentReminderRepository {
                         PAYMENT_REMINDERS.REMINDER_TYPE.eq(
                             PaymentReminder.ReminderType.AUTOMATIC.name()))
                     .and(PAYMENT_REMINDERS.STEP_OFFSET_DAYS.isNotNull())
-                    .and(PAYMENT_REMINDERS.DELETED_AT.isNull()))
+                    .and(PAYMENT_REMINDERS.DELETED_AT.isNull())
+                    .and(deliveryNotFailed()))
             .fetch(PAYMENT_REMINDERS.STEP_OFFSET_DAYS));
   }
 
@@ -111,6 +117,8 @@ public class PaymentReminderRepository {
     Map<UUID, Set<Integer>> out = new HashMap<>();
     dsl.select(PAYMENT_REMINDERS.PAYMENT_ID, PAYMENT_REMINDERS.STEP_OFFSET_DAYS)
         .from(PAYMENT_REMINDERS)
+        .leftJoin(NOTIFICATIONS)
+        .on(NOTIFICATIONS.ID.eq(PAYMENT_REMINDERS.NOTIFICATION_ID))
         .where(
             PAYMENT_REMINDERS
                 .PAYMENT_ID
@@ -120,12 +128,28 @@ public class PaymentReminderRepository {
                     PAYMENT_REMINDERS.REMINDER_TYPE.eq(
                         PaymentReminder.ReminderType.AUTOMATIC.name()))
                 .and(PAYMENT_REMINDERS.STEP_OFFSET_DAYS.isNotNull())
-                .and(PAYMENT_REMINDERS.DELETED_AT.isNull()))
+                .and(PAYMENT_REMINDERS.DELETED_AT.isNull())
+                .and(deliveryNotFailed()))
         .forEach(
             r ->
                 out.computeIfAbsent(r.value1(), k -> new HashSet<>())
                     .add(requireNonNull(r.value2())));
     return out;
+  }
+
+  /**
+   * A step whose email the provider rejected (or the outbox gave up on) was never received, so it
+   * must not block the ladder; rows without a notification (legacy, blocked) count as sent.
+   */
+  private static Condition deliveryNotFailed() {
+    return NOTIFICATIONS
+        .STATUS
+        .isNull()
+        .or(
+            NOTIFICATIONS.STATUS.notIn(
+                NotificationStatus.FAILED.name(),
+                NotificationStatus.BOUNCED.name(),
+                NotificationStatus.REJECTED.name()));
   }
 
   public PaymentReminder save(PaymentReminder reminder) {
@@ -148,6 +172,7 @@ public class PaymentReminderRepository {
         .set(PAYMENT_REMINDERS.NOTES, reminder.getNotes().orElse(null))
         .set(PAYMENT_REMINDERS.STEP_OFFSET_DAYS, reminder.getStepOffsetDays().orElse(null))
         .set(PAYMENT_REMINDERS.TONE, reminder.getTone().map(Enum::name).orElse(null))
+        .set(PAYMENT_REMINDERS.NOTIFICATION_ID, reminder.getNotificationId().orElse(null))
         .set(PAYMENT_REMINDERS.SENT_AT, sentAt)
         .set(PAYMENT_REMINDERS.CREATED_AT, now)
         .set(PAYMENT_REMINDERS.UPDATED_AT, now)
@@ -182,6 +207,7 @@ public class PaymentReminderRepository {
     reminder.setNotes(Optional.ofNullable(record.getNotes()));
     reminder.setStepOffsetDays(Optional.ofNullable(record.getStepOffsetDays()));
     reminder.setTone(Optional.ofNullable(record.getTone()).map(ReminderTone::valueOf));
+    reminder.setNotificationId(Optional.ofNullable(record.getNotificationId()));
     reminder.setSentAt(record.getSentAt().toInstant(UTC));
     reminder.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     reminder.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));

@@ -288,7 +288,15 @@
     "manual": "Rappel",
     "daysOverdue": "{{days}} jours de retard",
     "outstanding": "Restant dû {{amount}}",
-    "to": "à {{email}}"
+    "to": "à {{email}}",
+    "delivery": {
+      "QUEUED": "En attente",
+      "SENT": "Envoyé",
+      "DELIVERED": "Remis",
+      "FAILED": "Échec de remise",
+      "BLOCKED": "Non envoyé (démo)",
+      "UNKNOWN": "Inconnu"
+    }
   },
   "toasts": {
     "reminderSent": "Rappel envoyé à {{email}}",

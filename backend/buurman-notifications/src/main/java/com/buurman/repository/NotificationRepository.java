@@ -8,6 +8,8 @@ import static org.jooq.impl.DSL.trueCondition;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +30,7 @@ import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.NotificationRecordMapper;
+import com.buurman.service.notification.NotificationService;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -117,6 +120,25 @@ public class NotificationRepository {
       condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
     }
     return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().flatMap(mapper::toDomain);
+  }
+
+  /** Delivery state per notification, for the reminders timeline. */
+  public Map<UUID, NotificationService.DeliveryState> findDeliveryStatesByIdsAndTeamId(
+      Collection<UUID> ids, UUID teamId) {
+    if (ids.isEmpty()) {
+      return Map.of();
+    }
+    Map<UUID, NotificationService.DeliveryState> out = new HashMap<>();
+    dsl.select(NOTIFICATIONS.ID, NOTIFICATIONS.STATUS, NOTIFICATIONS.PROVIDER_ERROR)
+        .from(NOTIFICATIONS)
+        .where(NOTIFICATIONS.ID.in(ids).and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
+        .forEach(
+            r ->
+                out.put(
+                    r.value1(),
+                    new NotificationService.DeliveryState(
+                        NotificationStatus.valueOf(r.value2()), Optional.ofNullable(r.value3()))));
+    return out;
   }
 
   public Optional<Notification> findByProviderMessageId(String providerMessageId) {

@@ -20,8 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.buurman.document.DocumentFormatting;
-import com.buurman.domain.Contact;
-import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractRentPeriod;
@@ -102,13 +100,7 @@ public class RentChangeDocumentExporter {
     // Find linked extension (if any)
     Optional<ContractExtension> linkedExtension = findLinkedExtension(period, contract, teamId);
 
-    // Load contacts
-    LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
-
-    Optional<Contact> primaryContact =
-        helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
-    Optional<ContactAddress> address =
-        primaryContact.flatMap(c -> helper.findMailingAddress(c.getId(), teamId));
+    LetterExporterHelper.Addressee addressee = helper.addressee(contract.getId(), teamId);
 
     // Look up rent regulation data
     Optional<RentRegulationRule> regulationRule =
@@ -121,8 +113,7 @@ public class RentChangeDocumentExporter {
             previousPeriod,
             contract,
             property,
-            primaryContact,
-            address,
+            addressee,
             linkedExtension,
             regulationRule,
             locale);
@@ -135,20 +126,17 @@ public class RentChangeDocumentExporter {
       Optional<ContractRentPeriod> previousPeriod,
       Contract contract,
       Property property,
-      Optional<Contact> primaryContact,
-      Optional<ContactAddress> contactAddress,
+      LetterExporterHelper.Addressee addressee,
       Optional<ContractExtension> linkedExtension,
       Optional<RentRegulationRule> regulationRule,
       Locale locale) {
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
-    String generatedDate = LocalDate.now(clock).format(dateFmt);
+    DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     String ccy = currentPeriod.getRentAmount().currency();
 
     boolean isInitialRent = previousPeriod.isEmpty();
 
-    Map<String, Object> vars = new HashMap<>();
-
-    vars.put("generatedDate", generatedDate);
+    Map<String, Object> vars =
+        LetterExporterHelper.headerVariables(contract, LocalDate.now(clock), dateFmt);
     vars.put("isInitialRent", isInitialRent);
     vars.put(
         "rentPeriodIdentifier",
@@ -157,13 +145,8 @@ public class RentChangeDocumentExporter {
             .orElseThrow(() -> new IllegalStateException("Rent period missing identifier"))
             .value());
 
-    // Addressee
-    vars.put("primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
-    vars.put("contactAddress", helper.buildAddressMap(contactAddress).orElse(null));
-
-    // Property
-    String propertyAddress =
-        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
+    vars.putAll(addressee.variables());
+    String propertyAddress = LetterExporterHelper.propertyAddress(property);
     vars.put("propertyAddress", propertyAddress);
 
     // Rent amounts
@@ -234,22 +217,7 @@ public class RentChangeDocumentExporter {
           vars.put("extensionNewEndDate", null);
         });
 
-    // Contract
-    vars.put(
-        "contractIdentifier",
-        contract
-            .getIdentifier()
-            .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
-            .value());
-
-    // Country-specific legal clause
-    Optional<String> countryCode = contract.getCountryCode();
-    vars.put("countryCode", countryCode.orElse(null));
-    vars.put(
-        "legalClause",
-        helper
-            .resolveLegalClause(messageSource, "rentchange.legal.", countryCode, locale)
-            .orElse(null));
+    vars.putAll(helper.legalVariables(messageSource, "rentchange.legal.", contract, locale));
 
     // Regulation data
     regulationRule.ifPresentOrElse(

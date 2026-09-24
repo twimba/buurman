@@ -287,7 +287,15 @@
     "manual": "Muistutus",
     "daysOverdue": "{{days}} päivää myöhässä",
     "outstanding": "Avoinna {{amount}}",
-    "to": "osoitteeseen {{email}}"
+    "to": "osoitteeseen {{email}}",
+    "delivery": {
+      "QUEUED": "Jonossa",
+      "SENT": "Lähetetty",
+      "DELIVERED": "Toimitettu",
+      "FAILED": "Toimitus epäonnistui",
+      "BLOCKED": "Ei lähetetty (demo)",
+      "UNKNOWN": "Tuntematon"
+    }
   },
   "toasts": {
     "reminderSent": "Muistutus lähetetty osoitteeseen {{email}}",

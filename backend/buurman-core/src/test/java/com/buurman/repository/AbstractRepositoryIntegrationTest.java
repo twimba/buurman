@@ -53,6 +53,8 @@ abstract class AbstractRepositoryIntegrationTest {
   void cleanDatabase() {
     // Delete in reverse FK order to avoid constraint violations
     dsl.deleteFrom(DSL.table("payment_reminders")).execute();
+    dsl.deleteFrom(DSL.table("notification_outbox")).execute();
+    dsl.deleteFrom(DSL.table("notifications")).execute();
     dsl.deleteFrom(DSL.table("payment_receivals")).execute();
     dsl.deleteFrom(DSL.table("contact_credits")).execute();
     dsl.deleteFrom(DSL.table("payments")).execute();
