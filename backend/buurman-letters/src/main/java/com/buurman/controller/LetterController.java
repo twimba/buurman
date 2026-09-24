@@ -7,13 +7,6 @@ import java.util.Optional;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
@@ -76,65 +69,70 @@ public class LetterController implements LettersApi {
     return new ByteArrayResource(pdf);
   }
 
-  @GetMapping("/contracts/{contractId}/extensions/{extensionId}/addendum")
-  public ResponseEntity<byte[]> getExtensionAddendum(
-      @PathVariable ContractIdentifier contractId,
-      @PathVariable ContractExtensionIdentifier extensionId,
-      @RequestParam(defaultValue = "en") String lang) {
+  @Override
+  public Resource getExtensionAddendum(
+      String contractIdentifier, String extensionIdentifier, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    String language = lang.orElse("en");
     byte[] pdf =
         addendumExporter.generate(
-            Optional.of(contractId), extensionId, principal.requireTeamId(), lang);
-    return pdfEntity("extension-addendum-" + lang + ".pdf", pdf);
+            Optional.of(ContractIdentifier.of(contractIdentifier)),
+            ContractExtensionIdentifier.of(extensionIdentifier),
+            principal.requireTeamId(),
+            language);
+    return pdfResource("extension-addendum-" + language + ".pdf", pdf);
   }
 
-  @GetMapping("/contracts/{contractId}/extensions/{extensionId}/rent-increase-letter")
-  public ResponseEntity<byte[]> getRentIncreaseLetter(
-      @PathVariable ContractIdentifier contractId,
-      @PathVariable ContractExtensionIdentifier extensionId,
-      @RequestParam(defaultValue = "en") String lang) {
+  @Override
+  public Resource getRentIncreaseLetter(
+      String contractIdentifier, String extensionIdentifier, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    String language = lang.orElse("en");
     byte[] pdf =
         rentIncreaseLetterExporter.generate(
-            Optional.of(contractId), extensionId, principal.requireTeamId(), lang);
-    return pdfEntity("rent-increase-letter-" + lang + ".pdf", pdf);
+            Optional.of(ContractIdentifier.of(contractIdentifier)),
+            ContractExtensionIdentifier.of(extensionIdentifier),
+            principal.requireTeamId(),
+            language);
+    return pdfResource("rent-increase-letter-" + language + ".pdf", pdf);
   }
 
-  @GetMapping("/contracts/{contractId}/rent-periods/{periodId}/document")
-  public ResponseEntity<byte[]> getRentChangeDocument(
-      @PathVariable ContractIdentifier contractId,
-      @PathVariable ContractRentPeriodIdentifier periodId,
-      @RequestParam(defaultValue = "en") String lang) {
+  @Override
+  public Resource getRentChangeDocument(
+      ContractIdentifier contractIdentifier,
+      ContractRentPeriodIdentifier periodIdentifier,
+      Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    String language = lang.orElse("en");
     byte[] pdf =
-        rentChangeDocumentExporter.generate(contractId, periodId, principal.requireTeamId(), lang);
-    return pdfEntity("rent-change-" + periodId.value() + "-" + lang + ".pdf", pdf);
+        rentChangeDocumentExporter.generate(
+            contractIdentifier, periodIdentifier, principal.requireTeamId(), language);
+    return pdfResource("rent-change-" + periodIdentifier.value() + "-" + language + ".pdf", pdf);
   }
 
-  @PostMapping("/contracts/{contractId}/extensions/{extensionId}/generate-documents")
+  @Override
   public List<DocumentResponse> generateExtensionDocuments(
-      @PathVariable ContractIdentifier contractId,
-      @PathVariable ContractExtensionIdentifier extensionId,
-      @RequestBody GenerateExtensionDocumentsRequest request) {
+      String contractIdentifier,
+      String extensionIdentifier,
+      GenerateExtensionDocumentsRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return extensionDocumentGenerationService.generateAndPersist(
-        contractId, extensionId, request, principal);
+        ContractIdentifier.of(contractIdentifier),
+        ContractExtensionIdentifier.of(extensionIdentifier),
+        request,
+        principal);
   }
 
-  @PostMapping("/contracts/{contractId}/rent-periods/{periodId}/generate-documents")
+  @Override
   public List<DocumentResponse> generateRentChangeDocuments(
-      @PathVariable ContractIdentifier contractId,
-      @PathVariable ContractRentPeriodIdentifier periodId,
-      @RequestBody GenerateRentChangeDocumentsRequest request) {
+      String contractIdentifier,
+      String periodIdentifier,
+      GenerateRentChangeDocumentsRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return rentChangeDocumentGenerationService.generateAndPersist(
-        contractId, periodId, request, principal);
-  }
-
-  private static ResponseEntity<byte[]> pdfEntity(String filename, byte[] pdf) {
-    return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-        .header(HttpHeaders.CONTENT_TYPE, APPLICATION_PDF_VALUE)
-        .body(pdf);
+        ContractIdentifier.of(contractIdentifier),
+        ContractRentPeriodIdentifier.of(periodIdentifier),
+        request,
+        principal);
   }
 }

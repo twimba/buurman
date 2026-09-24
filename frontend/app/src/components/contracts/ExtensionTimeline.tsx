@@ -21,7 +21,7 @@ import {
 import {
   getExtensionAddendum,
   getRentIncreaseLetter,
-} from '@/generated/api/contract-extensions/contract-extensions';
+} from '@/generated/api/letters/letters';
 import {
   GenerateDocumentsModal,
   COUNTRY_OFFICIAL_LANGUAGES,

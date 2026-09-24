@@ -311,7 +311,7 @@ rent-periods-item:
 rent-periods-document:
   get:
     tags:
-      - Contract Documents
+      - Letters
     summary: Download rent change document PDF
     description: Download the rent change notification document for a specific rent period as PDF. Includes regulation data when available.
     operationId: getRentChangeDocument
@@ -380,7 +380,7 @@ rent-periods-document:
 rent-periods-generate-documents:
   post:
     tags:
-      - Contract Documents
+      - Letters
     summary: Generate and persist rent change documents
     description: Generate rent change PDF documents for a rent period and save them to S3 storage
     operationId: generateRentChangeDocuments

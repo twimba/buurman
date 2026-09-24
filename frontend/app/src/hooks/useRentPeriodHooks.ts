@@ -6,7 +6,7 @@ import {
   updateRentPeriod,
   deleteRentPeriod,
 } from '../generated/api/contract-rent-periods/contract-rent-periods';
-import { generateRentChangeDocuments } from '../generated/api/contract-documents/contract-documents';
+import { generateRentChangeDocuments } from '../generated/api/letters/letters';
 import type { GenerateRentChangeDocumentsRequest } from '../generated/models';
 import {
   CreateRentPeriodRequest,

@@ -4339,7 +4339,7 @@ paths:
   /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/document:
     get:
       tags:
-        - Contract Documents
+        - Letters
       summary: Download rent change document PDF
       description: Download the rent change notification document for a specific rent period as PDF. Includes regulation data when available.
       operationId: getRentChangeDocument
@@ -4407,7 +4407,7 @@ paths:
   /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/generate-documents:
     post:
       tags:
-        - Contract Documents
+        - Letters
       summary: Generate and persist rent change documents
       description: Generate rent change PDF documents for a rent period and save them to S3 storage
       operationId: generateRentChangeDocuments
@@ -11851,7 +11851,7 @@ paths:
   /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/addendum:
     get:
       tags:
-        - Contract Extensions
+        - Letters
       summary: Download extension addendum PDF
       description: Download the addendum document for a contract extension as PDF
       operationId: getExtensionAddendum
@@ -11919,7 +11919,7 @@ paths:
   /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/rent-increase-letter:
     get:
       tags:
-        - Contract Extensions
+        - Letters
       summary: Download rent increase letter PDF
       description: Download the rent increase notification letter as PDF
       operationId: getRentIncreaseLetter
@@ -11987,7 +11987,7 @@ paths:
   /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/generate-documents:
     post:
       tags:
-        - Contract Extensions
+        - Letters
       summary: Generate and persist extension documents
       description: Generate PDF documents for a contract extension and save them to S3 storage
       operationId: generateExtensionDocuments

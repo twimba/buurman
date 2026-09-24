@@ -12,8 +12,8 @@ import {
   confirmContractExtension,
   declineContractExtension,
   cancelContractExtension,
-  generateExtensionDocuments,
 } from '../generated/api/contract-extensions/contract-extensions';
+import { generateExtensionDocuments } from '../generated/api/letters/letters';
 import {
   getUpcomingRenewals,
   getPendingExtensions,
