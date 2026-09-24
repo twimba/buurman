@@ -372,6 +372,7 @@
                                 <schemaMapping>ContractPartyIdentifier=com.buurman.domain.identifier.ContractPartyIdentifier</schemaMapping>
                                 <schemaMapping>ContractPaymentInstructionIdentifier=com.buurman.domain.identifier.ContractPaymentInstructionIdentifier</schemaMapping>
                                 <schemaMapping>ContractRentPeriodIdentifier=com.buurman.domain.identifier.ContractRentPeriodIdentifier</schemaMapping>
+                                <schemaMapping>ContractExtensionIdentifier=com.buurman.domain.identifier.ContractExtensionIdentifier</schemaMapping>
                                 <schemaMapping>DocumentIdentifier=com.buurman.domain.identifier.DocumentIdentifier</schemaMapping>
                                 <schemaMapping>ExpenseIdentifier=com.buurman.domain.identifier.ExpenseIdentifier</schemaMapping>
                                 <schemaMapping>FinancingPaymentIdentifier=com.buurman.domain.identifier.FinancingPaymentIdentifier</schemaMapping>

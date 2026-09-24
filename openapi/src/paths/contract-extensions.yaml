@@ -471,13 +471,13 @@ extensions-addendum:
         description: Contract identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractIdentifier'
       - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractExtensionIdentifier'
       - name: lang
         in: query
         description: Document language (ISO 639-1 code)
@@ -540,13 +540,13 @@ extensions-rent-increase-letter:
         description: Contract identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractIdentifier'
       - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractExtensionIdentifier'
       - name: lang
         in: query
         description: Document language (ISO 639-1 code)
@@ -609,13 +609,13 @@ extensions-generate-documents:
         description: Contract identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractIdentifier'
       - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractExtensionIdentifier'
     requestBody:
       required: true
       content:

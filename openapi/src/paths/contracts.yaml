@@ -390,13 +390,13 @@ rent-periods-generate-documents:
         description: Contract identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractIdentifier'
       - name: periodIdentifier
         in: path
         description: Rent period identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractRentPeriodIdentifier'
     requestBody:
       required: true
       content:

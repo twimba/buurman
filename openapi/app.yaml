@@ -4417,13 +4417,13 @@ paths:
           description: Contract identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractIdentifier'
         - name: periodIdentifier
           in: path
           description: Rent period identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractRentPeriodIdentifier'
       requestBody:
         required: true
         content:
@@ -11861,13 +11861,13 @@ paths:
           description: Contract identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractIdentifier'
         - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractExtensionIdentifier'
         - name: lang
           in: query
           description: Document language (ISO 639-1 code)
@@ -11929,13 +11929,13 @@ paths:
           description: Contract identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractIdentifier'
         - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractExtensionIdentifier'
         - name: lang
           in: query
           description: Document language (ISO 639-1 code)
@@ -11997,13 +11997,13 @@ paths:
           description: Contract identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractIdentifier'
         - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractExtensionIdentifier'
       requestBody:
         required: true
         content:
@@ -21128,6 +21128,9 @@ components:
     ContractIdentifier:
       type: string
       description: Contract identifier
+    ContractExtensionIdentifier:
+      type: string
+      description: Contract extension identifier
     ContractPartyIdentifier:
       type: string
       description: Contract party identifier

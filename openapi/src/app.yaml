@@ -678,6 +678,9 @@ components:
     ContractIdentifier:
       type: string
       description: Contract identifier
+    ContractExtensionIdentifier:
+      type: string
+      description: Contract extension identifier
     ContractPartyIdentifier:
       type: string
       description: Contract party identifier

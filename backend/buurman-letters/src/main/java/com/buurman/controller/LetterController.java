@@ -71,13 +71,15 @@ public class LetterController implements LettersApi {
 
   @Override
   public Resource getExtensionAddendum(
-      String contractIdentifier, String extensionIdentifier, Optional<String> lang) {
+      ContractIdentifier contractIdentifier,
+      ContractExtensionIdentifier extensionIdentifier,
+      Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     String language = lang.orElse("en");
     byte[] pdf =
         addendumExporter.generate(
-            Optional.of(ContractIdentifier.of(contractIdentifier)),
-            ContractExtensionIdentifier.of(extensionIdentifier),
+            Optional.of(contractIdentifier),
+            extensionIdentifier,
             principal.requireTeamId(),
             language);
     return pdfResource("extension-addendum-" + language + ".pdf", pdf);
@@ -85,13 +87,15 @@ public class LetterController implements LettersApi {
 
   @Override
   public Resource getRentIncreaseLetter(
-      String contractIdentifier, String extensionIdentifier, Optional<String> lang) {
+      ContractIdentifier contractIdentifier,
+      ContractExtensionIdentifier extensionIdentifier,
+      Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     String language = lang.orElse("en");
     byte[] pdf =
         rentIncreaseLetterExporter.generate(
-            Optional.of(ContractIdentifier.of(contractIdentifier)),
-            ContractExtensionIdentifier.of(extensionIdentifier),
+            Optional.of(contractIdentifier),
+            extensionIdentifier,
             principal.requireTeamId(),
             language);
     return pdfResource("rent-increase-letter-" + language + ".pdf", pdf);
@@ -112,27 +116,21 @@ public class LetterController implements LettersApi {
 
   @Override
   public List<DocumentResponse> generateExtensionDocuments(
-      String contractIdentifier,
-      String extensionIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractExtensionIdentifier extensionIdentifier,
       GenerateExtensionDocumentsRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return extensionDocumentGenerationService.generateAndPersist(
-        ContractIdentifier.of(contractIdentifier),
-        ContractExtensionIdentifier.of(extensionIdentifier),
-        request,
-        principal);
+        contractIdentifier, extensionIdentifier, request, principal);
   }
 
   @Override
   public List<DocumentResponse> generateRentChangeDocuments(
-      String contractIdentifier,
-      String periodIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractRentPeriodIdentifier periodIdentifier,
       GenerateRentChangeDocumentsRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return rentChangeDocumentGenerationService.generateAndPersist(
-        ContractIdentifier.of(contractIdentifier),
-        ContractRentPeriodIdentifier.of(periodIdentifier),
-        request,
-        principal);
+        contractIdentifier, periodIdentifier, request, principal);
   }
 }
