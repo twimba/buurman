@@ -154,6 +154,11 @@ public class NotificationOutboxJob implements Job {
       return true;
     }
 
+    // Tenant-facing emails (no recipient user) must never be folded into a landlord digest.
+    if (entry.getRecipientUserId().isEmpty()) {
+      return true;
+    }
+
     // Non-consolidatable types sent individually
     return entry.getNotificationType().map(type -> !type.isConsolidatable()).orElse(true);
   }

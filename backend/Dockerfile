@@ -15,7 +15,9 @@ COPY backend/buurman-notifications/pom.xml buurman-notifications/
 COPY backend/buurman-backoffice/pom.xml buurman-backoffice/
 COPY backend/buurman-demo-data/pom.xml buurman-demo-data/
 COPY backend/buurman-takeout/pom.xml buurman-takeout/
+COPY backend/buurman-documents/pom.xml buurman-documents/
 COPY backend/buurman-booklets/pom.xml buurman-booklets/
+COPY backend/buurman-letters/pom.xml buurman-letters/
 COPY backend/buurman-app/pom.xml buurman-app/
 COPY backend/.mvn .mvn
 COPY backend/lombok.config .
@@ -32,7 +34,9 @@ COPY backend/buurman-notifications/src buurman-notifications/src
 COPY backend/buurman-backoffice/src buurman-backoffice/src
 COPY backend/buurman-demo-data/src buurman-demo-data/src
 COPY backend/buurman-takeout/src buurman-takeout/src
+COPY backend/buurman-documents/src buurman-documents/src
 COPY backend/buurman-booklets/src buurman-booklets/src
+COPY backend/buurman-letters/src buurman-letters/src
 COPY backend/buurman-app/src buurman-app/src
 
 EXPOSE 8081

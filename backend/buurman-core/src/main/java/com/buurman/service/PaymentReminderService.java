@@ -8,6 +8,7 @@ import static java.math.BigDecimal.ZERO;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -47,6 +49,7 @@ import com.buurman.dto.request.BulkSendPaymentRemindersRequest;
 import com.buurman.dto.request.SendPaymentReminderRequest;
 import com.buurman.dto.response.BulkActionResult;
 import com.buurman.dto.response.PaymentReminderResponse;
+import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContactRepository;
@@ -67,6 +70,7 @@ import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.Constants;
 import com.buurman.util.CurrencyUtils;
+import com.buurman.util.DocumentLanguages;
 import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
@@ -86,6 +90,14 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentReminderService {
 
   static final String TEMPLATE_NAME = "payment-reminder-tenant";
+  private static final String PDF_MIME = MediaType.APPLICATION_PDF_VALUE;
+  private static final String CONTRACT_ENTITY = "CONTRACT";
+
+  /** A tenant is not chased twice for the same payment within this window by hand. */
+  static final Duration MANUAL_COOLDOWN = Duration.ofHours(24);
+
+  /** Rendering a formal notice per payment is slow; bulk FINAL sends are capped. */
+  static final int MAX_BULK_FINAL = 50;
 
   private final PaymentRepository paymentRepository;
   private final PaymentReceivalRepository receivalRepository;
@@ -108,7 +120,6 @@ public class PaymentReminderService {
   private final Clock clock;
   private final PlatformTransactionManager transactionManager;
 
-  @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentReminderResponse sendReminder(
       PaymentIdentifier identifier, SendPaymentReminderRequest request, UserPrincipal principal) {
@@ -131,14 +142,18 @@ public class PaymentReminderService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public List<BulkActionResult<PaymentReminderResponse>> bulkSendReminders(
       BulkSendPaymentRemindersRequest request, UserPrincipal principal) {
-    TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+    List<PaymentIdentifier> identifiers = request.identifiers().stream().distinct().toList();
+    if (request.tone().filter(ReminderTone.FINAL::equals).isPresent()
+        && identifiers.size() > MAX_BULK_FINAL) {
+      throw new BadRequestException(
+          "A final notice can be sent to at most " + MAX_BULK_FINAL + " payments at once");
+    }
     SendPaymentReminderRequest single =
         new SendPaymentReminderRequest(request.notes(), request.tone());
     List<BulkActionResult<PaymentReminderResponse>> results = new ArrayList<>();
-    for (PaymentIdentifier identifier : request.identifiers().stream().distinct().toList()) {
+    for (PaymentIdentifier identifier : identifiers) {
       try {
-        PaymentReminderResponse response =
-            txTemplate.execute(status -> sendReminder(identifier, single, principal));
+        PaymentReminderResponse response = sendReminder(identifier, single, principal);
         results.add(BulkActionResult.success(identifier.value(), response));
       } catch (Exception e) {
         log.warn("Bulk reminder failed for payment {}: {}", identifier, e.getMessage());
@@ -152,7 +167,6 @@ public class PaymentReminderService {
    * Sends a ladder step on behalf of the scheduler. Same eligibility rules as a manual send; the
    * step offset is recorded so the scheduler never repeats it.
    */
-  @Transactional
   public PaymentReminderResponse sendAutomatic(Payment payment, PaymentReminderStep step) {
     return send(
         payment,
@@ -224,6 +238,21 @@ public class PaymentReminderService {
     if (payment.getStatus() == CANCELLED) {
       throw new BusinessRuleException("Cannot send a reminder for a cancelled payment");
     }
+    if (type == ReminderType.MANUAL) {
+      Optional.ofNullable(
+              reminderRepository
+                  .summarizeByPaymentIds(List.of(payment.getId()), teamId)
+                  .get(payment.getId()))
+          .flatMap(PaymentReminderRepository.ReminderSummary::lastSentAt)
+          .filter(last -> Duration.between(last, clock.instant()).compareTo(MANUAL_COOLDOWN) < 0)
+          .ifPresent(
+              last -> {
+                throw new BusinessRuleException(
+                    "A reminder for this payment was already sent less than "
+                        + MANUAL_COOLDOWN.toHours()
+                        + " hours ago");
+              });
+    }
 
     String currency = payment.getAmount().currency();
     BigDecimal received =
@@ -272,7 +301,7 @@ public class PaymentReminderService {
     int daysOverdue = (int) Math.max(0, ChronoUnit.DAYS.between(payment.getDueDate(), today));
     ReminderTone tone =
         requestedTone.orElse(daysOverdue > 0 ? ReminderTone.FIRM : ReminderTone.FRIENDLY);
-    String languageTag = contract.getDocumentLanguages().stream().findFirst().orElse("en");
+    String languageTag = DocumentLanguages.firstSupportedOrDefault(contract.getDocumentLanguages());
     Locale locale = Locale.forLanguageTag(languageTag);
     String propertyName =
         propertyRepository
@@ -308,20 +337,68 @@ public class PaymentReminderService {
     variables.put("primaryUrl", paymentUrl);
     variables.putAll(paymentInstructionVariables(contract.getId(), teamId));
 
-    List<EmailAttachment> attachments =
+    // Slow external work (Gotenberg render, S3 upload) happens before the transaction opens.
+    Optional<PreparedAttachment> notice =
         tone == ReminderTone.FINAL
             ? formalNoticeAttachment(
+                payment,
+                contract,
+                contact,
+                outstanding,
+                daysOverdue,
+                languageTag,
+                teamId,
+                actorUserId)
+            : Optional.empty();
+    List<EmailAttachment> attachments = notice.map(n -> List.of(n.attachment())).orElse(List.of());
+
+    return new TransactionTemplate(transactionManager)
+        .execute(
+            status ->
+                persistReminder(
                     payment,
-                    contract,
-                    contact,
-                    outstanding,
-                    daysOverdue,
-                    languageTag,
                     teamId,
-                    actorUserId)
-                .map(List::of)
-                .orElse(List.of())
-            : List.of();
+                    type,
+                    stepOffsetDays,
+                    notes,
+                    actorUserId,
+                    actorName,
+                    contact,
+                    email,
+                    daysOverdue,
+                    outstanding,
+                    currency,
+                    tone,
+                    languageTag,
+                    variables,
+                    attachments,
+                    notice));
+  }
+
+  /** The transactional tail of a send: outbox entry, filed document, reminder row, audit. */
+  private PaymentReminderResponse persistReminder(
+      Payment payment,
+      UUID teamId,
+      ReminderType type,
+      Optional<Integer> stepOffsetDays,
+      Optional<String> notes,
+      UUID actorUserId,
+      Optional<String> actorName,
+      Contact contact,
+      String email,
+      int daysOverdue,
+      BigDecimal outstanding,
+      String currency,
+      ReminderTone tone,
+      String languageTag,
+      Map<String, Object> variables,
+      List<EmailAttachment> attachments,
+      Optional<PreparedAttachment> notice) {
+    notice.ifPresent(
+        n -> {
+          documentRepository.save(n.document());
+          metricsService.incrementCounter("payment.formal_notice.generated.total");
+        });
 
     notificationService.send(
         SendNotificationRequest.builder()
@@ -375,11 +452,15 @@ public class PaymentReminderService {
     return response;
   }
 
+  /** A rendered, uploaded formal notice waiting for its document row to be committed. */
+  record PreparedAttachment(EmailAttachment attachment, Document document) {}
+
   /**
-   * Renders the formal notice PDF, files it under the contract's documents and returns it as an
-   * email attachment. Skipped (with a warning) when no PDF engine is deployed.
+   * Renders the formal notice PDF and uploads it; the document row is saved with the reminder so a
+   * failed send leaves no dangling metadata (the S3 object itself is cheap to orphan). Skipped with
+   * a warning when no PDF engine is deployed.
    */
-  private Optional<EmailAttachment> formalNoticeAttachment(
+  private Optional<PreparedAttachment> formalNoticeAttachment(
       Payment payment,
       Contract contract,
       Contact contact,
@@ -388,38 +469,39 @@ public class PaymentReminderService {
       String languageTag,
       UUID teamId,
       UUID actorUserId) {
-    TenantNoticeDocumentService renderer = noticeDocumentService.getIfAvailable();
-    if (renderer == null) {
+    Optional<TenantNoticeDocumentService> renderer =
+        Optional.ofNullable(noticeDocumentService.getIfAvailable());
+    if (renderer.isEmpty()) {
       log.warn("No TenantNoticeDocumentService available; sending FINAL reminder without PDF");
       return Optional.empty();
     }
     byte[] pdf =
-        renderer.renderFormalNotice(
-            new TenantNoticeDocumentService.FormalNoticeData(
-                payment, contract, contact, outstanding, daysOverdue, languageTag));
+        renderer
+            .get()
+            .renderFormalNotice(
+                new TenantNoticeDocumentService.FormalNoticeData(
+                    payment, contract, contact, outstanding, daysOverdue, languageTag));
     String paymentSid = payment.getIdentifier().map(Object::toString).orElse("payment");
     String fileName = "formal-notice-" + paymentSid + "-" + languageTag + ".pdf";
     Sid contractSid = contract.getIdentifier().orElseThrow();
     Sid teamSid = teamRepository.getById(teamId).getIdentifier().orElseThrow();
     String fileKey =
-        s3StorageService.uploadFile(
-            pdf, "application/pdf", teamSid, "CONTRACT", contractSid, fileName);
+        s3StorageService.uploadFile(pdf, PDF_MIME, teamSid, CONTRACT_ENTITY, contractSid, fileName);
     Document document =
         Document.builder()
             .teamId(teamId)
-            .entityType("CONTRACT")
+            .entityType(CONTRACT_ENTITY)
             .entityId(contract.getId())
             .fileKey(fileKey)
             .fileName(fileName)
             .fileSize((long) pdf.length)
-            .mimeType("application/pdf")
+            .mimeType(PDF_MIME)
             .title(Optional.of("Formal notice - payment " + paymentSid + " (" + languageTag + ")"))
             .notes(Optional.empty())
             .uploadedBy(actorUserId)
             .build();
-    documentRepository.save(document);
-    metricsService.incrementCounter("payment.formal_notice.generated.total");
-    return Optional.of(new EmailAttachment(fileName, "application/pdf", fileKey));
+    return Optional.of(
+        new PreparedAttachment(new EmailAttachment(fileName, PDF_MIME, fileKey), document));
   }
 
   /**
@@ -498,8 +580,15 @@ public class PaymentReminderService {
         reminder.getSentAt());
   }
 
+  /** Only rule/validation messages are safe to echo back; anything else stays generic. */
   private static String errorMessage(Exception e) {
+    boolean clientFacing =
+        e instanceof BusinessRuleException
+            || e instanceof BadRequestException
+            || e instanceof NotFoundException;
     String message = e.getMessage();
-    return message == null || message.isBlank() ? "An unexpected error occurred" : message;
+    return !clientFacing || message == null || message.isBlank()
+        ? "An unexpected error occurred"
+        : message;
   }
 }

@@ -26,9 +26,9 @@
   <div class="letter-body">
     <p th:text="#{notice.salutation(${primaryContactName})}"></p>
 
-    <p th:utext="#{notice.body.overdue(${propertyAddress}, ${amount}, ${dueDate}, ${daysOverdue})}"></p>
+    <p th:text="#{notice.body.overdue(${propertyAddress}, ${amount}, ${dueDate}, ${daysOverdue})}"></p>
     <p th:if="${hasPartialPayment}" th:text="#{notice.body.partial(${received}, ${outstanding})}"></p>
-    <p th:utext="#{notice.body.demand(${outstanding}, ${deadline}, ${deadlineDays})}"></p>
+    <p th:text="#{notice.body.demand(${outstanding}, ${deadline}, ${deadlineDays})}"></p>
 
     <div th:if="${hasInstructions}" class="legal-clause">
       <div th:text="#{notice.instructions.heading}"></div>

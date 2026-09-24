@@ -6,12 +6,15 @@ import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.TEAMS;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.countDistinct;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.min;
+import static org.jooq.impl.DSL.notExists;
+import static org.jooq.impl.DSL.selectOne;
 import static org.jooq.impl.DSL.sum;
 import static org.jooq.impl.DSL.table;
 
@@ -146,6 +149,7 @@ public class PaymentRepository {
                 .in(contractIds)
                 .and(PAYMENTS.TEAM_ID.eq(teamId))
                 .and(PAYMENTS.STATUS.eq(PAID.name()))
+                .and(notSettledByWriteOffOrPlan())
                 .and(PAYMENTS.PAYMENT_DATE.isNotNull())
                 .and(PAYMENTS.PAYMENT_DATE.between(from, to))
                 .and(PAYMENTS.DELETED_AT.isNull()))
@@ -570,8 +574,8 @@ public class PaymentRepository {
   }
 
   /**
-   * Overdue RENT payments on contracts with late fees enabled whose grace period has elapsed,
-   * across all teams. The scheduler charges each of these once (see {@link #hasLateFee}).
+   * Overdue RENT payments on non-demo contracts with late fees enabled whose grace period has
+   * elapsed and that carry no late fee yet, across all teams.
    */
   public List<Payment> findLateFeeCandidates(LocalDate today) {
     return dsl
@@ -579,6 +583,8 @@ public class PaymentRepository {
         .from(PAYMENTS)
         .join(CONTRACTS)
         .on(CONTRACTS.ID.eq(PAYMENTS.CONTRACT_ID))
+        .join(TEAMS)
+        .on(TEAMS.ID.eq(PAYMENTS.TEAM_ID))
         .where(
             PAYMENTS
                 .PAYMENT_TYPE
@@ -586,6 +592,8 @@ public class PaymentRepository {
                 .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
                 .and(PAYMENTS.DELETED_AT.isNull())
                 .and(CONTRACTS.DELETED_AT.isNull())
+                .and(TEAMS.DEMO.isFalse())
+                .and(notExists(lateFeeChildOf(PAYMENTS.ID)))
                 .and(CONTRACTS.LATE_FEE_ENABLED.isTrue())
                 .and(CONTRACTS.LATE_FEE_PERCENTAGE.gt(java.math.BigDecimal.ZERO))
                 .and(
@@ -630,6 +638,106 @@ public class PaymentRepository {
   }
 
   /**
+   * Open payments eligible for the automatic reminder ladder: due on or before the cut-off, on a
+   * contract that has tenant reminders enabled and is not paused today, excluding late fees (which
+   * ride along with their parent rent rather than getting their own ladder).
+   */
+  public List<Payment> findDunningCandidates(
+      UUID teamId, LocalDate dueDateInclusive, LocalDate today) {
+    return dsl
+        .select(PAYMENTS.fields())
+        .from(PAYMENTS)
+        .join(CONTRACTS)
+        .on(CONTRACTS.ID.eq(PAYMENTS.CONTRACT_ID))
+        .where(
+            PAYMENTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
+                .and(PAYMENTS.PAYMENT_TYPE.ne(Payment.PaymentType.LATE_FEE.name()))
+                .and(PAYMENTS.DUE_DATE.le(dueDateInclusive))
+                .and(PAYMENTS.DELETED_AT.isNull())
+                .and(CONTRACTS.DELETED_AT.isNull())
+                .and(CONTRACTS.TENANT_REMINDERS_ENABLED.isTrue())
+                .and(
+                    CONTRACTS
+                        .REMINDERS_PAUSED_UNTIL
+                        .isNull()
+                        .or(CONTRACTS.REMINDERS_PAUSED_UNTIL.lt(today))))
+        .orderBy(PAYMENTS.DUE_DATE.asc())
+        .fetch()
+        .stream()
+        .map(r -> mapper.toDomain(r.into(PAYMENTS)))
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  public List<Payment> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {
+    if (ids.isEmpty()) {
+      return List.of();
+    }
+    return dsl
+        .selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS.ID.in(ids).and(PAYMENTS.TEAM_ID.eq(teamId)).and(PAYMENTS.DELETED_AT.isNull()))
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  /** Late-fee children of a rent payment that are still open. */
+  public List<Payment> findOpenLateFeesByParentId(UUID parentPaymentId, UUID teamId) {
+    return dsl
+        .selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS
+                .PARENT_PAYMENT_ID
+                .eq(parentPaymentId)
+                .and(PAYMENTS.TEAM_ID.eq(teamId))
+                .and(PAYMENTS.PAYMENT_TYPE.eq(Payment.PaymentType.LATE_FEE.name()))
+                .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  private org.jooq.SelectConditionStep<org.jooq.Record1<Integer>> lateFeeChildOf(
+      Field<UUID> parentId) {
+    var fee = PAYMENTS.as("fee");
+    return selectOne()
+        .from(fee)
+        .where(
+            fee.PARENT_PAYMENT_ID
+                .eq(parentId)
+                .and(fee.PAYMENT_TYPE.eq(Payment.PaymentType.LATE_FEE.name()))
+                .and(fee.DELETED_AT.isNull()));
+  }
+
+  /**
+   * Excludes payments that reached PAID through a write-off or a payment plan: neither is cash
+   * collected, and a plan's cash is counted when its instalments are paid.
+   */
+  private Condition notSettledByWriteOffOrPlan() {
+    Table<?> receivals = table("payment_receivals").as("settle");
+    Field<UUID> rPaymentId = field("settle.payment_id", UUID.class);
+    Field<String> rType = field("settle.receival_type", String.class);
+    Field<LocalDateTime> rDeletedAt = field("settle.deleted_at", LocalDateTime.class);
+    return notExists(
+        selectOne()
+            .from(receivals)
+            .where(
+                rPaymentId
+                    .eq(PAYMENTS.ID)
+                    .and(rType.in("WRITE_OFF", "PLAN"))
+                    .and(rDeletedAt.isNull())));
+  }
+
+  /**
    * sum(receivals) per payment for the team, aliased as (r_payment_id, received) in minor units.
    */
   private Table<?> receivedPerPaymentSubquery(UUID teamId) {
@@ -656,6 +764,7 @@ public class PaymentRepository {
                 .TEAM_ID
                 .eq(teamId)
                 .and(PAYMENTS.STATUS.eq(PAID.name()))
+                .and(notSettledByWriteOffOrPlan())
                 .and(PAYMENTS.PAYMENT_DATE.isNotNull())
                 .and(PAYMENTS.PAYMENT_DATE.ge(startDate))
                 .and(PAYMENTS.DELETED_AT.isNull()))

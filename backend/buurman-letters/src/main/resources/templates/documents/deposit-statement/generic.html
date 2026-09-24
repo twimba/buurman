@@ -37,7 +37,7 @@
     <p th:if="${primaryContactName != null}" th:text="#{deposit.salutation(${primaryContactName})}"></p>
     <p th:unless="${primaryContactName != null}" th:text="#{deposit.salutation.default}"></p>
 
-    <p th:utext="#{deposit.body.intro(${propertyAddress}, ${contractStart})}"></p>
+    <p th:text="#{deposit.body.intro(${propertyAddress}, ${contractStart})}"></p>
 
     <table class="summary-table">
       <tr><td class="st-label" th:text="#{deposit.summary.contractRef}"></td><td class="st-value" th:text="${contractIdentifier}"></td></tr>

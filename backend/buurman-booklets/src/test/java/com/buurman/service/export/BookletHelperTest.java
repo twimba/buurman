@@ -80,19 +80,21 @@ class BookletHelperTest {
     @Test
     @DisplayName("converts UPPER_SNAKE_CASE to Title Case")
     void convertsSnakeCaseToTitleCase() {
-      assertThat(BookletHelper.formatEnumValue("PENDING_SIGNATURE")).isEqualTo("Pending Signature");
+      assertThat(com.buurman.document.DocumentFormatting.formatEnumValue("PENDING_SIGNATURE"))
+          .isEqualTo("Pending Signature");
     }
 
     @Test
     @DisplayName("handles single word")
     void handlesSingleWord() {
-      assertThat(BookletHelper.formatEnumValue("ACTIVE")).isEqualTo("Active");
+      assertThat(com.buurman.document.DocumentFormatting.formatEnumValue("ACTIVE"))
+          .isEqualTo("Active");
     }
 
     @Test
     @DisplayName("returns empty string for null")
     void returnsEmptyForNull() {
-      assertThat(BookletHelper.formatEnumValue(null)).isEmpty();
+      assertThat(com.buurman.document.DocumentFormatting.formatEnumValue(null)).isEmpty();
     }
   }
 
@@ -128,13 +130,14 @@ class BookletHelperTest {
     @Test
     @DisplayName("formats date with given formatter")
     void formatsDate() {
-      assertThat(BookletHelper.formatDate(LocalDate.of(2026, 3, 15), FMT)).isEqualTo("15/03/2026");
+      assertThat(com.buurman.document.DocumentFormatting.formatDate(LocalDate.of(2026, 3, 15), FMT))
+          .isEqualTo("15/03/2026");
     }
 
     @Test
     @DisplayName("returns dash for null date")
     void returnsDashForNull() {
-      assertThat(BookletHelper.formatDate(null, FMT)).isEqualTo("\u2014");
+      assertThat(com.buurman.document.DocumentFormatting.formatDate(null, FMT)).isEqualTo("\u2014");
     }
   }
 
@@ -287,7 +290,7 @@ class BookletHelperTest {
     @Test
     @DisplayName("empty string throws StringIndexOutOfBoundsException")
     void emptyStringThrows() {
-      assertThatThrownBy(() -> BookletHelper.formatEnumValue(""))
+      assertThatThrownBy(() -> com.buurman.document.DocumentFormatting.formatEnumValue(""))
           .isInstanceOf(StringIndexOutOfBoundsException.class);
     }
 
@@ -295,14 +298,14 @@ class BookletHelperTest {
     @DisplayName("single underscore returns empty (trailing empties discarded by split)")
     void singleUnderscoreReturnsEmpty() {
       // "_".split("_") returns [] in Java (trailing empty strings discarded)
-      assertThat(BookletHelper.formatEnumValue("_")).isEmpty();
+      assertThat(com.buurman.document.DocumentFormatting.formatEnumValue("_")).isEmpty();
     }
 
     @Test
     @DisplayName("double underscore A__B throws on empty middle segment")
     void doubleUnderscoreThrows() {
       // "A__B".split("_") returns ["A", "", "B"] — empty segment fails substring(0,1)
-      assertThatThrownBy(() -> BookletHelper.formatEnumValue("A__B"))
+      assertThatThrownBy(() -> com.buurman.document.DocumentFormatting.formatEnumValue("A__B"))
           .isInstanceOf(StringIndexOutOfBoundsException.class);
     }
   }

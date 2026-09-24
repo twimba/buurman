@@ -442,8 +442,10 @@ export const PaymentDetailPage = () => {
   const RECEIVALS_PER_PAGE = 10;
 
   const { data: payment, isLoading, error } = usePayment(id);
+  const creditsApplicable =
+    payment?.status !== 'PAID' && payment?.status !== 'CANCELLED';
   const { data: contactCredits = [] } = useContactCredits(
-    payment?.contact?.identifier
+    creditsApplicable ? payment?.contact?.identifier : undefined
   );
   const {
     data: auditLog = [],

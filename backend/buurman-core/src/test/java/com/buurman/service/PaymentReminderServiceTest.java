@@ -45,6 +45,7 @@ import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.identifier.PaymentIdentifier;
+import com.buurman.dto.request.BulkSendPaymentRemindersRequest;
 import com.buurman.dto.request.SendPaymentReminderRequest;
 import com.buurman.dto.response.PaymentReminderResponse;
 import com.buurman.exception.BusinessRuleException;
@@ -208,6 +209,92 @@ class PaymentReminderServiceTest {
   @Nested
   @DisplayName("sendReminder")
   class SendReminder {
+
+    @Test
+    @DisplayName("a FINAL reminder renders the formal notice, files it and attaches it")
+    void finalAttachesFormalNotice() {
+      stubHappyPath(payment(PaymentStatus.PENDING, TODAY.minusDays(30)), BigDecimal.ZERO);
+      when(contractRepository.findByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(
+              Optional.of(
+                  Contract.builder()
+                      .id(CONTRACT_ID)
+                      .identifier(Optional.of(Sid.of("ctr_01JTEST000000000000000001")))
+                      .teamId(TEAM_ID)
+                      .propertyId(UUID.randomUUID())
+                      .documentLanguages(List.of("nl"))
+                      .tenantRemindersEnabled(true)
+                      .build()));
+      when(teamRepository.getById(TEAM_ID))
+          .thenReturn(
+              Team.builder()
+                  .name("Acme Rentals")
+                  .identifier(Optional.of(Sid.of("team_01JTEST000000000000000001")))
+                  .build());
+      com.buurman.service.document.TenantNoticeDocumentService renderer =
+          data -> "%PDF-notice".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+      when(noticeDocumentService.getIfAvailable()).thenReturn(renderer);
+      when(s3StorageService.uploadFile(any(byte[].class), any(), any(), any(), any(), any()))
+          .thenReturn("teams/t/contract/c/notice.pdf");
+
+      service.sendReminder(
+          PAYMENT_SID,
+          new SendPaymentReminderRequest(Optional.empty(), Optional.of(ReminderTone.FINAL)),
+          principal);
+
+      ArgumentCaptor<SendNotificationRequest> captor =
+          ArgumentCaptor.forClass(SendNotificationRequest.class);
+      verify(notificationService).send(captor.capture());
+      assertThat(captor.getValue().attachments())
+          .singleElement()
+          .satisfies(
+              a -> {
+                assertThat(a.fileKey()).isEqualTo("teams/t/contract/c/notice.pdf");
+                assertThat(a.fileName()).isEqualTo("formal-notice-" + PAYMENT_SID + "-nl.pdf");
+                assertThat(a.contentType()).isEqualTo("application/pdf");
+              });
+      ArgumentCaptor<com.buurman.domain.Document> doc =
+          ArgumentCaptor.forClass(com.buurman.domain.Document.class);
+      verify(documentRepository).save(doc.capture());
+      assertThat(doc.getValue().getEntityId()).isEqualTo(CONTRACT_ID);
+      assertThat(doc.getValue().getMimeType()).isEqualTo("application/pdf");
+    }
+
+    @Test
+    @DisplayName("refuses a second manual reminder within the cooldown window")
+    void cooldownBlocksRepeat() {
+      Payment p = payment(PaymentStatus.PENDING, TODAY.minusDays(10));
+      when(paymentRepository.getByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID)).thenReturn(p);
+      when(reminderRepository.summarizeByPaymentIds(List.of(PAYMENT_ID), TEAM_ID))
+          .thenReturn(
+              java.util.Map.of(
+                  PAYMENT_ID,
+                  new PaymentReminderRepository.ReminderSummary(
+                      Optional.of(Instant.now(clock).minus(java.time.Duration.ofHours(2))), 1)));
+
+      assertThatThrownBy(
+              () ->
+                  service.sendReminder(PAYMENT_SID, SendPaymentReminderRequest.empty(), principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("already sent");
+      verify(notificationService, never()).send(any());
+    }
+
+    @Test
+    @DisplayName("bulk FINAL notices are capped to keep the request bounded")
+    void bulkFinalCapped() {
+      List<PaymentIdentifier> ids =
+          java.util.stream.IntStream.rangeClosed(1, PaymentReminderService.MAX_BULK_FINAL + 1)
+              .mapToObj(i -> PaymentIdentifier.of(String.format("pay_01JTEST%020d", i)))
+              .toList();
+      assertThatThrownBy(
+              () ->
+                  service.bulkSendReminders(
+                      new BulkSendPaymentRemindersRequest(
+                          ids, Optional.empty(), Optional.of(ReminderTone.FINAL)),
+                      principal))
+          .isInstanceOf(com.buurman.exception.BadRequestException.class);
+    }
 
     @Test
     @DisplayName("emails the tenant in the contract language and records the reminder")

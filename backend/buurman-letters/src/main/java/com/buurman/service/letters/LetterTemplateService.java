@@ -43,17 +43,8 @@ public class LetterTemplateService {
    * @return PDF bytes
    */
   public byte[] renderToPdf(String documentType, Locale locale, Map<String, Object> variables) {
-    return renderToPdf(documentType, locale, variables, PageSpec.A4_PORTRAIT);
-  }
-
-  /**
-   * Renders a document template to PDF bytes with an explicit page geometry (e.g. A4 landscape for
-   * one-page summary cards).
-   */
-  public byte[] renderToPdf(
-      String documentType, Locale locale, Map<String, Object> variables, PageSpec page) {
     String html = renderToHtml(documentType, locale, variables);
-    return pdfRenderer.render(html, page);
+    return pdfRenderer.render(html, PageSpec.A4_PORTRAIT);
   }
 
   /**

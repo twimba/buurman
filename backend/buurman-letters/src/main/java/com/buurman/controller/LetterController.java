@@ -9,6 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.document.DocumentLocale;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
@@ -48,7 +49,7 @@ public class LetterController implements LettersApi {
   public Resource getDepositStatement(
       ContractIdentifier contractIdentifier, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    String language = lang.orElse("en");
+    String language = DocumentLocale.resolve(lang.orElse("en")).getLanguage();
     byte[] pdf =
         depositStatementExporter.generate(contractIdentifier, principal.requireTeamId(), language);
     return pdfResource("deposit-statement-" + language + ".pdf", pdf);
@@ -57,7 +58,7 @@ public class LetterController implements LettersApi {
   @Override
   public Resource getPaymentFormalNotice(PaymentIdentifier identifier, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    String language = lang.orElse("en");
+    String language = DocumentLocale.resolve(lang.orElse("en")).getLanguage();
     byte[] pdf =
         paymentFormalNoticeExporter.generate(identifier, principal.requireTeamId(), language);
     return pdfResource("formal-notice-" + identifier.value() + "-" + language + ".pdf", pdf);
@@ -75,7 +76,7 @@ public class LetterController implements LettersApi {
       ContractExtensionIdentifier extensionIdentifier,
       Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    String language = lang.orElse("en");
+    String language = DocumentLocale.resolve(lang.orElse("en")).getLanguage();
     byte[] pdf =
         addendumExporter.generate(
             Optional.of(contractIdentifier),
@@ -91,7 +92,7 @@ public class LetterController implements LettersApi {
       ContractExtensionIdentifier extensionIdentifier,
       Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    String language = lang.orElse("en");
+    String language = DocumentLocale.resolve(lang.orElse("en")).getLanguage();
     byte[] pdf =
         rentIncreaseLetterExporter.generate(
             Optional.of(contractIdentifier),
@@ -107,7 +108,7 @@ public class LetterController implements LettersApi {
       ContractRentPeriodIdentifier periodIdentifier,
       Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    String language = lang.orElse("en");
+    String language = DocumentLocale.resolve(lang.orElse("en")).getLanguage();
     byte[] pdf =
         rentChangeDocumentExporter.generate(
             contractIdentifier, periodIdentifier, principal.requireTeamId(), language);

@@ -5,8 +5,10 @@ import static com.buurman.util.SidGenerator.newContactCreditId;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import com.buurman.domain.Contact;
 import com.buurman.domain.ContactCredit;
 import com.buurman.domain.ContactCredit.CreditSource;
 import com.buurman.domain.Contract;
+import com.buurman.domain.Payment;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContactCreditIdentifier;
 import com.buurman.domain.identifier.ContactIdentifier;
@@ -53,8 +56,38 @@ public class ContactCreditService {
       ContactIdentifier contactIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contact contact = contactRepository.getByIdentifierAndTeamId(contactIdentifier, teamId);
-    return creditRepository.findByContactIdAndTeamId(contact.getId(), teamId).stream()
-        .map(c -> toResponse(c, contact))
+    List<ContactCredit> credits =
+        creditRepository.findByContactIdAndTeamId(contact.getId(), teamId);
+    Map<UUID, Sid> contracts =
+        contractRepository
+            .findByIdsAndTeamId(
+                credits.stream()
+                    .map(ContactCredit::getContractId)
+                    .flatMap(Optional::stream)
+                    .toList(),
+                teamId)
+            .stream()
+            .filter(c -> c.getIdentifier().isPresent())
+            .collect(Collectors.toMap(Contract::getId, c -> c.getIdentifier().orElseThrow()));
+    Map<UUID, Sid> payments =
+        paymentRepository
+            .findByIdsAndTeamId(
+                credits.stream()
+                    .map(ContactCredit::getSourcePaymentId)
+                    .flatMap(Optional::stream)
+                    .toList(),
+                teamId)
+            .stream()
+            .filter(p -> p.getIdentifier().isPresent())
+            .collect(Collectors.toMap(Payment::getId, p -> p.getIdentifier().orElseThrow()));
+    return credits.stream()
+        .map(
+            c ->
+                toResponse(
+                    c,
+                    contact,
+                    c.getContractId().map(contracts::get),
+                    c.getSourcePaymentId().map(payments::get)))
         .toList();
   }
 
@@ -140,16 +173,24 @@ public class ContactCreditService {
   }
 
   ContactCreditResponse toResponse(ContactCredit credit, Contact contact) {
-    Optional<Sid> contractIdentifier =
+    return toResponse(
+        credit,
+        contact,
         credit
             .getContractId()
             .flatMap(id -> contractRepository.findByIdAndTeamId(id, credit.getTeamId()))
-            .flatMap(Contract::getIdentifier);
-    Optional<Sid> sourcePayment =
+            .flatMap(Contract::getIdentifier),
         credit
             .getSourcePaymentId()
             .flatMap(id -> paymentRepository.findByIdAndTeamId(id, credit.getTeamId()))
-            .flatMap(p -> p.getIdentifier());
+            .flatMap(Payment::getIdentifier));
+  }
+
+  private static ContactCreditResponse toResponse(
+      ContactCredit credit,
+      Contact contact,
+      Optional<Sid> contractIdentifier,
+      Optional<Sid> sourcePayment) {
     return new ContactCreditResponse(
         credit.getIdentifier().orElseThrow(),
         contact.getIdentifier().orElseThrow(),

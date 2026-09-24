@@ -242,7 +242,10 @@ public class PaymentPlanService {
     LocalDate today = LocalDate.now(clock);
     String currency = plan.getTotalAmount().currency();
     BigDecimal remainder = BigDecimal.ZERO;
-    for (Payment instalment : paymentRepository.findByPaymentPlanId(plan.getId(), teamId)) {
+    List<Payment> instalments = paymentRepository.findByPaymentPlanId(plan.getId(), teamId);
+    Optional<LocalDate> planEnd =
+        instalments.stream().map(Payment::getDueDate).max(LocalDate::compareTo);
+    for (Payment instalment : instalments) {
       if (instalment.getStatus() == PAID || instalment.getStatus() == CANCELLED) {
         continue;
       }
@@ -303,10 +306,13 @@ public class PaymentPlanService {
     plan.setUpdatedBy(principal.getUserId());
     plan.setUpdatedAt(clock.instant());
     PaymentPlan saved = planRepository.save(plan);
-    contract.setRemindersPausedUntil(Optional.empty());
-    contract.setUpdatedBy(principal.getUserId());
-    contract.setUpdatedAt(clock.instant());
-    contractRepository.save(contract);
+    // Only lift the pause this plan put in place; a landlord's own pause stays.
+    if (contract.getRemindersPausedUntil().equals(planEnd)) {
+      contract.setRemindersPausedUntil(Optional.empty());
+      contract.setUpdatedBy(principal.getUserId());
+      contract.setUpdatedAt(clock.instant());
+      contractRepository.save(contract);
+    }
     auditService.logUpdate(
         teamId,
         "PAYMENT_PLAN",
@@ -344,17 +350,19 @@ public class PaymentPlanService {
   private PaymentPlanResponse toResponse(PaymentPlan plan, Contract contract, UUID teamId) {
     List<Payment> instalments = paymentRepository.findByPaymentPlanId(plan.getId(), teamId);
     String currency = plan.getTotalAmount().currency();
-    BigDecimal paid = BigDecimal.ZERO;
-    for (Payment p : instalments) {
-      if (p.getStatus() == CANCELLED) {
-        continue;
-      }
-      paid = paid.add(receivalRepository.sumByPaymentIdAndTeamId(p.getId(), teamId, currency));
-    }
+    List<UUID> openInstalmentIds =
+        instalments.stream().filter(p -> p.getStatus() != CANCELLED).map(Payment::getId).toList();
+    BigDecimal paid =
+        receivalRepository
+            .sumByPaymentIdsAndTeamId(openInstalmentIds, teamId, currency)
+            .values()
+            .stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     List<Sid> covered =
-        receivalRepository.findPaymentIdsByPlanId(plan.getId(), teamId).stream()
-            .map(id -> paymentRepository.findByIdAndTeamId(id, teamId))
-            .flatMap(Optional::stream)
+        paymentRepository
+            .findByIdsAndTeamId(
+                receivalRepository.findPaymentIdsByPlanId(plan.getId(), teamId), teamId)
+            .stream()
             .flatMap(p -> p.getIdentifier().stream())
             .toList();
     List<PaymentSummary> summaries = instalments.stream().map(paymentMapper::toSummary).toList();

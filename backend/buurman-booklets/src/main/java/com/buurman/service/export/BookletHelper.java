@@ -1,13 +1,9 @@
 package com.buurman.service.export;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import org.jspecify.annotations.Nullable;
-
-import com.buurman.document.DocumentFormatting;
 
 /**
  * Shared formatting + escaping utilities for booklet/report exporters. All methods are static and
@@ -44,16 +40,8 @@ final class BookletHelper {
         .replaceAll("(?i)\\s+on\\w+\\s*=\\s*'[^']*'", "");
   }
 
-  static String formatEnumValue(@Nullable String value) {
-    return DocumentFormatting.formatEnumValue(value);
-  }
-
   static String fmt(@Nullable BigDecimal value) {
     return value != null ? String.format(Locale.US, "%,.2f", value) : "0.00";
-  }
-
-  static String formatDate(@Nullable LocalDate date, DateTimeFormatter fmt) {
-    return DocumentFormatting.formatDate(date, fmt);
   }
 
   static boolean isTrue(@Nullable Boolean value) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,7 +97,7 @@ public class RentChangeDocumentGenerationService {
       String fileKey =
           s3StorageService.uploadFile(
               pdf,
-              "application/pdf",
+              MediaType.APPLICATION_PDF_VALUE,
               Sid.of(principal.requireTeamIdentifier()),
               ENTITY_TYPE,
               contractSid,
@@ -110,7 +111,7 @@ public class RentChangeDocumentGenerationService {
               .fileKey(fileKey)
               .fileName(filename)
               .fileSize((long) pdf.length)
-              .mimeType("application/pdf")
+              .mimeType(MediaType.APPLICATION_PDF_VALUE)
               .title(Optional.of(title))
               .notes(Optional.empty())
               .uploadedBy(principal.getUserId())

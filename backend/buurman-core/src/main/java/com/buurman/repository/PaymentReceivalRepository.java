@@ -12,7 +12,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -111,6 +113,29 @@ public class PaymentReceivalRepository {
             .where(PAYMENT_ID.eq(paymentId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
             .fetchOneInto(BigDecimal.class);
     return MoneyAmount.sumToMajorUnits(sum, currency);
+  }
+
+  /** {@link #sumByPaymentIdAndTeamId} for many payments in one query; absent = nothing received. */
+  public Map<UUID, BigDecimal> sumByPaymentIdsAndTeamId(
+      Collection<UUID> paymentIds, UUID teamId, @Nullable String currency) {
+    if (paymentIds.isEmpty()) {
+      return Map.of();
+    }
+    Map<UUID, BigDecimal> out = new HashMap<>();
+    dsl.select(PAYMENT_ID, coalesce(sum(AMOUNT), 0L))
+        .from(TABLE)
+        .where(PAYMENT_ID.in(paymentIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .groupBy(PAYMENT_ID)
+        .forEach(
+            r ->
+                out.put(
+                    r.value1(),
+                    MoneyAmount.sumToMajorUnits(
+                        r.get(1, BigDecimal.class) == null
+                            ? BigDecimal.ZERO
+                            : r.get(1, BigDecimal.class),
+                        currency)));
+    return out;
   }
 
   /** Payments settled into a plan (distinct payment ids of PLAN receivals for the plan). */

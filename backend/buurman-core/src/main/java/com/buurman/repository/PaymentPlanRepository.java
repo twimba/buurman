@@ -5,6 +5,7 @@ import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,6 +50,21 @@ public class PaymentPlanRepository {
                 .and(PAYMENT_PLANS.TEAM_ID.eq(teamId))
                 .and(PAYMENT_PLANS.DELETED_AT.isNull()))
         .fetchOptional()
+        .map(this::toDomain);
+  }
+
+  public List<PaymentPlan> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {
+    if (ids.isEmpty()) {
+      return List.of();
+    }
+    return dsl.selectFrom(PAYMENT_PLANS)
+        .where(
+            PAYMENT_PLANS
+                .ID
+                .in(ids)
+                .and(PAYMENT_PLANS.TEAM_ID.eq(teamId))
+                .and(PAYMENT_PLANS.DELETED_AT.isNull()))
+        .fetch()
         .map(this::toDomain);
   }
 

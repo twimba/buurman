@@ -7,7 +7,7 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.Payment;
 
 /**
- * Renders tenant-facing notice PDFs. Implemented by the booklets module; core resolves it lazily so
+ * Renders tenant-facing notice PDFs. Implemented by the letters module; core resolves it lazily so
  * a deployment without the PDF engine still sends plain reminders.
  */
 public interface TenantNoticeDocumentService {

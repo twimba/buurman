@@ -25,7 +25,8 @@ import com.buurman.exception.ExternalServiceException;
  * shaping). Intentionally a single concrete renderer: Gotenberg is the only engine (no in-JVM
  * iText).
  *
- * <p>The sidecar URL is {@code booklet.gotenberg.url} (Docker/Dokploy: {@code
+ * <p>The sidecar URL is {@code booklet.gotenberg.url} (the property prefix predates the documents
+ * module and is kept for configuration compatibility) (Docker/Dokploy: {@code
  * http://gotenberg:3000}; local host-run backend: {@code http://localhost:3000}).
  *
  * <p>Fonts: the <b>brand</b> face (Satoshi) is shipped with each request — its WOFF2 is attached as

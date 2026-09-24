@@ -79,6 +79,7 @@ import com.buurman.repository.RentRegulationRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+import com.buurman.util.DocumentLanguages;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
@@ -157,6 +158,7 @@ public class ContractService {
     String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountryCode());
     contract.setCountryCode(Optional.ofNullable(countryCode));
     validateLateFee(contract);
+    validateDocumentLanguages(contract);
 
     // Deserialize and validate country metadata from request
     if (request.countryMetadata() != null && countryCode != null) {
@@ -416,6 +418,7 @@ public class ContractService {
           "Country metadata can only be modified while the contract is in DRAFT status");
     }
     validateLateFee(contract);
+    validateDocumentLanguages(contract);
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmount().currency(), contract.getRentAmount().value());
@@ -1308,6 +1311,20 @@ public class ContractService {
             .map(RentComponentRequest::amount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     return com.buurman.util.MoneyAmount.of(total, currency);
+  }
+
+  private static void validateDocumentLanguages(Contract contract) {
+    List<String> unsupported =
+        contract.getDocumentLanguages().stream()
+            .filter(lang -> !DocumentLanguages.isSupported(lang))
+            .toList();
+    if (!unsupported.isEmpty()) {
+      throw new BadRequestException(
+          "Unsupported document language(s): "
+              + String.join(", ", unsupported)
+              + ". Supported: "
+              + String.join(", ", DocumentLanguages.SUPPORTED.stream().sorted().toList()));
+    }
   }
 
   private void validateLateFee(Contract contract) {

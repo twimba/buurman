@@ -15,6 +15,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+import com.buurman.document.DocumentLocale;
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
@@ -121,7 +122,8 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
 
   @Override
   public byte[] renderFormalNotice(FormalNoticeData data) {
-    Locale locale = LetterTemplateService.resolveLocale(data.languageTag());
+    // Job path: an unsupported contract language must not block a FINAL reminder.
+    Locale locale = DocumentLocale.resolveOrEnglish(data.languageTag());
     UUID teamId = data.contract().getTeamId();
     Property property =
         propertyRepository.getByIdAndTeamId(data.contract().getPropertyId(), teamId);

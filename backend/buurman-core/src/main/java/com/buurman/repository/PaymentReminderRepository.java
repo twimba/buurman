@@ -2,6 +2,7 @@ package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.PAYMENT_REMINDERS;
 import static java.time.ZoneOffset.UTC;
+import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.max;
 
@@ -99,6 +100,32 @@ public class PaymentReminderRepository {
                     .and(PAYMENT_REMINDERS.STEP_OFFSET_DAYS.isNotNull())
                     .and(PAYMENT_REMINDERS.DELETED_AT.isNull()))
             .fetch(PAYMENT_REMINDERS.STEP_OFFSET_DAYS));
+  }
+
+  /** {@link #findAutomaticStepOffsets} for many payments in one query. */
+  public Map<UUID, Set<Integer>> findAutomaticStepOffsetsByPaymentIds(
+      Collection<UUID> paymentIds, UUID teamId) {
+    if (paymentIds.isEmpty()) {
+      return Map.of();
+    }
+    Map<UUID, Set<Integer>> out = new HashMap<>();
+    dsl.select(PAYMENT_REMINDERS.PAYMENT_ID, PAYMENT_REMINDERS.STEP_OFFSET_DAYS)
+        .from(PAYMENT_REMINDERS)
+        .where(
+            PAYMENT_REMINDERS
+                .PAYMENT_ID
+                .in(paymentIds)
+                .and(PAYMENT_REMINDERS.TEAM_ID.eq(teamId))
+                .and(
+                    PAYMENT_REMINDERS.REMINDER_TYPE.eq(
+                        PaymentReminder.ReminderType.AUTOMATIC.name()))
+                .and(PAYMENT_REMINDERS.STEP_OFFSET_DAYS.isNotNull())
+                .and(PAYMENT_REMINDERS.DELETED_AT.isNull()))
+        .forEach(
+            r ->
+                out.computeIfAbsent(r.value1(), k -> new HashSet<>())
+                    .add(requireNonNull(r.value2())));
+    return out;
   }
 
   public PaymentReminder save(PaymentReminder reminder) {

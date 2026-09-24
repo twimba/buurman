@@ -13,6 +13,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -55,6 +56,7 @@ class PaymentDunningServiceTest {
   @Mock private TeamPreferencesRepository teamPreferencesRepository;
   @Mock private PaymentRepository paymentRepository;
   @Mock private PaymentReminderRepository reminderRepository;
+  @Mock private MetricsService metricsService;
   @Mock private PaymentReminderService reminderService;
 
   private final Clock clock =
@@ -70,6 +72,7 @@ class PaymentDunningServiceTest {
             paymentRepository,
             reminderRepository,
             reminderService,
+            metricsService,
             clock);
   }
 
@@ -84,7 +87,9 @@ class PaymentDunningServiceTest {
       LocalDate due = TODAY.minusDays(10); // day 10: -3, 0, 7 reached; 21 not
 
       assertThat(PaymentDunningService.selectStep(steps, due, TODAY, Set.of())).contains(WEEK);
-      assertThat(PaymentDunningService.selectStep(steps, due, TODAY, Set.of(7))).contains(DUE);
+      // once the week step went out, the ladder never walks back to softer steps
+      assertThat(PaymentDunningService.selectStep(steps, due, TODAY, Set.of(7))).isEmpty();
+      assertThat(PaymentDunningService.selectStep(steps, due, TODAY, Set.of(0))).contains(WEEK);
       assertThat(PaymentDunningService.selectStep(steps, due, TODAY, Set.of(7, 0, -3))).isEmpty();
     }
 
@@ -138,9 +143,10 @@ class PaymentDunningServiceTest {
       Payment eligible = payment(teamId, TODAY.minusDays(8));
       Payment optedOut = payment(teamId, TODAY.minusDays(8));
       Payment tooEarly = payment(teamId, TODAY.plusDays(2));
-      when(paymentRepository.findOpenPaymentsDueOnOrBefore(eq(teamId), any()))
+      when(paymentRepository.findDunningCandidates(eq(teamId), any(), eq(TODAY)))
           .thenReturn(List.of(eligible, optedOut, tooEarly));
-      when(reminderRepository.findAutomaticStepOffsets(any(), eq(teamId))).thenReturn(Set.of());
+      when(reminderRepository.findAutomaticStepOffsetsByPaymentIds(any(), eq(teamId)))
+          .thenReturn(Map.of());
       when(reminderService.sendAutomatic(eq(optedOut), any()))
           .thenThrow(new BusinessRuleException("Tenant reminders are not enabled"));
 
@@ -165,7 +171,7 @@ class PaymentDunningServiceTest {
 
       service.runDailyLadder();
 
-      verify(paymentRepository, never()).findOpenPaymentsDueOnOrBefore(any(), any());
+      verify(paymentRepository, never()).findDunningCandidates(any(), any(), any());
     }
   }
 }

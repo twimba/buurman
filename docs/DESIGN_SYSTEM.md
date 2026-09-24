@@ -966,7 +966,7 @@ The backoffice login page must be **immediately recognizable** as a different en
 
 ### Generated PDFs (Gotenberg headless-Chromium)
 
-**Location**: `backend/buurman-booklets/` (exporters + `DocumentRenderer` → `GotenbergDocumentRenderer`)
+**Location**: `backend/buurman-documents/` (renderer) and `backend/buurman-booklets/` (templates) (exporters + `DocumentRenderer` (Gotenberg HTTP client))
 
 **Current state**: HTML-to-PDF via the **Gotenberg** (headless-Chromium) sidecar — full modern CSS. The in-JVM iText engine has been removed.
 

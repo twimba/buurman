@@ -95,6 +95,18 @@ public class DepositService {
         || deposit.getStatus() == DepositStatus.FORFEITED) {
       throw new BusinessRuleException("A returned or forfeited deposit can no longer be edited");
     }
+    BigDecimal committed =
+        existing
+            .map(d -> d.getAmount().value().subtract(refundable(d, teamId)))
+            .orElse(BigDecimal.ZERO);
+    if (request.amount().compareTo(committed) < 0) {
+      throw new BusinessRuleException(
+          "Deposit amount cannot be lower than what was already deducted and returned ("
+              + committed.stripTrailingZeros().toPlainString()
+              + " "
+              + currency
+              + ")");
+    }
     Deposit before = existing.map(d -> d.toBuilder().build()).orElse(null);
     deposit.setAmount(MoneyAmount.of(request.amount(), currency));
     deposit.setReceivedDate(request.receivedDate());
@@ -262,9 +274,14 @@ public class DepositService {
         || deposit.getStatus() == DepositStatus.FORFEITED) {
       throw new BusinessRuleException("Deposit is already closed");
     }
+    if (deposit.getStatus() == DepositStatus.EXPECTED) {
+      throw new BusinessRuleException("A deposit that was never received cannot be forfeited");
+    }
     Deposit before = deposit.toBuilder().build();
     deposit.setStatus(DepositStatus.FORFEITED);
-    deposit.setNotes(Optional.of("Forfeited: " + request.reason()));
+    deposit.setNotes(
+        Optional.of(
+            deposit.getNotes().map(n -> n + "\n").orElse("") + "Forfeited: " + request.reason()));
     deposit.setUpdatedBy(principal.getUserId());
     deposit.setUpdatedAt(clock.instant());
     Deposit saved = depositRepository.save(deposit);

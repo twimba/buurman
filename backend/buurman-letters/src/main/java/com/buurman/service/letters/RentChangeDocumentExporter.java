@@ -26,7 +26,6 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Property;
-import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRule;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
@@ -275,8 +274,9 @@ public class RentChangeDocumentExporter {
           BigDecimal percentageChange = (BigDecimal) vars.get("percentageChange");
           boolean exceeds =
               percentageChange != null
-                  && rule.getMaxIncreasePercentage().isPresent()
-                  && percentageChange.compareTo(rule.getMaxIncreasePercentage().get()) > 0;
+                  && rule.getMaxIncreasePercentage()
+                      .map(max -> percentageChange.compareTo(max) > 0)
+                      .orElse(false);
           vars.put("exceedsMaxIncrease", exceeds);
         },
         () -> {
@@ -292,25 +292,21 @@ public class RentChangeDocumentExporter {
     List<ContractExtension> extensions =
         extensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     return extensions.stream()
-        .filter(ext -> ext.getRentPeriodId().isPresent())
-        .filter(ext -> ext.getRentPeriodId().get().equals(period.getId()))
+        .filter(ext -> ext.getRentPeriodId().map(period.getId()::equals).orElse(false))
         .findFirst();
   }
 
   private Optional<RentRegulationRule> findApplicableRegulationRule(
       Contract contract, Property property, ContractRentPeriod period) {
-    Optional<String> countryCode = contract.getCountryCode();
-    if (countryCode.isEmpty()) {
-      return Optional.empty();
-    }
-    Optional<RentRegulationCountry> country =
-        regulationRepository.findCountryByCode(countryCode.get());
-    if (country.isEmpty()) {
-      return Optional.empty();
-    }
     int year = period.getEffectiveFrom().getYear();
-    List<RentRegulationRule> rules =
-        regulationRepository.findNationalRulesByCountryIdAndYear(country.get().getId(), year);
-    return rules.stream().findFirst();
+    return contract
+        .getCountryCode()
+        .flatMap(regulationRepository::findCountryByCode)
+        .flatMap(
+            country ->
+                regulationRepository
+                    .findNationalRulesByCountryIdAndYear(country.getId(), year)
+                    .stream()
+                    .findFirst());
   }
 }

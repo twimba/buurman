@@ -11,8 +11,8 @@ import com.buurman.document.DocumentTemplateSupport;
 
 /**
  * Thymeleaf wiring for tenant-facing letters (extension addenda, rent change notices, formal
- * notices, deposit statements). The letter bundles share the {@code letter.*} chrome keys and do
- * not collide, so a single merged message source is safe here.
+ * notices, deposit statements). The {@code letter.*} signature/footer chrome lives in its own
+ * bundle listed first; the per-letter bundles use disjoint prefixes, so one merged source is safe.
  */
 @Configuration
 public class LetterTemplateConfig {
@@ -22,6 +22,7 @@ public class LetterTemplateConfig {
       @Value("${spring.thymeleaf.cache:true}") boolean cacheTemplates) {
     return DocumentTemplateSupport.messageSource(
         cacheTemplates,
+        "classpath:messages/document-letter-chrome",
         "classpath:messages/document-extension",
         "classpath:messages/document-rent-change",
         "classpath:messages/document-payment-notice",

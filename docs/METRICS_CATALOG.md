@@ -552,3 +552,23 @@ These gauges are backed by `DatabaseMetricsService` + `DatabaseMetricsRepository
 - Template variable `$job` for Prometheus job selector (default: `buurman-backend`)
 - Database dashboard uses postgres-exporter job
 - Hetzner dashboard uses `hetzner-nodes` job
+
+### Rent collection (BUUR-101)
+
+| Metric | Type | Labels | Description |
+|--------|------|--------|-------------|
+| `buurman_payment_reminder_sent_total` ✅ | Counter | `type` (MANUAL/AUTOMATIC), `channel` | Tenant reminder queued for delivery |
+| `buurman_payment_reminder_skipped_total` ✅ | Counter | `type` | Ladder step skipped by a business rule (opt-out, no email, settled) |
+| `buurman_payment_reminder_failed_total` ✅ | Counter | `type` | Ladder step failed unexpectedly (Gotenberg, S3, DB) |
+| `buurman_payment_dunning_run_duration_seconds` ✅ | Timer | – | Daily dunning run duration |
+| `buurman_payment_dunning_team_failed_total` ✅ | Counter | – | Whole-team failure inside the dunning run |
+| `buurman_payment_formal_notice_generated_total` ✅ | Counter | – | Formal-notice PDF rendered and filed |
+| `buurman_payment_late_fee_charged_total` ✅ | Counter | `currency` | Late fee payment created |
+| `buurman_payment_late_fee_skipped_total` ✅ | Counter | `reason` (unknown_policy, not_applicable) | Candidate not charged |
+| `buurman_payment_late_fee_failed_total` ✅ | Counter | – | Charge failed and was rolled back |
+| `buurman_payment_late_fee_run_duration_seconds` ✅ | Timer | – | Daily late-fee run duration |
+| `buurman_payment_late_fee_cancelled_with_parent_total` ✅ | Counter | – | Fee closed because its rent was cancelled/written off |
+| `buurman_payment_written_off_total` / `_amount_total` ✅ | Counter | `currency` | Write-offs |
+| `buurman_payment_plan_created_total` / `_completed_total` ✅ | Counter | – | Payment plans |
+| `buurman_contact_credit_*_total` ✅ | Counter | – | Credit notes created, applied, refunded |
+| `buurman_deposit_*_total` ✅ | Counter | – | Deposit recorded, deduction, returned, forfeited |

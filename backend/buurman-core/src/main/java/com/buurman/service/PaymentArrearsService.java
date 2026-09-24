@@ -21,11 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
+import com.buurman.domain.Property;
 import com.buurman.dto.response.PaymentArrearsResponse;
 import com.buurman.dto.response.PaymentArrearsResponse.AgeingBucket;
 import com.buurman.dto.response.PaymentArrearsResponse.ContactArrears;
+import com.buurman.dto.response.PropertySummary;
 import com.buurman.mapper.ContactMapper;
 import com.buurman.mapper.PropertyMapper;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentReminderRepository;
 import com.buurman.repository.PaymentReminderRepository.ReminderSummary;
@@ -48,6 +51,7 @@ public class PaymentArrearsService {
   static final int[] BUCKET_STARTS = {1, 31, 61, 91};
 
   private final PaymentRepository paymentRepository;
+  private final ContactRepository contactRepository;
   private final PaymentReminderRepository paymentReminderRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
@@ -82,14 +86,29 @@ public class PaymentArrearsService {
     Map<UUID, ReminderSummary> reminders =
         paymentReminderRepository.summarizeByPaymentIds(
             rows.stream().map(OverduePaymentRow::paymentId).toList(), teamId);
+    Map<UUID, Contact> explicitContacts =
+        contactRepository
+            .findByIdsAndTeamId(
+                rows.stream().map(OverduePaymentRow::contactId).flatMap(Optional::stream).toList(),
+                teamId)
+            .stream()
+            .collect(Collectors.toMap(Contact::getId, Function.identity()));
+    Map<UUID, PropertySummary> properties =
+        propertyRepository
+            .findByIdsAndTeamId(
+                contracts.values().stream().map(Contract::getPropertyId).distinct().toList(),
+                teamId)
+            .stream()
+            .collect(Collectors.toMap(Property::getId, propertyMapper::toSummary));
 
     // Group rows by tenant; a payment without any linked contact groups under its contract.
     Map<String, List<OverduePaymentRow>> byTenant = new LinkedHashMap<>();
     Map<String, Optional<Contact>> tenantContacts = new LinkedHashMap<>();
     for (OverduePaymentRow row : rows) {
+      // The payment's own contact wins; otherwise the contract's primary contact.
       Optional<Contact> contact =
-          Optional.ofNullable(primaryContacts.get(row.contractId()))
-              .filter(c -> row.contactId().map(id -> id.equals(c.getId())).orElse(true))
+          row.contactId()
+              .map(explicitContacts::get)
               .or(() -> Optional.ofNullable(primaryContacts.get(row.contractId())));
       String key = contact.map(c -> "contact:" + c.getId()).orElse("contract:" + row.contractId());
       byTenant.computeIfAbsent(key, k -> new ArrayList<>()).add(row);
@@ -124,11 +143,7 @@ public class PaymentArrearsService {
               Optional.ofNullable(tenantContacts.get(entry.getKey()))
                   .flatMap(c -> c)
                   .map(contactMapper::toSummary),
-              contract.flatMap(
-                  c ->
-                      propertyRepository
-                          .findByIdAndTeamId(c.getPropertyId(), teamId)
-                          .map(propertyMapper::toSummary)),
+              contract.map(c -> properties.get(c.getPropertyId())),
               contract.flatMap(Contract::getIdentifier),
               outstanding,
               group.size(),
@@ -148,8 +163,12 @@ public class PaymentArrearsService {
     }
     contactArrears.sort(Comparator.comparing(ContactArrears::outstanding).reversed());
 
+    // Money totals are only meaningful in one currency; rows in another currency still count.
     BigDecimal total =
-        rows.stream().map(OverduePaymentRow::outstanding).reduce(BigDecimal.ZERO, BigDecimal::add);
+        rows.stream()
+            .filter(r -> currency.map(r.currency()::equals).orElse(true))
+            .map(OverduePaymentRow::outstanding)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     int oldestDays = rows.stream().mapToInt(r -> daysOverdue(r.dueDate(), today)).max().orElse(0);
 
     return new PaymentArrearsResponse(

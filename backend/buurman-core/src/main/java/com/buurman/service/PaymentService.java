@@ -46,6 +46,7 @@ import com.buurman.domain.ContactCredit;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
+import com.buurman.domain.Payment.PaymentType;
 import com.buurman.domain.PaymentPlan;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
@@ -79,7 +80,9 @@ import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.PaymentStatsResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ContactMapper;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.PaymentMapper;
@@ -258,9 +261,15 @@ public class PaymentService {
     return enrichPaymentResponse(savedPayment, teamId);
   }
 
-  private String extractPaymentErrorMessage(Exception e) {
+  /** Only rule/validation messages are safe to echo back; anything else stays generic. */
+  private static String extractPaymentErrorMessage(Exception e) {
+    boolean clientFacing =
+        e instanceof BusinessRuleException
+            || e instanceof BadRequestException
+            || e instanceof NotFoundException
+            || e instanceof jakarta.validation.ValidationException;
     String message = e.getMessage();
-    if (message == null || message.isBlank()) {
+    if (!clientFacing || message == null || message.isBlank()) {
       return "An unexpected error occurred";
     }
     return message;
@@ -687,6 +696,7 @@ public class PaymentService {
     PaymentReceival receival =
         receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
             receivalIdentifier, paymentId, teamId);
+    requireManualReceival(receival);
 
     // Validate new amount: total received minus old amount plus new amount must not exceed payment
     // amount
@@ -749,6 +759,7 @@ public class PaymentService {
     PaymentReceival receival =
         receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
             receivalIdentifier, paymentId, teamId);
+    requireManualReceival(receival);
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
@@ -853,6 +864,8 @@ public class PaymentService {
     writeOff.setUpdatedAt(clock.instant());
     receivalRepository.save(writeOff);
     recalculatePaymentStatus(payment, principal);
+    refreshPlanCompletion(payment, teamId, principal.getUserId());
+    cancelOpenLateFees(payment, "Parent payment written off", principal);
     PaymentResponse newState = enrichPaymentResponse(payment, teamId);
     Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
     changedFields.put("writtenOff", balance + " " + currency + ": " + request.reason());
@@ -1003,6 +1016,10 @@ public class PaymentService {
     if (payment.getStatus() == CANCELLED) {
       throw new BusinessRuleException("Payment is already cancelled");
     }
+    if (payment.getPaymentType() == PaymentType.INSTALMENT) {
+      throw new BusinessRuleException(
+          "Instalments cannot be cancelled on their own; cancel the payment plan instead");
+    }
     BigDecimal received =
         receivalRepository.sumByPaymentIdAndTeamId(
             payment.getId(), teamId, payment.getAmount().currency());
@@ -1029,7 +1046,45 @@ public class PaymentService {
         saved.getIdentifier().orElseThrow(),
         principal.getUserId(),
         reason);
+    cancelOpenLateFees(saved, "Parent payment cancelled", principal);
     return newState;
+  }
+
+  /**
+   * A late fee only exists because its parent rent was owed; once the parent is cancelled or
+   * written off the fee is closed too, so it is not chased on its own.
+   */
+  private void cancelOpenLateFees(Payment parent, String reason, UserPrincipal principal) {
+    if (parent.getPaymentType() != PaymentType.RENT) {
+      return;
+    }
+    for (Payment fee :
+        paymentRepository.findOpenLateFeesByParentId(parent.getId(), parent.getTeamId())) {
+      fee.setStatus(CANCELLED);
+      fee.setCancelReason(Optional.of(reason));
+      fee.setUpdatedBy(principal.getUserId());
+      fee.setUpdatedAt(clock.instant());
+      paymentRepository.save(fee);
+      metricsService.incrementCounter("payment.late_fee.cancelled_with_parent.total");
+      log.info(
+          "Cancelled late fee {} together with its parent {}",
+          fee.getIdentifier().map(Object::toString).orElse("?"),
+          parent.getIdentifier().map(Object::toString).orElse("?"));
+    }
+  }
+
+  /** Receivals created by credits, write-offs or plans are reversed through their own actions. */
+  private static void requireManualReceival(PaymentReceival receival) {
+    if (receival.getReceivalType() != PaymentReceival.ReceivalType.PAYMENT) {
+      throw new BusinessRuleException(
+          "This entry was created by a "
+              + receival
+                  .getReceivalType()
+                  .name()
+                  .toLowerCase(java.util.Locale.ROOT)
+                  .replace('_', ' ')
+              + " and cannot be edited or deleted directly");
+    }
   }
 
   // --- End receival operations ---
@@ -1318,6 +1373,30 @@ public class PaymentService {
     Map<UUID, Contact> primaryContactByContract =
         contractPartyService.getPrimaryContactsForContracts(contractIds, teamId);
 
+    // Batch-fetch parent rents of late fees and plans of instalments (identifiers only)
+    Map<UUID, Sid> parentIdentifiers =
+        paymentRepository
+            .findByIdsAndTeamId(
+                payments.stream()
+                    .map(Payment::getParentPaymentId)
+                    .flatMap(Optional::stream)
+                    .collect(toSet()),
+                teamId)
+            .stream()
+            .filter(p -> p.getIdentifier().isPresent())
+            .collect(toMap(Payment::getId, p -> p.getIdentifier().orElseThrow()));
+    Map<UUID, Sid> planIdentifiers =
+        paymentPlanRepository
+            .findByIdsAndTeamId(
+                payments.stream()
+                    .map(Payment::getPaymentPlanId)
+                    .flatMap(Optional::stream)
+                    .collect(toSet()),
+                teamId)
+            .stream()
+            .filter(p -> p.getIdentifier().isPresent())
+            .collect(toMap(PaymentPlan::getId, p -> p.getIdentifier().orElseThrow()));
+
     // Batch-fetch explicit contacts assigned to payments
     Set<UUID> explicitContactIds =
         payments.stream()
@@ -1407,11 +1486,11 @@ public class PaymentService {
               base.createdAt(),
               base.updatedAt(),
               base.paymentType(),
-              parentIdentifier(payment, teamId),
+              payment.getParentPaymentId().map(parentIdentifiers::get),
               base.cancelReason(),
               base.waivedAt(),
               base.waiveReason(),
-              planIdentifier(payment, teamId)));
+              payment.getPaymentPlanId().map(planIdentifiers::get)));
     }
     return responses;
   }

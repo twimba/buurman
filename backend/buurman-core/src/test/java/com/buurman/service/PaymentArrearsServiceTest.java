@@ -54,6 +54,7 @@ class PaymentArrearsServiceTest {
   @Mock private PaymentReminderRepository paymentReminderRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private PropertyRepository propertyRepository;
+  @Mock private com.buurman.repository.ContactRepository contactRepository;
   @Mock private ContractPartyService contractPartyService;
   @Mock private ContactMapper contactMapper;
   @Mock private PropertyMapper propertyMapper;
@@ -69,6 +70,7 @@ class PaymentArrearsServiceTest {
     service =
         new PaymentArrearsService(
             paymentRepository,
+            contactRepository,
             paymentReminderRepository,
             contractRepository,
             propertyRepository,
@@ -203,7 +205,6 @@ class PaymentArrearsServiceTest {
                     Optional.empty(),
                     DataRetentionStatus.ACTIVE);
               });
-      when(propertyRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
 
       PaymentArrearsResponse response = service.getArrears(principal);
 

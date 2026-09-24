@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -79,14 +80,19 @@ public class MailgunEmailSender implements NotificationChannelSender {
           request.subject().orElseThrow(() -> new NotificationSendException("subject is required"));
 
       List<File> tempFiles = new ArrayList<>();
+      Path tempDir = null;
       Message.MessageBuilder builder =
           Message.builder()
               .from(fromName + " <" + fromEmail + ">")
               .to(recipient)
               .subject(subject)
               .html(request.body());
-      for (EmailAttachment attachment : request.attachments().orElse(List.of())) {
-        tempFiles.add(materialize(attachment));
+      List<EmailAttachment> stored = request.attachments().orElse(List.of());
+      if (!stored.isEmpty()) {
+        tempDir = Files.createTempDirectory("buurman-mail-");
+        for (EmailAttachment attachment : stored) {
+          tempFiles.add(materialize(tempDir, attachment));
+        }
       }
       if (!tempFiles.isEmpty()) {
         builder.attachment(tempFiles);
@@ -97,7 +103,7 @@ public class MailgunEmailSender implements NotificationChannelSender {
       try {
         response = mailgunApi.sendMessage(domain, message);
       } finally {
-        tempFiles.forEach(f -> f.delete());
+        cleanup(tempDir, tempFiles);
       }
       String messageId = response.getId().replaceAll("^<|>$", "");
 
@@ -117,15 +123,23 @@ public class MailgunEmailSender implements NotificationChannelSender {
   }
 
   /** Mailgun's SDK attaches java.io.File only, so stored attachments are spooled to a temp dir. */
-  private File materialize(EmailAttachment attachment) throws IOException {
-    Path dir = Files.createTempDirectory("buurman-mail-");
+  private File materialize(Path dir, EmailAttachment attachment) throws IOException {
     Path file = dir.resolve(Path.of(attachment.fileName()).getFileName());
     try (InputStream in = s3StorageService.downloadFile(attachment.fileKey())) {
       Files.copy(in, file);
     }
-    file.toFile().deleteOnExit();
-    dir.toFile().deleteOnExit();
     return file.toFile();
+  }
+
+  private static void cleanup(@Nullable Path dir, List<File> files) {
+    files.forEach(File::delete);
+    if (dir != null) {
+      try {
+        Files.deleteIfExists(dir);
+      } catch (IOException e) {
+        log.warn("Could not remove mail temp dir {}: {}", dir, e.getMessage());
+      }
+    }
   }
 
   @Override

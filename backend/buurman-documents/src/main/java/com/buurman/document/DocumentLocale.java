@@ -4,12 +4,12 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.buurman.exception.BadRequestException;
+import com.buurman.util.DocumentLanguages;
 
 /** The languages a generated document (booklet, summary card or letter) can be rendered in. */
 public final class DocumentLocale {
 
-  public static final Set<String> SUPPORTED_LANGUAGES =
-      Set.of("en", "nl", "de", "fr", "pt", "es", "sv", "it", "fi", "el", "pl", "da", "nb");
+  public static final Set<String> SUPPORTED_LANGUAGES = DocumentLanguages.SUPPORTED;
 
   private DocumentLocale() {}
 

@@ -31,6 +31,7 @@ class TenantLetterLocaleRenderTest {
       List.of("en", "nl", "de", "fr", "pt", "es", "sv", "it", "fi", "el", "pl", "da", "nb");
 
   private SpringTemplateEngine engine;
+  private ReloadableResourceBundleMessageSource messages;
 
   @BeforeEach
   void setUp() {
@@ -43,12 +44,14 @@ class TenantLetterLocaleRenderTest {
 
     ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
     ms.setBasenames(
+        "classpath:messages/document-letter-chrome",
         "classpath:messages/document-extension",
         "classpath:messages/document-payment-notice",
         "classpath:messages/document-deposit-statement");
     ms.setDefaultEncoding("UTF-8");
     ms.setFallbackToSystemLocale(false);
     ms.setUseCodeAsDefaultMessage(true);
+    messages = ms;
     engine = new SpringTemplateEngine();
     engine.setTemplateResolver(resolver);
     engine.setMessageSource(ms);
@@ -74,6 +77,16 @@ class TenantLetterLocaleRenderTest {
         .doesNotContain("letter.")
         .contains("EUR 1,250.00")
         .contains("ctr_01TEST");
+
+    // The title must come from this locale's own bundle, not fall back to English.
+    String titleKey =
+        template.startsWith("payment-formal-notice") ? "notice.title" : "deposit.title";
+    Locale loc = Locale.forLanguageTag(locale);
+    String title = messages.getMessage(titleKey, null, loc);
+    assertThat(html).contains(title);
+    if (!locale.equals("en")) {
+      assertThat(title).isNotEqualTo(messages.getMessage(titleKey, null, Locale.ENGLISH));
+    }
   }
 
   private static Map<String, Object> allVars() {
