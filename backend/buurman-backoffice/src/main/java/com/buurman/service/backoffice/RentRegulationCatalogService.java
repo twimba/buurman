@@ -289,6 +289,8 @@ public class RentRegulationCatalogService {
         "lateFeeNotes",
         Optional.ofNullable(cur.lateFee()).map(l -> nv(l.notes())).orElse(""),
         Optional.ofNullable(tgt.lateFee()).map(l -> nv(l.notes())).orElse(""));
+    addFieldDiff(
+        fields, "formalNoticeDays", nv(cur.formalNoticeDays()), nv(tgt.formalNoticeDays()));
     return fields;
   }
 
@@ -491,6 +493,7 @@ public class RentRegulationCatalogService {
             .lateFeeMaxPercentage(
                 Optional.ofNullable(country.lateFee()).map(CatalogLateFee::maxPercentage))
             .lateFeeNotes(Optional.ofNullable(country.lateFee()).map(CatalogLateFee::notes))
+            .formalNoticeDays(Optional.ofNullable(country.formalNoticeDays()))
             .createdBy(Optional.of(actor))
             .updatedBy(Optional.of(actor))
             .build();
@@ -609,7 +612,8 @@ public class RentRegulationCatalogService {
             : new CatalogLateFee(
                 country.getLateFeePolicy(),
                 country.getLateFeeMaxPercentage().orElse(null),
-                country.getLateFeeNotes().orElse(null)));
+                country.getLateFeeNotes().orElse(null)),
+        country.getFormalNoticeDays().orElse(null));
   }
 
   private CatalogRule toCatalogRule(RentRegulationRule rule, Map<UUID, String> regionCodeById) {

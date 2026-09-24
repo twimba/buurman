@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "En {{country}} solo puede aplicarse el interés legal a la renta impagada; no pueden activarse recargos fijos.",
       "FORBIDDEN": "Los recargos por demora en alquileres de vivienda no están permitidos en {{country}}.",
       "overCap": "El porcentaje indicado supera este límite."
-    }
+    },
+    "formalNoticeDays": "Plazo del requerimiento (días)",
+    "formalNoticeDaysHelp": "Días que tiene el inquilino para pagar tras un requerimiento formal. Deje vacío para usar el valor por defecto de {{count}} días.",
+    "formalNoticeDaysCountryDefault": "Deje vacío para usar el valor por defecto de {{country}}: {{count}} días."
   },
   "statusChange": {
     "title": "Cambiar Estado del Contrato",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Recargos no permitidos",
         "UNKNOWN": "Desconocido"
       },
-      "maxPercentage": "Máximo {{percentage}}% del importe debido"
+      "maxPercentage": "Máximo {{percentage}}% del importe debido",
+      "noticeDays": "Plazo del requerimiento: {{count}} días"
     }
   },
   "rentIncrease": {

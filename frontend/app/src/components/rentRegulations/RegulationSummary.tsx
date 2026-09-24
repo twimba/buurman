@@ -92,6 +92,11 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
             {country.lateFeeNotes && (
               <p className="text-sm text-text-secondary mt-2">{country.lateFeeNotes}</p>
             )}
+            {country.formalNoticeDays != null && (
+              <p className="text-sm text-text-primary mt-2">
+                {t('rentRegulations.lateFees.noticeDays', { count: country.formalNoticeDays })}
+              </p>
+            )}
           </div>
         )}
 

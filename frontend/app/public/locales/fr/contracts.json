@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "En {{country}}, seuls les intérêts légaux peuvent être appliqués aux loyers impayés ; les pénalités forfaitaires ne peuvent pas être activées.",
       "FORBIDDEN": "Les pénalités de retard sur les loyers d’habitation sont interdites en {{country}}.",
       "overCap": "Le pourcentage ci-dessus dépasse ce plafond."
-    }
+    },
+    "formalNoticeDays": "Délai de mise en demeure (jours)",
+    "formalNoticeDaysHelp": "Jours accordés au locataire pour régler après une mise en demeure. Laisser vide pour le délai par défaut de {{count}} jours.",
+    "formalNoticeDaysCountryDefault": "Laisser vide pour le délai par défaut en {{country}} : {{count}} jours."
   },
   "statusChange": {
     "title": "Changer le statut du contrat",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Pénalités interdites",
         "UNKNOWN": "Inconnu"
       },
-      "maxPercentage": "Maximum {{percentage}} % du montant dû"
+      "maxPercentage": "Maximum {{percentage}} % du montant dû",
+      "noticeDays": "Délai de mise en demeure : {{count}} jours"
     }
   },
   "rentIncrease": {

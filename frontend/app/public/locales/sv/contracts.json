@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "I {{country}} får endast lagstadgad dröjsmålsränta tas ut på obetald hyra; fasta avgifter kan inte aktiveras.",
       "FORBIDDEN": "Förseningsavgifter på bostadshyra är inte tillåtna i {{country}}.",
       "overCap": "Procentsatsen ovan överstiger denna gräns."
-    }
+    },
+    "formalNoticeDays": "Betalningsfrist efter anmaning (dagar)",
+    "formalNoticeDaysHelp": "Dagar hyresgästen har på sig att betala efter en formell anmaning. Lämna tomt för standardvärdet {{count}} dagar.",
+    "formalNoticeDaysCountryDefault": "Lämna tomt för standardvärdet i {{country}}: {{count}} dagar."
   },
   "statusChange": {
     "title": "Andra kontraktsstatus",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Avgifter inte tillåtna",
         "UNKNOWN": "Okänt"
       },
-      "maxPercentage": "Högst {{percentage}} % av förfallet belopp"
+      "maxPercentage": "Högst {{percentage}} % av förfallet belopp",
+      "noticeDays": "Betalningsfrist efter anmaning: {{count}} dagar"
     }
   },
   "rentIncrease": {

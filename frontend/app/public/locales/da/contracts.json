@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "I {{country}} må der kun opkræves lovbestemte morarenter af forfalden husleje; faste gebyrer kan ikke aktiveres.",
       "FORBIDDEN": "Rykkergebyrer på boligleje er ikke tilladt i {{country}}.",
       "overCap": "Procentsatsen ovenfor overstiger denne grænse."
-    }
+    },
+    "formalNoticeDays": "Betalingsfrist efter påkrav (dage)",
+    "formalNoticeDaysHelp": "Dage lejeren har til at betale efter et formelt påkrav. Lad feltet stå tomt for standarden på {{count}} dage.",
+    "formalNoticeDaysCountryDefault": "Lad feltet stå tomt for standarden i {{country}}: {{count}} dage."
   },
   "statusChange": {
     "title": "Skift kontraktstatus",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Gebyrer ikke tilladt",
         "UNKNOWN": "Ukendt"
       },
-      "maxPercentage": "Højst {{percentage}} % af det forfaldne beløb"
+      "maxPercentage": "Højst {{percentage}} % af det forfaldne beløb",
+      "noticeDays": "Betalingsfrist efter påkrav: {{count}} dage"
     }
   },
   "rentIncrease": {

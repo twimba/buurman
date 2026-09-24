@@ -73,7 +73,8 @@ public class RentRegulationService {
         rules,
         country.getLateFeePolicy(),
         country.getLateFeeMaxPercentage(),
-        country.getLateFeeNotes());
+        country.getLateFeeNotes(),
+        country.getFormalNoticeDays());
   }
 
   @PreAuthorize("isAuthenticated()")
@@ -166,7 +167,8 @@ public class RentRegulationService {
         isStale(country),
         country.getLateFeePolicy(),
         country.getLateFeeMaxPercentage(),
-        country.getLateFeeNotes());
+        country.getLateFeeNotes(),
+        country.getFormalNoticeDays());
   }
 
   private RentRegulationRegionResponse toRegionResponse(RentRegulationRegion region) {

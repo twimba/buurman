@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "In {{country}} only statutory default interest may be charged on overdue rent; flat late fees cannot be enabled.",
       "FORBIDDEN": "Late fees on residential rent are not permitted in {{country}}.",
       "overCap": "The percentage above exceeds this cap."
-    }
+    },
+    "formalNoticeDays": "Formal notice period (days)",
+    "formalNoticeDaysHelp": "Days the tenant gets to settle after a formal notice. Leave empty to use the default of {{count}} days.",
+    "formalNoticeDaysCountryDefault": "Leave empty to use the {{country}} default of {{count}} days."
   },
   "statusChange": {
     "title": "Change Contract Status",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Late fees not permitted",
         "UNKNOWN": "Unknown"
       },
-      "maxPercentage": "Maximum {{percentage}}% of the amount due"
+      "maxPercentage": "Maximum {{percentage}}% of the amount due",
+      "noticeDays": "Formal notice period: {{count}} days"
     }
   },
   "rentIncrease": {

@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "In {{country}} dürfen auf rückständige Miete nur gesetzliche Verzugszinsen berechnet werden; pauschale Gebühren können nicht aktiviert werden.",
       "FORBIDDEN": "Verzugsgebühren auf Wohnraummiete sind in {{country}} nicht zulässig.",
       "overCap": "Der obige Prozentsatz überschreitet diese Grenze."
-    }
+    },
+    "formalNoticeDays": "Mahnfrist (Tage)",
+    "formalNoticeDaysHelp": "Tage, die der Mieter nach einer Mahnung zur Zahlung hat. Leer lassen für den Standard von {{count}} Tagen.",
+    "formalNoticeDaysCountryDefault": "Leer lassen für den Standard von {{country}}: {{count}} Tage."
   },
   "statusChange": {
     "title": "Vertragsstatus ändern",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Gebühren nicht erlaubt",
         "UNKNOWN": "Unbekannt"
       },
-      "maxPercentage": "Höchstens {{percentage}}% des fälligen Betrags"
+      "maxPercentage": "Höchstens {{percentage}}% des fälligen Betrags",
+      "noticeDays": "Mahnfrist: {{count}} Tage"
     }
   },
   "rentIncrease": {

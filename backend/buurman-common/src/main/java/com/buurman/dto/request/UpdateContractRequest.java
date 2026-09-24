@@ -14,6 +14,8 @@ import com.buurman.domain.identifier.PropertyIdentifier;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -58,7 +60,10 @@ public record UpdateContractRequest(
     Optional<LocalDate> remindersPausedUntil,
     Optional<Boolean> lateFeeEnabled,
     Optional<@PositiveOrZero(message = "Grace days must be zero or positive") Integer>
-        lateFeeGraceDays) {
+        lateFeeGraceDays,
+    Optional<
+            @Min(value = 1, message = "Formal notice period must be at least 1 day") @Max(value = 365, message = "Formal notice period must be at most 365 days") Integer>
+        formalNoticeDays) {
 
   // Bean Validation evaluates all constraints simultaneously, so @AssertTrue can run even when
   // @NotNull fails — null guards prevent NPE in that case.

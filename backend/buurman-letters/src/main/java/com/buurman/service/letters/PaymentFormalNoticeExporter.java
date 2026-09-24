@@ -22,6 +22,7 @@ import com.buurman.domain.ContractPaymentInstruction;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.Property;
+import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContactRepository;
@@ -31,6 +32,7 @@ import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.RentRegulationRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.document.TenantNoticeDocumentService;
 import com.buurman.util.CurrencyUtils;
@@ -44,7 +46,9 @@ import com.buurman.util.CurrencyUtils;
 public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService {
 
   static final String DOCUMENT_TYPE = "payment-formal-notice";
-  static final int DEADLINE_DAYS = 14;
+
+  /** Fallback when neither the contract nor the country regulation sets a notice period. */
+  static final int DEFAULT_DEADLINE_DAYS = 14;
 
   private final PaymentRepository paymentRepository;
   private final PaymentReceivalRepository receivalRepository;
@@ -54,6 +58,7 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
   private final ContractPartyService contractPartyService;
   private final ContractPaymentInstructionRepository cpiRepository;
   private final PaymentInstructionRepository paymentInstructionRepository;
+  private final RentRegulationRepository rentRegulationRepository;
   private final LetterExporterHelper helper;
   private final LetterTemplateService documentTemplateService;
   private final MessageSource messageSource;
@@ -68,6 +73,7 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
       ContractPartyService contractPartyService,
       ContractPaymentInstructionRepository cpiRepository,
       PaymentInstructionRepository paymentInstructionRepository,
+      RentRegulationRepository rentRegulationRepository,
       LetterExporterHelper helper,
       LetterTemplateService documentTemplateService,
       @Qualifier("letterMessageSource") MessageSource messageSource,
@@ -80,6 +86,7 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
     this.contractPartyService = contractPartyService;
     this.cpiRepository = cpiRepository;
     this.paymentInstructionRepository = paymentInstructionRepository;
+    this.rentRegulationRepository = rentRegulationRepository;
     this.helper = helper;
     this.documentTemplateService = documentTemplateService;
     this.messageSource = messageSource;
@@ -142,8 +149,12 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
     vars.put("outstanding", CurrencyUtils.formatCurrency(data.outstanding(), currency, locale));
     vars.put("dueDate", data.payment().getDueDate().format(dateFmt));
     vars.put("daysOverdue", data.daysOverdue());
-    vars.put("deadline", today.plusDays(DEADLINE_DAYS).format(dateFmt));
-    vars.put("deadlineDays", DEADLINE_DAYS);
+    int deadlineDays =
+        resolveDeadlineDays(
+            data.contract(),
+            data.contract().getCountryCode().flatMap(rentRegulationRepository::findCountryByCode));
+    vars.put("deadline", today.plusDays(deadlineDays).format(dateFmt));
+    vars.put("deadlineDays", deadlineDays);
     vars.putAll(paymentInstructionVariables(data.contract().getId(), teamId));
     Optional<String> countryCode = data.contract().getCountryCode();
     vars.put("countryCode", countryCode.orElse(null));
@@ -184,5 +195,16 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
     vars.put("accountHolderName", holder);
     vars.put("paymentReference", reference);
     return vars;
+  }
+
+  /**
+   * Notice period precedence: the contract's own setting, then the country regulation's default,
+   * then {@link #DEFAULT_DEADLINE_DAYS}.
+   */
+  static int resolveDeadlineDays(Contract contract, Optional<RentRegulationCountry> regulation) {
+    return contract
+        .getFormalNoticeDays()
+        .or(() -> regulation.flatMap(RentRegulationCountry::getFormalNoticeDays))
+        .orElse(DEFAULT_DEADLINE_DAYS);
   }
 }

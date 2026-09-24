@@ -19,4 +19,5 @@ public record RentRegulationCountryResponse(
     boolean stale,
     LateFeePolicy lateFeePolicy,
     Optional<BigDecimal> lateFeeMaxPercentage,
-    Optional<String> lateFeeNotes) {}
+    Optional<String> lateFeeNotes,
+    Optional<Integer> formalNoticeDays) {}

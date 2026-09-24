@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "In {{country}} sul canone arretrato possono applicarsi solo gli interessi legali; le penali fisse non possono essere attivate.",
       "FORBIDDEN": "Le penali di mora sui canoni abitativi non sono consentite in {{country}}.",
       "overCap": "La percentuale indicata supera questo limite."
-    }
+    },
+    "formalNoticeDays": "Termine della diffida (giorni)",
+    "formalNoticeDaysHelp": "Giorni concessi all’inquilino per pagare dopo una diffida. Lasciare vuoto per il valore predefinito di {{count}} giorni.",
+    "formalNoticeDaysCountryDefault": "Lasciare vuoto per il valore predefinito di {{country}}: {{count}} giorni."
   },
   "statusChange": {
     "title": "Cambia stato del contratto",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Penali non consentite",
         "UNKNOWN": "Sconosciuto"
       },
-      "maxPercentage": "Massimo {{percentage}}% dell’importo dovuto"
+      "maxPercentage": "Massimo {{percentage}}% dell’importo dovuto",
+      "noticeDays": "Termine della diffida: {{count}} giorni"
     }
   },
   "rentIncrease": {

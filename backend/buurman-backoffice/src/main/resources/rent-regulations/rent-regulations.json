@@ -13,6 +13,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "Statutory default interest (4% p.a., \u00a71000 ABGB; higher contractual rates reducible by court). Flat late fees on Wohnraum are not customary and may be void under KSchG. Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 14,
             "rules": [
                 {
                     "year": 2027,
@@ -119,6 +120,7 @@
                 "policy": "ALLOWED",
                 "notes": "Contractual late-payment interest and a reasonable indemnity clause are permitted; courts reduce excessive penalties (art. 5.88 BW / former art. 1231 BW). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 15,
             "regions": [
                 {
                     "regionCode": "BRU",
@@ -349,6 +351,7 @@
                 "policy": "CAPPED",
                 "notes": "Varies by province: Ontario allows no late fee beyond actual costs (RTA), British Columbia caps at CAD 25 (RTB Regulation s.7), Quebec allows none beyond legal interest. Advisory \u2014 verify per province."
             },
+            "formalNoticeDays": 14,
             "regions": [
                 {
                     "regionCode": "AB",
@@ -1417,6 +1420,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "Default interest of 5% p.a. (art. 104 OR) once the tenant is in default; flat penalty clauses in residential leases are uncommon and may be reduced (art. 163 OR). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 30,
             "regions": [
                 {
                     "regionCode": "BE",
@@ -1616,6 +1620,7 @@
                 "policy": "CAPPED",
                 "notes": "\u00a72239 NOZ (as amended 2020): contractual penalties in residential leases permitted but penalty plus deposit may not exceed three months' rent; statutory default interest applies. Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 15,
             "rules": [
                 {
                     "year": 2026,
@@ -1694,6 +1699,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "Verzugszinsen \u00a7288 BGB (5 percentage points above base rate); flat Mahngeb\u00fchren limited to actual costs (typically \u2264 \u20ac2.50). Pauschale late fees in Wohnraummietvertr\u00e4ge are void (\u00a7307 BGB). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 14,
             "regions": [
                 {
                     "regionCode": "BB",
@@ -2669,6 +2675,7 @@
                 "policy": "CAPPED",
                 "notes": "Lejeloven \u00a793/\u00a794: a written reminder fee is capped at a statutory DKK amount (indexed; DKK 316 in 2026) after a 3-day grace period; no percentage-based fee. Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 14,
             "rules": [
                 {
                     "year": 2026,
@@ -2779,6 +2786,7 @@
                 "policy": "ALLOWED",
                 "notes": "LAU does not cap late fees; contractual interest and penalty clauses are enforceable subject to consumer-law fairness review (courts may reduce). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 10,
             "regions": [
                 {
                     "regionCode": "CAT",
@@ -3032,6 +3040,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "Korkolaki default interest (reference rate + 7 pp); reminder fees limited to reasonable costs (max \u20ac5 per reminder for consumer debt). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 14,
             "rules": [
                 {
                     "year": 2026,
@@ -3122,6 +3131,7 @@
                 "policy": "FORBIDDEN",
                 "notes": "Loi 89-462 art. 4: clauses imposing penalties or fees for late rent are deemed unwritten (r\u00e9put\u00e9es non \u00e9crites); only legal interest via formal demand. Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 15,
             "regions": [
                 {
                     "regionCode": "FR-BORDEAUX",
@@ -3809,6 +3819,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "Tenant Fees Act 2019 (England): default fee for late rent limited to interest at 3% over Bank of England base rate, chargeable only once rent is 14+ days late; Wales/Scotland similar. Advisory \u2014 verify per nation."
             },
+            "formalNoticeDays": 14,
             "regions": [
                 {
                     "regionCode": "ENG",
@@ -4065,6 +4076,7 @@
                 "policy": "ALLOWED",
                 "notes": "No statutory cap; RTB expects any late-payment charge to be reasonable and set out in the tenancy agreement. Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 28,
             "rules": [
                 {
                     "year": 2026,
@@ -4136,6 +4148,7 @@
                 "policy": "ALLOWED",
                 "notes": "Penalty clauses (clausola penale) are permitted but the court may reduce manifestly excessive amounts (art. 1384 c.c.); legal interest applies by default. Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 20,
             "rules": [
                 {
                     "year": 2026,
@@ -4248,6 +4261,7 @@
                 "policy": "ALLOWED",
                 "notes": "No statutory cap; contractual default interest and indemnity clauses apply subject to fairness review. Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 15,
             "rules": [
                 {
                     "year": 2026,
@@ -4337,6 +4351,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "Statutory interest (wettelijke rente, art. 6:119 BW) applies; flat boetebedingen in residential leases are routinely voided as unfair terms (EU Directive 93/13, HR 2019). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 14,
             "rules": [
                 {
                     "year": 2026,
@@ -4519,6 +4534,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "Forsinkelsesrenteloven default interest; reminder fees capped at a fraction of the inkassosats (NOK 35 in 2026). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 14,
             "rules": [
                 {
                     "year": 2026,
@@ -4593,6 +4609,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "Statutory interest for delay (odsetki ustawowe za op\u00f3\u017anienie, art. 481 KC); penalty clauses for monetary obligations are not permitted (art. 483 KC). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 30,
             "rules": [
                 {
                     "year": 2026,
@@ -4701,6 +4718,7 @@
                 "maxPercentage": 20.0,
                 "notes": "C\u00f3digo Civil art. 1041 (Lei 13/2019): after 8 days' delay the landlord may claim an indemnity of 20% of the amount due, or terminate; no higher fee permitted. Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 8,
             "rules": [
                 {
                     "year": 2026,
@@ -4778,6 +4796,7 @@
                 "policy": "INTEREST_ONLY",
                 "notes": "R\u00e4ntelagen default interest (reference rate + 8 pp); reminder fee capped at SEK 60 (lag 1981:739). Advisory \u2014 verify locally."
             },
+            "formalNoticeDays": 14,
             "rules": [
                 {
                     "year": 2026,
@@ -4846,6 +4865,7 @@
                 "policy": "CAPPED",
                 "notes": "Varies by state: New York caps at the lesser of USD 50 or 5% after a 5-day grace (HSTPA 2019), California requires reasonableness, others set 5\u201310% caps. Advisory \u2014 verify per state."
             },
+            "formalNoticeDays": 14,
             "regions": [
                 {
                     "regionCode": "CA",

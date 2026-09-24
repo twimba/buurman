@@ -107,6 +107,7 @@ export interface ContractResponse {
   remindersPausedUntil?: string;
   lateFeeEnabled?: boolean;
   lateFeeGraceDays?: number;
+  formalNoticeDays?: number;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;

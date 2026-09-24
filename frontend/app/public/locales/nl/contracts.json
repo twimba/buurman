@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "In {{country}} mag alleen wettelijke rente over achterstallige huur worden gerekend; vaste boetes kunnen niet worden ingeschakeld.",
       "FORBIDDEN": "Boetes op achterstallige huur zijn niet toegestaan in {{country}}.",
       "overCap": "Het bovenstaande percentage overschrijdt dit maximum."
-    }
+    },
+    "formalNoticeDays": "Termijn ingebrekestelling (dagen)",
+    "formalNoticeDaysHelp": "Dagen die de huurder krijgt om te betalen na een ingebrekestelling. Leeg laten voor de standaard van {{count}} dagen.",
+    "formalNoticeDaysCountryDefault": "Leeg laten voor de standaard van {{country}}: {{count}} dagen."
   },
   "statusChange": {
     "title": "Contractstatus wijzigen",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Boetes niet toegestaan",
         "UNKNOWN": "Onbekend"
       },
-      "maxPercentage": "Maximaal {{percentage}}% van het verschuldigde bedrag"
+      "maxPercentage": "Maximaal {{percentage}}% van het verschuldigde bedrag",
+      "noticeDays": "Termijn ingebrekestelling: {{count}} dagen"
     }
   },
   "rentIncrease": {

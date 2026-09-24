@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "Maassa {{country}} myöhästyneestä vuokrasta saa periä vain lakisääteisen viivästyskoron; kiinteitä maksuja ei voi ottaa käyttöön.",
       "FORBIDDEN": "Viivästysmaksut asuinvuokrista eivät ole sallittuja maassa {{country}}.",
       "overCap": "Yllä oleva prosentti ylittää tämän rajan."
-    }
+    },
+    "formalNoticeDays": "Maksuvaatimuksen määräaika (päivää)",
+    "formalNoticeDaysHelp": "Päivät, jotka vuokralaisella on aikaa maksaa virallisen maksuvaatimuksen jälkeen. Jätä tyhjäksi käyttääksesi oletusta {{count}} päivää.",
+    "formalNoticeDaysCountryDefault": "Jätä tyhjäksi käyttääksesi maan {{country}} oletusta: {{count}} päivää."
   },
   "statusChange": {
     "title": "Vaihda sopimuksen tila",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Maksut kielletty",
         "UNKNOWN": "Tuntematon"
       },
-      "maxPercentage": "Enintään {{percentage}} % erääntyneestä summasta"
+      "maxPercentage": "Enintään {{percentage}} % erääntyneestä summasta",
+      "noticeDays": "Maksuvaatimuksen määräaika: {{count}} päivää"
     }
   },
   "rentIncrease": {

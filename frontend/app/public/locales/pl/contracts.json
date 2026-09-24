@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "W {{country}} od zaległego czynszu można naliczać wyłącznie odsetki ustawowe; stałych opłat nie można włączyć.",
       "FORBIDDEN": "Opłaty za zwłokę od czynszu mieszkaniowego są niedozwolone w {{country}}.",
       "overCap": "Powyższy procent przekracza ten limit."
-    }
+    },
+    "formalNoticeDays": "Termin wezwania do zapłaty (dni)",
+    "formalNoticeDaysHelp": "Dni, jakie najemca ma na zapłatę po formalnym wezwaniu. Pozostaw puste, aby użyć domyślnych {{count}} dni.",
+    "formalNoticeDaysCountryDefault": "Pozostaw puste, aby użyć wartości domyślnej dla {{country}}: {{count}} dni."
   },
   "statusChange": {
     "title": "Zmień status umowy",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Opłaty niedozwolone",
         "UNKNOWN": "Nieznane"
       },
-      "maxPercentage": "Maksymalnie {{percentage}}% należnej kwoty"
+      "maxPercentage": "Maksymalnie {{percentage}}% należnej kwoty",
+      "noticeDays": "Termin wezwania do zapłaty: {{count}} dni"
     }
   },
   "rentIncrease": {

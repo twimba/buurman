@@ -51,6 +51,10 @@ class RentRegulationCatalogTest {
           .as("lateFee.policy for %s", country.countryCode())
           .isNotNull()
           .isNotEqualTo(LateFeePolicy.UNKNOWN);
+      assertThat(country.formalNoticeDays())
+          .as("formalNoticeDays for %s", country.countryCode())
+          .isNotNull()
+          .isBetween(1, 365);
       if (country.lateFee().maxPercentage() != null) {
         assertThat(country.lateFee().policy()).isEqualTo(LateFeePolicy.CAPPED);
         assertThat(country.lateFee().maxPercentage()).isPositive();

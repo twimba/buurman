@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "Em {{country}} apenas podem ser cobrados juros de mora legais sobre rendas em atraso; penalizações fixas não podem ser ativadas.",
       "FORBIDDEN": "Penalizações por atraso em rendas habitacionais não são permitidas em {{country}}.",
       "overCap": "A percentagem acima excede este limite."
-    }
+    },
+    "formalNoticeDays": "Prazo da interpelação (dias)",
+    "formalNoticeDaysHelp": "Dias que o inquilino tem para pagar após uma interpelação formal. Deixe vazio para usar o valor por defeito de {{count}} dias.",
+    "formalNoticeDaysCountryDefault": "Deixe vazio para usar o valor por defeito de {{country}}: {{count}} dias."
   },
   "statusChange": {
     "title": "Alterar Estado do Contrato",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Penalizações não permitidas",
         "UNKNOWN": "Desconhecido"
       },
-      "maxPercentage": "Máximo {{percentage}}% do montante devido"
+      "maxPercentage": "Máximo {{percentage}}% do montante devido",
+      "noticeDays": "Prazo da interpelação: {{count}} dias"
     }
   },
   "rentIncrease": {

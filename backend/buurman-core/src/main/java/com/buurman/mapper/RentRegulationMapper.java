@@ -40,7 +40,8 @@ public class RentRegulationMapper {
         isStale(country),
         country.getLateFeePolicy(),
         country.getLateFeeMaxPercentage(),
-        country.getLateFeeNotes());
+        country.getLateFeeNotes(),
+        country.getFormalNoticeDays());
   }
 
   public RentRegulationCountryDetailResponse toCountryDetailResponse(
@@ -59,7 +60,8 @@ public class RentRegulationMapper {
         rules.stream().map(this::toRuleResponse).toList(),
         country.getLateFeePolicy(),
         country.getLateFeeMaxPercentage(),
-        country.getLateFeeNotes());
+        country.getLateFeeNotes(),
+        country.getFormalNoticeDays());
   }
 
   public RentRegulationRegionResponse toRegionResponse(RentRegulationRegion region) {

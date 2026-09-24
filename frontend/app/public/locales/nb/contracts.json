@@ -407,7 +407,10 @@
       "INTEREST_ONLY": "I {{country}} kan bare lovbestemt forsinkelsesrente kreves på forfalt husleie; faste gebyrer kan ikke aktiveres.",
       "FORBIDDEN": "Purregebyrer på boligleie er ikke tillatt i {{country}}.",
       "overCap": "Prosentsatsen ovenfor overstiger denne grensen."
-    }
+    },
+    "formalNoticeDays": "Betalingsfrist etter varsel (dager)",
+    "formalNoticeDaysHelp": "Dager leietakeren har til å betale etter et formelt varsel. La feltet stå tomt for standarden på {{count}} dager.",
+    "formalNoticeDaysCountryDefault": "La feltet stå tomt for standarden i {{country}}: {{count}} dager."
   },
   "statusChange": {
     "title": "Endre kontraktstatus",
@@ -519,7 +522,8 @@
         "FORBIDDEN": "Gebyrer ikke tillatt",
         "UNKNOWN": "Ukjent"
       },
-      "maxPercentage": "Maks {{percentage}} % av forfalt beløp"
+      "maxPercentage": "Maks {{percentage}} % av forfalt beløp",
+      "noticeDays": "Betalingsfrist etter varsel: {{count}} dager"
     }
   },
   "rentIncrease": {

@@ -155,6 +155,7 @@ export const ContractForm = ({
     lateFeePercentage: contract?.lateFeePercentage ?? undefined,
     lateFeeEnabled: contract?.lateFeeEnabled ?? false,
     lateFeeGraceDays: contract?.lateFeeGraceDays ?? 0,
+    formalNoticeDays: contract?.formalNoticeDays ?? undefined,
     termsAndConditions: contract?.termsAndConditions ?? '',
     notes: contract?.notes ?? '',
     countryMetadata: contract?.countryMetadata ?? undefined,
@@ -1205,6 +1206,39 @@ export const ContractForm = ({
                   placeholder="2.5"
                   disabled={isLoading}
                 />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="formalNoticeDays"
+                  className="block text-sm font-medium text-text-secondary mb-1"
+                >
+                  {t('form.formalNoticeDays')}
+                </label>
+                <input
+                  id="formalNoticeDays"
+                  type="number"
+                  min="1"
+                  max="365"
+                  value={formData.formalNoticeDays ?? ''}
+                  onChange={(e) =>
+                    handleChange(
+                      'formalNoticeDays',
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  placeholder={String(regulation?.formalNoticeDays ?? 14)}
+                  disabled={isLoading}
+                />
+                <p className="text-xs text-text-muted mt-1">
+                  {regulation?.formalNoticeDays != null
+                    ? t('form.formalNoticeDaysCountryDefault', {
+                        country: countryName || propertyCountryCode,
+                        count: regulation.formalNoticeDays,
+                      })
+                    : t('form.formalNoticeDaysHelp', { count: 14 })}
+                </p>
               </div>
             </div>
           </div>

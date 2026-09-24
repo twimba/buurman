@@ -374,6 +374,7 @@ public class ContractService {
             .remindersPausedUntil(contract.getRemindersPausedUntil())
             .lateFeeEnabled(contract.getLateFeeEnabled())
             .lateFeeGraceDays(contract.getLateFeeGraceDays())
+            .formalNoticeDays(contract.getFormalNoticeDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -637,6 +638,7 @@ public class ContractService {
             .remindersPausedUntil(contract.getRemindersPausedUntil())
             .lateFeeEnabled(contract.getLateFeeEnabled())
             .lateFeeGraceDays(contract.getLateFeeGraceDays())
+            .formalNoticeDays(contract.getFormalNoticeDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -791,6 +793,7 @@ public class ContractService {
             .remindersPausedUntil(contract.getRemindersPausedUntil())
             .lateFeeEnabled(contract.getLateFeeEnabled())
             .lateFeeGraceDays(contract.getLateFeeGraceDays())
+            .formalNoticeDays(contract.getFormalNoticeDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -1089,7 +1092,8 @@ public class ContractService {
         contract.getTenantRemindersEnabled(),
         contract.getRemindersPausedUntil(),
         contract.getLateFeeEnabled(),
-        contract.getLateFeeGraceDays());
+        contract.getLateFeeGraceDays(),
+        contract.getFormalNoticeDays());
   }
 
   /** Batch build responses for a list of contracts (avoids N+1 for parties and contacts). */
@@ -1225,7 +1229,8 @@ public class ContractService {
                   contract.getTenantRemindersEnabled(),
                   contract.getRemindersPausedUntil(),
                   contract.getLateFeeEnabled(),
-                  contract.getLateFeeGraceDays());
+                  contract.getLateFeeGraceDays(),
+                  contract.getFormalNoticeDays());
             })
         .toList();
   }

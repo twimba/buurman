@@ -16,4 +16,5 @@ public record CatalogCountry(
     String lastReviewedAt,
     List<CatalogRegion> regions,
     List<CatalogRule> rules,
-    CatalogLateFee lateFee) {}
+    CatalogLateFee lateFee,
+    Integer formalNoticeDays) {}

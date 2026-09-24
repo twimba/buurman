@@ -54,6 +54,8 @@ public class RentRegulationRepository {
   private static final Field<BigDecimal> C_LATE_FEE_MAX_PCT =
       field("late_fee_max_percentage", BigDecimal.class);
   private static final Field<String> C_LATE_FEE_NOTES = field("late_fee_notes", String.class);
+  private static final Field<Integer> C_FORMAL_NOTICE_DAYS =
+      field("formal_notice_days", Integer.class);
   private static final Field<Timestamp> C_CREATED_AT = field("created_at", Timestamp.class);
   private static final Field<Timestamp> C_UPDATED_AT = field("updated_at", Timestamp.class);
   private static final Field<String> C_CREATED_BY = field("created_by", String.class);
@@ -151,6 +153,7 @@ public class RentRegulationRepository {
           .set(C_LATE_FEE_POLICY, country.getLateFeePolicy().name())
           .set(C_LATE_FEE_MAX_PCT, country.getLateFeeMaxPercentage().orElse(null))
           .set(C_LATE_FEE_NOTES, country.getLateFeeNotes().orElse(null))
+          .set(C_FORMAL_NOTICE_DAYS, country.getFormalNoticeDays().orElse(null))
           .set(C_CREATED_AT, now)
           .set(C_UPDATED_AT, now)
           .set(C_CREATED_BY, country.getCreatedBy().orElse(null))
@@ -170,6 +173,7 @@ public class RentRegulationRepository {
           .set(C_LATE_FEE_POLICY, country.getLateFeePolicy().name())
           .set(C_LATE_FEE_MAX_PCT, country.getLateFeeMaxPercentage().orElse(null))
           .set(C_LATE_FEE_NOTES, country.getLateFeeNotes().orElse(null))
+          .set(C_FORMAL_NOTICE_DAYS, country.getFormalNoticeDays().orElse(null))
           .set(C_UPDATED_AT, now)
           .set(C_UPDATED_BY, country.getUpdatedBy().orElse(null))
           .where(C_ID.eq(country.getId()))
@@ -595,6 +599,7 @@ public class RentRegulationRepository {
             .orElse(LateFeePolicy.UNKNOWN));
     country.setLateFeeMaxPercentage(Optional.ofNullable(record.get(C_LATE_FEE_MAX_PCT)));
     country.setLateFeeNotes(Optional.ofNullable(record.get(C_LATE_FEE_NOTES)));
+    country.setFormalNoticeDays(Optional.ofNullable(record.get(C_FORMAL_NOTICE_DAYS)));
     Timestamp createdAt = record.get(C_CREATED_AT);
     if (createdAt != null) {
       country.setCreatedAt(createdAt.toInstant());

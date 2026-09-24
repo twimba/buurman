@@ -72,6 +72,10 @@ public class Contract {
   @Builder.Default private Boolean lateFeeEnabled = false;
 
   @Builder.Default private Integer lateFeeGraceDays = 0;
+
+  /** Days a tenant gets to settle after a formal notice; empty = the country default. */
+  @Builder.Default private Optional<Integer> formalNoticeDays = Optional.empty();
+
   private ContractStatus status;
   @Builder.Default private Optional<String> termsAndConditions = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();

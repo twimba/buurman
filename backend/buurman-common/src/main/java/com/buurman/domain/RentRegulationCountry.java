@@ -27,6 +27,10 @@ public class RentRegulationCountry {
   @Builder.Default private LateFeePolicy lateFeePolicy = LateFeePolicy.UNKNOWN;
   @Builder.Default private Optional<BigDecimal> lateFeeMaxPercentage = Optional.empty();
   @Builder.Default private Optional<String> lateFeeNotes = Optional.empty();
+
+  /** Default days a tenant gets to settle after a formal notice of overdue rent. */
+  @Builder.Default private Optional<Integer> formalNoticeDays = Optional.empty();
+
   private Instant createdAt;
   private Instant updatedAt;
   @Builder.Default private Optional<String> createdBy = Optional.empty();

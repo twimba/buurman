@@ -23908,6 +23908,12 @@ components:
           type: integer
           format: int32
           minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -24320,6 +24326,12 @@ components:
           type: integer
           format: int32
           minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -26371,6 +26383,12 @@ components:
           type: integer
           format: int32
           minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -29187,6 +29205,10 @@ components:
         lateFeeNotes:
           type: string
           description: Advisory notes on the late-fee regime
+        formalNoticeDays:
+          type: integer
+          format: int32
+          description: Default number of days a tenant gets to settle after a formal notice of overdue rent
       required:
         - identifier
         - countryCode
@@ -29219,6 +29241,10 @@ components:
         lateFeeNotes:
           type: string
           description: Advisory notes on the late-fee regime
+        formalNoticeDays:
+          type: integer
+          format: int32
+          description: Default number of days a tenant gets to settle after a formal notice of overdue rent
         regions:
           type: array
           items:
