@@ -69,7 +69,7 @@ public class DocumentTemplateService {
   }
 
   private static final Set<String> SUPPORTED_LANGUAGES =
-      Set.of("en", "nl", "de", "fr", "pt", "es", "sv", "it");
+      Set.of("en", "nl", "de", "fr", "pt", "es", "sv", "it", "fi", "el", "pl", "da", "nb");
 
   /**
    * Resolves a Locale from an ISO 639-1 language code.

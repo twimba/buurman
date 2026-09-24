@@ -19,6 +19,8 @@ export interface EntityExportControlsProps {
   googleSheet: (accessToken: string) => Promise<GoogleSheetExportResult>;
   /** Visual size of the dropdown trigger. */
   size?: 'sm' | 'md';
+  /** Trigger text override (e.g. "Export deposits") when a page offers several exports. */
+  label?: string;
 }
 
 /**
@@ -35,6 +37,7 @@ export const EntityExportControls = ({
   xlsx,
   googleSheet,
   size = 'md',
+  label,
 }: EntityExportControlsProps) => {
   const { isEnabled } = useFeatureFlags();
   const {
@@ -76,6 +79,7 @@ export const EntityExportControls = ({
       />
       <ExportDropdown
         size={size}
+        label={label}
         disabled={busy}
         exporting={busy}
         options={[

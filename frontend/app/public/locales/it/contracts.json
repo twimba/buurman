@@ -24,7 +24,8 @@
       "title": "Nessun contratto",
       "description": "Inizi creando il Suo primo contratto di locazione"
     },
-    "error": "Impossibile caricare i contratti"
+    "error": "Impossibile caricare i contratti",
+    "exportDeposits": "Esporta depositi"
   },
   "create": {
     "title": "Aggiungi nuovo contratto",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Nessun promemoria viene inviato fino a questa data, ad es. durante un piano di rientro.",
     "lateFeeEnabled": "Applica penali di mora",
     "lateFeeEnabledHelp": "Aggiunge un pagamento di penale separato quando un affitto resta aperto oltre il periodo di tolleranza. Disattivato per impostazione predefinita.",
-    "lateFeeGraceDays": "Periodo di tolleranza (giorni)"
+    "lateFeeGraceDays": "Periodo di tolleranza (giorni)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Le penali di mora fisse sono consentite in {{country}}.",
+      "CAPPED": "In {{country}} le penali di mora sono limitate al {{percentage}}% dell’importo dovuto.",
+      "INTEREST_ONLY": "In {{country}} sul canone arretrato possono applicarsi solo gli interessi legali; le penali fisse non possono essere attivate.",
+      "FORBIDDEN": "Le penali di mora sui canoni abitativi non sono consentite in {{country}}.",
+      "overCap": "La percentuale indicata supera questo limite."
+    }
   },
   "statusChange": {
     "title": "Cambia stato del contratto",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Negoziato",
       "FROZEN": "Congelato",
       "OTHER": "Altro"
+    },
+    "lateFees": {
+      "title": "Penali di mora",
+      "policy": {
+        "ALLOWED": "Penali fisse consentite",
+        "CAPPED": "Penali con tetto massimo",
+        "INTEREST_ONLY": "Solo interessi legali",
+        "FORBIDDEN": "Penali non consentite",
+        "UNKNOWN": "Sconosciuto"
+      },
+      "maxPercentage": "Massimo {{percentage}}% dell’importo dovuto"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Rendiconto (PDF)",
+    "statementHelp": "Scarica un rendiconto dettagliato del deposito per l’inquilino"
   },
   "paymentPlans": {
     "title": "Piani di pagamento",

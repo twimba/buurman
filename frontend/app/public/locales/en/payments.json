@@ -12,7 +12,8 @@
     "applyCredit": "Apply credit",
     "waiveLateFee": "Waive fee",
     "writeOff": "Write off",
-    "cancelPayment": "Cancel payment"
+    "cancelPayment": "Cancel payment",
+    "formalNotice": "Formal notice (PDF)"
   },
   "stats": {
     "pendingPayments": "Pending Payments",
@@ -203,7 +204,8 @@
     "save": "Save",
     "previous": "Previous",
     "next": "Next",
-    "sendReminder": "Email the tenant about this payment"
+    "sendReminder": "Email the tenant about this payment",
+    "formalNotice": "Download a dated formal demand letter for this payment"
   },
   "errors": {
     "loadFailed": "Failed to load payments",
@@ -259,7 +261,22 @@
     "notesLabel": "Personal message (optional)",
     "notesPlaceholder": "e.g. Please transfer the amount before Friday.",
     "confirm": "Send reminder",
-    "confirmBulk": "Send {{count}} reminders"
+    "confirmBulk": "Send {{count}} reminders",
+    "toneLabel": "Tone",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Friendly",
+        "help": "A polite nudge that the payment is open."
+      },
+      "FIRM": {
+        "label": "Firm",
+        "help": "A clear demand naming the days overdue and the consequences."
+      },
+      "FINAL": {
+        "label": "Final notice",
+        "help": "Formal demand with a 14-day deadline. A signed formal-notice PDF is attached and filed under the contract."
+      }
+    }
   },
   "reminders": {
     "title": "Reminders sent",

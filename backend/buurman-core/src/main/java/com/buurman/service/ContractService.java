@@ -75,6 +75,7 @@ import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.RentRegulationRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -109,6 +110,7 @@ public class ContractService {
   private final CountryMetadataSerializer countryMetadataSerializer;
   private final CountryMetadataValidator countryMetadataValidator;
   private final CurrencyEnforcementService currencyEnforcement;
+  private final RentRegulationRepository rentRegulationRepository;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -154,6 +156,7 @@ public class ContractService {
     // Resolve country code from property
     String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountryCode());
     contract.setCountryCode(Optional.ofNullable(countryCode));
+    validateLateFee(contract);
 
     // Deserialize and validate country metadata from request
     if (request.countryMetadata() != null && countryCode != null) {
@@ -411,6 +414,7 @@ public class ContractService {
       throw new BadRequestException(
           "Country metadata can only be modified while the contract is in DRAFT status");
     }
+    validateLateFee(contract);
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmount().currency(), contract.getRentAmount().value());
@@ -1299,6 +1303,11 @@ public class ContractService {
             .map(RentComponentRequest::amount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     return com.buurman.util.MoneyAmount.of(total, currency);
+  }
+
+  private void validateLateFee(Contract contract) {
+    LateFeeService.validateAgainstRegulation(
+        contract, contract.getCountryCode().flatMap(rentRegulationRepository::findCountryByCode));
   }
 
   private void validateCurrencyRequired(@Nullable String currency, @Nullable BigDecimal amount) {

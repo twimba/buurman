@@ -24,7 +24,8 @@
       "title": "Noch keine Verträge",
       "description": "Beginnen Sie mit der Erstellung Ihres ersten Mietvertrags"
     },
-    "error": "Verträge konnten nicht geladen werden"
+    "error": "Verträge konnten nicht geladen werden",
+    "exportDeposits": "Kautionen exportieren"
   },
   "create": {
     "title": "Neuen Vertrag hinzufügen",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Bis zu diesem Datum werden keine Erinnerungen gesendet, z. B. während einer Ratenvereinbarung.",
     "lateFeeEnabled": "Mahngebühren berechnen",
     "lateFeeEnabledHelp": "Legt eine separate Gebührenzahlung an, sobald eine Mietzahlung nach der Karenzzeit noch offen ist. Standardmäßig aus.",
-    "lateFeeGraceDays": "Karenzzeit (Tage)"
+    "lateFeeGraceDays": "Karenzzeit (Tage)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Pauschale Verzugsgebühren sind in {{country}} zulässig.",
+      "CAPPED": "In {{country}} sind Verzugsgebühren auf {{percentage}}% des fälligen Betrags begrenzt.",
+      "INTEREST_ONLY": "In {{country}} dürfen auf rückständige Miete nur gesetzliche Verzugszinsen berechnet werden; pauschale Gebühren können nicht aktiviert werden.",
+      "FORBIDDEN": "Verzugsgebühren auf Wohnraummiete sind in {{country}} nicht zulässig.",
+      "overCap": "Der obige Prozentsatz überschreitet diese Grenze."
+    }
   },
   "statusChange": {
     "title": "Vertragsstatus ändern",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Verhandelt",
       "FROZEN": "Eingefroren",
       "OTHER": "Sonstige"
+    },
+    "lateFees": {
+      "title": "Verzugsgebühren",
+      "policy": {
+        "ALLOWED": "Pauschale Gebühren erlaubt",
+        "CAPPED": "Gebühren gedeckelt",
+        "INTEREST_ONLY": "Nur Verzugszinsen",
+        "FORBIDDEN": "Gebühren nicht erlaubt",
+        "UNKNOWN": "Unbekannt"
+      },
+      "maxPercentage": "Höchstens {{percentage}}% des fälligen Betrags"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Abrechnung (PDF)",
+    "statementHelp": "Detaillierte Kautionsabrechnung für den Mieter herunterladen"
   },
   "paymentPlans": {
     "title": "Ratenpläne",

@@ -19,6 +19,7 @@ import { usePaymentSelection } from '@/hooks/usePaymentSelection';
 import { ArrearsPanel } from '@/components/payments/ArrearsPanel';
 import { BulkMarkPaidDialog } from '@/components/payments/BulkMarkPaidDialog';
 import { SendReminderDialog } from '@/components/payments/SendReminderDialog';
+import type { ReminderTone } from '@/generated/models';
 import {
   ConfirmDialog,
   DataList,
@@ -180,13 +181,14 @@ export const PaymentsPage = () => {
     exitSelection();
   };
 
-  const handleSendReminders = async (notes?: string) => {
+  const handleSendReminders = async (notes: string | undefined, tone: ReminderTone) => {
     if (!reminderTargets || reminderTargets.length === 0) {
       return;
     }
     await bulkRemindersMutation.mutateAsync({
       identifiers: reminderTargets,
       notes,
+      tone,
     });
     setReminderTargets(null);
     exitSelection();

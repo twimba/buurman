@@ -12,7 +12,8 @@
     "applyCredit": "Använd tillgodohavande",
     "waiveLateFee": "Efterskänk avgift",
     "writeOff": "Skriv av",
-    "cancelPayment": "Avbryt betalning"
+    "cancelPayment": "Avbryt betalning",
+    "formalNotice": "Betalningsanmaning (PDF)"
   },
   "stats": {
     "pendingPayments": "Vantande betalningar",
@@ -203,7 +204,8 @@
     "save": "Spara",
     "previous": "Foregaende",
     "next": "Nasta",
-    "sendReminder": "Mejla hyresgästen om denna betalning"
+    "sendReminder": "Mejla hyresgästen om denna betalning",
+    "formalNotice": "Ladda ner en daterad betalningsanmaning för denna betalning"
   },
   "errors": {
     "loadFailed": "Det gick inte att ladda betalningar",
@@ -260,7 +262,22 @@
     "notesLabel": "Personligt meddelande (valfritt)",
     "notesPlaceholder": "t.ex. Vänligen betala beloppet före fredag.",
     "confirm": "Skicka påminnelse",
-    "confirmBulk": "Skicka {{count}} påminnelser"
+    "confirmBulk": "Skicka {{count}} påminnelser",
+    "toneLabel": "Ton",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Vänlig",
+        "help": "En artig påminnelse om att betalningen är öppen."
+      },
+      "FIRM": {
+        "label": "Bestämd",
+        "help": "Ett tydligt krav med antal dagar försenat och konsekvenser."
+      },
+      "FINAL": {
+        "label": "Slutlig anmaning",
+        "help": "Formellt krav med 14 dagars frist. En betalningsanmaning som PDF bifogas och sparas under avtalet."
+      }
+    }
   },
   "reminders": {
     "title": "Skickade påminnelser",

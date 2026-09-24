@@ -27,9 +27,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.LateFeePolicy;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Payment.PaymentStatus;
 import com.buurman.domain.Payment.PaymentType;
+import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.Sid;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.identifier.PaymentIdentifier;
@@ -51,6 +53,7 @@ class LateFeeServiceTest {
 
   @Mock private PaymentRepository paymentRepository;
   @Mock private ContractRepository contractRepository;
+  @Mock private com.buurman.repository.RentRegulationRepository rentRegulationRepository;
   @Mock private AuditService auditService;
   @Mock private MetricsService metricsService;
 
@@ -63,7 +66,12 @@ class LateFeeServiceTest {
   void setUp() {
     service =
         new LateFeeService(
-            paymentRepository, contractRepository, auditService, metricsService, clock);
+            paymentRepository,
+            contractRepository,
+            rentRegulationRepository,
+            auditService,
+            metricsService,
+            clock);
     principal =
         new UserPrincipal(
             USER_ID,
@@ -119,6 +127,104 @@ class LateFeeServiceTest {
           .isEmpty();
       assertThat(LateFeeService.computeFee(rent("1000.00", TODAY), contract(true, "0"))).isEmpty();
     }
+
+    @Test
+    @DisplayName("clamped to the statutory cap when the jurisdiction caps late fees")
+    void clampedToCap() {
+      Optional<RentRegulationCountry> capped = Optional.of(regulation(LateFeePolicy.CAPPED, "20"));
+      assertThat(LateFeeService.computeFee(rent("1000.00", TODAY), contract(true, "25"), capped))
+          .contains(new BigDecimal("200.00"));
+      assertThat(LateFeeService.computeFee(rent("1000.00", TODAY), contract(true, "5"), capped))
+          .contains(new BigDecimal("50.00"));
+    }
+
+    @Test
+    @DisplayName("nothing when the jurisdiction forbids flat fees or allows interest only")
+    void nothingWhenForbidden() {
+      assertThat(
+              LateFeeService.computeFee(
+                  rent("1000.00", TODAY),
+                  contract(true, "5"),
+                  Optional.of(regulation(LateFeePolicy.FORBIDDEN))))
+          .isEmpty();
+      assertThat(
+              LateFeeService.computeFee(
+                  rent("1000.00", TODAY),
+                  contract(true, "5"),
+                  Optional.of(regulation(LateFeePolicy.INTEREST_ONLY))))
+          .isEmpty();
+      assertThat(
+              LateFeeService.computeFee(
+                  rent("1000.00", TODAY),
+                  contract(true, "5"),
+                  Optional.of(regulation(LateFeePolicy.ALLOWED))))
+          .contains(new BigDecimal("50.00"));
+    }
+  }
+
+  @Nested
+  @DisplayName("validateAgainstRegulation")
+  class Validate {
+    @Test
+    @DisplayName("rejects enabling late fees where they are forbidden or interest-only")
+    void rejectsForbidden() {
+      assertThatThrownBy(
+              () ->
+                  LateFeeService.validateAgainstRegulation(
+                      contract(true, "2"), Optional.of(regulation(LateFeePolicy.FORBIDDEN))))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("not permitted");
+      assertThatThrownBy(
+              () ->
+                  LateFeeService.validateAgainstRegulation(
+                      contract(true, "2"), Optional.of(regulation(LateFeePolicy.INTEREST_ONLY))))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("default interest");
+    }
+
+    @Test
+    @DisplayName("rejects a percentage above the cap, accepts one within it")
+    void enforcesCap() {
+      Optional<RentRegulationCountry> capped = Optional.of(regulation(LateFeePolicy.CAPPED, "20"));
+      assertThatThrownBy(
+              () -> LateFeeService.validateAgainstRegulation(contract(true, "20.5"), capped))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("exceeds the maximum of 20%");
+      LateFeeService.validateAgainstRegulation(contract(true, "20"), capped);
+    }
+
+    @Test
+    @DisplayName("silent when disabled, unknown or unregulated")
+    void silentOtherwise() {
+      LateFeeService.validateAgainstRegulation(
+          contract(false, "99"), Optional.of(regulation(LateFeePolicy.FORBIDDEN)));
+      LateFeeService.validateAgainstRegulation(contract(true, "99"), Optional.empty());
+      LateFeeService.validateAgainstRegulation(
+          contract(true, "99"), Optional.of(regulation(LateFeePolicy.UNKNOWN)));
+      LateFeeService.validateAgainstRegulation(
+          contract(true, "99"), Optional.of(regulation(LateFeePolicy.CAPPED)));
+    }
+  }
+
+  private static RentRegulationCountry regulation(LateFeePolicy policy) {
+    return regulation(policy, Optional.empty());
+  }
+
+  private static RentRegulationCountry regulation(LateFeePolicy policy, String maxPct) {
+    return regulation(policy, Optional.of(new BigDecimal(maxPct)));
+  }
+
+  private static RentRegulationCountry regulation(
+      LateFeePolicy policy, Optional<BigDecimal> maxPct) {
+    return RentRegulationCountry.builder()
+        .id(UUID.randomUUID())
+        .countryCode("XX")
+        .countryName("Testland")
+        .lateFeePolicy(policy)
+        .lateFeeMaxPercentage(maxPct)
+        .createdAt(Instant.EPOCH)
+        .updatedAt(Instant.EPOCH)
+        .build();
   }
 
   @Nested

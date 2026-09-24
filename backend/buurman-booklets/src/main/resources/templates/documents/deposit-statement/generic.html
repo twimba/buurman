@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<style th:replace="~{_letter-styles :: letter-css}">/* replaced by shared fragment */</style>
+<style>
+.deductions-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px 0; font-size: 12px; }
+.deductions-table th { text-align: left; padding: 8px 12px; background: #fafaf9; color: #78716c;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid #e7e5e4; }
+.deductions-table td { padding: 8px 12px; border-bottom: 1px solid #f5f5f4; color: #292524; vertical-align: top; }
+.deductions-table td.amt, .deductions-table th.amt { text-align: right; white-space: nowrap; }
+.deductions-table tr.total td { font-weight: 600; border-top: 1px solid #d6d3d1; }
+</style>
+</head>
+<body>
+
+<div class="letter">
+  <div class="letter-header">
+    <div class="letter-date" th:text="${generatedDate}"></div>
+    <div class="letter-ref" th:text="#{deposit.ref(${depositIdentifier})}"></div>
+  </div>
+
+  <div class="letter-addressee">
+    <div th:if="${primaryContactName != null}">
+      <div class="addressee-name" th:text="${primaryContactName}"></div>
+      <div th:if="${contactAddress != null}">
+        <div th:text="${contactAddress.street}"></div>
+        <div th:text="${contactAddress.postalCode} + ' ' + ${contactAddress.city}"></div>
+        <div th:text="${contactAddress.countryCode}"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="letter-subject" th:text="#{deposit.title}"></div>
+
+  <div class="letter-body">
+    <p th:if="${primaryContactName != null}" th:text="#{deposit.salutation(${primaryContactName})}"></p>
+    <p th:unless="${primaryContactName != null}" th:text="#{deposit.salutation.default}"></p>
+
+    <p th:utext="#{deposit.body.intro(${propertyAddress}, ${contractStart})}"></p>
+
+    <table class="summary-table">
+      <tr><td class="st-label" th:text="#{deposit.summary.contractRef}"></td><td class="st-value" th:text="${contractIdentifier}"></td></tr>
+      <tr><td class="st-label" th:text="#{deposit.summary.property}"></td><td class="st-value" th:text="${propertyAddress}"></td></tr>
+      <tr th:if="${contractEnd != null}"><td class="st-label" th:text="#{deposit.summary.contractEnd}"></td><td class="st-value" th:text="${contractEnd}"></td></tr>
+      <tr><td class="st-label" th:text="#{deposit.summary.amount}"></td><td class="st-value" th:text="${depositAmount}"></td></tr>
+      <tr th:if="${receivedDate != null}"><td class="st-label" th:text="#{deposit.summary.receivedDate}"></td><td class="st-value" th:text="${receivedDate}"></td></tr>
+      <tr th:if="${heldWhere != null}"><td class="st-label" th:text="#{deposit.summary.heldWhere}"></td><td class="st-value" th:text="${heldWhere}"></td></tr>
+      <tr><td class="st-label" th:text="#{deposit.summary.status}"></td><td class="st-value" th:text="#{'deposit.status.' + ${status}}"></td></tr>
+    </table>
+
+    <p th:if="${hasDeductions}" th:text="#{deposit.body.deductions}"></p>
+    <p th:unless="${hasDeductions}" th:text="#{deposit.body.noDeductions}"></p>
+
+    <table th:if="${hasDeductions}" class="deductions-table">
+      <thead>
+        <tr>
+          <th th:text="#{deposit.deductions.date}"></th>
+          <th th:text="#{deposit.deductions.reason}"></th>
+          <th class="amt" th:text="#{deposit.deductions.amount}"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="d : ${deductions}">
+          <td th:text="${d.date}"></td>
+          <td th:text="${d.reason}"></td>
+          <td class="amt" th:text="${d.amount}"></td>
+        </tr>
+        <tr class="total">
+          <td colspan="2" th:text="#{deposit.deductions.total}"></td>
+          <td class="amt" th:text="${deductionsTotal}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="summary-table">
+      <tr><td class="st-label" th:text="#{deposit.summary.amount}"></td><td class="st-value" th:text="${depositAmount}"></td></tr>
+      <tr><td class="st-label" th:text="#{deposit.summary.deductions}"></td><td class="st-value" th:text="'- ' + ${deductionsTotal}"></td></tr>
+      <tr th:if="${hasReturned}"><td class="st-label" th:text="#{deposit.summary.returned}"></td><td class="st-value"><span th:text="'- ' + ${returnedAmount}"></span><span th:if="${returnedDate != null}" th:text="' (' + ${returnedDate} + ')'"></span></td></tr>
+      <tr><td class="st-label" th:text="#{deposit.summary.refundable}"></td><td class="st-value"><strong th:text="${refundable}"></strong></td></tr>
+    </table>
+
+    <p th:if="${!isClosed and returnDueDate != null}" th:text="#{deposit.body.returnBy(${refundable}, ${returnDueDate})}"></p>
+    <p th:if="${isClosed}" th:text="#{deposit.body.closed}"></p>
+
+    <div th:if="${legalClause != null}" class="legal-clause" th:text="${legalClause}"></div>
+
+    <p th:if="${notes != null}" th:text="${notes}"></p>
+
+    <p th:text="#{deposit.closing}"></p>
+    <p th:text="#{letter.regards}"></p>
+  </div>
+
+  <div class="letter-signature">
+    <div class="sig-line"></div>
+    <div class="sig-label" th:text="#{letter.signature}"></div>
+    <div class="sig-date"><span th:text="#{letter.signature.date}"></span> <span class="sig-date-line"></span></div>
+  </div>
+
+  <div class="letter-disclaimer" th:text="#{deposit.disclaimer}"></div>
+
+  <div class="letter-footer">
+    <span th:text="#{letter.generated(${generatedDate})}"></span>
+    <span> &mdash; </span>
+    <span th:text="#{letter.footer}"></span>
+  </div>
+</div>
+
+</body>
+</html>

@@ -24,7 +24,8 @@
       "title": "Aún sin contratos",
       "description": "Comience creando su primer contrato de alquiler"
     },
-    "error": "Error al cargar contratos"
+    "error": "Error al cargar contratos",
+    "exportDeposits": "Exportar fianzas"
   },
   "create": {
     "title": "Añadir Nuevo Contrato",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "No se envían recordatorios hasta esta fecha, p. ej. durante un plan de pago.",
     "lateFeeEnabled": "Cobrar recargo por demora",
     "lateFeeEnabledHelp": "Añade un pago de recargo independiente cuando un alquiler sigue abierto tras el periodo de gracia. Desactivado por defecto.",
-    "lateFeeGraceDays": "Periodo de gracia (días)"
+    "lateFeeGraceDays": "Periodo de gracia (días)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Los recargos fijos por demora están permitidos en {{country}}.",
+      "CAPPED": "En {{country}} los recargos por demora están limitados al {{percentage}}% del importe debido.",
+      "INTEREST_ONLY": "En {{country}} solo puede aplicarse el interés legal a la renta impagada; no pueden activarse recargos fijos.",
+      "FORBIDDEN": "Los recargos por demora en alquileres de vivienda no están permitidos en {{country}}.",
+      "overCap": "El porcentaje indicado supera este límite."
+    }
   },
   "statusChange": {
     "title": "Cambiar Estado del Contrato",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Negociado",
       "FROZEN": "Congelado",
       "OTHER": "Otro"
+    },
+    "lateFees": {
+      "title": "Recargos por demora",
+      "policy": {
+        "ALLOWED": "Recargos fijos permitidos",
+        "CAPPED": "Recargos limitados",
+        "INTEREST_ONLY": "Solo interés legal",
+        "FORBIDDEN": "Recargos no permitidos",
+        "UNKNOWN": "Desconocido"
+      },
+      "maxPercentage": "Máximo {{percentage}}% del importe debido"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Liquidación (PDF)",
+    "statementHelp": "Descargar una liquidación detallada de la fianza para el inquilino"
   },
   "paymentPlans": {
     "title": "Planes de pago",

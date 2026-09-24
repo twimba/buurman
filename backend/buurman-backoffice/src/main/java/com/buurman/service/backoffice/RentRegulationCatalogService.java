@@ -16,11 +16,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.LateFeePolicy;
 import com.buurman.domain.RentFrequency;
 import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
 import com.buurman.domain.regulation.CatalogCountry;
+import com.buurman.domain.regulation.CatalogLateFee;
 import com.buurman.domain.regulation.CatalogRegion;
 import com.buurman.domain.regulation.CatalogRule;
 import com.buurman.domain.regulation.RentRegulationCatalog;
@@ -272,6 +274,21 @@ public class RentRegulationCatalogService {
         String.valueOf(cur.hasRegionalRegulations()),
         String.valueOf(tgt.hasRegionalRegulations()));
     addFieldDiff(fields, "summary", cur.summary(), tgt.summary());
+    addFieldDiff(
+        fields,
+        "lateFeePolicy",
+        Optional.ofNullable(cur.lateFee()).map(l -> nv(l.policy())).orElse(""),
+        Optional.ofNullable(tgt.lateFee()).map(l -> nv(l.policy())).orElse(""));
+    addFieldDiff(
+        fields,
+        "lateFeeMaxPercentage",
+        Optional.ofNullable(cur.lateFee()).map(l -> nv(l.maxPercentage())).orElse(""),
+        Optional.ofNullable(tgt.lateFee()).map(l -> nv(l.maxPercentage())).orElse(""));
+    addFieldDiff(
+        fields,
+        "lateFeeNotes",
+        Optional.ofNullable(cur.lateFee()).map(l -> nv(l.notes())).orElse(""),
+        Optional.ofNullable(tgt.lateFee()).map(l -> nv(l.notes())).orElse(""));
     return fields;
   }
 
@@ -467,6 +484,13 @@ public class RentRegulationCatalogService {
             .hasRegionalRegulations(country.hasRegionalRegulations())
             .summary(Optional.ofNullable(country.summary()))
             .lastReviewedAt(Optional.ofNullable(country.lastReviewedAt()).map(Instant::parse))
+            .lateFeePolicy(
+                Optional.ofNullable(country.lateFee())
+                    .map(CatalogLateFee::policy)
+                    .orElse(LateFeePolicy.UNKNOWN))
+            .lateFeeMaxPercentage(
+                Optional.ofNullable(country.lateFee()).map(CatalogLateFee::maxPercentage))
+            .lateFeeNotes(Optional.ofNullable(country.lateFee()).map(CatalogLateFee::notes))
             .createdBy(Optional.of(actor))
             .updatedBy(Optional.of(actor))
             .build();
@@ -577,7 +601,15 @@ public class RentRegulationCatalogService {
         country.getSummary().orElse(null),
         country.getLastReviewedAt().map(Instant::toString).orElse(null),
         catalogRegions.isEmpty() ? null : catalogRegions,
-        catalogRules.isEmpty() ? null : catalogRules);
+        catalogRules.isEmpty() ? null : catalogRules,
+        country.getLateFeePolicy() == LateFeePolicy.UNKNOWN
+                && country.getLateFeeMaxPercentage().isEmpty()
+                && country.getLateFeeNotes().isEmpty()
+            ? null
+            : new CatalogLateFee(
+                country.getLateFeePolicy(),
+                country.getLateFeeMaxPercentage().orElse(null),
+                country.getLateFeeNotes().orElse(null)));
   }
 
   private CatalogRule toCatalogRule(RentRegulationRule rule, Map<UUID, String> regionCodeById) {

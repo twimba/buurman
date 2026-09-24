@@ -32,6 +32,8 @@ import { ReasonDialog } from '@/components/payments/ReasonDialog';
 import { ApplyCreditDialog } from '@/components/payments/ApplyCreditDialog';
 import { PaymentRemindersList } from '@/components/payments/PaymentRemindersList';
 import { SendReminderDialog } from '@/components/payments/SendReminderDialog';
+import { getPaymentFormalNotice } from '@/generated/api/booklets/booklets';
+import { downloadBlob } from '@/utils/downloadBlob';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
@@ -53,6 +55,7 @@ import {
   ChevronDown,
   Trash2,
   Send,
+  Download,
   Calendar,
   DollarSign,
   Home,
@@ -364,7 +367,7 @@ export const PaymentDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation('payments');
+  const { t, i18n } = useTranslation('payments');
   const backTo = (location.state as { backTo?: string })?.backTo ?? '/payments';
   const { canEditData } = useTeam();
   const { formatDate, formatRelative } = useFormatDate();
@@ -456,6 +459,20 @@ export const PaymentDetailPage = () => {
   const updatePaymentMutation = useUpdatePayment(id);
   const markPaidMutation = useMarkPaymentAsPaid();
   const sendReminderMutation = useSendPaymentReminder();
+  const [noticeDownloading, setNoticeDownloading] = useState(false);
+  const handleDownloadFormalNotice = async () => {
+    if (!id) {
+      return;
+    }
+    setNoticeDownloading(true);
+    try {
+      const lang = i18n.language.split('-')[0];
+      const blob = await getPaymentFormalNotice(id, { lang });
+      downloadBlob(blob, `formal-notice-${id}-${lang}.pdf`);
+    } finally {
+      setNoticeDownloading(false);
+    }
+  };
   const cancelMutation = useCancelPayment();
   const waiveMutation = useWaiveLateFee();
   const writeOffMutation = useWriteOffPayment();
@@ -1073,17 +1090,31 @@ export const PaymentDetailPage = () => {
               <h2 className="text-xl font-semibold text-text-primary">
                 {t('reminders.title')}
               </h2>
-              {canMarkPaid && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  leftIcon={<Send />}
-                  onClick={() => setShowReminderModal(true)}
-                  disabled={!canEditData}
-                >
-                  {t('actions.sendReminder')}
-                </Button>
-              )}
+              <div className="flex items-center gap-2">
+                {canMarkPaid && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    leftIcon={<Download />}
+                    onClick={handleDownloadFormalNotice}
+                    isLoading={noticeDownloading}
+                    title={t('tooltips.formalNotice')}
+                  >
+                    {t('actions.formalNotice')}
+                  </Button>
+                )}
+                {canMarkPaid && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leftIcon={<Send />}
+                    onClick={() => setShowReminderModal(true)}
+                    disabled={!canEditData}
+                  >
+                    {t('actions.sendReminder')}
+                  </Button>
+                )}
+              </div>
             </div>
             {remindersLoading ? (
               <div className="flex items-center justify-center py-8">
@@ -1447,10 +1478,10 @@ export const PaymentDetailPage = () => {
           open={showReminderModal}
           count={1}
           isLoading={sendReminderMutation.isPending}
-          onConfirm={async (notes) => {
+          onConfirm={async (notes, tone) => {
             await sendReminderMutation.mutateAsync({
               id,
-              data: notes ? { notes } : undefined,
+              data: { notes, tone },
             });
             setShowReminderModal(false);
             setActiveTab('reminders');

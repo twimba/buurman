@@ -9,6 +9,10 @@
             "hasRegionalRegulations": false,
             "summary": "Richtwertmietzins (reference value rent) system. Adjusted by CPI. Category-based max rents.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "Statutory default interest (4% p.a., \u00a71000 ABGB; higher contractual rates reducible by court). Flat late fees on Wohnraum are not customary and may be void under KSchG. Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2027,
@@ -111,6 +115,10 @@
             "hasRegionalRegulations": true,
             "summary": "Health index (Statbel) used for rent indexation. Varies by region (Flanders, Wallonia, Brussels).",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "ALLOWED",
+                "notes": "Contractual late-payment interest and a reasonable indemnity clause are permitted; courts reduce excessive penalties (art. 5.88 BW / former art. 1231 BW). Advisory \u2014 verify locally."
+            },
             "regions": [
                 {
                     "regionCode": "BRU",
@@ -337,6 +345,10 @@
             "hasRegionalRegulations": true,
             "summary": "Province-by-province rent control. ON, BC, QC have guideline increases. AB has no rent control.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "CAPPED",
+                "notes": "Varies by province: Ontario allows no late fee beyond actual costs (RTA), British Columbia caps at CAD 25 (RTB Regulation s.7), Quebec allows none beyond legal interest. Advisory \u2014 verify per province."
+            },
             "regions": [
                 {
                     "regionCode": "AB",
@@ -1401,6 +1413,10 @@
             "hasRegionalRegulations": true,
             "summary": "Reference interest rate (hypothekarischer Referenzzinssatz) based system. CPI and cost-of-living adjustments.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "Default interest of 5% p.a. (art. 104 OR) once the tenant is in default; flat penalty clauses in residential leases are uncommon and may be reduced (art. 163 OR). Advisory \u2014 verify locally."
+            },
             "regions": [
                 {
                     "regionCode": "BE",
@@ -1596,6 +1612,10 @@
             "hasRegionalRegulations": false,
             "summary": "Deregulated since 2012. Market rents with contract terms governing increases.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "CAPPED",
+                "notes": "\u00a72239 NOZ (as amended 2020): contractual penalties in residential leases permitted but penalty plus deposit may not exceed three months' rent; statutory default interest applies. Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -1670,6 +1690,10 @@
             "hasRegionalRegulations": true,
             "summary": "Mietspiegel-based rent control. Mietpreisbremse (rent brake) limits initial rents in tight markets. Regional variation.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "Verzugszinsen \u00a7288 BGB (5 percentage points above base rate); flat Mahngeb\u00fchren limited to actual costs (typically \u2264 \u20ac2.50). Pauschale late fees in Wohnraummietvertr\u00e4ge are void (\u00a7307 BGB). Advisory \u2014 verify locally."
+            },
             "regions": [
                 {
                     "regionCode": "BB",
@@ -2641,6 +2665,10 @@
             "hasRegionalRegulations": false,
             "summary": "Cost-based rent regulation for pre-1992 buildings. Newer buildings: market rent with \"det lejedes vaerdi\" limits.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "CAPPED",
+                "notes": "Lejeloven \u00a793/\u00a794: a written reminder fee is capped at a statutory DKK amount (indexed; DKK 316 in 2026) after a 3-day grace period; no percentage-based fee. Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -2747,6 +2775,10 @@
             "hasRegionalRegulations": true,
             "summary": "CPI-linked until 2022, then temporary 2% cap (2023), 3% cap (2024), new reference index from 2025.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "ALLOWED",
+                "notes": "LAU does not cap late fees; contractual interest and penalty clauses are enforceable subject to consumer-law fairness review (courts may reduce). Advisory \u2014 verify locally."
+            },
             "regions": [
                 {
                     "regionCode": "CAT",
@@ -2996,6 +3028,10 @@
             "hasRegionalRegulations": false,
             "summary": "No statutory rent control. Increases per lease terms, typically CPI-linked.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "Korkolaki default interest (reference rate + 7 pp); reminder fees limited to reasonable costs (max \u20ac5 per reminder for consumer debt). Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -3082,6 +3118,10 @@
             "hasRegionalRegulations": true,
             "summary": "IRL (Indice de Reference des Loyers) published quarterly by INSEE. Applied nationally.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "FORBIDDEN",
+                "notes": "Loi 89-462 art. 4: clauses imposing penalties or fees for late rent are deemed unwritten (r\u00e9put\u00e9es non \u00e9crites); only legal interest via formal demand. Advisory \u2014 verify locally."
+            },
             "regions": [
                 {
                     "regionCode": "FR-BORDEAUX",
@@ -3765,6 +3805,10 @@
             "hasRegionalRegulations": true,
             "summary": "England/Wales: market rent with Section 13 procedure. Scotland: rent control areas possible. N. Ireland: market rent.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "Tenant Fees Act 2019 (England): default fee for late rent limited to interest at 3% over Bank of England base rate, chargeable only once rent is 14+ days late; Wales/Scotland similar. Advisory \u2014 verify per nation."
+            },
             "regions": [
                 {
                     "regionCode": "ENG",
@@ -4017,6 +4061,10 @@
             "hasRegionalRegulations": false,
             "summary": "Rent Pressure Zones (RPZ) cap annual increases. 2% cap since 2021.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "ALLOWED",
+                "notes": "No statutory cap; RTB expects any late-payment charge to be reasonable and set out in the tenancy agreement. Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -4084,6 +4132,10 @@
             "hasRegionalRegulations": false,
             "summary": "ISTAT FOI index (75% of index for regulated contracts). 100% for free-market contracts.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "ALLOWED",
+                "notes": "Penalty clauses (clausola penale) are permitted but the court may reduce manifestly excessive amounts (art. 1384 c.c.); legal interest applies by default. Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -4192,6 +4244,10 @@
             "hasRegionalRegulations": false,
             "summary": "Max rent = 5% of invested capital. Increases limited to cost-of-living index adjustments.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "ALLOWED",
+                "notes": "No statutory cap; contractual default interest and indemnity clauses apply subject to fairness review. Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -4277,6 +4333,10 @@
             "hasRegionalRegulations": false,
             "summary": "Regulated sector: max increase set by government (CBS huurverhoging). Free sector: CPI + surcharge, capped since 2024.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "Statutory interest (wettelijke rente, art. 6:119 BW) applies; flat boetebedingen in residential leases are routinely voided as unfair terms (EU Directive 93/13, HR 2019). Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -4455,6 +4515,10 @@
             "hasRegionalRegulations": false,
             "summary": "CPI-linked annual increases for existing leases. Market rent for new leases.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "Forsinkelsesrenteloven default interest; reminder fees capped at a fraction of the inkassosats (NOK 35 in 2026). Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -4525,6 +4589,10 @@
             "hasRegionalRegulations": false,
             "summary": "Municipal housing: regulated rents. Private market: largely unregulated, contract terms apply.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "Statutory interest for delay (odsetki ustawowe za op\u00f3\u017anienie, art. 481 KC); penalty clauses for monetary obligations are not permitted (art. 483 KC). Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -4628,6 +4696,11 @@
             "hasRegionalRegulations": false,
             "summary": "INE coefficient applied annually to all regulated leases. Effective January 1st each year.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "CAPPED",
+                "maxPercentage": 20.0,
+                "notes": "C\u00f3digo Civil art. 1041 (Lei 13/2019): after 8 days' delay the landlord may claim an indemnity of 20% of the amount due, or terminate; no higher fee permitted. Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -4701,6 +4774,10 @@
             "hasRegionalRegulations": false,
             "summary": "Collective bargaining (bruksvardesystemet). Annual negotiations between tenant/landlord unions.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "INTEREST_ONLY",
+                "notes": "R\u00e4ntelagen default interest (reference rate + 8 pp); reminder fee capped at SEK 60 (lag 1981:739). Advisory \u2014 verify locally."
+            },
             "rules": [
                 {
                     "year": 2026,
@@ -4765,6 +4842,10 @@
             "hasRegionalRegulations": true,
             "summary": "No federal rent control. State/city level regulations. Key states: CA, NY, OR have statewide controls.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
+            "lateFee": {
+                "policy": "CAPPED",
+                "notes": "Varies by state: New York caps at the lesser of USD 50 or 5% after a 5-day grace (HSTPA 2019), California requires reasonableness, others set 5\u201310% caps. Advisory \u2014 verify per state."
+            },
             "regions": [
                 {
                     "regionCode": "CA",

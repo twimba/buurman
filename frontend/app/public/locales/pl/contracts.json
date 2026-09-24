@@ -24,7 +24,8 @@
       "title": "Brak umów",
       "description": "Zacznij od utworzenia pierwszej umowy najmu"
     },
-    "error": "Nie udało się załadować umów"
+    "error": "Nie udało się załadować umów",
+    "exportDeposits": "Eksportuj kaucje"
   },
   "create": {
     "title": "Dodaj nową umowę",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Do tej daty nie są wysyłane przypomnienia, np. w trakcie uzgodnionego planu spłat.",
     "lateFeeEnabled": "Naliczaj opłaty za zwłokę",
     "lateFeeEnabledHelp": "Dodaje osobną płatność opłaty, gdy czynsz pozostaje nieopłacony po okresie karencji. Domyślnie wyłączone.",
-    "lateFeeGraceDays": "Okres karencji (dni)"
+    "lateFeeGraceDays": "Okres karencji (dni)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Stałe opłaty za zwłokę są dozwolone w {{country}}.",
+      "CAPPED": "W {{country}} opłaty za zwłokę są ograniczone do {{percentage}}% należnej kwoty.",
+      "INTEREST_ONLY": "W {{country}} od zaległego czynszu można naliczać wyłącznie odsetki ustawowe; stałych opłat nie można włączyć.",
+      "FORBIDDEN": "Opłaty za zwłokę od czynszu mieszkaniowego są niedozwolone w {{country}}.",
+      "overCap": "Powyższy procent przekracza ten limit."
+    }
   },
   "statusChange": {
     "title": "Zmień status umowy",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Negocjowany",
       "FROZEN": "Zamrożony",
       "OTHER": "Inny"
+    },
+    "lateFees": {
+      "title": "Opłaty za zwłokę",
+      "policy": {
+        "ALLOWED": "Stałe opłaty dozwolone",
+        "CAPPED": "Opłaty ograniczone",
+        "INTEREST_ONLY": "Tylko odsetki ustawowe",
+        "FORBIDDEN": "Opłaty niedozwolone",
+        "UNKNOWN": "Nieznane"
+      },
+      "maxPercentage": "Maksymalnie {{percentage}}% należnej kwoty"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Rozliczenie (PDF)",
+    "statementHelp": "Pobierz szczegółowe rozliczenie kaucji dla najemcy"
   },
   "paymentPlans": {
     "title": "Plany spłat",

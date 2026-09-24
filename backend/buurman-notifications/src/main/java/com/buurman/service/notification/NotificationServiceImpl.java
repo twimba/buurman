@@ -166,7 +166,8 @@ public class NotificationServiceImpl implements NotificationService {
               content.subject(),
               content.body(),
               Optional.empty(),
-              Optional.empty());
+              Optional.empty(),
+              Optional.of(request.attachments()).filter(a -> !a.isEmpty()));
 
       try {
         outbox.setPayload(objectMapper.writeValueAsString(sendRequest));

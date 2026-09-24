@@ -25,6 +25,7 @@ import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
+import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.GenerateExtensionDocumentsRequest;
 import com.buurman.dto.request.GenerateRentChangeDocumentsRequest;
@@ -40,7 +41,9 @@ import com.buurman.service.FeatureFlagService;
 import com.buurman.service.GoogleSheetExportService;
 import com.buurman.service.GoogleSheetTitleResolver;
 import com.buurman.service.export.ContractExtensionAddendumExporter;
+import com.buurman.service.export.DepositStatementExporter;
 import com.buurman.service.export.ExtensionDocumentGenerationService;
+import com.buurman.service.export.PaymentFormalNoticeExporter;
 import com.buurman.service.export.RentChangeDocumentExporter;
 import com.buurman.service.export.RentChangeDocumentGenerationService;
 import com.buurman.service.export.RentIncreaseLetterExporter;
@@ -59,6 +62,8 @@ public class BookletController implements BookletsApi {
   private final GoogleSheetExportService googleSheetExportService;
   private final ContractExtensionAddendumExporter addendumExporter;
   private final RentIncreaseLetterExporter rentIncreaseLetterExporter;
+  private final PaymentFormalNoticeExporter paymentFormalNoticeExporter;
+  private final DepositStatementExporter depositStatementExporter;
   private final RentChangeDocumentExporter rentChangeDocumentExporter;
   private final ExtensionDocumentGenerationService extensionDocumentGenerationService;
   private final RentChangeDocumentGenerationService rentChangeDocumentGenerationService;
@@ -149,6 +154,59 @@ public class BookletController implements BookletsApi {
         (token, principal, title) ->
             googleSheetExportService.generatePropertiesGoogleSheet(
                 token, principal.requireTeamId(), title));
+  }
+
+  // ── Deposits ────────────────────────────────────────────────────────────
+  @Override
+  public Resource exportDepositsCsv() {
+    return downloadCsv(
+        "deposits.csv",
+        () ->
+            exportService.generateDepositsCSV(SecurityUtils.getCurrentPrincipal().requireTeamId()));
+  }
+
+  @Override
+  public Resource exportDepositsXlsx() {
+    return downloadXlsx(
+        "deposits.xlsx",
+        () ->
+            exportService.generateDepositsExcel(
+                SecurityUtils.getCurrentPrincipal().requireTeamId()));
+  }
+
+  @Override
+  public GoogleSheetExportResponse exportDepositsGoogleSheet(GoogleSheetExportRequest request) {
+    return runGoogleSheetExport(
+        request,
+        "Deposits",
+        (token, principal, title) ->
+            googleSheetExportService.generateDepositsGoogleSheet(
+                token, principal.requireTeamId(), title));
+  }
+
+  @Override
+  public Resource getDepositStatement(
+      ContractIdentifier contractIdentifier, Optional<String> lang) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    String language = lang.orElse("en");
+    byte[] pdf =
+        depositStatementExporter.generate(contractIdentifier, principal.requireTeamId(), language);
+    return pdfResource("deposit-statement-" + language + ".pdf", pdf);
+  }
+
+  @Override
+  public Resource getPaymentFormalNotice(PaymentIdentifier identifier, Optional<String> lang) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    String language = lang.orElse("en");
+    byte[] pdf =
+        paymentFormalNoticeExporter.generate(identifier, principal.requireTeamId(), language);
+    return pdfResource("formal-notice-" + identifier.value() + "-" + language + ".pdf", pdf);
+  }
+
+  private Resource pdfResource(String filename, byte[] pdf) {
+    httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + filename);
+    httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
+    return new ByteArrayResource(pdf);
   }
 
   // ── Payments ────────────────────────────────────────────────────────────

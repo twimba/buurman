@@ -24,7 +24,8 @@
       "title": "Pas encore de contrats",
       "description": "Commencez par créer votre premier bail"
     },
-    "error": "Échec du chargement des contrats"
+    "error": "Échec du chargement des contrats",
+    "exportDeposits": "Exporter les dépôts"
   },
   "create": {
     "title": "Ajouter un nouveau contrat",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Aucun rappel n’est envoyé jusqu’à cette date, par ex. pendant un échéancier convenu.",
     "lateFeeEnabled": "Facturer des pénalités de retard",
     "lateFeeEnabledHelp": "Ajoute un paiement de pénalité distinct lorsqu’un loyer reste impayé après le délai de grâce. Désactivé par défaut.",
-    "lateFeeGraceDays": "Délai de grâce (jours)"
+    "lateFeeGraceDays": "Délai de grâce (jours)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Les pénalités de retard forfaitaires sont autorisées en {{country}}.",
+      "CAPPED": "En {{country}}, les pénalités de retard sont plafonnées à {{percentage}} % du montant dû.",
+      "INTEREST_ONLY": "En {{country}}, seuls les intérêts légaux peuvent être appliqués aux loyers impayés ; les pénalités forfaitaires ne peuvent pas être activées.",
+      "FORBIDDEN": "Les pénalités de retard sur les loyers d’habitation sont interdites en {{country}}.",
+      "overCap": "Le pourcentage ci-dessus dépasse ce plafond."
+    }
   },
   "statusChange": {
     "title": "Changer le statut du contrat",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Négocié",
       "FROZEN": "Gelé",
       "OTHER": "Autre"
+    },
+    "lateFees": {
+      "title": "Pénalités de retard",
+      "policy": {
+        "ALLOWED": "Pénalités forfaitaires autorisées",
+        "CAPPED": "Pénalités plafonnées",
+        "INTEREST_ONLY": "Intérêts légaux uniquement",
+        "FORBIDDEN": "Pénalités interdites",
+        "UNKNOWN": "Inconnu"
+      },
+      "maxPercentage": "Maximum {{percentage}} % du montant dû"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Décompte (PDF)",
+    "statementHelp": "Télécharger un décompte détaillé du dépôt pour le locataire"
   },
   "paymentPlans": {
     "title": "Échéanciers de paiement",

@@ -12,7 +12,8 @@
     "applyCredit": "Tegoed toepassen",
     "waiveLateFee": "Boete kwijtschelden",
     "writeOff": "Afboeken",
-    "cancelPayment": "Betaling annuleren"
+    "cancelPayment": "Betaling annuleren",
+    "formalNotice": "Ingebrekestelling (PDF)"
   },
   "stats": {
     "pendingPayments": "Openstaande betalingen",
@@ -203,7 +204,8 @@
     "save": "Opslaan",
     "previous": "Vorige",
     "next": "Volgende",
-    "sendReminder": "E-mail de huurder over deze betaling"
+    "sendReminder": "E-mail de huurder over deze betaling",
+    "formalNotice": "Download een gedateerde ingebrekestelling voor deze betaling"
   },
   "errors": {
     "loadFailed": "Kan betalingen niet laden",
@@ -259,7 +261,22 @@
     "notesLabel": "Persoonlijk bericht (optioneel)",
     "notesPlaceholder": "bijv. Wilt u het bedrag vóór vrijdag overmaken?",
     "confirm": "Herinnering sturen",
-    "confirmBulk": "{{count}} herinneringen sturen"
+    "confirmBulk": "{{count}} herinneringen sturen",
+    "toneLabel": "Toon",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Vriendelijk",
+        "help": "Een beleefde herinnering dat de betaling openstaat."
+      },
+      "FIRM": {
+        "label": "Dringend",
+        "help": "Een duidelijke aanmaning met het aantal dagen achterstand en de gevolgen."
+      },
+      "FINAL": {
+        "label": "Ingebrekestelling",
+        "help": "Formele aanmaning met een termijn van 14 dagen. Een ingebrekestelling als PDF wordt bijgevoegd en bij het contract opgeslagen."
+      }
+    }
   },
   "reminders": {
     "title": "Verstuurde herinneringen",

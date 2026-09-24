@@ -12,7 +12,8 @@
     "applyCredit": "Aplicar crédito",
     "waiveLateFee": "Condonar recargo",
     "writeOff": "Dar de baja",
-    "cancelPayment": "Cancelar pago"
+    "cancelPayment": "Cancelar pago",
+    "formalNotice": "Requerimiento (PDF)"
   },
   "stats": {
     "pendingPayments": "Pagos Pendientes",
@@ -203,7 +204,8 @@
     "save": "Guardar",
     "previous": "Anterior",
     "next": "Siguiente",
-    "sendReminder": "Enviar un correo al inquilino sobre este pago"
+    "sendReminder": "Enviar un correo al inquilino sobre este pago",
+    "formalNotice": "Descargar un requerimiento formal fechado para este pago"
   },
   "errors": {
     "loadFailed": "Error al cargar pagos",
@@ -260,7 +262,22 @@
     "notesLabel": "Mensaje personal (opcional)",
     "notesPlaceholder": "p. ej. Por favor, transfiera el importe antes del viernes.",
     "confirm": "Enviar recordatorio",
-    "confirmBulk": "Enviar {{count}} recordatorios"
+    "confirmBulk": "Enviar {{count}} recordatorios",
+    "toneLabel": "Tono",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Amable",
+        "help": "Un recordatorio cortés de que el pago está pendiente."
+      },
+      "FIRM": {
+        "label": "Firme",
+        "help": "Una reclamación clara con los días de retraso y las consecuencias."
+      },
+      "FINAL": {
+        "label": "Aviso final",
+        "help": "Requerimiento formal con un plazo de 14 días. Se adjunta un requerimiento en PDF y se archiva en el contrato."
+      }
+    }
   },
   "reminders": {
     "title": "Recordatorios enviados",

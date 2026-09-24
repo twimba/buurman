@@ -24,7 +24,8 @@
       "title": "Nog geen contracten",
       "description": "Begin door uw eerste huurovereenkomst aan te maken"
     },
-    "error": "Kan contracten niet laden"
+    "error": "Kan contracten niet laden",
+    "exportDeposits": "Borg exporteren"
   },
   "create": {
     "title": "Nieuw contract toevoegen",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Tot deze datum worden geen herinneringen verstuurd, bijv. tijdens een betalingsregeling.",
     "lateFeeEnabled": "Boete bij te late betaling",
     "lateFeeEnabledHelp": "Voegt een aparte boetebetaling toe zodra een huurbetaling na de respijtperiode nog openstaat. Standaard uit.",
-    "lateFeeGraceDays": "Respijtperiode (dagen)"
+    "lateFeeGraceDays": "Respijtperiode (dagen)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Vaste boetes bij te late betaling zijn toegestaan in {{country}}.",
+      "CAPPED": "In {{country}} zijn boetes gemaximeerd op {{percentage}}% van het verschuldigde bedrag.",
+      "INTEREST_ONLY": "In {{country}} mag alleen wettelijke rente over achterstallige huur worden gerekend; vaste boetes kunnen niet worden ingeschakeld.",
+      "FORBIDDEN": "Boetes op achterstallige huur zijn niet toegestaan in {{country}}.",
+      "overCap": "Het bovenstaande percentage overschrijdt dit maximum."
+    }
   },
   "statusChange": {
     "title": "Contractstatus wijzigen",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Onderhandeld",
       "FROZEN": "Bevroren",
       "OTHER": "Overig"
+    },
+    "lateFees": {
+      "title": "Boetes bij te late betaling",
+      "policy": {
+        "ALLOWED": "Vaste boetes toegestaan",
+        "CAPPED": "Boetes gemaximeerd",
+        "INTEREST_ONLY": "Alleen wettelijke rente",
+        "FORBIDDEN": "Boetes niet toegestaan",
+        "UNKNOWN": "Onbekend"
+      },
+      "maxPercentage": "Maximaal {{percentage}}% van het verschuldigde bedrag"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Inhouding verwijderd",
       "returned": "Terugbetaling vastgelegd",
       "forfeited": "Borg verbeurd verklaard"
-    }
+    },
+    "statement": "Overzicht (PDF)",
+    "statementHelp": "Download een gespecificeerd borgoverzicht voor de huurder"
   },
   "paymentPlans": {
     "title": "Betalingsregelingen",

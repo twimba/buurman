@@ -17473,6 +17473,142 @@ paths:
         "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       security:
         - bearer-jwt: []
+  /booklets/deposits/csv:
+    get:
+      tags:
+        - Booklets
+      summary: Export deposits to CSV
+      operationId: exportDepositsCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            "text/csv":
+              schema:
+                type: string
+                format: binary
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/deposits/xlsx:
+    get:
+      tags:
+        - Booklets
+      summary: Export deposits to Excel (deposits + deductions sheets)
+      operationId: exportDepositsXlsx
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+              schema:
+                type: string
+                format: binary
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/deposits/google-sheet:
+    post:
+      tags:
+        - Booklets
+      summary: Export deposits to Google Sheets
+      operationId: exportDepositsGoogleSheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+        "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /contracts/{contractIdentifier}/deposit/statement:
+    get:
+      tags:
+        - Booklets
+      summary: Download the deposit statement PDF
+      description: Itemised statement of the contract deposit — received, deductions, returned and refundable — in the requested language
+      operationId: getDepositStatement
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: lang
+          in: query
+          description: Document language (ISO 639-1 code)
+          required: false
+          schema:
+            type: string
+            default: en
+      responses:
+        "200":
+          description: Deposit statement PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/formal-notice:
+    get:
+      tags:
+        - Booklets
+      summary: Download the formal notice of overdue rent PDF
+      description: Dated demand letter for an open payment with the outstanding balance, a 14-day deadline and the payment details, in the requested language
+      operationId: getPaymentFormalNotice
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        - name: lang
+          in: query
+          description: Document language (ISO 639-1 code)
+          required: false
+          schema:
+            type: string
+            default: en
+      responses:
+        "200":
+          description: Formal notice PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
   /booklets/expenses/csv:
     get:
       tags:
@@ -28185,6 +28321,8 @@ components:
           type: string
           maxLength: 1000
           description: Optional personal message included in the email
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
     BulkMarkPaidRequest:
       type: object
       properties:
@@ -28214,6 +28352,8 @@ components:
         notes:
           type: string
           maxLength: 1000
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
       required:
         - identifiers
     BulkActionResultPaymentResponse:
@@ -29012,6 +29152,10 @@ components:
         - TRIENNIAL
         - ON_RELET
         - PER_MODERNISATION
+    LateFeePolicy:
+      type: string
+      description: Whether flat late fees may be charged on overdue residential rent
+      enum: [UNKNOWN, ALLOWED, CAPPED, INTEREST_ONLY, FORBIDDEN]
     RentRegulationCountryResponse:
       type: object
       properties:
@@ -29030,6 +29174,14 @@ components:
           format: date-time
         stale:
           type: boolean
+        lateFeePolicy:
+          $ref: '#/components/schemas/LateFeePolicy'
+        lateFeeMaxPercentage:
+          type: number
+          description: Statutory maximum late fee (% of the amount due) when the policy is CAPPED
+        lateFeeNotes:
+          type: string
+          description: Advisory notes on the late-fee regime
       required:
         - identifier
         - countryCode
@@ -29054,6 +29206,14 @@ components:
           format: date-time
         stale:
           type: boolean
+        lateFeePolicy:
+          $ref: '#/components/schemas/LateFeePolicy'
+        lateFeeMaxPercentage:
+          type: number
+          description: Statutory maximum late fee (% of the amount due) when the policy is CAPPED
+        lateFeeNotes:
+          type: string
+          description: Advisory notes on the late-fee regime
         regions:
           type: array
           items:

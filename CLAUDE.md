@@ -101,7 +101,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `backend/buurman-jooq/src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V063)
+- Convention: `V<version>__<description>.sql` (currently at V064)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts

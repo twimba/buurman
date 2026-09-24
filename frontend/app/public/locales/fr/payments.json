@@ -12,7 +12,8 @@
     "applyCredit": "Utiliser un avoir",
     "waiveLateFee": "Annuler la pénalité",
     "writeOff": "Passer en perte",
-    "cancelPayment": "Annuler le paiement"
+    "cancelPayment": "Annuler le paiement",
+    "formalNotice": "Mise en demeure (PDF)"
   },
   "stats": {
     "pendingPayments": "Paiements en attente",
@@ -203,7 +204,8 @@
     "save": "Enregistrer",
     "previous": "Précédent",
     "next": "Suivant",
-    "sendReminder": "Envoyer un e-mail au locataire au sujet de ce paiement"
+    "sendReminder": "Envoyer un e-mail au locataire au sujet de ce paiement",
+    "formalNotice": "Télécharger une mise en demeure datée pour ce paiement"
   },
   "errors": {
     "loadFailed": "Échec du chargement des paiements",
@@ -260,7 +262,22 @@
     "notesLabel": "Message personnel (facultatif)",
     "notesPlaceholder": "ex. Merci de virer le montant avant vendredi.",
     "confirm": "Envoyer le rappel",
-    "confirmBulk": "Envoyer {{count}} rappels"
+    "confirmBulk": "Envoyer {{count}} rappels",
+    "toneLabel": "Ton",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Amical",
+        "help": "Un rappel courtois que le paiement est en attente."
+      },
+      "FIRM": {
+        "label": "Ferme",
+        "help": "Une demande claire indiquant le retard et les conséquences."
+      },
+      "FINAL": {
+        "label": "Mise en demeure",
+        "help": "Demande formelle avec un délai de 14 jours. Une mise en demeure en PDF est jointe et classée dans le bail."
+      }
+    }
   },
   "reminders": {
     "title": "Rappels envoyés",

@@ -2,7 +2,14 @@ package com.buurman.service.notification.channel;
 
 import static com.buurman.domain.NotificationChannel.EMAIL;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +23,8 @@ import org.thymeleaf.context.Context;
 import com.buurman.config.models.MailgunProperties;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.service.MetricsService;
+import com.buurman.service.S3StorageService;
+import com.buurman.service.notification.EmailAttachment;
 import com.buurman.service.notification.EmailSubjectResolver;
 import com.buurman.service.notification.NotificationChannelSender;
 import com.buurman.service.notification.NotificationSendException;
@@ -36,6 +45,7 @@ public class MailgunEmailSender implements NotificationChannelSender {
   private final TemplateEngine templateEngine;
   private final EmailSubjectResolver emailSubjectResolver;
   private final MetricsService metricsService;
+  private final S3StorageService s3StorageService;
   private final String domain;
   private final String fromEmail;
   private final String fromName;
@@ -45,7 +55,9 @@ public class MailgunEmailSender implements NotificationChannelSender {
       @Qualifier("emailTemplateEngine") TemplateEngine templateEngine,
       EmailSubjectResolver emailSubjectResolver,
       MailgunProperties mailgunProperties,
-      MetricsService metricsService) {
+      MetricsService metricsService,
+      S3StorageService s3StorageService) {
+    this.s3StorageService = s3StorageService;
     this.mailgunApi = mailgunApi;
     this.templateEngine = templateEngine;
     this.emailSubjectResolver = emailSubjectResolver;
@@ -66,15 +78,27 @@ public class MailgunEmailSender implements NotificationChannelSender {
       String subject =
           request.subject().orElseThrow(() -> new NotificationSendException("subject is required"));
 
-      Message message =
+      List<File> tempFiles = new ArrayList<>();
+      Message.MessageBuilder builder =
           Message.builder()
               .from(fromName + " <" + fromEmail + ">")
               .to(recipient)
               .subject(subject)
-              .html(request.body())
-              .build();
+              .html(request.body());
+      for (EmailAttachment attachment : request.attachments().orElse(List.of())) {
+        tempFiles.add(materialize(attachment));
+      }
+      if (!tempFiles.isEmpty()) {
+        builder.attachment(tempFiles);
+      }
+      Message message = builder.build();
 
-      MessageResponse response = mailgunApi.sendMessage(domain, message);
+      MessageResponse response;
+      try {
+        response = mailgunApi.sendMessage(domain, message);
+      } finally {
+        tempFiles.forEach(f -> f.delete());
+      }
       String messageId = response.getId().replaceAll("^<|>$", "");
 
       log.info(
@@ -90,6 +114,18 @@ public class MailgunEmailSender implements NotificationChannelSender {
       metricsService.recordNotificationSend(start, "email", "mailgun", "failure");
       throw new NotificationSendException("Failed to send email via Mailgun", e);
     }
+  }
+
+  /** Mailgun's SDK attaches java.io.File only, so stored attachments are spooled to a temp dir. */
+  private File materialize(EmailAttachment attachment) throws IOException {
+    Path dir = Files.createTempDirectory("buurman-mail-");
+    Path file = dir.resolve(Path.of(attachment.fileName()).getFileName());
+    try (InputStream in = s3StorageService.downloadFile(attachment.fileKey())) {
+      Files.copy(in, file);
+    }
+    file.toFile().deleteOnExit();
+    dir.toFile().deleteOnExit();
+    return file.toFile();
   }
 
   @Override

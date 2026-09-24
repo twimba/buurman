@@ -12,7 +12,8 @@
     "applyCredit": "Bruk tilgodehavende",
     "waiveLateFee": "Frafall gebyr",
     "writeOff": "Avskriv",
-    "cancelPayment": "Kanseller betaling"
+    "cancelPayment": "Kanseller betaling",
+    "formalNotice": "Betalingsvarsel (PDF)"
   },
   "stats": {
     "pendingPayments": "Ventende betalinger",
@@ -203,7 +204,8 @@
     "save": "Lagre",
     "previous": "Forrige",
     "next": "Neste",
-    "sendReminder": "Send leietakeren en e-post om denne betalingen"
+    "sendReminder": "Send leietakeren en e-post om denne betalingen",
+    "formalNotice": "Last ned et datert betalingsvarsel for denne betalingen"
   },
   "errors": {
     "loadFailed": "Kunne ikke laste betalinger",
@@ -259,7 +261,22 @@
     "notesLabel": "Personlig melding (valgfritt)",
     "notesPlaceholder": "f.eks. Vennligst overfør beløpet innen fredag.",
     "confirm": "Send påminnelse",
-    "confirmBulk": "Send {{count}} påminnelser"
+    "confirmBulk": "Send {{count}} påminnelser",
+    "toneLabel": "Tone",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Vennlig",
+        "help": "En høflig påminnelse om at betalingen er åpen."
+      },
+      "FIRM": {
+        "label": "Bestemt",
+        "help": "Et tydelig krav med antall dager forsinket og konsekvenser."
+      },
+      "FINAL": {
+        "label": "Siste varsel",
+        "help": "Formelt krav med 14 dagers frist. Et betalingsvarsel som PDF legges ved og arkiveres under kontrakten."
+      }
+    }
   },
   "reminders": {
     "title": "Sendte påminnelser",

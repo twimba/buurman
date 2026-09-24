@@ -24,7 +24,8 @@
       "title": "No contracts yet",
       "description": "Get started by creating your first rental agreement"
     },
-    "error": "Failed to load contracts"
+    "error": "Failed to load contracts",
+    "exportDeposits": "Export deposits"
   },
   "create": {
     "title": "Add New Contract",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "No reminders are sent until this date, e.g. while a payment plan is agreed.",
     "lateFeeEnabled": "Charge late fees",
     "lateFeeEnabledHelp": "Adds a separate late-fee payment once a rent payment is still open after the grace period. Off by default.",
-    "lateFeeGraceDays": "Grace period (days)"
+    "lateFeeGraceDays": "Grace period (days)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Flat late fees are permitted in {{country}}.",
+      "CAPPED": "In {{country}} late fees are capped at {{percentage}}% of the amount due.",
+      "INTEREST_ONLY": "In {{country}} only statutory default interest may be charged on overdue rent; flat late fees cannot be enabled.",
+      "FORBIDDEN": "Late fees on residential rent are not permitted in {{country}}.",
+      "overCap": "The percentage above exceeds this cap."
+    }
   },
   "statusChange": {
     "title": "Change Contract Status",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Negotiated",
       "FROZEN": "Frozen",
       "OTHER": "Other"
+    },
+    "lateFees": {
+      "title": "Late fees",
+      "policy": {
+        "ALLOWED": "Flat late fees allowed",
+        "CAPPED": "Late fees capped",
+        "INTEREST_ONLY": "Statutory interest only",
+        "FORBIDDEN": "Late fees not permitted",
+        "UNKNOWN": "Unknown"
+      },
+      "maxPercentage": "Maximum {{percentage}}% of the amount due"
     }
   },
   "rentIncrease": {
@@ -902,7 +921,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Statement (PDF)",
+    "statementHelp": "Download an itemised deposit statement for the tenant"
   },
   "paymentPlans": {
     "title": "Payment plans",

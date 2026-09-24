@@ -12,7 +12,8 @@
     "applyCredit": "Guthaben verrechnen",
     "waiveLateFee": "Gebühr erlassen",
     "writeOff": "Abschreiben",
-    "cancelPayment": "Zahlung stornieren"
+    "cancelPayment": "Zahlung stornieren",
+    "formalNotice": "Mahnschreiben (PDF)"
   },
   "stats": {
     "pendingPayments": "Ausstehende Zahlungen",
@@ -203,7 +204,8 @@
     "save": "Speichern",
     "previous": "Zurück",
     "next": "Weiter",
-    "sendReminder": "Mieter per E-Mail an diese Zahlung erinnern"
+    "sendReminder": "Mieter per E-Mail an diese Zahlung erinnern",
+    "formalNotice": "Datiertes Mahnschreiben für diese Zahlung herunterladen"
   },
   "errors": {
     "loadFailed": "Zahlungen konnten nicht geladen werden",
@@ -259,7 +261,22 @@
     "notesLabel": "Persönliche Nachricht (optional)",
     "notesPlaceholder": "z. B. Bitte überweisen Sie den Betrag bis Freitag.",
     "confirm": "Erinnerung senden",
-    "confirmBulk": "{{count}} Erinnerungen senden"
+    "confirmBulk": "{{count}} Erinnerungen senden",
+    "toneLabel": "Tonfall",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Freundlich",
+        "help": "Ein höflicher Hinweis, dass die Zahlung offen ist."
+      },
+      "FIRM": {
+        "label": "Bestimmt",
+        "help": "Eine klare Aufforderung mit Verzugstagen und Folgen."
+      },
+      "FINAL": {
+        "label": "Letzte Mahnung",
+        "help": "Förmliche Zahlungsaufforderung mit 14-tägiger Frist. Eine Mahnung als PDF wird angehängt und beim Vertrag abgelegt."
+      }
+    }
   },
   "reminders": {
     "title": "Gesendete Erinnerungen",

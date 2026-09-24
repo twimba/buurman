@@ -12,7 +12,8 @@
     "applyCredit": "Użyj nadpłaty",
     "waiveLateFee": "Umorz opłatę",
     "writeOff": "Odpisz",
-    "cancelPayment": "Anuluj płatność"
+    "cancelPayment": "Anuluj płatność",
+    "formalNotice": "Wezwanie do zapłaty (PDF)"
   },
   "stats": {
     "pendingPayments": "Oczekujące płatności",
@@ -203,7 +204,8 @@
     "save": "Zapisz",
     "previous": "Poprzednia",
     "next": "Następna",
-    "sendReminder": "Wyślij najemcy e-mail w sprawie tej płatności"
+    "sendReminder": "Wyślij najemcy e-mail w sprawie tej płatności",
+    "formalNotice": "Pobierz datowane wezwanie do zapłaty dla tej płatności"
   },
   "errors": {
     "loadFailed": "Nie udało się załadować płatności",
@@ -259,7 +261,22 @@
     "notesLabel": "Wiadomość osobista (opcjonalnie)",
     "notesPlaceholder": "np. Prosimy o przelew do piątku.",
     "confirm": "Wyślij przypomnienie",
-    "confirmBulk": "Wyślij {{count}} przypomnień"
+    "confirmBulk": "Wyślij {{count}} przypomnień",
+    "toneLabel": "Ton",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Uprzejmy",
+        "help": "Grzeczne przypomnienie o otwartej płatności."
+      },
+      "FIRM": {
+        "label": "Stanowczy",
+        "help": "Jasne wezwanie z liczbą dni opóźnienia i konsekwencjami."
+      },
+      "FINAL": {
+        "label": "Ostateczne wezwanie",
+        "help": "Formalne wezwanie z 14-dniowym terminem. Wezwanie do zapłaty w PDF jest załączane i archiwizowane przy umowie."
+      }
+    }
   },
   "reminders": {
     "title": "Wysłane przypomnienia",

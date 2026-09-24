@@ -537,6 +537,16 @@ paths:
     $ref: 'paths/documents.yaml#/booklets-payments-xlsx'
   /booklets/payments/google-sheet:
     $ref: 'paths/documents.yaml#/booklets-payments-google-sheet'
+  /booklets/deposits/csv:
+    $ref: 'paths/documents.yaml#/booklets-deposits-csv'
+  /booklets/deposits/xlsx:
+    $ref: 'paths/documents.yaml#/booklets-deposits-xlsx'
+  /booklets/deposits/google-sheet:
+    $ref: 'paths/documents.yaml#/booklets-deposits-google-sheet'
+  /contracts/{contractIdentifier}/deposit/statement:
+    $ref: 'paths/documents.yaml#/booklets-deposit-statement'
+  /payments/{identifier}/formal-notice:
+    $ref: 'paths/documents.yaml#/booklets-payment-formal-notice'
   /booklets/expenses/csv:
     $ref: 'paths/documents.yaml#/booklets-expenses-csv'
   /booklets/expenses/xlsx:
@@ -7861,6 +7871,8 @@ components:
           type: string
           maxLength: 1000
           description: Optional personal message included in the email
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
     BulkMarkPaidRequest:
       type: object
       properties:
@@ -7890,6 +7902,8 @@ components:
         notes:
           type: string
           maxLength: 1000
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
       required:
         - identifiers
     BulkActionResultPaymentResponse:
@@ -8688,6 +8702,10 @@ components:
         - TRIENNIAL
         - ON_RELET
         - PER_MODERNISATION
+    LateFeePolicy:
+      type: string
+      description: Whether flat late fees may be charged on overdue residential rent
+      enum: [UNKNOWN, ALLOWED, CAPPED, INTEREST_ONLY, FORBIDDEN]
     RentRegulationCountryResponse:
       type: object
       properties:
@@ -8706,6 +8724,14 @@ components:
           format: date-time
         stale:
           type: boolean
+        lateFeePolicy:
+          $ref: '#/components/schemas/LateFeePolicy'
+        lateFeeMaxPercentage:
+          type: number
+          description: Statutory maximum late fee (% of the amount due) when the policy is CAPPED
+        lateFeeNotes:
+          type: string
+          description: Advisory notes on the late-fee regime
       required:
         - identifier
         - countryCode
@@ -8730,6 +8756,14 @@ components:
           format: date-time
         stale:
           type: boolean
+        lateFeePolicy:
+          $ref: '#/components/schemas/LateFeePolicy'
+        lateFeeMaxPercentage:
+          type: number
+          description: Statutory maximum late fee (% of the amount due) when the policy is CAPPED
+        lateFeeNotes:
+          type: string
+          description: Advisory notes on the late-fee regime
         regions:
           type: array
           items:

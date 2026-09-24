@@ -12,7 +12,8 @@
     "applyCredit": "Usa credito",
     "waiveLateFee": "Condona penale",
     "writeOff": "Stralcia",
-    "cancelPayment": "Annulla pagamento"
+    "cancelPayment": "Annulla pagamento",
+    "formalNotice": "Costituzione in mora (PDF)"
   },
   "stats": {
     "pendingPayments": "Pagamenti in attesa",
@@ -203,7 +204,8 @@
     "save": "Salva",
     "previous": "Precedente",
     "next": "Successivo",
-    "sendReminder": "Invia un'e-mail all'inquilino su questo pagamento"
+    "sendReminder": "Invia un'e-mail all'inquilino su questo pagamento",
+    "formalNotice": "Scarica una richiesta formale datata per questo pagamento"
   },
   "errors": {
     "loadFailed": "Impossibile caricare i pagamenti",
@@ -260,7 +262,22 @@
     "notesLabel": "Messaggio personale (facoltativo)",
     "notesPlaceholder": "es. Si prega di effettuare il bonifico entro venerdì.",
     "confirm": "Invia promemoria",
-    "confirmBulk": "Invia {{count}} promemoria"
+    "confirmBulk": "Invia {{count}} promemoria",
+    "toneLabel": "Tono",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Cordiale",
+        "help": "Un promemoria cortese che il pagamento è aperto."
+      },
+      "FIRM": {
+        "label": "Fermo",
+        "help": "Una richiesta chiara con i giorni di ritardo e le conseguenze."
+      },
+      "FINAL": {
+        "label": "Ultimo avviso",
+        "help": "Richiesta formale con termine di 14 giorni. Una costituzione in mora in PDF viene allegata e archiviata nel contratto."
+      }
+    }
   },
   "reminders": {
     "title": "Promemoria inviati",

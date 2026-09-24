@@ -44,6 +44,22 @@ public class DepositRepository {
         .map(this::toDomain);
   }
 
+  public List<Deposit> findAllByTeamId(UUID teamId) {
+    return dsl.selectFrom(DEPOSITS)
+        .where(DEPOSITS.TEAM_ID.eq(teamId).and(DEPOSITS.DELETED_AT.isNull()))
+        .orderBy(DEPOSITS.CREATED_AT.desc())
+        .fetch()
+        .map(this::toDomain);
+  }
+
+  public List<DepositDeduction> findAllDeductionsByTeamId(UUID teamId) {
+    return dsl.selectFrom(DEPOSIT_DEDUCTIONS)
+        .where(DEPOSIT_DEDUCTIONS.TEAM_ID.eq(teamId).and(DEPOSIT_DEDUCTIONS.DELETED_AT.isNull()))
+        .orderBy(DEPOSIT_DEDUCTIONS.DEDUCTION_DATE.asc())
+        .fetch()
+        .map(this::toDomain);
+  }
+
   public Deposit getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(DEPOSITS)
         .where(

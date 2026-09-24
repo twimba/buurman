@@ -24,7 +24,8 @@
       "title": "Ei sopimuksia viela",
       "description": "Aloita luomalla ensimmainen vuokrasopimuksesi"
     },
-    "error": "Sopimusten lataus epaonnistui"
+    "error": "Sopimusten lataus epaonnistui",
+    "exportDeposits": "Vie vakuudet"
   },
   "create": {
     "title": "Lisaa uusi sopimus",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Muistutuksia ei lähetetä ennen tätä päivää, esim. maksusuunnitelman aikana.",
     "lateFeeEnabled": "Veloita viivästysmaksu",
     "lateFeeEnabledHelp": "Lisää erillisen maksun, kun vuokra on yhä avoinna karenssiajan jälkeen. Oletuksena pois päältä.",
-    "lateFeeGraceDays": "Karenssiaika (päivää)"
+    "lateFeeGraceDays": "Karenssiaika (päivää)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Kiinteät viivästysmaksut ovat sallittuja maassa {{country}}.",
+      "CAPPED": "Maassa {{country}} viivästysmaksut on rajoitettu {{percentage}} %:iin erääntyneestä summasta.",
+      "INTEREST_ONLY": "Maassa {{country}} myöhästyneestä vuokrasta saa periä vain lakisääteisen viivästyskoron; kiinteitä maksuja ei voi ottaa käyttöön.",
+      "FORBIDDEN": "Viivästysmaksut asuinvuokrista eivät ole sallittuja maassa {{country}}.",
+      "overCap": "Yllä oleva prosentti ylittää tämän rajan."
+    }
   },
   "statusChange": {
     "title": "Vaihda sopimuksen tila",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Neuvoteltu",
       "FROZEN": "Jaahdytetty",
       "OTHER": "Muu"
+    },
+    "lateFees": {
+      "title": "Viivästysmaksut",
+      "policy": {
+        "ALLOWED": "Kiinteät maksut sallittu",
+        "CAPPED": "Maksut rajoitettu",
+        "INTEREST_ONLY": "Vain viivästyskorko",
+        "FORBIDDEN": "Maksut kielletty",
+        "UNKNOWN": "Tuntematon"
+      },
+      "maxPercentage": "Enintään {{percentage}} % erääntyneestä summasta"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Tilitys (PDF)",
+    "statementHelp": "Lataa eritelty vakuustilitys vuokralaiselle"
   },
   "paymentPlans": {
     "title": "Maksusuunnitelmat",

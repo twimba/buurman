@@ -9,6 +9,7 @@ import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.buurman.domain.LateFeePolicy;
 import com.buurman.domain.regulation.CatalogCountry;
 import com.buurman.domain.regulation.CatalogRegion;
 import com.buurman.domain.regulation.CatalogRule;
@@ -37,6 +38,31 @@ class RentRegulationCatalogTest {
     assertThat(catalog.countryCount()).isPositive();
     assertThat(catalog.regionCount()).isPositive();
     assertThat(catalog.ruleCount()).isPositive();
+  }
+
+  @Test
+  @DisplayName("every country declares a late-fee regime; capped ones with a percentage carry it")
+  void everyCountry_hasLateFeeRegime() {
+    RentRegulationCatalog catalog = loader.load();
+
+    for (CatalogCountry country : catalog.countries()) {
+      assertThat(country.lateFee()).as("lateFee for %s", country.countryCode()).isNotNull();
+      assertThat(country.lateFee().policy())
+          .as("lateFee.policy for %s", country.countryCode())
+          .isNotNull()
+          .isNotEqualTo(LateFeePolicy.UNKNOWN);
+      if (country.lateFee().maxPercentage() != null) {
+        assertThat(country.lateFee().policy()).isEqualTo(LateFeePolicy.CAPPED);
+        assertThat(country.lateFee().maxPercentage()).isPositive();
+      }
+    }
+    assertThat(catalog.countries())
+        .anySatisfy(
+            c -> {
+              assertThat(c.countryCode()).isEqualTo("PT");
+              assertThat(c.lateFee().policy()).isEqualTo(LateFeePolicy.CAPPED);
+              assertThat(c.lateFee().maxPercentage()).isEqualByComparingTo("20");
+            });
   }
 
   @Test

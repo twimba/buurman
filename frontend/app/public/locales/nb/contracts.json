@@ -24,7 +24,8 @@
       "title": "Ingen kontrakter ennå",
       "description": "Kom i gang ved å opprette din første leieavtale"
     },
-    "error": "Kunne ikke laste kontrakter"
+    "error": "Kunne ikke laste kontrakter",
+    "exportDeposits": "Eksporter depositum"
   },
   "create": {
     "title": "Legg til ny kontrakt",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Ingen påminnelser sendes før denne datoen, f.eks. under en nedbetalingsavtale.",
     "lateFeeEnabled": "Belast purregebyr",
     "lateFeeEnabledHelp": "Legger til en egen gebyrbetaling når en husleie fortsatt er åpen etter henstandsperioden. Av som standard.",
-    "lateFeeGraceDays": "Henstandsperiode (dager)"
+    "lateFeeGraceDays": "Henstandsperiode (dager)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Faste purregebyrer er tillatt i {{country}}.",
+      "CAPPED": "I {{country}} er purregebyrer begrenset til {{percentage}} % av forfalt beløp.",
+      "INTEREST_ONLY": "I {{country}} kan bare lovbestemt forsinkelsesrente kreves på forfalt husleie; faste gebyrer kan ikke aktiveres.",
+      "FORBIDDEN": "Purregebyrer på boligleie er ikke tillatt i {{country}}.",
+      "overCap": "Prosentsatsen ovenfor overstiger denne grensen."
+    }
   },
   "statusChange": {
     "title": "Endre kontraktstatus",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Forhandlet",
       "FROZEN": "Frosset",
       "OTHER": "Annet"
+    },
+    "lateFees": {
+      "title": "Purregebyrer",
+      "policy": {
+        "ALLOWED": "Faste gebyrer tillatt",
+        "CAPPED": "Gebyrer begrenset",
+        "INTEREST_ONLY": "Kun forsinkelsesrente",
+        "FORBIDDEN": "Gebyrer ikke tillatt",
+        "UNKNOWN": "Ukjent"
+      },
+      "maxPercentage": "Maks {{percentage}} % av forfalt beløp"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Oppgjør (PDF)",
+    "statementHelp": "Last ned et spesifisert depositumsoppgjør til leietakeren"
   },
   "paymentPlans": {
     "title": "Nedbetalingsplaner",

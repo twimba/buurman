@@ -12,7 +12,8 @@
     "applyCredit": "Käytä hyvitys",
     "waiveLateFee": "Peru maksu",
     "writeOff": "Kirjaa luottotappioksi",
-    "cancelPayment": "Peruuta maksu"
+    "cancelPayment": "Peruuta maksu",
+    "formalNotice": "Maksuvaatimus (PDF)"
   },
   "stats": {
     "pendingPayments": "Odottavat maksut",
@@ -203,7 +204,8 @@
     "save": "Tallenna",
     "previous": "Edellinen",
     "next": "Seuraava",
-    "sendReminder": "Lähetä vuokralaiselle sähköposti tästä maksusta"
+    "sendReminder": "Lähetä vuokralaiselle sähköposti tästä maksusta",
+    "formalNotice": "Lataa päivätty virallinen maksuvaatimus tälle maksulle"
   },
   "errors": {
     "loadFailed": "Maksujen lataus epaonnistui",
@@ -259,7 +261,22 @@
     "notesLabel": "Henkilökohtainen viesti (valinnainen)",
     "notesPlaceholder": "esim. Maksathan summan perjantaihin mennessä.",
     "confirm": "Lähetä muistutus",
-    "confirmBulk": "Lähetä {{count}} muistutusta"
+    "confirmBulk": "Lähetä {{count}} muistutusta",
+    "toneLabel": "Sävy",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Ystävällinen",
+        "help": "Kohtelias muistutus avoimesta maksusta."
+      },
+      "FIRM": {
+        "label": "Tiukka",
+        "help": "Selkeä vaatimus, jossa mainitaan myöhästymispäivät ja seuraukset."
+      },
+      "FINAL": {
+        "label": "Viimeinen huomautus",
+        "help": "Virallinen vaatimus 14 päivän määräajalla. Maksuvaatimus liitetään PDF-muodossa ja tallennetaan sopimukselle."
+      }
+    }
   },
   "reminders": {
     "title": "Lähetetyt muistutukset",

@@ -12,7 +12,8 @@
     "applyCredit": "Brug tilgodehavende",
     "waiveLateFee": "Eftergiv gebyr",
     "writeOff": "Afskriv",
-    "cancelPayment": "Annullér betaling"
+    "cancelPayment": "Annullér betaling",
+    "formalNotice": "Betalingspåkrav (PDF)"
   },
   "stats": {
     "pendingPayments": "Afventende betalinger",
@@ -203,7 +204,8 @@
     "save": "Gem",
     "previous": "Forrige",
     "next": "Naeste",
-    "sendReminder": "Send lejeren en e-mail om denne betaling"
+    "sendReminder": "Send lejeren en e-mail om denne betaling",
+    "formalNotice": "Download et dateret betalingspåkrav for denne betaling"
   },
   "errors": {
     "loadFailed": "Kunne ikke indlaese betalinger",
@@ -259,7 +261,22 @@
     "notesLabel": "Personlig besked (valgfri)",
     "notesPlaceholder": "f.eks. Overfør venligst beløbet inden fredag.",
     "confirm": "Send påmindelse",
-    "confirmBulk": "Send {{count}} påmindelser"
+    "confirmBulk": "Send {{count}} påmindelser",
+    "toneLabel": "Tone",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Venlig",
+        "help": "En høflig påmindelse om, at betalingen er åben."
+      },
+      "FIRM": {
+        "label": "Bestemt",
+        "help": "Et klart krav med antal dage forsinket og konsekvenser."
+      },
+      "FINAL": {
+        "label": "Sidste påkrav",
+        "help": "Formelt krav med 14 dages frist. Et betalingspåkrav som PDF vedhæftes og arkiveres under kontrakten."
+      }
+    }
   },
   "reminders": {
     "title": "Sendte påmindelser",

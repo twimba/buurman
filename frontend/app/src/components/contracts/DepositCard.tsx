@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Landmark, Plus, Trash2 } from 'lucide-react';
+import { FileDown, Landmark, Plus, Trash2 } from 'lucide-react';
 import { Button, ModalWrapper, StatusBadge, Textarea, type BadgeColorVariant } from '@buurman/ui';
 import {
   useAddDepositDeduction,
@@ -14,6 +14,8 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
 import { ReasonDialog } from '@/components/payments/ReasonDialog';
 import type { ContractResponse, DepositResponse } from '@/types/contract';
+import { getDepositStatement } from '@/generated/api/booklets/booklets';
+import { downloadBlob } from '@/utils/downloadBlob';
 
 interface DepositCardProps {
   contract: ContractResponse;
@@ -52,6 +54,17 @@ export const DepositCard = ({ contract, contractId }: DepositCardProps) => {
   const [showDeduction, setShowDeduction] = useState(false);
   const [showReturn, setShowReturn] = useState(false);
   const [showForfeit, setShowForfeit] = useState(false);
+  const [statementDownloading, setStatementDownloading] = useState(false);
+  const downloadStatement = async () => {
+    setStatementDownloading(true);
+    try {
+      const lang = contract.documentLanguages?.[0] ?? 'en';
+      const blob = await getDepositStatement(contractId, { lang });
+      downloadBlob(blob, `deposit-statement-${contractId}-${lang}.pdf`);
+    } finally {
+      setStatementDownloading(false);
+    }
+  };
 
   const currency = deposit?.currency ?? contract.rentAmountCurrency;
   const isClosed = deposit?.status === 'RETURNED' || deposit?.status === 'FORFEITED';
@@ -126,7 +139,21 @@ export const DepositCard = ({ contract, contractId }: DepositCardProps) => {
           <Landmark className="h-5 w-5" />
           {t('deposit.title')}
         </h2>
-        {deposit && <StatusBadge label={t(`deposit.status.${deposit.status}`)} color={statusColor[deposit.status]} shape="pill" />}
+        {deposit && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<FileDown />}
+              onClick={downloadStatement}
+              isLoading={statementDownloading}
+              title={t('deposit.statementHelp')}
+            >
+              {t('deposit.statement')}
+            </Button>
+            <StatusBadge label={t(`deposit.status.${deposit.status}`)} color={statusColor[deposit.status]} shape="pill" />
+          </div>
+        )}
       </div>
 
       {isLoading ? null : !deposit ? (

@@ -31,6 +31,7 @@ import { RenewalConfigForm } from '@/components/contracts/RenewalConfigForm';
 import { RentBreakdown } from '@/components/contracts/RentBreakdown';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useProperty } from '@/hooks/usePropertyHooks';
+import { useRentRegulationCountryDetail } from '@/hooks/useRentRegulationHooks';
 import {
   useAddContractParty,
   useRemoveContractParty,
@@ -202,6 +203,14 @@ export const ContractForm = ({
   const propertyCountryCode =
     contract?.countryCode || selectedProperty?.country || undefined;
   const countryName = useCountryName(propertyCountryCode);
+  const { data: regulation } = useRentRegulationCountryDetail(propertyCountryCode);
+  const lateFeePolicy = regulation?.lateFeePolicy ?? 'UNKNOWN';
+  const lateFeeCap = regulation?.lateFeeMaxPercentage;
+  const lateFeeBlocked = lateFeePolicy === 'FORBIDDEN' || lateFeePolicy === 'INTEREST_ONLY';
+  const lateFeeOverCap =
+    lateFeePolicy === 'CAPPED' &&
+    lateFeeCap != null &&
+    (formData.lateFeePercentage ?? 0) > lateFeeCap;
 
   // Sync currency fields when defaultCurrency loads asynchronously (create mode)
   useEffect(() => {
@@ -1119,6 +1128,21 @@ export const ContractForm = ({
                   <p className="text-sm text-text-secondary">
                     {t('form.lateFeeEnabledHelp')}
                   </p>
+                  {lateFeePolicy !== 'UNKNOWN' && (
+                    <p
+                      className={`text-sm mt-2 ${
+                        lateFeeBlocked || lateFeeOverCap
+                          ? 'text-error-text'
+                          : 'text-text-muted'
+                      }`}
+                    >
+                      {t(`form.lateFeeRegulation.${lateFeePolicy}`, {
+                        country: countryName || propertyCountryCode,
+                        percentage: lateFeeCap ?? '',
+                      })}
+                      {lateFeeOverCap && ` ${t('form.lateFeeRegulation.overCap')}`}
+                    </p>
+                  )}
                 </div>
                 <button
                   type="button"

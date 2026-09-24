@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -30,6 +31,7 @@ import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractPaymentInstruction;
+import com.buurman.domain.Document;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationUrgency;
 import com.buurman.domain.Payment;
@@ -38,6 +40,7 @@ import com.buurman.domain.PaymentReminder;
 import com.buurman.domain.PaymentReminder.ReminderType;
 import com.buurman.domain.PaymentReminderStep;
 import com.buurman.domain.ReminderTone;
+import com.buurman.domain.Sid;
 import com.buurman.domain.User;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.dto.request.BulkSendPaymentRemindersRequest;
@@ -49,6 +52,7 @@ import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentReminderRepository;
@@ -57,6 +61,8 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.document.TenantNoticeDocumentService;
+import com.buurman.service.notification.EmailAttachment;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.Constants;
@@ -96,6 +102,9 @@ public class PaymentReminderService {
   private final AuditService auditService;
   private final MetricsService metricsService;
   private final AppProperties appProperties;
+  private final DocumentRepository documentRepository;
+  private final S3StorageService s3StorageService;
+  private final ObjectProvider<TenantNoticeDocumentService> noticeDocumentService;
   private final Clock clock;
   private final PlatformTransactionManager transactionManager;
 
@@ -110,7 +119,7 @@ public class PaymentReminderService {
         teamId,
         ReminderType.MANUAL,
         Optional.empty(),
-        Optional.empty(),
+        request.tone(),
         request.notes(),
         principal.getUserId(),
         Optional.of(principal.getName()));
@@ -123,7 +132,8 @@ public class PaymentReminderService {
   public List<BulkActionResult<PaymentReminderResponse>> bulkSendReminders(
       BulkSendPaymentRemindersRequest request, UserPrincipal principal) {
     TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
-    SendPaymentReminderRequest single = new SendPaymentReminderRequest(request.notes());
+    SendPaymentReminderRequest single =
+        new SendPaymentReminderRequest(request.notes(), request.tone());
     List<BulkActionResult<PaymentReminderResponse>> results = new ArrayList<>();
     for (PaymentIdentifier identifier : request.identifiers().stream().distinct().toList()) {
       try {
@@ -298,6 +308,21 @@ public class PaymentReminderService {
     variables.put("primaryUrl", paymentUrl);
     variables.putAll(paymentInstructionVariables(contract.getId(), teamId));
 
+    List<EmailAttachment> attachments =
+        tone == ReminderTone.FINAL
+            ? formalNoticeAttachment(
+                    payment,
+                    contract,
+                    contact,
+                    outstanding,
+                    daysOverdue,
+                    languageTag,
+                    teamId,
+                    actorUserId)
+                .map(List::of)
+                .orElse(List.of())
+            : List.of();
+
     notificationService.send(
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
@@ -312,6 +337,7 @@ public class PaymentReminderService {
                     ? NotificationUrgency.NORMAL
                     : NotificationUrgency.URGENT)
             .createdBy(actorUserId)
+            .attachments(attachments)
             .build());
 
     PaymentReminder reminder =
@@ -347,6 +373,53 @@ public class PaymentReminderService {
         contact.getIdentifier().map(Object::toString).orElse("?"),
         daysOverdue);
     return response;
+  }
+
+  /**
+   * Renders the formal notice PDF, files it under the contract's documents and returns it as an
+   * email attachment. Skipped (with a warning) when no PDF engine is deployed.
+   */
+  private Optional<EmailAttachment> formalNoticeAttachment(
+      Payment payment,
+      Contract contract,
+      Contact contact,
+      BigDecimal outstanding,
+      int daysOverdue,
+      String languageTag,
+      UUID teamId,
+      UUID actorUserId) {
+    TenantNoticeDocumentService renderer = noticeDocumentService.getIfAvailable();
+    if (renderer == null) {
+      log.warn("No TenantNoticeDocumentService available; sending FINAL reminder without PDF");
+      return Optional.empty();
+    }
+    byte[] pdf =
+        renderer.renderFormalNotice(
+            new TenantNoticeDocumentService.FormalNoticeData(
+                payment, contract, contact, outstanding, daysOverdue, languageTag));
+    String paymentSid = payment.getIdentifier().map(Object::toString).orElse("payment");
+    String fileName = "formal-notice-" + paymentSid + "-" + languageTag + ".pdf";
+    Sid contractSid = contract.getIdentifier().orElseThrow();
+    Sid teamSid = teamRepository.getById(teamId).getIdentifier().orElseThrow();
+    String fileKey =
+        s3StorageService.uploadFile(
+            pdf, "application/pdf", teamSid, "CONTRACT", contractSid, fileName);
+    Document document =
+        Document.builder()
+            .teamId(teamId)
+            .entityType("CONTRACT")
+            .entityId(contract.getId())
+            .fileKey(fileKey)
+            .fileName(fileName)
+            .fileSize((long) pdf.length)
+            .mimeType("application/pdf")
+            .title(Optional.of("Formal notice - payment " + paymentSid + " (" + languageTag + ")"))
+            .notes(Optional.empty())
+            .uploadedBy(actorUserId)
+            .build();
+    documentRepository.save(document);
+    metricsService.incrementCounter("payment.formal_notice.generated.total");
+    return Optional.of(new EmailAttachment(fileName, "application/pdf", fileKey));
   }
 
   /**

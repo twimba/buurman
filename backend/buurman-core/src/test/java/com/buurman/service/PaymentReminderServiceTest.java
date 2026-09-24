@@ -91,6 +91,14 @@ class PaymentReminderServiceTest {
   @Mock private AuditService auditService;
   @Mock private MetricsService metricsService;
   @Mock private AppProperties appProperties;
+  @Mock private com.buurman.repository.DocumentRepository documentRepository;
+  @Mock private com.buurman.service.S3StorageService s3StorageService;
+
+  @Mock
+  private org.springframework.beans.factory.ObjectProvider<
+          com.buurman.service.document.TenantNoticeDocumentService>
+      noticeDocumentService;
+
   @Mock private PlatformTransactionManager transactionManager;
 
   private final Clock clock =
@@ -118,6 +126,9 @@ class PaymentReminderServiceTest {
             auditService,
             metricsService,
             appProperties,
+            documentRepository,
+            s3StorageService,
+            noticeDocumentService,
             clock,
             transactionManager);
     principal =

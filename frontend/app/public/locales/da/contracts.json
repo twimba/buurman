@@ -24,7 +24,8 @@
       "title": "Ingen kontrakter endnu",
       "description": "Kom i gang ved at oprette din foerste lejeaftale"
     },
-    "error": "Kunne ikke indlaese kontrakter"
+    "error": "Kunne ikke indlaese kontrakter",
+    "exportDeposits": "Eksportér depositum"
   },
   "create": {
     "title": "Tilfoej ny kontrakt",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Der sendes ingen påmindelser før denne dato, f.eks. under en afdragsordning.",
     "lateFeeEnabled": "Opkræv rykkergebyr",
     "lateFeeEnabledHelp": "Tilføjer en separat gebyrbetaling, når en husleje stadig er åben efter henstandsperioden. Slået fra som standard.",
-    "lateFeeGraceDays": "Henstandsperiode (dage)"
+    "lateFeeGraceDays": "Henstandsperiode (dage)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Faste rykkergebyrer er tilladt i {{country}}.",
+      "CAPPED": "I {{country}} er rykkergebyrer begrænset til {{percentage}} % af det forfaldne beløb.",
+      "INTEREST_ONLY": "I {{country}} må der kun opkræves lovbestemte morarenter af forfalden husleje; faste gebyrer kan ikke aktiveres.",
+      "FORBIDDEN": "Rykkergebyrer på boligleje er ikke tilladt i {{country}}.",
+      "overCap": "Procentsatsen ovenfor overstiger denne grænse."
+    }
   },
   "statusChange": {
     "title": "Skift kontraktstatus",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Forhandlet",
       "FROZEN": "Fastfrosset",
       "OTHER": "Andet"
+    },
+    "lateFees": {
+      "title": "Rykkergebyrer",
+      "policy": {
+        "ALLOWED": "Faste gebyrer tilladt",
+        "CAPPED": "Gebyrer begrænset",
+        "INTEREST_ONLY": "Kun morarenter",
+        "FORBIDDEN": "Gebyrer ikke tilladt",
+        "UNKNOWN": "Ukendt"
+      },
+      "maxPercentage": "Højst {{percentage}} % af det forfaldne beløb"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Deduction removed",
       "returned": "Deposit return recorded",
       "forfeited": "Deposit forfeited"
-    }
+    },
+    "statement": "Opgørelse (PDF)",
+    "statementHelp": "Download en specificeret depositumsopgørelse til lejeren"
   },
   "paymentPlans": {
     "title": "Afdragsordninger",

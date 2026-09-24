@@ -70,7 +70,10 @@ public class RentRegulationService {
         country.getLastReviewedAt(),
         isStale(country),
         regions,
-        rules);
+        rules,
+        country.getLateFeePolicy(),
+        country.getLateFeeMaxPercentage(),
+        country.getLateFeeNotes());
   }
 
   @PreAuthorize("isAuthenticated()")
@@ -160,7 +163,10 @@ public class RentRegulationService {
         country.isHasRegionalRegulations(),
         country.getSummary(),
         country.getLastReviewedAt(),
-        isStale(country));
+        isStale(country),
+        country.getLateFeePolicy(),
+        country.getLateFeeMaxPercentage(),
+        country.getLateFeeNotes());
   }
 
   private RentRegulationRegionResponse toRegionResponse(RentRegulationRegion region) {

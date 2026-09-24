@@ -24,7 +24,8 @@
       "title": "Ainda sem contratos",
       "description": "Comece por criar o seu primeiro contrato de arrendamento"
     },
-    "error": "Falha ao carregar contratos"
+    "error": "Falha ao carregar contratos",
+    "exportDeposits": "Exportar cauções"
   },
   "create": {
     "title": "Adicionar Novo Contrato",
@@ -399,7 +400,14 @@
     "remindersPausedUntilHelp": "Não são enviados lembretes até esta data, p. ex. durante um plano de pagamento.",
     "lateFeeEnabled": "Cobrar multa por atraso",
     "lateFeeEnabledHelp": "Adiciona um pagamento de multa separado quando uma renda continua em aberto após o período de carência. Desligado por defeito.",
-    "lateFeeGraceDays": "Período de carência (dias)"
+    "lateFeeGraceDays": "Período de carência (dias)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Penalizações fixas por atraso são permitidas em {{country}}.",
+      "CAPPED": "Em {{country}} as penalizações por atraso estão limitadas a {{percentage}}% do montante devido.",
+      "INTEREST_ONLY": "Em {{country}} apenas podem ser cobrados juros de mora legais sobre rendas em atraso; penalizações fixas não podem ser ativadas.",
+      "FORBIDDEN": "Penalizações por atraso em rendas habitacionais não são permitidas em {{country}}.",
+      "overCap": "A percentagem acima excede este limite."
+    }
   },
   "statusChange": {
     "title": "Alterar Estado do Contrato",
@@ -501,6 +509,17 @@
       "NEGOTIATED": "Negociado",
       "FROZEN": "Congelado",
       "OTHER": "Outro"
+    },
+    "lateFees": {
+      "title": "Penalizações por atraso",
+      "policy": {
+        "ALLOWED": "Penalizações fixas permitidas",
+        "CAPPED": "Penalizações limitadas",
+        "INTEREST_ONLY": "Apenas juros legais",
+        "FORBIDDEN": "Penalizações não permitidas",
+        "UNKNOWN": "Desconhecido"
+      },
+      "maxPercentage": "Máximo {{percentage}}% do montante devido"
     }
   },
   "rentIncrease": {
@@ -901,7 +920,9 @@
       "deductionRemoved": "Dedução removida",
       "returned": "Devolução registada",
       "forfeited": "Caução retida"
-    }
+    },
+    "statement": "Extrato (PDF)",
+    "statementHelp": "Descarregar um extrato detalhado da caução para o inquilino"
   },
   "paymentPlans": {
     "title": "Planos de pagamento",

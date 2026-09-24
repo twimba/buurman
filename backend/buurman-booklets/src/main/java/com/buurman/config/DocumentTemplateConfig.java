@@ -38,7 +38,9 @@ public class DocumentTemplateConfig {
     return messageSource(
         cacheTemplates,
         "classpath:messages/document-extension",
-        "classpath:messages/document-rent-change");
+        "classpath:messages/document-rent-change",
+        "classpath:messages/document-payment-notice",
+        "classpath:messages/document-deposit-statement");
   }
 
   @Bean("bookletMessageSource")

@@ -335,6 +335,7 @@
                                 <schemaMapping>ContactArrears=com.buurman.dto.response.PaymentArrearsResponse.ContactArrears</schemaMapping>
                                 <schemaMapping>PaymentReminderResponse=com.buurman.dto.response.PaymentReminderResponse</schemaMapping>
                                 <schemaMapping>ReminderTone=com.buurman.domain.ReminderTone</schemaMapping>
+                                <schemaMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</schemaMapping>
                                 <schemaMapping>PaymentType=com.buurman.domain.Payment.PaymentType</schemaMapping>
                                 <schemaMapping>ContactCreditIdentifier=com.buurman.domain.identifier.ContactCreditIdentifier</schemaMapping>
                                 <schemaMapping>CancelPaymentRequest=com.buurman.dto.request.CancelPaymentRequest</schemaMapping>
@@ -603,6 +604,7 @@
                                 <importMapping>ContactArrears=com.buurman.dto.response.PaymentArrearsResponse.ContactArrears</importMapping>
                                 <importMapping>PaymentReminderResponse=com.buurman.dto.response.PaymentReminderResponse</importMapping>
                                 <importMapping>ReminderTone=com.buurman.domain.ReminderTone</importMapping>
+                                <importMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</importMapping>
                                 <importMapping>PaymentType=com.buurman.domain.Payment.PaymentType</importMapping>
                                 <importMapping>ContactCreditIdentifier=com.buurman.domain.identifier.ContactCreditIdentifier</importMapping>
                                 <importMapping>CancelPaymentRequest=com.buurman.dto.request.CancelPaymentRequest</importMapping>

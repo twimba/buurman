@@ -65,6 +65,11 @@ public interface ExportService {
 
   byte[] generatePropertiesExcel(UUID teamId);
 
+  // Deposits
+  byte[] generateDepositsCSV(UUID teamId);
+
+  byte[] generateDepositsExcel(UUID teamId);
+
   // Payments
   byte[] generatePaymentsCSV(UUID teamId);
 
