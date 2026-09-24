@@ -30,7 +30,7 @@ Buurman is a property management dashboard for small landlords (properties, tena
 
 ### Backend (Spring Boot/Maven — Multi-Module)
 
-The backend is a 10-module Maven project:
+The backend is a 12-module Maven project:
 - `buurman-common` — domain, DTOs, utils (no Spring deps)
 - `buurman-jooq` — JOOQ codegen + Flyway migrations
 - `buurman` — core services, repos, mappers, config, security (`buurman-core`)
@@ -38,7 +38,9 @@ The backend is a 10-module Maven project:
 - `buurman-backoffice` — backoffice admin controllers/services/repos (depends on core + notifications)
 - `buurman-demo-data` — demo data generators + Quartz job
 - `buurman-takeout` — data export/takeout
-- `buurman-booklets` — PDF/CSV exporters + BookletController
+- `buurman-documents` — shared PDF rendering (Gotenberg renderer, Thymeleaf support, document locales/formatting)
+- `buurman-booklets` — entity booklets, summary cards, CSV/Excel/Google Sheets exports + BookletController
+- `buurman-letters` — tenant-facing letters (extension addenda, rent change notices, formal notices, deposit statements) + LetterController
 - `app` — thin shell, assembles fat JAR (`buurman-app`)
 
 - Build: `cd backend && mvn clean install -DskipTests`
@@ -184,10 +186,20 @@ backend/
 │       ├── service/             TakeoutService
 │       ├── repository/          DataTakeoutRepository
 │       └── job/                 TakeoutCleanupJob
-├── buurman-booklets/        PDF/CSV export (~16 files)
+├── buurman-documents/       Shared PDF rendering (depends on common only)
+│   └── com.buurman.document     DocumentRenderer (Gotenberg), PageSpec, DocumentLocale,
+│                                DocumentFormatting, DocumentTemplateSupport
+├── buurman-booklets/        Booklets, summary cards, tabular exports
 │   └── com.buurman
+│       ├── config/              BookletTemplateConfig
 │       ├── controller/          BookletController
-│       └── service/export/      ExportServiceImpl + 14 exporters
+│       └── service/export/      ExportServiceImpl + booklet/CSV/Excel/Sheets exporters
+├── buurman-letters/         Tenant-facing letters (PDF + generate-and-file)
+│   └── com.buurman
+│       ├── config/              LetterTemplateConfig
+│       ├── controller/          LetterController
+│       └── service/letters/     Addendum, rent-increase, rent-change, formal-notice,
+│                                deposit-statement exporters + generation services
 └── buurman-app/             Thin shell — fat JAR assembly (1 file)
     └── com.buurman           BuurmanApplication.java + all resources
 ```

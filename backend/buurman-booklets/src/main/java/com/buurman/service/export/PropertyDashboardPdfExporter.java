@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
+import com.buurman.document.DocumentRenderer;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;

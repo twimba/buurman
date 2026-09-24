@@ -32,7 +32,7 @@ import { ReasonDialog } from '@/components/payments/ReasonDialog';
 import { ApplyCreditDialog } from '@/components/payments/ApplyCreditDialog';
 import { PaymentRemindersList } from '@/components/payments/PaymentRemindersList';
 import { SendReminderDialog } from '@/components/payments/SendReminderDialog';
-import { getPaymentFormalNotice } from '@/generated/api/booklets/booklets';
+import { getPaymentFormalNotice } from '@/generated/api/letters/letters';
 import { downloadBlob } from '@/utils/downloadBlob';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';

@@ -1,4 +1,4 @@
-package com.buurman.service.export;
+package com.buurman.service.letters;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -42,8 +42,8 @@ public class DepositStatementExporter {
   private final DepositRepository depositRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final DocumentExporterHelper helper;
-  private final DocumentTemplateService documentTemplateService;
+  private final LetterExporterHelper helper;
+  private final LetterTemplateService documentTemplateService;
   private final MessageSource messageSource;
   private final Clock clock;
 
@@ -51,9 +51,9 @@ public class DepositStatementExporter {
       DepositRepository depositRepository,
       ContractRepository contractRepository,
       PropertyRepository propertyRepository,
-      DocumentExporterHelper helper,
-      DocumentTemplateService documentTemplateService,
-      @Qualifier("documentMessageSource") MessageSource messageSource,
+      LetterExporterHelper helper,
+      LetterTemplateService documentTemplateService,
+      @Qualifier("letterMessageSource") MessageSource messageSource,
       Clock clock) {
     this.depositRepository = depositRepository;
     this.contractRepository = contractRepository;
@@ -73,13 +73,13 @@ public class DepositStatementExporter {
             .orElseThrow(() -> new NotFoundException("No deposit recorded for this contract"));
     List<DepositDeduction> deductions = depositRepository.findDeductions(deposit.getId(), teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
-    DocumentExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
+    LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
     Optional<Contact> primaryContact =
         helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
     Optional<ContactAddress> address =
         primaryContact.flatMap(c -> helper.findMailingAddress(c.getId(), teamId));
 
-    Locale locale = DocumentTemplateService.resolveLocale(lang);
+    Locale locale = LetterTemplateService.resolveLocale(lang);
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
     String currency = deposit.getAmount().currency();
     BigDecimal deductionsTotal =

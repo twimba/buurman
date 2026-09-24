@@ -1,4 +1,4 @@
-package com.buurman.service.export;
+package com.buurman.document;
 
 /**
  * Target page orientation for a generated document. Paper is always A4 (the only size the renderer

@@ -1,4 +1,4 @@
-package com.buurman.service.export;
+package com.buurman.service.letters;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -54,8 +54,8 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
   private final ContractPartyService contractPartyService;
   private final ContractPaymentInstructionRepository cpiRepository;
   private final PaymentInstructionRepository paymentInstructionRepository;
-  private final DocumentExporterHelper helper;
-  private final DocumentTemplateService documentTemplateService;
+  private final LetterExporterHelper helper;
+  private final LetterTemplateService documentTemplateService;
   private final MessageSource messageSource;
   private final Clock clock;
 
@@ -68,9 +68,9 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
       ContractPartyService contractPartyService,
       ContractPaymentInstructionRepository cpiRepository,
       PaymentInstructionRepository paymentInstructionRepository,
-      DocumentExporterHelper helper,
-      DocumentTemplateService documentTemplateService,
-      @Qualifier("documentMessageSource") MessageSource messageSource,
+      LetterExporterHelper helper,
+      LetterTemplateService documentTemplateService,
+      @Qualifier("letterMessageSource") MessageSource messageSource,
       Clock clock) {
     this.paymentRepository = paymentRepository;
     this.receivalRepository = receivalRepository;
@@ -114,7 +114,7 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
 
   @Override
   public byte[] renderFormalNotice(FormalNoticeData data) {
-    Locale locale = DocumentTemplateService.resolveLocale(data.languageTag());
+    Locale locale = LetterTemplateService.resolveLocale(data.languageTag());
     UUID teamId = data.contract().getTeamId();
     Property property =
         propertyRepository.getByIdAndTeamId(data.contract().getPropertyId(), teamId);

@@ -1,14 +1,13 @@
 package com.buurman.service.export;
 
-import static java.util.stream.Collectors.joining;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Locale;
 
 import org.jspecify.annotations.Nullable;
+
+import com.buurman.document.DocumentFormatting;
 
 /**
  * Shared formatting + escaping utilities for booklet/report exporters. All methods are static and
@@ -46,15 +45,7 @@ final class BookletHelper {
   }
 
   static String formatEnumValue(@Nullable String value) {
-    if (value == null) {
-      return "";
-    }
-    return Arrays.stream(value.split("_"))
-        .map(
-            word ->
-                word.substring(0, 1).toUpperCase(Locale.ROOT)
-                    + word.substring(1).toLowerCase(Locale.ROOT))
-        .collect(joining(" "));
+    return DocumentFormatting.formatEnumValue(value);
   }
 
   static String fmt(@Nullable BigDecimal value) {
@@ -62,7 +53,7 @@ final class BookletHelper {
   }
 
   static String formatDate(@Nullable LocalDate date, DateTimeFormatter fmt) {
-    return date != null ? date.format(fmt) : "—";
+    return DocumentFormatting.formatDate(date, fmt);
   }
 
   static boolean isTrue(@Nullable Boolean value) {

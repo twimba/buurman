@@ -14,7 +14,7 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
 import { ReasonDialog } from '@/components/payments/ReasonDialog';
 import type { ContractResponse, DepositResponse } from '@/types/contract';
-import { getDepositStatement } from '@/generated/api/booklets/booklets';
+import { getDepositStatement } from '@/generated/api/letters/letters';
 import { downloadBlob } from '@/utils/downloadBlob';
 
 interface DepositCardProps {

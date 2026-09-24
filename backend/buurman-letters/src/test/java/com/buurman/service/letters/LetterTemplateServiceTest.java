@@ -1,4 +1,4 @@
-package com.buurman.service.export;
+package com.buurman.service.letters;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,19 +18,18 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import com.buurman.exception.BadRequestException;
+import com.buurman.document.DocumentRenderer;
 
-@DisplayName("DocumentTemplateService")
-class DocumentTemplateServiceTest {
+@DisplayName("LetterTemplateService")
+class LetterTemplateServiceTest {
 
-  private DocumentTemplateService service;
+  private LetterTemplateService service;
 
   @BeforeEach
   void setUp() {
@@ -61,27 +60,7 @@ class DocumentTemplateServiceTest {
     DocumentRenderer renderer = mock(DocumentRenderer.class);
     when(renderer.render(anyString(), any()))
         .thenAnswer(inv -> ("%PDF-1.7\n" + inv.getArgument(0, String.class)).getBytes(UTF_8));
-    service = new DocumentTemplateService(engine, renderer);
-  }
-
-  @Nested
-  @DisplayName("resolveLocale")
-  class ResolveLocale {
-
-    @ParameterizedTest(name = "resolves ''{0}'' to a valid locale")
-    @ValueSource(strings = {"en", "nl", "de", "fr", "pt", "es", "sv", "it"})
-    void resolvesAllSupportedLanguages(String lang) {
-      Locale locale = DocumentTemplateService.resolveLocale(lang);
-      assertThat(locale.getLanguage()).isEqualTo(lang);
-    }
-
-    @ParameterizedTest(name = "rejects unsupported language ''{0}''")
-    @ValueSource(strings = {"xx", "ja", "zh", "", "en-US", "../../etc"})
-    void rejectsUnsupportedLanguages(String lang) {
-      assertThatThrownBy(() -> DocumentTemplateService.resolveLocale(lang))
-          .isInstanceOf(BadRequestException.class)
-          .hasMessageContaining("Unsupported document language");
-    }
+    service = new LetterTemplateService(engine, renderer);
   }
 
   @Nested
@@ -166,7 +145,7 @@ class DocumentTemplateServiceTest {
     }
 
     @ParameterizedTest(name = "renders PDF for locale ''{0}'' with valid header")
-    @MethodSource("com.buurman.service.export.DocumentTemplateServiceTest#supportedLocalesForPdf")
+    @MethodSource("com.buurman.service.letters.LetterTemplateServiceTest#supportedLocalesForPdf")
     void rendersValidPdfForAllSupportedLocales(Locale locale) {
       byte[] pdf =
           service.renderToPdf("test-doc", locale, Map.of("name", "Test", "showExtra", false));

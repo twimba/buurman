@@ -11,19 +11,21 @@
         <version>0.104.0</version>
     </parent>
 
-    <artifactId>buurman-booklets</artifactId>
-    <name>Buurman Booklets</name>
-    <description>PDF/CSV export and booklet generation</description>
+    <artifactId>buurman-documents</artifactId>
+    <name>Buurman Documents</name>
+    <description>Shared PDF rendering infrastructure (Gotenberg renderer, Thymeleaf template support, document locales)</description>
 
     <dependencies>
         <!-- Inter-module -->
         <dependency>
             <groupId>com.buurman</groupId>
-            <artifactId>buurman-core</artifactId>
+            <artifactId>buurman-common</artifactId>
         </dependency>
+
+        <!-- Spring (RestClient, @Component, @Value) -->
         <dependency>
-            <groupId>com.buurman</groupId>
-            <artifactId>buurman-documents</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <!-- Thymeleaf (document templates) -->
@@ -34,45 +36,6 @@
 
         <!-- PDF rendering is delegated to the Gotenberg (headless-Chromium) sidecar over HTTP;
              no in-JVM PDF engine dependency. -->
-
-        <!-- QR codes (summary cards) -->
-        <dependency>
-            <groupId>com.google.zxing</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-
-        <!-- CSV -->
-        <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-        </dependency>
-
-        <!-- Excel -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-        </dependency>
-
-        <!-- Google Sheets / Drive -->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-sheets</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-drive</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.auth</groupId>
-            <artifactId>google-auth-library-oauth2-http</artifactId>
-        </dependency>
-
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- Null Safety -->
         <dependency>

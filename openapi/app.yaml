@@ -62,6 +62,8 @@ tags:
     description: Reference amenity data
   - name: Booklets
     description: Entity booklet PDF exports
+  - name: Letters
+    description: Tenant-facing letters (formal notices, deposit statements) as PDF
   - name: Payments
     description: Rent payment tracking and management
   - name: Property Fees
@@ -17540,7 +17542,7 @@ paths:
   /contracts/{contractIdentifier}/deposit/statement:
     get:
       tags:
-        - Booklets
+        - Letters
       summary: Download the deposit statement PDF
       description: Itemised statement of the contract deposit — received, deductions, returned and refundable — in the requested language
       operationId: getDepositStatement
@@ -17576,7 +17578,7 @@ paths:
   /payments/{identifier}/formal-notice:
     get:
       tags:
-        - Booklets
+        - Letters
       summary: Download the formal notice of overdue rent PDF
       description: Dated demand letter for an open payment with the outstanding balance, a 14-day deadline and the payment details, in the requested language
       operationId: getPaymentFormalNotice

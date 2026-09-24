@@ -1,4 +1,4 @@
-package com.buurman.service.export;
+package com.buurman.service.letters;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -34,13 +34,13 @@ import com.buurman.util.CurrencyUtils;
  * address lookup, legal clause resolution, and contract validation across exporters.
  */
 @Component
-class DocumentExporterHelper {
+class LetterExporterHelper {
 
   private final ContractPartyService contractPartyService;
   private final ContactRepository contactRepository;
   private final ContactAddressRepository contactAddressRepository;
 
-  DocumentExporterHelper(
+  LetterExporterHelper(
       ContractPartyService contractPartyService,
       ContactRepository contactRepository,
       ContactAddressRepository contactAddressRepository) {

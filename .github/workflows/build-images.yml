@@ -106,7 +106,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add backend/pom.xml backend/buurman-common/pom.xml backend/buurman-jooq/pom.xml backend/buurman-core/pom.xml backend/buurman-notifications/pom.xml backend/buurman-backoffice/pom.xml backend/buurman-demo-data/pom.xml backend/buurman-takeout/pom.xml backend/buurman-booklets/pom.xml backend/buurman-app/pom.xml frontend/app/package.json frontend/backoffice/package.json
+          git add backend/pom.xml backend/buurman-common/pom.xml backend/buurman-jooq/pom.xml backend/buurman-core/pom.xml backend/buurman-notifications/pom.xml backend/buurman-backoffice/pom.xml backend/buurman-demo-data/pom.xml backend/buurman-takeout/pom.xml backend/buurman-documents/pom.xml backend/buurman-booklets/pom.xml backend/buurman-letters/pom.xml backend/buurman-app/pom.xml frontend/app/package.json frontend/backoffice/package.json
           git commit -m "chore: bump version to ${VERSION}"
           git tag "${TAG}"
           git push origin main --tags

@@ -26,6 +26,8 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.buurman.document.DocumentRenderer;
+import com.buurman.document.PageSpec;
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
 import com.buurman.domain.ContactNote;

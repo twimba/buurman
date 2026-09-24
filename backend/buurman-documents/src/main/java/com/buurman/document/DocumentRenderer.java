@@ -1,4 +1,4 @@
-package com.buurman.service.export;
+package com.buurman.document;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +36,7 @@ import com.buurman.exception.ExternalServiceException;
  * (Noto fallback) — no hard failure.
  */
 @Component
-class DocumentRenderer {
+public class DocumentRenderer {
 
   /** A4 in inches — Gotenberg/Chromium express paper size in inches. */
   private static final String A4_WIDTH_IN = "8.27";
@@ -48,7 +48,7 @@ class DocumentRenderer {
   private final RestClient client;
   private final byte @Nullable [] brandFont;
 
-  DocumentRenderer(
+  public DocumentRenderer(
       @Value("${booklet.gotenberg.url}") String baseUrl,
       @Value("${booklet.gotenberg.connect-timeout:5s}") Duration connectTimeout,
       @Value("${booklet.gotenberg.read-timeout:30s}") Duration readTimeout,
@@ -79,7 +79,7 @@ class DocumentRenderer {
    * @param page target page orientation (paper is always A4)
    * @return PDF bytes
    */
-  byte[] render(String html, PageSpec page) {
+  public byte[] render(String html, PageSpec page) {
     MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
     parts.add("files", asset(withBrandFont(html).getBytes(StandardCharsets.UTF_8), "index.html"));
     if (brandFont != null) {
@@ -118,7 +118,7 @@ class DocumentRenderer {
   }
 
   /** Convenience for the common A4-portrait case. */
-  byte[] render(String html) {
+  public byte[] render(String html) {
     return render(html, PageSpec.A4_PORTRAIT);
   }
 

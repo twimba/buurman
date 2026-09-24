@@ -1,12 +1,11 @@
-package com.buurman.service.export;
+package com.buurman.service.letters;
 
-import static com.buurman.service.export.BookletHelper.formatEnumValue;
+import static com.buurman.document.DocumentFormatting.formatEnumValue;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -17,10 +16,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+import com.buurman.document.DocumentFormatting;
 import com.buurman.domain.Contact;
+import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
-import com.buurman.domain.ContractParty;
 import com.buurman.domain.Property;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -30,23 +30,23 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.util.CurrencyUtils;
 
 @Component
-public class ContractExtensionAddendumExporter {
+public class RentIncreaseLetterExporter {
 
   private final ContractExtensionRepository extensionRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final DocumentExporterHelper helper;
-  private final DocumentTemplateService documentTemplateService;
+  private final LetterExporterHelper helper;
+  private final LetterTemplateService documentTemplateService;
   private final MessageSource messageSource;
   private final Clock clock;
 
-  public ContractExtensionAddendumExporter(
+  public RentIncreaseLetterExporter(
       ContractExtensionRepository extensionRepository,
       ContractRepository contractRepository,
       PropertyRepository propertyRepository,
-      DocumentExporterHelper helper,
-      DocumentTemplateService documentTemplateService,
-      @Qualifier("documentMessageSource") MessageSource messageSource,
+      LetterExporterHelper helper,
+      LetterTemplateService documentTemplateService,
+      @Qualifier("letterMessageSource") MessageSource messageSource,
       Clock clock) {
     this.extensionRepository = extensionRepository;
     this.contractRepository = contractRepository;
@@ -71,25 +71,29 @@ public class ContractExtensionAddendumExporter {
     ContractExtension extension =
         extensionRepository.getByIdentifierAndTeamId(extensionIdentifier, teamId);
     Contract contract = contractRepository.getByIdAndTeamId(extension.getContractId(), teamId);
-    DocumentExporterHelper.validateContractOwnership(contractIdentifier, contract, "Extension");
+    LetterExporterHelper.validateContractOwnership(contractIdentifier, contract, "Extension");
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
-    DocumentExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
+    LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
 
-    Locale locale = DocumentTemplateService.resolveLocale(lang);
+    Optional<Contact> primaryContact =
+        helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
+    Optional<ContactAddress> address =
+        primaryContact.flatMap(c -> helper.findMailingAddress(c.getId(), teamId));
+
+    Locale locale = LetterTemplateService.resolveLocale(lang);
     Map<String, Object> variables =
-        buildTemplateVariables(
-            extension, contract, property, partyData.parties(), partyData.contactMap(), locale);
+        buildTemplateVariables(extension, contract, property, primaryContact, address, locale);
 
-    return documentTemplateService.renderToPdf("extension-addendum", locale, variables);
+    return documentTemplateService.renderToPdf("rent-increase-letter", locale, variables);
   }
 
   private Map<String, Object> buildTemplateVariables(
       ContractExtension extension,
       Contract contract,
       Property property,
-      List<ContractParty> parties,
-      Map<UUID, Contact> contactMap,
+      Optional<Contact> primaryContact,
+      Optional<ContactAddress> contactAddress,
       Locale locale) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
@@ -97,26 +101,54 @@ public class ContractExtensionAddendumExporter {
 
     Map<String, Object> vars = new HashMap<>();
 
-    // Cover page
-    vars.put("extensionNumber", extension.getExtensionNumber());
+    vars.put("generatedDate", generatedDate);
     vars.put(
         "extensionIdentifier",
         extension
             .getIdentifier()
             .orElseThrow(() -> new IllegalStateException("Extension missing identifier"))
             .value());
-    vars.put("extensionStatus", extension.getStatus().name());
-    vars.put("extensionStatusDisplay", formatEnumValue(extension.getStatus().name()));
-    vars.put("generatedDate", generatedDate);
+    vars.put("extensionNumber", extension.getExtensionNumber());
 
-    vars.put("propertyAddress", property.getStreet() + ", " + property.getCity());
+    // Addressee
+    vars.put("primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
+    vars.put("contactAddress", helper.buildAddressMap(contactAddress).orElse(null));
+
+    // Property
+    String propertyAddress =
+        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
+    vars.put("propertyAddress", propertyAddress);
+
+    // Rent
     vars.put(
-        "propertyFullAddress",
-        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity());
+        "previousRent",
+        CurrencyUtils.formatCurrency(extension.getPreviousRentAmount().value(), ccy));
+    vars.put("newRent", CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy));
 
-    // Contacts
-    vars.put("primaryContactName", helper.findPrimaryContactName(parties, contactMap));
-    vars.put("contactNames", helper.buildContactNamesList(parties, contactMap));
+    // Effective date: day after previous end date
+    String rentEffectiveDate =
+        DocumentFormatting.formatDate(extension.getPreviousEndDate().plusDays(1), dateFmt);
+    vars.put("rentEffectiveDate", rentEffectiveDate);
+
+    // Adjustment
+    vars.put("adjustmentType", formatEnumValue(extension.getRentAdjustmentType().name()));
+    vars.put(
+        "adjustmentBasis",
+        helper.buildAdjustmentBasis(messageSource, "letter.body.adjustment.", extension, locale));
+    vars.put(
+        "adjustmentValue",
+        extension
+            .getRentAdjustmentValue()
+            .map(
+                v ->
+                    LetterExporterHelper.formatAdjustmentDisplay(
+                        v, extension.getRentAdjustmentType()))
+            .orElse(null));
+
+    // End date
+    vars.put(
+        "newEndDate",
+        extension.getNewEndDate().map(d -> DocumentFormatting.formatDate(d, dateFmt)).orElse(null));
 
     // Contract
     vars.put(
@@ -125,54 +157,6 @@ public class ContractExtensionAddendumExporter {
             .getIdentifier()
             .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
             .value());
-    vars.put("contractStartDate", BookletHelper.formatDate(contract.getStartDate(), dateFmt));
-    vars.put(
-        "contractEndDate",
-        contract
-            .getEndDate()
-            .map(d -> BookletHelper.formatDate(d, dateFmt))
-            .orElse(formatEnumValue("INDEFINITE")));
-    vars.put(
-        "contractType",
-        contract.getContractType() != null
-            ? formatEnumValue(contract.getContractType().name())
-            : "");
-
-    // Extension
-    vars.put("previousEndDate", BookletHelper.formatDate(extension.getPreviousEndDate(), dateFmt));
-    vars.put(
-        "newEndDate",
-        extension
-            .getNewEndDate()
-            .map(d -> BookletHelper.formatDate(d, dateFmt))
-            .orElse(formatEnumValue("INDEFINITE")));
-    vars.put(
-        "previousRent",
-        CurrencyUtils.formatCurrency(extension.getPreviousRentAmount().value(), ccy));
-    vars.put("newRent", CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy));
-    vars.put("triggerType", formatEnumValue(extension.getTriggerType().name()));
-    vars.put("adjustmentType", formatEnumValue(extension.getRentAdjustmentType().name()));
-    vars.put(
-        "adjustmentValue",
-        extension
-            .getRentAdjustmentValue()
-            .map(
-                v ->
-                    DocumentExporterHelper.formatAdjustmentDisplay(
-                        v, extension.getRentAdjustmentType()))
-            .orElse("\u2014"));
-    vars.put(
-        "activatedDate",
-        extension
-            .getActivatedAt()
-            .map(
-                i ->
-                    BookletHelper.formatDate(
-                        i.atZone(java.time.ZoneOffset.UTC).toLocalDate(), dateFmt))
-            .orElse("\u2014"));
-
-    // Notes
-    vars.put("notes", extension.getNotes().filter(n -> !n.isBlank()).orElse(null));
 
     // Country-specific legal clause
     Optional<String> countryCode = contract.getCountryCode();

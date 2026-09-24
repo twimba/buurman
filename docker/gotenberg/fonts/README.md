@@ -11,6 +11,6 @@ Use this for:
   for future RTL locales).
 
 Do **not** put variable WOFF2 files here — fontconfig does not index WOFF2 reliably. The brand
-font lives at `backend/buurman-booklets/src/main/resources/fonts/Satoshi-Variable.woff2` and is
+font lives at `backend/buurman-documents/src/main/resources/fonts/Satoshi-Variable.woff2` and is
 shipped to Chromium per request by `GotenbergDocumentRenderer` (it attaches the WOFF2 as a sibling
 asset and injects a matching `@font-face` into the HTML head) — not baked into this image.

@@ -1,14 +1,16 @@
-package com.buurman.service.export;
+package com.buurman.service.letters;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.buurman.document.DocumentLocale;
+import com.buurman.document.DocumentRenderer;
+import com.buurman.document.PageSpec;
 import com.buurman.exception.BadRequestException;
 
 /**
@@ -20,13 +22,13 @@ import com.buurman.exception.BadRequestException;
  * {@code countryCode}.
  */
 @Service
-public class DocumentTemplateService {
+public class LetterTemplateService {
 
   private final TemplateEngine templateEngine;
   private final DocumentRenderer pdfRenderer;
 
-  public DocumentTemplateService(
-      @Qualifier("documentTemplateEngine") TemplateEngine templateEngine,
+  public LetterTemplateService(
+      @Qualifier("letterTemplateEngine") TemplateEngine templateEngine,
       DocumentRenderer pdfRenderer) {
     this.templateEngine = templateEngine;
     this.pdfRenderer = pdfRenderer;
@@ -68,20 +70,12 @@ public class DocumentTemplateService {
     return templateEngine.process(documentType + "/generic", context);
   }
 
-  private static final Set<String> SUPPORTED_LANGUAGES =
-      Set.of("en", "nl", "de", "fr", "pt", "es", "sv", "it", "fi", "el", "pl", "da", "nb");
-
   /**
    * Resolves a Locale from an ISO 639-1 language code.
    *
-   * @param lang language code (e.g., "en", "nl", "de")
-   * @return the corresponding Locale
    * @throws BadRequestException if the language is not supported
    */
   public static Locale resolveLocale(String lang) {
-    if (!SUPPORTED_LANGUAGES.contains(lang)) {
-      throw new BadRequestException("Unsupported document language: " + lang);
-    }
-    return Locale.forLanguageTag(lang);
+    return DocumentLocale.resolve(lang);
   }
 }

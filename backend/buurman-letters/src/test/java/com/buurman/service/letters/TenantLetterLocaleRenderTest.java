@@ -1,4 +1,4 @@
-package com.buurman.service.export;
+package com.buurman.service.letters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

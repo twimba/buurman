@@ -1,6 +1,6 @@
-package com.buurman.service.export;
+package com.buurman.service.letters;
 
-import static com.buurman.service.export.BookletHelper.formatEnumValue;
+import static com.buurman.document.DocumentFormatting.formatEnumValue;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +19,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+import com.buurman.document.DocumentFormatting;
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
@@ -49,8 +50,8 @@ public class RentChangeDocumentExporter {
   private final ContractExtensionRepository extensionRepository;
   private final PropertyRepository propertyRepository;
   private final RentRegulationRepository regulationRepository;
-  private final DocumentExporterHelper helper;
-  private final DocumentTemplateService documentTemplateService;
+  private final LetterExporterHelper helper;
+  private final LetterTemplateService documentTemplateService;
   private final MessageSource messageSource;
   private final Clock clock;
 
@@ -60,9 +61,9 @@ public class RentChangeDocumentExporter {
       ContractExtensionRepository extensionRepository,
       PropertyRepository propertyRepository,
       RentRegulationRepository regulationRepository,
-      DocumentExporterHelper helper,
-      DocumentTemplateService documentTemplateService,
-      @Qualifier("documentMessageSource") MessageSource messageSource,
+      LetterExporterHelper helper,
+      LetterTemplateService documentTemplateService,
+      @Qualifier("letterMessageSource") MessageSource messageSource,
       Clock clock) {
     this.rentPeriodRepository = rentPeriodRepository;
     this.contractRepository = contractRepository;
@@ -90,7 +91,7 @@ public class RentChangeDocumentExporter {
                         "Rent period not found: " + periodIdentifier.value()));
 
     Contract contract = contractRepository.getByIdAndTeamId(period.getContractId(), teamId);
-    DocumentExporterHelper.validateContractOwnership(
+    LetterExporterHelper.validateContractOwnership(
         Optional.of(contractIdentifier), contract, "Rent period");
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
@@ -103,7 +104,7 @@ public class RentChangeDocumentExporter {
     Optional<ContractExtension> linkedExtension = findLinkedExtension(period, contract, teamId);
 
     // Load contacts
-    DocumentExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
+    LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
 
     Optional<Contact> primaryContact =
         helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
@@ -114,7 +115,7 @@ public class RentChangeDocumentExporter {
     Optional<RentRegulationRule> regulationRule =
         findApplicableRegulationRule(contract, property, period);
 
-    Locale locale = DocumentTemplateService.resolveLocale(lang);
+    Locale locale = LetterTemplateService.resolveLocale(lang);
     Map<String, Object> variables =
         buildTemplateVariables(
             period,
@@ -177,7 +178,8 @@ public class RentChangeDocumentExporter {
     }
 
     // Effective date
-    vars.put("effectiveDate", BookletHelper.formatDate(currentPeriod.getEffectiveFrom(), dateFmt));
+    vars.put(
+        "effectiveDate", DocumentFormatting.formatDate(currentPeriod.getEffectiveFrom(), dateFmt));
 
     // Percentage change
     if (!isInitialRent) {
@@ -226,7 +228,7 @@ public class RentChangeDocumentExporter {
           vars.put("extensionNumber", ext.getExtensionNumber());
           vars.put(
               "extensionNewEndDate",
-              ext.getNewEndDate().map(d -> BookletHelper.formatDate(d, dateFmt)).orElse(null));
+              ext.getNewEndDate().map(d -> DocumentFormatting.formatDate(d, dateFmt)).orElse(null));
         },
         () -> {
           vars.put("extensionNumber", null);

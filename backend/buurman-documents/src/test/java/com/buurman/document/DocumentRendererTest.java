@@ -1,4 +1,4 @@
-package com.buurman.service.export;
+package com.buurman.document;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
