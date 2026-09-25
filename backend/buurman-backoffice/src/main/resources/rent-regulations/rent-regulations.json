@@ -1,6 +1,6 @@
 {
-    "version": "2026.3",
-    "generatedAt": "2026-06-20",
+    "version": "2026.4",
+    "generatedAt": "2026-09-25",
     "description": "Canonical Buurman rent-regulation dataset. Source of truth for the reference data shipped with the app. Regenerate via the backoffice Export action; reload via the backoffice Reload action.",
     "countries": [
         {
@@ -11,9 +11,9 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "INTEREST_ONLY",
-                "notes": "Statutory default interest (4% p.a., \u00a71000 ABGB; higher contractual rates reducible by court). Flat late fees on Wohnraum are not customary and may be void under KSchG. Advisory \u2014 verify locally."
+                "notes": "Default interest 4% p.a. (\u00a7 1000 ABGB); a higher agreed rate is reducible (\u00a7 1336(2) ABGB, \u00a7 6(1)(13) KSchG). A flat fee is void unless itemised per collection step and fault-based (OGH RS0129621). The 8-day demand period is \u00a7 30(2)(1) MRG. Advisory \u2014 verify locally."
             },
-            "formalNoticeDays": 14,
+            "formalNoticeDays": 8,
             "rules": [
                 {
                     "year": 2027,
@@ -117,10 +117,10 @@
             "summary": "Health index (Statbel) used for rent indexation. Varies by region (Flanders, Wallonia, Brussels).",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
-                "policy": "ALLOWED",
-                "notes": "Contractual late-payment interest and a reasonable indemnity clause are permitted; courts reduce excessive penalties (art. 5.88 BW / former art. 1231 BW). Advisory \u2014 verify locally."
+                "policy": "CAPPED",
+                "notes": "Brussels prohibits late-payment indemnity clauses outright for leases concluded or renewed from 1 Nov 2024 (art. 225/1 Code du Logement). In Flanders and Wallonia a landlord acting as an undertaking is capped by the Book XIX WER scale (EUR 20; EUR 30 + 10%; EUR 65 + 5%, max EUR 2,000) after a free 14-day reminder; otherwise the court reduces an unreasonable clause (art. 5.88 BW). Legal interest 4.5% (2026). Advisory \u2014 verify locally."
             },
-            "formalNoticeDays": 15,
+            "formalNoticeDays": 30,
             "regions": [
                 {
                     "regionCode": "BRU",
@@ -349,9 +349,9 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "CAPPED",
-                "notes": "Varies by province: Ontario allows no late fee beyond actual costs (RTA), British Columbia caps at CAD 25 (RTB Regulation s.7), Quebec allows none beyond legal interest. Advisory \u2014 verify per province."
+                "notes": "Varies by province. Ontario prohibits late fees entirely (RTA s. 134); British Columbia caps them at CAD 25; Nova Scotia at 1% of monthly rent per month; Alberta sets no cap but requires a genuine pre-estimate of loss. No province allows landlord-set interest on arrears. Ontario's notice for non-payment became 7 days on 21 Sep 2026. Advisory \u2014 verify locally."
             },
-            "formalNoticeDays": 14,
+            "formalNoticeDays": 10,
             "regions": [
                 {
                     "regionCode": "AB",
@@ -1417,8 +1417,8 @@
             "summary": "Reference interest rate (hypothekarischer Referenzzinssatz) based system. CPI and cost-of-living adjustments.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
-                "policy": "INTEREST_ONLY",
-                "notes": "Default interest of 5% p.a. (art. 104 OR) once the tenant is in default; flat penalty clauses in residential leases are uncommon and may be reduced (art. 163 OR). Advisory \u2014 verify locally."
+                "policy": "ALLOWED",
+                "notes": "Default interest 5% p.a. (art. 104 OR), running from the due date without demand. No tenancy-specific ban on penalty clauses, but the clause must be expressly agreed and quantified and the court must reduce an excessive one (art. 163(3) OR). A formal notice must allow 30 days (art. 257d OR). Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 30,
             "regions": [
@@ -1618,9 +1618,9 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "CAPPED",
-                "notes": "\u00a72239 NOZ (as amended 2020): contractual penalties in residential leases permitted but penalty plus deposit may not exceed three months' rent; statutory default interest applies. Advisory \u2014 verify locally."
+                "notes": "Contractual penalties returned to residential leases on 1 Jul 2020 (z\u00e1k. 163/2020 Sb.), but the security deposit and all accrued penalties combined may not exceed three months' rent (\u00a7 2254 NOZ), and a manifestly disproportionate term is disregarded (\u00a7 2239 NOZ). Default interest = CNB repo rate + 8 pp, fixed for the duration of the default. Advisory \u2014 verify locally."
             },
-            "formalNoticeDays": 15,
+            "formalNoticeDays": 30,
             "rules": [
                 {
                     "year": 2026,
@@ -1696,8 +1696,8 @@
             "summary": "Mietspiegel-based rent control. Mietpreisbremse (rent brake) limits initial rents in tight markets. Regional variation.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
-                "policy": "INTEREST_ONLY",
-                "notes": "Verzugszinsen \u00a7288 BGB (5 percentage points above base rate); flat Mahngeb\u00fchren limited to actual costs (typically \u2264 \u20ac2.50). Pauschale late fees in Wohnraummietvertr\u00e4ge are void (\u00a7307 BGB). Advisory \u2014 verify locally."
+                "policy": "FORBIDDEN",
+                "notes": "\u00a7 555 BGB voids any contractual penalty in a residential lease, individually negotiated ones included. Only default interest (base rate + 5 pp for a consumer tenant, \u00a7 288(1) BGB) and documented actual reminder cost (about EUR 2.50, BGH VIII ZR 95/18) are recoverable; the EUR 40 flat sum in \u00a7 288(5) never applies against a consumer. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 14,
             "regions": [
@@ -2673,7 +2673,7 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "CAPPED",
-                "notes": "Lejeloven \u00a793/\u00a794: a written reminder fee is capped at a statutory DKK amount (indexed; DKK 316 in 2026) after a 3-day grace period; no percentage-based fee. Advisory \u2014 verify locally."
+                "notes": "Lejeloven \u00a7 182(2): a p\u00e5krav may be sent from the third business day after the due date and carries a statutory fee, DKK 335 in 2026, chargeable once per default; the tenant then has 14 days to pay. No percentage-based fee exists. Default interest = Nationalbank lending rate + 8 pp. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 14,
             "rules": [
@@ -2784,9 +2784,9 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "ALLOWED",
-                "notes": "LAU does not cap late fees; contractual interest and penalty clauses are enforceable subject to consumer-law fairness review (courts may reduce). Advisory \u2014 verify locally."
+                "notes": "Neither the LAU nor consumer law caps late fees. A penalty clause is reducible by the court (art. 1154 CC), and void without moderation where the landlord is a professional and the tenant a consumer (art. 85.6 TRLGDCU). Legal interest 3.25% (2026). A 30-day requerimiento precedes an eviction claim (art. 22.4 LEC). Advisory \u2014 verify locally."
             },
-            "formalNoticeDays": 10,
+            "formalNoticeDays": 30,
             "regions": [
                 {
                     "regionCode": "CAT",
@@ -3038,7 +3038,7 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "INTEREST_ONLY",
-                "notes": "Korkolaki default interest (reference rate + 7 pp); reminder fees limited to reasonable costs (max \u20ac5 per reminder for consumer debt). Advisory \u2014 verify locally."
+                "notes": "Only default interest (reference rate + 7 pp, 9.5% in 2026, korkolaki 4 \u00a7) and a EUR 5 statutory reminder fee, chargeable from 14 days after the due date (perint\u00e4laki 10 a \u00a7). There is no statutory cure period for rent arrears; the period shown is a customary courtesy, not a legal entitlement. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 14,
             "rules": [
@@ -3129,7 +3129,7 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "FORBIDDEN",
-                "notes": "Loi 89-462 art. 4: clauses imposing penalties or fees for late rent are deemed unwritten (r\u00e9put\u00e9es non \u00e9crites); only legal interest via formal demand. Advisory \u2014 verify locally."
+                "notes": "Loi 89-462 art. 4 i): a clause letting the landlord charge fines or penalties is deemed unwritten. Only legal interest is available and runs from the mise en demeure (6.84% in H2 2026 where the landlord is a private individual, 2.75% otherwise). A bailiff's commandement de payer then runs 6 weeks for leases from Jul 2023. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 15,
             "regions": [
@@ -3817,9 +3817,9 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "INTEREST_ONLY",
-                "notes": "Tenant Fees Act 2019 (England): default fee for late rent limited to interest at 3% over Bank of England base rate, chargeable only once rent is 14+ days late; Wales/Scotland similar. Advisory \u2014 verify per nation."
+                "notes": "England: the Tenant Fees Act 2019 makes a flat late fee a prohibited payment; only interest at 3% above the Bank of England base rate may be charged, once rent is 14 or more days late and only if the tenancy agreement provides for it. Wales applies the same rate from 7 days. Scotland and Northern Ireland have no equivalent regime. Advisory \u2014 verify locally."
             },
-            "formalNoticeDays": 14,
+            "formalNoticeDays": 28,
             "regions": [
                 {
                     "regionCode": "ENG",
@@ -4073,8 +4073,8 @@
             "summary": "Rent Pressure Zones (RPZ) cap annual increases. 2% cap since 2021.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
-                "policy": "ALLOWED",
-                "notes": "No statutory cap; RTB expects any late-payment charge to be reasonable and set out in the tenancy agreement. Advisory \u2014 verify locally."
+                "policy": "INTEREST_ONLY",
+                "notes": "The Residential Tenancies Act is silent on late fees and the RTB's own model tenancy agreement contains none, so a flat charge is likely an unenforceable penalty. No statutory interest applies to rent arrears. A rent-arrears warning notice must give the tenant 28 days. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 28,
             "rules": [
@@ -4146,9 +4146,9 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "ALLOWED",
-                "notes": "Penalty clauses (clausola penale) are permitted but the court may reduce manifestly excessive amounts (art. 1384 c.c.); legal interest applies by default. Advisory \u2014 verify locally."
+                "notes": "A clausola penale is valid, but the court may reduce a manifestly excessive one of its own motion (art. 1384 c.c.). Legal interest is 1.60% from 1 Jan 2026 (art. 1284 c.c.) and runs without demand. Non-payment beyond 20 days is by law a grave breach (art. 5, L. 392/1978). Advisory \u2014 verify locally."
             },
-            "formalNoticeDays": 20,
+            "formalNoticeDays": 15,
             "rules": [
                 {
                     "year": 2026,
@@ -4259,7 +4259,7 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "ALLOWED",
-                "notes": "No statutory cap; contractual default interest and indemnity clauses apply subject to fairness review. Advisory \u2014 verify locally."
+                "notes": "The 2006 tenancy law sets no cap; a penalty clause is reducible if manifestly excessive (art. 1152 al. 2 Code civil). Legal interest is 3.75% for 2026 and runs only from the mise en demeure (art. 1153). No statutory cure period exists; the period shown is customary. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 15,
             "rules": [
@@ -4348,8 +4348,8 @@
             "summary": "Regulated sector: max increase set by government (CBS huurverhoging). Free sector: CPI + surcharge, capped since 2024.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
-                "policy": "INTEREST_ONLY",
-                "notes": "Statutory interest (wettelijke rente, art. 6:119 BW) applies; flat boetebedingen in residential leases are routinely voided as unfair terms (EU Directive 93/13, HR 2019). Advisory \u2014 verify locally."
+                "policy": "FORBIDDEN",
+                "notes": "A penalty clause in a consumer residential lease is void rather than reducible, and the court may not moderate it (CJEU C-488/11 Asbeek Brusse). Only statutory interest applies (4.0% in 2026, art. 6:119 BW); collection costs additionally require the 14-day WIK letter. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 14,
             "rules": [
@@ -4531,8 +4531,8 @@
             "summary": "CPI-linked annual increases for existing leases. Market rent for new leases.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
-                "policy": "INTEREST_ONLY",
-                "notes": "Forsinkelsesrenteloven default interest; reminder fees capped at a fraction of the inkassosats (NOK 35 in 2026). Advisory \u2014 verify locally."
+                "policy": "FORBIDDEN",
+                "notes": "Husleieloven \u00a7 3-7 voids any agreed payment beyond rent, metered utilities and the deposit, so a contractual late fee is unenforceable. Only default interest (12.25% in H2 2026) and a statutory reminder fee of NOK 38, chargeable from 14 days after the due date, are available. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 14,
             "rules": [
@@ -4606,8 +4606,8 @@
             "summary": "Municipal housing: regulated rents. Private market: largely unregulated, contract terms apply.",
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
-                "policy": "INTEREST_ONLY",
-                "notes": "Statutory interest for delay (odsetki ustawowe za op\u00f3\u017anienie, art. 481 KC); penalty clauses for monetary obligations are not permitted (art. 483 KC). Advisory \u2014 verify locally."
+                "policy": "FORBIDDEN",
+                "notes": "Art. 483 \u00a7 1 KC permits a contractual penalty only for non-monetary obligations, so a late fee on rent is void whatever it is called (SN I CSK 345/13). Only statutory interest applies (9.25% in 2026, NBP reference rate + 5.5 pp). Termination requires three months' arrears plus a one-month written warning. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 30,
             "rules": [
@@ -4716,7 +4716,7 @@
             "lateFee": {
                 "policy": "CAPPED",
                 "maxPercentage": 20.0,
-                "notes": "C\u00f3digo Civil art. 1041 (Lei 13/2019): after 8 days' delay the landlord may claim an indemnity of 20% of the amount due, or terminate; no higher fee permitted. Advisory \u2014 verify locally."
+                "notes": "C\u00f3digo Civil art. 1041, as amended by Lei 13/2019: after eight days' delay the landlord may claim an indemnity of 20% of the amount due, unless the lease is terminated for non-payment. The 50% figure quoted by older sources was repealed in 2019. Civil default interest is 4% (Portaria 291/2003). Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 8,
             "rules": [
@@ -4794,9 +4794,9 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "INTEREST_ONLY",
-                "notes": "R\u00e4ntelagen default interest (reference rate + 8 pp); reminder fee capped at SEK 60 (lag 1981:739). Advisory \u2014 verify locally."
+                "notes": "Only default interest (reference rate + 8 pp, 10% in 2026, r\u00e4ntelagen 6 \u00a7) and a SEK 60 reminder fee, which may be charged only if it was agreed no later than when the debt arose (lag 1981:739 \u00a7 2). The tenant has three weeks from service of notice to recover the tenancy (JB 12:44). Advisory \u2014 verify locally."
             },
-            "formalNoticeDays": 14,
+            "formalNoticeDays": 21,
             "rules": [
                 {
                     "year": 2026,
@@ -4863,7 +4863,7 @@
             "lastReviewedAt": "2026-06-20T00:00:00Z",
             "lateFee": {
                 "policy": "CAPPED",
-                "notes": "Varies by state: New York caps at the lesser of USD 50 or 5% after a 5-day grace (HSTPA 2019), California requires reasonableness, others set 5\u201310% caps. Advisory \u2014 verify per state."
+                "notes": "Varies by state, and most require a written lease term. Verified caps range from 4% of one month's rent (Maine) and the lesser of USD 50 or 5% (New York) to 12% (Texas, four units or fewer); seven states set no cap at all. Federally assisted housing is far stricter (about USD 5 plus USD 1 per day). No state sets default interest on arrears. Advisory \u2014 verify locally."
             },
             "formalNoticeDays": 14,
             "regions": [

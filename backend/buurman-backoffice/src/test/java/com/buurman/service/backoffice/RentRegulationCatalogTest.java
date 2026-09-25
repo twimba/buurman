@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,8 +67,26 @@ class RentRegulationCatalogTest {
             c -> {
               assertThat(c.countryCode()).isEqualTo("PT");
               assertThat(c.lateFee().policy()).isEqualTo(LateFeePolicy.CAPPED);
+              // art. 1041 CC as amended by Lei 13/2019; the older 50% figure was repealed.
               assertThat(c.lateFee().maxPercentage()).isEqualByComparingTo("20");
             });
+  }
+
+  @Test
+  @DisplayName("jurisdictions that void late-fee clauses are recorded as FORBIDDEN")
+  void prohibitionsAreRecorded() {
+    Map<String, LateFeePolicy> byCode =
+        loader.load().countries().stream()
+            .collect(Collectors.toMap(CatalogCountry::countryCode, c -> c.lateFee().policy()));
+
+    // FR loi 89-462 art. 4 i); PL art. 483 § 1 KC; NO husleieloven § 3-7; DE § 555 BGB;
+    // NL unfair-terms nullity (CJEU C-488/11).
+    assertThat(byCode)
+        .containsEntry("FR", LateFeePolicy.FORBIDDEN)
+        .containsEntry("PL", LateFeePolicy.FORBIDDEN)
+        .containsEntry("NO", LateFeePolicy.FORBIDDEN)
+        .containsEntry("DE", LateFeePolicy.FORBIDDEN)
+        .containsEntry("NL", LateFeePolicy.FORBIDDEN);
   }
 
   @Test
