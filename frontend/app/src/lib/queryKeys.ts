@@ -37,6 +37,8 @@ export const queryKeys = {
     pending: () => k('pendingInvitations'),
     settings: (teamId?: string) => k('teamSettings', teamId),
     reminderSettings: (teamId?: string) => k('teamReminderSettings', teamId),
+    reminderPreview: (teamId?: string, tone?: string, offsetDays?: number) =>
+      k('teamReminderPreview', teamId, tone, offsetDays),
   },
 
   // --- Properties ---

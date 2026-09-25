@@ -406,7 +406,8 @@
       "enabled": "Porras käytössä",
       "offsetDays": "Päivää suhteessa eräpäivään",
       "tone": "Sävy",
-      "duplicateOffsets": "Jokaisella portaalla on oltava eri päivämäärä."
+      "duplicateOffsets": "Jokaisella portaalla on oltava eri päivämäärä.",
+      "preview": "Esikatselu"
     },
     "offset": {
       "before": "{{count}} päivä ennen eräpäivää",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Ystävällinen",
       "FIRM": "Jämäkkä",
       "FINAL": "Viimeinen huomautus"
+    },
+    "preview": {
+      "title": "Muistutuksen esikatselu",
+      "subtitle": "Miltä {{tone}} muistutus näyttää vuokralaiselle",
+      "subject": "Aihe",
+      "sampleNotice": "Vain esimerkki: osoitettu henkilölle {{name}}, kielellä {{language}}. Mitään ei ole lähetetty.",
+      "failed": "Esikatselua ei voitu ladata."
     }
   }
 }

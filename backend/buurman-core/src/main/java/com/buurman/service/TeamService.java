@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.PaymentReminderStep;
+import com.buurman.domain.ReminderTone;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
@@ -36,10 +37,12 @@ import com.buurman.dto.request.UpdateReminderSettingsRequest;
 import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
+import com.buurman.dto.response.ReminderPreviewResponse;
 import com.buurman.dto.response.ReminderSettingsResponse;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamPreferencesResponse;
 import com.buurman.dto.response.TeamResponse;
+import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.mapper.TeamMapper;
@@ -60,6 +63,7 @@ public class TeamService {
 
   private final TeamRepository teamRepository;
   private final TeamPreferencesRepository teamPreferencesRepository;
+  private final PaymentReminderService paymentReminderService;
   private final TeamMemberRepository teamMemberRepository;
   private final TeamInvitationRepository invitationRepository;
   private final UserRepository userRepository;
@@ -521,6 +525,20 @@ public class TeamService {
     TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
     return new ReminderSettingsResponse(
         prefs.isAutomaticRemindersEnabled(), prefs.getPaymentReminderSteps());
+  }
+
+  /** Renders one ladder step for the settings screen. Reads only; nothing is sent or stored. */
+  @Transactional(readOnly = true)
+  public ReminderPreviewResponse previewReminder(
+      TeamIdentifier teamIdentifier, ReminderTone tone, int offsetDays, UserPrincipal principal) {
+    Team team = resolveTeam(teamIdentifier);
+    if (!team.getId().equals(principal.requireTeamId())) {
+      throw new ForbiddenException("Access denied");
+    }
+    if (offsetDays < -30 || offsetDays > 365) {
+      throw new BadRequestException("offsetDays must be between -30 and 365");
+    }
+    return paymentReminderService.previewReminder(tone, offsetDays, principal);
   }
 
   @Transactional

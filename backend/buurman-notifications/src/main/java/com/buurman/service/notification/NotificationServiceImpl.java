@@ -184,6 +184,19 @@ public class NotificationServiceImpl implements NotificationService {
   }
 
   @Override
+  public RenderedContent renderPreview(
+      NotificationChannel channel,
+      String templateName,
+      Map<String, Object> variables,
+      Locale locale) {
+    NotificationChannelSender sender = channelSenders.get(channel);
+    if (sender == null) {
+      throw new ExternalServiceException("No sender registered for channel: " + channel);
+    }
+    return sender.render(templateName, variables, locale);
+  }
+
+  @Override
   @Transactional(readOnly = true)
   public Map<UUID, DeliveryState> deliveryStates(Collection<UUID> notificationIds, UUID teamId) {
     return notificationRepository.findDeliveryStatesByIdsAndTeamId(notificationIds, teamId);

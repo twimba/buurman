@@ -87,6 +87,7 @@ class PaymentReminderServiceTest {
   @Mock private ContractPaymentInstructionRepository cpiRepository;
   @Mock private PaymentInstructionRepository paymentInstructionRepository;
   @Mock private TeamRepository teamRepository;
+  @Mock private com.buurman.repository.TeamPreferencesRepository teamPreferencesRepository;
   @Mock private UserRepository userRepository;
   @Mock private NotificationService notificationService;
   @Mock private AuditService auditService;
@@ -122,6 +123,7 @@ class PaymentReminderServiceTest {
             cpiRepository,
             paymentInstructionRepository,
             teamRepository,
+            teamPreferencesRepository,
             userRepository,
             notificationService,
             auditService,

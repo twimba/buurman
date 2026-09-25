@@ -135,6 +135,8 @@ paths:
     $ref: 'paths/teams.yaml#/teams-settings'
   /teams/{teamIdentifier}/reminder-settings:
     $ref: 'paths/teams.yaml#/teams-reminder-settings'
+  /teams/{teamIdentifier}/reminder-settings/preview:
+    $ref: 'paths/teams.yaml#/teams-reminder-preview'
   /teams/{teamIdentifier}/members/{userIdentifier}/role:
     $ref: 'paths/teams.yaml#/teams-members-role'
   /properties/{propertyIdentifier}/outdoor-areas/{areaIdentifier}:
@@ -7828,6 +7830,26 @@ components:
         - offsetDays
         - tone
         - enabled
+    ReminderPreviewResponse:
+      type: object
+      description: A rendered tenant reminder built from a worked example; never sent
+      properties:
+        subject:
+          type: string
+        html:
+          type: string
+          description: Full HTML body of the email as the tenant would receive it
+        languageTag:
+          type: string
+          description: Language the preview was rendered in (the team default)
+        sampleTenantName:
+          type: string
+          description: Placeholder tenant name used in the example
+      required:
+        - subject
+        - html
+        - languageTag
+        - sampleTenantName
     ReminderSettingsResponse:
       type: object
       properties:

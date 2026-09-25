@@ -406,7 +406,8 @@
       "enabled": "Steg aktivt",
       "offsetDays": "Dagar i förhållande till förfallodatum",
       "tone": "Ton",
-      "duplicateOffsets": "Varje steg behöver ett annat antal dagar."
+      "duplicateOffsets": "Varje steg behöver ett annat antal dagar.",
+      "preview": "Förhandsgranska"
     },
     "offset": {
       "before": "{{count}} dag före förfallodatum",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Vänlig",
       "FIRM": "Bestämd",
       "FINAL": "Sista påminnelse"
+    },
+    "preview": {
+      "title": "Förhandsgranskning av påminnelsen",
+      "subtitle": "Hur en {{tone}} påminnelse uppfattas av en hyresgäst",
+      "subject": "Ämne",
+      "sampleNotice": "Endast ett exempel: ställt till {{name}}, visat på {{language}}. Ingenting har skickats.",
+      "failed": "Förhandsgranskningen kunde inte laddas."
     }
   }
 }

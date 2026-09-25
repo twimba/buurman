@@ -2,6 +2,7 @@ package com.buurman.service.notification;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Notification;
+import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.identifier.NotificationIdentifier;
 
@@ -19,6 +21,16 @@ public interface NotificationService {
    * notification rows (one per channel; blocked ones included) so callers can track delivery.
    */
   List<Notification> send(SendNotificationRequest request);
+
+  /**
+   * Renders a notification exactly as {@link #send} would, without persisting or queueing anything.
+   * Used to preview what a recipient will receive.
+   */
+  RenderedContent renderPreview(
+      NotificationChannel channel,
+      String templateName,
+      Map<String, Object> variables,
+      Locale locale);
 
   /** Current delivery state of the given notifications, keyed by notification id. */
   Map<UUID, DeliveryState> deliveryStates(Collection<UUID> notificationIds, UUID teamId);

@@ -406,7 +406,8 @@
       "enabled": "Stufe aktiv",
       "offsetDays": "Tage relativ zur Fälligkeit",
       "tone": "Tonfall",
-      "duplicateOffsets": "Jede Stufe braucht eine andere Tagesanzahl."
+      "duplicateOffsets": "Jede Stufe braucht eine andere Tagesanzahl.",
+      "preview": "Vorschau"
     },
     "offset": {
       "before": "{{count}} Tag vor Fälligkeit",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Freundlich",
       "FIRM": "Bestimmt",
       "FINAL": "Letzte Mahnung"
+    },
+    "preview": {
+      "title": "Vorschau der Erinnerung",
+      "subtitle": "Wie eine Erinnerung im Ton {{tone}} beim Mieter ankommt",
+      "subject": "Betreff",
+      "sampleNotice": "Nur ein Beispiel: an {{name}} gerichtet, dargestellt in {{language}}. Es wurde nichts versendet.",
+      "failed": "Die Vorschau konnte nicht geladen werden."
     }
   }
 }

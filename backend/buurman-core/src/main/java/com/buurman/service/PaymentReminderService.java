@@ -45,12 +45,15 @@ import com.buurman.domain.PaymentReminderStep;
 import com.buurman.domain.ReminderDeliveryStatus;
 import com.buurman.domain.ReminderTone;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Team;
+import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.dto.request.BulkSendPaymentRemindersRequest;
 import com.buurman.dto.request.SendPaymentReminderRequest;
 import com.buurman.dto.response.BulkActionResult;
 import com.buurman.dto.response.PaymentReminderResponse;
+import com.buurman.dto.response.ReminderPreviewResponse;
 import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.NotFoundException;
@@ -63,12 +66,14 @@ import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentReminderRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.document.TenantNoticeDocumentService;
 import com.buurman.service.notification.EmailAttachment;
 import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.RenderedContent;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.Constants;
 import com.buurman.util.CurrencyUtils;
@@ -92,6 +97,14 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentReminderService {
 
   static final String TEMPLATE_NAME = "payment-reminder-tenant";
+
+  /** Worked-example values for the settings preview; never used for a real send. */
+  private static final String SAMPLE_TENANT_NAME = "Sam Example";
+
+  private static final String SAMPLE_PROPERTY = "12 Example Street, Springfield";
+  private static final String SAMPLE_IBAN = "NL00BANK0123456789";
+  private static final String SAMPLE_REFERENCE = "RENT-EXAMPLE";
+  private static final BigDecimal SAMPLE_RENT = new BigDecimal("1200.00");
   private static final String PDF_MIME = MediaType.APPLICATION_PDF_VALUE;
   private static final String CONTRACT_ENTITY = "CONTRACT";
 
@@ -111,6 +124,7 @@ public class PaymentReminderService {
   private final ContractPaymentInstructionRepository cpiRepository;
   private final PaymentInstructionRepository paymentInstructionRepository;
   private final TeamRepository teamRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final UserRepository userRepository;
   private final NotificationService notificationService;
   private final AuditService auditService;
@@ -328,28 +342,22 @@ public class PaymentReminderService {
             + "/payments/"
             + payment.getIdentifier().map(Object::toString).orElse("");
 
-    Map<String, Object> variables = new HashMap<>();
-    variables.put("contactName", contact.getDisplayName());
-    variables.put("propertyName", propertyName);
-    variables.put("teamName", teamName);
-    variables.put(
-        "amount", CurrencyUtils.formatCurrency(payment.getAmount().value(), currency, locale));
-    variables.put("outstanding", CurrencyUtils.formatCurrency(outstanding, currency, locale));
-    variables.put("received", CurrencyUtils.formatCurrency(received, currency, locale));
-    variables.put("hasPartialPayment", received.compareTo(ZERO) > 0);
-    variables.put(
-        "dueDate",
-        payment
-            .getDueDate()
-            .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale)));
-    variables.put("daysOverdue", daysOverdue);
-    variables.put("isOverdue", daysOverdue > 0);
-    variables.put("tone", tone.name());
-    variables.put("isFinal", tone == ReminderTone.FINAL);
-    variables.put("notes", notes.filter(n -> !n.isBlank()).orElse(""));
-    variables.put("baseUrl", appProperties.email().baseUrl());
-    variables.put("primaryUrl", paymentUrl);
-    variables.putAll(paymentInstructionVariables(contract.getId(), teamId));
+    Map<String, Object> variables =
+        reminderVariables(
+            contact.getDisplayName(),
+            propertyName,
+            teamName,
+            payment.getAmount().value(),
+            received,
+            outstanding,
+            currency,
+            payment.getDueDate(),
+            daysOverdue,
+            tone,
+            notes,
+            paymentUrl,
+            locale,
+            paymentInstructionVariables(contract.getId(), teamId));
 
     // Slow external work (Gotenberg render, S3 upload) happens before the transaction opens.
     Optional<PreparedAttachment> notice =
@@ -479,6 +487,95 @@ public class PaymentReminderService {
 
   /** A rendered, uploaded formal notice waiting for its document row to be committed. */
   record PreparedAttachment(EmailAttachment attachment, Document document) {}
+
+  /**
+   * The template variables for a tenant reminder. Shared by the real send and the settings preview
+   * so what a landlord previews is what a tenant receives.
+   */
+  private Map<String, Object> reminderVariables(
+      String contactName,
+      String propertyName,
+      String teamName,
+      BigDecimal amount,
+      BigDecimal received,
+      BigDecimal outstanding,
+      String currency,
+      LocalDate dueDate,
+      int daysOverdue,
+      ReminderTone tone,
+      Optional<String> notes,
+      String primaryUrl,
+      Locale locale,
+      Map<String, Object> paymentInstructions) {
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("contactName", contactName);
+    variables.put("propertyName", propertyName);
+    variables.put("teamName", teamName);
+    variables.put("amount", CurrencyUtils.formatCurrency(amount, currency, locale));
+    variables.put("outstanding", CurrencyUtils.formatCurrency(outstanding, currency, locale));
+    variables.put("received", CurrencyUtils.formatCurrency(received, currency, locale));
+    variables.put("hasPartialPayment", received.compareTo(ZERO) > 0);
+    variables.put(
+        "dueDate",
+        dueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale)));
+    variables.put("daysOverdue", daysOverdue);
+    variables.put("isOverdue", daysOverdue > 0);
+    variables.put("tone", tone.name());
+    variables.put("isFinal", tone == ReminderTone.FINAL);
+    variables.put("notes", notes.filter(n -> !n.isBlank()).orElse(""));
+    variables.put("baseUrl", appProperties.email().baseUrl());
+    variables.put("primaryUrl", primaryUrl);
+    variables.putAll(paymentInstructions);
+    return variables;
+  }
+
+  /**
+   * Renders one ladder step against a worked example so a landlord can read the email before
+   * switching the step on. Nothing is sent, stored or addressed to a real tenant.
+   */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public ReminderPreviewResponse previewReminder(
+      ReminderTone tone, int offsetDays, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Team team = teamRepository.getById(teamId);
+    TeamPreferences preferences = teamPreferencesRepository.getByTeamId(teamId);
+    String currency = preferences.getDefaultCurrency();
+    String languageTag =
+        DocumentLanguages.firstSupportedOrDefault(List.of(preferences.getDefaultLanguage()));
+    Locale locale = Locale.forLanguageTag(languageTag);
+    LocalDate dueDate = LocalDate.now(clock).minusDays(offsetDays);
+    int daysOverdue = Math.max(0, offsetDays);
+
+    BigDecimal amount = SAMPLE_RENT;
+    Map<String, Object> instructions = new HashMap<>();
+    instructions.put("hasInstructions", true);
+    instructions.put("iban", SAMPLE_IBAN);
+    instructions.put("accountHolderName", team.getName());
+    instructions.put("paymentReference", SAMPLE_REFERENCE);
+
+    Map<String, Object> variables =
+        reminderVariables(
+            SAMPLE_TENANT_NAME,
+            SAMPLE_PROPERTY,
+            team.getName(),
+            amount,
+            ZERO,
+            amount,
+            currency,
+            dueDate,
+            daysOverdue,
+            tone,
+            Optional.empty(),
+            appProperties.email().baseUrl() + "/payments",
+            locale,
+            instructions);
+
+    RenderedContent rendered =
+        notificationService.renderPreview(
+            NotificationChannel.EMAIL, TEMPLATE_NAME, variables, locale);
+    return new ReminderPreviewResponse(
+        rendered.subject().orElse(""), rendered.body(), languageTag, SAMPLE_TENANT_NAME);
+  }
 
   /**
    * Renders the formal notice PDF and uploads it; the document row is saved with the reminder so a

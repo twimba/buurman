@@ -406,7 +406,8 @@
       "enabled": "Étape active",
       "offsetDays": "Jours par rapport à l’échéance",
       "tone": "Ton",
-      "duplicateOffsets": "Chaque étape doit avoir un nombre de jours différent."
+      "duplicateOffsets": "Chaque étape doit avoir un nombre de jours différent.",
+      "preview": "Aperçu"
     },
     "offset": {
       "before": "{{count}} jour avant l’échéance",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Amical",
       "FIRM": "Ferme",
       "FINAL": "Dernier avis"
+    },
+    "preview": {
+      "title": "Aperçu du rappel",
+      "subtitle": "Comment un rappel {{tone}} est perçu par un locataire",
+      "subject": "Objet",
+      "sampleNotice": "Exemple uniquement : adressé à {{name}}, affiché en {{language}}. Rien n'a été envoyé.",
+      "failed": "L'aperçu n'a pas pu être chargé."
     }
   }
 }

@@ -1143,6 +1143,73 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /teams/{teamIdentifier}/reminder-settings/preview:
+    get:
+      tags:
+        - Teams
+      summary: Preview a tenant reminder for one ladder step
+      description: Renders the reminder email a tenant would receive for the given tone and offset, using a worked example. Nothing is sent or stored.
+      operationId: previewReminder
+      parameters:
+        - name: teamIdentifier
+          in: path
+          description: Team identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/TeamIdentifier'
+        - name: tone
+          in: query
+          description: Tone of the ladder step being previewed
+          required: true
+          schema:
+            $ref: '#/components/schemas/ReminderTone'
+        - name: offsetDays
+          in: query
+          description: Days relative to the due date, between -30 and 365; negative previews a reminder sent before it
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        "200":
+          description: Rendered reminder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderPreviewResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /teams/{teamIdentifier}/members/{userIdentifier}/role:
     put:
       tags:
@@ -28278,6 +28345,26 @@ components:
         - offsetDays
         - tone
         - enabled
+    ReminderPreviewResponse:
+      type: object
+      description: A rendered tenant reminder built from a worked example; never sent
+      properties:
+        subject:
+          type: string
+        html:
+          type: string
+          description: Full HTML body of the email as the tenant would receive it
+        languageTag:
+          type: string
+          description: Language the preview was rendered in (the team default)
+        sampleTenantName:
+          type: string
+          description: Placeholder tenant name used in the example
+      required:
+        - subject
+        - html
+        - languageTag
+        - sampleTenantName
     ReminderSettingsResponse:
       type: object
       properties:

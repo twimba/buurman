@@ -406,7 +406,8 @@
       "enabled": "Trin aktivt",
       "offsetDays": "Dage i forhold til forfaldsdato",
       "tone": "Tone",
-      "duplicateOffsets": "Hvert trin skal have et forskelligt antal dage."
+      "duplicateOffsets": "Hvert trin skal have et forskelligt antal dage.",
+      "preview": "Forhåndsvis"
     },
     "offset": {
       "before": "{{count}} dag før forfald",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Venlig",
       "FIRM": "Bestemt",
       "FINAL": "Sidste påmindelse"
+    },
+    "preview": {
+      "title": "Forhåndsvisning af påmindelsen",
+      "subtitle": "Hvordan en {{tone}} påmindelse læses af en lejer",
+      "subject": "Emne",
+      "sampleNotice": "Kun et eksempel: stilet til {{name}}, vist på {{language}}. Der er ikke sendt noget.",
+      "failed": "Forhåndsvisningen kunne ikke indlæses."
     }
   }
 }

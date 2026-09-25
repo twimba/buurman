@@ -406,7 +406,8 @@
       "enabled": "Step enabled",
       "offsetDays": "Days relative to due date",
       "tone": "Tone",
-      "duplicateOffsets": "Each step needs a different day offset."
+      "duplicateOffsets": "Each step needs a different day offset.",
+      "preview": "Preview"
     },
     "offset": {
       "before": "{{count}} day before due date",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Friendly",
       "FIRM": "Firm",
       "FINAL": "Final notice"
+    },
+    "preview": {
+      "title": "Reminder preview",
+      "subtitle": "How a {{tone}} reminder reads to a tenant",
+      "subject": "Subject",
+      "sampleNotice": "Example only: addressed to {{name}}, rendered in {{language}}. Nothing has been sent.",
+      "failed": "The preview could not be loaded."
     }
   }
 }

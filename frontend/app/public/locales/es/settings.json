@@ -406,7 +406,8 @@
       "enabled": "Paso activo",
       "offsetDays": "Días respecto al vencimiento",
       "tone": "Tono",
-      "duplicateOffsets": "Cada paso necesita un número de días distinto."
+      "duplicateOffsets": "Cada paso necesita un número de días distinto.",
+      "preview": "Vista previa"
     },
     "offset": {
       "before": "{{count}} día antes del vencimiento",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Amable",
       "FIRM": "Firme",
       "FINAL": "Aviso final"
+    },
+    "preview": {
+      "title": "Vista previa del recordatorio",
+      "subtitle": "Cómo lee un inquilino un recordatorio {{tone}}",
+      "subject": "Asunto",
+      "sampleNotice": "Solo un ejemplo: dirigido a {{name}}, mostrado en {{language}}. No se ha enviado nada.",
+      "failed": "No se pudo cargar la vista previa."
     }
   }
 }

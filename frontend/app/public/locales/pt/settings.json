@@ -406,7 +406,8 @@
       "enabled": "Passo ativo",
       "offsetDays": "Dias em relação ao vencimento",
       "tone": "Tom",
-      "duplicateOffsets": "Cada passo precisa de um número de dias diferente."
+      "duplicateOffsets": "Cada passo precisa de um número de dias diferente.",
+      "preview": "Pré-visualizar"
     },
     "offset": {
       "before": "{{count}} dia antes do vencimento",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Amigável",
       "FIRM": "Firme",
       "FINAL": "Aviso final"
+    },
+    "preview": {
+      "title": "Pré-visualização do lembrete",
+      "subtitle": "Como um lembrete {{tone}} é lido por um inquilino",
+      "subject": "Assunto",
+      "sampleNotice": "Apenas um exemplo: dirigido a {{name}}, apresentado em {{language}}. Nada foi enviado.",
+      "failed": "Não foi possível carregar a pré-visualização."
     }
   }
 }

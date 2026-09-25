@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BellRing, Loader2, Plus, Save, Trash2 } from 'lucide-react';
+import { BellRing, Eye, Loader2, Plus, Save, Trash2 } from 'lucide-react';
 import { useTeam } from '../../context/TeamContext';
 import {
   useCurrentTeam,
@@ -12,6 +12,7 @@ import type {
   ReminderSettingsResponse,
   ReminderTone,
 } from '../../generated/models';
+import { ReminderPreviewModal } from './ReminderPreviewModal';
 
 const TONES: ReminderTone[] = ['FRIENDLY', 'FIRM', 'FINAL'];
 
@@ -34,6 +35,9 @@ export const TenantRemindersSection = () => {
   const updateMutation = useUpdateReminderSettings(team?.identifier ?? '');
 
   const [draft, setDraft] = useState<ReminderSettingsResponse | null>(null);
+  const [previewStep, setPreviewStep] = useState<PaymentReminderStep | null>(
+    null
+  );
   const [synced, setSynced] = useState<ReminderSettingsResponse | undefined>(
     undefined
   );
@@ -281,12 +285,20 @@ export const TenantRemindersSection = () => {
                       </option>
                     ))}
                   </select>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewStep(step)}
+                    className="ml-auto inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 dark:text-primary-300 hover:underline focus-ring rounded px-1.5 py-1"
+                  >
+                    <Eye className="h-4 w-4" />
+                    {t('tenantReminders.steps.preview')}
+                  </button>
                   {canEditTeamSettings && (
                     <button
                       type="button"
                       onClick={() => removeStep(index)}
                       aria-label={t('tenantReminders.steps.remove')}
-                      className="ml-auto p-1.5 rounded text-text-secondary hover:text-error-text hover:bg-error-bg focus-ring"
+                      className="p-1.5 rounded text-text-secondary hover:text-error-text hover:bg-error-bg focus-ring"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -312,6 +324,16 @@ export const TenantRemindersSection = () => {
           )}
         </div>
       </div>
+
+      {previewStep && (
+        <ReminderPreviewModal
+          open
+          teamId={team?.identifier}
+          tone={previewStep.tone}
+          offsetDays={previewStep.offsetDays}
+          onClose={() => setPreviewStep(null)}
+        />
+      )}
     </div>
   );
 };

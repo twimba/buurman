@@ -406,7 +406,8 @@
       "enabled": "Krok aktywny",
       "offsetDays": "Dni względem terminu",
       "tone": "Ton",
-      "duplicateOffsets": "Każdy krok musi mieć inną liczbę dni."
+      "duplicateOffsets": "Każdy krok musi mieć inną liczbę dni.",
+      "preview": "Podgląd"
     },
     "offset": {
       "before": "{{count}} dzień przed terminem",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Przyjazny",
       "FIRM": "Stanowczy",
       "FINAL": "Ostateczne wezwanie"
+    },
+    "preview": {
+      "title": "Podgląd przypomnienia",
+      "subtitle": "Jak przypomnienie w tonie {{tone}} odbiera najemca",
+      "subject": "Temat",
+      "sampleNotice": "Tylko przykład: skierowane do {{name}}, w języku {{language}}. Nic nie zostało wysłane.",
+      "failed": "Nie udało się załadować podglądu."
     }
   }
 }

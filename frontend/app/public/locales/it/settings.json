@@ -406,7 +406,8 @@
       "enabled": "Passo attivo",
       "offsetDays": "Giorni rispetto alla scadenza",
       "tone": "Tono",
-      "duplicateOffsets": "Ogni passo deve avere un numero di giorni diverso."
+      "duplicateOffsets": "Ogni passo deve avere un numero di giorni diverso.",
+      "preview": "Anteprima"
     },
     "offset": {
       "before": "{{count}} giorno prima della scadenza",
@@ -419,6 +420,13 @@
       "FRIENDLY": "Cordiale",
       "FIRM": "Deciso",
       "FINAL": "Ultimo avviso"
+    },
+    "preview": {
+      "title": "Anteprima del sollecito",
+      "subtitle": "Come un sollecito {{tone}} viene letto da un inquilino",
+      "subject": "Oggetto",
+      "sampleNotice": "Solo un esempio: indirizzato a {{name}}, mostrato in {{language}}. Non è stato inviato nulla.",
+      "failed": "Impossibile caricare l'anteprima."
     }
   }
 }
