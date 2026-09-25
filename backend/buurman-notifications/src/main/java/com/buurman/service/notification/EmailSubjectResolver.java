@@ -26,8 +26,21 @@ public class EmailSubjectResolver {
         Optional.ofNullable(
                 emailMessageSource.getMessage("email.subject.default", null, null, locale))
             .orElse(FALLBACK_SUBJECT);
-    return Optional.ofNullable(emailMessageSource.getMessage(key, args, null, locale))
+    // A tenant reminder reads very differently by tone, so each tone has its own subject line.
+    return toneVariantKey(templateName, variables)
+        .flatMap(k -> Optional.ofNullable(emailMessageSource.getMessage(k, args, null, locale)))
+        .or(() -> Optional.ofNullable(emailMessageSource.getMessage(key, args, null, locale)))
         .orElse(defaultSubject);
+  }
+
+  private Optional<String> toneVariantKey(String templateName, Map<String, Object> variables) {
+    if (!"payment-reminder-tenant".equals(templateName)) {
+      return Optional.empty();
+    }
+    String tone = getVar(variables, "tone", "");
+    return tone.isBlank()
+        ? Optional.empty()
+        : Optional.of("email.subject." + templateName + "." + tone);
   }
 
   private Object[] extractArgs(String templateName, Map<String, Object> variables) {
