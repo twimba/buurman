@@ -19,7 +19,21 @@ import {
   useRegisterReceival,
   useUpdatePaymentReceival,
   useDeletePaymentReceival,
+  usePaymentReminders,
+  useSendPaymentReminder,
+  useCancelPayment,
+  useWaiveLateFee,
+  useWriteOffPayment,
+  useApplyCredit,
 } from '@/hooks/usePaymentHooks';
+import { useContactCredits } from '@/hooks/useContactHooks';
+import { PaymentTypeBadge } from '@/components/payments/PaymentTypeBadge';
+import { ReasonDialog } from '@/components/payments/ReasonDialog';
+import { ApplyCreditDialog } from '@/components/payments/ApplyCreditDialog';
+import { PaymentRemindersList } from '@/components/payments/PaymentRemindersList';
+import { SendReminderDialog } from '@/components/payments/SendReminderDialog';
+import { getPaymentFormalNotice } from '@/generated/api/letters/letters';
+import { downloadBlob } from '@/utils/downloadBlob';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
@@ -40,6 +54,9 @@ import {
   ChevronUp,
   ChevronDown,
   Trash2,
+  Send,
+  Download,
+  AlertTriangle,
   Calendar,
   DollarSign,
   Home,
@@ -270,6 +287,12 @@ const ReceivalsTable = ({
                       {symbol} {receival.amount.toFixed(2)}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary max-w-xs">
+                      {receival.receivalType &&
+                        receival.receivalType !== 'PAYMENT' && (
+                          <span className="inline-block mb-1 px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
+                            {t(`receivals.types.${receival.receivalType}`)}
+                          </span>
+                        )}
                       {receival.notes ? (
                         <RichTextDisplay
                           content={receival.notes}
@@ -345,7 +368,7 @@ export const PaymentDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation('payments');
+  const { t, i18n } = useTranslation('payments');
   const backTo = (location.state as { backTo?: string })?.backTo ?? '/payments';
   const { canEditData } = useTeam();
   const { formatDate, formatRelative } = useFormatDate();
@@ -353,6 +376,11 @@ export const PaymentDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
   const [showReceivalModal, setShowReceivalModal] = useState(false);
+  const [showReminderModal, setShowReminderModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showWaiveModal, setShowWaiveModal] = useState(false);
+  const [showWriteOffModal, setShowWriteOffModal] = useState(false);
+  const [showApplyCreditModal, setShowApplyCreditModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Open the relevant action modal when arriving from an email deep link
@@ -369,6 +397,8 @@ export const PaymentDetailPage = () => {
       setShowMarkPaidModal(true);
     } else if (action === 'record-receival') {
       setShowReceivalModal(true);
+    } else if (action === 'send-reminder') {
+      setShowReminderModal(true);
     }
     setSearchParams(
       (prev) => {
@@ -382,6 +412,7 @@ export const PaymentDetailPage = () => {
     'details',
     'receivals',
     'documents',
+    'reminders',
     'history',
   ] as const);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
@@ -412,6 +443,11 @@ export const PaymentDetailPage = () => {
   const RECEIVALS_PER_PAGE = 10;
 
   const { data: payment, isLoading, error } = usePayment(id);
+  const creditsApplicable =
+    payment?.status !== 'PAID' && payment?.status !== 'CANCELLED';
+  const { data: contactCredits = [] } = useContactCredits(
+    creditsApplicable ? payment?.contact?.identifier : undefined
+  );
   const {
     data: auditLog = [],
     isLoading: auditLoading,
@@ -425,6 +461,27 @@ export const PaymentDetailPage = () => {
   const deletePaymentMutation = useDeletePayment();
   const updatePaymentMutation = useUpdatePayment(id);
   const markPaidMutation = useMarkPaymentAsPaid();
+  const sendReminderMutation = useSendPaymentReminder();
+  const [noticeDownloading, setNoticeDownloading] = useState(false);
+  const handleDownloadFormalNotice = async () => {
+    if (!id) {
+      return;
+    }
+    setNoticeDownloading(true);
+    try {
+      const lang = i18n.language.split('-')[0];
+      const blob = await getPaymentFormalNotice(id, { lang });
+      downloadBlob(blob, `formal-notice-${id}-${lang}.pdf`);
+    } finally {
+      setNoticeDownloading(false);
+    }
+  };
+  const cancelMutation = useCancelPayment();
+  const waiveMutation = useWaiveLateFee();
+  const writeOffMutation = useWriteOffPayment();
+  const applyCreditMutation = useApplyCredit();
+  const { data: reminders = [], isLoading: remindersLoading } =
+    usePaymentReminders(id);
   const uploadDocumentMutation = useUploadPaymentDocument(id);
   const deleteDocumentMutation = useDeletePaymentDocument(id);
   const registerReceivalMutation = useRegisterReceival(id);
@@ -514,7 +571,20 @@ export const PaymentDetailPage = () => {
     payment.status === PaymentStatus.PARTIALLY_PAID ||
     payment.status === PaymentStatus.OVERDUE;
   const canRegisterReceival = canMarkPaid;
+  const openCredits = contactCredits.filter(
+    (c) => c.remainingAmount > 0 && c.currency === payment.currency
+  );
   const symbol = getCurrencySymbol(payment.currency);
+  const fmtMoney = (value: number, currency: string) => {
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency,
+      }).format(value);
+    } catch {
+      return `${currency} ${value.toFixed(2)}`;
+    }
+  };
 
   return (
     <div className="min-h-full bg-background">
@@ -526,7 +596,12 @@ export const PaymentDetailPage = () => {
             id: payment.contract?.identifier,
           })}
           backTo={backTo}
-          badge={<PaymentStatusBadge status={payment.status} />}
+          badge={
+            <span className="inline-flex items-center gap-2">
+              <PaymentTypeBadge type={payment.paymentType} />
+              <PaymentStatusBadge status={payment.status} />
+            </span>
+          }
           actions={
             <>
               {canRegisterReceival && (
@@ -549,6 +624,17 @@ export const PaymentDetailPage = () => {
                   {t('actions.markAsPaid')}
                 </Button>
               )}
+              {canMarkPaid && (
+                <Button
+                  variant="secondary"
+                  leftIcon={<Send />}
+                  onClick={() => setShowReminderModal(true)}
+                  disabled={!canEditData}
+                  title={t('tooltips.sendReminder')}
+                >
+                  {t('actions.sendReminder')}
+                </Button>
+              )}
               {canEdit && !isEditing && (
                 <Button
                   variant="secondary"
@@ -560,6 +646,43 @@ export const PaymentDetailPage = () => {
                   disabled={!canEditData}
                 >
                   {t('common:buttons.edit')}
+                </Button>
+              )}
+              {canMarkPaid && openCredits.length > 0 && (
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowApplyCreditModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.applyCredit')}
+                </Button>
+              )}
+              {canMarkPaid && payment.paymentType === 'LATE_FEE' && (
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowWaiveModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.waiveLateFee')}
+                </Button>
+              )}
+              {canMarkPaid && (
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowWriteOffModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.writeOff')}
+                </Button>
+              )}
+              {canMarkPaid && (payment.receivedAmount ?? 0) === 0 && (
+                <Button
+                  variant="secondary"
+                  leftIcon={<X />}
+                  onClick={() => setShowCancelModal(true)}
+                  disabled={!canEditData}
+                >
+                  {t('actions.cancelPayment')}
                 </Button>
               )}
               {canDelete && (
@@ -612,6 +735,18 @@ export const PaymentDetailPage = () => {
               <FileText className="h-4 w-4" />
               {t('tabs.documents')}{' '}
               {documents.length > 0 && `(${documents.length})`}
+            </button>
+            <button
+              onClick={() => setActiveTab('reminders')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'reminders'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Send className="h-4 w-4" />
+              {t('tabs.reminders')}{' '}
+              {reminders.length > 0 && `(${reminders.length})`}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -782,6 +917,63 @@ export const PaymentDetailPage = () => {
                       </button>
                     </div>
                   </div>
+
+                  {/* The late fee this rent incurred, or the rent a late fee belongs to */}
+                  {(payment.lateFees ?? []).length > 0 && (
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-5 w-5 text-text-muted mt-1" />
+                      <div className="flex-1">
+                        <p className="text-sm text-text-secondary">
+                          {t('detail.lateFeesCharged')}
+                        </p>
+                        <ul className="space-y-1">
+                          {(payment.lateFees ?? []).map((fee) => (
+                            <li
+                              key={fee.identifier}
+                              className="flex flex-wrap items-center gap-2"
+                            >
+                              <button
+                                onClick={() => navigate(`/payments/${fee.identifier}`)}
+                                className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
+                              >
+                                {fmtMoney(fee.amount, fee.currency)}
+                              </button>
+                              <PaymentStatusBadge status={fee.status} />
+                              <span className="text-sm text-text-muted">
+                                {t('detail.lateFeeDue', {
+                                  date: formatDate(fee.dueDate),
+                                })}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {payment.paymentType === 'LATE_FEE' &&
+                    payment.parentPaymentIdentifier && (
+                      <div className="flex items-start gap-3">
+                        <ArrowUpDown className="h-5 w-5 text-text-muted mt-1" />
+                        <div className="flex-1">
+                          <p className="text-sm text-text-secondary">
+                            {t('detail.lateFeeParent')}
+                          </p>
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/payments/${payment.parentPaymentIdentifier}`
+                              )
+                            }
+                            className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
+                          >
+                            {t('detail.paymentId', {
+                              id: payment.parentPaymentIdentifier,
+                            })}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -950,6 +1142,51 @@ export const PaymentDetailPage = () => {
             isDeleting={deleteDocumentMutation.isPending}
             readOnly={!canEditData}
           />
+        )}
+
+        {activeTab === 'reminders' && (
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <div className="flex items-center justify-between mb-4 gap-3">
+              <h2 className="text-xl font-semibold text-text-primary">
+                {t('reminders.title')}
+              </h2>
+              <div className="flex items-center gap-2">
+                {canMarkPaid && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    leftIcon={<Download />}
+                    onClick={handleDownloadFormalNotice}
+                    isLoading={noticeDownloading}
+                    title={t('tooltips.formalNotice')}
+                  >
+                    {t('actions.formalNotice')}
+                  </Button>
+                )}
+                {canMarkPaid && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leftIcon={<Send />}
+                    onClick={() => setShowReminderModal(true)}
+                    disabled={!canEditData}
+                  >
+                    {t('actions.sendReminder')}
+                  </Button>
+                )}
+              </div>
+            </div>
+            {remindersLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <PaymentRemindersList
+                reminders={reminders}
+                formatMoney={fmtMoney}
+              />
+            )}
+          </div>
         )}
 
         {activeTab === 'history' && (
@@ -1294,6 +1531,103 @@ export const PaymentDetailPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showReminderModal && id && (
+        <SendReminderDialog
+          open={showReminderModal}
+          count={1}
+          isLoading={sendReminderMutation.isPending}
+          onConfirm={async (notes, tone) => {
+            await sendReminderMutation.mutateAsync({
+              id,
+              data: { notes, tone },
+            });
+            setShowReminderModal(false);
+            setActiveTab('reminders');
+          }}
+          onClose={() => setShowReminderModal(false)}
+        />
+      )}
+
+      {showCancelModal && (
+        <ReasonDialog
+          open={showCancelModal}
+          title={t('cancelDialog.title')}
+          message={t('cancelDialog.message')}
+          reasonLabel={t('cancelDialog.reason')}
+          reasonPlaceholder={t('cancelDialog.reasonPlaceholder')}
+          confirmLabel={t('cancelDialog.confirm')}
+          variant="danger"
+          isLoading={cancelMutation.isPending}
+          onConfirm={async (reason) => {
+            await cancelMutation.mutateAsync({ id, data: { reason } });
+            setShowCancelModal(false);
+          }}
+          onClose={() => setShowCancelModal(false)}
+        />
+      )}
+
+      {showWaiveModal && (
+        <ReasonDialog
+          open={showWaiveModal}
+          title={t('waiveDialog.title')}
+          message={t('waiveDialog.message', {
+            amount: fmtMoney(payment.balance ?? payment.amount, payment.currency),
+          })}
+          reasonLabel={t('waiveDialog.reason')}
+          reasonPlaceholder={t('waiveDialog.reasonPlaceholder')}
+          confirmLabel={t('waiveDialog.confirm')}
+          isLoading={waiveMutation.isPending}
+          onConfirm={async (reason) => {
+            await waiveMutation.mutateAsync({ id, data: { reason } });
+            setShowWaiveModal(false);
+          }}
+          onClose={() => setShowWaiveModal(false)}
+        />
+      )}
+
+      {showWriteOffModal && (
+        <ReasonDialog
+          open={showWriteOffModal}
+          title={t('writeOffDialog.title')}
+          message={t('writeOffDialog.message', {
+            amount: fmtMoney(payment.balance ?? payment.amount, payment.currency),
+          })}
+          reasonLabel={t('writeOffDialog.reason')}
+          reasonPlaceholder={t('writeOffDialog.reasonPlaceholder')}
+          dateLabel={t('writeOffDialog.date')}
+          confirmLabel={t('writeOffDialog.confirm')}
+          variant="danger"
+          isLoading={writeOffMutation.isPending}
+          onConfirm={async (reason, date) => {
+            await writeOffMutation.mutateAsync({
+              id,
+              data: { reason, writeOffDate: date },
+            });
+            setShowWriteOffModal(false);
+          }}
+          onClose={() => setShowWriteOffModal(false)}
+        />
+      )}
+
+      {showApplyCreditModal && (
+        <ApplyCreditDialog
+          open={showApplyCreditModal}
+          credits={openCredits}
+          balance={payment.balance ?? payment.amount}
+          currency={payment.currency}
+          formatMoney={fmtMoney}
+          isLoading={applyCreditMutation.isPending}
+          onConfirm={async (creditIdentifier, amount) => {
+            await applyCreditMutation.mutateAsync({
+              id,
+              data: { creditIdentifier, amount },
+            });
+            setShowApplyCreditModal(false);
+          }}
+          onClose={() => setShowApplyCreditModal(false)}
+        />
       )}
 
       {/* Mark Paid Modal */}

@@ -131,7 +131,10 @@
       "guarantor": "Bürge",
       "overdue": "Überfällig",
       "pending": "Ausstehend"
-    }
+    },
+    "paymentReminders": "Zahlungserinnerungen",
+    "paymentRemindersOn": "Zugestimmt",
+    "paymentRemindersOff": "Nicht zugestimmt"
   },
   "card": {
     "allPaid": "Alles bezahlt",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Firmenname ist erforderlich",
       "invalidEmail": "E-Mail-Adresse muss gültig sein",
       "invalidInvoiceEmail": "Rechnungs-E-Mail muss gültig sein"
-    }
+    },
+    "paymentReminders": "Zahlungserinnerungen an diesen Kontakt senden",
+    "paymentRemindersHelp": "Ausdrückliche Zustimmung zu Erinnerungs-E-Mails bei überfälliger Miete. Erinnerungen werden nur für Verträge gesendet, bei denen sie ebenfalls aktiviert sind."
   },
   "addresses": {
     "title": "Adressen",
@@ -467,6 +472,36 @@
       "DO_NOT_CONTACT": "Nicht Kontaktieren",
       "FORMER_TENANT": "Ehemaliger Mieter",
       "REFERRED": "Empfohlen"
+    }
+  },
+  "credits": {
+    "title": "Guthaben",
+    "add": "Gutschrift hinzufügen",
+    "empty": "Keine Guthaben — Überzahlungen und Gutschriften erscheinen hier",
+    "openTotal": "Offenes Guthaben: {{amount}}",
+    "date": "Datum",
+    "source": "Quelle",
+    "reason": "Grund",
+    "amount": "Betrag",
+    "remaining": "Verbleibend",
+    "refund": "Erstatten",
+    "refundedOn": "Erstattet am {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Überzahlung",
+      "CREDIT_NOTE": "Gutschrift"
+    },
+    "createDialog": {
+      "title": "Gutschrift hinzufügen",
+      "message": "Geld, das Sie diesem Kontakt schulden. Es kann mit einer späteren Zahlung verrechnet oder erstattet werden.",
+      "reasonPlaceholder": "z. B. Entschädigung für Heizungsausfall im März",
+      "confirm": "Guthaben hinzufügen"
+    },
+    "refundDialog": {
+      "title": "Guthaben erstatten",
+      "message": "Hält fest, dass die verbleibenden {{amount}} an den Kontakt zurückgezahlt wurden.",
+      "date": "Erstattungsdatum",
+      "notes": "Notizen (optional)",
+      "confirm": "Als erstattet markieren"
     }
   }
 }

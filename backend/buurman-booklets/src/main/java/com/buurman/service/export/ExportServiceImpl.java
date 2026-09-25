@@ -43,6 +43,8 @@ public class ExportServiceImpl implements ExportService {
   private final ContactExcelExporter contactExcelExporter;
   private final PropertyCsvExporter propertyCsvExporter;
   private final PropertyExcelExporter propertyExcelExporter;
+  private final DepositCsvExporter depositCsvExporter;
+  private final DepositExcelExporter depositExcelExporter;
   private final PaymentCsvExporter paymentCsvExporter;
   private final PaymentExcelExporter paymentExcelExporter;
   private final ExpenseCsvExporter expenseCsvExporter;
@@ -181,6 +183,17 @@ public class ExportServiceImpl implements ExportService {
   @Override
   public byte[] generatePropertiesExcel(UUID teamId) {
     return withMetrics("properties_excel", () -> propertyExcelExporter.generate(teamId));
+  }
+
+  // ── Deposits ────────────────────────────────────────────────────────────
+  @Override
+  public byte[] generateDepositsCSV(UUID teamId) {
+    return withMetrics("deposits_csv", () -> depositCsvExporter.generate(teamId));
+  }
+
+  @Override
+  public byte[] generateDepositsExcel(UUID teamId) {
+    return withMetrics("deposits_excel", () -> depositExcelExporter.generate(teamId));
   }
 
   // ── Payments ────────────────────────────────────────────────────────────

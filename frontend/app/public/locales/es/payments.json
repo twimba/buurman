@@ -7,7 +7,13 @@
     "schedulePayment": "Programar Pago",
     "registerPayment": "Registrar Pago",
     "registerReceival": "Registrar Recibo",
-    "markAsPaid": "Marcar como Pagado"
+    "markAsPaid": "Marcar como Pagado",
+    "sendReminder": "Enviar recordatorio",
+    "applyCredit": "Aplicar crédito",
+    "waiveLateFee": "Condonar recargo",
+    "writeOff": "Dar de baja",
+    "cancelPayment": "Cancelar pago",
+    "formalNotice": "Requerimiento (PDF)"
   },
   "stats": {
     "pendingPayments": "Pagos Pendientes",
@@ -122,13 +128,18 @@
     "metadata": "Metadatos",
     "created": "Creado:",
     "lastUpdated": "Última Actualización:",
-    "editPayment": "Editar Pago"
+    "editPayment": "Editar Pago",
+    "lateFeesCharged": "Recargo por demora aplicado",
+    "lateFeeDue": "vence {{date}}",
+    "lateFeeParent": "Recargo por demora de",
+    "paymentId": "Pago #{{id}}"
   },
   "tabs": {
     "details": "Detalles",
     "receivals": "Recibos",
     "documents": "Documentos",
-    "history": "Historial"
+    "history": "Historial",
+    "reminders": "Recordatorios"
   },
   "receivals": {
     "title": "Recibos ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Fecha de Recibo",
     "notesOptional": "Notas (Opcional)",
     "notesPlaceholder": "Añadir notas sobre este recibo...",
-    "register": "Registrar"
+    "register": "Registrar",
+    "types": {
+      "WRITE_OFF": "Baja",
+      "CREDIT": "Crédito aplicado",
+      "PAYMENT": "Pago",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Historial de Pagos",
@@ -190,11 +207,171 @@
     "deleteReceival": "Eliminar recibo",
     "save": "Guardar",
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "sendReminder": "Enviar un correo al inquilino sobre este pago",
+    "formalNotice": "Descargar un requerimiento formal fechado para este pago"
   },
   "errors": {
     "loadFailed": "Error al cargar pagos",
     "loadPaymentFailed": "Error al cargar pago",
     "loadHistoryFailed": "Error al cargar historial"
+  },
+  "selection": {
+    "selected": "{{count}} seleccionado",
+    "selected_other": "{{count}} seleccionados",
+    "selectAll": "Seleccionar todos los impagados de esta página",
+    "selectRow": "Seleccionar pago {{id}}",
+    "select": "Seleccionar",
+    "done": "Listo",
+    "markPaid": "Marcar pagado",
+    "sendReminders": "Enviar recordatorios",
+    "cancel": "Cancelar pagos",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Impagos",
+    "summary": "{{amount}} pendientes de {{count}} inquilino",
+    "summary_other": "{{amount}} pendientes de {{count}} inquilinos",
+    "oldest": "el más antiguo con {{days}} días de retraso",
+    "bucket": {
+      "1-30": "1–30 días",
+      "31-60": "31–60 días",
+      "61-90": "61–90 días",
+      "91+": "Más de 90 días"
+    },
+    "payments": "{{count}} pago",
+    "payments_other": "{{count}} pagos",
+    "lastReminded": "último recordatorio {{when}} ({{count}}×)",
+    "neverReminded": "sin recordatorios",
+    "daysOverdue": "{{days}} días de retraso",
+    "sendReminder": "Enviar recordatorio",
+    "sendReminderTo": "Enviar recordatorio a {{name}}",
+    "remindAll": "Recordar a todos ({{count}})",
+    "showAll": "Mostrar los {{count}} inquilinos",
+    "showLess": "Mostrar menos",
+    "noContact": "Sin contacto vinculado",
+    "remindersDisabled": "Los recordatorios requieren la opción del contrato y el consentimiento del inquilino: actívelos en el contrato y en el contacto."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Marcar {{count}} pagos como pagados",
+    "message": "Cada pago seleccionado se marca como pagado en su totalidad en la fecha elegida. Los pagos ya pagados o cancelados se omiten.",
+    "confirm": "Marcar {{count}} como pagados"
+  },
+  "sendReminderDialog": {
+    "title": "Enviar recordatorio de pago",
+    "titleBulk": "Enviar {{count}} recordatorios",
+    "message": "El inquilino recibe un correo con el importe pendiente, la fecha de vencimiento y sus datos de pago, en el idioma del contrato.",
+    "messageBulk": "Cada inquilino recibe un correo con su importe pendiente, la fecha de vencimiento y sus datos de pago. Los pagos sin correo del inquilino se omiten.",
+    "notesLabel": "Mensaje personal (opcional)",
+    "notesPlaceholder": "p. ej. Por favor, transfiera el importe antes del viernes.",
+    "confirm": "Enviar recordatorio",
+    "confirmBulk": "Enviar {{count}} recordatorios",
+    "toneLabel": "Tono",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Amable",
+        "help": "Un recordatorio cortés de que el pago está pendiente."
+      },
+      "FIRM": {
+        "label": "Firme",
+        "help": "Una reclamación clara con los días de retraso y las consecuencias."
+      },
+      "FINAL": {
+        "label": "Aviso final",
+        "help": "Requerimiento formal con un plazo de 14 días. Se adjunta un requerimiento en PDF y se archiva en el contrato."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Recordatorios enviados",
+    "empty": "Aún no se han enviado recordatorios",
+    "emptySubtitle": "Los recordatorios que envíe al inquilino aparecerán aquí",
+    "sentBy": "por {{name}}",
+    "automatic": "Recordatorio automático",
+    "manual": "Recordatorio",
+    "daysOverdue": "{{days}} días de retraso",
+    "outstanding": "Pendiente {{amount}}",
+    "to": "a {{email}}",
+    "delivery": {
+      "QUEUED": "En cola",
+      "SENT": "Enviado",
+      "DELIVERED": "Entregado",
+      "FAILED": "Entrega fallida",
+      "BLOCKED": "No enviado (demo)",
+      "UNKNOWN": "Desconocido"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Recordatorio enviado a {{email}}",
+    "bulkMarkPaid": "{{success}} marcados como pagados, {{failed}} omitidos",
+    "bulkReminders": "{{success}} recordatorios enviados, {{failed}} omitidos",
+    "cancelled": "Pago cancelado",
+    "bulkCancelled": "{{success}} cancelados, {{failed}} omitidos",
+    "lateFeeWaived": "Recargo condonado",
+    "writtenOff": "Saldo dado de baja",
+    "creditApplied": "Crédito aplicado"
+  },
+  "types": {
+    "LATE_FEE": "Recargo por demora",
+    "RENT": "Alquiler",
+    "INSTALMENT": "Cuota"
+  },
+  "cancelDialog": {
+    "title": "Cancelar pago",
+    "titleBulk": "Cancelar {{count}} pagos",
+    "message": "El pago se marca como cancelado y deja de contar como pendiente. Los pagos con cobros registrados no se pueden cancelar: dé de baja el saldo en su lugar.",
+    "messageBulk": "Cada pago abierto seleccionado se cancela con este motivo. Los pagos pagados o con cobros se omiten.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "p. ej. El inquilino se fue el día 15",
+    "confirm": "Cancelar pago",
+    "confirmBulk": "Cancelar {{count}} pagos"
+  },
+  "waiveDialog": {
+    "title": "Condonar recargo por demora",
+    "message": "El recargo de {{amount}} se cancela y no se cobrará.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "p. ej. Primer retraso, buena voluntad",
+    "confirm": "Condonar recargo"
+  },
+  "writeOffDialog": {
+    "title": "Dar de baja el saldo",
+    "message": "El resto de {{amount}} se cierra sin cobro. Queda registrado como baja y no se puede deshacer.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "p. ej. Deuda incobrable tras la salida del inquilino",
+    "date": "Fecha de baja",
+    "confirm": "Dar de baja"
+  },
+  "applyCreditDialog": {
+    "title": "Aplicar crédito del inquilino",
+    "message": "Saldo pendiente: {{balance}}. Elija qué crédito usar y cuánto.",
+    "credit": "Crédito",
+    "amount": "Importe (máx. {{max}})",
+    "confirm": "Aplicar {{amount}}",
+    "none": "Este inquilino no tiene crédito abierto en esta moneda."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Pago en exceso",
+      "CREDIT_NOTE": "Nota de crédito"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

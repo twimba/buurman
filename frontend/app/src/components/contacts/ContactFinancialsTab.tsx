@@ -4,6 +4,7 @@ import { useExpenses } from '@/hooks/useExpenseHooks';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
+import { ContactCreditsSection } from '@/components/contacts/ContactCreditsSection';
 import { LoadingSpinner } from '@buurman/ui';
 import { getCurrencySymbol } from '@/utils/currencies';
 import { Receipt, CreditCard, ExternalLink } from 'lucide-react';
@@ -64,6 +65,9 @@ export const ContactFinancialsTab = ({
 
   return (
     <div className="space-y-6">
+      {/* Credits owed to the contact */}
+      <ContactCreditsSection contactIdentifier={contactIdentifier} />
+
       {/* Expenses Section */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">

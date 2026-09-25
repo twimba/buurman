@@ -62,6 +62,8 @@ tags:
     description: Reference amenity data
   - name: Booklets
     description: Entity booklet PDF exports
+  - name: Letters
+    description: Tenant-facing letters (formal notices, deposit statements) as PDF
   - name: Payments
     description: Rent payment tracking and management
   - name: Property Fees
@@ -1004,6 +1006,198 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
         "409":
           description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /teams/{teamIdentifier}/reminder-settings:
+    get:
+      tags:
+        - Teams
+      summary: Get tenant reminder settings
+      description: Dunning ladder configuration — whether automatic tenant reminders run and which steps they send
+      operationId: getReminderSettings
+      parameters:
+        - name: teamIdentifier
+          in: path
+          description: Team identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/TeamIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderSettingsResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Teams
+      summary: Update tenant reminder settings
+      description: >-
+        Configure the dunning ladder (Admin only). Automatic reminders are off by default and, even
+        when on, only reach tenants whose contract or contact has reminders explicitly enabled.
+      operationId: updateReminderSettings
+      parameters:
+        - name: teamIdentifier
+          in: path
+          description: Team identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/TeamIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReminderSettingsRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderSettingsResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /teams/{teamIdentifier}/reminder-settings/preview:
+    get:
+      tags:
+        - Teams
+      summary: Preview a tenant reminder for one ladder step
+      description: Renders the reminder email a tenant would receive for the given tone and offset, using a worked example. Nothing is sent or stored.
+      operationId: previewReminder
+      parameters:
+        - name: teamIdentifier
+          in: path
+          description: Team identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/TeamIdentifier'
+        - name: tone
+          in: query
+          description: Tone of the ladder step being previewed
+          required: true
+          schema:
+            $ref: '#/components/schemas/ReminderTone'
+        - name: offsetDays
+          in: query
+          description: Days relative to the due date, between -30 and 365; negative previews a reminder sent before it
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        "200":
+          description: Rendered reminder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderPreviewResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Not found
           content:
             application/json:
               schema:
@@ -4212,7 +4406,7 @@ paths:
   /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/document:
     get:
       tags:
-        - Contract Documents
+        - Letters
       summary: Download rent change document PDF
       description: Download the rent change notification document for a specific rent period as PDF. Includes regulation data when available.
       operationId: getRentChangeDocument
@@ -4280,7 +4474,7 @@ paths:
   /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/generate-documents:
     post:
       tags:
-        - Contract Documents
+        - Letters
       summary: Generate and persist rent change documents
       description: Generate rent change PDF documents for a rent period and save them to S3 storage
       operationId: generateRentChangeDocuments
@@ -4290,13 +4484,13 @@ paths:
           description: Contract identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractIdentifier'
         - name: periodIdentifier
           in: path
           description: Rent period identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractRentPeriodIdentifier'
       requestBody:
         required: true
         content:
@@ -8324,6 +8518,637 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /payments/bulk-mark-paid:
+    post:
+      tags:
+        - Payments
+      summary: Mark several payments as paid
+      description: >-
+        Marks each selected payment as fully paid on the given date (Admin/Editor). Each payment is
+        processed independently; the response reports success or the error per identifier.
+      operationId: bulkMarkPaymentsAsPaid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkMarkPaidRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BulkActionResultPaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/bulk-reminders:
+    post:
+      tags:
+        - Payments
+      summary: Send reminders for several payments
+      description: >-
+        Emails the tenant of each selected outstanding payment (Admin/Editor). Each reminder is
+        processed independently; the response reports success or the error per identifier.
+      operationId: bulkSendPaymentReminders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkSendPaymentRemindersRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BulkActionResultPaymentReminderResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/arrears:
+    get:
+      tags:
+        - Payments
+      summary: Get arrears overview
+      description: >-
+        Every past-due payment with an open balance, aged into 1-30 / 31-60 / 61-90 / 91+ day
+        buckets and grouped by the tenant who owes it, with last-reminder information.
+      operationId: getPaymentArrears
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentArrearsResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/reminders:
+    get:
+      tags:
+        - Payments
+      summary: List reminders sent for a payment
+      description: Communications timeline of reminders sent to the tenant, newest first
+      operationId: getPaymentReminders
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentReminderResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Payments
+      summary: Send a payment reminder to the tenant
+      description: >-
+        Emails the tenant linked to the payment (or the contract's primary contact) with the
+        outstanding balance and the landlord's payment instructions, in the contract's document
+        language (Admin/Editor). Fails if the payment is paid, cancelled or the contact has no email.
+      operationId: sendPaymentReminder
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPaymentReminderRequest'
+        required: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReminderResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/cancel:
+    post:
+      tags:
+        - Payments
+      summary: Cancel a payment
+      description: >-
+        Cancels an open payment with a reason (Admin/Editor). Payments with registered receivals cannot be cancelled; write off the balance instead.
+      operationId: cancelPayment
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelPaymentRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/waive-late-fee:
+    post:
+      tags:
+        - Payments
+      summary: Waive a late fee
+      description: >-
+        Cancels a charged LATE_FEE payment with a reason (Admin/Editor). Paid fees cannot be waived.
+      operationId: waiveLateFee
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaiveLateFeeRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/write-off:
+    post:
+      tags:
+        - Payments
+      summary: Write off the open balance
+      description: >-
+        Closes the remaining balance without money received, recorded as a WRITE_OFF receival (Admin/Editor).
+      operationId: writeOffPayment
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WriteOffPaymentRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/apply-credit:
+    post:
+      tags:
+        - Payments
+      summary: Apply a tenant credit
+      description: >-
+        Settles (part of) the open balance from a credit the tenant holds, recorded as a CREDIT receival (Admin/Editor).
+      operationId: applyCreditToPayment
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyCreditRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /payments/bulk-cancel:
+    post:
+      tags:
+        - Payments
+      summary: Cancel several payments
+      description: >-
+        Cancels each selected open payment with the same reason (Admin/Editor); outcomes reported per identifier.
+      operationId: bulkCancelPayments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCancelPaymentsRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BulkActionResultPaymentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /payment-instructions:
     get:
       tags:
@@ -9537,6 +10362,587 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /contracts/{identifier}/deposit:
+    get:
+      tags:
+        - Contracts
+      summary: Get the contract deposit
+      description: The deposit record for this contract (empty list when none is recorded yet)
+      operationId: getContractDeposits
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DepositResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Contracts
+      summary: Create or update the deposit
+      description: Records the agreed deposit, when it was received and where it is held (Admin/Editor)
+      operationId: upsertContractDeposit
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertDepositRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{identifier}/deposit/deductions:
+    post:
+      tags:
+        - Contracts
+      summary: Add a deduction
+      description: Withholds part of the deposit with a reason, e.g. damage repairs (Admin/Editor)
+      operationId: addDepositDeduction
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDepositDeductionRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{identifier}/deposit/deductions/{deductionIdentifier}:
+    delete:
+      tags:
+        - Contracts
+      summary: Remove a deduction
+      description: Removes a deduction from an open deposit (Admin/Editor)
+      operationId: removeDepositDeduction
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: deductionIdentifier
+          in: path
+          description: Deduction identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DepositDeductionIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{identifier}/deposit/return:
+    post:
+      tags:
+        - Contracts
+      summary: Return the deposit
+      description: Records money paid back to the tenant; less than the refundable amount is a partial return (Admin/Editor)
+      operationId: returnContractDeposit
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnDepositRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{identifier}/deposit/forfeit:
+    post:
+      tags:
+        - Contracts
+      summary: Forfeit the deposit
+      description: Marks the whole deposit as kept by the landlord with a reason (Admin/Editor)
+      operationId: forfeitContractDeposit
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForfeitDepositRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{identifier}/payment-plans:
+    get:
+      tags:
+        - Contracts
+      summary: List payment plans
+      description: Payment plans agreed on this contract, newest first
+      operationId: getContractPaymentPlans
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentPlanResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Contracts
+      summary: Create a payment plan
+      description: Settles the selected open payments into a plan and creates equal instalments on the chosen schedule; pauses tenant reminders until the last instalment by default (Admin/Editor)
+      operationId: createContractPaymentPlan
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentPlanRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentPlanResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{identifier}/payment-plans/{planIdentifier}/cancel:
+    post:
+      tags:
+        - Contracts
+      summary: Cancel a payment plan
+      description: Cancels open instalments and reopens the unpaid remainder as a single payment due today (Admin/Editor)
+      operationId: cancelContractPaymentPlan
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: planIdentifier
+          in: path
+          description: Payment plan identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentPlanIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelPaymentPlanRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentPlanResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contracts/{identifier}/duplicate:
     post:
       tags:
@@ -10512,7 +11918,7 @@ paths:
   /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/addendum:
     get:
       tags:
-        - Contract Extensions
+        - Letters
       summary: Download extension addendum PDF
       description: Download the addendum document for a contract extension as PDF
       operationId: getExtensionAddendum
@@ -10522,13 +11928,13 @@ paths:
           description: Contract identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractIdentifier'
         - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractExtensionIdentifier'
         - name: lang
           in: query
           description: Document language (ISO 639-1 code)
@@ -10580,7 +11986,7 @@ paths:
   /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/rent-increase-letter:
     get:
       tags:
-        - Contract Extensions
+        - Letters
       summary: Download rent increase letter PDF
       description: Download the rent increase notification letter as PDF
       operationId: getRentIncreaseLetter
@@ -10590,13 +11996,13 @@ paths:
           description: Contract identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractIdentifier'
         - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractExtensionIdentifier'
         - name: lang
           in: query
           description: Document language (ISO 639-1 code)
@@ -10648,7 +12054,7 @@ paths:
   /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/generate-documents:
     post:
       tags:
-        - Contract Extensions
+        - Letters
       summary: Generate and persist extension documents
       description: Generate PDF documents for a contract extension and save them to S3 storage
       operationId: generateExtensionDocuments
@@ -10658,13 +12064,13 @@ paths:
           description: Contract identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractIdentifier'
         - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
           schema:
-            type: string
+            $ref: '#/components/schemas/ContractExtensionIdentifier'
       requestBody:
         required: true
         content:
@@ -16136,6 +17542,142 @@ paths:
         "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
       security:
         - bearer-jwt: []
+  /booklets/deposits/csv:
+    get:
+      tags:
+        - Booklets
+      summary: Export deposits to CSV
+      operationId: exportDepositsCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            "text/csv":
+              schema:
+                type: string
+                format: binary
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/deposits/xlsx:
+    get:
+      tags:
+        - Booklets
+      summary: Export deposits to Excel (deposits + deductions sheets)
+      operationId: exportDepositsXlsx
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+              schema:
+                type: string
+                format: binary
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /booklets/deposits/google-sheet:
+    post:
+      tags:
+        - Booklets
+      summary: Export deposits to Google Sheets
+      operationId: exportDepositsGoogleSheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSheetExportRequest'
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+        "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /contracts/{contractIdentifier}/deposit/statement:
+    get:
+      tags:
+        - Letters
+      summary: Download the deposit statement PDF
+      description: Itemised statement of the contract deposit — received, deductions, returned and refundable — in the requested language
+      operationId: getDepositStatement
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: lang
+          in: query
+          description: Document language (ISO 639-1 code)
+          required: false
+          schema:
+            type: string
+            default: en
+      responses:
+        "200":
+          description: Deposit statement PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /payments/{identifier}/formal-notice:
+    get:
+      tags:
+        - Letters
+      summary: Download the formal notice of overdue rent PDF
+      description: Dated demand letter for an open payment with the outstanding balance, a 14-day deadline and the payment details, in the requested language
+      operationId: getPaymentFormalNotice
+      parameters:
+        - name: identifier
+          in: path
+          description: Payment identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        - name: lang
+          in: query
+          description: Document language (ISO 639-1 code)
+          required: false
+          schema:
+            type: string
+            default: en
+      responses:
+        "200":
+          description: Formal notice PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
   /booklets/expenses/csv:
     get:
       tags:
@@ -16992,6 +18534,202 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ContactNoteResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/credits:
+    get:
+      tags:
+        - Contacts
+      summary: List credits
+      description: Credits owed to this contact — overpayments and credit notes — with remaining balances
+      operationId: getContactCredits
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactCreditResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Contacts
+      summary: Create a credit note
+      description: Records money the landlord owes this contact, usable on later payments or refundable (Admin/Editor)
+      operationId: createContactCredit
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactCreditRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactCreditResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/credits/{creditIdentifier}/refund:
+    post:
+      tags:
+        - Contacts
+      summary: Refund a credit
+      description: Marks the remaining balance of a credit as paid back to the contact (Admin/Editor)
+      operationId: refundContactCredit
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: creditIdentifier
+          in: path
+          description: Credit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactCreditIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundContactCreditRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactCreditResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -19457,6 +21195,9 @@ components:
     ContractIdentifier:
       type: string
       description: Contract identifier
+    ContractExtensionIdentifier:
+      type: string
+      description: Contract extension identifier
     ContractPartyIdentifier:
       type: string
       description: Contract party identifier
@@ -19490,6 +21231,15 @@ components:
     PaymentInstructionIdentifier:
       type: string
       description: Payment instruction identifier
+    ContactCreditIdentifier:
+      type: string
+      description: Contact credit identifier
+    DepositDeductionIdentifier:
+      type: string
+      description: Deposit deduction identifier
+    PaymentPlanIdentifier:
+      type: string
+      description: Payment plan identifier
     PaymentReceivalIdentifier:
       type: string
       description: Payment receival identifier
@@ -19809,6 +21559,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
         website:
           type: string
         dateOfBirth:
@@ -20029,6 +21782,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
           format: email
         website:
           type: string
@@ -21819,6 +23575,10 @@ components:
         createdAt:
           type: string
           format: date-time
+        receivalType:
+          type: string
+          enum: [PAYMENT, WRITE_OFF, CREDIT, PLAN]
+          description: How the balance was settled — money received, written off, an applied credit, or moved into a payment plan
       required:
         - amount
         - createdAt
@@ -21872,6 +23632,26 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PaymentReceivalResponse"
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
+        parentPaymentIdentifier:
+          type: string
+          description: For LATE_FEE payments, the rent payment the fee was charged on
+        cancelReason:
+          type: string
+        waivedAt:
+          type: string
+          format: date-time
+        waiveReason:
+          type: string
+        paymentPlanIdentifier:
+          type: string
+          description: For INSTALMENT payments, the plan they belong to
+        lateFees:
+          type: array
+          description: Late fees charged on this payment; empty unless this is the rent that incurred them
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
         createdAt:
           type: string
           format: date-time
@@ -22186,6 +23966,26 @@ components:
           minimum: 0
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -22584,6 +24384,26 @@ components:
           type: integer
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -23555,6 +25375,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
         website:
           type: string
         dateOfBirth:
@@ -24618,6 +26441,26 @@ components:
           minimum: 0
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -26148,6 +27991,616 @@ components:
         - overdueCount
         - pendingAmount
         - pendingCount
+    PaymentType:
+      type: string
+      description: RENT for regular rent, LATE_FEE for a fee charged on an overdue rent payment
+      enum: [RENT, LATE_FEE, INSTALMENT]
+    CancelPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - reason
+    BulkCancelPaymentsRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - identifiers
+        - reason
+    WaiveLateFeeRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - reason
+    WriteOffPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        writeOffDate:
+          type: string
+          format: date
+      required:
+        - reason
+    ApplyCreditRequest:
+      type: object
+      properties:
+        creditIdentifier:
+          $ref: '#/components/schemas/ContactCreditIdentifier'
+        amount:
+          type: number
+          description: Defaults to the smaller of the open balance and the remaining credit
+      required:
+        - creditIdentifier
+    CreateContactCreditRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+          maxLength: 1000
+        contractIdentifier:
+          $ref: '#/components/schemas/ContractIdentifier'
+      required:
+        - amount
+        - reason
+    RefundContactCreditRequest:
+      type: object
+      properties:
+        refundDate:
+          type: string
+          format: date
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - refundDate
+    ContactCreditResponse:
+      type: object
+      description: Money owed to a contact from an overpayment or a credit note
+      properties:
+        identifier:
+          type: string
+        contactIdentifier:
+          type: string
+        contractIdentifier:
+          type: string
+        amount:
+          type: number
+        remainingAmount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+          enum: [OVERPAYMENT, CREDIT_NOTE]
+        reason:
+          type: string
+        sourcePaymentIdentifier:
+          type: string
+        refundedAt:
+          type: string
+          format: date-time
+        refundNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - contactIdentifier
+        - amount
+        - remainingAmount
+        - currency
+        - source
+        - createdAt
+    PaymentSummary:
+      type: object
+      description: Compact payment reference used inside other resources
+      properties:
+        identifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        paymentDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [PENDING, PARTIALLY_PAID, PAID, OVERDUE, CANCELLED]
+      required: [identifier, amount, currency, dueDate, status]
+    DepositDeductionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        reason:
+          type: string
+        deductionDate:
+          type: string
+          format: date
+      required: [identifier, amount, currency, reason, deductionDate]
+    DepositResponse:
+      type: object
+      description: The tenant deposit for a contract and what happened to it
+      properties:
+        identifier:
+          type: string
+        contractIdentifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        receivedDate:
+          type: string
+          format: date
+        heldWhere:
+          type: string
+        status:
+          type: string
+          enum: [EXPECTED, HELD, PARTIALLY_RETURNED, RETURNED, FORFEITED]
+        returnDueDate:
+          type: string
+          format: date
+        returnedDate:
+          type: string
+          format: date
+        returnedAmount:
+          type: number
+        deductionsTotal:
+          type: number
+        refundable:
+          type: number
+          description: amount minus deductions minus what was already returned
+        notes:
+          type: string
+        deductions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DepositDeductionResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [identifier, contractIdentifier, amount, currency, status, returnedAmount, deductionsTotal, refundable, deductions, createdAt]
+    UpsertDepositRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        receivedDate:
+          type: string
+          format: date
+        heldWhere:
+          type: string
+          maxLength: 255
+        returnDueDate:
+          type: string
+          format: date
+        notes:
+          type: string
+          maxLength: 2000
+      required: [amount]
+    CreateDepositDeductionRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+          maxLength: 1000
+        deductionDate:
+          type: string
+          format: date
+      required: [amount, reason]
+    ReturnDepositRequest:
+      type: object
+      properties:
+        returnedDate:
+          type: string
+          format: date
+        returnedAmount:
+          type: number
+          description: Defaults to the refundable amount
+        notes:
+          type: string
+          maxLength: 2000
+      required: [returnedDate]
+    ForfeitDepositRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required: [reason]
+    PaymentPlanResponse:
+      type: object
+      description: An agreed instalment schedule for an overdue balance
+      properties:
+        identifier:
+          type: string
+        contractIdentifier:
+          type: string
+        totalAmount:
+          type: number
+        currency:
+          type: string
+        instalmentCount:
+          type: integer
+          format: int32
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [WEEKLY, BIWEEKLY, MONTHLY]
+        status:
+          type: string
+          enum: [ACTIVE, COMPLETED, CANCELLED]
+        notes:
+          type: string
+        cancelReason:
+          type: string
+        paidAmount:
+          type: number
+        remainingAmount:
+          type: number
+        instalments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
+        coveredPaymentIdentifiers:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [identifier, contractIdentifier, totalAmount, currency, instalmentCount, startDate, frequency, status, paidAmount, remainingAmount, instalments, coveredPaymentIdentifiers, createdAt]
+    CreatePaymentPlanRequest:
+      type: object
+      properties:
+        paymentIdentifiers:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        instalmentCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 36
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [WEEKLY, BIWEEKLY, MONTHLY]
+        notes:
+          type: string
+          maxLength: 2000
+        pauseReminders:
+          type: boolean
+          description: Pause tenant reminders on the contract until the last instalment is due (default true)
+      required: [paymentIdentifiers, instalmentCount, startDate]
+    CancelPaymentPlanRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required: [reason]
+    ReminderDeliveryStatus:
+      type: string
+      description: Delivery state of the email behind a reminder
+      enum: [QUEUED, SENT, DELIVERED, FAILED, BLOCKED, UNKNOWN]
+    ReminderTone:
+      type: string
+      description: How strongly a tenant reminder is worded
+      enum: [FRIENDLY, FIRM, FINAL]
+    PaymentReminderStep:
+      type: object
+      description: One rung of the dunning ladder, relative to the payment due date
+      properties:
+        offsetDays:
+          type: integer
+          format: int32
+          minimum: -30
+          maximum: 365
+          description: Days after the due date (negative = before)
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+        enabled:
+          type: boolean
+      required:
+        - offsetDays
+        - tone
+        - enabled
+    ReminderPreviewResponse:
+      type: object
+      description: A rendered tenant reminder built from a worked example; never sent
+      properties:
+        subject:
+          type: string
+        html:
+          type: string
+          description: Full HTML body of the email as the tenant would receive it
+        languageTag:
+          type: string
+          description: Language the preview was rendered in (the team default)
+        sampleTenantName:
+          type: string
+          description: Placeholder tenant name used in the example
+      required:
+        - subject
+        - html
+        - languageTag
+        - sampleTenantName
+    ReminderSettingsResponse:
+      type: object
+      properties:
+        automaticRemindersEnabled:
+          type: boolean
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentReminderStep'
+      required:
+        - automaticRemindersEnabled
+        - steps
+    UpdateReminderSettingsRequest:
+      type: object
+      properties:
+        automaticRemindersEnabled:
+          type: boolean
+        steps:
+          type: array
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/PaymentReminderStep'
+      required:
+        - automaticRemindersEnabled
+        - steps
+    PaymentReminderResponse:
+      type: object
+      description: One reminder sent to a tenant about an outstanding payment
+      properties:
+        identifier:
+          type: string
+        reminderType:
+          type: string
+          enum: [MANUAL, AUTOMATIC]
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        recipientEmail:
+          type: string
+        daysOverdue:
+          type: integer
+          format: int32
+        outstandingAmount:
+          type: number
+          description: Balance still open when the reminder was sent (major units)
+        currency:
+          type: string
+        notes:
+          type: string
+        sentByName:
+          type: string
+        stepOffsetDays:
+          type: integer
+          format: int32
+          description: Ladder step (days relative to due date) for AUTOMATIC reminders
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+        deliveryStatus:
+          $ref: '#/components/schemas/ReminderDeliveryStatus'
+        deliveryError:
+          type: string
+          description: Provider error when delivery failed
+        sentAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - reminderType
+        - channel
+        - daysOverdue
+        - outstandingAmount
+        - currency
+        - deliveryStatus
+        - sentAt
+    SendPaymentReminderRequest:
+      type: object
+      properties:
+        notes:
+          type: string
+          maxLength: 1000
+          description: Optional personal message included in the email
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+    BulkMarkPaidRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        paymentDate:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - identifiers
+        - paymentDate
+    BulkSendPaymentRemindersRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        notes:
+          type: string
+          maxLength: 1000
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+      required:
+        - identifiers
+    BulkActionResultPaymentResponse:
+      type: object
+      description: Outcome of a bulk action for one payment, keyed by its identifier
+      properties:
+        identifier:
+          type: string
+        result:
+          $ref: '#/components/schemas/PaymentResponse'
+        error:
+          type: string
+      required:
+        - identifier
+    BulkActionResultPaymentReminderResponse:
+      type: object
+      description: Outcome of a bulk reminder send for one payment, keyed by its identifier
+      properties:
+        identifier:
+          type: string
+        result:
+          $ref: '#/components/schemas/PaymentReminderResponse'
+        error:
+          type: string
+      required:
+        - identifier
+    ArrearsAgeingBucket:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Human key such as "1-30" or "91+"
+        fromDays:
+          type: integer
+          format: int32
+        toDays:
+          type: integer
+          format: int32
+          description: Absent for the open-ended last bucket
+        amount:
+          type: number
+        count:
+          type: integer
+          format: int32
+      required:
+        - key
+        - fromDays
+        - amount
+        - count
+    ContactArrears:
+      type: object
+      description: Everything one tenant owes past due
+      properties:
+        contact:
+          $ref: '#/components/schemas/ContactSummary'
+        property:
+          $ref: '#/components/schemas/PropertySummary'
+        contractIdentifier:
+          type: string
+        outstanding:
+          type: number
+        paymentCount:
+          type: integer
+          format: int32
+        oldestDueDate:
+          type: string
+          format: date
+        daysOverdue:
+          type: integer
+          format: int32
+        lastReminderAt:
+          type: string
+          format: date-time
+        reminderCount:
+          type: integer
+          format: int32
+        paymentIdentifiers:
+          type: array
+          items:
+            type: string
+        remindersEnabled:
+          type: boolean
+          description: Whether tenant reminders may currently be sent to this tenant
+      required:
+        - outstanding
+        - paymentCount
+        - oldestDueDate
+        - daysOverdue
+        - reminderCount
+        - paymentIdentifiers
+        - remindersEnabled
+    PaymentArrearsResponse:
+      type: object
+      properties:
+        currency:
+          type: string
+        totalOutstanding:
+          type: number
+        paymentCount:
+          type: integer
+          format: int32
+        contactCount:
+          type: integer
+          format: int32
+        oldestDaysOverdue:
+          type: integer
+          format: int32
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArrearsAgeingBucket'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactArrears'
+      required:
+        - totalOutstanding
+        - paymentCount
+        - contactCount
+        - oldestDaysOverdue
+        - buckets
+        - contacts
     PageResponseNotificationResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata
@@ -26824,6 +29277,10 @@ components:
         - TRIENNIAL
         - ON_RELET
         - PER_MODERNISATION
+    LateFeePolicy:
+      type: string
+      description: Whether flat late fees may be charged on overdue residential rent
+      enum: [UNKNOWN, ALLOWED, CAPPED, INTEREST_ONLY, FORBIDDEN]
     RentRegulationCountryResponse:
       type: object
       properties:
@@ -26842,6 +29299,18 @@ components:
           format: date-time
         stale:
           type: boolean
+        lateFeePolicy:
+          $ref: '#/components/schemas/LateFeePolicy'
+        lateFeeMaxPercentage:
+          type: number
+          description: Statutory maximum late fee (% of the amount due) when the policy is CAPPED
+        lateFeeNotes:
+          type: string
+          description: Advisory notes on the late-fee regime
+        formalNoticeDays:
+          type: integer
+          format: int32
+          description: Default number of days a tenant gets to settle after a formal notice of overdue rent
       required:
         - identifier
         - countryCode
@@ -26866,6 +29335,18 @@ components:
           format: date-time
         stale:
           type: boolean
+        lateFeePolicy:
+          $ref: '#/components/schemas/LateFeePolicy'
+        lateFeeMaxPercentage:
+          type: number
+          description: Statutory maximum late fee (% of the amount due) when the policy is CAPPED
+        lateFeeNotes:
+          type: string
+          description: Advisory notes on the late-fee regime
+        formalNoticeDays:
+          type: integer
+          format: int32
+          description: Default number of days a tenant gets to settle after a formal notice of overdue rent
         regions:
           type: array
           items:

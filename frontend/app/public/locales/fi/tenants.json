@@ -131,7 +131,10 @@
       "guarantor": "Takaaja",
       "overdue": "Myohassa",
       "pending": "Odottaa"
-    }
+    },
+    "paymentReminders": "Maksumuistutukset",
+    "paymentRemindersOn": "Suostumus annettu",
+    "paymentRemindersOff": "Ei suostumusta"
   },
   "card": {
     "allPaid": "Kaikki maksettu",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Yrityksen nimi on pakollinen",
       "invalidEmail": "Sahkopostiosoitteen on oltava kelvollinen",
       "invalidInvoiceEmail": "Laskutussahkopostin on oltava kelvollinen"
-    }
+    },
+    "paymentReminders": "Lähetä maksumuistutuksia tälle yhteystiedolle",
+    "paymentRemindersHelp": "Nimenomainen suostumus vastaanottaa muistutussähköposteja myöhässä olevasta vuokrasta. Muistutuksia lähetetään vain sopimuksille, joissa ne on myös otettu käyttöön."
   },
   "addresses": {
     "title": "Osoitteet",
@@ -467,6 +472,36 @@
       "DO_NOT_CONTACT": "Ala ota yhteytta",
       "FORMER_TENANT": "Entinen vuokralainen",
       "REFERRED": "Suositeltu"
+    }
+  },
+  "credits": {
+    "title": "Hyvitykset",
+    "add": "Lisää hyvityslasku",
+    "empty": "Ei hyvityksiä – liikamaksut ja hyvityslaskut näkyvät tässä",
+    "openTotal": "Avoin hyvitys: {{amount}}",
+    "date": "Päivä",
+    "source": "Lähde",
+    "reason": "Syy",
+    "amount": "Summa",
+    "remaining": "Jäljellä",
+    "refund": "Palauta",
+    "refundedOn": "Palautettu {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Liikamaksu",
+      "CREDIT_NOTE": "Hyvityslasku"
+    },
+    "createDialog": {
+      "title": "Lisää hyvityslasku",
+      "message": "Raha, jonka olet velkaa tälle yhteystiedolle. Voidaan käyttää myöhempään maksuun tai palauttaa.",
+      "reasonPlaceholder": "esim. Korvaus lämmityskatkosta maaliskuussa",
+      "confirm": "Lisää hyvitys"
+    },
+    "refundDialog": {
+      "title": "Palauta hyvitys",
+      "message": "Kirjaa, että jäljellä oleva {{amount}} on maksettu takaisin.",
+      "date": "Palautuspäivä",
+      "notes": "Muistiinpanot (valinnainen)",
+      "confirm": "Merkitse palautetuksi"
     }
   }
 }

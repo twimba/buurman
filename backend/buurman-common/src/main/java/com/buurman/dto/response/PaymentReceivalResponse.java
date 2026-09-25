@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Sid;
 import com.buurman.util.SkipTestCoverage;
 
@@ -15,4 +16,5 @@ public record PaymentReceivalResponse(
     String currency,
     LocalDate receivalDate,
     Optional<String> notes,
-    Instant createdAt) {}
+    Instant createdAt,
+    PaymentReceival.ReceivalType receivalType) {}

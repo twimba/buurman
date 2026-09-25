@@ -62,6 +62,8 @@ tags:
     description: Reference amenity data
   - name: Booklets
     description: Entity booklet PDF exports
+  - name: Letters
+    description: Tenant-facing letters (formal notices, deposit statements) as PDF
   - name: Payments
     description: Rent payment tracking and management
   - name: Property Fees
@@ -131,6 +133,10 @@ paths:
     $ref: 'paths/teams.yaml#/teams-item'
   /teams/{teamIdentifier}/settings:
     $ref: 'paths/teams.yaml#/teams-settings'
+  /teams/{teamIdentifier}/reminder-settings:
+    $ref: 'paths/teams.yaml#/teams-reminder-settings'
+  /teams/{teamIdentifier}/reminder-settings/preview:
+    $ref: 'paths/teams.yaml#/teams-reminder-preview'
   /teams/{teamIdentifier}/members/{userIdentifier}/role:
     $ref: 'paths/teams.yaml#/teams-members-role'
   /properties/{propertyIdentifier}/outdoor-areas/{areaIdentifier}:
@@ -253,6 +259,24 @@ paths:
     $ref: 'paths/payments.yaml#/payments-bulk'
   /payments/bulk-generate:
     $ref: 'paths/payments.yaml#/payments-bulk-generate'
+  /payments/bulk-mark-paid:
+    $ref: 'paths/payments.yaml#/payments-bulk-mark-paid'
+  /payments/bulk-reminders:
+    $ref: 'paths/payments.yaml#/payments-bulk-reminders'
+  /payments/arrears:
+    $ref: 'paths/payments.yaml#/payments-arrears'
+  /payments/{identifier}/reminders:
+    $ref: 'paths/payments.yaml#/payments-reminders'
+  /payments/{identifier}/cancel:
+    $ref: 'paths/payments.yaml#/payments-cancel'
+  /payments/{identifier}/waive-late-fee:
+    $ref: 'paths/payments.yaml#/payments-waive-late-fee'
+  /payments/{identifier}/write-off:
+    $ref: 'paths/payments.yaml#/payments-write-off'
+  /payments/{identifier}/apply-credit:
+    $ref: 'paths/payments.yaml#/payments-apply-credit'
+  /payments/bulk-cancel:
+    $ref: 'paths/payments.yaml#/payments-bulk-cancel'
   /payment-instructions:
     $ref: 'paths/payments.yaml#/payment-instructions'
   /notifications/{identifier}/resend:
@@ -281,6 +305,20 @@ paths:
     $ref: 'paths/contracts.yaml#/parties-change-primary'
   /contracts/{identifier}/generate-payments:
     $ref: 'paths/contracts.yaml#/generate-payments'
+  /contracts/{identifier}/deposit:
+    $ref: 'paths/contracts.yaml#/deposits'
+  /contracts/{identifier}/deposit/deductions:
+    $ref: 'paths/contracts.yaml#/deposit-deductions'
+  /contracts/{identifier}/deposit/deductions/{deductionIdentifier}:
+    $ref: 'paths/contracts.yaml#/deposit-deductions-item'
+  /contracts/{identifier}/deposit/return:
+    $ref: 'paths/contracts.yaml#/deposit-return'
+  /contracts/{identifier}/deposit/forfeit:
+    $ref: 'paths/contracts.yaml#/deposit-forfeit'
+  /contracts/{identifier}/payment-plans:
+    $ref: 'paths/contracts.yaml#/payment-plans'
+  /contracts/{identifier}/payment-plans/{planIdentifier}/cancel:
+    $ref: 'paths/contracts.yaml#/payment-plans-cancel'
   /contracts/{identifier}/duplicate:
     $ref: 'paths/contracts.yaml#/duplicate'
   /contracts/{identifier}/documents:
@@ -503,6 +541,16 @@ paths:
     $ref: 'paths/documents.yaml#/booklets-payments-xlsx'
   /booklets/payments/google-sheet:
     $ref: 'paths/documents.yaml#/booklets-payments-google-sheet'
+  /booklets/deposits/csv:
+    $ref: 'paths/documents.yaml#/booklets-deposits-csv'
+  /booklets/deposits/xlsx:
+    $ref: 'paths/documents.yaml#/booklets-deposits-xlsx'
+  /booklets/deposits/google-sheet:
+    $ref: 'paths/documents.yaml#/booklets-deposits-google-sheet'
+  /contracts/{contractIdentifier}/deposit/statement:
+    $ref: 'paths/documents.yaml#/booklets-deposit-statement'
+  /payments/{identifier}/formal-notice:
+    $ref: 'paths/documents.yaml#/booklets-payment-formal-notice'
   /booklets/expenses/csv:
     $ref: 'paths/documents.yaml#/booklets-expenses-csv'
   /booklets/expenses/xlsx:
@@ -535,6 +583,10 @@ paths:
     $ref: 'paths/contacts.yaml#/documents-item'
   /contacts/{contactIdentifier}/notes:
     $ref: 'paths/contacts.yaml#/notes'
+  /contacts/{contactIdentifier}/credits:
+    $ref: 'paths/contacts.yaml#/credits'
+  /contacts/{contactIdentifier}/credits/{creditIdentifier}/refund:
+    $ref: 'paths/contacts.yaml#/credits-refund'
   /contacts/{contactIdentifier}/notes/{noteIdentifier}:
     $ref: 'paths/contacts.yaml#/notes-item'
   /contacts/{contactIdentifier}/notes/{noteIdentifier}/pin:
@@ -628,6 +680,9 @@ components:
     ContractIdentifier:
       type: string
       description: Contract identifier
+    ContractExtensionIdentifier:
+      type: string
+      description: Contract extension identifier
     ContractPartyIdentifier:
       type: string
       description: Contract party identifier
@@ -661,6 +716,15 @@ components:
     PaymentInstructionIdentifier:
       type: string
       description: Payment instruction identifier
+    ContactCreditIdentifier:
+      type: string
+      description: Contact credit identifier
+    DepositDeductionIdentifier:
+      type: string
+      description: Deposit deduction identifier
+    PaymentPlanIdentifier:
+      type: string
+      description: Payment plan identifier
     PaymentReceivalIdentifier:
       type: string
       description: Payment receival identifier
@@ -980,6 +1044,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
         website:
           type: string
         dateOfBirth:
@@ -1200,6 +1267,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
           format: email
         website:
           type: string
@@ -2990,6 +3060,10 @@ components:
         createdAt:
           type: string
           format: date-time
+        receivalType:
+          type: string
+          enum: [PAYMENT, WRITE_OFF, CREDIT, PLAN]
+          description: How the balance was settled — money received, written off, an applied credit, or moved into a payment plan
       required:
         - amount
         - createdAt
@@ -3043,6 +3117,26 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PaymentReceivalResponse"
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
+        parentPaymentIdentifier:
+          type: string
+          description: For LATE_FEE payments, the rent payment the fee was charged on
+        cancelReason:
+          type: string
+        waivedAt:
+          type: string
+          format: date-time
+        waiveReason:
+          type: string
+        paymentPlanIdentifier:
+          type: string
+          description: For INSTALMENT payments, the plan they belong to
+        lateFees:
+          type: array
+          description: Late fees charged on this payment; empty unless this is the rent that incurred them
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
         createdAt:
           type: string
           format: date-time
@@ -3357,6 +3451,26 @@ components:
           minimum: 0
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -3755,6 +3869,26 @@ components:
           type: integer
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -4726,6 +4860,9 @@ components:
           type: string
         invoiceEmail:
           type: string
+        paymentRemindersEnabled:
+          type: boolean
+          description: Consent to receive tenant-facing payment reminder emails (off by default)
         website:
           type: string
         dateOfBirth:
@@ -5789,6 +5926,26 @@ components:
           minimum: 0
         requiresTenantConfirmation:
           type: boolean
+        tenantRemindersEnabled:
+          type: boolean
+          description: Send tenant-facing payment reminders for this contract (off by default)
+        remindersPausedUntil:
+          type: string
+          format: date
+          description: While set and not in the past, no tenant reminder is sent for this contract
+        lateFeeEnabled:
+          type: boolean
+          description: Charge lateFeePercentage on rent payments still open after the grace period (off by default)
+        lateFeeGraceDays:
+          type: integer
+          format: int32
+          minimum: 0
+        formalNoticeDays:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 365
+          description: Days the tenant gets to settle after a formal notice; empty = the country default from the regulation catalogue (14 when unknown)
         rentAdjustmentType:
           $ref: '#/components/schemas/RentAdjustmentType'
         rentAdjustmentValue:
@@ -7319,6 +7476,616 @@ components:
         - overdueCount
         - pendingAmount
         - pendingCount
+    PaymentType:
+      type: string
+      description: RENT for regular rent, LATE_FEE for a fee charged on an overdue rent payment
+      enum: [RENT, LATE_FEE, INSTALMENT]
+    CancelPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - reason
+    BulkCancelPaymentsRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - identifiers
+        - reason
+    WaiveLateFeeRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required:
+        - reason
+    WriteOffPaymentRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+        writeOffDate:
+          type: string
+          format: date
+      required:
+        - reason
+    ApplyCreditRequest:
+      type: object
+      properties:
+        creditIdentifier:
+          $ref: '#/components/schemas/ContactCreditIdentifier'
+        amount:
+          type: number
+          description: Defaults to the smaller of the open balance and the remaining credit
+      required:
+        - creditIdentifier
+    CreateContactCreditRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+          maxLength: 1000
+        contractIdentifier:
+          $ref: '#/components/schemas/ContractIdentifier'
+      required:
+        - amount
+        - reason
+    RefundContactCreditRequest:
+      type: object
+      properties:
+        refundDate:
+          type: string
+          format: date
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - refundDate
+    ContactCreditResponse:
+      type: object
+      description: Money owed to a contact from an overpayment or a credit note
+      properties:
+        identifier:
+          type: string
+        contactIdentifier:
+          type: string
+        contractIdentifier:
+          type: string
+        amount:
+          type: number
+        remainingAmount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+          enum: [OVERPAYMENT, CREDIT_NOTE]
+        reason:
+          type: string
+        sourcePaymentIdentifier:
+          type: string
+        refundedAt:
+          type: string
+          format: date-time
+        refundNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - contactIdentifier
+        - amount
+        - remainingAmount
+        - currency
+        - source
+        - createdAt
+    PaymentSummary:
+      type: object
+      description: Compact payment reference used inside other resources
+      properties:
+        identifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        paymentDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [PENDING, PARTIALLY_PAID, PAID, OVERDUE, CANCELLED]
+      required: [identifier, amount, currency, dueDate, status]
+    DepositDeductionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        reason:
+          type: string
+        deductionDate:
+          type: string
+          format: date
+      required: [identifier, amount, currency, reason, deductionDate]
+    DepositResponse:
+      type: object
+      description: The tenant deposit for a contract and what happened to it
+      properties:
+        identifier:
+          type: string
+        contractIdentifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        receivedDate:
+          type: string
+          format: date
+        heldWhere:
+          type: string
+        status:
+          type: string
+          enum: [EXPECTED, HELD, PARTIALLY_RETURNED, RETURNED, FORFEITED]
+        returnDueDate:
+          type: string
+          format: date
+        returnedDate:
+          type: string
+          format: date
+        returnedAmount:
+          type: number
+        deductionsTotal:
+          type: number
+        refundable:
+          type: number
+          description: amount minus deductions minus what was already returned
+        notes:
+          type: string
+        deductions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DepositDeductionResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [identifier, contractIdentifier, amount, currency, status, returnedAmount, deductionsTotal, refundable, deductions, createdAt]
+    UpsertDepositRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        receivedDate:
+          type: string
+          format: date
+        heldWhere:
+          type: string
+          maxLength: 255
+        returnDueDate:
+          type: string
+          format: date
+        notes:
+          type: string
+          maxLength: 2000
+      required: [amount]
+    CreateDepositDeductionRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+          maxLength: 1000
+        deductionDate:
+          type: string
+          format: date
+      required: [amount, reason]
+    ReturnDepositRequest:
+      type: object
+      properties:
+        returnedDate:
+          type: string
+          format: date
+        returnedAmount:
+          type: number
+          description: Defaults to the refundable amount
+        notes:
+          type: string
+          maxLength: 2000
+      required: [returnedDate]
+    ForfeitDepositRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required: [reason]
+    PaymentPlanResponse:
+      type: object
+      description: An agreed instalment schedule for an overdue balance
+      properties:
+        identifier:
+          type: string
+        contractIdentifier:
+          type: string
+        totalAmount:
+          type: number
+        currency:
+          type: string
+        instalmentCount:
+          type: integer
+          format: int32
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [WEEKLY, BIWEEKLY, MONTHLY]
+        status:
+          type: string
+          enum: [ACTIVE, COMPLETED, CANCELLED]
+        notes:
+          type: string
+        cancelReason:
+          type: string
+        paidAmount:
+          type: number
+        remainingAmount:
+          type: number
+        instalments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
+        coveredPaymentIdentifiers:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [identifier, contractIdentifier, totalAmount, currency, instalmentCount, startDate, frequency, status, paidAmount, remainingAmount, instalments, coveredPaymentIdentifiers, createdAt]
+    CreatePaymentPlanRequest:
+      type: object
+      properties:
+        paymentIdentifiers:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        instalmentCount:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 36
+        startDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [WEEKLY, BIWEEKLY, MONTHLY]
+        notes:
+          type: string
+          maxLength: 2000
+        pauseReminders:
+          type: boolean
+          description: Pause tenant reminders on the contract until the last instalment is due (default true)
+      required: [paymentIdentifiers, instalmentCount, startDate]
+    CancelPaymentPlanRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 1000
+      required: [reason]
+    ReminderDeliveryStatus:
+      type: string
+      description: Delivery state of the email behind a reminder
+      enum: [QUEUED, SENT, DELIVERED, FAILED, BLOCKED, UNKNOWN]
+    ReminderTone:
+      type: string
+      description: How strongly a tenant reminder is worded
+      enum: [FRIENDLY, FIRM, FINAL]
+    PaymentReminderStep:
+      type: object
+      description: One rung of the dunning ladder, relative to the payment due date
+      properties:
+        offsetDays:
+          type: integer
+          format: int32
+          minimum: -30
+          maximum: 365
+          description: Days after the due date (negative = before)
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+        enabled:
+          type: boolean
+      required:
+        - offsetDays
+        - tone
+        - enabled
+    ReminderPreviewResponse:
+      type: object
+      description: A rendered tenant reminder built from a worked example; never sent
+      properties:
+        subject:
+          type: string
+        html:
+          type: string
+          description: Full HTML body of the email as the tenant would receive it
+        languageTag:
+          type: string
+          description: Language the preview was rendered in (the team default)
+        sampleTenantName:
+          type: string
+          description: Placeholder tenant name used in the example
+      required:
+        - subject
+        - html
+        - languageTag
+        - sampleTenantName
+    ReminderSettingsResponse:
+      type: object
+      properties:
+        automaticRemindersEnabled:
+          type: boolean
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentReminderStep'
+      required:
+        - automaticRemindersEnabled
+        - steps
+    UpdateReminderSettingsRequest:
+      type: object
+      properties:
+        automaticRemindersEnabled:
+          type: boolean
+        steps:
+          type: array
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/PaymentReminderStep'
+      required:
+        - automaticRemindersEnabled
+        - steps
+    PaymentReminderResponse:
+      type: object
+      description: One reminder sent to a tenant about an outstanding payment
+      properties:
+        identifier:
+          type: string
+        reminderType:
+          type: string
+          enum: [MANUAL, AUTOMATIC]
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        recipientEmail:
+          type: string
+        daysOverdue:
+          type: integer
+          format: int32
+        outstandingAmount:
+          type: number
+          description: Balance still open when the reminder was sent (major units)
+        currency:
+          type: string
+        notes:
+          type: string
+        sentByName:
+          type: string
+        stepOffsetDays:
+          type: integer
+          format: int32
+          description: Ladder step (days relative to due date) for AUTOMATIC reminders
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+        deliveryStatus:
+          $ref: '#/components/schemas/ReminderDeliveryStatus'
+        deliveryError:
+          type: string
+          description: Provider error when delivery failed
+        sentAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - reminderType
+        - channel
+        - daysOverdue
+        - outstandingAmount
+        - currency
+        - deliveryStatus
+        - sentAt
+    SendPaymentReminderRequest:
+      type: object
+      properties:
+        notes:
+          type: string
+          maxLength: 1000
+          description: Optional personal message included in the email
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+    BulkMarkPaidRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        paymentDate:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - identifiers
+        - paymentDate
+    BulkSendPaymentRemindersRequest:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/PaymentIdentifier'
+        notes:
+          type: string
+          maxLength: 1000
+        tone:
+          $ref: '#/components/schemas/ReminderTone'
+      required:
+        - identifiers
+    BulkActionResultPaymentResponse:
+      type: object
+      description: Outcome of a bulk action for one payment, keyed by its identifier
+      properties:
+        identifier:
+          type: string
+        result:
+          $ref: '#/components/schemas/PaymentResponse'
+        error:
+          type: string
+      required:
+        - identifier
+    BulkActionResultPaymentReminderResponse:
+      type: object
+      description: Outcome of a bulk reminder send for one payment, keyed by its identifier
+      properties:
+        identifier:
+          type: string
+        result:
+          $ref: '#/components/schemas/PaymentReminderResponse'
+        error:
+          type: string
+      required:
+        - identifier
+    ArrearsAgeingBucket:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Human key such as "1-30" or "91+"
+        fromDays:
+          type: integer
+          format: int32
+        toDays:
+          type: integer
+          format: int32
+          description: Absent for the open-ended last bucket
+        amount:
+          type: number
+        count:
+          type: integer
+          format: int32
+      required:
+        - key
+        - fromDays
+        - amount
+        - count
+    ContactArrears:
+      type: object
+      description: Everything one tenant owes past due
+      properties:
+        contact:
+          $ref: '#/components/schemas/ContactSummary'
+        property:
+          $ref: '#/components/schemas/PropertySummary'
+        contractIdentifier:
+          type: string
+        outstanding:
+          type: number
+        paymentCount:
+          type: integer
+          format: int32
+        oldestDueDate:
+          type: string
+          format: date
+        daysOverdue:
+          type: integer
+          format: int32
+        lastReminderAt:
+          type: string
+          format: date-time
+        reminderCount:
+          type: integer
+          format: int32
+        paymentIdentifiers:
+          type: array
+          items:
+            type: string
+        remindersEnabled:
+          type: boolean
+          description: Whether tenant reminders may currently be sent to this tenant
+      required:
+        - outstanding
+        - paymentCount
+        - oldestDueDate
+        - daysOverdue
+        - reminderCount
+        - paymentIdentifiers
+        - remindersEnabled
+    PaymentArrearsResponse:
+      type: object
+      properties:
+        currency:
+          type: string
+        totalOutstanding:
+          type: number
+        paymentCount:
+          type: integer
+          format: int32
+        contactCount:
+          type: integer
+          format: int32
+        oldestDaysOverdue:
+          type: integer
+          format: int32
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArrearsAgeingBucket'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactArrears'
+      required:
+        - totalOutstanding
+        - paymentCount
+        - contactCount
+        - oldestDaysOverdue
+        - buckets
+        - contacts
     PageResponseNotificationResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata
@@ -7995,6 +8762,10 @@ components:
         - TRIENNIAL
         - ON_RELET
         - PER_MODERNISATION
+    LateFeePolicy:
+      type: string
+      description: Whether flat late fees may be charged on overdue residential rent
+      enum: [UNKNOWN, ALLOWED, CAPPED, INTEREST_ONLY, FORBIDDEN]
     RentRegulationCountryResponse:
       type: object
       properties:
@@ -8013,6 +8784,18 @@ components:
           format: date-time
         stale:
           type: boolean
+        lateFeePolicy:
+          $ref: '#/components/schemas/LateFeePolicy'
+        lateFeeMaxPercentage:
+          type: number
+          description: Statutory maximum late fee (% of the amount due) when the policy is CAPPED
+        lateFeeNotes:
+          type: string
+          description: Advisory notes on the late-fee regime
+        formalNoticeDays:
+          type: integer
+          format: int32
+          description: Default number of days a tenant gets to settle after a formal notice of overdue rent
       required:
         - identifier
         - countryCode
@@ -8037,6 +8820,18 @@ components:
           format: date-time
         stale:
           type: boolean
+        lateFeePolicy:
+          $ref: '#/components/schemas/LateFeePolicy'
+        lateFeeMaxPercentage:
+          type: number
+          description: Statutory maximum late fee (% of the amount due) when the policy is CAPPED
+        lateFeeNotes:
+          type: string
+          description: Advisory notes on the late-fee regime
+        formalNoticeDays:
+          type: integer
+          format: int32
+          description: Default number of days a tenant gets to settle after a formal notice of overdue rent
         regions:
           type: array
           items:

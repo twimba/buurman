@@ -131,7 +131,10 @@
       "guarantor": "Kausjonist",
       "overdue": "Forfalt",
       "pending": "Ventende"
-    }
+    },
+    "paymentReminders": "Betalingspåminnelser",
+    "paymentRemindersOn": "Samtykke gitt",
+    "paymentRemindersOff": "Ikke samtykket"
   },
   "card": {
     "allPaid": "Alt betalt",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Firmanavn er obligatorisk",
       "invalidEmail": "E-post må være gyldig",
       "invalidInvoiceEmail": "Faktura-e-post må være gyldig"
-    }
+    },
+    "paymentReminders": "Send betalingspåminnelser til denne kontakten",
+    "paymentRemindersHelp": "Uttrykkelig samtykke til påminnelses-e-poster om forfalt husleie. Påminnelser sendes bare for kontrakter der de også er aktivert."
   },
   "addresses": {
     "title": "Adresser",
@@ -467,6 +472,36 @@
       "DO_NOT_CONTACT": "Ikke kontakt",
       "FORMER_TENANT": "Tidligere leietaker",
       "REFERRED": "Henvist"
+    }
+  },
+  "credits": {
+    "title": "Tilgodehavender",
+    "add": "Legg til kreditnota",
+    "empty": "Ingen tilgodehavender — overbetalinger og kreditnotaer vises her",
+    "openTotal": "Åpent tilgodehavende: {{amount}}",
+    "date": "Dato",
+    "source": "Kilde",
+    "reason": "Begrunnelse",
+    "amount": "Beløp",
+    "remaining": "Gjenstående",
+    "refund": "Refunder",
+    "refundedOn": "Refundert {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Overbetaling",
+      "CREDIT_NOTE": "Kreditnota"
+    },
+    "createDialog": {
+      "title": "Legg til kreditnota",
+      "message": "Penger du skylder denne kontakten. Kan brukes på en senere betaling eller refunderes.",
+      "reasonPlaceholder": "f.eks. Kompensasjon for fyrkjelehavari i mars",
+      "confirm": "Legg til"
+    },
+    "refundDialog": {
+      "title": "Refunder tilgodehavende",
+      "message": "Registrerer at gjenstående {{amount}} er betalt tilbake til kontakten.",
+      "date": "Refusjonsdato",
+      "notes": "Notater (valgfritt)",
+      "confirm": "Merk som refundert"
     }
   }
 }

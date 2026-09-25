@@ -24,7 +24,8 @@
       "title": "Ainda sem contratos",
       "description": "Comece por criar o seu primeiro contrato de arrendamento"
     },
-    "error": "Falha ao carregar contratos"
+    "error": "Falha ao carregar contratos",
+    "exportDeposits": "Exportar cauções"
   },
   "create": {
     "title": "Adicionar Novo Contrato",
@@ -193,7 +194,13 @@
       "created": "Criado:",
       "lastUpdated": "Última Atualização:",
       "at": "às"
-    }
+    },
+    "tenantReminders": "Lembretes ao inquilino",
+    "remindersOn": "Ativados",
+    "remindersOff": "Desligados",
+    "remindersPausedUntil": "Em pausa até {{date}}",
+    "lateFeeActive": "cobrada após {{count}} dias",
+    "lateFeeInactive": "não cobrada"
   },
   "payments": {
     "title": "Pagamentos",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Defina um país no imóvel selecionado para ver os campos regulatórios específicos do país.",
     "dismissDuplicateWarning": "Revise o aviso de duplicata acima e dispense-o para continuar",
     "dismissDuplicateFirst": "Dispense primeiro o aviso de duplicata",
-    "change": "Alterar"
+    "change": "Alterar",
+    "tenantReminders": "Lembretes de pagamento ao inquilino",
+    "tenantRemindersHelp": "Permitir e-mails de lembrete para este contrato. O contacto do inquilino também tem de ter dado consentimento; caso contrário nada é enviado.",
+    "remindersPausedUntil": "Pausar lembretes até",
+    "remindersPausedUntilHelp": "Não são enviados lembretes até esta data, p. ex. durante um plano de pagamento.",
+    "lateFeeEnabled": "Cobrar multa por atraso",
+    "lateFeeEnabledHelp": "Adiciona um pagamento de multa separado quando uma renda continua em aberto após o período de carência. Desligado por defeito.",
+    "lateFeeGraceDays": "Período de carência (dias)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Penalizações fixas por atraso são permitidas em {{country}}.",
+      "CAPPED": "Em {{country}} as penalizações por atraso estão limitadas a {{percentage}}% do montante devido.",
+      "INTEREST_ONLY": "Em {{country}} apenas podem ser cobrados juros de mora legais sobre rendas em atraso; penalizações fixas não podem ser ativadas.",
+      "FORBIDDEN": "Penalizações por atraso em rendas habitacionais não são permitidas em {{country}}.",
+      "overCap": "A percentagem acima excede este limite."
+    },
+    "formalNoticeDays": "Prazo da interpelação (dias)",
+    "formalNoticeDaysHelp": "Dias que o inquilino tem para pagar após uma interpelação formal. Deixe vazio para usar o valor por defeito de {{count}} dias.",
+    "formalNoticeDaysCountryDefault": "Deixe vazio para usar o valor por defeito de {{country}}: {{count}} dias."
   },
   "statusChange": {
     "title": "Alterar Estado do Contrato",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Negociado",
       "FROZEN": "Congelado",
       "OTHER": "Outro"
+    },
+    "lateFees": {
+      "title": "Penalizações por atraso",
+      "policy": {
+        "ALLOWED": "Penalizações fixas permitidas",
+        "CAPPED": "Penalizações limitadas",
+        "INTEREST_ONLY": "Apenas juros legais",
+        "FORBIDDEN": "Penalizações não permitidas",
+        "UNKNOWN": "Desconhecido"
+      },
+      "maxPercentage": "Máximo {{percentage}}% do montante devido",
+      "noticeDays": "Prazo da interpelação: {{count}} dias"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Percentagem fixa",
       "FIXED_AMOUNT": "Valor fixo",
       "MANUAL": "Manual"
+    }
+  },
+  "deposit": {
+    "title": "Caução",
+    "empty": "Ainda não há caução registada.",
+    "emptyWithAgreed": "Caução acordada de {{amount}} — ainda não registada como recebida.",
+    "record": "Registar caução",
+    "amount": "Valor",
+    "refundable": "Reembolsável",
+    "receivedDate": "Recebida em",
+    "heldWhere": "Guardada em",
+    "returnDueDate": "Devolver até",
+    "returned": "Devolvida",
+    "deductions": "Deduções",
+    "addDeduction": "Adicionar dedução",
+    "removeDeduction": "Remover dedução",
+    "noDeductions": "Sem deduções",
+    "notes": "Notas",
+    "return": "Devolver caução",
+    "forfeit": "Reter",
+    "status": {
+      "EXPECTED": "Esperada",
+      "HELD": "Retida",
+      "PARTIALLY_RETURNED": "Parcialmente devolvida",
+      "RETURNED": "Devolvida",
+      "FORFEITED": "Perdida"
+    },
+    "editDialog": {
+      "titleNew": "Registar caução",
+      "titleEdit": "Editar caução",
+      "receivedHelp": "Deixe vazio enquanto a caução ainda for esperada.",
+      "heldWherePlaceholder": "ex.: Conta poupança separada, serviço de escrow"
+    },
+    "deductionDialog": {
+      "title": "Adicionar dedução",
+      "message": "Reembolsável após as deduções existentes: {{refundable}}.",
+      "date": "Data",
+      "reason": "Motivo",
+      "reasonPlaceholder": "ex.: Repintar a sala após danos",
+      "confirm": "Adicionar dedução"
+    },
+    "returnDialog": {
+      "title": "Devolver caução",
+      "message": "Valor reembolsável: {{refundable}}. Devolver menos regista uma devolução parcial.",
+      "date": "Data da devolução",
+      "amount": "Valor devolvido",
+      "amountHelp": "Deixe vazio para devolver todo o valor reembolsável.",
+      "confirm": "Registar devolução"
+    },
+    "forfeitDialog": {
+      "title": "Reter caução",
+      "message": "Toda a caução fica com o senhorio. Isto encerra a caução e não pode ser anulado.",
+      "reason": "Motivo",
+      "confirm": "Reter"
+    },
+    "toasts": {
+      "saved": "Caução guardada",
+      "deductionAdded": "Dedução adicionada",
+      "deductionRemoved": "Dedução removida",
+      "returned": "Devolução registada",
+      "forfeited": "Caução retida"
+    },
+    "statement": "Extrato (PDF)",
+    "statementHelp": "Descarregar um extrato detalhado da caução para o inquilino"
+  },
+  "paymentPlans": {
+    "title": "Planos de pagamento",
+    "summary": "{{total}} em {{count}} prestações {{frequency}}",
+    "from": "a partir de {{date}}",
+    "covers": "cobre {{count}} pagamento",
+    "covers_other": "cobre {{count}} pagamentos",
+    "progress": "{{paid}} pago · {{remaining}} em falta",
+    "cancel": "Cancelar plano",
+    "cancelledBecause": "Cancelado: {{reason}}",
+    "frequency": {
+      "WEEKLY": "semanais",
+      "BIWEEKLY": "quinzenais",
+      "MONTHLY": "mensais"
+    },
+    "status": {
+      "ACTIVE": "Ativo",
+      "COMPLETED": "Concluído",
+      "CANCELLED": "Cancelado"
+    },
+    "cancelDialog": {
+      "title": "Cancelar plano de pagamento",
+      "message": "As prestações em aberto são canceladas e o restante por pagar de {{remaining}} passa a um único pagamento com vencimento hoje. Os lembretes do contrato são retomados.",
+      "reason": "Motivo",
+      "confirm": "Cancelar plano"
+    },
+    "toasts": {
+      "cancelled": "Plano de pagamento cancelado"
     }
   }
 }

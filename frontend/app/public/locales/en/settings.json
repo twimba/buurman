@@ -387,5 +387,46 @@
       "completed": "Completed",
       "failed": "Failed"
     }
+  },
+  "tenantReminders": {
+    "title": "Tenant Reminders",
+    "subtitle": "Automatic payment reminder emails to tenants (dunning ladder)",
+    "consentNotice": "Reminders are never sent unless both the contract has reminders enabled and the tenant contact has opted in. Everything here is off by default.",
+    "automatic": {
+      "label": "Automatic reminders",
+      "description": "Run the ladder below every morning for open payments of opted-in tenants"
+    },
+    "steps": {
+      "title": "Reminder ladder",
+      "description": "Each step sends one email once a payment is the given number of days past its due date. A payment receives at most one step per day.",
+      "empty": "No steps configured — nothing will be sent automatically.",
+      "useDefaults": "Use recommended ladder",
+      "add": "Add step",
+      "remove": "Remove step",
+      "enabled": "Step enabled",
+      "offsetDays": "Days relative to due date",
+      "tone": "Tone",
+      "duplicateOffsets": "Each step needs a different day offset.",
+      "preview": "Preview"
+    },
+    "offset": {
+      "before": "{{count}} day before due date",
+      "before_other": "{{count}} days before due date",
+      "onDue": "on the due date",
+      "after": "{{count}} day after due date",
+      "after_other": "{{count}} days after due date"
+    },
+    "tones": {
+      "FRIENDLY": "Friendly",
+      "FIRM": "Firm",
+      "FINAL": "Final notice"
+    },
+    "preview": {
+      "title": "Reminder preview",
+      "subtitle": "How a {{tone}} reminder reads to a tenant",
+      "subject": "Subject",
+      "sampleNotice": "Example only: addressed to {{name}}, rendered in {{language}}. Nothing has been sent.",
+      "failed": "The preview could not be loaded."
+    }
   }
 }

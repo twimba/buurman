@@ -4,12 +4,15 @@ import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.CALENDAR_FEEDS;
 import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
+import static com.buurman.jooq.generated.Tables.CONTACT_CREDITS;
 import static com.buurman.jooq.generated.Tables.CONTACT_NOTES;
 import static com.buurman.jooq.generated.Tables.CONTACT_RELATIONSHIPS;
 import static com.buurman.jooq.generated.Tables.CONTACT_TAGS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
 import static com.buurman.jooq.generated.Tables.DATA_TAKEOUTS;
+import static com.buurman.jooq.generated.Tables.DEPOSITS;
+import static com.buurman.jooq.generated.Tables.DEPOSIT_DEDUCTIONS;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EMAIL_VERIFICATION_CODES;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
@@ -19,7 +22,9 @@ import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_INSTRUCTIONS;
+import static com.buurman.jooq.generated.Tables.PAYMENT_PLANS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
+import static com.buurman.jooq.generated.Tables.PAYMENT_REMINDERS;
 import static com.buurman.jooq.generated.Tables.PHONE_VERIFICATION_CODES;
 import static com.buurman.jooq.generated.Tables.PHOTOS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
@@ -80,6 +85,7 @@ public class DemoDataService {
   private final DemoContractGenerator contractGenerator;
   private final ContractExtensionDemoDataGenerator contractExtensionGenerator;
   private final DemoPaymentGenerator paymentGenerator;
+  private final DemoRentCollectionGenerator rentCollectionGenerator;
   private final DemoExpenseGenerator expenseGenerator;
   private final DemoPaymentInstructionGenerator paymentInstructionGenerator;
   private final DemoPhotoGenerator photoGenerator;
@@ -172,6 +178,7 @@ public class DemoDataService {
           contractExtensionGenerator.generate(ctx);
           paymentInstructionGenerator.generate(ctx);
           paymentGenerator.generate(ctx);
+          rentCollectionGenerator.generate(ctx);
           expenseGenerator.generate(ctx);
         });
 
@@ -219,8 +226,28 @@ public class DemoDataService {
   public void cleanupDatabaseRecords(List<UUID> demoTeamIds) {
     // Delete in reverse FK dependency order
 
-    // 1. Payment receivals (FK -> payments)
+    // 0. Rent-collection data (FK -> payments, contracts, contacts)
     int deleted =
+        dsl.deleteFrom(PAYMENT_REMINDERS)
+            .where(PAYMENT_REMINDERS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} payment reminders", deleted);
+
+    deleted =
+        dsl.deleteFrom(CONTACT_CREDITS).where(CONTACT_CREDITS.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} contact credits", deleted);
+
+    deleted =
+        dsl.deleteFrom(DEPOSIT_DEDUCTIONS)
+            .where(DEPOSIT_DEDUCTIONS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} deposit deductions", deleted);
+
+    deleted = dsl.deleteFrom(DEPOSITS).where(DEPOSITS.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} deposits", deleted);
+
+    // 1. Payment receivals (FK -> payments)
+    deleted =
         dsl.deleteFrom(PAYMENT_RECEIVALS)
             .where(PAYMENT_RECEIVALS.TEAM_ID.in(demoTeamIds))
             .execute();
@@ -279,8 +306,12 @@ public class DemoDataService {
             .execute();
     log.debug("Deleted {} contract payment instructions", deleted);
 
-    // 7. Payments (FK -> contracts)
+    // 7. Payments (FK -> contracts), then the plans they referenced
     deleted = dsl.deleteFrom(PAYMENTS).where(PAYMENTS.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} payments", deleted);
+
+    deleted = dsl.deleteFrom(PAYMENT_PLANS).where(PAYMENT_PLANS.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} payment plans", deleted);
     log.debug("Deleted {} payments", deleted);
 
     // 8. Expenses (FK -> properties)

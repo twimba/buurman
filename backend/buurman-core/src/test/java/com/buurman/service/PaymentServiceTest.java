@@ -1,6 +1,8 @@
 package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +31,7 @@ import com.buurman.domain.Payment.PaymentStatus;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Sid;
 import com.buurman.domain.TeamRole;
+import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.mapper.ContactMapper;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.DocumentMapper;
@@ -36,9 +39,11 @@ import com.buurman.mapper.PaymentMapper;
 import com.buurman.mapper.PaymentReceivalMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.AuditLogRepository;
+import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
+import com.buurman.repository.PaymentPlanRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -59,6 +64,8 @@ class PaymentServiceTest {
 
   @Mock private PaymentRepository paymentRepository;
   @Mock private PaymentReceivalRepository receivalRepository;
+  @Mock private ContactCreditRepository creditRepository;
+  @Mock private PaymentPlanRepository paymentPlanRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContactRepository contactRepository;
@@ -97,6 +104,8 @@ class PaymentServiceTest {
         new PaymentService(
             paymentRepository,
             receivalRepository,
+            creditRepository,
+            paymentPlanRepository,
             contractRepository,
             propertyRepository,
             contactRepository,
@@ -369,6 +378,338 @@ class PaymentServiceTest {
       invokeUpdateStatus(payment, LocalDate.of(2026, 3, 1));
 
       assertThat(payment.getStatus()).isEqualTo(PaymentStatus.PARTIALLY_PAID);
+    }
+  }
+
+  @Nested
+  @DisplayName("bulkMarkPaymentsAsPaid")
+  class BulkMarkPaid {
+
+    @Test
+    @DisplayName("reports success per identifier and isolates failures")
+    void reportsPerIdentifier() {
+      when(transactionManager.getTransaction(any()))
+          .thenReturn(new org.springframework.transaction.support.SimpleTransactionStatus());
+
+      PaymentIdentifier okId = PaymentIdentifier.of("pay_01JTEST0000000000000000OK");
+      PaymentIdentifier paidId = PaymentIdentifier.of("pay_01JTEST00000000000000PAID");
+      Payment pending =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PENDING);
+      pending.setIdentifier(Optional.of(okId));
+      Payment alreadyPaid =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PAID);
+      alreadyPaid.setIdentifier(Optional.of(paidId));
+
+      when(paymentRepository.getByIdentifierAndTeamId(okId, TEAM_ID)).thenReturn(pending);
+      when(paymentRepository.getByIdentifierAndTeamId(paidId, TEAM_ID)).thenReturn(alreadyPaid);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+      when(paymentMapper.toResponse(any(Payment.class)))
+          .thenAnswer(
+              inv -> {
+                Payment p = inv.getArgument(0);
+                return new com.buurman.dto.response.PaymentResponse(
+                    p.getIdentifier().orElseThrow(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    p.getAmount().value(),
+                    p.getAmount().currency(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    p.getPaymentDate(),
+                    p.getDueDate(),
+                    p.getStatus(),
+                    p.getNotes(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    List.of(),
+                    p.getCreatedAt(),
+                    Optional.empty(),
+                    p.getPaymentType(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    java.util.List.of());
+              });
+      when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
+      when(receivalRepository.findByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID)).thenReturn(List.of());
+      org.mockito.Mockito.lenient()
+          .when(appProperties.email())
+          .thenReturn(new AppProperties.Email("no-reply@test", "Buurman", "https://app.test"));
+
+      List<com.buurman.dto.response.BulkActionResult<com.buurman.dto.response.PaymentResponse>>
+          results =
+              service.bulkMarkPaymentsAsPaid(
+                  new com.buurman.dto.request.BulkMarkPaidRequest(
+                      List.of(okId, paidId, okId), LocalDate.of(2026, 2, 28), Optional.empty()),
+                  principal);
+
+      assertThat(results).hasSize(2);
+      assertThat(results.get(0).identifier()).isEqualTo(okId.value());
+      assertThat(results.get(0).isSuccess()).isTrue();
+      assertThat(results.get(0).result())
+          .hasValueSatisfying(r -> assertThat(r.status()).isEqualTo(PaymentStatus.PAID));
+      assertThat(results.get(1).identifier()).isEqualTo(paidId.value());
+      assertThat(results.get(1).error()).hasValueSatisfying(e -> assertThat(e).contains("already"));
+    }
+  }
+
+  @Nested
+  @DisplayName("adjustments")
+  class Adjustments {
+
+    private final PaymentIdentifier id = PaymentIdentifier.of("pay_01JTEST0000000000000000AD");
+
+    private void stubEnrich() {
+      when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+      when(paymentMapper.toResponse(any(Payment.class)))
+          .thenAnswer(
+              inv -> {
+                Payment p = inv.getArgument(0);
+                return new com.buurman.dto.response.PaymentResponse(
+                    p.getIdentifier().orElseThrow(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    p.getAmount().value(),
+                    p.getAmount().currency(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    p.getPaymentDate(),
+                    p.getDueDate(),
+                    p.getStatus(),
+                    p.getNotes(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    List.of(),
+                    p.getCreatedAt(),
+                    Optional.empty(),
+                    p.getPaymentType(),
+                    Optional.empty(),
+                    p.getCancelReason(),
+                    p.getWaivedAt(),
+                    p.getWaiveReason(),
+                    Optional.empty(),
+                    java.util.List.of());
+              });
+      when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
+      org.mockito.Mockito.lenient()
+          .when(receivalRepository.findByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID))
+          .thenReturn(List.of());
+    }
+
+    @Test
+    @DisplayName("cancel records the reason and refuses paid or partially received payments")
+    void cancel() {
+      Payment pending =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PENDING);
+      pending.setIdentifier(Optional.of(id));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(pending);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      stubEnrich();
+
+      var response =
+          service.cancelPayment(
+              id, new com.buurman.dto.request.CancelPaymentRequest("Tenant moved out"), principal);
+      assertThat(response.status()).isEqualTo(PaymentStatus.CANCELLED);
+      assertThat(response.cancelReason()).contains("Tenant moved out");
+
+      Payment partial =
+          buildPayment(
+              new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PARTIALLY_PAID);
+      partial.setIdentifier(Optional.of(id));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(partial);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(new BigDecimal("100.00"));
+      org.assertj.core.api.Assertions.assertThatThrownBy(
+              () ->
+                  service.cancelPayment(
+                      id, new com.buurman.dto.request.CancelPaymentRequest("x"), principal))
+          .isInstanceOf(com.buurman.exception.BusinessRuleException.class)
+          .hasMessageContaining("write off");
+    }
+
+    @Test
+    @DisplayName("write-off settles the balance with a WRITE_OFF receival")
+    void writeOff() {
+      Payment overdue =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 1, 1), PaymentStatus.OVERDUE);
+      overdue.setIdentifier(Optional.of(id));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(overdue);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(new BigDecimal("400.00"))
+          .thenReturn(new BigDecimal("1000.00"));
+      stubEnrich();
+
+      var response =
+          service.writeOffPayment(
+              id,
+              new com.buurman.dto.request.WriteOffPaymentRequest(
+                  "Bad debt", Optional.of(LocalDate.of(2026, 2, 28))),
+              principal);
+
+      org.mockito.ArgumentCaptor<com.buurman.domain.PaymentReceival> captor =
+          org.mockito.ArgumentCaptor.forClass(com.buurman.domain.PaymentReceival.class);
+      verify(receivalRepository).save(captor.capture());
+      assertThat(captor.getValue().getReceivalType())
+          .isEqualTo(com.buurman.domain.PaymentReceival.ReceivalType.WRITE_OFF);
+      assertThat(captor.getValue().getAmount().value()).isEqualByComparingTo("600.00");
+      assertThat(captor.getValue().getReceivalDate()).isEqualTo(LocalDate.of(2026, 2, 28));
+      assertThat(response.status()).isEqualTo(PaymentStatus.PAID);
+    }
+
+    @Test
+    @DisplayName("an overpayment settles the balance and books the excess as a tenant credit")
+    void overpaymentBecomesCredit() {
+      UUID contactId = UUID.randomUUID();
+      Payment pending =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PENDING);
+      pending.setIdentifier(Optional.of(id));
+      pending.setContactId(Optional.of(contactId));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(pending);
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO)
+          .thenReturn(BigDecimal.ZERO)
+          .thenReturn(new BigDecimal("1000.00"))
+          .thenReturn(new BigDecimal("1000.00"));
+      when(creditRepository.save(any(com.buurman.domain.ContactCredit.class)))
+          .thenAnswer(inv -> inv.getArgument(0));
+      UUID receivalId = UUID.randomUUID();
+      org.mockito.Mockito.doAnswer(
+              inv -> {
+                inv.getArgument(0, PaymentReceival.class).setId(receivalId);
+                return null;
+              })
+          .when(receivalRepository)
+          .save(any(PaymentReceival.class));
+      org.mockito.Mockito.lenient()
+          .when(appProperties.email())
+          .thenReturn(new AppProperties.Email("no-reply@test", "Buurman", "https://app.test"));
+      stubEnrich();
+
+      service.registerReceival(
+          id,
+          new com.buurman.dto.request.CreatePaymentReceivalRequest(
+              new BigDecimal("1250.00"), LocalDate.of(2026, 2, 3), Optional.empty()),
+          principal);
+
+      org.mockito.ArgumentCaptor<com.buurman.domain.PaymentReceival> rc =
+          org.mockito.ArgumentCaptor.forClass(com.buurman.domain.PaymentReceival.class);
+      verify(receivalRepository).save(rc.capture());
+      assertThat(rc.getValue().getAmount().value()).isEqualByComparingTo("1000.00");
+      org.mockito.ArgumentCaptor<com.buurman.domain.ContactCredit> cc =
+          org.mockito.ArgumentCaptor.forClass(com.buurman.domain.ContactCredit.class);
+      verify(creditRepository).save(cc.capture());
+      assertThat(cc.getValue().getAmount().value()).isEqualByComparingTo("250.00");
+      assertThat(cc.getValue().getRemainingAmount()).isEqualByComparingTo("250.00");
+      assertThat(cc.getValue().getContactId()).isEqualTo(contactId);
+      assertThat(cc.getValue().getSource())
+          .isEqualTo(com.buurman.domain.ContactCredit.CreditSource.OVERPAYMENT);
+      assertThat(cc.getValue().getSourcePaymentId()).contains(PAYMENT_ID);
+      assertThat(cc.getValue().getSourceReceivalId()).contains(receivalId);
+    }
+
+    // --- reversing a receival that produced a credit ---
+
+    private final PaymentIdentifier reversalId =
+        PaymentIdentifier.of("pay_01JTEST0000000000000000AE");
+    private final com.buurman.domain.identifier.PaymentReceivalIdentifier receivalSid =
+        com.buurman.domain.identifier.PaymentReceivalIdentifier.of(
+            com.buurman.util.SidGenerator.newPaymentReceivalId().value());
+    private final UUID receivalId = UUID.randomUUID();
+
+    private PaymentReceival receival() {
+      PaymentReceival r = new PaymentReceival();
+      r.setId(receivalId);
+      r.setIdentifier(Optional.of(com.buurman.domain.Sid.of(receivalSid.value())));
+      r.setTeamId(TEAM_ID);
+      r.setPaymentId(PAYMENT_ID);
+      r.setAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"));
+      r.setReceivalDate(LocalDate.of(2026, 2, 3));
+      return r;
+    }
+
+    private com.buurman.domain.ContactCredit credit(String remaining) {
+      return com.buurman.domain.ContactCredit.builder()
+          .id(UUID.randomUUID())
+          .identifier(Optional.of(com.buurman.util.SidGenerator.newContactCreditId()))
+          .teamId(TEAM_ID)
+          .contactId(UUID.randomUUID())
+          .amount(MoneyAmount.of(new BigDecimal("250.00"), "EUR"))
+          .remainingAmount(new BigDecimal(remaining))
+          .source(com.buurman.domain.ContactCredit.CreditSource.OVERPAYMENT)
+          .sourcePaymentId(Optional.of(PAYMENT_ID))
+          .sourceReceivalId(Optional.of(receivalId))
+          .createdBy(USER_ID)
+          .updatedBy(USER_ID)
+          .build();
+    }
+
+    private void stubPayment() {
+      Payment paid =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PAID);
+      paid.setIdentifier(Optional.of(reversalId));
+      when(paymentRepository.getByIdentifierAndTeamId(reversalId, TEAM_ID)).thenReturn(paid);
+      when(receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
+              receivalSid, PAYMENT_ID, TEAM_ID))
+          .thenReturn(receival());
+    }
+
+    @Test
+    @DisplayName("deleting the receival reverses an untouched credit")
+    void deleteReversesUnusedCredit() {
+      stubPayment();
+      com.buurman.domain.ContactCredit unused = credit("250.00");
+      when(creditRepository.findBySourceReceivalIdAndTeamId(receivalId, TEAM_ID))
+          .thenReturn(Optional.of(unused));
+      when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
+          .thenReturn(BigDecimal.ZERO);
+      stubEnrich();
+
+      service.deleteReceival(reversalId, receivalSid, principal);
+
+      verify(receivalRepository).softDeleteByIdAndTeamId(receivalId, TEAM_ID);
+      verify(creditRepository).softDeleteByIdAndTeamId(unused.getId(), TEAM_ID, USER_ID);
+    }
+
+    @Test
+    @DisplayName("deleting the receival is refused once the credit was applied")
+    void deleteRefusedWhenCreditUsed() {
+      stubPayment();
+      when(creditRepository.findBySourceReceivalIdAndTeamId(receivalId, TEAM_ID))
+          .thenReturn(Optional.of(credit("100.00")));
+
+      org.assertj.core.api.Assertions.assertThatThrownBy(
+              () -> service.deleteReceival(reversalId, receivalSid, principal))
+          .isInstanceOf(com.buurman.exception.BusinessRuleException.class)
+          .hasMessageContaining("already been applied");
+      verify(receivalRepository, org.mockito.Mockito.never()).softDeleteByIdAndTeamId(any(), any());
+      verify(creditRepository, org.mockito.Mockito.never())
+          .softDeleteByIdAndTeamId(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("editing a receival that produced a credit is refused")
+    void updateRefused() {
+      stubPayment();
+      when(creditRepository.findBySourceReceivalIdAndTeamId(receivalId, TEAM_ID))
+          .thenReturn(Optional.of(credit("250.00")));
+
+      org.assertj.core.api.Assertions.assertThatThrownBy(
+              () ->
+                  service.updateReceival(
+                      reversalId,
+                      receivalSid,
+                      new com.buurman.dto.request.UpdatePaymentReceivalRequest(
+                          new BigDecimal("900.00"), LocalDate.of(2026, 2, 3), Optional.empty()),
+                      principal))
+          .isInstanceOf(com.buurman.exception.BusinessRuleException.class)
+          .hasMessageContaining("delete it and register");
     }
   }
 }

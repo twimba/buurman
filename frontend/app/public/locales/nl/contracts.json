@@ -24,7 +24,8 @@
       "title": "Nog geen contracten",
       "description": "Begin door uw eerste huurovereenkomst aan te maken"
     },
-    "error": "Kan contracten niet laden"
+    "error": "Kan contracten niet laden",
+    "exportDeposits": "Borg exporteren"
   },
   "create": {
     "title": "Nieuw contract toevoegen",
@@ -193,7 +194,13 @@
       "created": "Aangemaakt:",
       "lastUpdated": "Laatst bijgewerkt:",
       "at": "om"
-    }
+    },
+    "tenantReminders": "Huurdersherinneringen",
+    "remindersOn": "Ingeschakeld",
+    "remindersOff": "Uit",
+    "remindersPausedUntil": "Gepauzeerd tot {{date}}",
+    "lateFeeActive": "na {{count}} dagen in rekening gebracht",
+    "lateFeeInactive": "niet in rekening gebracht"
   },
   "payments": {
     "title": "Betalingen",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Stel een land in op het geselecteerde pand om landspecifieke regelgevingsvelden te zien.",
     "dismissDuplicateWarning": "Bekijk de duplicaatwaarschuwing hierboven en sluit deze om door te gaan",
     "dismissDuplicateFirst": "Sluit eerst de duplicaatwaarschuwing",
-    "change": "Wijzigen"
+    "change": "Wijzigen",
+    "tenantReminders": "Betalingsherinneringen aan huurder",
+    "tenantRemindersHelp": "Sta herinneringsmails voor dit contract toe. Het huurderscontact moet ook toestemming hebben gegeven; anders wordt niets verstuurd.",
+    "remindersPausedUntil": "Herinneringen pauzeren tot",
+    "remindersPausedUntilHelp": "Tot deze datum worden geen herinneringen verstuurd, bijv. tijdens een betalingsregeling.",
+    "lateFeeEnabled": "Boete bij te late betaling",
+    "lateFeeEnabledHelp": "Voegt een aparte boetebetaling toe zodra een huurbetaling na de respijtperiode nog openstaat. Standaard uit.",
+    "lateFeeGraceDays": "Respijtperiode (dagen)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Vaste boetes bij te late betaling zijn toegestaan in {{country}}.",
+      "CAPPED": "In {{country}} zijn boetes gemaximeerd op {{percentage}}% van het verschuldigde bedrag.",
+      "INTEREST_ONLY": "In {{country}} mag alleen wettelijke rente over achterstallige huur worden gerekend; vaste boetes kunnen niet worden ingeschakeld.",
+      "FORBIDDEN": "Boetes op achterstallige huur zijn niet toegestaan in {{country}}.",
+      "overCap": "Het bovenstaande percentage overschrijdt dit maximum."
+    },
+    "formalNoticeDays": "Termijn ingebrekestelling (dagen)",
+    "formalNoticeDaysHelp": "Dagen die de huurder krijgt om te betalen na een ingebrekestelling. Leeg laten voor de standaard van {{count}} dagen.",
+    "formalNoticeDaysCountryDefault": "Leeg laten voor de standaard van {{country}}: {{count}} dagen."
   },
   "statusChange": {
     "title": "Contractstatus wijzigen",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Onderhandeld",
       "FROZEN": "Bevroren",
       "OTHER": "Overig"
+    },
+    "lateFees": {
+      "title": "Boetes bij te late betaling",
+      "policy": {
+        "ALLOWED": "Vaste boetes toegestaan",
+        "CAPPED": "Boetes gemaximeerd",
+        "INTEREST_ONLY": "Alleen wettelijke rente",
+        "FORBIDDEN": "Boetes niet toegestaan",
+        "UNKNOWN": "Onbekend"
+      },
+      "maxPercentage": "Maximaal {{percentage}}% van het verschuldigde bedrag",
+      "noticeDays": "Termijn ingebrekestelling: {{count}} dagen"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Vast percentage",
       "FIXED_AMOUNT": "Vast bedrag",
       "MANUAL": "Handmatig"
+    }
+  },
+  "deposit": {
+    "title": "Borg",
+    "empty": "Nog geen borg vastgelegd.",
+    "emptyWithAgreed": "Afgesproken borg van {{amount}} — nog niet als ontvangen vastgelegd.",
+    "record": "Borg vastleggen",
+    "amount": "Bedrag",
+    "refundable": "Terug te betalen",
+    "receivedDate": "Ontvangen op",
+    "heldWhere": "Bewaard bij",
+    "returnDueDate": "Terugbetalen vóór",
+    "returned": "Terugbetaald",
+    "deductions": "Inhoudingen",
+    "addDeduction": "Inhouding toevoegen",
+    "removeDeduction": "Inhouding verwijderen",
+    "noDeductions": "Geen inhoudingen",
+    "notes": "Notities",
+    "return": "Borg terugbetalen",
+    "forfeit": "Verbeurd verklaren",
+    "status": {
+      "EXPECTED": "Verwacht",
+      "HELD": "In bewaring",
+      "PARTIALLY_RETURNED": "Deels terugbetaald",
+      "RETURNED": "Terugbetaald",
+      "FORFEITED": "Verbeurd"
+    },
+    "editDialog": {
+      "titleNew": "Borg vastleggen",
+      "titleEdit": "Borg bewerken",
+      "receivedHelp": "Laat leeg zolang de borg nog verwacht wordt.",
+      "heldWherePlaceholder": "bijv. Aparte spaarrekening, derdenrekening"
+    },
+    "deductionDialog": {
+      "title": "Inhouding toevoegen",
+      "message": "Terug te betalen na bestaande inhoudingen: {{refundable}}.",
+      "date": "Datum",
+      "reason": "Reden",
+      "reasonPlaceholder": "bijv. Woonkamer overschilderen na schade",
+      "confirm": "Inhouding toevoegen"
+    },
+    "returnDialog": {
+      "title": "Borg terugbetalen",
+      "message": "Terug te betalen bedrag: {{refundable}}. Minder terugbetalen wordt als gedeeltelijke terugbetaling vastgelegd.",
+      "date": "Terugbetaaldatum",
+      "amount": "Terugbetaald bedrag",
+      "amountHelp": "Laat leeg om het volledige bedrag terug te betalen.",
+      "confirm": "Terugbetaling vastleggen"
+    },
+    "forfeitDialog": {
+      "title": "Borg verbeurd verklaren",
+      "message": "De volledige borg blijft bij de verhuurder. Dit sluit de borg af en kan niet ongedaan worden gemaakt.",
+      "reason": "Reden",
+      "confirm": "Verbeurd verklaren"
+    },
+    "toasts": {
+      "saved": "Borg opgeslagen",
+      "deductionAdded": "Inhouding toegevoegd",
+      "deductionRemoved": "Inhouding verwijderd",
+      "returned": "Terugbetaling vastgelegd",
+      "forfeited": "Borg verbeurd verklaard"
+    },
+    "statement": "Overzicht (PDF)",
+    "statementHelp": "Download een gespecificeerd borgoverzicht voor de huurder"
+  },
+  "paymentPlans": {
+    "title": "Betalingsregelingen",
+    "summary": "{{total}} in {{count}} {{frequency}} termijnen",
+    "from": "vanaf {{date}}",
+    "covers": "dekt {{count}} betaling",
+    "covers_other": "dekt {{count}} betalingen",
+    "progress": "{{paid}} betaald · {{remaining}} resterend",
+    "cancel": "Regeling annuleren",
+    "cancelledBecause": "Geannuleerd: {{reason}}",
+    "frequency": {
+      "WEEKLY": "wekelijkse",
+      "BIWEEKLY": "tweewekelijkse",
+      "MONTHLY": "maandelijkse"
+    },
+    "status": {
+      "ACTIVE": "Actief",
+      "COMPLETED": "Afgerond",
+      "CANCELLED": "Geannuleerd"
+    },
+    "cancelDialog": {
+      "title": "Betalingsregeling annuleren",
+      "message": "Openstaande termijnen worden geannuleerd en het onbetaalde restant van {{remaining}} wordt één betaling die vandaag vervalt. Herinneringen op het contract worden hervat.",
+      "reason": "Reden",
+      "confirm": "Regeling annuleren"
+    },
+    "toasts": {
+      "cancelled": "Betalingsregeling geannuleerd"
     }
   }
 }

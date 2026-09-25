@@ -57,4 +57,9 @@ public record ContractResponse(
     // Rent components breakdown
     List<RentComponentResponse> rentComponents,
     Instant createdAt,
-    Optional<Instant> updatedAt) {}
+    Optional<Instant> updatedAt,
+    Boolean tenantRemindersEnabled,
+    Optional<LocalDate> remindersPausedUntil,
+    Boolean lateFeeEnabled,
+    Integer lateFeeGraceDays,
+    Optional<Integer> formalNoticeDays) {}

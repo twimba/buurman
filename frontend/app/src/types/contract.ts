@@ -103,6 +103,11 @@ export interface ContractResponse {
   landlordNoticeDays?: number;
   tenantNoticeDays?: number;
   requiresTenantConfirmation?: boolean;
+  tenantRemindersEnabled?: boolean;
+  remindersPausedUntil?: string;
+  lateFeeEnabled?: boolean;
+  lateFeeGraceDays?: number;
+  formalNoticeDays?: number;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;
@@ -215,3 +220,16 @@ export interface CountryMetadataSchema {
   fields: MetadataFieldSchema[];
   groups: MetadataGroupSchema[];
 }
+
+// Deposits & payment plans (BUUR-101)
+export type {
+  DepositResponse,
+  DepositDeductionResponse,
+  UpsertDepositRequest,
+  CreateDepositDeductionRequest,
+  ReturnDepositRequest,
+  ForfeitDepositRequest,
+  PaymentPlanResponse,
+  CreatePaymentPlanRequest,
+  CancelPaymentPlanRequest,
+} from '../generated/models';

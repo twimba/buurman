@@ -47,6 +47,8 @@ public class ContractRecordMapper {
     contract.setTerminationNoticeDays(
         record.getTerminationNoticeDays() != null ? record.getTerminationNoticeDays() : 30);
     contract.setLateFeePercentage(Optional.ofNullable(record.getLateFeePercentage()));
+    contract.setLateFeeEnabled(Optional.ofNullable(record.getLateFeeEnabled()).orElse(false));
+    contract.setLateFeeGraceDays(Optional.ofNullable(record.getLateFeeGraceDays()).orElse(0));
     contract.setStatus(Contract.ContractStatus.valueOf(record.getStatus()));
     contract.setTermsAndConditions(Optional.ofNullable(record.getTermsAndConditions()));
     contract.setNotes(Optional.ofNullable(record.getNotes()));
@@ -63,6 +65,9 @@ public class ContractRecordMapper {
     contract.setLandlordNoticeDays(record.getLandlordNoticeDays());
     contract.setTenantNoticeDays(record.getTenantNoticeDays());
     contract.setRequiresTenantConfirmation(record.getRequiresTenantConfirmation());
+    contract.setTenantRemindersEnabled(
+        Optional.ofNullable(record.getTenantRemindersEnabled()).orElse(false));
+    contract.setRemindersPausedUntil(Optional.ofNullable(record.getRemindersPausedUntil()));
     contract.setRentAdjustmentType(
         com.buurman.domain.ContractExtension.RentAdjustmentType.valueOf(
             record.getRentAdjustmentType()));

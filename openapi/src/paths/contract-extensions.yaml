@@ -461,7 +461,7 @@ extensions-decline:
 extensions-addendum:
   get:
     tags:
-      - Contract Extensions
+      - Letters
     summary: Download extension addendum PDF
     description: Download the addendum document for a contract extension as PDF
     operationId: getExtensionAddendum
@@ -471,13 +471,13 @@ extensions-addendum:
         description: Contract identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractIdentifier'
       - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractExtensionIdentifier'
       - name: lang
         in: query
         description: Document language (ISO 639-1 code)
@@ -530,7 +530,7 @@ extensions-addendum:
 extensions-rent-increase-letter:
   get:
     tags:
-      - Contract Extensions
+      - Letters
     summary: Download rent increase letter PDF
     description: Download the rent increase notification letter as PDF
     operationId: getRentIncreaseLetter
@@ -540,13 +540,13 @@ extensions-rent-increase-letter:
         description: Contract identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractIdentifier'
       - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractExtensionIdentifier'
       - name: lang
         in: query
         description: Document language (ISO 639-1 code)
@@ -599,7 +599,7 @@ extensions-rent-increase-letter:
 extensions-generate-documents:
   post:
     tags:
-      - Contract Extensions
+      - Letters
     summary: Generate and persist extension documents
     description: Generate PDF documents for a contract extension and save them to S3 storage
     operationId: generateExtensionDocuments
@@ -609,13 +609,13 @@ extensions-generate-documents:
         description: Contract identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractIdentifier'
       - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/ContractExtensionIdentifier'
     requestBody:
       required: true
       content:

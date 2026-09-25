@@ -1,11 +1,11 @@
 package com.buurman.service.export;
 
+import static com.buurman.document.DocumentFormatting.formatEnumValue;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static com.buurman.domain.Property.PropertyCategory.AGRICULTURAL;
 import static com.buurman.domain.Property.PropertyCategory.COMMERCIAL;
 import static com.buurman.domain.Property.PropertyCategory.INDUSTRIAL;
 import static com.buurman.domain.Property.PropertyCategory.RESIDENTIAL;
-import static com.buurman.service.export.BookletHelper.formatEnumValue;
 import static com.buurman.service.export.BookletHelper.isTrue;
 import static java.math.BigDecimal.ZERO;
 
@@ -35,6 +35,9 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.buurman.document.DocumentFormatting;
+import com.buurman.document.DocumentRenderer;
+import com.buurman.document.PageSpec;
 import com.buurman.domain.Amenity;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
@@ -478,11 +481,11 @@ public class PropertyBookletExporter {
       addRow(
           rows,
           msg("cover.soil.type", locale),
-          agricultural.getSoilType().map(BookletHelper::formatEnumValue).orElse(null));
+          agricultural.getSoilType().map(DocumentFormatting::formatEnumValue).orElse(null));
       addRow(
           rows,
           msg("cover.current.use", locale),
-          agricultural.getCurrentUse().map(BookletHelper::formatEnumValue).orElse(null));
+          agricultural.getCurrentUse().map(DocumentFormatting::formatEnumValue).orElse(null));
     } else if (category == RESIDENTIAL && residential != null) {
       String bedBath =
           residential.getBedrooms().map(b -> b + " " + msg("cover.bed", locale)).orElse("—")
@@ -545,7 +548,7 @@ public class PropertyBookletExporter {
       addField(
           f,
           msg("field.pet.policy", locale),
-          residential.getPetPolicy().map(BookletHelper::formatEnumValue).orElse(null));
+          residential.getPetPolicy().map(DocumentFormatting::formatEnumValue).orElse(null));
       return new CategorySection(msg("section.residential.details", locale), f);
     }
     if (category == COMMERCIAL && commercial != null) {
@@ -666,26 +669,26 @@ public class PropertyBookletExporter {
       addField(
           f,
           msg("field.soil.type", locale),
-          agricultural.getSoilType().map(BookletHelper::formatEnumValue).orElse(null));
+          agricultural.getSoilType().map(DocumentFormatting::formatEnumValue).orElse(null));
       addField(
           f, msg("field.water.rights", locale), yesNo(agricultural.getHasWaterRights(), locale));
       addField(
           f,
           msg("field.water.source", locale),
-          agricultural.getWaterSource().map(BookletHelper::formatEnumValue).orElse(null));
+          agricultural.getWaterSource().map(DocumentFormatting::formatEnumValue).orElse(null));
       addField(
           f,
           msg("field.irrigation", locale),
-          agricultural.getIrrigationType().map(BookletHelper::formatEnumValue).orElse(null));
+          agricultural.getIrrigationType().map(DocumentFormatting::formatEnumValue).orElse(null));
       addField(
           f,
           msg("field.fencing", locale),
-          agricultural.getFencingType().map(BookletHelper::formatEnumValue).orElse(null));
+          agricultural.getFencingType().map(DocumentFormatting::formatEnumValue).orElse(null));
       addField(f, msg("field.outbuildings", locale), outbuildingsText(agricultural, locale));
       addField(
           f,
           msg("field.current.use", locale),
-          agricultural.getCurrentUse().map(BookletHelper::formatEnumValue).orElse(null));
+          agricultural.getCurrentUse().map(DocumentFormatting::formatEnumValue).orElse(null));
       addField(f, msg("field.zoning", locale), agricultural.getZoningClassification().orElse(null));
       return new CategorySection(msg("section.agricultural.details", locale), f);
     }
@@ -1119,7 +1122,7 @@ public class PropertyBookletExporter {
   }
 
   private @Nullable String enumStr(Optional<String> opt) {
-    return opt.filter(s -> !s.isBlank()).map(BookletHelper::formatEnumValue).orElse(null);
+    return opt.filter(s -> !s.isBlank()).map(DocumentFormatting::formatEnumValue).orElse(null);
   }
 
   // ── Domain helpers (unchanged) ───────────────────────────────────

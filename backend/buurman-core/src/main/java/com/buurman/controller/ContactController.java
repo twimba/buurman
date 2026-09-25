@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.identifier.ContactAddressIdentifier;
+import com.buurman.domain.identifier.ContactCreditIdentifier;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContactNoteIdentifier;
 import com.buurman.domain.identifier.ContactRelationshipIdentifier;
@@ -17,16 +18,19 @@ import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.dto.request.AddContactTagRequest;
 import com.buurman.dto.request.CreateContactAddressRequest;
+import com.buurman.dto.request.CreateContactCreditRequest;
 import com.buurman.dto.request.CreateContactNoteRequest;
 import com.buurman.dto.request.CreateContactRelationshipRequest;
 import com.buurman.dto.request.CreateContactRequest;
 import com.buurman.dto.request.DuplicateCheckRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.RefundContactCreditRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactNoteRequest;
 import com.buurman.dto.request.UpdateContactRelationshipRequest;
 import com.buurman.dto.request.UpdateContactRequest;
 import com.buurman.dto.response.ContactAddressResponse;
+import com.buurman.dto.response.ContactCreditResponse;
 import com.buurman.dto.response.ContactNoteResponse;
 import com.buurman.dto.response.ContactRelationshipResponse;
 import com.buurman.dto.response.ContactResponse;
@@ -39,6 +43,7 @@ import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.ContactsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.ContactCreditService;
 import com.buurman.service.ContactNoteService;
 import com.buurman.service.ContactRelationshipService;
 import com.buurman.service.ContactService;
@@ -51,6 +56,7 @@ public class ContactController implements ContactsApi {
 
   private final ContactService contactService;
   private final ContactNoteService contactNoteService;
+  private final ContactCreditService contactCreditService;
   private final ContactRelationshipService contactRelationshipService;
 
   @Override
@@ -206,6 +212,28 @@ public class ContactController implements ContactsApi {
       ContactIdentifier contactIdentifier, CreateContactNoteRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactNoteService.createNote(contactIdentifier, request, principal);
+  }
+
+  @Override
+  public List<ContactCreditResponse> getContactCredits(ContactIdentifier contactIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactCreditService.getCredits(contactIdentifier, principal);
+  }
+
+  @Override
+  public ContactCreditResponse createContactCredit(
+      ContactIdentifier contactIdentifier, CreateContactCreditRequest request) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactCreditService.createCreditNote(contactIdentifier, request, principal);
+  }
+
+  @Override
+  public ContactCreditResponse refundContactCredit(
+      ContactIdentifier contactIdentifier,
+      ContactCreditIdentifier creditIdentifier,
+      RefundContactCreditRequest request) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactCreditService.refund(contactIdentifier, creditIdentifier, request, principal);
   }
 
   @Override

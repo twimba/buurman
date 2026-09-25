@@ -24,7 +24,8 @@
       "title": "Brak umów",
       "description": "Zacznij od utworzenia pierwszej umowy najmu"
     },
-    "error": "Nie udało się załadować umów"
+    "error": "Nie udało się załadować umów",
+    "exportDeposits": "Eksportuj kaucje"
   },
   "create": {
     "title": "Dodaj nową umowę",
@@ -193,7 +194,13 @@
       "created": "Utworzono:",
       "lastUpdated": "Ostatnia aktualizacja:",
       "at": "o"
-    }
+    },
+    "tenantReminders": "Przypomnienia dla najemcy",
+    "remindersOn": "Włączone",
+    "remindersOff": "Wyłączone",
+    "remindersPausedUntil": "Wstrzymane do {{date}}",
+    "lateFeeActive": "naliczana po {{count}} dniach",
+    "lateFeeInactive": "nienaliczana"
   },
   "payments": {
     "title": "Płatności",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Ustaw kraj dla wybranej nieruchomości, aby zobaczyć pola regulacyjne specyficzne dla kraju.",
     "dismissDuplicateWarning": "Przejrzyj ostrzeżenie o duplikacie powyżej i odrzuć je, aby kontynuować",
     "dismissDuplicateFirst": "Najpierw odrzuć ostrzeżenie o duplikacie",
-    "change": "Zmień"
+    "change": "Zmień",
+    "tenantReminders": "Przypomnienia o płatności dla najemcy",
+    "tenantRemindersHelp": "Zezwól na e-maile z przypomnieniem dla tej umowy. Kontakt najemcy również musi wyrazić zgodę; w przeciwnym razie nic nie zostanie wysłane.",
+    "remindersPausedUntil": "Wstrzymaj przypomnienia do",
+    "remindersPausedUntilHelp": "Do tej daty nie są wysyłane przypomnienia, np. w trakcie uzgodnionego planu spłat.",
+    "lateFeeEnabled": "Naliczaj opłaty za zwłokę",
+    "lateFeeEnabledHelp": "Dodaje osobną płatność opłaty, gdy czynsz pozostaje nieopłacony po okresie karencji. Domyślnie wyłączone.",
+    "lateFeeGraceDays": "Okres karencji (dni)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Stałe opłaty za zwłokę są dozwolone w {{country}}.",
+      "CAPPED": "W {{country}} opłaty za zwłokę są ograniczone do {{percentage}}% należnej kwoty.",
+      "INTEREST_ONLY": "W {{country}} od zaległego czynszu można naliczać wyłącznie odsetki ustawowe; stałych opłat nie można włączyć.",
+      "FORBIDDEN": "Opłaty za zwłokę od czynszu mieszkaniowego są niedozwolone w {{country}}.",
+      "overCap": "Powyższy procent przekracza ten limit."
+    },
+    "formalNoticeDays": "Termin wezwania do zapłaty (dni)",
+    "formalNoticeDaysHelp": "Dni, jakie najemca ma na zapłatę po formalnym wezwaniu. Pozostaw puste, aby użyć domyślnych {{count}} dni.",
+    "formalNoticeDaysCountryDefault": "Pozostaw puste, aby użyć wartości domyślnej dla {{country}}: {{count}} dni."
   },
   "statusChange": {
     "title": "Zmień status umowy",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Negocjowany",
       "FROZEN": "Zamrożony",
       "OTHER": "Inny"
+    },
+    "lateFees": {
+      "title": "Opłaty za zwłokę",
+      "policy": {
+        "ALLOWED": "Stałe opłaty dozwolone",
+        "CAPPED": "Opłaty ograniczone",
+        "INTEREST_ONLY": "Tylko odsetki ustawowe",
+        "FORBIDDEN": "Opłaty niedozwolone",
+        "UNKNOWN": "Nieznane"
+      },
+      "maxPercentage": "Maksymalnie {{percentage}}% należnej kwoty",
+      "noticeDays": "Termin wezwania do zapłaty: {{count}} dni"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Stały procent",
       "FIXED_AMOUNT": "Stała kwota",
       "MANUAL": "Ręczny"
+    }
+  },
+  "deposit": {
+    "title": "Kaucja",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Oczekiwana",
+      "HELD": "Zdeponowana",
+      "PARTIALLY_RETURNED": "Częściowo zwrócona",
+      "RETURNED": "Zwrócona",
+      "FORFEITED": "Zatrzymana"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    },
+    "statement": "Rozliczenie (PDF)",
+    "statementHelp": "Pobierz szczegółowe rozliczenie kaucji dla najemcy"
+  },
+  "paymentPlans": {
+    "title": "Plany spłat",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "tygodniowych",
+      "BIWEEKLY": "dwutygodniowych",
+      "MONTHLY": "miesięcznych"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
     }
   }
 }

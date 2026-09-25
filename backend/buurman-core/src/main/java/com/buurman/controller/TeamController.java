@@ -1,17 +1,22 @@
 package com.buurman.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.ReminderTone;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.TransferOwnershipRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
+import com.buurman.dto.request.UpdateReminderSettingsRequest;
 import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
+import com.buurman.dto.response.ReminderPreviewResponse;
+import com.buurman.dto.response.ReminderSettingsResponse;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamPreferencesResponse;
 import com.buurman.dto.response.TeamResponse;
@@ -87,6 +92,27 @@ public class TeamController implements TeamsApi {
       TeamIdentifier teamIdentifier, UpdateTeamSettingsRequest updateTeamSettingsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateTeamPreferences(teamIdentifier, updateTeamSettingsRequest, principal);
+  }
+
+  @Override
+  public ReminderPreviewResponse previewReminder(
+      TeamIdentifier teamIdentifier, ReminderTone tone, Optional<Integer> offsetDays) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return teamService.previewReminder(teamIdentifier, tone, offsetDays.orElse(0), principal);
+  }
+
+  @Override
+  public ReminderSettingsResponse getReminderSettings(TeamIdentifier teamIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return teamService.getReminderSettings(teamIdentifier, principal);
+  }
+
+  @Override
+  public ReminderSettingsResponse updateReminderSettings(
+      TeamIdentifier teamIdentifier, UpdateReminderSettingsRequest updateReminderSettingsRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return teamService.updateReminderSettings(
+        teamIdentifier, updateReminderSettingsRequest, principal);
   }
 
   @Override

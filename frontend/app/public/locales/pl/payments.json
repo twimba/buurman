@@ -7,7 +7,13 @@
     "schedulePayment": "Zaplanuj płatność",
     "registerPayment": "Zarejestruj płatność",
     "registerReceival": "Zarejestruj wpłatę",
-    "markAsPaid": "Oznacz jako opłacone"
+    "markAsPaid": "Oznacz jako opłacone",
+    "sendReminder": "Wyślij przypomnienie",
+    "applyCredit": "Użyj nadpłaty",
+    "waiveLateFee": "Umorz opłatę",
+    "writeOff": "Odpisz",
+    "cancelPayment": "Anuluj płatność",
+    "formalNotice": "Wezwanie do zapłaty (PDF)"
   },
   "stats": {
     "pendingPayments": "Oczekujące płatności",
@@ -122,13 +128,18 @@
     "metadata": "Metadane",
     "created": "Utworzono:",
     "lastUpdated": "Ostatnia aktualizacja:",
-    "editPayment": "Edytuj płatność"
+    "editPayment": "Edytuj płatność",
+    "lateFeesCharged": "Naliczono opłatę za zwłokę",
+    "lateFeeDue": "termin {{date}}",
+    "lateFeeParent": "Opłata za zwłokę od",
+    "paymentId": "Płatność #{{id}}"
   },
   "tabs": {
     "details": "Szczegóły",
     "receivals": "Wpłaty",
     "documents": "Dokumenty",
-    "history": "Historia"
+    "history": "Historia",
+    "reminders": "Przypomnienia"
   },
   "receivals": {
     "title": "Wpłaty ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Data wpłaty",
     "notesOptional": "Notatki (opcjonalne)",
     "notesPlaceholder": "Dodaj uwagi dotyczące tej wpłaty...",
-    "register": "Zarejestruj"
+    "register": "Zarejestruj",
+    "types": {
+      "WRITE_OFF": "Odpis",
+      "CREDIT": "Nadpłata użyta",
+      "PAYMENT": "Płatność",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Historia płatności",
@@ -190,11 +207,170 @@
     "deleteReceival": "Usuń wpłatę",
     "save": "Zapisz",
     "previous": "Poprzednia",
-    "next": "Następna"
+    "next": "Następna",
+    "sendReminder": "Wyślij najemcy e-mail w sprawie tej płatności",
+    "formalNotice": "Pobierz datowane wezwanie do zapłaty dla tej płatności"
   },
   "errors": {
     "loadFailed": "Nie udało się załadować płatności",
     "loadPaymentFailed": "Nie udało się załadować płatności",
     "loadHistoryFailed": "Nie udało się załadować historii"
+  },
+  "selection": {
+    "selected": "Wybrano: {{count}}",
+    "selectAll": "Zaznacz wszystkie nieopłacone na tej stronie",
+    "selectRow": "Zaznacz płatność {{id}}",
+    "select": "Zaznacz",
+    "done": "Gotowe",
+    "markPaid": "Oznacz jako opłacone",
+    "sendReminders": "Wyślij przypomnienia",
+    "cancel": "Anuluj płatności",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Zaległości",
+    "summary": "{{amount}} zaległości od {{count}} najemcy",
+    "summary_other": "{{amount}} zaległości od {{count}} najemców",
+    "oldest": "najstarsza {{days}} dni po terminie",
+    "bucket": {
+      "1-30": "1–30 dni",
+      "31-60": "31–60 dni",
+      "61-90": "61–90 dni",
+      "91+": "Ponad 90 dni"
+    },
+    "payments": "{{count}} płatność",
+    "payments_other": "{{count}} płatności",
+    "lastReminded": "ostatnie przypomnienie {{when}} ({{count}}×)",
+    "neverReminded": "brak przypomnień",
+    "daysOverdue": "{{days}} dni po terminie",
+    "sendReminder": "Wyślij przypomnienie",
+    "sendReminderTo": "Wyślij przypomnienie do {{name}}",
+    "remindAll": "Przypomnij wszystkim ({{count}})",
+    "showAll": "Pokaż wszystkich najemców ({{count}})",
+    "showLess": "Pokaż mniej",
+    "noContact": "Brak powiązanego kontaktu",
+    "remindersDisabled": "Przypomnienia wymagają zarówno opcji w umowie, jak i zgody najemcy — włącz je w umowie i w kontakcie."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Oznacz {{count}} płatności jako opłacone",
+    "message": "Każda zaznaczona płatność zostanie oznaczona jako w pełni opłacona w wybranym dniu. Płatności już opłacone lub anulowane zostaną pominięte.",
+    "confirm": "Oznacz {{count}} jako opłacone"
+  },
+  "sendReminderDialog": {
+    "title": "Wyślij przypomnienie o płatności",
+    "titleBulk": "Wyślij {{count}} przypomnień",
+    "message": "Najemca otrzyma e-mail z kwotą do zapłaty, terminem i Twoimi danymi do przelewu, w języku umowy.",
+    "messageBulk": "Każdy najemca otrzyma e-mail z kwotą do zapłaty, terminem i Twoimi danymi do przelewu. Płatności bez adresu e-mail najemcy zostaną pominięte.",
+    "notesLabel": "Wiadomość osobista (opcjonalnie)",
+    "notesPlaceholder": "np. Prosimy o przelew do piątku.",
+    "confirm": "Wyślij przypomnienie",
+    "confirmBulk": "Wyślij {{count}} przypomnień",
+    "toneLabel": "Ton",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Uprzejmy",
+        "help": "Grzeczne przypomnienie o otwartej płatności."
+      },
+      "FIRM": {
+        "label": "Stanowczy",
+        "help": "Jasne wezwanie z liczbą dni opóźnienia i konsekwencjami."
+      },
+      "FINAL": {
+        "label": "Ostateczne wezwanie",
+        "help": "Formalne wezwanie z 14-dniowym terminem. Wezwanie do zapłaty w PDF jest załączane i archiwizowane przy umowie."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Wysłane przypomnienia",
+    "empty": "Nie wysłano jeszcze przypomnień",
+    "emptySubtitle": "Przypomnienia wysłane do najemcy pojawią się tutaj",
+    "sentBy": "przez {{name}}",
+    "automatic": "Automatyczne przypomnienie",
+    "manual": "Przypomnienie",
+    "daysOverdue": "{{days}} dni po terminie",
+    "outstanding": "Do zapłaty {{amount}}",
+    "to": "do {{email}}",
+    "delivery": {
+      "QUEUED": "W kolejce",
+      "SENT": "Wysłano",
+      "DELIVERED": "Dostarczono",
+      "FAILED": "Dostarczenie nie powiodło się",
+      "BLOCKED": "Nie wysłano (demo)",
+      "UNKNOWN": "Nieznany"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Przypomnienie wysłano do {{email}}",
+    "bulkMarkPaid": "Oznaczono jako opłacone: {{success}}, pominięto: {{failed}}",
+    "bulkReminders": "Wysłano przypomnień: {{success}}, pominięto: {{failed}}",
+    "cancelled": "Płatność anulowana",
+    "bulkCancelled": "Anulowano: {{success}}, pominięto: {{failed}}",
+    "lateFeeWaived": "Opłata umorzona",
+    "writtenOff": "Saldo odpisane",
+    "creditApplied": "Nadpłata użyta"
+  },
+  "types": {
+    "LATE_FEE": "Opłata za zwłokę",
+    "RENT": "Czynsz",
+    "INSTALMENT": "Rata"
+  },
+  "cancelDialog": {
+    "title": "Anuluj płatność",
+    "titleBulk": "Anuluj {{count}} płatności",
+    "message": "Płatność zostanie oznaczona jako anulowana i przestanie być zaległością. Płatności z zarejestrowanymi wpłatami nie można anulować — zamiast tego odpisz saldo.",
+    "messageBulk": "Każda zaznaczona otwarta płatność zostanie anulowana z tym powodem. Opłacone płatności i płatności z wpłatami zostaną pominięte.",
+    "reason": "Powód",
+    "reasonPlaceholder": "np. Najemca wyprowadził się 15-go",
+    "confirm": "Anuluj płatność",
+    "confirmBulk": "Anuluj {{count}} płatności"
+  },
+  "waiveDialog": {
+    "title": "Umorz opłatę za zwłokę",
+    "message": "Opłata {{amount}} zostanie anulowana i nie będzie naliczona.",
+    "reason": "Powód",
+    "reasonPlaceholder": "np. Pierwsze opóźnienie, dobra wola",
+    "confirm": "Umorz opłatę"
+  },
+  "writeOffDialog": {
+    "title": "Odpisz saldo",
+    "message": "Pozostałe {{amount}} zostanie zamknięte bez wpłaty. Zostanie to zapisane jako odpis i nie można tego cofnąć.",
+    "reason": "Powód",
+    "reasonPlaceholder": "np. Nieściągalna należność po wyprowadzce",
+    "date": "Data odpisu",
+    "confirm": "Odpisz"
+  },
+  "applyCreditDialog": {
+    "title": "Użyj nadpłaty najemcy",
+    "message": "Otwarte saldo: {{balance}}. Wybierz nadpłatę i kwotę.",
+    "credit": "Nadpłata",
+    "amount": "Kwota (maks. {{max}})",
+    "confirm": "Użyj {{amount}}",
+    "none": "Ten najemca nie ma otwartej nadpłaty w tej walucie."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Nadpłata",
+      "CREDIT_NOTE": "Nota kredytowa"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

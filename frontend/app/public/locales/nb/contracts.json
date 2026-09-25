@@ -24,7 +24,8 @@
       "title": "Ingen kontrakter ennå",
       "description": "Kom i gang ved å opprette din første leieavtale"
     },
-    "error": "Kunne ikke laste kontrakter"
+    "error": "Kunne ikke laste kontrakter",
+    "exportDeposits": "Eksporter depositum"
   },
   "create": {
     "title": "Legg til ny kontrakt",
@@ -193,7 +194,13 @@
       "created": "Opprettet:",
       "lastUpdated": "Sist oppdatert:",
       "at": "kl."
-    }
+    },
+    "tenantReminders": "Leietakerpåminnelser",
+    "remindersOn": "Aktivert",
+    "remindersOff": "Av",
+    "remindersPausedUntil": "På pause til {{date}}",
+    "lateFeeActive": "belastes etter {{count}} dager",
+    "lateFeeInactive": "belastes ikke"
   },
   "payments": {
     "title": "Betalinger",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Angi et land for den valgte eiendommen for å se landsspesifikke regulatoriske felt.",
     "dismissDuplicateWarning": "Gjennomgå duplikatadvarselen ovenfor og avvis den for å fortsette",
     "dismissDuplicateFirst": "Avvis duplikatadvarselen først",
-    "change": "Endre"
+    "change": "Endre",
+    "tenantReminders": "Betalingspåminnelser til leietaker",
+    "tenantRemindersHelp": "Tillat påminnelses-e-poster for denne kontrakten. Leietakerkontakten må også ha samtykket; ellers sendes ingenting.",
+    "remindersPausedUntil": "Sett påminnelser på pause til",
+    "remindersPausedUntilHelp": "Ingen påminnelser sendes før denne datoen, f.eks. under en nedbetalingsavtale.",
+    "lateFeeEnabled": "Belast purregebyr",
+    "lateFeeEnabledHelp": "Legger til en egen gebyrbetaling når en husleie fortsatt er åpen etter henstandsperioden. Av som standard.",
+    "lateFeeGraceDays": "Henstandsperiode (dager)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Faste purregebyrer er tillatt i {{country}}.",
+      "CAPPED": "I {{country}} er purregebyrer begrenset til {{percentage}} % av forfalt beløp.",
+      "INTEREST_ONLY": "I {{country}} kan bare lovbestemt forsinkelsesrente kreves på forfalt husleie; faste gebyrer kan ikke aktiveres.",
+      "FORBIDDEN": "Purregebyrer på boligleie er ikke tillatt i {{country}}.",
+      "overCap": "Prosentsatsen ovenfor overstiger denne grensen."
+    },
+    "formalNoticeDays": "Betalingsfrist etter varsel (dager)",
+    "formalNoticeDaysHelp": "Dager leietakeren har til å betale etter et formelt varsel. La feltet stå tomt for standarden på {{count}} dager.",
+    "formalNoticeDaysCountryDefault": "La feltet stå tomt for standarden i {{country}}: {{count}} dager."
   },
   "statusChange": {
     "title": "Endre kontraktstatus",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Forhandlet",
       "FROZEN": "Frosset",
       "OTHER": "Annet"
+    },
+    "lateFees": {
+      "title": "Purregebyrer",
+      "policy": {
+        "ALLOWED": "Faste gebyrer tillatt",
+        "CAPPED": "Gebyrer begrenset",
+        "INTEREST_ONLY": "Kun forsinkelsesrente",
+        "FORBIDDEN": "Gebyrer ikke tillatt",
+        "UNKNOWN": "Ukjent"
+      },
+      "maxPercentage": "Maks {{percentage}} % av forfalt beløp",
+      "noticeDays": "Betalingsfrist etter varsel: {{count}} dager"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Fast prosent",
       "FIXED_AMOUNT": "Fast beløp",
       "MANUAL": "Manuell"
+    }
+  },
+  "deposit": {
+    "title": "Depositum",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Forventet",
+      "HELD": "Oppbevart",
+      "PARTIALLY_RETURNED": "Delvis tilbakebetalt",
+      "RETURNED": "Tilbakebetalt",
+      "FORFEITED": "Tilbakeholdt"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    },
+    "statement": "Oppgjør (PDF)",
+    "statementHelp": "Last ned et spesifisert depositumsoppgjør til leietakeren"
+  },
+  "paymentPlans": {
+    "title": "Nedbetalingsplaner",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "ukentlige",
+      "BIWEEKLY": "annenhver uke",
+      "MONTHLY": "månedlige"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
     }
   }
 }

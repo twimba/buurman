@@ -41,6 +41,10 @@
             <groupId>com.buurman</groupId>
             <artifactId>buurman-booklets</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-letters</artifactId>
+        </dependency>
         <!-- DevTools (auto-restart + live reload, excluded from fat JAR by default) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

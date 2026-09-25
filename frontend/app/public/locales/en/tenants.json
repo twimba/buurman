@@ -131,7 +131,10 @@
       "guarantor": "Guarantor",
       "overdue": "Overdue",
       "pending": "Pending"
-    }
+    },
+    "paymentReminders": "Payment reminders",
+    "paymentRemindersOn": "Opted in",
+    "paymentRemindersOff": "Not opted in"
   },
   "card": {
     "allPaid": "All paid",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Business name is required",
       "invalidEmail": "Email must be valid",
       "invalidInvoiceEmail": "Invoice email must be valid"
-    }
+    },
+    "paymentReminders": "Send payment reminders to this contact",
+    "paymentRemindersHelp": "Explicit consent to receive reminder emails about overdue rent. Reminders are only sent for contracts that also have reminders enabled."
   },
   "addresses": {
     "title": "Addresses",
@@ -467,6 +472,36 @@
       "DO_NOT_CONTACT": "Do Not Contact",
       "FORMER_TENANT": "Former Tenant",
       "REFERRED": "Referred"
+    }
+  },
+  "credits": {
+    "title": "Credits",
+    "add": "Add credit note",
+    "empty": "No credits — overpayments and credit notes appear here",
+    "openTotal": "Open credit: {{amount}}",
+    "date": "Date",
+    "source": "Source",
+    "reason": "Reason",
+    "amount": "Amount",
+    "remaining": "Remaining",
+    "refund": "Refund",
+    "refundedOn": "Refunded {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Overpayment",
+      "CREDIT_NOTE": "Credit note"
+    },
+    "createDialog": {
+      "title": "Add credit note",
+      "message": "Money you owe this contact. It can be applied to a later payment or refunded.",
+      "reasonPlaceholder": "e.g. Compensation for boiler outage in March",
+      "confirm": "Add credit"
+    },
+    "refundDialog": {
+      "title": "Refund credit",
+      "message": "Records that the remaining {{amount}} was paid back to the contact.",
+      "date": "Refund date",
+      "notes": "Notes (optional)",
+      "confirm": "Mark as refunded"
     }
   }
 }

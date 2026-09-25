@@ -387,5 +387,46 @@
       "completed": "Completado",
       "failed": "Fallido"
     }
+  },
+  "tenantReminders": {
+    "title": "Recordatorios a inquilinos",
+    "subtitle": "Correos automáticos de recordatorio de pago a los inquilinos (escala de reclamación)",
+    "consentNotice": "Nunca se envían recordatorios a menos que el contrato tenga los recordatorios activados y el contacto del inquilino haya dado su consentimiento. Todo aquí está desactivado por defecto.",
+    "automatic": {
+      "label": "Recordatorios automáticos",
+      "description": "Ejecutar la escala siguiente cada mañana para pagos abiertos de inquilinos que hayan dado su consentimiento"
+    },
+    "steps": {
+      "title": "Escala de recordatorios",
+      "description": "Cada paso envía un correo cuando un pago alcanza el número de días indicado tras el vencimiento. Un pago recibe como máximo un paso al día.",
+      "empty": "Sin pasos configurados: no se enviará nada automáticamente.",
+      "useDefaults": "Usar escala recomendada",
+      "add": "Añadir paso",
+      "remove": "Eliminar paso",
+      "enabled": "Paso activo",
+      "offsetDays": "Días respecto al vencimiento",
+      "tone": "Tono",
+      "duplicateOffsets": "Cada paso necesita un número de días distinto.",
+      "preview": "Vista previa"
+    },
+    "offset": {
+      "before": "{{count}} día antes del vencimiento",
+      "before_other": "{{count}} días antes del vencimiento",
+      "onDue": "en la fecha de vencimiento",
+      "after": "{{count}} día después del vencimiento",
+      "after_other": "{{count}} días después del vencimiento"
+    },
+    "tones": {
+      "FRIENDLY": "Amable",
+      "FIRM": "Firme",
+      "FINAL": "Aviso final"
+    },
+    "preview": {
+      "title": "Vista previa del recordatorio",
+      "subtitle": "Cómo lee un inquilino un recordatorio {{tone}}",
+      "subject": "Asunto",
+      "sampleNotice": "Solo un ejemplo: dirigido a {{name}}, mostrado en {{language}}. No se ha enviado nada.",
+      "failed": "No se pudo cargar la vista previa."
+    }
   }
 }

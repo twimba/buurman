@@ -75,9 +75,11 @@ import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.RentRegulationRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+import com.buurman.util.DocumentLanguages;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
@@ -109,6 +111,7 @@ public class ContractService {
   private final CountryMetadataSerializer countryMetadataSerializer;
   private final CountryMetadataValidator countryMetadataValidator;
   private final CurrencyEnforcementService currencyEnforcement;
+  private final RentRegulationRepository rentRegulationRepository;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -154,6 +157,8 @@ public class ContractService {
     // Resolve country code from property
     String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountryCode());
     contract.setCountryCode(Optional.ofNullable(countryCode));
+    validateLateFee(contract);
+    validateDocumentLanguages(contract);
 
     // Deserialize and validate country metadata from request
     if (request.countryMetadata() != null && countryCode != null) {
@@ -367,6 +372,11 @@ public class ContractService {
             .landlordNoticeDays(contract.getLandlordNoticeDays())
             .tenantNoticeDays(contract.getTenantNoticeDays())
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
+            .remindersPausedUntil(contract.getRemindersPausedUntil())
+            .lateFeeEnabled(contract.getLateFeeEnabled())
+            .lateFeeGraceDays(contract.getLateFeeGraceDays())
+            .formalNoticeDays(contract.getFormalNoticeDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -407,6 +417,8 @@ public class ContractService {
       throw new BadRequestException(
           "Country metadata can only be modified while the contract is in DRAFT status");
     }
+    validateLateFee(contract);
+    validateDocumentLanguages(contract);
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmount().currency(), contract.getRentAmount().value());
@@ -625,6 +637,11 @@ public class ContractService {
             .landlordNoticeDays(contract.getLandlordNoticeDays())
             .tenantNoticeDays(contract.getTenantNoticeDays())
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
+            .remindersPausedUntil(contract.getRemindersPausedUntil())
+            .lateFeeEnabled(contract.getLateFeeEnabled())
+            .lateFeeGraceDays(contract.getLateFeeGraceDays())
+            .formalNoticeDays(contract.getFormalNoticeDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -775,6 +792,11 @@ public class ContractService {
             .landlordNoticeDays(contract.getLandlordNoticeDays())
             .tenantNoticeDays(contract.getTenantNoticeDays())
             .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .tenantRemindersEnabled(contract.getTenantRemindersEnabled())
+            .remindersPausedUntil(contract.getRemindersPausedUntil())
+            .lateFeeEnabled(contract.getLateFeeEnabled())
+            .lateFeeGraceDays(contract.getLateFeeGraceDays())
+            .formalNoticeDays(contract.getFormalNoticeDays())
             .rentAdjustmentType(contract.getRentAdjustmentType())
             .rentAdjustmentValue(contract.getRentAdjustmentValue())
             .landlordType(contract.getLandlordType())
@@ -1069,7 +1091,12 @@ public class ContractService {
         extensionsRemaining,
         componentResponses,
         contract.getCreatedAt(),
-        Optional.of(contract.getUpdatedAt()));
+        Optional.of(contract.getUpdatedAt()),
+        contract.getTenantRemindersEnabled(),
+        contract.getRemindersPausedUntil(),
+        contract.getLateFeeEnabled(),
+        contract.getLateFeeGraceDays(),
+        contract.getFormalNoticeDays());
   }
 
   /** Batch build responses for a list of contracts (avoids N+1 for parties and contacts). */
@@ -1201,7 +1228,12 @@ public class ContractService {
                   extensionsRemaining,
                   componentResponses,
                   contract.getCreatedAt(),
-                  Optional.of(contract.getUpdatedAt()));
+                  Optional.of(contract.getUpdatedAt()),
+                  contract.getTenantRemindersEnabled(),
+                  contract.getRemindersPausedUntil(),
+                  contract.getLateFeeEnabled(),
+                  contract.getLateFeeGraceDays(),
+                  contract.getFormalNoticeDays());
             })
         .toList();
   }
@@ -1279,6 +1311,25 @@ public class ContractService {
             .map(RentComponentRequest::amount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     return com.buurman.util.MoneyAmount.of(total, currency);
+  }
+
+  private static void validateDocumentLanguages(Contract contract) {
+    List<String> unsupported =
+        contract.getDocumentLanguages().stream()
+            .filter(lang -> !DocumentLanguages.isSupported(lang))
+            .toList();
+    if (!unsupported.isEmpty()) {
+      throw new BadRequestException(
+          "Unsupported document language(s): "
+              + String.join(", ", unsupported)
+              + ". Supported: "
+              + String.join(", ", DocumentLanguages.SUPPORTED.stream().sorted().toList()));
+    }
+  }
+
+  private void validateLateFee(Contract contract) {
+    LateFeeService.validateAgainstRegulation(
+        contract, contract.getCountryCode().flatMap(rentRegulationRepository::findCountryByCode));
   }
 
   private void validateCurrencyRequired(@Nullable String currency, @Nullable BigDecimal amount) {

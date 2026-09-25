@@ -12,6 +12,9 @@ import {
   updateTeam,
   getTeamSettings,
   updateTeamSettings,
+  getReminderSettings,
+  updateReminderSettings,
+  previewReminder,
 } from '../generated/api/teams/teams';
 import {
   getInvitation,
@@ -23,6 +26,8 @@ import type {
   UpdateMemberRoleRequest,
   UpdateTeamRequest,
   UpdateTeamSettingsRequest,
+  UpdateReminderSettingsRequest,
+  ReminderTone,
 } from '../generated/models';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
@@ -189,6 +194,42 @@ export const useUpdateTeamSettings = (teamId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.teams.settings(teamId),
+      });
+    },
+  });
+};
+
+export const useReminderSettings = (teamId: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.teams.reminderSettings(teamId),
+    queryFn: () => getReminderSettings(teamId ?? ''),
+    enabled: !!teamId,
+  });
+};
+
+/** Renders one ladder step; only fetched while a preview is actually open. */
+export const useReminderPreview = (
+  teamId: string | undefined,
+  tone: ReminderTone | undefined,
+  offsetDays: number | undefined
+) => {
+  return useQuery({
+    queryKey: queryKeys.teams.reminderPreview(teamId, tone, offsetDays),
+    queryFn: () =>
+      previewReminder(teamId ?? '', { tone: tone as ReminderTone, offsetDays }),
+    enabled: !!teamId && !!tone,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useUpdateReminderSettings = (teamId: string) => {
+  const queryClient = useQueryClient();
+  return useMutationWithToast({
+    mutationFn: (data: UpdateReminderSettingsRequest) =>
+      updateReminderSettings(teamId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.teams.reminderSettings(teamId),
       });
     },
   });

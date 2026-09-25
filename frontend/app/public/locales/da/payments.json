@@ -7,7 +7,13 @@
     "schedulePayment": "Planlæg betaling",
     "registerPayment": "Registrer betaling",
     "registerReceival": "Registrer modtagelse",
-    "markAsPaid": "Marker som betalt"
+    "markAsPaid": "Marker som betalt",
+    "sendReminder": "Send påmindelse",
+    "applyCredit": "Brug tilgodehavende",
+    "waiveLateFee": "Eftergiv gebyr",
+    "writeOff": "Afskriv",
+    "cancelPayment": "Annullér betaling",
+    "formalNotice": "Betalingspåkrav (PDF)"
   },
   "stats": {
     "pendingPayments": "Afventende betalinger",
@@ -122,13 +128,18 @@
     "metadata": "Metadata",
     "created": "Oprettet:",
     "lastUpdated": "Sidst opdateret:",
-    "editPayment": "Rediger betaling"
+    "editPayment": "Rediger betaling",
+    "lateFeesCharged": "Rykkergebyr opkrævet",
+    "lateFeeDue": "forfalder {{date}}",
+    "lateFeeParent": "Rykkergebyr for",
+    "paymentId": "Betaling #{{id}}"
   },
   "tabs": {
     "details": "Detaljer",
     "receivals": "Modtagelser",
     "documents": "Dokumenter",
-    "history": "Historik"
+    "history": "Historik",
+    "reminders": "Påmindelser"
   },
   "receivals": {
     "title": "Modtagelser ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Modtagelsesdato",
     "notesOptional": "Noter (valgfrit)",
     "notesPlaceholder": "Tilfoej noter om denne modtagelse...",
-    "register": "Registrer"
+    "register": "Registrer",
+    "types": {
+      "WRITE_OFF": "Afskrivning",
+      "CREDIT": "Tilgodehavende brugt",
+      "PAYMENT": "Betaling",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Betalingshistorik",
@@ -190,11 +207,170 @@
     "deleteReceival": "Slet modtagelse",
     "save": "Gem",
     "previous": "Forrige",
-    "next": "Naeste"
+    "next": "Naeste",
+    "sendReminder": "Send lejeren en e-mail om denne betaling",
+    "formalNotice": "Download et dateret betalingspåkrav for denne betaling"
   },
   "errors": {
     "loadFailed": "Kunne ikke indlaese betalinger",
     "loadPaymentFailed": "Kunne ikke indlaese betaling",
     "loadHistoryFailed": "Kunne ikke indlaese historik"
+  },
+  "selection": {
+    "selected": "{{count}} valgt",
+    "selectAll": "Vælg alle ubetalte på siden",
+    "selectRow": "Vælg betaling {{id}}",
+    "select": "Vælg",
+    "done": "Færdig",
+    "markPaid": "Markér betalt",
+    "sendReminders": "Send påmindelser",
+    "cancel": "Annullér betalinger",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Restancer",
+    "summary": "{{amount}} udestående fra {{count}} lejer",
+    "summary_other": "{{amount}} udestående fra {{count}} lejere",
+    "oldest": "ældste {{days}} dage forsinket",
+    "bucket": {
+      "1-30": "1–30 dage",
+      "31-60": "31–60 dage",
+      "61-90": "61–90 dage",
+      "91+": "Over 90 dage"
+    },
+    "payments": "{{count}} betaling",
+    "payments_other": "{{count}} betalinger",
+    "lastReminded": "sidst påmindet {{when}} ({{count}}×)",
+    "neverReminded": "aldrig påmindet",
+    "daysOverdue": "{{days}} dage forsinket",
+    "sendReminder": "Send påmindelse",
+    "sendReminderTo": "Send påmindelse til {{name}}",
+    "remindAll": "Påmind alle ({{count}})",
+    "showAll": "Vis alle {{count}} lejere",
+    "showLess": "Vis færre",
+    "noContact": "Ingen kontakt tilknyttet",
+    "remindersDisabled": "Påmindelser kræver både kontraktindstillingen og lejerens samtykke — slå dem til på kontrakten og kontakten."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Markér {{count}} betalinger som betalt",
+    "message": "Hver valgt betaling markeres som fuldt betalt på den valgte dato. Allerede betalte eller annullerede betalinger springes over.",
+    "confirm": "Markér {{count}} som betalt"
+  },
+  "sendReminderDialog": {
+    "title": "Send betalingspåmindelse",
+    "titleBulk": "Send {{count}} påmindelser",
+    "message": "Lejeren modtager en e-mail med det udestående beløb, forfaldsdatoen og dine betalingsoplysninger på kontraktens sprog.",
+    "messageBulk": "Hver lejer modtager en e-mail med sit udestående beløb, forfaldsdatoen og dine betalingsoplysninger. Betalinger uden lejerens e-mailadresse springes over.",
+    "notesLabel": "Personlig besked (valgfri)",
+    "notesPlaceholder": "f.eks. Overfør venligst beløbet inden fredag.",
+    "confirm": "Send påmindelse",
+    "confirmBulk": "Send {{count}} påmindelser",
+    "toneLabel": "Tone",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Venlig",
+        "help": "En høflig påmindelse om, at betalingen er åben."
+      },
+      "FIRM": {
+        "label": "Bestemt",
+        "help": "Et klart krav med antal dage forsinket og konsekvenser."
+      },
+      "FINAL": {
+        "label": "Sidste påkrav",
+        "help": "Formelt krav med 14 dages frist. Et betalingspåkrav som PDF vedhæftes og arkiveres under kontrakten."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Sendte påmindelser",
+    "empty": "Ingen påmindelser sendt endnu",
+    "emptySubtitle": "Påmindelser, du sender til lejeren, vises her",
+    "sentBy": "af {{name}}",
+    "automatic": "Automatisk påmindelse",
+    "manual": "Påmindelse",
+    "daysOverdue": "{{days}} dage forsinket",
+    "outstanding": "Udestående {{amount}}",
+    "to": "til {{email}}",
+    "delivery": {
+      "QUEUED": "I kø",
+      "SENT": "Sendt",
+      "DELIVERED": "Leveret",
+      "FAILED": "Levering mislykkedes",
+      "BLOCKED": "Ikke sendt (demo)",
+      "UNKNOWN": "Ukendt"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Påmindelse sendt til {{email}}",
+    "bulkMarkPaid": "{{success}} markeret som betalt, {{failed}} sprunget over",
+    "bulkReminders": "{{success}} påmindelser sendt, {{failed}} sprunget over",
+    "cancelled": "Betaling annulleret",
+    "bulkCancelled": "{{success}} annulleret, {{failed}} sprunget over",
+    "lateFeeWaived": "Rykkergebyr eftergivet",
+    "writtenOff": "Saldo afskrevet",
+    "creditApplied": "Tilgodehavende brugt"
+  },
+  "types": {
+    "LATE_FEE": "Rykkergebyr",
+    "RENT": "Husleje",
+    "INSTALMENT": "Afdrag"
+  },
+  "cancelDialog": {
+    "title": "Annullér betaling",
+    "titleBulk": "Annullér {{count}} betalinger",
+    "message": "Betalingen markeres som annulleret og tæller ikke længere som udestående. Betalinger med registrerede indbetalinger kan ikke annulleres — afskriv i stedet saldoen.",
+    "messageBulk": "Hver valgt åben betaling annulleres med denne begrundelse. Betalte betalinger og betalinger med indbetalinger springes over.",
+    "reason": "Begrundelse",
+    "reasonPlaceholder": "f.eks. Lejer fraflyttede den 15.",
+    "confirm": "Annullér betaling",
+    "confirmBulk": "Annullér {{count}} betalinger"
+  },
+  "waiveDialog": {
+    "title": "Eftergiv rykkergebyr",
+    "message": "Gebyret på {{amount}} annulleres og opkræves ikke.",
+    "reason": "Begrundelse",
+    "reasonPlaceholder": "f.eks. Første forsinkelse, kulance",
+    "confirm": "Eftergiv gebyr"
+  },
+  "writeOffDialog": {
+    "title": "Afskriv saldo",
+    "message": "De resterende {{amount}} lukkes uden indbetaling. Dette registreres som afskrivning og kan ikke fortrydes.",
+    "reason": "Begrundelse",
+    "reasonPlaceholder": "f.eks. Uerholdelig fordring efter fraflytning",
+    "date": "Afskrivningsdato",
+    "confirm": "Afskriv"
+  },
+  "applyCreditDialog": {
+    "title": "Brug lejers tilgodehavende",
+    "message": "Åben saldo: {{balance}}. Vælg tilgodehavende og beløb.",
+    "credit": "Tilgodehavende",
+    "amount": "Beløb (maks. {{max}})",
+    "confirm": "Brug {{amount}}",
+    "none": "Lejeren har intet åbent tilgodehavende i denne valuta."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Overbetaling",
+      "CREDIT_NOTE": "Kreditnota"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

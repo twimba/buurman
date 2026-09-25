@@ -11,20 +11,30 @@ import org.springframework.web.multipart.MultipartFile;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
+import com.buurman.domain.identifier.DepositDeductionIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.PaymentPlanIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.AddContractPartyRequest;
+import com.buurman.dto.request.CancelPaymentPlanRequest;
 import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.ChangePrimaryContactRequest;
 import com.buurman.dto.request.CreateContractRequest;
+import com.buurman.dto.request.CreateDepositDeductionRequest;
+import com.buurman.dto.request.CreatePaymentPlanRequest;
+import com.buurman.dto.request.ForfeitDepositRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.ReturnDepositRequest;
 import com.buurman.dto.request.UpdateContractRequest;
+import com.buurman.dto.request.UpsertDepositRequest;
 import com.buurman.dto.response.ContractPartyResponse;
 import com.buurman.dto.response.ContractResponse;
 import com.buurman.dto.response.CountryMetadataSchemaResponse;
+import com.buurman.dto.response.DepositResponse;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
+import com.buurman.dto.response.PaymentPlanResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.ContractsApi;
 import com.buurman.security.SecurityUtils;
@@ -32,6 +42,8 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.ContractService;
 import com.buurman.service.CountryMetadataSchemaService;
+import com.buurman.service.DepositService;
+import com.buurman.service.PaymentPlanService;
 import com.buurman.service.PaymentSchedulingService;
 
 import lombok.RequiredArgsConstructor;
@@ -44,6 +56,8 @@ public class ContractController implements ContractsApi {
   private final ContractPartyService contractPartyService;
   private final CountryMetadataSchemaService countryMetadataSchemaService;
   private final PaymentSchedulingService paymentSchedulingService;
+  private final DepositService depositService;
+  private final PaymentPlanService paymentPlanService;
 
   @Override
   public ContractResponse createContract(CreateContractRequest createContractRequest) {
@@ -186,6 +200,71 @@ public class ContractController implements ContractsApi {
   public void deleteContractDocument(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     contractService.deleteDocument(documentIdentifier, principal);
+  }
+
+  // --- Deposits ---
+
+  @Override
+  public List<DepositResponse> getContractDeposits(ContractIdentifier identifier) {
+    return depositService.getDeposits(identifier, SecurityUtils.getCurrentPrincipal());
+  }
+
+  @Override
+  public DepositResponse upsertContractDeposit(
+      ContractIdentifier identifier, UpsertDepositRequest upsertDepositRequest) {
+    return depositService.upsert(
+        identifier, upsertDepositRequest, SecurityUtils.getCurrentPrincipal());
+  }
+
+  @Override
+  public DepositResponse addDepositDeduction(
+      ContractIdentifier identifier, CreateDepositDeductionRequest createDepositDeductionRequest) {
+    return depositService.addDeduction(
+        identifier, createDepositDeductionRequest, SecurityUtils.getCurrentPrincipal());
+  }
+
+  @Override
+  public DepositResponse removeDepositDeduction(
+      ContractIdentifier identifier, DepositDeductionIdentifier deductionIdentifier) {
+    return depositService.removeDeduction(
+        identifier, deductionIdentifier, SecurityUtils.getCurrentPrincipal());
+  }
+
+  @Override
+  public DepositResponse returnContractDeposit(
+      ContractIdentifier identifier, ReturnDepositRequest returnDepositRequest) {
+    return depositService.returnDeposit(
+        identifier, returnDepositRequest, SecurityUtils.getCurrentPrincipal());
+  }
+
+  @Override
+  public DepositResponse forfeitContractDeposit(
+      ContractIdentifier identifier, ForfeitDepositRequest forfeitDepositRequest) {
+    return depositService.forfeit(
+        identifier, forfeitDepositRequest, SecurityUtils.getCurrentPrincipal());
+  }
+
+  // --- Payment plans ---
+
+  @Override
+  public List<PaymentPlanResponse> getContractPaymentPlans(ContractIdentifier identifier) {
+    return paymentPlanService.getPlans(identifier, SecurityUtils.getCurrentPrincipal());
+  }
+
+  @Override
+  public PaymentPlanResponse createContractPaymentPlan(
+      ContractIdentifier identifier, CreatePaymentPlanRequest createPaymentPlanRequest) {
+    return paymentPlanService.createPlan(
+        identifier, createPaymentPlanRequest, SecurityUtils.getCurrentPrincipal());
+  }
+
+  @Override
+  public PaymentPlanResponse cancelContractPaymentPlan(
+      ContractIdentifier identifier,
+      PaymentPlanIdentifier planIdentifier,
+      CancelPaymentPlanRequest cancelPaymentPlanRequest) {
+    return paymentPlanService.cancelPlan(
+        identifier, planIdentifier, cancelPaymentPlanRequest, SecurityUtils.getCurrentPrincipal());
   }
 
   @Override

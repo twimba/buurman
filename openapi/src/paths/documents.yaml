@@ -1667,3 +1667,144 @@ contact-summary:
               $ref: '#/components/schemas/ProblemDetail'
     security:
       - bearer-jwt: []
+
+booklets-deposits-csv:
+  get:
+    tags:
+      - Booklets
+    summary: Export deposits to CSV
+    operationId: exportDepositsCsv
+    responses:
+      "200":
+        description: OK
+        content:
+          "text/csv":
+            schema:
+              type: string
+              format: binary
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-deposits-xlsx:
+  get:
+    tags:
+      - Booklets
+    summary: Export deposits to Excel (deposits + deductions sheets)
+    operationId: exportDepositsXlsx
+    responses:
+      "200":
+        description: OK
+        content:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            schema:
+              type: string
+              format: binary
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-deposits-google-sheet:
+  post:
+    tags:
+      - Booklets
+    summary: Export deposits to Google Sheets
+    operationId: exportDepositsGoogleSheet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleSheetExportRequest'
+    responses:
+      "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/GoogleSheetExportResponse' } } } }
+      "502": { description: Bad Gateway, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-deposit-statement:
+  get:
+    tags:
+      - Letters
+    summary: Download the deposit statement PDF
+    description: Itemised statement of the contract deposit — received, deductions, returned and refundable — in the requested language
+    operationId: getDepositStatement
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: lang
+        in: query
+        description: Document language (ISO 639-1 code)
+        required: false
+        schema:
+          type: string
+          default: en
+    responses:
+      "200":
+        description: Deposit statement PDF
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []
+
+booklets-payment-formal-notice:
+  get:
+    tags:
+      - Letters
+    summary: Download the formal notice of overdue rent PDF
+    description: Dated demand letter for an open payment with the outstanding balance, a 14-day deadline and the payment details, in the requested language
+    operationId: getPaymentFormalNotice
+    parameters:
+      - name: identifier
+        in: path
+        description: Payment identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/PaymentIdentifier'
+      - name: lang
+        in: query
+        description: Document language (ISO 639-1 code)
+        required: false
+        schema:
+          type: string
+          default: en
+    responses:
+      "200":
+        description: Formal notice PDF
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+      "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+    security:
+      - bearer-jwt: []

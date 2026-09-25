@@ -5,6 +5,7 @@ import com.buurman.domain.identifier.AmenityIdentifier;
 import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.domain.identifier.CalendarFeedIdentifier;
 import com.buurman.domain.identifier.ContactAddressIdentifier;
+import com.buurman.domain.identifier.ContactCreditIdentifier;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContactNoteIdentifier;
 import com.buurman.domain.identifier.ContactRelationshipIdentifier;
@@ -16,6 +17,8 @@ import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.domain.identifier.CountryRequestIdentifier;
 import com.buurman.domain.identifier.DataImportIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
+import com.buurman.domain.identifier.DepositDeductionIdentifier;
+import com.buurman.domain.identifier.DepositIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
@@ -25,7 +28,9 @@ import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
 import com.buurman.domain.identifier.PaymentInstructionIdentifier;
+import com.buurman.domain.identifier.PaymentPlanIdentifier;
 import com.buurman.domain.identifier.PaymentReceivalIdentifier;
+import com.buurman.domain.identifier.PaymentReminderIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.domain.identifier.PropertyAcquisitionIdentifier;
 import com.buurman.domain.identifier.PropertyFeeIdentifier;
@@ -122,6 +127,26 @@ public class SidGenerator {
 
   public static PaymentReceivalIdentifier newPaymentReceivalId() {
     return PaymentReceivalIdentifier.of(generateRaw(EntityPrefix.PRE));
+  }
+
+  public static PaymentReminderIdentifier newPaymentReminderId() {
+    return PaymentReminderIdentifier.of(generateRaw(EntityPrefix.PRM));
+  }
+
+  public static ContactCreditIdentifier newContactCreditId() {
+    return ContactCreditIdentifier.of(generateRaw(EntityPrefix.CCR));
+  }
+
+  public static DepositIdentifier newDepositId() {
+    return DepositIdentifier.of(generateRaw(EntityPrefix.DEP));
+  }
+
+  public static DepositDeductionIdentifier newDepositDeductionId() {
+    return DepositDeductionIdentifier.of(generateRaw(EntityPrefix.DDD));
+  }
+
+  public static PaymentPlanIdentifier newPaymentPlanId() {
+    return PaymentPlanIdentifier.of(generateRaw(EntityPrefix.PPL));
   }
 
   public static PhotoIdentifier newPhotoId() {

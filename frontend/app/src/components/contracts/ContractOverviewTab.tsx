@@ -10,6 +10,8 @@ import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/mo
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { ConfirmDialog, RichTextDisplay } from '@buurman/ui';
 import { RentTimeline } from '@/components/contracts/RentTimeline';
+import { DepositCard } from '@/components/contracts/DepositCard';
+import { PaymentPlansCard } from '@/components/contracts/PaymentPlansCard';
 import { useTeam } from '@/context/TeamContext';
 import {
   Home,
@@ -718,13 +720,37 @@ export const ContractOverviewTab = ({
         </div>
       )}
 
+      {/* Deposit lifecycle */}
+      <DepositCard contract={contract} contractId={contractId} />
+
+      {/* Payment plans */}
+      <PaymentPlansCard contractId={contractId} />
+
       {/* Additional Terms */}
-      {(contract.terminationNoticeDays || contract.lateFeePercentage) && (
+      {(contract.terminationNoticeDays ||
+        contract.lateFeePercentage ||
+        contract.tenantRemindersEnabled !== undefined) && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <h2 className="text-lg font-semibold text-text-primary mb-4">
             {t('overview.additionalTerms')}
           </h2>
           <div className="space-y-3">
+            <div>
+              <p className="text-sm text-text-secondary">
+                {t('overview.tenantReminders')}
+              </p>
+              <p className="font-medium text-text-primary">
+                {!contract.tenantRemindersEnabled
+                  ? t('overview.remindersOff')
+                  : contract.remindersPausedUntil &&
+                      contract.remindersPausedUntil >=
+                        new Date().toISOString().slice(0, 10)
+                    ? t('overview.remindersPausedUntil', {
+                        date: formatDate(contract.remindersPausedUntil),
+                      })
+                    : t('overview.remindersOn')}
+              </p>
+            </div>
             {contract.terminationNoticeDays && (
               <div>
                 <p className="text-sm text-text-secondary">
@@ -744,6 +770,13 @@ export const ContractOverviewTab = ({
                 </p>
                 <p className="font-medium text-text-primary">
                   {contract.lateFeePercentage}%
+                  <span className="ml-2 text-sm font-normal text-text-secondary">
+                    {contract.lateFeeEnabled
+                      ? t('overview.lateFeeActive', {
+                          count: contract.lateFeeGraceDays ?? 0,
+                        })
+                      : t('overview.lateFeeInactive')}
+                  </span>
                 </p>
               </div>
             )}

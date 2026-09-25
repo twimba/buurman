@@ -28,4 +28,12 @@ public record PaymentResponse(
     Optional<DocumentResponse> receipt,
     List<PaymentReceivalResponse> receivals,
     Instant createdAt,
-    Optional<Instant> updatedAt) {}
+    Optional<Instant> updatedAt,
+    Payment.PaymentType paymentType,
+    Optional<Sid> parentPaymentIdentifier,
+    Optional<String> cancelReason,
+    Optional<Instant> waivedAt,
+    Optional<String> waiveReason,
+    Optional<Sid> paymentPlanIdentifier,
+    /** Late fees charged on this payment; empty unless this is the rent that incurred them. */
+    List<PaymentSummary> lateFees) {}

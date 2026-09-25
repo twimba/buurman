@@ -27,7 +27,9 @@
         <module>buurman-backoffice</module>
         <module>buurman-demo-data</module>
         <module>buurman-takeout</module>
+        <module>buurman-documents</module>
         <module>buurman-booklets</module>
+        <module>buurman-letters</module>
         <module>buurman-app</module>
     </modules>
 
@@ -97,6 +99,16 @@
             <dependency>
                 <groupId>com.buurman</groupId>
                 <artifactId>buurman-booklets</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.buurman</groupId>
+                <artifactId>buurman-documents</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.buurman</groupId>
+                <artifactId>buurman-letters</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

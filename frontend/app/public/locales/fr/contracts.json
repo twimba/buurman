@@ -24,7 +24,8 @@
       "title": "Pas encore de contrats",
       "description": "Commencez par créer votre premier bail"
     },
-    "error": "Échec du chargement des contrats"
+    "error": "Échec du chargement des contrats",
+    "exportDeposits": "Exporter les dépôts"
   },
   "create": {
     "title": "Ajouter un nouveau contrat",
@@ -193,7 +194,13 @@
       "created": "Créé :",
       "lastUpdated": "Dernière mise à jour :",
       "at": "à"
-    }
+    },
+    "tenantReminders": "Rappels au locataire",
+    "remindersOn": "Activés",
+    "remindersOff": "Désactivés",
+    "remindersPausedUntil": "Suspendus jusqu’au {{date}}",
+    "lateFeeActive": "facturée après {{count}} jours",
+    "lateFeeInactive": "non facturée"
   },
   "payments": {
     "title": "Paiements",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Définissez un pays sur le bien sélectionné pour voir les champs réglementaires spécifiques au pays.",
     "dismissDuplicateWarning": "Examinez l'avertissement de doublon ci-dessus et ignorez-le pour continuer",
     "dismissDuplicateFirst": "Ignorez d'abord l'avertissement de doublon",
-    "change": "Modifier"
+    "change": "Modifier",
+    "tenantReminders": "Rappels de paiement au locataire",
+    "tenantRemindersHelp": "Autoriser les e-mails de rappel pour ce contrat. Le contact locataire doit aussi avoir donné son accord ; sinon rien n’est envoyé.",
+    "remindersPausedUntil": "Suspendre les rappels jusqu’au",
+    "remindersPausedUntilHelp": "Aucun rappel n’est envoyé jusqu’à cette date, par ex. pendant un échéancier convenu.",
+    "lateFeeEnabled": "Facturer des pénalités de retard",
+    "lateFeeEnabledHelp": "Ajoute un paiement de pénalité distinct lorsqu’un loyer reste impayé après le délai de grâce. Désactivé par défaut.",
+    "lateFeeGraceDays": "Délai de grâce (jours)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Les pénalités de retard forfaitaires sont autorisées en {{country}}.",
+      "CAPPED": "En {{country}}, les pénalités de retard sont plafonnées à {{percentage}} % du montant dû.",
+      "INTEREST_ONLY": "En {{country}}, seuls les intérêts légaux peuvent être appliqués aux loyers impayés ; les pénalités forfaitaires ne peuvent pas être activées.",
+      "FORBIDDEN": "Les pénalités de retard sur les loyers d’habitation sont interdites en {{country}}.",
+      "overCap": "Le pourcentage ci-dessus dépasse ce plafond."
+    },
+    "formalNoticeDays": "Délai de mise en demeure (jours)",
+    "formalNoticeDaysHelp": "Jours accordés au locataire pour régler après une mise en demeure. Laisser vide pour le délai par défaut de {{count}} jours.",
+    "formalNoticeDaysCountryDefault": "Laisser vide pour le délai par défaut en {{country}} : {{count}} jours."
   },
   "statusChange": {
     "title": "Changer le statut du contrat",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Négocié",
       "FROZEN": "Gelé",
       "OTHER": "Autre"
+    },
+    "lateFees": {
+      "title": "Pénalités de retard",
+      "policy": {
+        "ALLOWED": "Pénalités forfaitaires autorisées",
+        "CAPPED": "Pénalités plafonnées",
+        "INTEREST_ONLY": "Intérêts légaux uniquement",
+        "FORBIDDEN": "Pénalités interdites",
+        "UNKNOWN": "Inconnu"
+      },
+      "maxPercentage": "Maximum {{percentage}} % du montant dû",
+      "noticeDays": "Délai de mise en demeure : {{count}} jours"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Pourcentage fixe",
       "FIXED_AMOUNT": "Montant fixe",
       "MANUAL": "Manuel"
+    }
+  },
+  "deposit": {
+    "title": "Dépôt de garantie",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Attendu",
+      "HELD": "Détenu",
+      "PARTIALLY_RETURNED": "Partiellement restitué",
+      "RETURNED": "Restitué",
+      "FORFEITED": "Conservé"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    },
+    "statement": "Décompte (PDF)",
+    "statementHelp": "Télécharger un décompte détaillé du dépôt pour le locataire"
+  },
+  "paymentPlans": {
+    "title": "Échéanciers de paiement",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "hebdomadaires",
+      "BIWEEKLY": "bimensuelles",
+      "MONTHLY": "mensuelles"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
     }
   }
 }

@@ -387,5 +387,46 @@
       "completed": "Terminé",
       "failed": "Échoué"
     }
+  },
+  "tenantReminders": {
+    "title": "Rappels aux locataires",
+    "subtitle": "E-mails automatiques de rappel de paiement aux locataires (relances graduées)",
+    "consentNotice": "Aucun rappel n’est envoyé sans que le contrat ait les rappels activés et que le contact locataire ait donné son accord. Tout est désactivé par défaut.",
+    "automatic": {
+      "label": "Rappels automatiques",
+      "description": "Exécuter chaque matin l’échelle ci-dessous pour les paiements ouverts des locataires ayant donné leur accord"
+    },
+    "steps": {
+      "title": "Échelle de relances",
+      "description": "Chaque étape envoie un e-mail lorsqu’un paiement atteint le nombre de jours indiqué après l’échéance. Un paiement reçoit au plus une étape par jour.",
+      "empty": "Aucune étape configurée — rien ne sera envoyé automatiquement.",
+      "useDefaults": "Utiliser l’échelle recommandée",
+      "add": "Ajouter une étape",
+      "remove": "Supprimer l’étape",
+      "enabled": "Étape active",
+      "offsetDays": "Jours par rapport à l’échéance",
+      "tone": "Ton",
+      "duplicateOffsets": "Chaque étape doit avoir un nombre de jours différent.",
+      "preview": "Aperçu"
+    },
+    "offset": {
+      "before": "{{count}} jour avant l’échéance",
+      "before_other": "{{count}} jours avant l’échéance",
+      "onDue": "le jour de l’échéance",
+      "after": "{{count}} jour après l’échéance",
+      "after_other": "{{count}} jours après l’échéance"
+    },
+    "tones": {
+      "FRIENDLY": "Amical",
+      "FIRM": "Ferme",
+      "FINAL": "Dernier avis"
+    },
+    "preview": {
+      "title": "Aperçu du rappel",
+      "subtitle": "Comment un rappel {{tone}} est perçu par un locataire",
+      "subject": "Objet",
+      "sampleNotice": "Exemple uniquement : adressé à {{name}}, affiché en {{language}}. Rien n'a été envoyé.",
+      "failed": "L'aperçu n'a pas pu être chargé."
+    }
   }
 }

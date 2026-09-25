@@ -21,6 +21,10 @@
             <groupId>com.buurman</groupId>
             <artifactId>buurman-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-documents</artifactId>
+        </dependency>
 
         <!-- Thymeleaf (document templates) -->
         <dependency>

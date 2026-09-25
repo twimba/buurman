@@ -37,4 +37,5 @@ public record ContactResponse(
     List<ContactPropertyAssignment> activeProperties,
     Optional<ContactBalanceSummary> balanceSummary,
     Instant createdAt,
-    Optional<Instant> updatedAt) {}
+    Optional<Instant> updatedAt,
+    Boolean paymentRemindersEnabled) {}

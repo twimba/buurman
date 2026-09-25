@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<style th:replace="~{_letter-styles :: letter-css}">/* replaced by shared fragment */</style>
+</head>
+<body>
+
+<div class="letter">
+  <div class="letter-header">
+    <div class="letter-date" th:text="${generatedDate}"></div>
+    <div class="letter-ref" th:text="#{notice.ref(${paymentIdentifier})}"></div>
+  </div>
+
+  <div class="letter-addressee">
+    <div class="addressee-name" th:text="${primaryContactName}"></div>
+    <div th:if="${contactAddress != null}">
+      <div th:text="${contactAddress.street}"></div>
+      <div th:text="${contactAddress.postalCode} + ' ' + ${contactAddress.city}"></div>
+      <div th:text="${contactAddress.countryCode}"></div>
+    </div>
+  </div>
+
+  <div class="letter-subject" th:text="#{notice.title}"></div>
+
+  <div class="letter-body">
+    <p th:text="#{notice.salutation(${primaryContactName})}"></p>
+
+    <p th:text="#{notice.body.overdue(${propertyAddress}, ${amount}, ${dueDate}, ${daysOverdue})}"></p>
+    <p th:if="${hasPartialPayment}" th:text="#{notice.body.partial(${received}, ${outstanding})}"></p>
+    <p th:text="#{notice.body.demand(${outstanding}, ${deadline}, ${deadlineDays})}"></p>
+
+    <div th:if="${hasInstructions}" class="legal-clause">
+      <div th:text="#{notice.instructions.heading}"></div>
+      <div th:if="${!#strings.isEmpty(accountHolderName)}"><span th:text="#{notice.instructions.holder}"></span> <span th:text="${accountHolderName}"></span></div>
+      <div th:if="${!#strings.isEmpty(iban)}"><span th:text="#{notice.instructions.iban}"></span> <span th:text="${iban}"></span></div>
+      <div th:if="${!#strings.isEmpty(paymentReference)}"><span th:text="#{notice.instructions.reference}"></span> <span th:text="${paymentReference}"></span></div>
+    </div>
+
+    <p th:text="#{notice.body.consequences}"></p>
+
+    <div th:if="${legalClause != null}" class="legal-clause" th:text="${legalClause}"></div>
+
+    <table class="summary-table">
+      <tr><td class="st-label" th:text="#{notice.summary.contractRef}"></td><td class="st-value" th:text="${contractIdentifier}"></td></tr>
+      <tr><td class="st-label" th:text="#{notice.summary.property}"></td><td class="st-value" th:text="${propertyAddress}"></td></tr>
+      <tr><td class="st-label" th:text="#{notice.summary.amount}"></td><td class="st-value" th:text="${amount}"></td></tr>
+      <tr th:if="${hasPartialPayment}"><td class="st-label" th:text="#{notice.summary.received}"></td><td class="st-value" th:text="${received}"></td></tr>
+      <tr><td class="st-label" th:text="#{notice.summary.outstanding}"></td><td class="st-value"><strong th:text="${outstanding}"></strong></td></tr>
+      <tr><td class="st-label" th:text="#{notice.summary.dueDate}"></td><td class="st-value" th:text="${dueDate}"></td></tr>
+      <tr><td class="st-label" th:text="#{notice.summary.deadline}"></td><td class="st-value"><strong th:text="${deadline}"></strong></td></tr>
+    </table>
+
+    <p th:text="#{notice.closing}"></p>
+    <p th:text="#{letter.regards}"></p>
+  </div>
+
+  <div class="letter-signature">
+    <div class="sig-line"></div>
+    <div class="sig-label" th:text="#{letter.signature}"></div>
+    <div class="sig-date"><span th:text="#{letter.signature.date}"></span> <span class="sig-date-line"></span></div>
+  </div>
+
+  <div class="letter-disclaimer" th:text="#{notice.disclaimer}"></div>
+
+  <div class="letter-footer">
+    <span th:text="#{letter.generated(${generatedDate})}"></span>
+    <span> &mdash; </span>
+    <span th:text="#{letter.footer}"></span>
+  </div>
+</div>
+
+</body>
+</html>

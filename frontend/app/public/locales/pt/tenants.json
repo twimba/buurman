@@ -131,7 +131,10 @@
       "guarantor": "Fiador",
       "overdue": "Em atraso",
       "pending": "Pendente"
-    }
+    },
+    "paymentReminders": "Lembretes de pagamento",
+    "paymentRemindersOn": "Com consentimento",
+    "paymentRemindersOff": "Sem consentimento"
   },
   "card": {
     "allPaid": "Tudo pago",
@@ -196,7 +199,9 @@
       "businessNameRequired": "O nome comercial é obrigatório",
       "invalidEmail": "O email deve ser válido",
       "invalidInvoiceEmail": "O email de faturação deve ser válido"
-    }
+    },
+    "paymentReminders": "Enviar lembretes de pagamento a este contacto",
+    "paymentRemindersHelp": "Consentimento explícito para receber e-mails de lembrete sobre rendas em atraso. Os lembretes só são enviados para contratos que também tenham lembretes ativados."
   },
   "addresses": {
     "title": "Moradas",
@@ -467,6 +472,36 @@
       "DO_NOT_CONTACT": "Não Contactar",
       "FORMER_TENANT": "Antigo Inquilino",
       "REFERRED": "Referenciado"
+    }
+  },
+  "credits": {
+    "title": "Créditos",
+    "add": "Adicionar nota de crédito",
+    "empty": "Sem créditos — pagamentos em excesso e notas de crédito aparecem aqui",
+    "openTotal": "Crédito em aberto: {{amount}}",
+    "date": "Data",
+    "source": "Origem",
+    "reason": "Motivo",
+    "amount": "Valor",
+    "remaining": "Restante",
+    "refund": "Reembolsar",
+    "refundedOn": "Reembolsado em {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Pagamento em excesso",
+      "CREDIT_NOTE": "Nota de crédito"
+    },
+    "createDialog": {
+      "title": "Adicionar nota de crédito",
+      "message": "Dinheiro que deve a este contacto. Pode ser aplicado a um pagamento posterior ou reembolsado.",
+      "reasonPlaceholder": "ex.: Compensação pela avaria da caldeira em março",
+      "confirm": "Adicionar crédito"
+    },
+    "refundDialog": {
+      "title": "Reembolsar crédito",
+      "message": "Regista que o restante {{amount}} foi devolvido ao contacto.",
+      "date": "Data do reembolso",
+      "notes": "Notas (opcional)",
+      "confirm": "Marcar como reembolsado"
     }
   }
 }

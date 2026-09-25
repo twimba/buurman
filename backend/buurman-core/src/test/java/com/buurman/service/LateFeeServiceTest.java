@@ -1,0 +1,347 @@
+package com.buurman.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.buurman.domain.Contract;
+import com.buurman.domain.LateFeePolicy;
+import com.buurman.domain.Payment;
+import com.buurman.domain.Payment.PaymentStatus;
+import com.buurman.domain.Payment.PaymentType;
+import com.buurman.domain.RentRegulationCountry;
+import com.buurman.domain.Sid;
+import com.buurman.domain.TeamRole;
+import com.buurman.domain.identifier.PaymentIdentifier;
+import com.buurman.dto.request.WaiveLateFeeRequest;
+import com.buurman.exception.BusinessRuleException;
+import com.buurman.repository.ContractRepository;
+import com.buurman.repository.PaymentRepository;
+import com.buurman.security.UserPrincipal;
+import com.buurman.util.Constants;
+import com.buurman.util.MoneyAmount;
+
+@ExtendWith(MockitoExtension.class)
+class LateFeeServiceTest {
+
+  private static final UUID TEAM_ID = UUID.randomUUID();
+  private static final UUID USER_ID = UUID.randomUUID();
+  private static final UUID CONTRACT_ID = UUID.randomUUID();
+  private static final LocalDate TODAY = LocalDate.of(2026, 3, 1);
+
+  @Mock private PaymentRepository paymentRepository;
+  @Mock private ContractRepository contractRepository;
+  @Mock private com.buurman.repository.RentRegulationRepository rentRegulationRepository;
+  @Mock private com.buurman.repository.PaymentReceivalRepository receivalRepository;
+  @Mock private org.springframework.transaction.PlatformTransactionManager transactionManager;
+  @Mock private AuditService auditService;
+  @Mock private MetricsService metricsService;
+
+  private final Clock clock =
+      Clock.fixed(TODAY.atStartOfDay().toInstant(ZoneOffset.UTC), ZoneOffset.UTC);
+  private LateFeeService service;
+  private UserPrincipal principal;
+
+  @BeforeEach
+  void setUp() {
+    service =
+        new LateFeeService(
+            paymentRepository,
+            contractRepository,
+            rentRegulationRepository,
+            receivalRepository,
+            auditService,
+            metricsService,
+            clock,
+            transactionManager);
+    principal =
+        new UserPrincipal(
+            USER_ID,
+            "usr_test",
+            "kc-id",
+            "t@example.com",
+            "Test User",
+            TEAM_ID,
+            "team_test",
+            TeamRole.TEAM_ADMIN,
+            true);
+  }
+
+  private static Payment rent(String amount, LocalDate due) {
+    return Payment.builder()
+        .id(UUID.randomUUID())
+        .identifier(Optional.of(Sid.of("pay_01JTEST000000000000000001")))
+        .teamId(TEAM_ID)
+        .contractId(CONTRACT_ID)
+        .contactId(Optional.of(UUID.randomUUID()))
+        .amount(MoneyAmount.of(new BigDecimal(amount), "EUR"))
+        .dueDate(due)
+        .status(PaymentStatus.OVERDUE)
+        .createdAt(Instant.EPOCH)
+        .updatedAt(Instant.EPOCH)
+        .build();
+  }
+
+  private static Contract contract(boolean enabled, String pct) {
+    return Contract.builder()
+        .id(CONTRACT_ID)
+        .teamId(TEAM_ID)
+        .propertyId(UUID.randomUUID())
+        .lateFeeEnabled(enabled)
+        .lateFeePercentage(Optional.of(new BigDecimal(pct)))
+        .build();
+  }
+
+  @Nested
+  @DisplayName("computeFee")
+  class ComputeFee {
+    @Test
+    @DisplayName("percentage of the face value, rounded to cents")
+    void percentageOfFaceValue() {
+      assertThat(LateFeeService.computeFee(rent("1234.56", TODAY), contract(true, "2.5")))
+          .contains(new BigDecimal("30.86"));
+    }
+
+    @Test
+    @DisplayName("nothing when disabled or zero percent")
+    void nothingWhenOff() {
+      assertThat(LateFeeService.computeFee(rent("1000.00", TODAY), contract(false, "2.5")))
+          .isEmpty();
+      assertThat(LateFeeService.computeFee(rent("1000.00", TODAY), contract(true, "0"))).isEmpty();
+    }
+
+    @Test
+    @DisplayName("clamped to the statutory cap when the jurisdiction caps late fees")
+    void clampedToCap() {
+      Optional<RentRegulationCountry> capped = Optional.of(regulation(LateFeePolicy.CAPPED, "20"));
+      assertThat(LateFeeService.computeFee(rent("1000.00", TODAY), contract(true, "25"), capped))
+          .contains(new BigDecimal("200.00"));
+      assertThat(LateFeeService.computeFee(rent("1000.00", TODAY), contract(true, "5"), capped))
+          .contains(new BigDecimal("50.00"));
+    }
+
+    @Test
+    @DisplayName("nothing when the jurisdiction forbids flat fees or allows interest only")
+    void nothingWhenForbidden() {
+      assertThat(
+              LateFeeService.computeFee(
+                  rent("1000.00", TODAY),
+                  contract(true, "5"),
+                  Optional.of(regulation(LateFeePolicy.FORBIDDEN))))
+          .isEmpty();
+      assertThat(
+              LateFeeService.computeFee(
+                  rent("1000.00", TODAY),
+                  contract(true, "5"),
+                  Optional.of(regulation(LateFeePolicy.INTEREST_ONLY))))
+          .isEmpty();
+      assertThat(
+              LateFeeService.computeFee(
+                  rent("1000.00", TODAY),
+                  contract(true, "5"),
+                  Optional.of(regulation(LateFeePolicy.ALLOWED))))
+          .contains(new BigDecimal("50.00"));
+    }
+  }
+
+  @Nested
+  @DisplayName("validateAgainstRegulation")
+  class Validate {
+    @Test
+    @DisplayName("rejects enabling late fees where they are forbidden or interest-only")
+    void rejectsForbidden() {
+      assertThatThrownBy(
+              () ->
+                  LateFeeService.validateAgainstRegulation(
+                      contract(true, "2"), Optional.of(regulation(LateFeePolicy.FORBIDDEN))))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("not permitted");
+      assertThatThrownBy(
+              () ->
+                  LateFeeService.validateAgainstRegulation(
+                      contract(true, "2"), Optional.of(regulation(LateFeePolicy.INTEREST_ONLY))))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("default interest");
+    }
+
+    @Test
+    @DisplayName("rejects a percentage above the cap, accepts one within it")
+    void enforcesCap() {
+      Optional<RentRegulationCountry> capped = Optional.of(regulation(LateFeePolicy.CAPPED, "20"));
+      assertThatThrownBy(
+              () -> LateFeeService.validateAgainstRegulation(contract(true, "20.5"), capped))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("exceeds the maximum of 20%");
+      LateFeeService.validateAgainstRegulation(contract(true, "20"), capped);
+    }
+
+    @Test
+    @DisplayName("silent when disabled, unknown or unregulated")
+    void silentOtherwise() {
+      LateFeeService.validateAgainstRegulation(
+          contract(false, "99"), Optional.of(regulation(LateFeePolicy.FORBIDDEN)));
+      LateFeeService.validateAgainstRegulation(contract(true, "99"), Optional.empty());
+      LateFeeService.validateAgainstRegulation(
+          contract(true, "99"), Optional.of(regulation(LateFeePolicy.UNKNOWN)));
+      LateFeeService.validateAgainstRegulation(
+          contract(true, "99"), Optional.of(regulation(LateFeePolicy.CAPPED)));
+    }
+  }
+
+  private static RentRegulationCountry regulation(LateFeePolicy policy) {
+    return regulation(policy, Optional.empty());
+  }
+
+  private static RentRegulationCountry regulation(LateFeePolicy policy, String maxPct) {
+    return regulation(policy, Optional.of(new BigDecimal(maxPct)));
+  }
+
+  private static RentRegulationCountry regulation(
+      LateFeePolicy policy, Optional<BigDecimal> maxPct) {
+    return RentRegulationCountry.builder()
+        .id(UUID.randomUUID())
+        .countryCode("XX")
+        .countryName("Testland")
+        .lateFeePolicy(policy)
+        .lateFeeMaxPercentage(maxPct)
+        .createdAt(Instant.EPOCH)
+        .updatedAt(Instant.EPOCH)
+        .build();
+  }
+
+  @Nested
+  @DisplayName("runDailyLateFees")
+  class Run {
+    @Test
+    @DisplayName("charges one LATE_FEE payment per candidate on the amount still due")
+    void chargesOnce() {
+      Payment fresh = rent("1000.00", TODAY.minusDays(10));
+      Payment partlyPaid = rent("800.00", TODAY.minusDays(20));
+      when(paymentRepository.findLateFeeCandidates(TODAY)).thenReturn(List.of(fresh, partlyPaid));
+      when(contractRepository.findByIdsAndTeamId(any(), eq(TEAM_ID)))
+          .thenReturn(List.of(contract(true, "5")));
+      when(receivalRepository.sumByPaymentIdsAndTeamId(any(), eq(TEAM_ID), eq("EUR")))
+          .thenReturn(java.util.Map.of(partlyPaid.getId(), new BigDecimal("800.00")));
+      when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+      int charged = service.runDailyLateFees();
+
+      // the fully paid one has nothing due, so only the fresh rent is charged
+      assertThat(charged).isEqualTo(1);
+      ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+      verify(paymentRepository).save(captor.capture());
+      Payment fee = captor.getValue();
+      assertThat(fee.getPaymentType()).isEqualTo(PaymentType.LATE_FEE);
+      assertThat(fee.getParentPaymentId()).contains(fresh.getId());
+      assertThat(fee.getAmount().value()).isEqualByComparingTo("50.00");
+      assertThat(fee.getDueDate()).isEqualTo(TODAY);
+      assertThat(fee.getStatus()).isEqualTo(PaymentStatus.PENDING);
+      assertThat(fee.getContactId()).isEqualTo(fresh.getContactId());
+      assertThat(fee.getCreatedBy()).isEqualTo(Constants.SYSTEM_USER_ID);
+      assertThat(fee.getAutoGenerated()).isTrue();
+    }
+  }
+
+  @Nested
+  @DisplayName("runDailyLateFees policy handling")
+  class RunPolicy {
+    @Test
+    @DisplayName("never charges while the country's late-fee regime is still UNKNOWN")
+    void unknownPolicySkips() {
+      Payment fresh = rent("1000.00", TODAY.minusDays(10));
+      Contract c = contract(true, "5");
+      c.setCountryCode(Optional.of("XX"));
+      when(paymentRepository.findLateFeeCandidates(TODAY)).thenReturn(List.of(fresh));
+      when(contractRepository.findByIdsAndTeamId(any(), eq(TEAM_ID))).thenReturn(List.of(c));
+      when(rentRegulationRepository.findCountryByCode("XX"))
+          .thenReturn(Optional.of(regulation(LateFeePolicy.UNKNOWN)));
+
+      assertThat(service.runDailyLateFees()).isZero();
+      verify(paymentRepository, never()).save(any(Payment.class));
+    }
+
+    @Test
+    @DisplayName("a partially paid rent is charged on its balance")
+    void partialBalance() {
+      assertThat(
+              LateFeeService.computeFee(
+                  new BigDecimal("100.00"), "EUR", contract(true, "5"), Optional.empty()))
+          .contains(new BigDecimal("5.00"));
+      assertThat(
+              LateFeeService.computeFee(
+                  BigDecimal.ZERO, "EUR", contract(true, "5"), Optional.empty()))
+          .isEmpty();
+    }
+  }
+
+  @Nested
+  @DisplayName("waiveLateFee")
+  class Waive {
+    private final PaymentIdentifier id = PaymentIdentifier.of("pay_01JTEST00000000000000FEE1");
+
+    private Payment fee(PaymentStatus status) {
+      Payment p = rent("50.00", TODAY);
+      p.setIdentifier(Optional.of(id));
+      p.setPaymentType(PaymentType.LATE_FEE);
+      p.setStatus(status);
+      return p;
+    }
+
+    @Test
+    @DisplayName("cancels the fee and records who waived it and why")
+    void waives() {
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID))
+          .thenReturn(fee(PaymentStatus.PENDING));
+      when(paymentRepository.save(any(Payment.class))).thenAnswer(inv -> inv.getArgument(0));
+
+      Payment saved = service.waiveLateFee(id, new WaiveLateFeeRequest("Goodwill"), principal);
+
+      assertThat(saved.getStatus()).isEqualTo(PaymentStatus.CANCELLED);
+      assertThat(saved.getWaiveReason()).contains("Goodwill");
+      assertThat(saved.getWaivedBy()).contains(USER_ID);
+      assertThat(saved.getWaivedAt()).contains(Instant.now(clock));
+      verify(auditService)
+          .logUpdate(eq(TEAM_ID), eq("PAYMENT"), any(), eq(USER_ID), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("only LATE_FEE payments can be waived, and not once paid")
+    void rejects() {
+      Payment rentPayment = rent("1000.00", TODAY);
+      rentPayment.setIdentifier(Optional.of(id));
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID)).thenReturn(rentPayment);
+      assertThatThrownBy(() -> service.waiveLateFee(id, new WaiveLateFeeRequest("x"), principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("Only late fees");
+
+      when(paymentRepository.getByIdentifierAndTeamId(id, TEAM_ID))
+          .thenReturn(fee(PaymentStatus.PAID));
+      assertThatThrownBy(() -> service.waiveLateFee(id, new WaiveLateFeeRequest("x"), principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("paid");
+      verify(paymentRepository, never()).save(any());
+    }
+  }
+}

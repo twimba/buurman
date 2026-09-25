@@ -131,7 +131,10 @@
       "guarantor": "Borgensman",
       "overdue": "Forsenad",
       "pending": "Vantande"
-    }
+    },
+    "paymentReminders": "Betalningspåminnelser",
+    "paymentRemindersOn": "Samtycke lämnat",
+    "paymentRemindersOff": "Inget samtycke"
   },
   "card": {
     "allPaid": "Allt betalt",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Foretagsnamn ar obligatoriskt",
       "invalidEmail": "E-postadressen maste vara giltig",
       "invalidInvoiceEmail": "Faktura-e-posten maste vara giltig"
-    }
+    },
+    "paymentReminders": "Skicka betalningspåminnelser till denna kontakt",
+    "paymentRemindersHelp": "Uttryckligt samtycke till påminnelsemejl om försenad hyra. Påminnelser skickas bara för avtal där de också är aktiverade."
   },
   "addresses": {
     "title": "Adresser",
@@ -467,6 +472,36 @@
       "DO_NOT_CONTACT": "Kontakta inte",
       "FORMER_TENANT": "Tidigare hyresgast",
       "REFERRED": "Refererad"
+    }
+  },
+  "credits": {
+    "title": "Tillgodohavanden",
+    "add": "Lägg till kreditnota",
+    "empty": "Inga tillgodohavanden – överbetalningar och kreditnotor visas här",
+    "openTotal": "Öppet tillgodohavande: {{amount}}",
+    "date": "Datum",
+    "source": "Källa",
+    "reason": "Anledning",
+    "amount": "Belopp",
+    "remaining": "Återstående",
+    "refund": "Återbetala",
+    "refundedOn": "Återbetalat {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Överbetalning",
+      "CREDIT_NOTE": "Kreditnota"
+    },
+    "createDialog": {
+      "title": "Lägg till kreditnota",
+      "message": "Pengar du är skyldig denna kontakt. Kan användas på en senare betalning eller återbetalas.",
+      "reasonPlaceholder": "t.ex. Kompensation för pannhaveri i mars",
+      "confirm": "Lägg till"
+    },
+    "refundDialog": {
+      "title": "Återbetala tillgodohavande",
+      "message": "Registrerar att återstående {{amount}} betalats tillbaka till kontakten.",
+      "date": "Återbetalningsdatum",
+      "notes": "Anteckningar (valfritt)",
+      "confirm": "Markera som återbetalat"
     }
   }
 }

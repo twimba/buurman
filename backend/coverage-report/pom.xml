@@ -33,6 +33,14 @@
             <groupId>com.buurman</groupId>
             <artifactId>buurman-booklets</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-documents</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-letters</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

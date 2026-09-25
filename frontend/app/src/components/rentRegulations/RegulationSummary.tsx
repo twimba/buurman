@@ -1,6 +1,6 @@
-import { Clock, Globe, MapPin } from 'lucide-react';
+import { Clock, Globe, MapPin, Percent } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { RichTextDisplay } from '@buurman/ui';
+import { RichTextDisplay, StatusBadge, type BadgeColorVariant } from '@buurman/ui';
 import type { RentRegulationCountryDetailResponse } from '@/types/rentRegulation';
 import { RegulationDisclaimer } from './StalenessWarning';
 
@@ -15,6 +15,14 @@ function countryCodeToFlag(code: string): string {
 interface RegulationSummaryProps {
   country: RentRegulationCountryDetailResponse;
 }
+
+const lateFeeColor: Record<string, BadgeColorVariant> = {
+  ALLOWED: 'emerald',
+  CAPPED: 'amber',
+  INTEREST_ONLY: 'blue',
+  FORBIDDEN: 'red',
+  UNKNOWN: 'gray',
+};
 
 export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
   const { t } = useTranslation('contracts');
@@ -59,6 +67,38 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
             </div>
           </div>
         </div>
+
+        {/* Late-fee regime */}
+        {country.lateFeePolicy && country.lateFeePolicy !== 'UNKNOWN' && (
+          <div className="px-6 py-5 border-b border-border-default">
+            <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">
+              <Percent className="h-3.5 w-3.5" />
+              {t('rentRegulations.lateFees.title')}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <StatusBadge
+                label={t(`rentRegulations.lateFees.policy.${country.lateFeePolicy}`)}
+                color={lateFeeColor[country.lateFeePolicy] ?? 'gray'}
+                shape="pill"
+              />
+              {country.lateFeePolicy === 'CAPPED' && country.lateFeeMaxPercentage != null && (
+                <span className="text-sm text-text-primary">
+                  {t('rentRegulations.lateFees.maxPercentage', {
+                    percentage: country.lateFeeMaxPercentage,
+                  })}
+                </span>
+              )}
+            </div>
+            {country.lateFeeNotes && (
+              <p className="text-sm text-text-secondary mt-2">{country.lateFeeNotes}</p>
+            )}
+            {country.formalNoticeDays != null && (
+              <p className="text-sm text-text-primary mt-2">
+                {t('rentRegulations.lateFees.noticeDays', { count: country.formalNoticeDays })}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Summary — rich text */}
         {country.summary && (

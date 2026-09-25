@@ -7,7 +7,13 @@
     "schedulePayment": "Προγραμματισμός Πληρωμής",
     "registerPayment": "Καταχώρηση Πληρωμής",
     "registerReceival": "Καταχώρηση Είσπραξης",
-    "markAsPaid": "Σήμανση ως Πληρωμένη"
+    "markAsPaid": "Σήμανση ως Πληρωμένη",
+    "sendReminder": "Αποστολή υπενθύμισης",
+    "applyCredit": "Χρήση πίστωσης",
+    "waiveLateFee": "Απαλλαγή προστίμου",
+    "writeOff": "Διαγραφή",
+    "cancelPayment": "Ακύρωση πληρωμής",
+    "formalNotice": "Όχληση (PDF)"
   },
   "stats": {
     "pendingPayments": "Εκκρεμείς Πληρωμές",
@@ -122,13 +128,18 @@
     "metadata": "Μεταδεδομένα",
     "created": "Δημιουργήθηκε:",
     "lastUpdated": "Τελευταία Ενημέρωση:",
-    "editPayment": "Επεξεργασία Πληρωμής"
+    "editPayment": "Επεξεργασία Πληρωμής",
+    "lateFeesCharged": "Χρεώθηκε πρόστιμο καθυστέρησης",
+    "lateFeeDue": "λήγει {{date}}",
+    "lateFeeParent": "Πρόστιμο καθυστέρησης για",
+    "paymentId": "Πληρωμή #{{id}}"
   },
   "tabs": {
     "details": "Λεπτομέρειες",
     "receivals": "Εισπράξεις",
     "documents": "Έγγραφα",
-    "history": "Ιστορικό"
+    "history": "Ιστορικό",
+    "reminders": "Υπενθυμίσεις"
   },
   "receivals": {
     "title": "Εισπράξεις ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Ημερομηνία Είσπραξης",
     "notesOptional": "Σημειώσεις (Προαιρετικό)",
     "notesPlaceholder": "Προσθέστε σημειώσεις για αυτήν την είσπραξη...",
-    "register": "Καταχώρηση"
+    "register": "Καταχώρηση",
+    "types": {
+      "WRITE_OFF": "Διαγραφή",
+      "CREDIT": "Πίστωση χρησιμοποιήθηκε",
+      "PAYMENT": "Πληρωμή",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Ιστορικό Πληρωμής",
@@ -190,11 +207,171 @@
     "deleteReceival": "Διαγραφή είσπραξης",
     "save": "Αποθήκευση",
     "previous": "Προηγούμενο",
-    "next": "Επόμενο"
+    "next": "Επόμενο",
+    "sendReminder": "Αποστολή email στον ενοικιαστή για αυτήν την πληρωμή",
+    "formalNotice": "Λήψη επίσημης όχλησης με ημερομηνία για αυτήν την πληρωμή"
   },
   "errors": {
     "loadFailed": "Αποτυχία φόρτωσης πληρωμών",
     "loadPaymentFailed": "Αποτυχία φόρτωσης πληρωμής",
     "loadHistoryFailed": "Αποτυχία φόρτωσης ιστορικού"
+  },
+  "selection": {
+    "selected": "{{count}} επιλεγμένο",
+    "selected_other": "{{count}} επιλεγμένα",
+    "selectAll": "Επιλογή όλων των απλήρωτων της σελίδας",
+    "selectRow": "Επιλογή πληρωμής {{id}}",
+    "select": "Επιλογή",
+    "done": "Τέλος",
+    "markPaid": "Σήμανση ως πληρωμένο",
+    "sendReminders": "Αποστολή υπενθυμίσεων",
+    "cancel": "Ακύρωση πληρωμών",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Καθυστερήσεις",
+    "summary": "{{amount}} εκκρεμούν από {{count}} ενοικιαστή",
+    "summary_other": "{{amount}} εκκρεμούν από {{count}} ενοικιαστές",
+    "oldest": "η παλαιότερη {{days}} ημέρες εκπρόθεσμη",
+    "bucket": {
+      "1-30": "1–30 ημέρες",
+      "31-60": "31–60 ημέρες",
+      "61-90": "61–90 ημέρες",
+      "91+": "Πάνω από 90 ημέρες"
+    },
+    "payments": "{{count}} πληρωμή",
+    "payments_other": "{{count}} πληρωμές",
+    "lastReminded": "τελευταία υπενθύμιση {{when}} ({{count}}×)",
+    "neverReminded": "χωρίς υπενθύμιση",
+    "daysOverdue": "{{days}} ημέρες εκπρόθεσμη",
+    "sendReminder": "Αποστολή υπενθύμισης",
+    "sendReminderTo": "Αποστολή υπενθύμισης σε {{name}}",
+    "remindAll": "Υπενθύμιση σε όλους ({{count}})",
+    "showAll": "Εμφάνιση και των {{count}} ενοικιαστών",
+    "showLess": "Εμφάνιση λιγότερων",
+    "noContact": "Δεν υπάρχει συνδεδεμένη επαφή",
+    "remindersDisabled": "Οι υπενθυμίσεις απαιτούν τη ρύθμιση του συμβολαίου και τη συγκατάθεση του ενοικιαστή — ενεργοποιήστε τις στο συμβόλαιο και στην επαφή."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Σήμανση {{count}} πληρωμών ως πληρωμένων",
+    "message": "Κάθε επιλεγμένη πληρωμή σημειώνεται ως πλήρως πληρωμένη την επιλεγμένη ημερομηνία. Οι ήδη πληρωμένες ή ακυρωμένες πληρωμές παραλείπονται.",
+    "confirm": "Σήμανση {{count}} ως πληρωμένων"
+  },
+  "sendReminderDialog": {
+    "title": "Αποστολή υπενθύμισης πληρωμής",
+    "titleBulk": "Αποστολή {{count}} υπενθυμίσεων",
+    "message": "Ο ενοικιαστής λαμβάνει email με το οφειλόμενο ποσό, την ημερομηνία λήξης και τα στοιχεία πληρωμής σας, στη γλώσσα του συμβολαίου.",
+    "messageBulk": "Κάθε ενοικιαστής λαμβάνει email με το οφειλόμενο ποσό, την ημερομηνία λήξης και τα στοιχεία πληρωμής σας. Οι πληρωμές χωρίς email ενοικιαστή παραλείπονται.",
+    "notesLabel": "Προσωπικό μήνυμα (προαιρετικό)",
+    "notesPlaceholder": "π.χ. Παρακαλούμε μεταφέρετε το ποσό πριν την Παρασκευή.",
+    "confirm": "Αποστολή υπενθύμισης",
+    "confirmBulk": "Αποστολή {{count}} υπενθυμίσεων",
+    "toneLabel": "Ύφος",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Φιλικό",
+        "help": "Μια ευγενική υπενθύμιση ότι η πληρωμή εκκρεμεί."
+      },
+      "FIRM": {
+        "label": "Αυστηρό",
+        "help": "Σαφής απαίτηση με τις ημέρες καθυστέρησης και τις συνέπειες."
+      },
+      "FINAL": {
+        "label": "Τελική όχληση",
+        "help": "Επίσημη απαίτηση με προθεσμία 14 ημερών. Επισυνάπτεται όχληση σε PDF και αρχειοθετείται στο συμβόλαιο."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Απεσταλμένες υπενθυμίσεις",
+    "empty": "Δεν έχουν σταλεί υπενθυμίσεις ακόμη",
+    "emptySubtitle": "Οι υπενθυμίσεις που στέλνετε στον ενοικιαστή θα εμφανίζονται εδώ",
+    "sentBy": "από {{name}}",
+    "automatic": "Αυτόματη υπενθύμιση",
+    "manual": "Υπενθύμιση",
+    "daysOverdue": "{{days}} ημέρες εκπρόθεσμη",
+    "outstanding": "Οφειλή {{amount}}",
+    "to": "προς {{email}}",
+    "delivery": {
+      "QUEUED": "Σε αναμονή",
+      "SENT": "Εστάλη",
+      "DELIVERED": "Παραδόθηκε",
+      "FAILED": "Αποτυχία παράδοσης",
+      "BLOCKED": "Δεν εστάλη (demo)",
+      "UNKNOWN": "Άγνωστο"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Η υπενθύμιση στάλθηκε στο {{email}}",
+    "bulkMarkPaid": "{{success}} σημειώθηκαν ως πληρωμένες, {{failed}} παραλείφθηκαν",
+    "bulkReminders": "{{success}} υπενθυμίσεις στάλθηκαν, {{failed}} παραλείφθηκαν",
+    "cancelled": "Η πληρωμή ακυρώθηκε",
+    "bulkCancelled": "{{success}} ακυρώθηκαν, {{failed}} παραλείφθηκαν",
+    "lateFeeWaived": "Το πρόστιμο απαλλάχθηκε",
+    "writtenOff": "Το υπόλοιπο διαγράφηκε",
+    "creditApplied": "Η πίστωση χρησιμοποιήθηκε"
+  },
+  "types": {
+    "LATE_FEE": "Πρόστιμο καθυστέρησης",
+    "RENT": "Ενοίκιο",
+    "INSTALMENT": "Δόση"
+  },
+  "cancelDialog": {
+    "title": "Ακύρωση πληρωμής",
+    "titleBulk": "Ακύρωση {{count}} πληρωμών",
+    "message": "Η πληρωμή σημειώνεται ως ακυρωμένη και δεν μετρά πλέον ως εκκρεμής. Πληρωμές με καταχωρημένες εισπράξεις δεν ακυρώνονται — διαγράψτε το υπόλοιπο αντ’ αυτού.",
+    "messageBulk": "Κάθε επιλεγμένη ανοιχτή πληρωμή ακυρώνεται με αυτόν τον λόγο. Οι εξοφλημένες ή με εισπράξεις παραλείπονται.",
+    "reason": "Λόγος",
+    "reasonPlaceholder": "π.χ. Ο ενοικιαστής αποχώρησε στις 15",
+    "confirm": "Ακύρωση πληρωμής",
+    "confirmBulk": "Ακύρωση {{count}} πληρωμών"
+  },
+  "waiveDialog": {
+    "title": "Απαλλαγή προστίμου",
+    "message": "Το πρόστιμο των {{amount}} ακυρώνεται και δεν θα χρεωθεί.",
+    "reason": "Λόγος",
+    "reasonPlaceholder": "π.χ. Πρώτη καθυστέρηση, καλή θέληση",
+    "confirm": "Απαλλαγή"
+  },
+  "writeOffDialog": {
+    "title": "Διαγραφή υπολοίπου",
+    "message": "Το υπόλοιπο {{amount}} κλείνει χωρίς είσπραξη. Καταγράφεται ως διαγραφή και δεν αναιρείται.",
+    "reason": "Λόγος",
+    "reasonPlaceholder": "π.χ. Επισφαλής απαίτηση μετά την αποχώρηση",
+    "date": "Ημερομηνία διαγραφής",
+    "confirm": "Διαγραφή"
+  },
+  "applyCreditDialog": {
+    "title": "Χρήση πίστωσης ενοικιαστή",
+    "message": "Ανοιχτό υπόλοιπο: {{balance}}. Επιλέξτε πίστωση και ποσό.",
+    "credit": "Πίστωση",
+    "amount": "Ποσό (μέγ. {{max}})",
+    "confirm": "Χρήση {{amount}}",
+    "none": "Ο ενοικιαστής δεν έχει ανοιχτή πίστωση σε αυτό το νόμισμα."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Υπερπληρωμή",
+      "CREDIT_NOTE": "Πιστωτικό σημείωμα"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

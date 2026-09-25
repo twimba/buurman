@@ -226,6 +226,159 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     }
 
     @Test
+    @DisplayName("findOverduePayments includes partially paid and stored-OVERDUE payments past due")
+    void findOverdueIncludesPartiallyPaidAndOverdueStatus() {
+      Payment partial =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1));
+      partial.setStatus(PaymentStatus.PARTIALLY_PAID);
+      repo.save(partial);
+      Payment stored =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("900.00"), LocalDate.of(2026, 1, 15));
+      stored.setStatus(PaymentStatus.OVERDUE);
+      repo.save(stored);
+      Payment cancelled =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("800.00"), LocalDate.of(2026, 1, 1));
+      cancelled.setStatus(PaymentStatus.CANCELLED);
+      repo.save(cancelled);
+
+      List<Payment> overdue = repo.findOverduePayments(TEAM_A_ID);
+
+      assertThat(overdue)
+          .extracting(Payment::getStatus)
+          .containsExactly(PaymentStatus.OVERDUE, PaymentStatus.PARTIALLY_PAID);
+    }
+
+    @Test
+    @DisplayName("findOverdueRows nets receivals off the balance and drops fully covered payments")
+    void findOverdueRowsNetsReceivals() {
+      PaymentReceivalRepository receivals = new PaymentReceivalRepository(dsl, CLOCK);
+      Payment partial =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("1000.00"),
+                  LocalDate.of(2026, 2, 1)));
+      Payment covered =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("300.00"),
+                  LocalDate.of(2026, 1, 1)));
+      Payment otherTeam =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_B_ID,
+                  contractIdB,
+                  USER_ID,
+                  new BigDecimal("400.00"),
+                  LocalDate.of(2026, 1, 1)));
+      receivals.save(receival(partial, new BigDecimal("250.00")));
+      receivals.save(receival(covered, new BigDecimal("300.00")));
+
+      List<PaymentRepository.OverduePaymentRow> rows = repo.findOverdueRows(TEAM_A_ID);
+
+      assertThat(rows).hasSize(1);
+      assertThat(rows.getFirst().paymentId()).isEqualTo(partial.getId());
+      assertThat(rows.getFirst().outstanding()).isEqualByComparingTo("750.00");
+      assertThat(rows.getFirst().identifier()).isEqualTo(partial.getIdentifier().orElseThrow());
+      assertThat(rows).noneMatch(r -> r.paymentId().equals(otherTeam.getId()));
+
+      assertThat(repo.getOverdueStats(TEAM_A_ID)).isPresent();
+      assertThat(repo.getOverdueStats(TEAM_A_ID).orElseThrow().count()).isEqualTo(2);
+      assertThat(repo.getOverdueStats(TEAM_A_ID).orElseThrow().total())
+          .hasValueSatisfying(total -> assertThat(total).isEqualByComparingTo("75000"));
+    }
+
+    private com.buurman.domain.PaymentReceival receival(Payment payment, BigDecimal amount) {
+      com.buurman.domain.PaymentReceival r = new com.buurman.domain.PaymentReceival();
+      r.setIdentifier(Optional.of(com.buurman.util.SidGenerator.newPaymentReceivalId()));
+      r.setTeamId(payment.getTeamId());
+      r.setPaymentId(payment.getId());
+      r.setAmount(com.buurman.util.MoneyAmount.of(amount, "EUR"));
+      r.setReceivalDate(LocalDate.of(2026, 2, 15));
+      r.setCreatedBy(USER_ID);
+      r.setUpdatedBy(USER_ID);
+      return r;
+    }
+
+    @Test
+    @DisplayName("late fee candidates respect the contract opt-in, grace period and one-fee rule")
+    void lateFeeCandidates() {
+      LocalDate today = LocalDate.of(2026, 3, 1);
+      dsl.update(com.buurman.jooq.generated.Tables.CONTRACTS)
+          .set(com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_ENABLED, true)
+          .set(com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_GRACE_DAYS, 5)
+          .set(
+              com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_PERCENTAGE,
+              new BigDecimal("2.50"))
+          .where(com.buurman.jooq.generated.Tables.CONTRACTS.ID.eq(contractIdA))
+          .execute();
+      Payment pastGrace =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), today.minusDays(6)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), today.minusDays(5)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_B_ID, contractIdB, USER_ID, new BigDecimal("1000.00"), today.minusDays(30)));
+
+      List<Payment> candidates = repo.findLateFeeCandidates(today);
+      assertThat(candidates).extracting(Payment::getId).containsExactly(pastGrace.getId());
+      assertThat(repo.hasLateFee(pastGrace.getId(), TEAM_A_ID)).isFalse();
+
+      Payment fee =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("25.00"), today);
+      fee.setPaymentType(Payment.PaymentType.LATE_FEE);
+      fee.setParentPaymentId(Optional.of(pastGrace.getId()));
+      Payment savedFee = repo.save(fee);
+      assertThat(repo.hasLateFee(pastGrace.getId(), TEAM_A_ID)).isTrue();
+      Payment reloaded =
+          repo.getByIdentifierAndTeamId(savedFee.getIdentifier().orElseThrow(), TEAM_A_ID);
+      assertThat(reloaded.getPaymentType()).isEqualTo(Payment.PaymentType.LATE_FEE);
+      assertThat(reloaded.getParentPaymentId()).contains(pastGrace.getId());
+      // Late fees are never themselves candidates
+      assertThat(repo.findLateFeeCandidates(today.plusDays(30)))
+          .extracting(Payment::getId)
+          .doesNotContain(savedFee.getId());
+    }
+
+    @Test
+    @DisplayName("demo teams are charged too, so demo data shows the feature working")
+    void lateFeeCandidatesIncludeDemoTeams() {
+      LocalDate today = LocalDate.of(2026, 3, 1);
+      dsl.update(com.buurman.jooq.generated.Tables.TEAMS)
+          .set(com.buurman.jooq.generated.Tables.TEAMS.DEMO, true)
+          .where(com.buurman.jooq.generated.Tables.TEAMS.ID.eq(TEAM_A_ID))
+          .execute();
+      dsl.update(com.buurman.jooq.generated.Tables.CONTRACTS)
+          .set(com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_ENABLED, true)
+          .set(com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_GRACE_DAYS, 5)
+          .set(
+              com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_PERCENTAGE,
+              new BigDecimal("2.50"))
+          .where(com.buurman.jooq.generated.Tables.CONTRACTS.ID.eq(contractIdA))
+          .execute();
+      Payment pastGrace =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), today.minusDays(6)));
+
+      assertThat(repo.findLateFeeCandidates(today))
+          .extracting(Payment::getId)
+          .contains(pastGrace.getId());
+    }
+
+    @Test
     @DisplayName("findOverduePayments excludes paid payments")
     void findOverdueExcludesPaid() {
       Payment p =

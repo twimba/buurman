@@ -7,7 +7,13 @@
     "schedulePayment": "Schedule Payment",
     "registerPayment": "Register Payment",
     "registerReceival": "Register Receival",
-    "markAsPaid": "Mark as Paid"
+    "markAsPaid": "Mark as Paid",
+    "sendReminder": "Send Reminder",
+    "applyCredit": "Apply credit",
+    "waiveLateFee": "Waive fee",
+    "writeOff": "Write off",
+    "cancelPayment": "Cancel payment",
+    "formalNotice": "Formal notice (PDF)"
   },
   "stats": {
     "pendingPayments": "Pending Payments",
@@ -122,13 +128,18 @@
     "metadata": "Metadata",
     "created": "Created:",
     "lastUpdated": "Last Updated:",
-    "editPayment": "Edit Payment"
+    "editPayment": "Edit Payment",
+    "lateFeesCharged": "Late fee charged",
+    "lateFeeDue": "due {{date}}",
+    "lateFeeParent": "Late fee on",
+    "paymentId": "Payment #{{id}}"
   },
   "tabs": {
     "details": "Details",
     "receivals": "Receivals",
     "documents": "Documents",
-    "history": "History"
+    "history": "History",
+    "reminders": "Reminders"
   },
   "receivals": {
     "title": "Receivals ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Receival Date",
     "notesOptional": "Notes (Optional)",
     "notesPlaceholder": "Add notes about this receival...",
-    "register": "Register"
+    "register": "Register",
+    "types": {
+      "WRITE_OFF": "Write-off",
+      "CREDIT": "Credit applied",
+      "PAYMENT": "Payment",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Payment History",
@@ -190,11 +207,170 @@
     "deleteReceival": "Delete receival",
     "save": "Save",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "sendReminder": "Email the tenant about this payment",
+    "formalNotice": "Download a dated formal demand letter for this payment"
   },
   "errors": {
     "loadFailed": "Failed to load payments",
     "loadPaymentFailed": "Failed to load payment",
     "loadHistoryFailed": "Failed to load history"
+  },
+  "selection": {
+    "selected": "{{count}} selected",
+    "selectAll": "Select all unpaid on this page",
+    "selectRow": "Select payment {{id}}",
+    "select": "Select",
+    "done": "Done",
+    "markPaid": "Mark paid",
+    "sendReminders": "Send reminders",
+    "cancel": "Cancel payments",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Arrears",
+    "summary": "{{amount}} outstanding from {{count}} tenant",
+    "summary_other": "{{amount}} outstanding from {{count}} tenants",
+    "oldest": "oldest {{days}} days overdue",
+    "bucket": {
+      "1-30": "1–30 days",
+      "31-60": "31–60 days",
+      "61-90": "61–90 days",
+      "91+": "Over 90 days"
+    },
+    "payments": "{{count}} payment",
+    "payments_other": "{{count}} payments",
+    "lastReminded": "last reminded {{when}} ({{count}}×)",
+    "neverReminded": "never reminded",
+    "daysOverdue": "{{days}} days overdue",
+    "sendReminder": "Send reminder",
+    "sendReminderTo": "Send reminder to {{name}}",
+    "remindAll": "Remind all ({{count}})",
+    "showAll": "Show all {{count}} tenants",
+    "showLess": "Show less",
+    "noContact": "No contact linked",
+    "remindersDisabled": "Reminders require both the contract flag and the tenant’s consent — enable them on the contract and the contact."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Mark {{count}} payments as paid",
+    "message": "Each selected payment is marked fully paid on the chosen date. Payments that are already paid or cancelled are skipped.",
+    "confirm": "Mark {{count}} as paid"
+  },
+  "sendReminderDialog": {
+    "title": "Send payment reminder",
+    "titleBulk": "Send {{count}} reminders",
+    "message": "The tenant receives an email with the outstanding balance, due date and your payment instructions, in the language of the contract.",
+    "messageBulk": "Each tenant receives an email with their outstanding balance, due date and your payment instructions. Payments without a tenant email address are skipped.",
+    "notesLabel": "Personal message (optional)",
+    "notesPlaceholder": "e.g. Please transfer the amount before Friday.",
+    "confirm": "Send reminder",
+    "confirmBulk": "Send {{count}} reminders",
+    "toneLabel": "Tone",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Friendly",
+        "help": "A polite nudge that the payment is open."
+      },
+      "FIRM": {
+        "label": "Firm",
+        "help": "A clear demand naming the days overdue and the consequences."
+      },
+      "FINAL": {
+        "label": "Final notice",
+        "help": "Formal demand with a 14-day deadline. A signed formal-notice PDF is attached and filed under the contract."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Reminders sent",
+    "empty": "No reminders sent yet",
+    "emptySubtitle": "Reminders you send to the tenant will appear here",
+    "sentBy": "by {{name}}",
+    "automatic": "Automatic reminder",
+    "manual": "Reminder",
+    "daysOverdue": "{{days}} days overdue",
+    "outstanding": "Outstanding {{amount}}",
+    "to": "to {{email}}",
+    "delivery": {
+      "QUEUED": "Queued",
+      "SENT": "Sent",
+      "DELIVERED": "Delivered",
+      "FAILED": "Delivery failed",
+      "BLOCKED": "Not sent (demo)",
+      "UNKNOWN": "Unknown"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Reminder sent to {{email}}",
+    "bulkMarkPaid": "{{success}} marked as paid, {{failed}} skipped",
+    "bulkReminders": "{{success}} reminders sent, {{failed}} skipped",
+    "cancelled": "Payment cancelled",
+    "bulkCancelled": "{{success}} cancelled, {{failed}} skipped",
+    "lateFeeWaived": "Late fee waived",
+    "writtenOff": "Balance written off",
+    "creditApplied": "Credit applied"
+  },
+  "types": {
+    "LATE_FEE": "Late fee",
+    "RENT": "Rent",
+    "INSTALMENT": "Instalment"
+  },
+  "cancelDialog": {
+    "title": "Cancel payment",
+    "titleBulk": "Cancel {{count}} payments",
+    "message": "The payment is marked as cancelled and no longer counts as outstanding. Payments with registered receivals cannot be cancelled — write off the balance instead.",
+    "messageBulk": "Each selected open payment is cancelled with this reason. Paid payments and payments with receivals are skipped.",
+    "reason": "Reason",
+    "reasonPlaceholder": "e.g. Tenant moved out on the 15th",
+    "confirm": "Cancel payment",
+    "confirmBulk": "Cancel {{count}} payments"
+  },
+  "waiveDialog": {
+    "title": "Waive late fee",
+    "message": "The fee of {{amount}} is cancelled and will not be charged.",
+    "reason": "Reason",
+    "reasonPlaceholder": "e.g. First late payment, goodwill",
+    "confirm": "Waive fee"
+  },
+  "writeOffDialog": {
+    "title": "Write off balance",
+    "message": "The remaining {{amount}} is closed without money received. This is recorded as a write-off and cannot be undone.",
+    "reason": "Reason",
+    "reasonPlaceholder": "e.g. Bad debt after tenant left",
+    "date": "Write-off date",
+    "confirm": "Write off"
+  },
+  "applyCreditDialog": {
+    "title": "Apply tenant credit",
+    "message": "Open balance: {{balance}}. Choose which credit to use and how much of it.",
+    "credit": "Credit",
+    "amount": "Amount (max {{max}})",
+    "confirm": "Apply {{amount}}",
+    "none": "This tenant has no open credit in this currency."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Overpayment",
+      "CREDIT_NOTE": "Credit note"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

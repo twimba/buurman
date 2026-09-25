@@ -1,5 +1,6 @@
 package com.buurman.service.notification;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,10 +18,14 @@ public record SendNotificationRequest(
     Optional<UUID> recipientContactId,
     Optional<String> recipientEmail,
     Optional<String> recipientPhone,
+    /** Explicit locale for rendering (BCP 47 tag). Overrides user/team preference resolution. */
+    Optional<String> languageTag,
     String templateName,
     Map<String, Object> templateVariables,
     NotificationUrgency urgency,
-    UUID createdBy) {
+    UUID createdBy,
+    /** Files (already in object storage) to attach to the email. */
+    List<EmailAttachment> attachments) {
 
   /** Customize the Lombok-generated builder to provide defaults for Optional and urgency fields. */
   @SuppressWarnings("NullAway.Init")
@@ -30,6 +35,8 @@ public record SendNotificationRequest(
     private Optional<UUID> recipientContactId = Optional.empty();
     private Optional<String> recipientEmail = Optional.empty();
     private Optional<String> recipientPhone = Optional.empty();
+    private Optional<String> languageTag = Optional.empty();
     private NotificationUrgency urgency = NotificationUrgency.NORMAL;
+    private List<EmailAttachment> attachments = List.of();
   }
 }

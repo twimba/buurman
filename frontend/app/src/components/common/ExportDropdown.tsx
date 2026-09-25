@@ -21,6 +21,8 @@ export interface ExportDropdownProps {
   disabled?: boolean;
   size?: 'sm' | 'md';
   exporting?: boolean;
+  /** Trigger text when several options are offered. Defaults to the generic "Export". */
+  label?: string;
 }
 
 export const ExportDropdown = ({
@@ -28,6 +30,7 @@ export const ExportDropdown = ({
   disabled = false,
   size = 'md',
   exporting = false,
+  label,
 }: ExportDropdownProps) => {
   const [open, setOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState<{
@@ -153,7 +156,7 @@ export const ExportDropdown = ({
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border-default text-text-secondary hover:bg-surface-inset transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {exporting ? spinnerSm : <Download className="h-3.5 w-3.5" />}
-          {exporting ? t('buttons.exporting') : t('buttons.export')}
+          {exporting ? t('buttons.exporting') : (label ?? t('buttons.export'))}
           {!exporting && <ChevronDown className="h-3 w-3" />}
         </button>
         {dropdownMenu}
@@ -170,7 +173,7 @@ export const ExportDropdown = ({
         className="flex items-center gap-2 px-4 py-2 bg-surface-card border border-border-strong text-text-secondary rounded-md hover:bg-surface-inset transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {exporting ? spinnerMd : <Download className="h-4 w-4" />}
-        {exporting ? t('buttons.exporting') : t('buttons.export')}
+        {exporting ? t('buttons.exporting') : (label ?? t('buttons.export'))}
         {!exporting && <ChevronDown className="h-3.5 w-3.5" />}
       </button>
       {dropdownMenu}

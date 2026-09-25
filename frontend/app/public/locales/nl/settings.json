@@ -387,5 +387,46 @@
       "completed": "Voltooid",
       "failed": "Mislukt"
     }
+  },
+  "tenantReminders": {
+    "title": "Huurdersherinneringen",
+    "subtitle": "Automatische betalingsherinneringen per e-mail aan huurders (aanmaningsladder)",
+    "consentNotice": "Herinneringen worden nooit verstuurd tenzij zowel het contract herinneringen heeft ingeschakeld als het huurderscontact toestemming heeft gegeven. Alles hier staat standaard uit.",
+    "automatic": {
+      "label": "Automatische herinneringen",
+      "description": "Voer de onderstaande ladder elke ochtend uit voor openstaande betalingen van ingestemde huurders"
+    },
+    "steps": {
+      "title": "Herinneringsladder",
+      "description": "Elke stap stuurt één e-mail zodra een betaling het opgegeven aantal dagen na de vervaldatum is. Een betaling krijgt maximaal één stap per dag.",
+      "empty": "Geen stappen ingesteld — er wordt niets automatisch verstuurd.",
+      "useDefaults": "Aanbevolen ladder gebruiken",
+      "add": "Stap toevoegen",
+      "remove": "Stap verwijderen",
+      "enabled": "Stap actief",
+      "offsetDays": "Dagen ten opzichte van vervaldatum",
+      "tone": "Toon",
+      "duplicateOffsets": "Elke stap heeft een ander aantal dagen nodig.",
+      "preview": "Voorbeeld"
+    },
+    "offset": {
+      "before": "{{count}} dag vóór de vervaldatum",
+      "before_other": "{{count}} dagen vóór de vervaldatum",
+      "onDue": "op de vervaldatum",
+      "after": "{{count}} dag na de vervaldatum",
+      "after_other": "{{count}} dagen na de vervaldatum"
+    },
+    "tones": {
+      "FRIENDLY": "Vriendelijk",
+      "FIRM": "Streng",
+      "FINAL": "Laatste aanmaning"
+    },
+    "preview": {
+      "title": "Voorbeeld van de herinnering",
+      "subtitle": "Hoe een {{tone}} herinnering overkomt bij een huurder",
+      "subject": "Onderwerp",
+      "sampleNotice": "Alleen een voorbeeld: gericht aan {{name}}, weergegeven in {{language}}. Er is niets verzonden.",
+      "failed": "Het voorbeeld kon niet worden geladen."
+    }
   }
 }

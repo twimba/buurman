@@ -24,7 +24,8 @@
       "title": "No contracts yet",
       "description": "Get started by creating your first rental agreement"
     },
-    "error": "Failed to load contracts"
+    "error": "Failed to load contracts",
+    "exportDeposits": "Export deposits"
   },
   "create": {
     "title": "Add New Contract",
@@ -193,7 +194,13 @@
       "created": "Created:",
       "lastUpdated": "Last Updated:",
       "at": "at"
-    }
+    },
+    "tenantReminders": "Tenant reminders",
+    "remindersOn": "Enabled",
+    "remindersOff": "Off",
+    "remindersPausedUntil": "Paused until {{date}}",
+    "lateFeeActive": "charged after {{count}} days",
+    "lateFeeInactive": "not charged"
   },
   "payments": {
     "title": "Payments",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Set a country on the selected property to see country-specific regulatory fields.",
     "dismissDuplicateWarning": "Review the duplicate warning above and dismiss it to continue",
     "dismissDuplicateFirst": "Dismiss the duplicate warning first",
-    "change": "Change"
+    "change": "Change",
+    "tenantReminders": "Tenant payment reminders",
+    "tenantRemindersHelp": "Allow reminder emails for this contract. The tenant contact must also have opted in; nothing is sent otherwise.",
+    "remindersPausedUntil": "Pause reminders until",
+    "remindersPausedUntilHelp": "No reminders are sent until this date, e.g. while a payment plan is agreed.",
+    "lateFeeEnabled": "Charge late fees",
+    "lateFeeEnabledHelp": "Adds a separate late-fee payment once a rent payment is still open after the grace period. Off by default.",
+    "lateFeeGraceDays": "Grace period (days)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Flat late fees are permitted in {{country}}.",
+      "CAPPED": "In {{country}} late fees are capped at {{percentage}}% of the amount due.",
+      "INTEREST_ONLY": "In {{country}} only statutory default interest may be charged on overdue rent; flat late fees cannot be enabled.",
+      "FORBIDDEN": "Late fees on residential rent are not permitted in {{country}}.",
+      "overCap": "The percentage above exceeds this cap."
+    },
+    "formalNoticeDays": "Formal notice period (days)",
+    "formalNoticeDaysHelp": "Days the tenant gets to settle after a formal notice. Leave empty to use the default of {{count}} days.",
+    "formalNoticeDaysCountryDefault": "Leave empty to use the {{country}} default of {{count}} days."
   },
   "statusChange": {
     "title": "Change Contract Status",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Negotiated",
       "FROZEN": "Frozen",
       "OTHER": "Other"
+    },
+    "lateFees": {
+      "title": "Late fees",
+      "policy": {
+        "ALLOWED": "Flat late fees allowed",
+        "CAPPED": "Late fees capped",
+        "INTEREST_ONLY": "Statutory interest only",
+        "FORBIDDEN": "Late fees not permitted",
+        "UNKNOWN": "Unknown"
+      },
+      "maxPercentage": "Maximum {{percentage}}% of the amount due",
+      "noticeDays": "Formal notice period: {{count}} days"
     }
   },
   "rentIncrease": {
@@ -828,6 +864,98 @@
       "FIXED_PERCENTAGE": "Fixed percentage",
       "FIXED_AMOUNT": "Fixed amount",
       "MANUAL": "Manual"
+    }
+  },
+  "deposit": {
+    "title": "Deposit",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Expected",
+      "HELD": "Held",
+      "PARTIALLY_RETURNED": "Partially returned",
+      "RETURNED": "Returned",
+      "FORFEITED": "Forfeited"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    },
+    "statement": "Statement (PDF)",
+    "statementHelp": "Download an itemised deposit statement for the tenant"
+  },
+  "paymentPlans": {
+    "title": "Payment plans",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "weekly",
+      "BIWEEKLY": "biweekly",
+      "MONTHLY": "monthly"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
     }
   }
 }

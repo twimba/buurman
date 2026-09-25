@@ -7,7 +7,13 @@
     "schedulePayment": "Betaling plannen",
     "registerPayment": "Betaling registreren",
     "registerReceival": "Ontvangst registreren",
-    "markAsPaid": "Markeer als betaald"
+    "markAsPaid": "Markeer als betaald",
+    "sendReminder": "Herinnering sturen",
+    "applyCredit": "Tegoed toepassen",
+    "waiveLateFee": "Boete kwijtschelden",
+    "writeOff": "Afboeken",
+    "cancelPayment": "Betaling annuleren",
+    "formalNotice": "Ingebrekestelling (PDF)"
   },
   "stats": {
     "pendingPayments": "Openstaande betalingen",
@@ -122,13 +128,18 @@
     "metadata": "Metadata",
     "created": "Aangemaakt:",
     "lastUpdated": "Laatst bijgewerkt:",
-    "editPayment": "Betaling bewerken"
+    "editPayment": "Betaling bewerken",
+    "lateFeesCharged": "Boete in rekening gebracht",
+    "lateFeeDue": "vervalt {{date}}",
+    "lateFeeParent": "Boete op",
+    "paymentId": "Betaling #{{id}}"
   },
   "tabs": {
     "details": "Details",
     "receivals": "Ontvangsten",
     "documents": "Documenten",
-    "history": "Geschiedenis"
+    "history": "Geschiedenis",
+    "reminders": "Herinneringen"
   },
   "receivals": {
     "title": "Ontvangsten ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Ontvangstdatum",
     "notesOptional": "Notities (optioneel)",
     "notesPlaceholder": "Opmerkingen over deze ontvangst toevoegen...",
-    "register": "Registreren"
+    "register": "Registreren",
+    "types": {
+      "WRITE_OFF": "Afboeking",
+      "CREDIT": "Tegoed toegepast",
+      "PAYMENT": "Betaling",
+      "PLAN": "Naar betalingsregeling"
+    }
   },
   "history": {
     "title": "Betalingsgeschiedenis",
@@ -190,11 +207,170 @@
     "deleteReceival": "Ontvangst verwijderen",
     "save": "Opslaan",
     "previous": "Vorige",
-    "next": "Volgende"
+    "next": "Volgende",
+    "sendReminder": "E-mail de huurder over deze betaling",
+    "formalNotice": "Download een gedateerde ingebrekestelling voor deze betaling"
   },
   "errors": {
     "loadFailed": "Kan betalingen niet laden",
     "loadPaymentFailed": "Kan betaling niet laden",
     "loadHistoryFailed": "Kan geschiedenis niet laden"
+  },
+  "selection": {
+    "selected": "{{count}} geselecteerd",
+    "selectAll": "Alle onbetaalde op deze pagina selecteren",
+    "selectRow": "Betaling {{id}} selecteren",
+    "select": "Selecteren",
+    "done": "Klaar",
+    "markPaid": "Markeer betaald",
+    "sendReminders": "Herinneringen sturen",
+    "cancel": "Betalingen annuleren",
+    "paymentPlan": "Betalingsregeling",
+    "paymentPlanHint": "Selecteer openstaande betalingen van één contract om een regeling te maken."
+  },
+  "arrears": {
+    "title": "Achterstanden",
+    "summary": "{{amount}} openstaand bij {{count}} huurder",
+    "summary_other": "{{amount}} openstaand bij {{count}} huurders",
+    "oldest": "oudste {{days}} dagen te laat",
+    "bucket": {
+      "1-30": "1–30 dagen",
+      "31-60": "31–60 dagen",
+      "61-90": "61–90 dagen",
+      "91+": "Meer dan 90 dagen"
+    },
+    "payments": "{{count}} betaling",
+    "payments_other": "{{count}} betalingen",
+    "lastReminded": "laatst herinnerd {{when}} ({{count}}×)",
+    "neverReminded": "nog nooit herinnerd",
+    "daysOverdue": "{{days}} dagen te laat",
+    "sendReminder": "Herinnering sturen",
+    "sendReminderTo": "Herinnering sturen naar {{name}}",
+    "remindAll": "Iedereen herinneren ({{count}})",
+    "showAll": "Alle {{count}} huurders tonen",
+    "showLess": "Minder tonen",
+    "noContact": "Geen contact gekoppeld",
+    "remindersDisabled": "Herinneringen vereisen zowel de contractinstelling als de toestemming van de huurder — schakel ze in op het contract en het contact."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "{{count}} betalingen als betaald markeren",
+    "message": "Elke geselecteerde betaling wordt op de gekozen datum als volledig betaald gemarkeerd. Al betaalde of geannuleerde betalingen worden overgeslagen.",
+    "confirm": "{{count}} als betaald markeren"
+  },
+  "sendReminderDialog": {
+    "title": "Betalingsherinnering sturen",
+    "titleBulk": "{{count}} herinneringen sturen",
+    "message": "De huurder ontvangt een e-mail met het openstaande bedrag, de vervaldatum en uw betaalgegevens, in de taal van het contract.",
+    "messageBulk": "Elke huurder ontvangt een e-mail met het openstaande bedrag, de vervaldatum en uw betaalgegevens. Betalingen zonder e-mailadres van de huurder worden overgeslagen.",
+    "notesLabel": "Persoonlijk bericht (optioneel)",
+    "notesPlaceholder": "bijv. Wilt u het bedrag vóór vrijdag overmaken?",
+    "confirm": "Herinnering sturen",
+    "confirmBulk": "{{count}} herinneringen sturen",
+    "toneLabel": "Toon",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Vriendelijk",
+        "help": "Een beleefde herinnering dat de betaling openstaat."
+      },
+      "FIRM": {
+        "label": "Dringend",
+        "help": "Een duidelijke aanmaning met het aantal dagen achterstand en de gevolgen."
+      },
+      "FINAL": {
+        "label": "Ingebrekestelling",
+        "help": "Formele aanmaning met een termijn van 14 dagen. Een ingebrekestelling als PDF wordt bijgevoegd en bij het contract opgeslagen."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Verstuurde herinneringen",
+    "empty": "Nog geen herinneringen verstuurd",
+    "emptySubtitle": "Herinneringen die u naar de huurder stuurt verschijnen hier",
+    "sentBy": "door {{name}}",
+    "automatic": "Automatische herinnering",
+    "manual": "Herinnering",
+    "daysOverdue": "{{days}} dagen te laat",
+    "outstanding": "Openstaand {{amount}}",
+    "to": "naar {{email}}",
+    "delivery": {
+      "QUEUED": "In wachtrij",
+      "SENT": "Verzonden",
+      "DELIVERED": "Afgeleverd",
+      "FAILED": "Bezorging mislukt",
+      "BLOCKED": "Niet verzonden (demo)",
+      "UNKNOWN": "Onbekend"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Herinnering verstuurd naar {{email}}",
+    "bulkMarkPaid": "{{success}} als betaald gemarkeerd, {{failed}} overgeslagen",
+    "bulkReminders": "{{success}} herinneringen verstuurd, {{failed}} overgeslagen",
+    "cancelled": "Betaling geannuleerd",
+    "bulkCancelled": "{{success}} geannuleerd, {{failed}} overgeslagen",
+    "lateFeeWaived": "Boete kwijtgescholden",
+    "writtenOff": "Saldo afgeboekt",
+    "creditApplied": "Tegoed toegepast"
+  },
+  "types": {
+    "LATE_FEE": "Boete",
+    "RENT": "Huur",
+    "INSTALMENT": "Termijn"
+  },
+  "cancelDialog": {
+    "title": "Betaling annuleren",
+    "titleBulk": "{{count}} betalingen annuleren",
+    "message": "De betaling wordt als geannuleerd gemarkeerd en telt niet meer als openstaand. Betalingen met geregistreerde ontvangsten kunnen niet worden geannuleerd — boek dan het saldo af.",
+    "messageBulk": "Elke geselecteerde openstaande betaling wordt met deze reden geannuleerd. Betaalde betalingen en betalingen met ontvangsten worden overgeslagen.",
+    "reason": "Reden",
+    "reasonPlaceholder": "bijv. Huurder is op de 15e vertrokken",
+    "confirm": "Betaling annuleren",
+    "confirmBulk": "{{count}} betalingen annuleren"
+  },
+  "waiveDialog": {
+    "title": "Boete kwijtschelden",
+    "message": "De boete van {{amount}} wordt geannuleerd en niet in rekening gebracht.",
+    "reason": "Reden",
+    "reasonPlaceholder": "bijv. Eerste te late betaling, coulance",
+    "confirm": "Kwijtschelden"
+  },
+  "writeOffDialog": {
+    "title": "Saldo afboeken",
+    "message": "Het resterende {{amount}} wordt gesloten zonder ontvangst. Dit wordt als afboeking vastgelegd en kan niet ongedaan worden gemaakt.",
+    "reason": "Reden",
+    "reasonPlaceholder": "bijv. Oninbaar na vertrek huurder",
+    "date": "Afboekdatum",
+    "confirm": "Afboeken"
+  },
+  "applyCreditDialog": {
+    "title": "Huurderstegoed toepassen",
+    "message": "Openstaand saldo: {{balance}}. Kies welk tegoed u gebruikt en hoeveel ervan.",
+    "credit": "Tegoed",
+    "amount": "Bedrag (max {{max}})",
+    "confirm": "{{amount}} toepassen",
+    "none": "Deze huurder heeft geen open tegoed in deze valuta."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Te veel betaald",
+      "CREDIT_NOTE": "Creditnota"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Betalingsregeling maken",
+    "message": "{{count}} betalingen met {{total}} openstaand worden in een regeling ondergebracht en vervangen door termijnen.",
+    "instalments": "Termijnen",
+    "frequency": "Frequentie",
+    "frequencies": {
+      "WEEKLY": "Wekelijks",
+      "BIWEEKLY": "Om de twee weken",
+      "MONTHLY": "Maandelijks"
+    },
+    "startDate": "Eerste termijn vervalt op",
+    "preview": "{{count}} termijnen van ongeveer {{amount}}",
+    "pauseReminders": "Huurdersherinneringen pauzeren tot de laatste termijn",
+    "pauseRemindersHelp": "Aanbevolen: de huurder betaalt zoals afgesproken, dus de ladder hoeft niet aan te manen.",
+    "notes": "Notities (optioneel)",
+    "confirm": "Regeling maken",
+    "created": "Betalingsregeling gemaakt"
   }
 }

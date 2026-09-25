@@ -12,7 +12,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,6 +46,9 @@ public class PaymentReceivalRepository {
   private static final Field<String> CURRENCY = field("currency", String.class);
   private static final Field<LocalDate> RECEIVAL_DATE = field("receival_date", LocalDate.class);
   private static final Field<String> NOTES = field("notes", String.class);
+  private static final Field<String> RECEIVAL_TYPE = field("receival_type", String.class);
+  private static final Field<UUID> CREDIT_ID = field("credit_id", UUID.class);
+  private static final Field<UUID> PLAN_ID = field("payment_plan_id", UUID.class);
   private static final Field<LocalDateTime> CREATED_AT = field("created_at", LocalDateTime.class);
   private static final Field<LocalDateTime> UPDATED_AT = field("updated_at", LocalDateTime.class);
   private static final Field<UUID> CREATED_BY = field("created_by", UUID.class);
@@ -110,6 +115,37 @@ public class PaymentReceivalRepository {
     return MoneyAmount.sumToMajorUnits(sum, currency);
   }
 
+  /** {@link #sumByPaymentIdAndTeamId} for many payments in one query; absent = nothing received. */
+  public Map<UUID, BigDecimal> sumByPaymentIdsAndTeamId(
+      Collection<UUID> paymentIds, UUID teamId, @Nullable String currency) {
+    if (paymentIds.isEmpty()) {
+      return Map.of();
+    }
+    Map<UUID, BigDecimal> out = new HashMap<>();
+    dsl.select(PAYMENT_ID, coalesce(sum(AMOUNT), 0L))
+        .from(TABLE)
+        .where(PAYMENT_ID.in(paymentIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .groupBy(PAYMENT_ID)
+        .forEach(
+            r ->
+                out.put(
+                    r.value1(),
+                    MoneyAmount.sumToMajorUnits(
+                        r.get(1, BigDecimal.class) == null
+                            ? BigDecimal.ZERO
+                            : r.get(1, BigDecimal.class),
+                        currency)));
+    return out;
+  }
+
+  /** Payments settled into a plan (distinct payment ids of PLAN receivals for the plan). */
+  public List<UUID> findPaymentIdsByPlanId(UUID planId, UUID teamId) {
+    return dsl.selectDistinct(PAYMENT_ID)
+        .from(TABLE)
+        .where(PLAN_ID.eq(planId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .fetch(PAYMENT_ID);
+  }
+
   public void save(PaymentReceival receival) {
     LocalDateTime now = LocalDateTime.now(clock);
 
@@ -124,6 +160,9 @@ public class PaymentReceivalRepository {
         .set(CURRENCY, receival.getAmount().currency())
         .set(RECEIVAL_DATE, receival.getReceivalDate())
         .set(NOTES, receival.getNotes().orElse(null))
+        .set(RECEIVAL_TYPE, receival.getReceivalType().name())
+        .set(CREDIT_ID, receival.getCreditId().orElse(null))
+        .set(PLAN_ID, receival.getPaymentPlanId().orElse(null))
         .set(CREATED_AT, now)
         .set(UPDATED_AT, now)
         .set(CREATED_BY, receival.getCreatedBy())
@@ -185,6 +224,12 @@ public class PaymentReceivalRepository {
       receival.setReceivalDate(receivalDate);
     }
     receival.setNotes(Optional.ofNullable(record.get(NOTES)));
+    receival.setReceivalType(
+        Optional.ofNullable(record.get(RECEIVAL_TYPE))
+            .map(PaymentReceival.ReceivalType::valueOf)
+            .orElse(PaymentReceival.ReceivalType.PAYMENT));
+    receival.setCreditId(Optional.ofNullable(record.get(CREDIT_ID)));
+    receival.setPaymentPlanId(Optional.ofNullable(record.get(PLAN_ID)));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {
       receival.setCreatedAt(createdAt);

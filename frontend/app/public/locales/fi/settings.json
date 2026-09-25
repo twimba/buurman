@@ -387,5 +387,46 @@
       "completed": "Valmis",
       "failed": "Epaonnistunut"
     }
+  },
+  "tenantReminders": {
+    "title": "Vuokralaismuistutukset",
+    "subtitle": "Automaattiset maksumuistutukset sähköpostitse vuokralaisille (muistutusportaat)",
+    "consentNotice": "Muistutuksia ei koskaan lähetetä, ellei sekä sopimuksessa ole muistutukset käytössä että vuokralainen ole antanut suostumusta. Kaikki on oletuksena pois päältä.",
+    "automatic": {
+      "label": "Automaattiset muistutukset",
+      "description": "Suorita alla olevat portaat joka aamu suostumuksen antaneiden vuokralaisten avoimille maksuille"
+    },
+    "steps": {
+      "title": "Muistutusportaat",
+      "description": "Jokainen porras lähettää yhden sähköpostin, kun maksu on annetun päivämäärän verran eräpäivän jälkeen. Maksu saa enintään yhden portaan päivässä.",
+      "empty": "Portaita ei ole määritetty — mitään ei lähetetä automaattisesti.",
+      "useDefaults": "Käytä suositeltuja portaita",
+      "add": "Lisää porras",
+      "remove": "Poista porras",
+      "enabled": "Porras käytössä",
+      "offsetDays": "Päivää suhteessa eräpäivään",
+      "tone": "Sävy",
+      "duplicateOffsets": "Jokaisella portaalla on oltava eri päivämäärä.",
+      "preview": "Esikatselu"
+    },
+    "offset": {
+      "before": "{{count}} päivä ennen eräpäivää",
+      "before_other": "{{count}} päivää ennen eräpäivää",
+      "onDue": "eräpäivänä",
+      "after": "{{count}} päivä eräpäivän jälkeen",
+      "after_other": "{{count}} päivää eräpäivän jälkeen"
+    },
+    "tones": {
+      "FRIENDLY": "Ystävällinen",
+      "FIRM": "Jämäkkä",
+      "FINAL": "Viimeinen huomautus"
+    },
+    "preview": {
+      "title": "Muistutuksen esikatselu",
+      "subtitle": "Miltä {{tone}} muistutus näyttää vuokralaiselle",
+      "subject": "Aihe",
+      "sampleNotice": "Vain esimerkki: osoitettu henkilölle {{name}}, kielellä {{language}}. Mitään ei ole lähetetty.",
+      "failed": "Esikatselua ei voitu ladata."
+    }
   }
 }

@@ -36,6 +36,9 @@ export const queryKeys = {
     invitation: (token?: string) => k('invitation', token),
     pending: () => k('pendingInvitations'),
     settings: (teamId?: string) => k('teamSettings', teamId),
+    reminderSettings: (teamId?: string) => k('teamReminderSettings', teamId),
+    reminderPreview: (teamId?: string, tone?: string, offsetDays?: number) =>
+      k('teamReminderPreview', teamId, tone, offsetDays),
   },
 
   // --- Properties ---
@@ -82,6 +85,7 @@ export const queryKeys = {
     photos: (contactId?: string) => k('contactPhotos', contactId),
     addresses: (contactId?: string) => k('contactAddresses', contactId),
     notes: (contactId?: string) => k('contactNotes', contactId),
+    credits: (contactId?: string) => k('contactCredits', contactId),
     relationships: (contactId?: string) => k('contactRelationships', contactId),
     activity: (contactId?: string, params?: unknown) =>
       k('contactActivity', contactId, params),
@@ -97,6 +101,9 @@ export const queryKeys = {
       k('contract-metadata-schema', countryCode),
     paymentsByContract: (contractId?: string) =>
       k('paymentsByContract', contractId),
+    deposit: (contractId?: string) => k('contractDeposit', contractId),
+    paymentPlans: (contractId?: string) =>
+      k('contractPaymentPlans', contractId),
   },
 
   // --- Contract Extensions ---
@@ -132,6 +139,8 @@ export const queryKeys = {
     documents: (paymentId?: string) => k('paymentDocuments', paymentId),
     auditLog: (paymentId?: string) => k('paymentAuditLog', paymentId),
     receivals: (paymentId?: string) => k('paymentReceivals', paymentId),
+    reminders: (paymentId?: string) => k('paymentReminders', paymentId),
+    arrears: () => k('paymentArrears'),
   },
 
   // --- Payment Instructions ---

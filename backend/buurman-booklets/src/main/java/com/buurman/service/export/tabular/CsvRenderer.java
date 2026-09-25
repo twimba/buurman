@@ -67,6 +67,36 @@ public class CsvRenderer {
     if (value instanceof BigDecimal bd) {
       return bd.toPlainString();
     }
-    return value.toString();
+    if (value instanceof Number || value instanceof Boolean) {
+      return value.toString();
+    }
+    return neutraliseFormula(value.toString());
+  }
+
+  /**
+   * Text starting with a formula trigger ({@code = + - @}, tab or CR) would be evaluated by Excel
+   * and LibreOffice when the CSV is opened; a leading apostrophe forces it to stay text. Negative
+   * numbers rendered as strings are left alone.
+   */
+  static String neutraliseFormula(String text) {
+    if (text.isEmpty()) {
+      return text;
+    }
+    char first = text.charAt(0);
+    boolean trigger =
+        first == '='
+            || first == '+'
+            || first == '-'
+            || first == '@'
+            || first == '\t'
+            || first == '\r';
+    if (!trigger) {
+      return text;
+    }
+    boolean signedNumber =
+        (first == '-' || first == '+')
+            && text.length() > 1
+            && (Character.isDigit(text.charAt(1)) || text.charAt(1) == '.');
+    return signedNumber ? text : "'" + text;
   }
 }

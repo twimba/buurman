@@ -24,7 +24,8 @@
       "title": "Inga kontrakt annu",
       "description": "Kom igang genom att skapa ditt forsta hyresavtal"
     },
-    "error": "Det gick inte att ladda kontrakt"
+    "error": "Det gick inte att ladda kontrakt",
+    "exportDeposits": "Exportera depositioner"
   },
   "create": {
     "title": "Lagg till nytt kontrakt",
@@ -193,7 +194,13 @@
       "created": "Skapad:",
       "lastUpdated": "Senast uppdaterad:",
       "at": "kl"
-    }
+    },
+    "tenantReminders": "Hyresgästpåminnelser",
+    "remindersOn": "Aktiverade",
+    "remindersOff": "Av",
+    "remindersPausedUntil": "Pausade till {{date}}",
+    "lateFeeActive": "debiteras efter {{count}} dagar",
+    "lateFeeInactive": "debiteras inte"
   },
   "payments": {
     "title": "Betalningar",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Ange ett land för den valda fastigheten för att se landsspecifika regulatoriska fält.",
     "dismissDuplicateWarning": "Granska dubblettvarningen ovan och avfärda den för att fortsätta",
     "dismissDuplicateFirst": "Avfärda dubblettvarningen först",
-    "change": "Ändra"
+    "change": "Ändra",
+    "tenantReminders": "Betalningspåminnelser till hyresgäst",
+    "tenantRemindersHelp": "Tillåt påminnelsemejl för detta avtal. Hyresgästkontakten måste också ha samtyckt; annars skickas inget.",
+    "remindersPausedUntil": "Pausa påminnelser till",
+    "remindersPausedUntilHelp": "Inga påminnelser skickas fram till detta datum, t.ex. under en avbetalningsplan.",
+    "lateFeeEnabled": "Ta ut förseningsavgift",
+    "lateFeeEnabledHelp": "Lägger till en separat avgiftsbetalning när en hyra fortfarande är obetald efter respittiden. Avstängt som standard.",
+    "lateFeeGraceDays": "Respittid (dagar)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Fasta förseningsavgifter är tillåtna i {{country}}.",
+      "CAPPED": "I {{country}} är förseningsavgifter begränsade till {{percentage}} % av förfallet belopp.",
+      "INTEREST_ONLY": "I {{country}} får endast lagstadgad dröjsmålsränta tas ut på obetald hyra; fasta avgifter kan inte aktiveras.",
+      "FORBIDDEN": "Förseningsavgifter på bostadshyra är inte tillåtna i {{country}}.",
+      "overCap": "Procentsatsen ovan överstiger denna gräns."
+    },
+    "formalNoticeDays": "Betalningsfrist efter anmaning (dagar)",
+    "formalNoticeDaysHelp": "Dagar hyresgästen har på sig att betala efter en formell anmaning. Lämna tomt för standardvärdet {{count}} dagar.",
+    "formalNoticeDaysCountryDefault": "Lämna tomt för standardvärdet i {{country}}: {{count}} dagar."
   },
   "statusChange": {
     "title": "Andra kontraktsstatus",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Forhandlad",
       "FROZEN": "Fryst",
       "OTHER": "Ovrigt"
+    },
+    "lateFees": {
+      "title": "Förseningsavgifter",
+      "policy": {
+        "ALLOWED": "Fasta avgifter tillåtna",
+        "CAPPED": "Avgifter begränsade",
+        "INTEREST_ONLY": "Endast dröjsmålsränta",
+        "FORBIDDEN": "Avgifter inte tillåtna",
+        "UNKNOWN": "Okänt"
+      },
+      "maxPercentage": "Högst {{percentage}} % av förfallet belopp",
+      "noticeDays": "Betalningsfrist efter anmaning: {{count}} dagar"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Fast procentsats",
       "FIXED_AMOUNT": "Fast belopp",
       "MANUAL": "Manuell"
+    }
+  },
+  "deposit": {
+    "title": "Deposition",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Väntad",
+      "HELD": "Innehas",
+      "PARTIALLY_RETURNED": "Delvis återbetald",
+      "RETURNED": "Återbetald",
+      "FORFEITED": "Förverkad"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    },
+    "statement": "Avräkning (PDF)",
+    "statementHelp": "Ladda ner en specificerad depositionsavräkning för hyresgästen"
+  },
+  "paymentPlans": {
+    "title": "Avbetalningsplaner",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "veckovisa",
+      "BIWEEKLY": "varannan vecka",
+      "MONTHLY": "månatliga"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
     }
   }
 }

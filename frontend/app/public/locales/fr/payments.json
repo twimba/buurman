@@ -7,7 +7,13 @@
     "schedulePayment": "Planifier un paiement",
     "registerPayment": "Enregistrer un paiement",
     "registerReceival": "Enregistrer un encaissement",
-    "markAsPaid": "Marquer comme payé"
+    "markAsPaid": "Marquer comme payé",
+    "sendReminder": "Envoyer un rappel",
+    "applyCredit": "Utiliser un avoir",
+    "waiveLateFee": "Annuler la pénalité",
+    "writeOff": "Passer en perte",
+    "cancelPayment": "Annuler le paiement",
+    "formalNotice": "Mise en demeure (PDF)"
   },
   "stats": {
     "pendingPayments": "Paiements en attente",
@@ -122,13 +128,18 @@
     "metadata": "Métadonnées",
     "created": "Créé :",
     "lastUpdated": "Dernière mise à jour :",
-    "editPayment": "Modifier le paiement"
+    "editPayment": "Modifier le paiement",
+    "lateFeesCharged": "Pénalité de retard appliquée",
+    "lateFeeDue": "échéance {{date}}",
+    "lateFeeParent": "Pénalité de retard sur",
+    "paymentId": "Paiement #{{id}}"
   },
   "tabs": {
     "details": "Détails",
     "receivals": "Encaissements",
     "documents": "Documents",
-    "history": "Historique"
+    "history": "Historique",
+    "reminders": "Rappels"
   },
   "receivals": {
     "title": "Encaissements ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Date d'encaissement",
     "notesOptional": "Notes (Optionnel)",
     "notesPlaceholder": "Ajouter des notes sur cet encaissement...",
-    "register": "Enregistrer"
+    "register": "Enregistrer",
+    "types": {
+      "WRITE_OFF": "Perte",
+      "CREDIT": "Avoir utilisé",
+      "PAYMENT": "Paiement",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Historique des paiements",
@@ -190,11 +207,171 @@
     "deleteReceival": "Supprimer l'encaissement",
     "save": "Enregistrer",
     "previous": "Précédent",
-    "next": "Suivant"
+    "next": "Suivant",
+    "sendReminder": "Envoyer un e-mail au locataire au sujet de ce paiement",
+    "formalNotice": "Télécharger une mise en demeure datée pour ce paiement"
   },
   "errors": {
     "loadFailed": "Échec du chargement des paiements",
     "loadPaymentFailed": "Échec du chargement du paiement",
     "loadHistoryFailed": "Échec du chargement de l'historique"
+  },
+  "selection": {
+    "selected": "{{count}} sélectionné",
+    "selected_other": "{{count}} sélectionnés",
+    "selectAll": "Sélectionner tous les impayés de cette page",
+    "selectRow": "Sélectionner le paiement {{id}}",
+    "select": "Sélectionner",
+    "done": "Terminé",
+    "markPaid": "Marquer payé",
+    "sendReminders": "Envoyer des rappels",
+    "cancel": "Annuler les paiements",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Impayés",
+    "summary": "{{amount}} dus par {{count}} locataire",
+    "summary_other": "{{amount}} dus par {{count}} locataires",
+    "oldest": "le plus ancien a {{days}} jours de retard",
+    "bucket": {
+      "1-30": "1–30 jours",
+      "31-60": "31–60 jours",
+      "61-90": "61–90 jours",
+      "91+": "Plus de 90 jours"
+    },
+    "payments": "{{count}} paiement",
+    "payments_other": "{{count}} paiements",
+    "lastReminded": "dernier rappel {{when}} ({{count}}×)",
+    "neverReminded": "jamais relancé",
+    "daysOverdue": "{{days}} jours de retard",
+    "sendReminder": "Envoyer un rappel",
+    "sendReminderTo": "Envoyer un rappel à {{name}}",
+    "remindAll": "Relancer tous ({{count}})",
+    "showAll": "Afficher les {{count}} locataires",
+    "showLess": "Afficher moins",
+    "noContact": "Aucun contact lié",
+    "remindersDisabled": "Les rappels exigent l’option du contrat et l’accord du locataire — activez-les sur le contrat et le contact."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Marquer {{count}} paiements comme payés",
+    "message": "Chaque paiement sélectionné est marqué comme entièrement payé à la date choisie. Les paiements déjà payés ou annulés sont ignorés.",
+    "confirm": "Marquer {{count}} comme payés"
+  },
+  "sendReminderDialog": {
+    "title": "Envoyer un rappel de paiement",
+    "titleBulk": "Envoyer {{count}} rappels",
+    "message": "Le locataire reçoit un e-mail avec le montant restant dû, la date d’échéance et vos coordonnées de paiement, dans la langue du contrat.",
+    "messageBulk": "Chaque locataire reçoit un e-mail avec son montant restant dû, la date d’échéance et vos coordonnées de paiement. Les paiements sans adresse e-mail du locataire sont ignorés.",
+    "notesLabel": "Message personnel (facultatif)",
+    "notesPlaceholder": "ex. Merci de virer le montant avant vendredi.",
+    "confirm": "Envoyer le rappel",
+    "confirmBulk": "Envoyer {{count}} rappels",
+    "toneLabel": "Ton",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Amical",
+        "help": "Un rappel courtois que le paiement est en attente."
+      },
+      "FIRM": {
+        "label": "Ferme",
+        "help": "Une demande claire indiquant le retard et les conséquences."
+      },
+      "FINAL": {
+        "label": "Mise en demeure",
+        "help": "Demande formelle avec un délai de 14 jours. Une mise en demeure en PDF est jointe et classée dans le bail."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Rappels envoyés",
+    "empty": "Aucun rappel envoyé pour l’instant",
+    "emptySubtitle": "Les rappels envoyés au locataire apparaîtront ici",
+    "sentBy": "par {{name}}",
+    "automatic": "Rappel automatique",
+    "manual": "Rappel",
+    "daysOverdue": "{{days}} jours de retard",
+    "outstanding": "Restant dû {{amount}}",
+    "to": "à {{email}}",
+    "delivery": {
+      "QUEUED": "En attente",
+      "SENT": "Envoyé",
+      "DELIVERED": "Remis",
+      "FAILED": "Échec de remise",
+      "BLOCKED": "Non envoyé (démo)",
+      "UNKNOWN": "Inconnu"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Rappel envoyé à {{email}}",
+    "bulkMarkPaid": "{{success}} marqués comme payés, {{failed}} ignorés",
+    "bulkReminders": "{{success}} rappels envoyés, {{failed}} ignorés",
+    "cancelled": "Paiement annulé",
+    "bulkCancelled": "{{success}} annulés, {{failed}} ignorés",
+    "lateFeeWaived": "Pénalité annulée",
+    "writtenOff": "Solde passé en perte",
+    "creditApplied": "Avoir utilisé"
+  },
+  "types": {
+    "LATE_FEE": "Pénalité de retard",
+    "RENT": "Loyer",
+    "INSTALMENT": "Échéance"
+  },
+  "cancelDialog": {
+    "title": "Annuler le paiement",
+    "titleBulk": "Annuler {{count}} paiements",
+    "message": "Le paiement est marqué comme annulé et ne compte plus comme impayé. Les paiements avec des encaissements enregistrés ne peuvent pas être annulés — passez le solde en perte.",
+    "messageBulk": "Chaque paiement ouvert sélectionné est annulé avec ce motif. Les paiements réglés ou avec encaissements sont ignorés.",
+    "reason": "Motif",
+    "reasonPlaceholder": "ex. Le locataire est parti le 15",
+    "confirm": "Annuler le paiement",
+    "confirmBulk": "Annuler {{count}} paiements"
+  },
+  "waiveDialog": {
+    "title": "Annuler la pénalité de retard",
+    "message": "La pénalité de {{amount}} est annulée et ne sera pas facturée.",
+    "reason": "Motif",
+    "reasonPlaceholder": "ex. Premier retard, geste commercial",
+    "confirm": "Annuler la pénalité"
+  },
+  "writeOffDialog": {
+    "title": "Passer le solde en perte",
+    "message": "Le reste de {{amount}} est clôturé sans encaissement. Ceci est enregistré comme perte et ne peut pas être annulé.",
+    "reason": "Motif",
+    "reasonPlaceholder": "ex. Créance irrécouvrable après le départ du locataire",
+    "date": "Date de passage en perte",
+    "confirm": "Passer en perte"
+  },
+  "applyCreditDialog": {
+    "title": "Utiliser un avoir du locataire",
+    "message": "Solde ouvert : {{balance}}. Choisissez l’avoir à utiliser et le montant.",
+    "credit": "Avoir",
+    "amount": "Montant (max {{max}})",
+    "confirm": "Utiliser {{amount}}",
+    "none": "Ce locataire n’a aucun avoir ouvert dans cette devise."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Trop-perçu",
+      "CREDIT_NOTE": "Avoir"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

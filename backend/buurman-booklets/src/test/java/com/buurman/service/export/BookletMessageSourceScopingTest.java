@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 /**
- * Guards the per-booklet message-source decision in {@code DocumentTemplateConfig}: the three
+ * Guards the per-booklet message-source decision in {@code BookletTemplateConfig}: the three
  * *-booklet bundles share generic keys (cover.title, value.*), so merging them into one source
  * resolves those keys to whichever basename is first — the bug that made the contract/contact
  * booklets render the property title. Each legacy exporter must bind to its own scoped source.

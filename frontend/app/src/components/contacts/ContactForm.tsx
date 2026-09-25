@@ -84,6 +84,7 @@ export const ContactForm = ({
     website: contact?.website ?? '',
     invoiceEmail: contact?.invoiceEmail ?? '',
     notes: contact?.notes ?? '',
+    paymentRemindersEnabled: contact?.paymentRemindersEnabled ?? false,
   }));
   const [contactIdentifier, setContactIdentifier] = useState(
     contact?.identifier
@@ -110,6 +111,7 @@ export const ContactForm = ({
         website: contact.website ?? '',
         invoiceEmail: contact.invoiceEmail ?? '',
         notes: contact.notes ?? '',
+        paymentRemindersEnabled: contact.paymentRemindersEnabled ?? false,
       });
       /* eslint-enable react-hooks/set-state-in-effect */
     }
@@ -429,6 +431,28 @@ export const ContactForm = ({
                 error={errors.phone}
               />
             </div>
+
+            <label className="lg:col-span-2 flex items-start gap-3 rounded-md border border-border-default p-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.paymentRemindersEnabled ?? false}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    paymentRemindersEnabled: e.target.checked,
+                  }))
+                }
+                className="mt-0.5 h-4 w-4 rounded border-border-strong text-primary-500 focus-ring"
+              />
+              <span>
+                <span className="block text-sm font-medium text-text-primary">
+                  {t('form.paymentReminders')}
+                </span>
+                <span className="block text-sm text-text-secondary">
+                  {t('form.paymentRemindersHelp')}
+                </span>
+              </span>
+            </label>
 
             {isCompanyLike && (
               <>

@@ -19,6 +19,8 @@ public interface GoogleSheetExportService {
 
   GoogleSheetExport generateContactsGoogleSheet(GoogleAccessToken token, UUID teamId, String title);
 
+  GoogleSheetExport generateDepositsGoogleSheet(GoogleAccessToken token, UUID teamId, String title);
+
   GoogleSheetExport generateTransactionHistoryGoogleSheet(
       GoogleAccessToken token,
       Optional<LocalDate> startDate,

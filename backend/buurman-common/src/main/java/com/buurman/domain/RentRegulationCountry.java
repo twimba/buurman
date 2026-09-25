@@ -1,5 +1,6 @@
 package com.buurman.domain;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,6 +24,13 @@ public class RentRegulationCountry {
   private boolean hasRegionalRegulations;
   @Builder.Default private Optional<String> summary = Optional.empty();
   @Builder.Default private Optional<Instant> lastReviewedAt = Optional.empty();
+  @Builder.Default private LateFeePolicy lateFeePolicy = LateFeePolicy.UNKNOWN;
+  @Builder.Default private Optional<BigDecimal> lateFeeMaxPercentage = Optional.empty();
+  @Builder.Default private Optional<String> lateFeeNotes = Optional.empty();
+
+  /** Default days a tenant gets to settle after a formal notice of overdue rent. */
+  @Builder.Default private Optional<Integer> formalNoticeDays = Optional.empty();
+
   private Instant createdAt;
   private Instant updatedAt;
   @Builder.Default private Optional<String> createdBy = Optional.empty();

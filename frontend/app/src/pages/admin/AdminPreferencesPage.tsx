@@ -4,6 +4,7 @@ import { Settings } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { useTranslation } from 'react-i18next';
 import { TeamPreferencesSection } from '@/components/settings/TeamPreferencesSection';
+import { TenantRemindersSection } from '@/components/settings/TenantRemindersSection';
 
 export const AdminPreferencesPage = () => {
   const { t } = useTranslation('admin');
@@ -34,7 +35,10 @@ export const AdminPreferencesPage = () => {
             {t('preferences.subtitle')}
           </p>
         </div>
-        <TeamPreferencesSection />
+        <div className="space-y-6">
+          <TeamPreferencesSection />
+          <TenantRemindersSection />
+        </div>
       </div>
     </div>
   );

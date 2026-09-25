@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
+import com.buurman.document.DocumentFormatting;
+
 /**
  * Resolves locale-aware display labels for domain enums from the {@code document-enum-labels}
- * message bundle, replacing the hardcoded English maps and {@link BookletHelper#formatEnumValue}
- * calls scattered across the exporters.
+ * message bundle, replacing the hardcoded English maps and {@link
+ * DocumentFormatting#formatEnumValue} calls scattered across the exporters.
  *
  * <p>Key convention: {@code <lowerCamelEnumSimpleName>.<ENUM_CONSTANT>} — e.g. {@code
  * PropertyStatus.VACANT} → {@code propertyStatus.VACANT}. When a key is missing the label degrades
@@ -44,7 +46,7 @@ public class EnumLabelResolver {
       return "";
     }
     String key = namespace + "." + code;
-    String fallback = BookletHelper.formatEnumValue(code);
+    String fallback = DocumentFormatting.formatEnumValue(code);
     return Objects.requireNonNullElse(
         messageSource.getMessage(key, null, fallback, locale), fallback);
   }

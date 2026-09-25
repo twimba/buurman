@@ -131,7 +131,10 @@
       "guarantor": "Garante",
       "overdue": "Scaduto",
       "pending": "In attesa"
-    }
+    },
+    "paymentReminders": "Promemoria di pagamento",
+    "paymentRemindersOn": "Consenso dato",
+    "paymentRemindersOff": "Nessun consenso"
   },
   "card": {
     "allPaid": "Tutto pagato",
@@ -196,7 +199,9 @@
       "businessNameRequired": "Il nome dell'attività è obbligatorio",
       "invalidEmail": "L'email deve essere valida",
       "invalidInvoiceEmail": "L'email di fatturazione deve essere valida"
-    }
+    },
+    "paymentReminders": "Invia promemoria di pagamento a questo contatto",
+    "paymentRemindersHelp": "Consenso esplicito a ricevere e-mail di promemoria per affitti scaduti. I promemoria vengono inviati solo per i contratti in cui sono anch’essi attivati."
   },
   "addresses": {
     "title": "Indirizzi",
@@ -467,6 +472,36 @@
       "DO_NOT_CONTACT": "Non contattare",
       "FORMER_TENANT": "Ex inquilino",
       "REFERRED": "Referenziato"
+    }
+  },
+  "credits": {
+    "title": "Crediti",
+    "add": "Aggiungi nota di credito",
+    "empty": "Nessun credito: pagamenti in eccesso e note di credito compaiono qui",
+    "openTotal": "Credito aperto: {{amount}}",
+    "date": "Data",
+    "source": "Origine",
+    "reason": "Motivo",
+    "amount": "Importo",
+    "remaining": "Residuo",
+    "refund": "Rimborsa",
+    "refundedOn": "Rimborsato il {{date}}",
+    "sources": {
+      "OVERPAYMENT": "Pagamento in eccesso",
+      "CREDIT_NOTE": "Nota di credito"
+    },
+    "createDialog": {
+      "title": "Aggiungi nota di credito",
+      "message": "Denaro che devi a questo contatto. Può essere usato per un pagamento successivo o rimborsato.",
+      "reasonPlaceholder": "es. Compensazione per guasto caldaia a marzo",
+      "confirm": "Aggiungi credito"
+    },
+    "refundDialog": {
+      "title": "Rimborsa credito",
+      "message": "Registra che il residuo di {{amount}} è stato restituito al contatto.",
+      "date": "Data del rimborso",
+      "notes": "Note (facoltativo)",
+      "confirm": "Segna come rimborsato"
     }
   }
 }

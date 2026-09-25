@@ -24,7 +24,8 @@
       "title": "Noch keine Verträge",
       "description": "Beginnen Sie mit der Erstellung Ihres ersten Mietvertrags"
     },
-    "error": "Verträge konnten nicht geladen werden"
+    "error": "Verträge konnten nicht geladen werden",
+    "exportDeposits": "Kautionen exportieren"
   },
   "create": {
     "title": "Neuen Vertrag hinzufügen",
@@ -193,7 +194,13 @@
       "created": "Erstellt:",
       "lastUpdated": "Zuletzt aktualisiert:",
       "at": "um"
-    }
+    },
+    "tenantReminders": "Mietererinnerungen",
+    "remindersOn": "Aktiviert",
+    "remindersOff": "Aus",
+    "remindersPausedUntil": "Pausiert bis {{date}}",
+    "lateFeeActive": "nach {{count}} Tagen berechnet",
+    "lateFeeInactive": "nicht berechnet"
   },
   "payments": {
     "title": "Zahlungen",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Legen Sie ein Land für die ausgewählte Immobilie fest, um länderspezifische Regulierungsfelder zu sehen.",
     "dismissDuplicateWarning": "Überprüfen Sie die obige Duplikatwarnung und schließen Sie sie, um fortzufahren",
     "dismissDuplicateFirst": "Schließen Sie zuerst die Duplikatwarnung",
-    "change": "Ändern"
+    "change": "Ändern",
+    "tenantReminders": "Zahlungserinnerungen an Mieter",
+    "tenantRemindersHelp": "Erinnerungs-E-Mails für diesen Vertrag erlauben. Der Mieterkontakt muss ebenfalls zugestimmt haben; sonst wird nichts gesendet.",
+    "remindersPausedUntil": "Erinnerungen pausieren bis",
+    "remindersPausedUntilHelp": "Bis zu diesem Datum werden keine Erinnerungen gesendet, z. B. während einer Ratenvereinbarung.",
+    "lateFeeEnabled": "Mahngebühren berechnen",
+    "lateFeeEnabledHelp": "Legt eine separate Gebührenzahlung an, sobald eine Mietzahlung nach der Karenzzeit noch offen ist. Standardmäßig aus.",
+    "lateFeeGraceDays": "Karenzzeit (Tage)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Pauschale Verzugsgebühren sind in {{country}} zulässig.",
+      "CAPPED": "In {{country}} sind Verzugsgebühren auf {{percentage}}% des fälligen Betrags begrenzt.",
+      "INTEREST_ONLY": "In {{country}} dürfen auf rückständige Miete nur gesetzliche Verzugszinsen berechnet werden; pauschale Gebühren können nicht aktiviert werden.",
+      "FORBIDDEN": "Verzugsgebühren auf Wohnraummiete sind in {{country}} nicht zulässig.",
+      "overCap": "Der obige Prozentsatz überschreitet diese Grenze."
+    },
+    "formalNoticeDays": "Mahnfrist (Tage)",
+    "formalNoticeDaysHelp": "Tage, die der Mieter nach einer Mahnung zur Zahlung hat. Leer lassen für den Standard von {{count}} Tagen.",
+    "formalNoticeDaysCountryDefault": "Leer lassen für den Standard von {{country}}: {{count}} Tage."
   },
   "statusChange": {
     "title": "Vertragsstatus ändern",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Verhandelt",
       "FROZEN": "Eingefroren",
       "OTHER": "Sonstige"
+    },
+    "lateFees": {
+      "title": "Verzugsgebühren",
+      "policy": {
+        "ALLOWED": "Pauschale Gebühren erlaubt",
+        "CAPPED": "Gebühren gedeckelt",
+        "INTEREST_ONLY": "Nur Verzugszinsen",
+        "FORBIDDEN": "Gebühren nicht erlaubt",
+        "UNKNOWN": "Unbekannt"
+      },
+      "maxPercentage": "Höchstens {{percentage}}% des fälligen Betrags",
+      "noticeDays": "Mahnfrist: {{count}} Tage"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Fester Prozentsatz",
       "FIXED_AMOUNT": "Fester Betrag",
       "MANUAL": "Manuell"
+    }
+  },
+  "deposit": {
+    "title": "Kaution",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Erwartet",
+      "HELD": "Hinterlegt",
+      "PARTIALLY_RETURNED": "Teilweise zurückgezahlt",
+      "RETURNED": "Zurückgezahlt",
+      "FORFEITED": "Einbehalten"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    },
+    "statement": "Abrechnung (PDF)",
+    "statementHelp": "Detaillierte Kautionsabrechnung für den Mieter herunterladen"
+  },
+  "paymentPlans": {
+    "title": "Ratenpläne",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "wöchentliche",
+      "BIWEEKLY": "zweiwöchentliche",
+      "MONTHLY": "monatliche"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
     }
   }
 }

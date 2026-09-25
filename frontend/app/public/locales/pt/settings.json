@@ -387,5 +387,46 @@
       "completed": "Concluído",
       "failed": "Falhado"
     }
+  },
+  "tenantReminders": {
+    "title": "Lembretes a inquilinos",
+    "subtitle": "E-mails automáticos de lembrete de pagamento aos inquilinos (escada de cobrança)",
+    "consentNotice": "Nunca são enviados lembretes sem que o contrato tenha lembretes ativados e o contacto do inquilino tenha dado consentimento. Tudo aqui está desligado por defeito.",
+    "automatic": {
+      "label": "Lembretes automáticos",
+      "description": "Executar a escada abaixo todas as manhãs para pagamentos em aberto de inquilinos com consentimento"
+    },
+    "steps": {
+      "title": "Escada de lembretes",
+      "description": "Cada passo envia um e-mail quando um pagamento atinge o número de dias indicado após o vencimento. Um pagamento recebe no máximo um passo por dia.",
+      "empty": "Sem passos configurados — nada será enviado automaticamente.",
+      "useDefaults": "Usar escada recomendada",
+      "add": "Adicionar passo",
+      "remove": "Remover passo",
+      "enabled": "Passo ativo",
+      "offsetDays": "Dias em relação ao vencimento",
+      "tone": "Tom",
+      "duplicateOffsets": "Cada passo precisa de um número de dias diferente.",
+      "preview": "Pré-visualizar"
+    },
+    "offset": {
+      "before": "{{count}} dia antes do vencimento",
+      "before_other": "{{count}} dias antes do vencimento",
+      "onDue": "na data de vencimento",
+      "after": "{{count}} dia após o vencimento",
+      "after_other": "{{count}} dias após o vencimento"
+    },
+    "tones": {
+      "FRIENDLY": "Amigável",
+      "FIRM": "Firme",
+      "FINAL": "Aviso final"
+    },
+    "preview": {
+      "title": "Pré-visualização do lembrete",
+      "subtitle": "Como um lembrete {{tone}} é lido por um inquilino",
+      "subject": "Assunto",
+      "sampleNotice": "Apenas um exemplo: dirigido a {{name}}, apresentado em {{language}}. Nada foi enviado.",
+      "failed": "Não foi possível carregar a pré-visualização."
+    }
   }
 }

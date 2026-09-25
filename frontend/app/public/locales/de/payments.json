@@ -7,7 +7,13 @@
     "schedulePayment": "Zahlung planen",
     "registerPayment": "Zahlung registrieren",
     "registerReceival": "Eingang registrieren",
-    "markAsPaid": "Als bezahlt markieren"
+    "markAsPaid": "Als bezahlt markieren",
+    "sendReminder": "Erinnerung senden",
+    "applyCredit": "Guthaben verrechnen",
+    "waiveLateFee": "Gebühr erlassen",
+    "writeOff": "Abschreiben",
+    "cancelPayment": "Zahlung stornieren",
+    "formalNotice": "Mahnschreiben (PDF)"
   },
   "stats": {
     "pendingPayments": "Ausstehende Zahlungen",
@@ -122,13 +128,18 @@
     "metadata": "Metadaten",
     "created": "Erstellt:",
     "lastUpdated": "Zuletzt aktualisiert:",
-    "editPayment": "Zahlung bearbeiten"
+    "editPayment": "Zahlung bearbeiten",
+    "lateFeesCharged": "Verzugsgebühr berechnet",
+    "lateFeeDue": "fällig {{date}}",
+    "lateFeeParent": "Verzugsgebühr zu",
+    "paymentId": "Zahlung #{{id}}"
   },
   "tabs": {
     "details": "Details",
     "receivals": "Eingänge",
     "documents": "Dokumente",
-    "history": "Verlauf"
+    "history": "Verlauf",
+    "reminders": "Erinnerungen"
   },
   "receivals": {
     "title": "Eingänge ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Eingangsdatum",
     "notesOptional": "Notizen (optional)",
     "notesPlaceholder": "Anmerkungen zu diesem Eingang hinzufügen...",
-    "register": "Registrieren"
+    "register": "Registrieren",
+    "types": {
+      "WRITE_OFF": "Abschreibung",
+      "CREDIT": "Guthaben verrechnet",
+      "PAYMENT": "Zahlung",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Zahlungsverlauf",
@@ -190,11 +207,170 @@
     "deleteReceival": "Eingang löschen",
     "save": "Speichern",
     "previous": "Zurück",
-    "next": "Weiter"
+    "next": "Weiter",
+    "sendReminder": "Mieter per E-Mail an diese Zahlung erinnern",
+    "formalNotice": "Datiertes Mahnschreiben für diese Zahlung herunterladen"
   },
   "errors": {
     "loadFailed": "Zahlungen konnten nicht geladen werden",
     "loadPaymentFailed": "Zahlung konnte nicht geladen werden",
     "loadHistoryFailed": "Verlauf konnte nicht geladen werden"
+  },
+  "selection": {
+    "selected": "{{count}} ausgewählt",
+    "selectAll": "Alle offenen auf dieser Seite auswählen",
+    "selectRow": "Zahlung {{id}} auswählen",
+    "select": "Auswählen",
+    "done": "Fertig",
+    "markPaid": "Als bezahlt markieren",
+    "sendReminders": "Erinnerungen senden",
+    "cancel": "Zahlungen stornieren",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Rückstände",
+    "summary": "{{amount}} offen bei {{count}} Mieter",
+    "summary_other": "{{amount}} offen bei {{count}} Mietern",
+    "oldest": "älteste {{days}} Tage überfällig",
+    "bucket": {
+      "1-30": "1–30 Tage",
+      "31-60": "31–60 Tage",
+      "61-90": "61–90 Tage",
+      "91+": "Über 90 Tage"
+    },
+    "payments": "{{count}} Zahlung",
+    "payments_other": "{{count}} Zahlungen",
+    "lastReminded": "zuletzt erinnert {{when}} ({{count}}×)",
+    "neverReminded": "noch nie erinnert",
+    "daysOverdue": "{{days}} Tage überfällig",
+    "sendReminder": "Erinnerung senden",
+    "sendReminderTo": "Erinnerung an {{name}} senden",
+    "remindAll": "Alle erinnern ({{count}})",
+    "showAll": "Alle {{count}} Mieter anzeigen",
+    "showLess": "Weniger anzeigen",
+    "noContact": "Kein Kontakt verknüpft",
+    "remindersDisabled": "Erinnerungen erfordern die Vertragsoption und die Zustimmung des Mieters — im Vertrag und beim Kontakt einschalten."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "{{count}} Zahlungen als bezahlt markieren",
+    "message": "Jede ausgewählte Zahlung wird zum gewählten Datum als vollständig bezahlt markiert. Bereits bezahlte oder stornierte Zahlungen werden übersprungen.",
+    "confirm": "{{count}} als bezahlt markieren"
+  },
+  "sendReminderDialog": {
+    "title": "Zahlungserinnerung senden",
+    "titleBulk": "{{count}} Erinnerungen senden",
+    "message": "Der Mieter erhält eine E-Mail mit dem offenen Betrag, dem Fälligkeitsdatum und Ihren Zahlungsdaten in der Vertragssprache.",
+    "messageBulk": "Jeder Mieter erhält eine E-Mail mit seinem offenen Betrag, dem Fälligkeitsdatum und Ihren Zahlungsdaten. Zahlungen ohne E-Mail-Adresse des Mieters werden übersprungen.",
+    "notesLabel": "Persönliche Nachricht (optional)",
+    "notesPlaceholder": "z. B. Bitte überweisen Sie den Betrag bis Freitag.",
+    "confirm": "Erinnerung senden",
+    "confirmBulk": "{{count}} Erinnerungen senden",
+    "toneLabel": "Tonfall",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Freundlich",
+        "help": "Ein höflicher Hinweis, dass die Zahlung offen ist."
+      },
+      "FIRM": {
+        "label": "Bestimmt",
+        "help": "Eine klare Aufforderung mit Verzugstagen und Folgen."
+      },
+      "FINAL": {
+        "label": "Letzte Mahnung",
+        "help": "Förmliche Zahlungsaufforderung mit 14-tägiger Frist. Eine Mahnung als PDF wird angehängt und beim Vertrag abgelegt."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Gesendete Erinnerungen",
+    "empty": "Noch keine Erinnerungen gesendet",
+    "emptySubtitle": "Erinnerungen an den Mieter erscheinen hier",
+    "sentBy": "von {{name}}",
+    "automatic": "Automatische Erinnerung",
+    "manual": "Erinnerung",
+    "daysOverdue": "{{days}} Tage überfällig",
+    "outstanding": "Offen {{amount}}",
+    "to": "an {{email}}",
+    "delivery": {
+      "QUEUED": "In Warteschlange",
+      "SENT": "Gesendet",
+      "DELIVERED": "Zugestellt",
+      "FAILED": "Zustellung fehlgeschlagen",
+      "BLOCKED": "Nicht gesendet (Demo)",
+      "UNKNOWN": "Unbekannt"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Erinnerung an {{email}} gesendet",
+    "bulkMarkPaid": "{{success}} als bezahlt markiert, {{failed}} übersprungen",
+    "bulkReminders": "{{success}} Erinnerungen gesendet, {{failed}} übersprungen",
+    "cancelled": "Zahlung storniert",
+    "bulkCancelled": "{{success}} storniert, {{failed}} übersprungen",
+    "lateFeeWaived": "Mahngebühr erlassen",
+    "writtenOff": "Saldo abgeschrieben",
+    "creditApplied": "Guthaben verrechnet"
+  },
+  "types": {
+    "LATE_FEE": "Mahngebühr",
+    "RENT": "Miete",
+    "INSTALMENT": "Rate"
+  },
+  "cancelDialog": {
+    "title": "Zahlung stornieren",
+    "titleBulk": "{{count}} Zahlungen stornieren",
+    "message": "Die Zahlung wird als storniert markiert und zählt nicht mehr als offen. Zahlungen mit erfassten Eingängen können nicht storniert werden — schreiben Sie stattdessen den Saldo ab.",
+    "messageBulk": "Jede ausgewählte offene Zahlung wird mit diesem Grund storniert. Bezahlte Zahlungen und Zahlungen mit Eingängen werden übersprungen.",
+    "reason": "Grund",
+    "reasonPlaceholder": "z. B. Mieter am 15. ausgezogen",
+    "confirm": "Zahlung stornieren",
+    "confirmBulk": "{{count}} Zahlungen stornieren"
+  },
+  "waiveDialog": {
+    "title": "Mahngebühr erlassen",
+    "message": "Die Gebühr von {{amount}} wird storniert und nicht berechnet.",
+    "reason": "Grund",
+    "reasonPlaceholder": "z. B. Erste Verspätung, Kulanz",
+    "confirm": "Gebühr erlassen"
+  },
+  "writeOffDialog": {
+    "title": "Saldo abschreiben",
+    "message": "Die verbleibenden {{amount}} werden ohne Zahlungseingang geschlossen. Dies wird als Abschreibung erfasst und kann nicht rückgängig gemacht werden.",
+    "reason": "Grund",
+    "reasonPlaceholder": "z. B. Uneinbringliche Forderung nach Auszug",
+    "date": "Abschreibungsdatum",
+    "confirm": "Abschreiben"
+  },
+  "applyCreditDialog": {
+    "title": "Mieterguthaben verrechnen",
+    "message": "Offener Saldo: {{balance}}. Wählen Sie das Guthaben und den Betrag.",
+    "credit": "Guthaben",
+    "amount": "Betrag (max. {{max}})",
+    "confirm": "{{amount}} verrechnen",
+    "none": "Dieser Mieter hat kein offenes Guthaben in dieser Währung."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Überzahlung",
+      "CREDIT_NOTE": "Gutschrift"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

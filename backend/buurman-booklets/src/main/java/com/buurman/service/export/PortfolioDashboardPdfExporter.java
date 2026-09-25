@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.buurman.document.DocumentRenderer;
 import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.dto.response.PortfolioDashboardResponse.PortfolioSummary;
 import com.buurman.dto.response.PortfolioDashboardResponse.PropertyPerformance;

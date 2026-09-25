@@ -7,7 +7,13 @@
     "schedulePayment": "Schemalagd betalning",
     "registerPayment": "Registrera betalning",
     "registerReceival": "Registrera mottagning",
-    "markAsPaid": "Markera som betald"
+    "markAsPaid": "Markera som betald",
+    "sendReminder": "Skicka påminnelse",
+    "applyCredit": "Använd tillgodohavande",
+    "waiveLateFee": "Efterskänk avgift",
+    "writeOff": "Skriv av",
+    "cancelPayment": "Avbryt betalning",
+    "formalNotice": "Betalningsanmaning (PDF)"
   },
   "stats": {
     "pendingPayments": "Vantande betalningar",
@@ -122,13 +128,18 @@
     "metadata": "Metadata",
     "created": "Skapad:",
     "lastUpdated": "Senast uppdaterad:",
-    "editPayment": "Redigera betalning"
+    "editPayment": "Redigera betalning",
+    "lateFeesCharged": "Förseningsavgift debiterad",
+    "lateFeeDue": "förfaller {{date}}",
+    "lateFeeParent": "Förseningsavgift för",
+    "paymentId": "Betalning #{{id}}"
   },
   "tabs": {
     "details": "Detaljer",
     "receivals": "Mottagningar",
     "documents": "Dokument",
-    "history": "Historik"
+    "history": "Historik",
+    "reminders": "Påminnelser"
   },
   "receivals": {
     "title": "Mottagningar ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Mottagningsdatum",
     "notesOptional": "Anteckningar (valfritt)",
     "notesPlaceholder": "Lagg till anteckningar om denna mottagning...",
-    "register": "Registrera"
+    "register": "Registrera",
+    "types": {
+      "WRITE_OFF": "Avskrivning",
+      "CREDIT": "Tillgodohavande använt",
+      "PAYMENT": "Betalning",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Betalningshistorik",
@@ -190,11 +207,171 @@
     "deleteReceival": "Ta bort mottagning",
     "save": "Spara",
     "previous": "Foregaende",
-    "next": "Nasta"
+    "next": "Nasta",
+    "sendReminder": "Mejla hyresgästen om denna betalning",
+    "formalNotice": "Ladda ner en daterad betalningsanmaning för denna betalning"
   },
   "errors": {
     "loadFailed": "Det gick inte att ladda betalningar",
     "loadPaymentFailed": "Det gick inte att ladda betalning",
     "loadHistoryFailed": "Det gick inte att ladda historik"
+  },
+  "selection": {
+    "selected": "{{count}} vald",
+    "selected_other": "{{count}} valda",
+    "selectAll": "Välj alla obetalda på sidan",
+    "selectRow": "Välj betalning {{id}}",
+    "select": "Välj",
+    "done": "Klar",
+    "markPaid": "Markera betald",
+    "sendReminders": "Skicka påminnelser",
+    "cancel": "Avbryt betalningar",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Förfallna belopp",
+    "summary": "{{amount}} utestående från {{count}} hyresgäst",
+    "summary_other": "{{amount}} utestående från {{count}} hyresgäster",
+    "oldest": "äldsta {{days}} dagar försenad",
+    "bucket": {
+      "1-30": "1–30 dagar",
+      "31-60": "31–60 dagar",
+      "61-90": "61–90 dagar",
+      "91+": "Över 90 dagar"
+    },
+    "payments": "{{count}} betalning",
+    "payments_other": "{{count}} betalningar",
+    "lastReminded": "senast påmind {{when}} ({{count}}×)",
+    "neverReminded": "aldrig påmind",
+    "daysOverdue": "{{days}} dagar försenad",
+    "sendReminder": "Skicka påminnelse",
+    "sendReminderTo": "Skicka påminnelse till {{name}}",
+    "remindAll": "Påminn alla ({{count}})",
+    "showAll": "Visa alla {{count}} hyresgäster",
+    "showLess": "Visa färre",
+    "noContact": "Ingen kontakt kopplad",
+    "remindersDisabled": "Påminnelser kräver både avtalsinställningen och hyresgästens samtycke — aktivera dem på avtalet och kontakten."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Markera {{count}} betalningar som betalda",
+    "message": "Varje vald betalning markeras som helt betald på valt datum. Redan betalda eller avbrutna betalningar hoppas över.",
+    "confirm": "Markera {{count}} som betalda"
+  },
+  "sendReminderDialog": {
+    "title": "Skicka betalningspåminnelse",
+    "titleBulk": "Skicka {{count}} påminnelser",
+    "message": "Hyresgästen får ett mejl med utestående belopp, förfallodatum och dina betalningsuppgifter, på avtalets språk.",
+    "messageBulk": "Varje hyresgäst får ett mejl med sitt utestående belopp, förfallodatum och dina betalningsuppgifter. Betalningar utan hyresgästens e-postadress hoppas över.",
+    "notesLabel": "Personligt meddelande (valfritt)",
+    "notesPlaceholder": "t.ex. Vänligen betala beloppet före fredag.",
+    "confirm": "Skicka påminnelse",
+    "confirmBulk": "Skicka {{count}} påminnelser",
+    "toneLabel": "Ton",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Vänlig",
+        "help": "En artig påminnelse om att betalningen är öppen."
+      },
+      "FIRM": {
+        "label": "Bestämd",
+        "help": "Ett tydligt krav med antal dagar försenat och konsekvenser."
+      },
+      "FINAL": {
+        "label": "Slutlig anmaning",
+        "help": "Formellt krav med 14 dagars frist. En betalningsanmaning som PDF bifogas och sparas under avtalet."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Skickade påminnelser",
+    "empty": "Inga påminnelser skickade ännu",
+    "emptySubtitle": "Påminnelser du skickar till hyresgästen visas här",
+    "sentBy": "av {{name}}",
+    "automatic": "Automatisk påminnelse",
+    "manual": "Påminnelse",
+    "daysOverdue": "{{days}} dagar försenad",
+    "outstanding": "Utestående {{amount}}",
+    "to": "till {{email}}",
+    "delivery": {
+      "QUEUED": "I kö",
+      "SENT": "Skickat",
+      "DELIVERED": "Levererat",
+      "FAILED": "Leverans misslyckades",
+      "BLOCKED": "Ej skickat (demo)",
+      "UNKNOWN": "Okänt"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Påminnelse skickad till {{email}}",
+    "bulkMarkPaid": "{{success}} markerade som betalda, {{failed}} överhoppade",
+    "bulkReminders": "{{success}} påminnelser skickade, {{failed}} överhoppade",
+    "cancelled": "Betalning avbruten",
+    "bulkCancelled": "{{success}} avbrutna, {{failed}} överhoppade",
+    "lateFeeWaived": "Förseningsavgift efterskänkt",
+    "writtenOff": "Saldo avskrivet",
+    "creditApplied": "Tillgodohavande använt"
+  },
+  "types": {
+    "LATE_FEE": "Förseningsavgift",
+    "RENT": "Hyra",
+    "INSTALMENT": "Delbetalning"
+  },
+  "cancelDialog": {
+    "title": "Avbryt betalning",
+    "titleBulk": "Avbryt {{count}} betalningar",
+    "message": "Betalningen markeras som avbruten och räknas inte längre som utestående. Betalningar med registrerade inbetalningar kan inte avbrytas – skriv av saldot i stället.",
+    "messageBulk": "Varje vald öppen betalning avbryts med denna anledning. Betalda betalningar och betalningar med inbetalningar hoppas över.",
+    "reason": "Anledning",
+    "reasonPlaceholder": "t.ex. Hyresgästen flyttade ut den 15:e",
+    "confirm": "Avbryt betalning",
+    "confirmBulk": "Avbryt {{count}} betalningar"
+  },
+  "waiveDialog": {
+    "title": "Efterskänk förseningsavgift",
+    "message": "Avgiften på {{amount}} avbryts och debiteras inte.",
+    "reason": "Anledning",
+    "reasonPlaceholder": "t.ex. Första förseningen, goodwill",
+    "confirm": "Efterskänk avgift"
+  },
+  "writeOffDialog": {
+    "title": "Skriv av saldo",
+    "message": "Återstående {{amount}} stängs utan inbetalning. Detta registreras som avskrivning och kan inte ångras.",
+    "reason": "Anledning",
+    "reasonPlaceholder": "t.ex. Osäker fordran efter utflytt",
+    "date": "Avskrivningsdatum",
+    "confirm": "Skriv av"
+  },
+  "applyCreditDialog": {
+    "title": "Använd hyresgästens tillgodohavande",
+    "message": "Öppet saldo: {{balance}}. Välj vilket tillgodohavande som ska användas och hur mycket.",
+    "credit": "Tillgodohavande",
+    "amount": "Belopp (max {{max}})",
+    "confirm": "Använd {{amount}}",
+    "none": "Hyresgästen har inget öppet tillgodohavande i denna valuta."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Överbetalning",
+      "CREDIT_NOTE": "Kreditnota"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Reminder</title>
+</head>
+<body style="font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background-color: #fafaf9;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div th:replace="~{_email-base :: header}"></div>
+        <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
+            <!--/* Heading, body and closing all follow the ladder step's tone; a firm step must
+                    not read like a friendly one just because the rent is late in both. Parser-level
+                    comment so the note never ships inside a tenant's email. */-->
+            <h1 th:text="${isFinal} ? #{email.payment-reminder-tenant.heading.final} : (${tone == 'FIRM'} ? #{email.payment-reminder-tenant.heading.firm} : (${isOverdue} ? #{email.payment-reminder-tenant.heading.overdue} : #{email.payment-reminder-tenant.heading.due}))" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Payment Reminder</h1>
+
+            <p th:text="#{email.payment-reminder-tenant.greeting(${contactName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Dear Tenant,
+            </p>
+
+            <p th:if="${isFinal}" th:text="#{email.payment-reminder-tenant.body.final(${propertyName}, ${daysOverdue})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0; font-weight: 600;">
+                This is a final reminder before further steps are taken.
+            </p>
+            <p th:if="${!isFinal and tone == 'FIRM'}" th:text="#{email.payment-reminder-tenant.body.firm(${propertyName}, ${daysOverdue})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0; font-weight: 600;">
+                The rent remains unpaid and is now well past its due date.
+            </p>
+            <p th:if="${!isFinal and tone == 'FIRM'}" th:text="#{email.payment-reminder-tenant.body.firm.consequences}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Late fees and formal collection steps may follow.
+            </p>
+            <p th:if="${!isFinal and tone != 'FIRM' and isOverdue}" th:text="#{email.payment-reminder-tenant.body.overdue(${propertyName}, ${daysOverdue})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Our records show that the rent payment for the property is overdue.
+            </p>
+            <p th:if="${!isFinal and tone != 'FIRM' and !isOverdue}" th:text="#{email.payment-reminder-tenant.body.due(${propertyName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                This is a friendly reminder that a rent payment is due.
+            </p>
+
+            <div style="background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; padding: 20px; margin: 0 0 24px 0;">
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.payment-reminder-tenant.label.property}">Property:</strong> <span th:text="${propertyName}">Property</span></p>
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.payment-reminder-tenant.label.amount}">Amount:</strong> <span th:text="${amount}">€0.00</span></p>
+                <p th:if="${hasPartialPayment}" style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.payment-reminder-tenant.label.received}">Already received:</strong> <span th:text="${received}">€0.00</span></p>
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.payment-reminder-tenant.label.outstanding}">Outstanding:</strong> <span th:text="${outstanding}" style="font-weight: 600;">€0.00</span></p>
+                <p style="color: #292524; margin: 0;"><strong th:text="#{email.payment-reminder-tenant.label.dueDate}">Due date:</strong> <span th:text="${dueDate}">Date</span></p>
+            </div>
+
+            <div th:if="${hasInstructions}" style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; padding: 20px; margin: 0 0 24px 0;">
+                <p th:text="#{email.payment-reminder-tenant.instructions.heading}" style="color: #0c4a6e; font-weight: 600; margin: 0 0 12px 0;">Payment details</p>
+                <p th:if="${!#strings.isEmpty(accountHolderName)}" style="color: #292524; margin: 0 0 6px 0;"><strong th:text="#{email.payment-reminder-tenant.instructions.holder}">Account holder:</strong> <span th:text="${accountHolderName}"></span></p>
+                <p th:if="${!#strings.isEmpty(iban)}" style="color: #292524; margin: 0 0 6px 0;"><strong th:text="#{email.payment-reminder-tenant.instructions.iban}">IBAN:</strong> <span th:text="${iban}" style="font-family: monospace;"></span></p>
+                <p th:if="${!#strings.isEmpty(bicSwift)}" style="color: #292524; margin: 0 0 6px 0;"><strong th:text="#{email.payment-reminder-tenant.instructions.bic}">BIC:</strong> <span th:text="${bicSwift}" style="font-family: monospace;"></span></p>
+                <p th:if="${!#strings.isEmpty(bankName)}" style="color: #292524; margin: 0 0 6px 0;"><strong th:text="#{email.payment-reminder-tenant.instructions.bank}">Bank:</strong> <span th:text="${bankName}"></span></p>
+                <p th:if="${!#strings.isEmpty(paymentReference)}" style="color: #292524; margin: 0 0 6px 0;"><strong th:text="#{email.payment-reminder-tenant.instructions.reference}">Reference:</strong> <span th:text="${paymentReference}" style="font-family: monospace;"></span></p>
+                <p th:if="${!#strings.isEmpty(additionalDetails)}" style="color: #57534e; margin: 8px 0 0 0; font-size: 14px;" th:text="${additionalDetails}"></p>
+            </div>
+
+            <div th:if="${!#strings.isEmpty(notes)}" style="border-left: 3px solid #d6d3d1; padding: 4px 16px; margin: 0 0 24px 0;">
+                <p style="color: #57534e; margin: 0; white-space: pre-line;" th:text="${notes}"></p>
+            </div>
+
+            <p th:text="${isFinal} ? #{email.payment-reminder-tenant.closing.final} : (${tone == 'FIRM'} ? #{email.payment-reminder-tenant.closing.firm} : #{email.payment-reminder-tenant.closing})" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                If you have already made this payment, please disregard this message.
+            </p>
+            <p th:text="#{email.payment-reminder-tenant.signature(${teamName})}" style="color: #292524; line-height: 1.6; margin: 0;">
+                Kind regards
+            </p>
+        </div>
+
+        <div th:replace="~{_email-base :: footer}"></div>
+    </div>
+</body>
+</html>

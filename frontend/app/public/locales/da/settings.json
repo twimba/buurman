@@ -387,5 +387,46 @@
       "completed": "Faerdig",
       "failed": "Fejlet"
     }
+  },
+  "tenantReminders": {
+    "title": "Lejerpåmindelser",
+    "subtitle": "Automatiske betalingspåmindelser pr. e-mail til lejere (rykkertrappe)",
+    "consentNotice": "Påmindelser sendes aldrig, medmindre både kontrakten har påmindelser aktiveret og lejerkontakten har givet samtykke. Alt her er slået fra som standard.",
+    "automatic": {
+      "label": "Automatiske påmindelser",
+      "description": "Kør trappen nedenfor hver morgen for åbne betalinger fra lejere, der har givet samtykke"
+    },
+    "steps": {
+      "title": "Rykkertrappe",
+      "description": "Hvert trin sender én e-mail, når en betaling har nået det angivne antal dage efter forfald. En betaling får højst ét trin om dagen.",
+      "empty": "Ingen trin konfigureret — intet sendes automatisk.",
+      "useDefaults": "Brug anbefalet trappe",
+      "add": "Tilføj trin",
+      "remove": "Fjern trin",
+      "enabled": "Trin aktivt",
+      "offsetDays": "Dage i forhold til forfaldsdato",
+      "tone": "Tone",
+      "duplicateOffsets": "Hvert trin skal have et forskelligt antal dage.",
+      "preview": "Forhåndsvis"
+    },
+    "offset": {
+      "before": "{{count}} dag før forfald",
+      "before_other": "{{count}} dage før forfald",
+      "onDue": "på forfaldsdagen",
+      "after": "{{count}} dag efter forfald",
+      "after_other": "{{count}} dage efter forfald"
+    },
+    "tones": {
+      "FRIENDLY": "Venlig",
+      "FIRM": "Bestemt",
+      "FINAL": "Sidste påmindelse"
+    },
+    "preview": {
+      "title": "Forhåndsvisning af påmindelsen",
+      "subtitle": "Hvordan en {{tone}} påmindelse læses af en lejer",
+      "subject": "Emne",
+      "sampleNotice": "Kun et eksempel: stilet til {{name}}, vist på {{language}}. Der er ikke sendt noget.",
+      "failed": "Forhåndsvisningen kunne ikke indlæses."
+    }
   }
 }

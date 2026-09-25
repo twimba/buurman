@@ -24,7 +24,8 @@
       "title": "Ei sopimuksia viela",
       "description": "Aloita luomalla ensimmainen vuokrasopimuksesi"
     },
-    "error": "Sopimusten lataus epaonnistui"
+    "error": "Sopimusten lataus epaonnistui",
+    "exportDeposits": "Vie vakuudet"
   },
   "create": {
     "title": "Lisaa uusi sopimus",
@@ -193,7 +194,13 @@
       "created": "Luotu:",
       "lastUpdated": "Viimeksi paivitetty:",
       "at": "klo"
-    }
+    },
+    "tenantReminders": "Vuokralaismuistutukset",
+    "remindersOn": "Käytössä",
+    "remindersOff": "Pois",
+    "remindersPausedUntil": "Keskeytetty {{date}} asti",
+    "lateFeeActive": "veloitetaan {{count}} päivän jälkeen",
+    "lateFeeInactive": "ei veloiteta"
   },
   "payments": {
     "title": "Maksut",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Aseta maa valitulle kiinteistölle nähdäksesi maakohtaiset sääntelykentät.",
     "dismissDuplicateWarning": "Tarkista yllä oleva kaksoiskappalevaroitus ja sulje se jatkaaksesi",
     "dismissDuplicateFirst": "Sulje ensin kaksoiskappalevaroitus",
-    "change": "Muuta"
+    "change": "Muuta",
+    "tenantReminders": "Maksumuistutukset vuokralaiselle",
+    "tenantRemindersHelp": "Salli muistutussähköpostit tälle sopimukselle. Myös vuokralaisen yhteystiedon on annettava suostumus; muuten mitään ei lähetetä.",
+    "remindersPausedUntil": "Keskeytä muistutukset asti",
+    "remindersPausedUntilHelp": "Muistutuksia ei lähetetä ennen tätä päivää, esim. maksusuunnitelman aikana.",
+    "lateFeeEnabled": "Veloita viivästysmaksu",
+    "lateFeeEnabledHelp": "Lisää erillisen maksun, kun vuokra on yhä avoinna karenssiajan jälkeen. Oletuksena pois päältä.",
+    "lateFeeGraceDays": "Karenssiaika (päivää)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Kiinteät viivästysmaksut ovat sallittuja maassa {{country}}.",
+      "CAPPED": "Maassa {{country}} viivästysmaksut on rajoitettu {{percentage}} %:iin erääntyneestä summasta.",
+      "INTEREST_ONLY": "Maassa {{country}} myöhästyneestä vuokrasta saa periä vain lakisääteisen viivästyskoron; kiinteitä maksuja ei voi ottaa käyttöön.",
+      "FORBIDDEN": "Viivästysmaksut asuinvuokrista eivät ole sallittuja maassa {{country}}.",
+      "overCap": "Yllä oleva prosentti ylittää tämän rajan."
+    },
+    "formalNoticeDays": "Maksuvaatimuksen määräaika (päivää)",
+    "formalNoticeDaysHelp": "Päivät, jotka vuokralaisella on aikaa maksaa virallisen maksuvaatimuksen jälkeen. Jätä tyhjäksi käyttääksesi oletusta {{count}} päivää.",
+    "formalNoticeDaysCountryDefault": "Jätä tyhjäksi käyttääksesi maan {{country}} oletusta: {{count}} päivää."
   },
   "statusChange": {
     "title": "Vaihda sopimuksen tila",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Neuvoteltu",
       "FROZEN": "Jaahdytetty",
       "OTHER": "Muu"
+    },
+    "lateFees": {
+      "title": "Viivästysmaksut",
+      "policy": {
+        "ALLOWED": "Kiinteät maksut sallittu",
+        "CAPPED": "Maksut rajoitettu",
+        "INTEREST_ONLY": "Vain viivästyskorko",
+        "FORBIDDEN": "Maksut kielletty",
+        "UNKNOWN": "Tuntematon"
+      },
+      "maxPercentage": "Enintään {{percentage}} % erääntyneestä summasta",
+      "noticeDays": "Maksuvaatimuksen määräaika: {{count}} päivää"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Kiinteä prosentti",
       "FIXED_AMOUNT": "Kiinteä summa",
       "MANUAL": "Manuaalinen"
+    }
+  },
+  "deposit": {
+    "title": "Vuokravakuus",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Odotetaan",
+      "HELD": "Hallussa",
+      "PARTIALLY_RETURNED": "Osittain palautettu",
+      "RETURNED": "Palautettu",
+      "FORFEITED": "Pidätetty"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    },
+    "statement": "Tilitys (PDF)",
+    "statementHelp": "Lataa eritelty vakuustilitys vuokralaiselle"
+  },
+  "paymentPlans": {
+    "title": "Maksusuunnitelmat",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "viikoittaista",
+      "BIWEEKLY": "kahden viikon välein",
+      "MONTHLY": "kuukausittaista"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
     }
   }
 }

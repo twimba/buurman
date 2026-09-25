@@ -256,3 +256,60 @@ make deploy-prod
 ### Rollback
 
 There is no in-JVM fallback — if PDF generation breaks, fix or restart the `gotenberg` sidecar (it is stateless), or redeploy the previous backend release (the one that still bundled iText). No data or schema changes are involved.
+
+---
+
+## BUUR-101: Rent Collection Maturity (reminders, late fees, deposits, plans, letters)
+
+### Context
+
+Adds tenant payment reminders (manual, bulk and a daily automatic ladder), late fees with
+jurisdiction caps, write-offs, contact credits, payment plans, deposits with statements, and
+formal-notice PDFs attached to FINAL reminders. Migrations V060–V066. Two new Maven modules
+(`buurman-documents`, `buurman-letters`) are part of the fat JAR; no new containers.
+
+### Database
+
+Migrations are additive (new columns with defaults, new tables, index rebuilds) and safe for a
+rolling deploy. V066 rebuilds `idx_payments_pending`; on a large `payments` table expect a short
+write lock (seconds) while Flyway runs.
+
+### Post-deploy (REQUIRED before enabling late fees for any team)
+
+1. Reload the rent-regulation catalogue from the backoffice (Rent regulations → Reload). V064/V065
+   add `late_fee_policy` and `formal_notice_days` to `rent_regulation_countries` with
+   `UNKNOWN`/empty defaults; the reload fills them from the bundled catalogue.
+2. Until the reload, the late-fee job **skips** every rent whose country row is still `UNKNOWN`
+   (metric `buurman_payment_late_fee_skipped_total{reason="unknown_policy"}`, one warning per
+   country in the logs) and the contract form shows no regime hint. Nothing is charged blind.
+
+### Configuration (all optional, defaults shown)
+
+```yaml
+scheduling:
+  payment-dunning:
+    cron: "0 30 8 * * ?"     # UTC; one run for all teams
+    enabled: true            # kill switch for tenant reminder emails
+  late-fees:
+    cron: "0 15 6 * * ?"     # UTC
+    enabled: true            # kill switch for late-fee charging
+```
+
+All job times are UTC; "today" in due-date arithmetic is UTC as well. Acceptable for the EU-first
+launch; revisit per-team timezones before opening to the Americas.
+
+### Runbook
+
+- **Stop all tenant emails now**: set `SCHEDULING_PAYMENT_DUNNING_ENABLED=false` and restart, or
+  pause `paymentDunningJob` from the backoffice scheduler (persisted in the Quartz store).
+- **Pause one team**: team settings → automatic reminders off; **one contract**: set "reminders
+  paused until" on the contract.
+- **Re-run a missed day**: trigger `paymentDunningJob` / `lateFeeJob` from the backoffice
+  scheduler. Both are idempotent (a ladder step is sent once per payment, a fee once per rent).
+- **Wrongly charged fee**: waive it on the payment (cancels the fee with a reason). Cancelling or
+  writing off the parent rent cancels its open fees automatically.
+- **Reminder delivery**: the reminder row records the send request; delivery itself goes through
+  the notification outbox (retries with backoff, FAILED after the retry budget). Check the
+  notifications table for the tenant email when a landlord reports a missing reminder.
+- **Formal-notice PDFs** are filed under the contract's documents; if Gotenberg is down a FINAL
+  reminder fails (manual) or is counted in `buurman_payment_reminder_failed_total` (automatic).

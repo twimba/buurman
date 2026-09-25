@@ -24,7 +24,8 @@
       "title": "Δεν υπάρχουν συμβόλαια ακόμα",
       "description": "Ξεκινήστε δημιουργώντας τη πρώτη σας συμφωνία ενοικίασης"
     },
-    "error": "Αποτυχία φόρτωσης συμβολαίων"
+    "error": "Αποτυχία φόρτωσης συμβολαίων",
+    "exportDeposits": "Εξαγωγή εγγυήσεων"
   },
   "create": {
     "title": "Προσθήκη Νέου Συμβολαίου",
@@ -193,7 +194,13 @@
       "created": "Δημιουργήθηκε:",
       "lastUpdated": "Τελευταία Ενημέρωση:",
       "at": "στις"
-    }
+    },
+    "tenantReminders": "Υπενθυμίσεις ενοικιαστή",
+    "remindersOn": "Ενεργές",
+    "remindersOff": "Ανενεργές",
+    "remindersPausedUntil": "Σε παύση έως {{date}}",
+    "lateFeeActive": "χρεώνεται μετά από {{count}} ημέρες",
+    "lateFeeInactive": "δεν χρεώνεται"
   },
   "payments": {
     "title": "Πληρωμές",
@@ -386,7 +393,24 @@
     "setCountryForFields": "Ορίστε χώρα στο επιλεγμένο ακίνητο για να δείτε τα ειδικά κανονιστικά πεδία.",
     "dismissDuplicateWarning": "Ελέγξτε την παραπάνω προειδοποίηση διπλότυπου και απορρίψτε την για να συνεχίσετε",
     "dismissDuplicateFirst": "Απορρίψτε πρώτα την προειδοποίηση διπλότυπου",
-    "change": "Αλλαγή"
+    "change": "Αλλαγή",
+    "tenantReminders": "Υπενθυμίσεις πληρωμής στον ενοικιαστή",
+    "tenantRemindersHelp": "Επιτρέψτε email υπενθύμισης για αυτό το συμβόλαιο. Και η επαφή του ενοικιαστή πρέπει να έχει συναινέσει, αλλιώς δεν αποστέλλεται τίποτα.",
+    "remindersPausedUntil": "Παύση υπενθυμίσεων έως",
+    "remindersPausedUntilHelp": "Δεν αποστέλλονται υπενθυμίσεις μέχρι αυτήν την ημερομηνία, π.χ. κατά τη διάρκεια διακανονισμού.",
+    "lateFeeEnabled": "Χρέωση προστίμου καθυστέρησης",
+    "lateFeeEnabledHelp": "Προσθέτει ξεχωριστή πληρωμή προστίμου όταν ένα ενοίκιο παραμένει ανοιχτό μετά την περίοδο χάριτος. Απενεργοποιημένο από προεπιλογή.",
+    "lateFeeGraceDays": "Περίοδος χάριτος (ημέρες)",
+    "lateFeeRegulation": {
+      "ALLOWED": "Τα σταθερά πρόστιμα καθυστέρησης επιτρέπονται σε {{country}}.",
+      "CAPPED": "Σε {{country}} τα πρόστιμα καθυστέρησης περιορίζονται στο {{percentage}}% του οφειλόμενου ποσού.",
+      "INTEREST_ONLY": "Σε {{country}} επιτρέπεται μόνο ο νόμιμος τόκος υπερημερίας σε ληξιπρόθεσμα ενοίκια· τα σταθερά πρόστιμα δεν μπορούν να ενεργοποιηθούν.",
+      "FORBIDDEN": "Τα πρόστιμα καθυστέρησης σε ενοίκια κατοικίας δεν επιτρέπονται σε {{country}}.",
+      "overCap": "Το παραπάνω ποσοστό υπερβαίνει αυτό το όριο."
+    },
+    "formalNoticeDays": "Προθεσμία όχλησης (ημέρες)",
+    "formalNoticeDaysHelp": "Ημέρες που έχει ο ενοικιαστής για να πληρώσει μετά από επίσημη όχληση. Αφήστε κενό για την προεπιλογή των {{count}} ημερών.",
+    "formalNoticeDaysCountryDefault": "Αφήστε κενό για την προεπιλογή σε {{country}}: {{count}} ημέρες."
   },
   "statusChange": {
     "title": "Αλλαγή Κατάστασης Συμβολαίου",
@@ -488,6 +512,18 @@
       "NEGOTIATED": "Διαπραγματεύσιμο",
       "FROZEN": "Παγωμένο",
       "OTHER": "Άλλο"
+    },
+    "lateFees": {
+      "title": "Πρόστιμα καθυστέρησης",
+      "policy": {
+        "ALLOWED": "Σταθερά πρόστιμα επιτρέπονται",
+        "CAPPED": "Πρόστιμα με ανώτατο όριο",
+        "INTEREST_ONLY": "Μόνο νόμιμος τόκος",
+        "FORBIDDEN": "Πρόστιμα δεν επιτρέπονται",
+        "UNKNOWN": "Άγνωστο"
+      },
+      "maxPercentage": "Έως {{percentage}}% του οφειλόμενου ποσού",
+      "noticeDays": "Προθεσμία όχλησης: {{count}} ημέρες"
     }
   },
   "rentIncrease": {
@@ -827,6 +863,98 @@
       "FIXED_PERCENTAGE": "Σταθερό ποσοστό",
       "FIXED_AMOUNT": "Σταθερό ποσό",
       "MANUAL": "Μη αυτόματος"
+    }
+  },
+  "deposit": {
+    "title": "Εγγύηση",
+    "empty": "No deposit recorded yet.",
+    "emptyWithAgreed": "Agreed deposit of {{amount}} — not yet recorded as received.",
+    "record": "Record deposit",
+    "amount": "Amount",
+    "refundable": "Refundable",
+    "receivedDate": "Received on",
+    "heldWhere": "Held at",
+    "returnDueDate": "Return due by",
+    "returned": "Returned",
+    "deductions": "Deductions",
+    "addDeduction": "Add deduction",
+    "removeDeduction": "Remove deduction",
+    "noDeductions": "No deductions",
+    "notes": "Notes",
+    "return": "Return deposit",
+    "forfeit": "Forfeit",
+    "status": {
+      "EXPECTED": "Αναμένεται",
+      "HELD": "Κρατείται",
+      "PARTIALLY_RETURNED": "Μερικώς επιστράφηκε",
+      "RETURNED": "Επιστράφηκε",
+      "FORFEITED": "Παρακρατήθηκε"
+    },
+    "editDialog": {
+      "titleNew": "Record deposit",
+      "titleEdit": "Edit deposit",
+      "receivedHelp": "Leave empty while the deposit is still expected.",
+      "heldWherePlaceholder": "e.g. Separate savings account, escrow service"
+    },
+    "deductionDialog": {
+      "title": "Add deduction",
+      "message": "Refundable after existing deductions: {{refundable}}.",
+      "date": "Date",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. Repainting living room after damage",
+      "confirm": "Add deduction"
+    },
+    "returnDialog": {
+      "title": "Return deposit",
+      "message": "Refundable amount: {{refundable}}. Returning less records a partial return.",
+      "date": "Return date",
+      "amount": "Amount returned",
+      "amountHelp": "Leave empty to return the full refundable amount.",
+      "confirm": "Record return"
+    },
+    "forfeitDialog": {
+      "title": "Forfeit deposit",
+      "message": "The whole deposit is kept by the landlord. This closes the deposit and cannot be undone.",
+      "reason": "Reason",
+      "confirm": "Forfeit"
+    },
+    "toasts": {
+      "saved": "Deposit saved",
+      "deductionAdded": "Deduction added",
+      "deductionRemoved": "Deduction removed",
+      "returned": "Deposit return recorded",
+      "forfeited": "Deposit forfeited"
+    },
+    "statement": "Εκκαθάριση (PDF)",
+    "statementHelp": "Λήψη αναλυτικής εκκαθάρισης εγγύησης για τον ενοικιαστή"
+  },
+  "paymentPlans": {
+    "title": "Διακανονισμοί πληρωμής",
+    "summary": "{{total}} in {{count}} {{frequency}} instalments",
+    "from": "from {{date}}",
+    "covers": "covers {{count}} payment",
+    "covers_other": "covers {{count}} payments",
+    "progress": "{{paid}} paid · {{remaining}} remaining",
+    "cancel": "Cancel plan",
+    "cancelledBecause": "Cancelled: {{reason}}",
+    "frequency": {
+      "WEEKLY": "εβδομαδιαίες",
+      "BIWEEKLY": "δεκαπενθήμερες",
+      "MONTHLY": "μηνιαίες"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancelDialog": {
+      "title": "Cancel payment plan",
+      "message": "Open instalments are cancelled and the unpaid remainder of {{remaining}} becomes one payment due today. Reminders on the contract resume.",
+      "reason": "Reason",
+      "confirm": "Cancel plan"
+    },
+    "toasts": {
+      "cancelled": "Payment plan cancelled"
     }
   }
 }

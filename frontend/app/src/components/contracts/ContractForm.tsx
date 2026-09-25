@@ -31,6 +31,7 @@ import { RenewalConfigForm } from '@/components/contracts/RenewalConfigForm';
 import { RentBreakdown } from '@/components/contracts/RentBreakdown';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useProperty } from '@/hooks/usePropertyHooks';
+import { useRentRegulationCountryDetail } from '@/hooks/useRentRegulationHooks';
 import {
   useAddContractParty,
   useRemoveContractParty,
@@ -152,6 +153,9 @@ export const ContractForm = ({
     paymentDueDay: contract?.paymentDueDay ?? 1,
     terminationNoticeDays: contract?.terminationNoticeDays ?? 30,
     lateFeePercentage: contract?.lateFeePercentage ?? undefined,
+    lateFeeEnabled: contract?.lateFeeEnabled ?? false,
+    lateFeeGraceDays: contract?.lateFeeGraceDays ?? 0,
+    formalNoticeDays: contract?.formalNoticeDays ?? undefined,
     termsAndConditions: contract?.termsAndConditions ?? '',
     notes: contract?.notes ?? '',
     countryMetadata: contract?.countryMetadata ?? undefined,
@@ -161,6 +165,8 @@ export const ContractForm = ({
     landlordNoticeDays: contract?.landlordNoticeDays ?? 30,
     tenantNoticeDays: contract?.tenantNoticeDays ?? 30,
     requiresTenantConfirmation: contract?.requiresTenantConfirmation ?? false,
+    tenantRemindersEnabled: contract?.tenantRemindersEnabled ?? false,
+    remindersPausedUntil: contract?.remindersPausedUntil ?? undefined,
     rentAdjustmentType: contract?.rentAdjustmentType ?? 'NONE',
     rentAdjustmentValue: contract?.rentAdjustmentValue ?? undefined,
     landlordType: contract?.landlordType ?? undefined,
@@ -198,6 +204,14 @@ export const ContractForm = ({
   const propertyCountryCode =
     contract?.countryCode || selectedProperty?.country || undefined;
   const countryName = useCountryName(propertyCountryCode);
+  const { data: regulation } = useRentRegulationCountryDetail(propertyCountryCode);
+  const lateFeePolicy = regulation?.lateFeePolicy ?? 'UNKNOWN';
+  const lateFeeCap = regulation?.lateFeeMaxPercentage;
+  const lateFeeBlocked = lateFeePolicy === 'FORBIDDEN' || lateFeePolicy === 'INTEREST_ONLY';
+  const lateFeeOverCap =
+    lateFeePolicy === 'CAPPED' &&
+    lateFeeCap != null &&
+    (formData.lateFeePercentage ?? 0) > lateFeeCap;
 
   // Sync currency fields when defaultCurrency loads asynchronously (create mode)
   useEffect(() => {
@@ -983,6 +997,72 @@ export const ContractForm = ({
             <h3 className="text-lg font-semibold text-text-primary mb-4">
               {t('form.paymentTerms')}
             </h3>
+
+            {/* Tenant reminders — opt-in, off by default */}
+            <div className="mb-4 rounded-md border border-border-default p-4 space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <label
+                    htmlFor="tenantRemindersEnabled"
+                    className="text-sm font-medium text-text-primary"
+                  >
+                    {t('form.tenantReminders')}
+                  </label>
+                  <p className="text-sm text-text-secondary">
+                    {t('form.tenantRemindersHelp')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  id="tenantRemindersEnabled"
+                  role="switch"
+                  aria-checked={formData.tenantRemindersEnabled ?? false}
+                  onClick={() =>
+                    handleChange(
+                      'tenantRemindersEnabled',
+                      !(formData.tenantRemindersEnabled ?? false)
+                    )
+                  }
+                  disabled={isLoading}
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-ring ${
+                    formData.tenantRemindersEnabled
+                      ? 'bg-primary-500'
+                      : 'bg-surface-inset'
+                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.tenantRemindersEnabled
+                        ? 'translate-x-6'
+                        : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              {formData.tenantRemindersEnabled && (
+                <div className="max-w-xs">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('form.remindersPausedUntil')}
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.remindersPausedUntil ?? ''}
+                    onChange={(e) =>
+                      handleChange(
+                        'remindersPausedUntil',
+                        e.target.value || undefined
+                      )
+                    }
+                    className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                    disabled={isLoading}
+                  />
+                  <p className="text-xs text-text-muted mt-1">
+                    {t('form.remindersPausedUntilHelp')}
+                  </p>
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
@@ -1038,6 +1118,74 @@ export const ContractForm = ({
                 )}
               </div>
 
+              <div className="lg:col-span-2 flex items-start justify-between gap-4 rounded-md border border-border-default p-4">
+                <div>
+                  <label
+                    htmlFor="lateFeeEnabled"
+                    className="text-sm font-medium text-text-primary"
+                  >
+                    {t('form.lateFeeEnabled')}
+                  </label>
+                  <p className="text-sm text-text-secondary">
+                    {t('form.lateFeeEnabledHelp')}
+                  </p>
+                  {lateFeePolicy !== 'UNKNOWN' && (
+                    <p
+                      className={`text-sm mt-2 ${
+                        lateFeeBlocked || lateFeeOverCap
+                          ? 'text-error-text'
+                          : 'text-text-muted'
+                      }`}
+                    >
+                      {t(`form.lateFeeRegulation.${lateFeePolicy}`, {
+                        country: countryName || propertyCountryCode,
+                        percentage: lateFeeCap ?? '',
+                      })}
+                      {lateFeeOverCap && ` ${t('form.lateFeeRegulation.overCap')}`}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  id="lateFeeEnabled"
+                  role="switch"
+                  aria-checked={formData.lateFeeEnabled ?? false}
+                  onClick={() =>
+                    handleChange('lateFeeEnabled', !(formData.lateFeeEnabled ?? false))
+                  }
+                  disabled={isLoading}
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-ring ${
+                    formData.lateFeeEnabled ? 'bg-primary-500' : 'bg-surface-inset'
+                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.lateFeeEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  {t('form.lateFeeGraceDays')}
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="90"
+                  value={formData.lateFeeGraceDays ?? 0}
+                  onChange={(e) =>
+                    handleChange(
+                      'lateFeeGraceDays',
+                      e.target.value ? parseInt(e.target.value) : 0
+                    )
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  disabled={isLoading || !formData.lateFeeEnabled}
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
                   {t('form.lateFeePercentage')}
@@ -1058,6 +1206,39 @@ export const ContractForm = ({
                   placeholder="2.5"
                   disabled={isLoading}
                 />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="formalNoticeDays"
+                  className="block text-sm font-medium text-text-secondary mb-1"
+                >
+                  {t('form.formalNoticeDays')}
+                </label>
+                <input
+                  id="formalNoticeDays"
+                  type="number"
+                  min="1"
+                  max="365"
+                  value={formData.formalNoticeDays ?? ''}
+                  onChange={(e) =>
+                    handleChange(
+                      'formalNoticeDays',
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
+                  className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  placeholder={String(regulation?.formalNoticeDays ?? 14)}
+                  disabled={isLoading}
+                />
+                <p className="text-xs text-text-muted mt-1">
+                  {regulation?.formalNoticeDays != null
+                    ? t('form.formalNoticeDaysCountryDefault', {
+                        country: countryName || propertyCountryCode,
+                        count: regulation.formalNoticeDays,
+                      })
+                    : t('form.formalNoticeDaysHelp', { count: 14 })}
+                </p>
               </div>
             </div>
           </div>

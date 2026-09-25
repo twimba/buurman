@@ -18,6 +18,7 @@ import com.buurman.service.GoogleSheetExportService;
 import com.buurman.service.MetricsService;
 import com.buurman.service.export.google.ContactGoogleSheetExporter;
 import com.buurman.service.export.google.ContractGoogleSheetExporter;
+import com.buurman.service.export.google.DepositGoogleSheetExporter;
 import com.buurman.service.export.google.ExpenseGoogleSheetExporter;
 import com.buurman.service.export.google.PaymentGoogleSheetExporter;
 import com.buurman.service.export.google.PortfolioDashboardGoogleSheetExporter;
@@ -37,6 +38,7 @@ public class GoogleSheetExportServiceImpl implements GoogleSheetExportService {
   private final PortfolioDashboardGoogleSheetExporter portfolioDashboardExporter;
   private final PropertyGoogleSheetExporter propertyExporter;
   private final PaymentGoogleSheetExporter paymentExporter;
+  private final DepositGoogleSheetExporter depositExporter;
   private final ExpenseGoogleSheetExporter expenseExporter;
   private final ContractGoogleSheetExporter contractExporter;
   private final MetricsService metricsService;
@@ -82,6 +84,13 @@ public class GoogleSheetExportServiceImpl implements GoogleSheetExportService {
       GoogleAccessToken token, UUID teamId, String title) {
     return withMetrics(
         "properties_google_sheet", () -> propertyExporter.generate(token, teamId, title));
+  }
+
+  @Override
+  public GoogleSheetExport generateDepositsGoogleSheet(
+      GoogleAccessToken token, UUID teamId, String title) {
+    return withMetrics(
+        "deposits_google_sheet", () -> depositExporter.generate(token, teamId, title));
   }
 
   @Override

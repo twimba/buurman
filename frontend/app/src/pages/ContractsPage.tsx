@@ -23,6 +23,9 @@ import {
   exportContractsCsv,
   exportContractsXlsx,
   exportContractsGoogleSheet,
+  exportDepositsCsv,
+  exportDepositsXlsx,
+  exportDepositsGoogleSheet,
 } from '@/generated/api/booklets/booklets';
 import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 
@@ -133,6 +136,18 @@ export const ContractsPage = () => {
             xlsx={() => exportContractsXlsx()}
             googleSheet={(accessToken) =>
               exportContractsGoogleSheet(
+                { accessToken },
+                { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
+              )
+            }
+          />
+          <EntityExportControls
+            filenameStem="deposits"
+            label={t('list.exportDeposits')}
+            csv={() => exportDepositsCsv()}
+            xlsx={() => exportDepositsXlsx()}
+            googleSheet={(accessToken) =>
+              exportDepositsGoogleSheet(
                 { accessToken },
                 { timeout: GOOGLE_SHEET_EXPORT_TIMEOUT_MS }
               )

@@ -7,7 +7,13 @@
     "schedulePayment": "Ajoita maksu",
     "registerPayment": "Kirjaa maksu",
     "registerReceival": "Kirjaa vastaanotto",
-    "markAsPaid": "Merkitse maksetuksi"
+    "markAsPaid": "Merkitse maksetuksi",
+    "sendReminder": "Lähetä muistutus",
+    "applyCredit": "Käytä hyvitys",
+    "waiveLateFee": "Peru maksu",
+    "writeOff": "Kirjaa luottotappioksi",
+    "cancelPayment": "Peruuta maksu",
+    "formalNotice": "Maksuvaatimus (PDF)"
   },
   "stats": {
     "pendingPayments": "Odottavat maksut",
@@ -122,13 +128,18 @@
     "metadata": "Metatiedot",
     "created": "Luotu:",
     "lastUpdated": "Viimeksi paivitetty:",
-    "editPayment": "Muokkaa maksua"
+    "editPayment": "Muokkaa maksua",
+    "lateFeesCharged": "Viivästysmaksu veloitettu",
+    "lateFeeDue": "eräpäivä {{date}}",
+    "lateFeeParent": "Viivästysmaksu maksusta",
+    "paymentId": "Maksu #{{id}}"
   },
   "tabs": {
     "details": "Tiedot",
     "receivals": "Vastaanotot",
     "documents": "Asiakirjat",
-    "history": "Historia"
+    "history": "Historia",
+    "reminders": "Muistutukset"
   },
   "receivals": {
     "title": "Vastaanotot ({{count}})",
@@ -146,7 +157,13 @@
     "receivalDate": "Vastaanottopaivamaara",
     "notesOptional": "Muistiinpanot (valinnainen)",
     "notesPlaceholder": "Lisaa muistiinpanoja tasta vastaanotosta...",
-    "register": "Kirjaa"
+    "register": "Kirjaa",
+    "types": {
+      "WRITE_OFF": "Luottotappio",
+      "CREDIT": "Hyvitys käytetty",
+      "PAYMENT": "Maksu",
+      "PLAN": "Moved to payment plan"
+    }
   },
   "history": {
     "title": "Maksuhistoria",
@@ -190,11 +207,170 @@
     "deleteReceival": "Poista vastaanotto",
     "save": "Tallenna",
     "previous": "Edellinen",
-    "next": "Seuraava"
+    "next": "Seuraava",
+    "sendReminder": "Lähetä vuokralaiselle sähköposti tästä maksusta",
+    "formalNotice": "Lataa päivätty virallinen maksuvaatimus tälle maksulle"
   },
   "errors": {
     "loadFailed": "Maksujen lataus epaonnistui",
     "loadPaymentFailed": "Maksun lataus epaonnistui",
     "loadHistoryFailed": "Historian lataus epaonnistui"
+  },
+  "selection": {
+    "selected": "{{count}} valittu",
+    "selectAll": "Valitse kaikki sivun maksamattomat",
+    "selectRow": "Valitse maksu {{id}}",
+    "select": "Valitse",
+    "done": "Valmis",
+    "markPaid": "Merkitse maksetuksi",
+    "sendReminders": "Lähetä muistutukset",
+    "cancel": "Peruuta maksut",
+    "paymentPlan": "Payment plan",
+    "paymentPlanHint": "Select open payments of a single contract to create a plan."
+  },
+  "arrears": {
+    "title": "Maksurästit",
+    "summary": "{{amount}} avoinna {{count}} vuokralaiselta",
+    "summary_other": "{{amount}} avoinna {{count}} vuokralaiselta",
+    "oldest": "vanhin {{days}} päivää myöhässä",
+    "bucket": {
+      "1-30": "1–30 päivää",
+      "31-60": "31–60 päivää",
+      "61-90": "61–90 päivää",
+      "91+": "Yli 90 päivää"
+    },
+    "payments": "{{count}} maksu",
+    "payments_other": "{{count}} maksua",
+    "lastReminded": "viimeksi muistutettu {{when}} ({{count}}×)",
+    "neverReminded": "ei muistutettu",
+    "daysOverdue": "{{days}} päivää myöhässä",
+    "sendReminder": "Lähetä muistutus",
+    "sendReminderTo": "Lähetä muistutus: {{name}}",
+    "remindAll": "Muistuta kaikkia ({{count}})",
+    "showAll": "Näytä kaikki {{count}} vuokralaista",
+    "showLess": "Näytä vähemmän",
+    "noContact": "Ei liitettyä yhteystietoa",
+    "remindersDisabled": "Muistutukset vaativat sekä sopimuksen asetuksen että vuokralaisen suostumuksen — ota ne käyttöön sopimuksessa ja yhteystiedossa."
+  },
+  "bulkMarkPaidDialog": {
+    "title": "Merkitse {{count}} maksua maksetuksi",
+    "message": "Jokainen valittu maksu merkitään kokonaan maksetuksi valittuna päivänä. Jo maksetut tai perutut maksut ohitetaan.",
+    "confirm": "Merkitse {{count}} maksetuksi"
+  },
+  "sendReminderDialog": {
+    "title": "Lähetä maksumuistutus",
+    "titleBulk": "Lähetä {{count}} muistutusta",
+    "message": "Vuokralainen saa sähköpostin, jossa on avoin summa, eräpäivä ja maksutietosi sopimuksen kielellä.",
+    "messageBulk": "Jokainen vuokralainen saa sähköpostin, jossa on avoin summa, eräpäivä ja maksutietosi. Maksut ilman vuokralaisen sähköpostiosoitetta ohitetaan.",
+    "notesLabel": "Henkilökohtainen viesti (valinnainen)",
+    "notesPlaceholder": "esim. Maksathan summan perjantaihin mennessä.",
+    "confirm": "Lähetä muistutus",
+    "confirmBulk": "Lähetä {{count}} muistutusta",
+    "toneLabel": "Sävy",
+    "tone": {
+      "FRIENDLY": {
+        "label": "Ystävällinen",
+        "help": "Kohtelias muistutus avoimesta maksusta."
+      },
+      "FIRM": {
+        "label": "Tiukka",
+        "help": "Selkeä vaatimus, jossa mainitaan myöhästymispäivät ja seuraukset."
+      },
+      "FINAL": {
+        "label": "Viimeinen huomautus",
+        "help": "Virallinen vaatimus 14 päivän määräajalla. Maksuvaatimus liitetään PDF-muodossa ja tallennetaan sopimukselle."
+      }
+    }
+  },
+  "reminders": {
+    "title": "Lähetetyt muistutukset",
+    "empty": "Muistutuksia ei ole vielä lähetetty",
+    "emptySubtitle": "Vuokralaiselle lähettämäsi muistutukset näkyvät tässä",
+    "sentBy": "lähettäjä {{name}}",
+    "automatic": "Automaattinen muistutus",
+    "manual": "Muistutus",
+    "daysOverdue": "{{days}} päivää myöhässä",
+    "outstanding": "Avoinna {{amount}}",
+    "to": "osoitteeseen {{email}}",
+    "delivery": {
+      "QUEUED": "Jonossa",
+      "SENT": "Lähetetty",
+      "DELIVERED": "Toimitettu",
+      "FAILED": "Toimitus epäonnistui",
+      "BLOCKED": "Ei lähetetty (demo)",
+      "UNKNOWN": "Tuntematon"
+    }
+  },
+  "toasts": {
+    "reminderSent": "Muistutus lähetetty osoitteeseen {{email}}",
+    "bulkMarkPaid": "{{success}} merkitty maksetuksi, {{failed}} ohitettu",
+    "bulkReminders": "{{success}} muistutusta lähetetty, {{failed}} ohitettu",
+    "cancelled": "Maksu peruutettu",
+    "bulkCancelled": "{{success}} peruutettu, {{failed}} ohitettu",
+    "lateFeeWaived": "Viivästysmaksu peruttu",
+    "writtenOff": "Saldo kirjattu luottotappioksi",
+    "creditApplied": "Hyvitys käytetty"
+  },
+  "types": {
+    "LATE_FEE": "Viivästysmaksu",
+    "RENT": "Vuokra",
+    "INSTALMENT": "Erä"
+  },
+  "cancelDialog": {
+    "title": "Peruuta maksu",
+    "titleBulk": "Peruuta {{count}} maksua",
+    "message": "Maksu merkitään peruutetuksi eikä sitä lasketa enää avoimeksi. Maksuja, joilla on kirjattuja suorituksia, ei voi peruuttaa – kirjaa saldo luottotappioksi.",
+    "messageBulk": "Jokainen valittu avoin maksu peruutetaan tällä syyllä. Maksetut ja suorituksia sisältävät maksut ohitetaan.",
+    "reason": "Syy",
+    "reasonPlaceholder": "esim. Vuokralainen muutti pois 15. päivä",
+    "confirm": "Peruuta maksu",
+    "confirmBulk": "Peruuta {{count}} maksua"
+  },
+  "waiveDialog": {
+    "title": "Peru viivästysmaksu",
+    "message": "Maksu {{amount}} perutaan eikä sitä veloiteta.",
+    "reason": "Syy",
+    "reasonPlaceholder": "esim. Ensimmäinen myöhästyminen, hyvä tahto",
+    "confirm": "Peru maksu"
+  },
+  "writeOffDialog": {
+    "title": "Kirjaa saldo luottotappioksi",
+    "message": "Jäljellä oleva {{amount}} suljetaan ilman suoritusta. Tämä kirjataan luottotappioksi eikä sitä voi perua.",
+    "reason": "Syy",
+    "reasonPlaceholder": "esim. Perimiskelvoton saatava poismuuton jälkeen",
+    "date": "Kirjauspäivä",
+    "confirm": "Kirjaa"
+  },
+  "applyCreditDialog": {
+    "title": "Käytä vuokralaisen hyvitys",
+    "message": "Avoin saldo: {{balance}}. Valitse käytettävä hyvitys ja summa.",
+    "credit": "Hyvitys",
+    "amount": "Summa (enint. {{max}})",
+    "confirm": "Käytä {{amount}}",
+    "none": "Vuokralaisella ei ole avointa hyvitystä tässä valuutassa."
+  },
+  "credits": {
+    "sources": {
+      "OVERPAYMENT": "Liikamaksu",
+      "CREDIT_NOTE": "Hyvityslasku"
+    }
+  },
+  "paymentPlanDialog": {
+    "title": "Create payment plan",
+    "message": "{{count}} payments with {{total}} outstanding are settled into a plan and replaced by instalments.",
+    "instalments": "Instalments",
+    "frequency": "Frequency",
+    "frequencies": {
+      "WEEKLY": "Weekly",
+      "BIWEEKLY": "Every two weeks",
+      "MONTHLY": "Monthly"
+    },
+    "startDate": "First instalment due",
+    "preview": "{{count}} instalments of about {{amount}}",
+    "pauseReminders": "Pause tenant reminders until the last instalment",
+    "pauseRemindersHelp": "Recommended: the tenant is paying as agreed, so the ladder should not chase them.",
+    "notes": "Notes (optional)",
+    "confirm": "Create plan",
+    "created": "Payment plan created"
   }
 }

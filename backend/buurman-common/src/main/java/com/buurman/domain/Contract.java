@@ -67,6 +67,15 @@ public class Contract {
   @Builder.Default private Optional<Integer> paymentDueDay = Optional.empty();
   @Builder.Default private Integer terminationNoticeDays = 30;
   @Builder.Default private Optional<BigDecimal> lateFeePercentage = Optional.empty();
+
+  /** Charge {@code lateFeePercentage} once a rent payment is overdue past the grace period. */
+  @Builder.Default private Boolean lateFeeEnabled = false;
+
+  @Builder.Default private Integer lateFeeGraceDays = 0;
+
+  /** Days a tenant gets to settle after a formal notice; empty = the country default. */
+  @Builder.Default private Optional<Integer> formalNoticeDays = Optional.empty();
+
   private ContractStatus status;
   @Builder.Default private Optional<String> termsAndConditions = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();
@@ -87,6 +96,13 @@ public class Contract {
   @Builder.Default private Optional<LandlordType> landlordType = Optional.empty();
   @Builder.Default private Optional<String> regionCode = Optional.empty();
   @Builder.Default private List<String> documentLanguages = List.of("en");
+
+  /** Tenant-facing payment reminders for this contract. Off by default. */
+  @Builder.Default private Boolean tenantRemindersEnabled = false;
+
+  /** While set and in the future, no tenant reminder (manual or automatic) is sent. */
+  @Builder.Default private Optional<LocalDate> remindersPausedUntil = Optional.empty();
+
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

@@ -18,11 +18,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.buurman.domain.LateFeePolicy;
 import com.buurman.domain.MaxIncreaseType;
 import com.buurman.domain.RentFrequency;
 import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRule;
 import com.buurman.domain.regulation.CatalogCountry;
+import com.buurman.domain.regulation.CatalogLateFee;
 import com.buurman.domain.regulation.CatalogRule;
 import com.buurman.domain.regulation.RentRegulationCatalog;
 import com.buurman.dto.response.RentRegulationCatalogDiff;
@@ -171,10 +173,53 @@ class RentRegulationCatalogDiffTest {
     assertThat(diff.byCountry()).isEmpty();
   }
 
+  @Test
+  @DisplayName("a late-fee regime change in the catalogue is reported as a country change")
+  void diff_reportsLateFeeChanges() {
+    CatalogCountry pt =
+        new CatalogCountry(
+            "PT",
+            "Portugal",
+            false,
+            null,
+            null,
+            null,
+            List.of(),
+            new CatalogLateFee(LateFeePolicy.CAPPED, new BigDecimal("20.0"), "Art. 1041 CC"),
+            8);
+    RentRegulationCatalog target =
+        new RentRegulationCatalog("2026.2", "2026-06-20", "desc", List.of(pt));
+    when(loader.load()).thenReturn(target);
+    when(repository.findAllCountries()).thenReturn(List.of(domainCountry(NL_ID, "PT", "Portugal")));
+    when(repository.findAllRegions()).thenReturn(List.of());
+    when(repository.findAllRules()).thenReturn(List.of());
+
+    RentRegulationCatalogDiff diff = service.diff();
+
+    assertThat(diff.countries().changed()).isEqualTo(1);
+    RentRegulationDiffEntry entry =
+        diff.byCountry().getFirst().changes().stream()
+            .filter(e -> e.entity().equals("COUNTRY"))
+            .findFirst()
+            .orElseThrow();
+    assertThat(entry.fields())
+        .anySatisfy(
+            f -> {
+              assertThat(f.field()).isEqualTo("lateFeePolicy");
+              assertThat(f.before()).isEmpty();
+              assertThat(f.after()).isEqualTo("CAPPED");
+            })
+        .anySatisfy(
+            f -> {
+              assertThat(f.field()).isEqualTo("lateFeeMaxPercentage");
+              assertThat(f.after()).isEqualTo("20.0");
+            });
+  }
+
   // ---- builders ----
 
   private static CatalogCountry country(String code, String name, List<CatalogRule> rules) {
-    return new CatalogCountry(code, name, false, null, null, null, rules);
+    return new CatalogCountry(code, name, false, null, null, null, rules, null, null);
   }
 
   private static CatalogRule catalogRule(int year, String category, BigDecimal pct, String notes) {
