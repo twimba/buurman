@@ -128,7 +128,11 @@
     "metadata": "Μεταδεδομένα",
     "created": "Δημιουργήθηκε:",
     "lastUpdated": "Τελευταία Ενημέρωση:",
-    "editPayment": "Επεξεργασία Πληρωμής"
+    "editPayment": "Επεξεργασία Πληρωμής",
+    "lateFeesCharged": "Χρεώθηκε πρόστιμο καθυστέρησης",
+    "lateFeeDue": "λήγει {{date}}",
+    "lateFeeParent": "Πρόστιμο καθυστέρησης για",
+    "paymentId": "Πληρωμή #{{id}}"
   },
   "tabs": {
     "details": "Λεπτομέρειες",

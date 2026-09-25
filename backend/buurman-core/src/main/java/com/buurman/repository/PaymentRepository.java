@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
@@ -685,6 +686,29 @@ public class PaymentRepository {
         .map(mapper::toDomain)
         .flatMap(Optional::stream)
         .toList();
+  }
+
+  /** Late-fee children of the given rent payments, grouped by parent. */
+  public Map<UUID, List<Payment>> findLateFeesByParentIds(Collection<UUID> parentIds, UUID teamId) {
+    if (parentIds.isEmpty()) {
+      return Map.of();
+    }
+    return dsl
+        .selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS
+                .PARENT_PAYMENT_ID
+                .in(parentIds)
+                .and(PAYMENTS.TEAM_ID.eq(teamId))
+                .and(PAYMENTS.PAYMENT_TYPE.eq(Payment.PaymentType.LATE_FEE.name()))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .orderBy(PAYMENTS.DUE_DATE.asc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .collect(
+            Collectors.groupingBy(p -> p.getParentPaymentId().orElseThrow(), Collectors.toList()));
   }
 
   /** Late-fee children of a rent payment that are still open. */

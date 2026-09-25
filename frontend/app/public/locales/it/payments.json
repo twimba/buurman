@@ -128,7 +128,11 @@
     "metadata": "Metadati",
     "created": "Creato:",
     "lastUpdated": "Ultimo aggiornamento:",
-    "editPayment": "Modifica pagamento"
+    "editPayment": "Modifica pagamento",
+    "lateFeesCharged": "Penale di mora applicata",
+    "lateFeeDue": "scade {{date}}",
+    "lateFeeParent": "Penale di mora su",
+    "paymentId": "Pagamento #{{id}}"
   },
   "tabs": {
     "details": "Dettagli",

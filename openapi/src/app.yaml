@@ -3130,6 +3130,11 @@ components:
         paymentPlanIdentifier:
           type: string
           description: For INSTALMENT payments, the plan they belong to
+        lateFees:
+          type: array
+          description: Late fees charged on this payment; empty unless this is the rent that incurred them
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
         createdAt:
           type: string
           format: date-time

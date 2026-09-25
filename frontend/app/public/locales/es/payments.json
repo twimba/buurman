@@ -128,7 +128,11 @@
     "metadata": "Metadatos",
     "created": "Creado:",
     "lastUpdated": "Última Actualización:",
-    "editPayment": "Editar Pago"
+    "editPayment": "Editar Pago",
+    "lateFeesCharged": "Recargo por demora aplicado",
+    "lateFeeDue": "vence {{date}}",
+    "lateFeeParent": "Recargo por demora de",
+    "paymentId": "Pago #{{id}}"
   },
   "tabs": {
     "details": "Detalles",

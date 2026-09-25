@@ -128,7 +128,11 @@
     "metadata": "Metadata",
     "created": "Opprettet:",
     "lastUpdated": "Sist oppdatert:",
-    "editPayment": "Rediger betaling"
+    "editPayment": "Rediger betaling",
+    "lateFeesCharged": "Purregebyr belastet",
+    "lateFeeDue": "forfaller {{date}}",
+    "lateFeeParent": "Purregebyr for",
+    "paymentId": "Betaling #{{id}}"
   },
   "tabs": {
     "details": "Detaljer",

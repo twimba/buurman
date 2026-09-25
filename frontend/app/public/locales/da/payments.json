@@ -128,7 +128,11 @@
     "metadata": "Metadata",
     "created": "Oprettet:",
     "lastUpdated": "Sidst opdateret:",
-    "editPayment": "Rediger betaling"
+    "editPayment": "Rediger betaling",
+    "lateFeesCharged": "Rykkergebyr opkrævet",
+    "lateFeeDue": "forfalder {{date}}",
+    "lateFeeParent": "Rykkergebyr for",
+    "paymentId": "Betaling #{{id}}"
   },
   "tabs": {
     "details": "Detaljer",

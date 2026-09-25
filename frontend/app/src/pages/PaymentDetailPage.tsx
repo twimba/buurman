@@ -56,6 +56,7 @@ import {
   Trash2,
   Send,
   Download,
+  AlertTriangle,
   Calendar,
   DollarSign,
   Home,
@@ -916,6 +917,63 @@ export const PaymentDetailPage = () => {
                       </button>
                     </div>
                   </div>
+
+                  {/* The late fee this rent incurred, or the rent a late fee belongs to */}
+                  {(payment.lateFees ?? []).length > 0 && (
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-5 w-5 text-text-muted mt-1" />
+                      <div className="flex-1">
+                        <p className="text-sm text-text-secondary">
+                          {t('detail.lateFeesCharged')}
+                        </p>
+                        <ul className="space-y-1">
+                          {(payment.lateFees ?? []).map((fee) => (
+                            <li
+                              key={fee.identifier}
+                              className="flex flex-wrap items-center gap-2"
+                            >
+                              <button
+                                onClick={() => navigate(`/payments/${fee.identifier}`)}
+                                className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
+                              >
+                                {fmtMoney(fee.amount, fee.currency)}
+                              </button>
+                              <PaymentStatusBadge status={fee.status} />
+                              <span className="text-sm text-text-muted">
+                                {t('detail.lateFeeDue', {
+                                  date: formatDate(fee.dueDate),
+                                })}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {payment.paymentType === 'LATE_FEE' &&
+                    payment.parentPaymentIdentifier && (
+                      <div className="flex items-start gap-3">
+                        <ArrowUpDown className="h-5 w-5 text-text-muted mt-1" />
+                        <div className="flex-1">
+                          <p className="text-sm text-text-secondary">
+                            {t('detail.lateFeeParent')}
+                          </p>
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/payments/${payment.parentPaymentIdentifier}`
+                              )
+                            }
+                            className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
+                          >
+                            {t('detail.paymentId', {
+                              id: payment.parentPaymentIdentifier,
+                            })}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                 </div>
               </div>
 

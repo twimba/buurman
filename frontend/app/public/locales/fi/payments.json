@@ -128,7 +128,11 @@
     "metadata": "Metatiedot",
     "created": "Luotu:",
     "lastUpdated": "Viimeksi paivitetty:",
-    "editPayment": "Muokkaa maksua"
+    "editPayment": "Muokkaa maksua",
+    "lateFeesCharged": "Viivästysmaksu veloitettu",
+    "lateFeeDue": "eräpäivä {{date}}",
+    "lateFeeParent": "Viivästysmaksu maksusta",
+    "paymentId": "Maksu #{{id}}"
   },
   "tabs": {
     "details": "Tiedot",

@@ -78,6 +78,7 @@ import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PaymentReceivalResponse;
 import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.PaymentStatsResponse;
+import com.buurman.dto.response.PaymentSummary;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.exception.BadRequestException;
@@ -1426,6 +1427,21 @@ public class PaymentService {
             .stream()
             .filter(p -> p.getIdentifier().isPresent())
             .collect(toMap(Payment::getId, p -> p.getIdentifier().orElseThrow()));
+    Map<UUID, List<PaymentSummary>> lateFeesByParent =
+        paymentRepository
+            .findLateFeesByParentIds(
+                payments.stream()
+                    .filter(p -> p.getPaymentType() == PaymentType.RENT)
+                    .map(Payment::getId)
+                    .toList(),
+                teamId)
+            .entrySet()
+            .stream()
+            .collect(
+                toMap(
+                    Map.Entry::getKey,
+                    e -> e.getValue().stream().map(paymentMapper::toSummary).toList()));
+
     Map<UUID, Sid> planIdentifiers =
         paymentPlanRepository
             .findByIdsAndTeamId(
@@ -1531,7 +1547,8 @@ public class PaymentService {
               base.cancelReason(),
               base.waivedAt(),
               base.waiveReason(),
-              payment.getPaymentPlanId().map(planIdentifiers::get)));
+              payment.getPaymentPlanId().map(planIdentifiers::get),
+              lateFeesByParent.getOrDefault(payment.getId(), List.of())));
     }
     return responses;
   }
@@ -1607,7 +1624,8 @@ public class PaymentService {
           response.cancelReason(),
           response.waivedAt(),
           response.waiveReason(),
-          planIdentifier(payment, teamId));
+          planIdentifier(payment, teamId),
+          lateFeeSummaries(payment, teamId));
     }
 
     return new PaymentResponse(
@@ -1633,7 +1651,21 @@ public class PaymentService {
         response.cancelReason(),
         response.waivedAt(),
         response.waiveReason(),
-        planIdentifier(payment, teamId));
+        planIdentifier(payment, teamId),
+        lateFeeSummaries(payment, teamId));
+  }
+
+  /** The late fees charged on this rent, so the timeline shows what it incurred. */
+  private List<PaymentSummary> lateFeeSummaries(Payment payment, UUID teamId) {
+    if (payment.getPaymentType() != PaymentType.RENT) {
+      return List.of();
+    }
+    return paymentRepository
+        .findLateFeesByParentIds(List.of(payment.getId()), teamId)
+        .getOrDefault(payment.getId(), List.of())
+        .stream()
+        .map(paymentMapper::toSummary)
+        .toList();
   }
 
   private Optional<Sid> planIdentifier(Payment payment, UUID teamId) {

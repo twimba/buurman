@@ -432,7 +432,8 @@ class PaymentServiceTest {
                     Optional.empty(),
                     Optional.empty(),
                     Optional.empty(),
-                    Optional.empty());
+                    Optional.empty(),
+                    java.util.List.of());
               });
       when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
       when(receivalRepository.findByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID)).thenReturn(List.of());
@@ -492,7 +493,8 @@ class PaymentServiceTest {
                     p.getCancelReason(),
                     p.getWaivedAt(),
                     p.getWaiveReason(),
-                    Optional.empty());
+                    Optional.empty(),
+                    java.util.List.of());
               });
       when(contractRepository.findByIdAndTeamId(any(), eq(TEAM_ID))).thenReturn(Optional.empty());
       org.mockito.Mockito.lenient()
