@@ -6,7 +6,6 @@ import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
-import static com.buurman.jooq.generated.Tables.TEAMS;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.count;
@@ -574,8 +573,12 @@ public class PaymentRepository {
   }
 
   /**
-   * Overdue RENT payments on non-demo contracts with late fees enabled whose grace period has
-   * elapsed and that carry no late fee yet, across all teams.
+   * Overdue RENT payments on contracts with late fees enabled whose grace period has elapsed and
+   * that carry no late fee yet, across all teams.
+   *
+   * <p>Demo teams are included on purpose: charging a fee only writes a payment row, so demo data
+   * shows the feature working. (The dunning ladder excludes them because it emails real people, and
+   * demo regeneration clears demo payments anyway.)
    */
   public List<Payment> findLateFeeCandidates(LocalDate today) {
     return dsl
@@ -583,8 +586,6 @@ public class PaymentRepository {
         .from(PAYMENTS)
         .join(CONTRACTS)
         .on(CONTRACTS.ID.eq(PAYMENTS.CONTRACT_ID))
-        .join(TEAMS)
-        .on(TEAMS.ID.eq(PAYMENTS.TEAM_ID))
         .where(
             PAYMENTS
                 .PAYMENT_TYPE
@@ -592,7 +593,6 @@ public class PaymentRepository {
                 .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
                 .and(PAYMENTS.DELETED_AT.isNull())
                 .and(CONTRACTS.DELETED_AT.isNull())
-                .and(TEAMS.DEMO.isFalse())
                 .and(notExists(lateFeeChildOf(PAYMENTS.ID)))
                 .and(CONTRACTS.LATE_FEE_ENABLED.isTrue())
                 .and(CONTRACTS.LATE_FEE_PERCENTAGE.gt(java.math.BigDecimal.ZERO))

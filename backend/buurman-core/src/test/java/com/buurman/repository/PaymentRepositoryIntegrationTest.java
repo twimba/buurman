@@ -353,6 +353,32 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     }
 
     @Test
+    @DisplayName("demo teams are charged too, so demo data shows the feature working")
+    void lateFeeCandidatesIncludeDemoTeams() {
+      LocalDate today = LocalDate.of(2026, 3, 1);
+      dsl.update(com.buurman.jooq.generated.Tables.TEAMS)
+          .set(com.buurman.jooq.generated.Tables.TEAMS.DEMO, true)
+          .where(com.buurman.jooq.generated.Tables.TEAMS.ID.eq(TEAM_A_ID))
+          .execute();
+      dsl.update(com.buurman.jooq.generated.Tables.CONTRACTS)
+          .set(com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_ENABLED, true)
+          .set(com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_GRACE_DAYS, 5)
+          .set(
+              com.buurman.jooq.generated.Tables.CONTRACTS.LATE_FEE_PERCENTAGE,
+              new BigDecimal("2.50"))
+          .where(com.buurman.jooq.generated.Tables.CONTRACTS.ID.eq(contractIdA))
+          .execute();
+      Payment pastGrace =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), today.minusDays(6)));
+
+      assertThat(repo.findLateFeeCandidates(today))
+          .extracting(Payment::getId)
+          .contains(pastGrace.getId());
+    }
+
+    @Test
     @DisplayName("findOverduePayments excludes paid payments")
     void findOverdueExcludesPaid() {
       Payment p =
