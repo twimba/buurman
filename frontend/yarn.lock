@@ -999,7 +999,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/core@npm:^9.4.0":
+"@luma.gl/core@npm:^9.4.0, @luma.gl/core@npm:^9.4.2":
   version: 9.4.2
   resolution: "@luma.gl/core@npm:9.4.2"
   dependencies:
@@ -4268,7 +4268,7 @@ __metadata:
     "@eslint/js": "npm:10.0.1"
     "@googlemaps/markerclusterer": "npm:2.6.2"
     "@loaders.gl/core": "npm:^4.5.2"
-    "@luma.gl/core": "npm:^9.4.0"
+    "@luma.gl/core": "npm:^9.4.2"
     "@luma.gl/engine": "npm:^9.4.0"
     "@luma.gl/shadertools": "npm:^9.4.0"
     "@luma.gl/webgl": "npm:^9.4.2"
