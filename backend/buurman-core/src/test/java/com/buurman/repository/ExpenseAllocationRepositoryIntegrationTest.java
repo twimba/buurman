@@ -104,6 +104,41 @@ class ExpenseAllocationRepositoryIntegrationTest extends AbstractRepositoryInteg
     assertThat(repository.findByExpenseIdAndTeamId(expenseId, TEAM_B_ID)).isEmpty();
   }
 
+  @Test
+  @DisplayName(
+      "replaceForExpense with an empty list retires every active row and leaves none — the"
+          + " primitive ExpenseAllocationService.retireAllocations uses when a building-level"
+          + " expense (BUUR-106 Important 3) is edited to belong to a single unit. Without this,"
+          + " the old per-unit rows would stay active alongside the new direct unit charge and"
+          + " double-count the expense on a service-charge settlement statement")
+  void replaceForExpenseWithEmptyListRetiresEveryActiveRowAndLeavesNone() {
+    List<ExpenseAllocation> split =
+        List.of(
+            allocation(unit1Id, "600.00", AllocationBasis.EQUAL),
+            allocation(unit2Id, "600.00", AllocationBasis.EQUAL));
+    List<ExpenseAllocation> saved =
+        repository.replaceForExpense(expenseId, TEAM_A_ID, split, USER_ID);
+    assertThat(saved).hasSize(2);
+    List<UUID> savedIds = saved.stream().map(ExpenseAllocation::getId).toList();
+
+    // The expense is now edited to belong to a single unit: retire the building-level split
+    // (mirrors ExpenseAllocationService.retireAllocations, which calls exactly this).
+    List<ExpenseAllocation> retired =
+        repository.replaceForExpense(expenseId, TEAM_A_ID, List.of(), USER_ID);
+
+    assertThat(retired).isEmpty();
+    assertThat(repository.findByExpenseIdAndTeamId(expenseId, TEAM_A_ID)).isEmpty();
+
+    int softDeletedRows =
+        dsl.fetchCount(
+            DSL.selectFrom(DSL.table("expense_allocations"))
+                .where(
+                    DSL.field("id", UUID.class)
+                        .in(savedIds)
+                        .and(DSL.field("deleted_at", LocalDateTime.class).isNotNull())));
+    assertThat(softDeletedRows).isEqualTo(2);
+  }
+
   private ExpenseAllocation allocation(UUID unitId, String amount, AllocationBasis basis) {
     return ExpenseAllocation.builder()
         .unitId(unitId)

@@ -27,6 +27,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.buurman.domain.Contract;
 import com.buurman.domain.Contract.ContractStatus;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
@@ -300,6 +301,134 @@ class ContractServiceTest {
       assertThatThrownBy(() -> invoke(property, identifierValue, principal(TEAM_ID)))
           .isInstanceOf(NotFoundException.class)
           .hasMessage("Unit not found");
+    }
+  }
+
+  /**
+   * Same reflection technique as {@link ResolveUnitId}, applied to {@code
+   * assertUnitHasNoActiveContract} — the guard shared by {@code createContract} (BUUR-106 Critical
+   * 1's create call site, line ~133) and {@code changeContractStatus}'s activate path (Critical 1's
+   * other call site, line ~636). Before the fix, both called {@code
+   * ContractRepository.findActiveContractByPropertyId}, so a second unit of an already-let building
+   * could never accept a contract. This proves the guard now calls {@code
+   * ContractRepository.findActiveByUnitId} — i.e. that the fix is actually wired into
+   * ContractService, not just present as an unused repository method.
+   */
+  @Nested
+  @DisplayName("assertUnitHasNoActiveContract")
+  class AssertUnitHasNoActiveContract {
+
+    private static final UUID TEAM_ID = UUID.randomUUID();
+    private static final UUID UNIT_1_ID = UUID.randomUUID();
+    private static final UUID UNIT_2_ID = UUID.randomUUID();
+
+    private ContractRepository contractRepository;
+    private Method assertUnitHasNoActiveContract;
+    private Object contractServiceInstance;
+
+    @BeforeEach
+    void setUp() throws Exception {
+      contractRepository = Mockito.mock(ContractRepository.class);
+
+      contractServiceInstance =
+          Mockito.mock(
+              ContractService.class,
+              Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
+
+      Field contractRepositoryField = ContractService.class.getDeclaredField("contractRepository");
+      contractRepositoryField.setAccessible(true);
+      contractRepositoryField.set(contractServiceInstance, contractRepository);
+
+      assertUnitHasNoActiveContract =
+          ContractService.class.getDeclaredMethod(
+              "assertUnitHasNoActiveContract", UUID.class, UUID.class, UUID.class);
+      assertUnitHasNoActiveContract.setAccessible(true);
+    }
+
+    private void invoke(UUID unitId, @Nullable UUID excludeContractId) throws Throwable {
+      try {
+        assertUnitHasNoActiveContract.invoke(
+            contractServiceInstance, unitId, TEAM_ID, excludeContractId);
+      } catch (InvocationTargetException e) {
+        throw e.getCause();
+      }
+    }
+
+    private Contract activeContract(UUID id, UUID unitId) {
+      return Contract.builder()
+          .id(id)
+          .teamId(TEAM_ID)
+          .unitId(unitId)
+          .status(ContractStatus.ACTIVE)
+          .build();
+    }
+
+    @Test
+    @DisplayName(
+        "createContract's call site: a second unit of an already-let building has no active"
+            + " contract of its own, so the guard lets it through")
+    void secondUnitOfAlreadyLetBuildingAcceptsAContract() throws Throwable {
+      // Unit 1 has an active contract; unit 2 (a different unit, same property) does not.
+      when(contractRepository.findActiveByUnitId(UNIT_2_ID, TEAM_ID)).thenReturn(Optional.empty());
+
+      assertThatCode(() -> invoke(UNIT_2_ID, null)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName(
+        "createContract's call site: a second contract on the SAME unit is still rejected, with"
+            + " the unit-level message")
+    void secondContractOnSameUnitIsRejected() {
+      UUID existingContractId = UUID.randomUUID();
+      when(contractRepository.findActiveByUnitId(UNIT_1_ID, TEAM_ID))
+          .thenReturn(Optional.of(activeContract(existingContractId, UNIT_1_ID)));
+
+      assertThatThrownBy(() -> invoke(UNIT_1_ID, null))
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessage(
+              "Unit already has an active contract. Please terminate the existing contract"
+                  + " first.");
+    }
+
+    @Test
+    @DisplayName(
+        "changeContractStatus's activate path: a second unit of an already-let building has no"
+            + " active contract of its own, so activating it succeeds")
+    void activatingSecondUnitOfAlreadyLetBuildingSucceeds() throws Throwable {
+      when(contractRepository.findActiveByUnitId(UNIT_2_ID, TEAM_ID)).thenReturn(Optional.empty());
+
+      // excludeContractId is the contract being activated itself — irrelevant here since no
+      // active contract was found at all on unit 2.
+      assertThatCode(() -> invoke(UNIT_2_ID, UUID.randomUUID())).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName(
+        "changeContractStatus's activate path: activating a DIFFERENT contract on a unit that"
+            + " already has one ACTIVE is still rejected")
+    void activatingSecondContractOnSameUnitIsRejected() {
+      UUID existingContractId = UUID.randomUUID();
+      UUID contractBeingActivated = UUID.randomUUID();
+      when(contractRepository.findActiveByUnitId(UNIT_1_ID, TEAM_ID))
+          .thenReturn(Optional.of(activeContract(existingContractId, UNIT_1_ID)));
+
+      assertThatThrownBy(() -> invoke(UNIT_1_ID, contractBeingActivated))
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessage(
+              "Unit already has an active contract. Please terminate the existing contract"
+                  + " first.");
+    }
+
+    @Test
+    @DisplayName(
+        "changeContractStatus's activate path: re-activating the SAME contract that is itself the"
+            + " one found active is a no-op, not a self-rejection")
+    void reactivatingTheSameContractDoesNotRejectItself() throws Throwable {
+      UUID contractId = UUID.randomUUID();
+      when(contractRepository.findActiveByUnitId(UNIT_1_ID, TEAM_ID))
+          .thenReturn(Optional.of(activeContract(contractId, UNIT_1_ID)));
+
+      assertThatCode(() -> invoke(UNIT_1_ID, contractId)).doesNotThrowAnyException();
     }
   }
 

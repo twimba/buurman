@@ -130,14 +130,7 @@ public class ContractService {
     UUID unitId = resolveUnitId(property, request.unitIdentifier(), principal);
 
     // Check no active contract exists for the unit
-    contractRepository
-        .findActiveByUnitId(unitId, teamId)
-        .ifPresent(
-            existing -> {
-              throw new IllegalArgumentException(
-                  "Unit already has an active contract. Please terminate the existing contract"
-                      + " first.");
-            });
+    assertUnitHasNoActiveContract(unitId, teamId, null);
 
     // Validate dates
     if (request.endDate().isPresent() && request.endDate().get().isBefore(request.startDate())) {
@@ -301,6 +294,31 @@ public class ContractService {
               + " units. Specify which unit the contract is for.");
     }
     return units.get(0).getId();
+  }
+
+  /**
+   * Guards against two ACTIVE contracts on the same unit. Scoped by <em>unit</em>, not property —
+   * BUUR-106 made it valid for two different units of the same property to each have their own
+   * active contract, so this must never widen back out to property scope (that was Critical 1 of
+   * the final review: the old property-scoped guard made a second unit of an already-let building
+   * un-lettable, and its {@code fetchOptional()} would 500 once two units really could both be
+   * active). {@code excludeContractId} lets {@link #changeContractStatus} re-activate a contract
+   * that is itself the one found "active" (e.g. a no-op transition) without rejecting itself;
+   * {@link #createContract} passes {@code null} since a brand-new contract can never be the one
+   * found.
+   */
+  private void assertUnitHasNoActiveContract(
+      UUID unitId, UUID teamId, @Nullable UUID excludeContractId) {
+    contractRepository
+        .findActiveByUnitId(unitId, teamId)
+        .ifPresent(
+            existing -> {
+              if (excludeContractId == null || !existing.getId().equals(excludeContractId)) {
+                throw new IllegalArgumentException(
+                    "Unit already has an active contract. Please terminate the existing contract"
+                        + " first.");
+              }
+            });
   }
 
   public List<ContractResponse> getAllContracts(UserPrincipal principal) {
@@ -634,16 +652,7 @@ public class ContractService {
 
     // If changing to ACTIVE, ensure no other active contract on the unit
     if (newStatus == ACTIVE) {
-      contractRepository
-          .findActiveByUnitId(contract.getUnitId(), teamId)
-          .ifPresent(
-              existing -> {
-                if (!existing.getId().equals(contractId)) {
-                  throw new IllegalArgumentException(
-                      "Unit already has an active contract. Please terminate the existing"
-                          + " contract first.");
-                }
-              });
+      assertUnitHasNoActiveContract(contract.getUnitId(), teamId, contractId);
     }
 
     // Store old values for audit
