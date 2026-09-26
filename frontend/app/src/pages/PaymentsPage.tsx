@@ -99,9 +99,7 @@ export const PaymentsPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [showBulkMarkPaid, setShowBulkMarkPaid] = useState(false);
-  const [reminderTargets, setReminderTargets] = useState<string[] | null>(
-    null
-  );
+  const [reminderTargets, setReminderTargets] = useState<string[] | null>(null);
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>(
     undefined
   );
@@ -181,7 +179,10 @@ export const PaymentsPage = () => {
     exitSelection();
   };
 
-  const handleSendReminders = async (notes: string | undefined, tone: ReminderTone) => {
+  const handleSendReminders = async (
+    notes: string | undefined,
+    tone: ReminderTone
+  ) => {
     if (!reminderTargets || reminderTargets.length === 0) {
       return;
     }
@@ -510,7 +511,9 @@ export const PaymentsPage = () => {
             formatMoney={fmtMoney}
             canEdit={canEditData}
             onSendReminders={(ids) => setReminderTargets(ids)}
-            sendingFor={bulkRemindersMutation.isPending ? reminderTargets : null}
+            sendingFor={
+              bulkRemindersMutation.isPending ? reminderTargets : null
+            }
           />
         )}
 
@@ -648,7 +651,9 @@ export const PaymentsPage = () => {
                             ) : (
                               <Square
                                 className={`h-5 w-5 ${
-                                  isUnpaid ? 'text-text-muted' : 'text-border-default'
+                                  isUnpaid
+                                    ? 'text-text-muted'
+                                    : 'text-border-default'
                                 }`}
                               />
                             )
@@ -723,7 +728,11 @@ export const PaymentsPage = () => {
                     <button
                       onClick={() => setShowPlanDialog(true)}
                       disabled={!planContract}
-                      title={planContract ? undefined : t('selection.paymentPlanHint')}
+                      title={
+                        planContract
+                          ? undefined
+                          : t('selection.paymentPlanHint')
+                      }
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset transition-colors disabled:opacity-50 focus-ring"
                     >
                       <ListChecks className="h-4 w-4" />
@@ -1002,7 +1011,9 @@ export const PaymentsPage = () => {
           message={t('cancelDialog.messageBulk')}
           reasonLabel={t('cancelDialog.reason')}
           reasonPlaceholder={t('cancelDialog.reasonPlaceholder')}
-          confirmLabel={t('cancelDialog.confirmBulk', { count: selectedIds.length })}
+          confirmLabel={t('cancelDialog.confirmBulk', {
+            count: selectedIds.length,
+          })}
           variant="danger"
           isLoading={bulkCancelMutation.isPending}
           onConfirm={handleBulkCancel}

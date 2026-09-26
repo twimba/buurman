@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
   },
   "dependencies": {
     "@buurman/ui": "workspace:*",

@@ -90,9 +90,12 @@ const DayCell = ({
           type="button"
           onClick={onSelect}
           aria-pressed={isSelected}
-          aria-label={`${longDateLabel} — ${t('calendarFeeds.preview.dayEventCount', {
-            count: events.length,
-          })}`}
+          aria-label={`${longDateLabel} — ${t(
+            'calendarFeeds.preview.dayEventCount',
+            {
+              count: events.length,
+            }
+          )}`}
           className={[
             shared,
             'cursor-pointer hover:bg-surface-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500',
@@ -128,7 +131,10 @@ export const MonthCalendar = ({
 
   const weeks = useMemo(() => buildMonthGrid(year, month), [year, month]);
   const weekdays = useMemo(() => getWeekdayLabels(locale), [locale]);
-  const weekdaysLong = useMemo(() => getWeekdayLabels(locale, 'long'), [locale]);
+  const weekdaysLong = useMemo(
+    () => getWeekdayLabels(locale, 'long'),
+    [locale]
+  );
   const longDate = useMemo(
     () =>
       new Intl.DateTimeFormat(locale, {

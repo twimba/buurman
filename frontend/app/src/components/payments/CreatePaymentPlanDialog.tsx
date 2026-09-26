@@ -29,9 +29,14 @@ export const CreatePaymentPlanDialog = ({
   onClose,
 }: CreatePaymentPlanDialogProps) => {
   const { t } = useTranslation('payments');
-  const create = useCreatePaymentPlan(contractIdentifier, t('paymentPlanDialog.created'));
+  const create = useCreatePaymentPlan(
+    contractIdentifier,
+    t('paymentPlanDialog.created')
+  );
   const [count, setCount] = useState(3);
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
   const [frequency, setFrequency] = useState<Frequency>('MONTHLY');
   const [notes, setNotes] = useState('');
   const [pauseReminders, setPauseReminders] = useState(true);
@@ -69,10 +74,19 @@ export const CreatePaymentPlanDialog = ({
       onSubmit={submit}
       footer={
         <>
-          <Button variant="secondary" onClick={onClose} disabled={create.isPending}>
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            disabled={create.isPending}
+          >
             {t('common:buttons.cancel')}
           </Button>
-          <Button variant="primary" onClick={submit} isLoading={create.isPending} disabled={!valid}>
+          <Button
+            variant="primary"
+            onClick={submit}
+            isLoading={create.isPending}
+            disabled={!valid}
+          >
             {t('paymentPlanDialog.confirm')}
           </Button>
         </>
@@ -81,43 +95,98 @@ export const CreatePaymentPlanDialog = ({
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="plan-count" className="block text-sm font-medium text-text-secondary mb-1">
+            <label
+              htmlFor="plan-count"
+              className="block text-sm font-medium text-text-secondary mb-1"
+            >
               {t('paymentPlanDialog.instalments')}
             </label>
-            <input id="plan-count" type="number" min={1} max={36} value={count} onChange={(e) => setCount(Number.parseInt(e.target.value || '1', 10))} className={inputClass} />
+            <input
+              id="plan-count"
+              type="number"
+              min={1}
+              max={36}
+              value={count}
+              onChange={(e) =>
+                setCount(Number.parseInt(e.target.value || '1', 10))
+              }
+              className={inputClass}
+            />
           </div>
           <div>
-            <label htmlFor="plan-frequency" className="block text-sm font-medium text-text-secondary mb-1">
+            <label
+              htmlFor="plan-frequency"
+              className="block text-sm font-medium text-text-secondary mb-1"
+            >
               {t('paymentPlanDialog.frequency')}
             </label>
-            <select id="plan-frequency" value={frequency} onChange={(e) => setFrequency(e.target.value as Frequency)} className={inputClass}>
-              <option value="WEEKLY">{t('paymentPlanDialog.frequencies.WEEKLY')}</option>
-              <option value="BIWEEKLY">{t('paymentPlanDialog.frequencies.BIWEEKLY')}</option>
-              <option value="MONTHLY">{t('paymentPlanDialog.frequencies.MONTHLY')}</option>
+            <select
+              id="plan-frequency"
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value as Frequency)}
+              className={inputClass}
+            >
+              <option value="WEEKLY">
+                {t('paymentPlanDialog.frequencies.WEEKLY')}
+              </option>
+              <option value="BIWEEKLY">
+                {t('paymentPlanDialog.frequencies.BIWEEKLY')}
+              </option>
+              <option value="MONTHLY">
+                {t('paymentPlanDialog.frequencies.MONTHLY')}
+              </option>
             </select>
           </div>
         </div>
         <div>
-          <label htmlFor="plan-start" className="block text-sm font-medium text-text-secondary mb-1">
+          <label
+            htmlFor="plan-start"
+            className="block text-sm font-medium text-text-secondary mb-1"
+          >
             {t('paymentPlanDialog.startDate')}
           </label>
-          <input id="plan-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputClass} />
+          <input
+            id="plan-start"
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className={inputClass}
+          />
         </div>
         <p className="text-sm text-text-secondary">
-          {t('paymentPlanDialog.preview', { count, amount: formatMoney(perInstalment, currency) })}
+          {t('paymentPlanDialog.preview', {
+            count,
+            amount: formatMoney(perInstalment, currency),
+          })}
         </p>
         <label className="flex items-start gap-2 text-sm text-text-primary">
-          <input type="checkbox" checked={pauseReminders} onChange={(e) => setPauseReminders(e.target.checked)} className="mt-0.5 h-4 w-4 rounded border-border-strong text-primary-500 focus-ring" />
+          <input
+            type="checkbox"
+            checked={pauseReminders}
+            onChange={(e) => setPauseReminders(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-border-strong text-primary-500 focus-ring"
+          />
           <span>
             {t('paymentPlanDialog.pauseReminders')}
-            <span className="block text-text-secondary">{t('paymentPlanDialog.pauseRemindersHelp')}</span>
+            <span className="block text-text-secondary">
+              {t('paymentPlanDialog.pauseRemindersHelp')}
+            </span>
           </span>
         </label>
         <div>
-          <label htmlFor="plan-notes" className="block text-sm font-medium text-text-secondary mb-1">
+          <label
+            htmlFor="plan-notes"
+            className="block text-sm font-medium text-text-secondary mb-1"
+          >
             {t('paymentPlanDialog.notes')}
           </label>
-          <Textarea id="plan-notes" rows={2} maxLength={2000} value={notes} onChange={(e) => setNotes(e.target.value)} />
+          <Textarea
+            id="plan-notes"
+            rows={2}
+            maxLength={2000}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
         </div>
       </div>
     </ModalWrapper>

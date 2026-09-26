@@ -39,7 +39,9 @@ describe('EntityExportControls', () => {
         googleSheet={vi.fn()}
       />
     );
-    expect(screen.getByRole('button', { name: /Export deposits/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Export deposits/ })
+    ).toBeInTheDocument();
   });
 
   it('downloads the CSV under the filename stem when only CSV is available', async () => {
@@ -48,9 +50,16 @@ describe('EntityExportControls', () => {
     const blob = new Blob(['a,b'], { type: 'text/csv' });
     const csv = vi.fn().mockResolvedValue(blob);
     renderWithProviders(
-      <EntityExportControls filenameStem="deposits" csv={csv} xlsx={vi.fn()} googleSheet={vi.fn()} />
+      <EntityExportControls
+        filenameStem="deposits"
+        csv={csv}
+        xlsx={vi.fn()}
+        googleSheet={vi.fn()}
+      />
     );
     await user.click(screen.getByRole('button', { name: /CSV/ }));
-    await waitFor(() => expect(downloadBlob).toHaveBeenCalledWith(blob, 'deposits.csv'));
+    await waitFor(() =>
+      expect(downloadBlob).toHaveBeenCalledWith(blob, 'deposits.csv')
+    );
   });
 });

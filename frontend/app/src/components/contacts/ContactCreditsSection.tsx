@@ -17,7 +17,10 @@ interface ContactCreditsSectionProps {
 
 const fmt = (value: number, currency: string) => {
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value);
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency,
+    }).format(value);
   } catch {
     return `${currency} ${value.toFixed(2)}`;
   }
@@ -30,14 +33,18 @@ export const ContactCreditsSection = ({
   const { t } = useTranslation('tenants');
   const { canEditData } = useTeam();
   const { formatDate, formatDateTime } = useFormatDate();
-  const { data: credits = [], isLoading } = useContactCredits(contactIdentifier);
+  const { data: credits = [], isLoading } =
+    useContactCredits(contactIdentifier);
   const createMutation = useCreateContactCredit(contactIdentifier);
   const refundMutation = useRefundContactCredit(contactIdentifier);
   const [showCreate, setShowCreate] = useState(false);
   const [amount, setAmount] = useState('');
   const [reason, setReason] = useState('');
-  const [refundTarget, setRefundTarget] = useState<ContactCreditResponse | null>(null);
-  const [refundDate, setRefundDate] = useState(new Date().toISOString().split('T')[0]);
+  const [refundTarget, setRefundTarget] =
+    useState<ContactCreditResponse | null>(null);
+  const [refundDate, setRefundDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
   const [refundNotes, setRefundNotes] = useState('');
 
   const openTotal = credits.reduce((acc, c) => acc + c.remainingAmount, 0);
@@ -95,7 +102,9 @@ export const ContactCreditsSection = ({
       ) : (
         <>
           <p className="text-sm text-text-secondary mb-3">
-            {t('credits.openTotal', { amount: fmt(openTotal, currency ?? 'EUR') })}
+            {t('credits.openTotal', {
+              amount: fmt(openTotal, currency ?? 'EUR'),
+            })}
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

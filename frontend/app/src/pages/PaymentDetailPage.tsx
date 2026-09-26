@@ -933,7 +933,9 @@ export const PaymentDetailPage = () => {
                               className="flex flex-wrap items-center gap-2"
                             >
                               <button
-                                onClick={() => navigate(`/payments/${fee.identifier}`)}
+                                onClick={() =>
+                                  navigate(`/payments/${fee.identifier}`)
+                                }
                                 className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                               >
                                 {fmtMoney(fee.amount, fee.currency)}
@@ -1573,7 +1575,10 @@ export const PaymentDetailPage = () => {
           open={showWaiveModal}
           title={t('waiveDialog.title')}
           message={t('waiveDialog.message', {
-            amount: fmtMoney(payment.balance ?? payment.amount, payment.currency),
+            amount: fmtMoney(
+              payment.balance ?? payment.amount,
+              payment.currency
+            ),
           })}
           reasonLabel={t('waiveDialog.reason')}
           reasonPlaceholder={t('waiveDialog.reasonPlaceholder')}
@@ -1592,7 +1597,10 @@ export const PaymentDetailPage = () => {
           open={showWriteOffModal}
           title={t('writeOffDialog.title')}
           message={t('writeOffDialog.message', {
-            amount: fmtMoney(payment.balance ?? payment.amount, payment.currency),
+            amount: fmtMoney(
+              payment.balance ?? payment.amount,
+              payment.currency
+            ),
           })}
           reasonLabel={t('writeOffDialog.reason')}
           reasonPlaceholder={t('writeOffDialog.reasonPlaceholder')}

@@ -80,7 +80,11 @@ export const ArrearsPanel = ({
             variant="secondary"
             size="sm"
             leftIcon={<Send />}
-            isLoading={sendingFor === null ? false : sendingFor?.length === arrears.paymentCount}
+            isLoading={
+              sendingFor === null
+                ? false
+                : sendingFor?.length === arrears.paymentCount
+            }
             disabled={!arrears.contacts.some((c) => c.remindersEnabled)}
             title={
               arrears.contacts.some((c) => c.remindersEnabled)
@@ -109,7 +113,8 @@ export const ArrearsPanel = ({
             key={bucket.key}
             className={`rounded-md border px-3 py-2 ${
               bucket.count > 0
-                ? bucketTone[bucket.key] ?? 'bg-surface-inset text-text-primary border-border-default'
+                ? (bucketTone[bucket.key] ??
+                  'bg-surface-inset text-text-primary border-border-default')
                 : 'bg-surface-inset text-text-muted border-border-default'
             }`}
           >

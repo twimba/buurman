@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { CalendarClock } from 'lucide-react';
 import { Button, StatusBadge, type BadgeColorVariant } from '@buurman/ui';
-import { useCancelPaymentPlan, useContractPaymentPlans } from '@/hooks/useContractHooks';
+import {
+  useCancelPaymentPlan,
+  useContractPaymentPlans,
+} from '@/hooks/useContractHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
 import { ReasonDialog } from '@/components/payments/ReasonDialog';
@@ -21,7 +24,10 @@ const statusColor: Record<PaymentPlanResponse['status'], BadgeColorVariant> = {
 
 const fmt = (value: number, currency: string) => {
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value);
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency,
+    }).format(value);
   } catch {
     return `${currency} ${value.toFixed(2)}`;
   }
@@ -33,8 +39,13 @@ export const PaymentPlansCard = ({ contractId }: PaymentPlansCardProps) => {
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const { data: plans = [] } = useContractPaymentPlans(contractId);
-  const cancel = useCancelPaymentPlan(contractId, t('paymentPlans.toasts.cancelled'));
-  const [cancelTarget, setCancelTarget] = useState<PaymentPlanResponse | null>(null);
+  const cancel = useCancelPaymentPlan(
+    contractId,
+    t('paymentPlans.toasts.cancelled')
+  );
+  const [cancelTarget, setCancelTarget] = useState<PaymentPlanResponse | null>(
+    null
+  );
 
   if (plans.length === 0) {
     return null;
@@ -48,9 +59,18 @@ export const PaymentPlansCard = ({ contractId }: PaymentPlansCardProps) => {
       </h2>
       <ul className="space-y-4">
         {plans.map((plan) => {
-          const progress = plan.totalAmount > 0 ? Math.min(100, Math.round((plan.paidAmount / plan.totalAmount) * 100)) : 0;
+          const progress =
+            plan.totalAmount > 0
+              ? Math.min(
+                  100,
+                  Math.round((plan.paidAmount / plan.totalAmount) * 100)
+                )
+              : 0;
           return (
-            <li key={plan.identifier} className="rounded-md border border-border-default p-4 space-y-2">
+            <li
+              key={plan.identifier}
+              className="rounded-md border border-border-default p-4 space-y-2"
+            >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm font-medium text-text-primary">
@@ -61,15 +81,32 @@ export const PaymentPlansCard = ({ contractId }: PaymentPlansCardProps) => {
                     })}
                   </p>
                   <p className="text-xs text-text-secondary">
-                    {t('paymentPlans.from', { date: formatDate(plan.startDate) })}
+                    {t('paymentPlans.from', {
+                      date: formatDate(plan.startDate),
+                    })}
                     {' · '}
-                    {t('paymentPlans.covers', { count: plan.coveredPaymentIdentifiers.length })}
+                    {t('paymentPlans.covers', {
+                      count: plan.coveredPaymentIdentifiers.length,
+                    })}
                   </p>
                 </div>
-                <StatusBadge label={t(`paymentPlans.status.${plan.status}`)} color={statusColor[plan.status]} shape="pill" />
+                <StatusBadge
+                  label={t(`paymentPlans.status.${plan.status}`)}
+                  color={statusColor[plan.status]}
+                  shape="pill"
+                />
               </div>
-              <div className="h-2 rounded-full bg-surface-inset overflow-hidden" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
-                <div className="h-full bg-success rounded-full" style={{ width: `${progress}%` }} />
+              <div
+                className="h-2 rounded-full bg-surface-inset overflow-hidden"
+                role="progressbar"
+                aria-valuenow={progress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
+                <div
+                  className="h-full bg-success rounded-full"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
               <p className="text-xs text-text-secondary">
                 {t('paymentPlans.progress', {
@@ -92,17 +129,28 @@ export const PaymentPlansCard = ({ contractId }: PaymentPlansCardProps) => {
                               : 'border-border-default text-text-secondary'
                       }`}
                     >
-                      {formatDate(inst.dueDate)} · {fmt(inst.amount, inst.currency)}
+                      {formatDate(inst.dueDate)} ·{' '}
+                      {fmt(inst.amount, inst.currency)}
                     </Link>
                   </li>
                 ))}
               </ul>
-              {plan.notes && <p className="text-xs text-text-secondary">{plan.notes}</p>}
+              {plan.notes && (
+                <p className="text-xs text-text-secondary">{plan.notes}</p>
+              )}
               {plan.cancelReason && (
-                <p className="text-xs text-text-muted">{t('paymentPlans.cancelledBecause', { reason: plan.cancelReason })}</p>
+                <p className="text-xs text-text-muted">
+                  {t('paymentPlans.cancelledBecause', {
+                    reason: plan.cancelReason,
+                  })}
+                </p>
               )}
               {canEditData && plan.status === 'ACTIVE' && (
-                <Button variant="ghost" size="sm" onClick={() => setCancelTarget(plan)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCancelTarget(plan)}
+                >
                   {t('paymentPlans.cancel')}
                 </Button>
               )}
@@ -115,13 +163,18 @@ export const PaymentPlansCard = ({ contractId }: PaymentPlansCardProps) => {
         <ReasonDialog
           open={!!cancelTarget}
           title={t('paymentPlans.cancelDialog.title')}
-          message={t('paymentPlans.cancelDialog.message', { remaining: fmt(cancelTarget.remainingAmount, cancelTarget.currency) })}
+          message={t('paymentPlans.cancelDialog.message', {
+            remaining: fmt(cancelTarget.remainingAmount, cancelTarget.currency),
+          })}
           reasonLabel={t('paymentPlans.cancelDialog.reason')}
           confirmLabel={t('paymentPlans.cancelDialog.confirm')}
           variant="danger"
           isLoading={cancel.isPending}
           onConfirm={async (reason) => {
-            await cancel.mutateAsync({ planId: cancelTarget.identifier, data: { reason } });
+            await cancel.mutateAsync({
+              planId: cancelTarget.identifier,
+              data: { reason },
+            });
             setCancelTarget(null);
           }}
           onClose={() => setCancelTarget(null)}

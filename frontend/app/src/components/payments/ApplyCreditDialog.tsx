@@ -10,7 +10,10 @@ interface ApplyCreditDialogProps {
   currency: string;
   formatMoney: (value: number, currency: string) => string;
   isLoading?: boolean;
-  onConfirm: (creditIdentifier: string, amount?: number) => Promise<void> | void;
+  onConfirm: (
+    creditIdentifier: string,
+    amount?: number
+  ) => Promise<void> | void;
   onClose: () => void;
 }
 
@@ -27,7 +30,8 @@ export const ApplyCreditDialog = ({
 }: ApplyCreditDialogProps) => {
   const { t } = useTranslation('payments');
   const usable = useMemo(
-    () => credits.filter((c) => c.remainingAmount > 0 && c.currency === currency),
+    () =>
+      credits.filter((c) => c.remainingAmount > 0 && c.currency === currency),
     [credits, currency]
   );
   const [creditId, setCreditId] = useState(usable[0]?.identifier ?? '');

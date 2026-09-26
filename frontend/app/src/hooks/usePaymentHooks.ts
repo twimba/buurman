@@ -69,12 +69,17 @@ import { queryKeys } from '../lib/queryKeys';
  */
 const invalidatePaymentViews = (
   queryClient: ReturnType<typeof useQueryClient>,
-  { financial = true, contractId }: { financial?: boolean; contractId?: string } = {}
+  {
+    financial = true,
+    contractId,
+  }: { financial?: boolean; contractId?: string } = {}
 ) => {
   queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
   queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
   if (contractId) {
-    queryClient.invalidateQueries({ queryKey: queryKeys.contracts.detail(contractId) });
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.contracts.detail(contractId),
+    });
   }
   if (!financial) {
     return;
@@ -438,13 +443,22 @@ export const useSendPaymentReminder = () => {
   const announce = useAnnounce();
   const { t } = useTranslation('payments');
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data?: SendPaymentReminderRequest }) =>
-      sendPaymentReminder(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data?: SendPaymentReminderRequest;
+    }) => sendPaymentReminder(id, data),
     onSuccess: (reminder, { id }) => {
       // Not a financial change: the timeline and the arrears "last reminded" column only.
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.reminders(id) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.payments.reminders(id),
+      });
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.payments.auditLog(id) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.payments.auditLog(id),
+      });
       const message = t('toasts.reminderSent', {
         email: reminder.recipientEmail ?? '',
       });

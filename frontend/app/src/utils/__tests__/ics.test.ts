@@ -14,7 +14,12 @@ const feed = (...events: string[]) =>
     'END:VCALENDAR',
   ].join('\r\n');
 
-const allDayEvent = (uid: string, date: string, summary: string, description?: string) =>
+const allDayEvent = (
+  uid: string,
+  date: string,
+  summary: string,
+  description?: string
+) =>
   [
     'BEGIN:VEVENT',
     `UID:${uid}`,
@@ -29,7 +34,9 @@ const allDayEvent = (uid: string, date: string, summary: string, description?: s
 describe('parseIcsFeed', () => {
   it('parses an all-day event into a local calendar day', () => {
     const [event] = parseIcsFeed(
-      feed(allDayEvent('a@buurman', '20260315', 'Contract Start - Oak Street 12'))
+      feed(
+        allDayEvent('a@buurman', '20260315', 'Contract Start - Oak Street 12')
+      )
     );
 
     expect(event.uid).toBe('a@buurman');
@@ -44,7 +51,9 @@ describe('parseIcsFeed', () => {
   it('keeps the date stable rather than shifting it a day west of UTC', () => {
     // ical.js reads date-only values as UTC midnight; reading the fields
     // directly is what stops this becoming the 14th in negative offsets.
-    const [event] = parseIcsFeed(feed(allDayEvent('b', '20260101', 'New year')));
+    const [event] = parseIcsFeed(
+      feed(allDayEvent('b', '20260101', 'New year'))
+    );
     expect(toDayKey(event.start)).toBe('2026-01-01');
   });
 
@@ -56,7 +65,9 @@ describe('parseIcsFeed', () => {
   });
 
   it('leaves description undefined when absent', () => {
-    const [event] = parseIcsFeed(feed(allDayEvent('d', '20260401', 'Rent due')));
+    const [event] = parseIcsFeed(
+      feed(allDayEvent('d', '20260401', 'Rent due'))
+    );
     expect(event.description).toBeUndefined();
   });
 
@@ -98,7 +109,12 @@ describe('parseIcsFeed', () => {
 
   it('skips an unparseable event instead of failing the whole feed', () => {
     const ics = feed(
-      ['BEGIN:VEVENT', 'UID:broken', 'SUMMARY:No start date', 'END:VEVENT'].join('\r\n'),
+      [
+        'BEGIN:VEVENT',
+        'UID:broken',
+        'SUMMARY:No start date',
+        'END:VEVENT',
+      ].join('\r\n'),
       allDayEvent('good', '20260315', 'Still rendered')
     );
     const events = parseIcsFeed(ics);

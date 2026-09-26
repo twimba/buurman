@@ -52,7 +52,11 @@ describe('buildMonthGrid', () => {
 
   it('marks no day when today falls outside the rendered month', () => {
     const today = new Date(2026, 6, 4);
-    expect(buildMonthGrid(2026, 2, today).flat().some((d) => d.isToday)).toBe(false);
+    expect(
+      buildMonthGrid(2026, 2, today)
+        .flat()
+        .some((d) => d.isToday)
+    ).toBe(false);
   });
 
   it('handles a leap February', () => {

@@ -29,9 +29,11 @@ export function buildMonthGrid(
   const todayKey = toDayKey(startOfDay(today));
 
   // How many days of the previous month are needed to reach the week start.
-  const leadingDays = (firstOfMonth.getDay() - WEEK_STARTS_ON + DAYS_IN_WEEK) % DAYS_IN_WEEK;
+  const leadingDays =
+    (firstOfMonth.getDay() - WEEK_STARTS_ON + DAYS_IN_WEEK) % DAYS_IN_WEEK;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const totalCells = Math.ceil((leadingDays + daysInMonth) / DAYS_IN_WEEK) * DAYS_IN_WEEK;
+  const totalCells =
+    Math.ceil((leadingDays + daysInMonth) / DAYS_IN_WEEK) * DAYS_IN_WEEK;
 
   const weeks: CalendarGridDay[][] = [];
   for (let cell = 0; cell < totalCells; cell += 1) {
