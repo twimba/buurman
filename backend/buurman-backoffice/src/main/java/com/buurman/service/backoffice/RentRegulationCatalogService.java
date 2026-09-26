@@ -613,7 +613,8 @@ public class RentRegulationCatalogService {
                 country.getLateFeePolicy(),
                 country.getLateFeeMaxPercentage().orElse(null),
                 country.getLateFeeNotes().orElse(null)),
-        country.getFormalNoticeDays().orElse(null));
+        country.getFormalNoticeDays().orElse(null),
+        null);
   }
 
   private CatalogRule toCatalogRule(RentRegulationRule rule, Map<UUID, String> regionCodeById) {

@@ -186,7 +186,8 @@ class RentRegulationCatalogDiffTest {
             null,
             List.of(),
             new CatalogLateFee(LateFeePolicy.CAPPED, new BigDecimal("20.0"), "Art. 1041 CC"),
-            8);
+            8,
+            null);
     RentRegulationCatalog target =
         new RentRegulationCatalog("2026.2", "2026-06-20", "desc", List.of(pt));
     when(loader.load()).thenReturn(target);
@@ -219,7 +220,7 @@ class RentRegulationCatalogDiffTest {
   // ---- builders ----
 
   private static CatalogCountry country(String code, String name, List<CatalogRule> rules) {
-    return new CatalogCountry(code, name, false, null, null, null, rules, null, null);
+    return new CatalogCountry(code, name, false, null, null, null, rules, null, null, null);
   }
 
   private static CatalogRule catalogRule(int year, String category, BigDecimal pct, String notes) {
