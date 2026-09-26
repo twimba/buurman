@@ -226,6 +226,48 @@ class UnitServiceTest {
     }
 
     @Test
+    @DisplayName(
+        "renumbers the promoted implicit unit to the batch's first label — not just its own"
+            + " pre-existing number")
+    void renumbersPromotedImplicitUnitToFirstLabel() {
+      // The implicit unit is seeded as "1" (V068 backfills every implicit unit's unit_number as
+      // literal "1"), which is realistic but means a NUMERIC batch's first label ("1") can't tell
+      // "renumbered" apart from "never renumbered". ALPHABETIC's first label ("A") differs from
+      // the seed, so this test can actually detect a missing setUnitNumber call.
+      Unit implicitUnit = unit("1", UnitStatus.VACANT);
+      implicitUnit.setImplicit(true);
+      UUID implicitId = implicitUnit.getId();
+      Sid implicitIdentifier = implicitUnit.getIdentifier().orElseThrow();
+
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(implicitUnit));
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      service()
+          .bulkCreateUnits(
+              propertyIdentifier(),
+              new BulkCreateUnitsRequest(
+                  3,
+                  BulkCreateUnitsRequest.NumberingPattern.ALPHABETIC,
+                  UnitType.APARTMENT,
+                  Optional.empty()),
+              principal());
+
+      ArgumentCaptor<Unit> savedCaptor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository, times(3)).save(savedCaptor.capture());
+      Unit firstSaved = savedCaptor.getAllValues().get(0);
+
+      // A missing `setUnitNumber` in promoteForBulkCreate would leave this "1" — the seeded
+      // value — instead of "A", the batch's actual first label.
+      assertThat(firstSaved.getUnitNumber()).isEqualTo("A");
+      assertThat(firstSaved.getId()).isEqualTo(implicitId);
+      assertThat(firstSaved.getIdentifier()).contains(implicitIdentifier);
+    }
+
+    @Test
     @DisplayName("numbers units 1..n for NUMERIC")
     void numbersNumerically() {
       when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());

@@ -147,6 +147,12 @@ public class UnitService {
     }
   }
 
+  /**
+   * Bulk-create's promotion counterpart to {@link #promoteImplicitUnit}: intentionally duplicated
+   * rather than shared behind an optional-label/sortOrder parameter, because single-create
+   * promotion must never renumber. Keep the two in sync manually — a field added to one promotion
+   * path (e.g. clearing a stat that shouldn't survive promotion) likely belongs in the other too.
+   */
   private Unit promoteForBulkCreate(
       Unit implicitUnit, String label, int sortOrder, UserPrincipal principal) {
     implicitUnit.setImplicit(false);
@@ -186,6 +192,9 @@ public class UnitService {
       switch (request.numberingPattern()) {
         case NUMERIC -> labels.add(String.valueOf(i + 1));
         case ALPHABETIC -> labels.add(alphabeticLabel(i));
+        // "%02d" is zero-padded to two digits only up to index 99; @Max(200) allows counts that
+        // widen it to three digits (e.g. "1.100"). Labels stay unique either way, so this is
+        // graceful degradation, not a bug — just not literally "two-digit" past that point.
         case FLOOR_DOT_INDEX ->
             labels.add(request.startFloor().orElse(0) + "." + String.format("%02d", i + 1));
       }
@@ -273,6 +282,9 @@ public class UnitService {
    * Relies on the {@code uq_units_one_implicit_per_property} unique index to guarantee at most one
    * live implicit unit per property, so the unit to promote is unambiguous. Promotes in place —
    * never delete-and-recreate.
+   *
+   * <p>See {@link #promoteForBulkCreate} for bulk-create's counterpart, deliberately kept separate
+   * (single-create must not renumber) — keep both in sync manually.
    */
   private void promoteImplicitUnit(UUID propertyId, UUID teamId, UUID actorId) {
     unitRepository.findAllByPropertyIdAndTeamId(propertyId, teamId).stream()
