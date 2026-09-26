@@ -930,20 +930,20 @@ public class PropertyService {
   }
 
   /**
-   * Coarser unit facts for a list response, from the page-wide precomputed counts map (see {@link
-   * #getPropertiesPaginated}) rather than a per-property query. {@code vacant} here is "not
-   * occupied" (total minus occupied) rather than a literal count of VACANT-status units, since
-   * {@link UnitCounts} only tracks total/occupied — a deliberate simplification for list rendering;
-   * {@link #unitFactsFromFullList} is exact.
+   * Unit facts for a list response, from the page-wide precomputed counts map (see {@link
+   * #getPropertiesPaginated}) rather than a per-property query. {@code vacant} is a literal count
+   * of VACANT-status units — the same conditional aggregate {@link
+   * PropertyRepository#findUnitCountsByTeamId} computes for {@code occupied} — so it agrees exactly
+   * with {@link #unitFactsFromFullList}'s count rather than approximating it as "not occupied"
+   * (which would silently fold MAINTENANCE/UNAVAILABLE/etc. units into "vacant").
    */
   private UnitFacts unitFactsFromCounts(
       UUID propertyId, @Nullable Map<UUID, UnitCounts> unitCountsByPropertyId) {
     UnitCounts counts =
         Optional.ofNullable(unitCountsByPropertyId)
             .map(m -> m.get(propertyId))
-            .orElse(new UnitCounts(0, 0));
-    return new UnitFacts(
-        counts.total(), counts.occupied(), counts.total() - counts.occupied(), List.of());
+            .orElse(new UnitCounts(0, 0, 0));
+    return new UnitFacts(counts.total(), counts.occupied(), counts.vacant(), List.of());
   }
 
   private record UnitFacts(int total, int occupied, int vacant, List<UnitSummaryResponse> units) {}

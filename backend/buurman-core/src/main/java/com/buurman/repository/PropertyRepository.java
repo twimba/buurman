@@ -19,7 +19,7 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record3;
+import org.jooq.Record4;
 import org.jooq.impl.DSL;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
@@ -353,6 +353,9 @@ public class PropertyRepository {
             DSL.count(),
             DSL.sum(
                 DSL.when(UNITS.STATUS.eq(UnitStatus.OCCUPIED.name()), DSL.inline(1))
+                    .otherwise(DSL.inline(0))),
+            DSL.sum(
+                DSL.when(UNITS.STATUS.eq(UnitStatus.VACANT.name()), DSL.inline(1))
                     .otherwise(DSL.inline(0))))
         .from(UNITS)
         .join(PROPERTIES)
@@ -366,15 +369,23 @@ public class PropertyRepository {
         .groupBy(UNITS.PROPERTY_ID)
         .fetch()
         .forEach(
-            (Record3<UUID, Integer, BigDecimal> r) -> {
+            (Record4<UUID, Integer, BigDecimal, BigDecimal> r) -> {
               int occupied = r.value3() == null ? 0 : r.value3().intValue();
-              counts.put(r.value1(), new UnitCounts(r.value2(), occupied));
+              int vacant = r.value4() == null ? 0 : r.value4().intValue();
+              counts.put(r.value1(), new UnitCounts(r.value2(), occupied, vacant));
             });
     return counts;
   }
 
-  /** Per-property unit totals for {@link #findUnitCountsByTeamId}. */
-  public record UnitCounts(int total, int occupied) {}
+  /**
+   * Per-property unit totals for {@link #findUnitCountsByTeamId}. {@code vacant} is a literal count
+   * of {@code status == VACANT} units — computed by the same conditional-aggregate pattern as
+   * {@code occupied}, in the same single grouped query — so it agrees exactly with
+   * PropertyService's single-property unit-facts path (which counts the same way from a unit list)
+   * rather than being approximated as {@code total - occupied} (which would silently fold
+   * MAINTENANCE/UNAVAILABLE/etc. units into "vacant").
+   */
+  public record UnitCounts(int total, int occupied, int vacant) {}
 
   private Condition hasUnitWithStatus(UnitStatus status) {
     // "A vacant property" (etc.): the property has at least one non-deleted unit in that status.

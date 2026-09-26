@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ import com.buurman.domain.AllocationBasis;
 import com.buurman.domain.Property;
 import com.buurman.domain.Property.PropertyCategory;
 import com.buurman.domain.Property.PropertyType;
+import com.buurman.domain.SortDirection;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.Unit;
 import com.buurman.domain.UnitStatus;
@@ -35,6 +37,8 @@ import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.CreateUnitRequest;
+import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.UnitSummaryResponse;
 import com.buurman.mapper.OptionalMappingConfig;
@@ -50,6 +54,7 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
+import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.buurman.util.SidGenerator;
 
 /**
@@ -366,6 +371,57 @@ class PropertyServiceTest {
       assertThat(response.occupiedUnitCount()).isEqualTo(1);
       assertThat(response.vacantUnitCount()).isEqualTo(3);
       assertThat(response.units()).hasSize(4);
+    }
+
+    @Test
+    @DisplayName(
+        "unitCount/occupiedUnitCount/vacantUnitCount agree with the paginated list for a property"
+            + " with 1 OCCUPIED, 1 VACANT, 2 MAINTENANCE units")
+    void unitFactsAgreeBetweenDetailAndListEndpoints() {
+      Property property = savedProperty(PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT);
+
+      // Detail path: getProperty derives counts from the full unit list.
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      List<Unit> units =
+          List.of(
+              unit("1", UnitType.APARTMENT, UnitStatus.OCCUPIED),
+              unit("2", UnitType.APARTMENT, UnitStatus.VACANT),
+              unit("3", UnitType.APARTMENT, UnitStatus.MAINTENANCE),
+              unit("4", UnitType.APARTMENT, UnitStatus.MAINTENANCE));
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(units);
+      when(unitMapper.toSummary(any(Unit.class)))
+          .thenAnswer(
+              inv -> {
+                Unit u = inv.getArgument(0);
+                return new UnitSummaryResponse(
+                    u.getIdentifier().orElseThrow(),
+                    u.getUnitNumber(),
+                    u.getName(),
+                    u.getUnitType(),
+                    u.getStatus());
+              });
+
+      PropertyResponse detail = service.getProperty(PROPERTY_SID, principal);
+
+      // List path: getPropertiesPaginated derives counts from the precomputed UnitCounts map,
+      // which must carry the same 1/1 split (not "total - occupied", which would report 3).
+      when(propertyRepository.findAllByTeamIdPaginated(eq(TEAM_ID), any(), any(), any(), any()))
+          .thenReturn(new PaginatedResult<>(List.of(property), 1));
+      when(propertyRepository.findUnitCountsByTeamId(TEAM_ID))
+          .thenReturn(Map.of(PROPERTY_ID, new PropertyRepository.UnitCounts(4, 1, 1)));
+
+      PageResponse<PropertyResponse> page =
+          service.getPropertiesPaginated(
+              principal, null, null, null, PageRequest.of(null, null, null, (SortDirection) null));
+      PropertyResponse listItem = page.content().get(0);
+
+      assertThat(detail.unitCount()).isEqualTo(4);
+      assertThat(detail.occupiedUnitCount()).isEqualTo(1);
+      assertThat(detail.vacantUnitCount()).isEqualTo(1);
+
+      assertThat(listItem.unitCount()).isEqualTo(detail.unitCount());
+      assertThat(listItem.occupiedUnitCount()).isEqualTo(detail.occupiedUnitCount());
+      assertThat(listItem.vacantUnitCount()).isEqualTo(detail.vacantUnitCount());
     }
   }
 }

@@ -175,8 +175,11 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
       UUID propertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
       TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "1", "OCCUPIED");
       TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "2", "VACANT");
-      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "3", "VACANT");
-      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "4", "VACANT");
+      // A MAINTENANCE unit deliberately keeps this fixture's vacant count (1) distinct from
+      // total-minus-occupied (3), so this test cannot pass if vacant() regresses to that
+      // approximation.
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "3", "MAINTENANCE");
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "4", "MAINTENANCE");
 
       Map<UUID, PropertyRepository.UnitCounts> counts = repo.findUnitCountsByTeamId(TEAM_A_ID);
 
@@ -185,6 +188,7 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
           java.util.Objects.requireNonNull(counts.get(propertyId));
       assertThat(propertyCounts.total()).isEqualTo(4);
       assertThat(propertyCounts.occupied()).isEqualTo(1);
+      assertThat(propertyCounts.vacant()).isEqualTo(1);
     }
 
     @Test
