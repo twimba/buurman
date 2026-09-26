@@ -7396,6 +7396,9 @@ components:
         properties:
           type: integer
           format: int64
+        units:
+          type: integer
+          format: int64
         tenants:
           type: integer
           format: int64
@@ -7418,6 +7421,7 @@ components:
         - payments
         - properties
         - tenants
+        - units
     FinancialSnapshot:
       type: object
       properties:

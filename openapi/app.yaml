@@ -114,6 +114,8 @@ tags:
     description: Data export and takeout management
   - name: Broadcasts
     description: Broadcast messages for users
+  - name: Units
+    description: Units within a property (dwellings, parking, storage, commercial space)
 paths:
   /users/preferences/notifications:
     get:
@@ -6105,6 +6107,625 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PropertyResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /properties/{propertyIdentifier}/units:
+    get:
+      tags:
+        - Units
+      summary: List units
+      description: Get all units of a property, with each row's current occupancy snapshot
+      operationId: listUnits
+      parameters:
+        - name: propertyIdentifier
+          in: path
+          description: Property identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PropertyIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitGridRowResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Units
+      summary: Create unit
+      description: Create a new unit on a property (Admin/Editor). Promotes the property's implicit stand-in unit in place if this is its second unit.
+      operationId: createUnit
+      parameters:
+        - name: propertyIdentifier
+          in: path
+          description: Property identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PropertyIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUnitRequest'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /properties/{propertyIdentifier}/units/bulk:
+    post:
+      tags:
+        - Units
+      summary: Bulk-create units
+      description: Split a property into several labeled units in one batch (Admin/Editor). Promotes the property's implicit stand-in unit in place as the first of the batch.
+      operationId: bulkCreateUnits
+      parameters:
+        - name: propertyIdentifier
+          in: path
+          description: Property identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PropertyIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateUnitsRequest'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnitResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /units/{identifier}:
+    get:
+      tags:
+        - Units
+      summary: Get unit
+      description: Get unit details by identifier
+      operationId: getUnit
+      parameters:
+        - name: identifier
+          in: path
+          description: Unit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/UnitIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Units
+      summary: Update unit
+      description: Update unit details (Admin/Editor)
+      operationId: updateUnit
+      parameters:
+        - name: identifier
+          in: path
+          description: Unit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/UnitIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUnitRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Units
+      summary: Delete unit
+      description: Soft delete a unit (Admin only). Refuses to remove a property's last unit or a unit with an active contract.
+      operationId: deleteUnit
+      parameters:
+        - name: identifier
+          in: path
+          description: Unit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/UnitIdentifier'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /units/{identifier}/residential-details:
+    get:
+      tags:
+        - Units
+      summary: Get unit residential details
+      description: Get bedroom/bathroom/furnishing details for a unit. Returns an empty result for non-APARTMENT units without exposing any stored data.
+      operationId: getUnitResidentialDetails
+      parameters:
+        - name: identifier
+          in: path
+          description: Unit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/UnitIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitResidentialDetailsResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Units
+      summary: Update unit residential details
+      description: Set bedroom/bathroom/furnishing details for a unit (Admin/Editor). Rejected for non-APARTMENT units.
+      operationId: updateUnitResidentialDetails
+      parameters:
+        - name: identifier
+          in: path
+          description: Unit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/UnitIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUnitResidentialDetailsRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitResidentialDetailsResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /units/{identifier}/amenities:
+    get:
+      tags:
+        - Units
+      summary: Get unit amenities
+      description: Get the amenities currently linked to a unit
+      operationId: getUnitAmenities
+      parameters:
+        - name: identifier
+          in: path
+          description: Unit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/UnitIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AmenityResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Units
+      summary: Replace unit amenities
+      description: Replace the full set of amenities linked to a unit (Admin/Editor). An empty list clears all amenities.
+      operationId: updateUnitAmenities
+      parameters:
+        - name: identifier
+          in: path
+          description: Unit identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/UnitIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUnitAmenitiesRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AmenityResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -21067,6 +21688,9 @@ components:
     PropertyIdentifier:
       type: string
       description: Property identifier
+    UnitIdentifier:
+      type: string
+      description: Unit identifier
     PropertyInsuranceIdentifier:
       type: string
       description: Property insurance identifier
@@ -21700,10 +22324,17 @@ components:
         memberCount:
           type: integer
           format: int64
+        billableUnitCount:
+          type: integer
+          format: int32
+          description: >-
+            Count of all non-deleted units across the team, implicit units
+            included.
         createdAt:
           type: string
           format: date-time
       required:
+        - billableUnitCount
         - createdAt
         - identifier
         - memberCount
@@ -30234,6 +30865,347 @@ components:
       required:
         - spreadsheetId
         - url
+    UnitType:
+      type: string
+      description: Kind of separately-lettable object within a property
+      enum: [APARTMENT, PARKING, STORAGE, COMMERCIAL]
+    UnitStatus:
+      type: string
+      description: Occupancy state of a single unit
+      enum:
+        - VACANT
+        - OCCUPIED
+        - SELF_OCCUPIED
+        - MAINTENANCE
+        - UNAVAILABLE
+        - UNDER_RENOVATION
+        - FALLOW
+        - LISTED
+    AllocationBasis:
+      type: string
+      description: How a building-level expense is divided across a property's units
+      enum: [AREA, EQUAL, CUSTOM, MANUAL]
+    UnitResponse:
+      type: object
+      description: A separately-lettable dwelling within a property
+      properties:
+        identifier:
+          type: string
+          description: Unit identifier
+        propertyIdentifier:
+          type: string
+          description: Identifier of the property this unit belongs to
+        unitNumber:
+          type: string
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        implicit:
+          type: boolean
+          description: True while this unit is the auto-created stand-in for a single-unit property
+        sortOrder:
+          type: integer
+          format: int32
+        areaValue:
+          type: number
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+        wozValueCurrency:
+          type: string
+        wozSharePct:
+          type: number
+        allocationShare:
+          type: number
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - identifier
+        - implicit
+        - propertyIdentifier
+        - sortOrder
+        - status
+        - unitNumber
+        - unitType
+    UnitSummaryResponse:
+      type: object
+      description: A short summary of a unit, for embedding in other responses
+      properties:
+        identifier:
+          type: string
+        unitNumber:
+          type: string
+        name:
+          type: string
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+      required:
+        - identifier
+        - status
+        - unitNumber
+        - unitType
+    UnitGridRowResponse:
+      type: object
+      description: A single row in the units grid view, joining unit identity with the current occupancy snapshot
+      properties:
+        identifier:
+          type: string
+        unitNumber:
+          type: string
+        name:
+          type: string
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        tenantName:
+          type: string
+        monthlyRent:
+          type: number
+        monthlyRentCurrency:
+          type: string
+        vacancyDays:
+          type: integer
+          format: int32
+      required:
+        - identifier
+        - status
+        - unitNumber
+        - unitType
+    CreateUnitRequest:
+      type: object
+      properties:
+        unitNumber:
+          type: string
+          minLength: 1
+          maxLength: 50
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        areaValue:
+          type: number
+          exclusiveMinimum: 0
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+          exclusiveMinimum: 0
+        wozValueCurrency:
+          type: string
+        allocationShare:
+          type: number
+          minimum: 0
+          maximum: 100
+        wozSharePct:
+          type: number
+          minimum: 0
+          maximum: 100
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+      required:
+        - unitNumber
+        - unitType
+    UpdateUnitRequest:
+      type: object
+      properties:
+        unitNumber:
+          type: string
+          minLength: 1
+          maxLength: 50
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        areaValue:
+          type: number
+          exclusiveMinimum: 0
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+          exclusiveMinimum: 0
+        wozValueCurrency:
+          type: string
+        allocationShare:
+          type: number
+          minimum: 0
+          maximum: 100
+        wozSharePct:
+          type: number
+          minimum: 0
+          maximum: 100
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+      required:
+        - unitNumber
+        - unitType
+    BulkCreateUnitsRequest:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 200
+        numberingPattern:
+          type: string
+          description: How generated unit numbers are formatted
+          enum: [NUMERIC, ALPHABETIC, FLOOR_DOT_INDEX]
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        startFloor:
+          type: integer
+          format: int32
+      required:
+        - count
+        - numberingPattern
+        - unitType
+    UnitResidentialDetailsResponse:
+      type: object
+      description: Bedroom/bathroom/furnishing details for an APARTMENT unit
+      properties:
+        bedrooms:
+          type: integer
+          format: int32
+        bathrooms:
+          type: integer
+          format: int32
+        furnished:
+          type: boolean
+        petPolicy:
+          type: string
+      required:
+        - furnished
+    UpdateUnitResidentialDetailsRequest:
+      type: object
+      properties:
+        bedrooms:
+          type: integer
+          format: int32
+          minimum: 0
+        bathrooms:
+          type: integer
+          format: int32
+          minimum: 0
+        furnished:
+          type: boolean
+        petPolicy:
+          type: string
+      required:
+        - furnished
+    UpdateUnitAmenitiesRequest:
+      type: object
+      description: Replaces the full set of amenities linked to a unit. An empty list clears all amenities.
+      properties:
+        amenityIdentifiers:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/AmenityIdentifier'
+      required:
+        - amenityIdentifiers
   securitySchemes:
     bearer-jwt:
       type: http
