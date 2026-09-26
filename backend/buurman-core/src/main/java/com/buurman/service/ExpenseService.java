@@ -344,16 +344,21 @@ public class ExpenseService {
                       .getId();
               expense.setContactId(Optional.of(resolvedContactId));
             });
-    request
-        .unitIdentifier()
-        .ifPresent(
-            uid -> {
-              Unit unit = unitRepository.getByIdentifierAndTeamId(uid, principal.requireTeamId());
-              if (!unit.getPropertyId().equals(expense.getPropertyId())) {
-                throw new BadRequestException("Unit does not belong to the expense's property");
-              }
-              expense.setUnitId(Optional.of(unit.getId()));
-            });
+    // Per the API contract, unitIdentifier is not a "leave untouched when absent" field like the
+    // others above: absent makes (or keeps) the expense building-level, present assigns it to that
+    // unit. So both branches apply, not just ifPresent — otherwise a unit-level expense could never
+    // be moved back to building-level through this endpoint.
+    if (request.unitIdentifier().isPresent()) {
+      Unit unit =
+          unitRepository.getByIdentifierAndTeamId(
+              request.unitIdentifier().get(), principal.requireTeamId());
+      if (!unit.getPropertyId().equals(expense.getPropertyId())) {
+        throw new BadRequestException("Unit does not belong to the expense's property");
+      }
+      expense.setUnitId(Optional.of(unit.getId()));
+    } else {
+      expense.setUnitId(Optional.empty());
+    }
     expense.setUpdatedBy(principal.getUserId());
     expense.setUpdatedAt(clock.instant());
     request
@@ -364,6 +369,11 @@ public class ExpenseService {
 
     if (updatedExpense.getUnitId().isEmpty()) {
       expenseAllocationService.allocate(updatedExpense, principal.getUserId());
+    } else {
+      // The expense may have just gained a unitId (was building-level with per-unit allocation
+      // rows); those rows must be retired so a settlement doesn't double-charge the unit — once by
+      // allocation, once directly. A no-op when no rows existed.
+      expenseAllocationService.retireAllocations(updatedExpense, principal.getUserId());
     }
 
     ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.requireTeamId());

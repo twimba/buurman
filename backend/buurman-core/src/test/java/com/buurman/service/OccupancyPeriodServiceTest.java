@@ -411,6 +411,39 @@ class OccupancyPeriodServiceTest {
 
       verify(unitRepository, never()).save(any(Unit.class));
     }
+
+    @Test
+    @DisplayName(
+        "does not mark the unit SELF_OCCUPIED for a historical period that has already ended"
+            + " (e.g. back-recorded '2019-2020' for tax purposes), even though it lives in a"
+            + " currently-let unit")
+    void doesNotChangeUnitStatusForHistoricalEndedPeriod() {
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(unit));
+      when(repository.findOverlapping(
+              eq(UNIT_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
+          .thenReturn(List.of());
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID)).thenReturn(List.of());
+      when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(), TEAM_ID))
+          .thenReturn(List.of());
+
+      // Both dates are well before the fixed clock (2026-03-01): the period both started and
+      // ended in the past, so it must never flip the unit's live status.
+      CreateOccupancyPeriodRequest request =
+          new CreateOccupancyPeriodRequest(
+              LocalDate.of(2019, 1, 1),
+              OccupancyType.PERSONAL,
+              Optional.of(LocalDate.of(2020, 1, 1)),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              null);
+
+      service.create(PROPERTY_SID, request, principal);
+
+      verify(unitRepository, never()).save(any(Unit.class));
+    }
   }
 
   @Nested

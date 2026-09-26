@@ -22330,25 +22330,12 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
       required:
         - city
         - identifier
         - postalCode
         - propertyCategory
         - propertyType
-        - status
         - street
     BalanceStatus:
       type: string

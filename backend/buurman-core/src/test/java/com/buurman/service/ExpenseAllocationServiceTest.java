@@ -136,6 +136,58 @@ class ExpenseAllocationServiceTest {
   }
 
   @Test
+  @DisplayName(
+      "falls back to EQUAL and records it when every unit's CUSTOM share is explicitly zero, "
+          + "instead of stamping CUSTOM on what is actually an equal split")
+  void fallsBackToEqualWhenAllCustomSharesAreZero() {
+    List<Unit> unitList = units(null, null, null, null);
+    unitList.forEach(u -> u.setAllocationShare(Optional.of(BigDecimal.ZERO)));
+
+    List<ExpenseAllocation> allocations =
+        service.computeAllocations(money("1200.00"), AllocationBasis.CUSTOM, unitList);
+
+    assertThat(sum(allocations)).isEqualByComparingTo("1200.00");
+    assertThat(allocations)
+        .allSatisfy(
+            a -> {
+              assertThat(a.getAmount().value()).isEqualByComparingTo("300.00");
+              assertThat(a.getBasis()).isEqualTo(AllocationBasis.EQUAL);
+            });
+  }
+
+  @Test
+  @DisplayName(
+      "rejects a MANUAL override whose entries sum exactly before currency rounding but not after"
+          + " (0.005 + 0.005 + 9.99 rounds to 0.01 + 0.01 + 9.99 = 10.01, not 10.00)")
+  void rejectsManualOverrideThatOnlySumsBeforeRounding() {
+    Expense expense =
+        Expense.builder()
+            .id(UUID.randomUUID())
+            .teamId(UUID.randomUUID())
+            .propertyId(UUID.randomUUID())
+            .category(Expense.ExpenseCategory.MAINTENANCE)
+            .amount(money("10.00"))
+            .expenseDate(LocalDate.of(2026, 1, 1))
+            .description("Roof repair")
+            .build();
+
+    ManualAllocationRequest request =
+        new ManualAllocationRequest(
+            List.of(
+                new ManualAllocationEntry(
+                    UnitIdentifier.of("UNT0000000000000000000A"), new BigDecimal("0.005")),
+                new ManualAllocationEntry(
+                    UnitIdentifier.of("UNT0000000000000000000B"), new BigDecimal("0.005")),
+                new ManualAllocationEntry(
+                    UnitIdentifier.of("UNT0000000000000000000C"), new BigDecimal("9.99"))));
+
+    assertThatThrownBy(() -> service.overrideManual(expense, request, UUID.randomUUID()))
+        .isInstanceOf(BusinessRuleException.class)
+        .hasMessageContaining("10.01")
+        .hasMessageContaining("10.00");
+  }
+
+  @Test
   @DisplayName("returns no allocations for an empty unit list")
   void handlesNoUnits() {
     assertThat(service.computeAllocations(money("100.00"), AllocationBasis.EQUAL, List.of()))

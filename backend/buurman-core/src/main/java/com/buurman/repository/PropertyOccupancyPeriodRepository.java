@@ -64,24 +64,21 @@ public class PropertyOccupancyPeriodRepository {
         .toList();
   }
 
-  public Optional<PropertyOccupancyPeriod> findActiveByPropertyIdAndTeamId(
-      UUID propertyId, UUID teamId) {
-    LocalDate today = LocalDate.now(clock);
-    return dsl.selectFrom(PROPERTY_OCCUPANCY_PERIODS)
-        .where(
-            PROPERTY_OCCUPANCY_PERIODS
-                .PROPERTY_ID
-                .eq(propertyId)
-                .and(PROPERTY_OCCUPANCY_PERIODS.TEAM_ID.eq(teamId))
-                .and(PROPERTY_OCCUPANCY_PERIODS.DELETED_AT.isNull())
-                .and(PROPERTY_OCCUPANCY_PERIODS.START_DATE.le(today))
-                .and(
-                    PROPERTY_OCCUPANCY_PERIODS
-                        .END_DATE
-                        .isNull()
-                        .or(PROPERTY_OCCUPANCY_PERIODS.END_DATE.ge(today))))
-        .fetchOptional()
-        .flatMap(mapper::toDomain);
+  /**
+   * Whether any occupancy period (active or historical) still references this unit — used to guard
+   * unit deletion, since {@code GET /properties/{id}/occupancy-periods} looks up each period's unit
+   * by id and would otherwise throw once the unit is soft-deleted.
+   */
+  public boolean existsByUnitIdAndTeamId(UUID unitId, UUID teamId) {
+    return dsl.fetchExists(
+        dsl.selectOne()
+            .from(PROPERTY_OCCUPANCY_PERIODS)
+            .where(
+                PROPERTY_OCCUPANCY_PERIODS
+                    .UNIT_ID
+                    .eq(unitId)
+                    .and(PROPERTY_OCCUPANCY_PERIODS.TEAM_ID.eq(teamId))
+                    .and(PROPERTY_OCCUPANCY_PERIODS.DELETED_AT.isNull())));
   }
 
   /**

@@ -129,13 +129,13 @@ public class ContractService {
 
     UUID unitId = resolveUnitId(property, request.unitIdentifier(), principal);
 
-    // Check no active contract exists for property
+    // Check no active contract exists for the unit
     contractRepository
-        .findActiveContractByPropertyId(property.getId(), teamId)
+        .findActiveByUnitId(unitId, teamId)
         .ifPresent(
             existing -> {
               throw new IllegalArgumentException(
-                  "Property already has an active contract. Please terminate the existing contract"
+                  "Unit already has an active contract. Please terminate the existing contract"
                       + " first.");
             });
 
@@ -387,6 +387,7 @@ public class ContractService {
             .identifier(contract.getIdentifier())
             .teamId(contract.getTeamId())
             .propertyId(contract.getPropertyId())
+            .unitId(contract.getUnitId())
             .contractType(contract.getContractType())
             .startDate(contract.getStartDate())
             .endDate(contract.getEndDate())
@@ -631,15 +632,15 @@ public class ContractService {
     // Validate status transitions
     validateStatusTransition(oldStatus, newStatus);
 
-    // If changing to ACTIVE, ensure no other active contract on property
+    // If changing to ACTIVE, ensure no other active contract on the unit
     if (newStatus == ACTIVE) {
       contractRepository
-          .findActiveContractByPropertyId(contract.getPropertyId(), teamId)
+          .findActiveByUnitId(contract.getUnitId(), teamId)
           .ifPresent(
               existing -> {
                 if (!existing.getId().equals(contractId)) {
                   throw new IllegalArgumentException(
-                      "Property already has an active contract. Please terminate the existing"
+                      "Unit already has an active contract. Please terminate the existing"
                           + " contract first.");
                 }
               });
@@ -652,6 +653,7 @@ public class ContractService {
             .identifier(contract.getIdentifier())
             .teamId(contract.getTeamId())
             .propertyId(contract.getPropertyId())
+            .unitId(contract.getUnitId())
             .contractType(contract.getContractType())
             .startDate(contract.getStartDate())
             .endDate(contract.getEndDate())
@@ -807,6 +809,7 @@ public class ContractService {
             .identifier(contract.getIdentifier())
             .teamId(contract.getTeamId())
             .propertyId(contract.getPropertyId())
+            .unitId(contract.getUnitId())
             .contractType(contract.getContractType())
             .startDate(contract.getStartDate())
             .endDate(contract.getEndDate())

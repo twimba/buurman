@@ -119,6 +119,33 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   }
 
   @Test
+  @DisplayName(
+      "findActiveByUnitId is scoped to the unit, not the property (BUUR-106 Critical 1): a second"
+          + " unit of an already-let building has no active contract of its own, while the first"
+          + " unit's is still found")
+  void findActiveByUnitIdIsScopedPerUnitNotProperty() {
+    // unitId (from setUp) already has an ACTIVE contract via contractBuilder()'s default status.
+    Contract activeOnUnit1 = repository.save(contractBuilder().build());
+
+    UUID unit2Id = UUID.randomUUID();
+    TestDataHelper.insertUnit(dsl, unit2Id, propertyId, TEAM_A_ID, "2", "VACANT");
+
+    // The building's first unit is let: ContractService's create/activate guard, which calls
+    // exactly this method keyed on the resolved unit, must still find it and refuse a second
+    // ACTIVE contract on the SAME unit.
+    assertThat(repository.findActiveByUnitId(unitId, TEAM_A_ID))
+        .isPresent()
+        .get()
+        .extracting(Contract::getId)
+        .isEqualTo(activeOnUnit1.getId());
+
+    // A second, different unit of the same property has no active contract of its own — so the
+    // guard must let a contract be created for it. Before this fix, the guard queried by
+    // property_id and would incorrectly reject this as "property already has an active contract".
+    assertThat(repository.findActiveByUnitId(unit2Id, TEAM_A_ID)).isEmpty();
+  }
+
+  @Test
   @DisplayName("a team-B-scoped read cannot see team A's contract")
   void isolatesByTeam() {
     Contract saved = repository.save(contractBuilder().build());

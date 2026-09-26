@@ -84,7 +84,7 @@ public class OccupancyPeriodService {
     }
 
     // Validate no overlapping contracts on this unit
-    validateNoOverlappingContracts(unit.getId(), teamId, request.startDate(), endDate, null);
+    validateNoOverlappingContracts(unit.getId(), teamId, request.startDate(), endDate);
 
     Instant now = Instant.now(clock);
     PropertyOccupancyPeriod period =
@@ -108,8 +108,16 @@ public class OccupancyPeriodService {
     repository.save(period);
 
     // Reinstated business rule (deleted when properties.status was dropped in V068), retargeted
-    // to the unit: a period that has already started marks its unit SELF_OCCUPIED.
-    if (!request.startDate().isAfter(LocalDate.now(clock))) {
+    // to the unit: a period that is genuinely CURRENT marks its unit SELF_OCCUPIED. "Current" means
+    // started (startDate not in the future) AND not already ended (endDate null or not in the
+    // past) — a back-recorded historical period (e.g. "I lived here 2019-2020" for tax purposes)
+    // must never flip a unit's live status. Also, like end()/delete(), never overwrite a status
+    // such as MAINTENANCE that a current self-occupancy record shouldn't clobber.
+    LocalDate today = LocalDate.now(clock);
+    boolean isCurrent =
+        !request.startDate().isAfter(today)
+            && (request.endDate().isEmpty() || !request.endDate().get().isBefore(today));
+    if (isCurrent && unit.getStatus() != UnitStatus.MAINTENANCE) {
       unit.setStatus(UnitStatus.SELF_OCCUPIED);
       unit.setUpdatedBy(Optional.of(principal.getUserId()));
       unitRepository.save(unit);
@@ -152,8 +160,7 @@ public class OccupancyPeriodService {
           "Cannot update self-occupancy period: overlaps with an existing period");
     }
 
-    validateNoOverlappingContracts(
-        period.getUnitId(), teamId, period.getStartDate(), endDate, null);
+    validateNoOverlappingContracts(period.getUnitId(), teamId, period.getStartDate(), endDate);
 
     period.setUpdatedAt(Instant.now(clock));
     period.setUpdatedBy(principal.getUserId());
@@ -359,7 +366,7 @@ public class OccupancyPeriodService {
   }
 
   private void validateNoOverlappingContracts(
-      UUID unitId, UUID teamId, LocalDate startDate, LocalDate endDate, @Nullable UUID excludeId) {
+      UUID unitId, UUID teamId, LocalDate startDate, LocalDate endDate) {
     List<Contract> contracts = contractRepository.findByUnitId(unitId, teamId);
 
     // Batch-load extensions for effective end date computation

@@ -155,6 +155,23 @@ public class ContractRepository {
         .toList();
   }
 
+  /**
+   * Whether any contract (active or historical) still references this unit — used to guard unit
+   * deletion, since {@code GET /contracts/{id}} resolves the contract's unit by id and would
+   * otherwise 404 once the unit is soft-deleted, permanently hiding the tenancy's history.
+   */
+  public boolean existsByUnitId(UUID unitId, UUID teamId) {
+    return dsl.fetchExists(
+        dsl.selectOne()
+            .from(CONTRACTS)
+            .where(
+                CONTRACTS
+                    .UNIT_ID
+                    .eq(unitId)
+                    .and(CONTRACTS.TEAM_ID.eq(teamId))
+                    .and(CONTRACTS.DELETED_AT.isNull())));
+  }
+
   public List<Contract> findByContactIdViaParties(UUID contactId, UUID teamId) {
     var CONTRACT_PARTIES = org.jooq.impl.DSL.table("contract_parties");
     var CP_CONTRACT_ID = org.jooq.impl.DSL.field("contract_parties.contract_id", UUID.class);
@@ -200,12 +217,12 @@ public class ContractRepository {
         .toList();
   }
 
-  public Optional<Contract> findActiveContractByPropertyId(UUID propertyId, UUID teamId) {
+  public Optional<Contract> findActiveByUnitId(UUID unitId, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
         .where(
             CONTRACTS
-                .PROPERTY_ID
-                .eq(propertyId)
+                .UNIT_ID
+                .eq(unitId)
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                 .and(CONTRACTS.DELETED_AT.isNull()))

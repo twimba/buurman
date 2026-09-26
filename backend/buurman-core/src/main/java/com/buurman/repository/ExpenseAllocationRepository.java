@@ -47,17 +47,21 @@ public class ExpenseAllocationRepository {
             .map(mapper::toDomain));
   }
 
-  public List<ExpenseAllocation> findByUnitIdAndTeamId(UUID unitId, UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(EXPENSE_ALLOCATIONS)
+  /**
+   * Whether any allocation row still references this unit — used to guard unit deletion, since
+   * {@code GET /expenses/{id}/allocations} resolves each row's unit by id and would otherwise throw
+   * once the unit is soft-deleted.
+   */
+  public boolean existsByUnitIdAndTeamId(UUID unitId, UUID teamId) {
+    return dsl.fetchExists(
+        dsl.selectOne()
+            .from(EXPENSE_ALLOCATIONS)
             .where(
                 EXPENSE_ALLOCATIONS
                     .UNIT_ID
                     .eq(unitId)
                     .and(EXPENSE_ALLOCATIONS.TEAM_ID.eq(teamId))
-                    .and(EXPENSE_ALLOCATIONS.DELETED_AT.isNull()))
-            .fetch()
-            .map(mapper::toDomain));
+                    .and(EXPENSE_ALLOCATIONS.DELETED_AT.isNull())));
   }
 
   /**

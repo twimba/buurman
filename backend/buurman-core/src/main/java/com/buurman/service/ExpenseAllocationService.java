@@ -157,6 +157,19 @@ public class ExpenseAllocationService {
     return computeAndPersist(expense, actorId);
   }
 
+  /**
+   * Retires an expense's active allocation rows without replacing them, for when a building-level
+   * expense is edited to belong to a single unit. Without this, the previous per-unit rows stay
+   * active alongside the now-direct unit charge, double-counting the expense on a service-charge
+   * settlement statement.
+   */
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public void retireAllocations(Expense expense, UUID actorId) {
+    requireExpenseAllocationRepository()
+        .replaceForExpense(expense.getId(), expense.getTeamId(), List.of(), actorId);
+  }
+
   private List<ExpenseAllocationResponse> computeAndPersist(Expense expense, UUID actorId) {
     if (expense.getUnitId().isPresent()) {
       throw new BusinessRuleException(
@@ -189,10 +202,16 @@ public class ExpenseAllocationService {
           "Expense belongs to a single unit and cannot be allocated across units.");
     }
 
+    String currency = expense.getAmount().currency();
+    // Normalise each entry to the currency's scale BEFORE summing: validating the raw BigDecimals
+    // and only rounding afterwards (via MoneyAmount.of below) lets sub-minor-unit entries such as
+    // 0.005/0.005/9.99 pass the check on paper while rounding to 0.01/0.01/9.99 = 10.01 once
+    // persisted — silently breaking the one guarantee MANUAL allocations advertise: that the split
+    // sums to exactly the expense's total.
+    List<MoneyAmount> normalizedEntries =
+        request.entries().stream().map(entry -> MoneyAmount.of(entry.amount(), currency)).toList();
     BigDecimal supplied =
-        request.entries().stream()
-            .map(ManualAllocationEntry::amount)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        normalizedEntries.stream().map(MoneyAmount::value).reduce(BigDecimal.ZERO, BigDecimal::add);
     if (supplied.compareTo(expense.getAmount().value()) != 0) {
       throw new BusinessRuleException(
           "Manual allocations total "
@@ -203,7 +222,8 @@ public class ExpenseAllocationService {
     }
 
     List<ExpenseAllocation> allocations = new ArrayList<>();
-    for (ManualAllocationEntry entry : request.entries()) {
+    for (int i = 0; i < request.entries().size(); i++) {
+      ManualAllocationEntry entry = request.entries().get(i);
       Unit unit =
           requireUnitRepository()
               .getByIdentifierAndTeamId(entry.unitIdentifier(), expense.getTeamId());
@@ -217,7 +237,7 @@ public class ExpenseAllocationService {
           ExpenseAllocation.builder()
               .unitId(unit.getId())
               .teamId(expense.getTeamId())
-              .amount(MoneyAmount.of(entry.amount(), expense.getAmount().currency()))
+              .amount(normalizedEntries.get(i))
               .basis(AllocationBasis.MANUAL)
               .build());
     }
@@ -286,17 +306,18 @@ public class ExpenseAllocationService {
   }
 
   /**
-   * AREA is only meaningful when at least one unit has an area, and CUSTOM only when at least one
-   * unit has an allocation share; otherwise EQUAL is the honest description of what actually
-   * happened, and is what gets recorded on the returned rows.
+   * AREA is only meaningful when the units' areas sum to a positive weight, and CUSTOM only when
+   * the units' allocation shares do; otherwise EQUAL is the honest description of what actually
+   * happened, and is what gets recorded on the returned rows. A zero weight total covers both an
+   * absent value (unset area/share) and an explicitly-zero one (e.g. every unit's CUSTOM share is
+   * {@code 0}) — either way, the requested basis would otherwise silently degrade into an equal
+   * split while still being stamped with a basis that overpromises its precision, and would drive
+   * the largest-remainder loop below with a zero weight total for every unit.
    */
   private AllocationBasis resolveBasis(AllocationBasis requested, List<Unit> units) {
-    if (requested == AllocationBasis.AREA
-        && units.stream().allMatch(u -> u.getAreaValue().isEmpty())) {
-      return AllocationBasis.EQUAL;
-    }
-    if (requested == AllocationBasis.CUSTOM
-        && units.stream().allMatch(u -> u.getAllocationShare().isEmpty())) {
+    if ((requested == AllocationBasis.AREA || requested == AllocationBasis.CUSTOM)
+        && weightsFor(requested, units).stream().reduce(BigDecimal.ZERO, BigDecimal::add).signum()
+            == 0) {
       return AllocationBasis.EQUAL;
     }
     return requested;

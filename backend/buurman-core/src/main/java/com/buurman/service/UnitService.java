@@ -30,8 +30,11 @@ import com.buurman.dto.response.UnitResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.UnitMapper;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ExpenseAllocationRepository;
+import com.buurman.repository.PropertyOccupancyPeriodRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitRepository;
+import com.buurman.repository.WwsCalculationRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.SidGenerator;
 
@@ -56,6 +59,9 @@ public class UnitService {
   private final UnitRepository unitRepository;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
+  private final PropertyOccupancyPeriodRepository occupancyPeriodRepository;
+  private final WwsCalculationRepository wwsCalculationRepository;
+  private final ExpenseAllocationRepository expenseAllocationRepository;
   private final UnitMapper unitMapper;
 
   // Reserved for per-unit vacancy-day calculations once unit-level occupancy periods land
@@ -269,6 +275,27 @@ public class UnitService {
     if (contractRepository.countActiveByUnitId(unit.getId(), teamId) > 0) {
       throw new BusinessRuleException(
           "Cannot delete a unit with an active contract. End the contract first.");
+    }
+    // A soft-deleted unit is invisible to findByIdsAndTeamId/getByIdAndTeamId lookups, so any
+    // dependent that resolves its unit by id at read time (contract history, occupancy periods, WWS
+    // calculations, expense allocations) would start throwing instead of rendering. Refusing here —
+    // like the last-unit and active-contract guards above — is kinder than three endpoints
+    // degrading into 404s and 500s.
+    if (contractRepository.existsByUnitId(unit.getId(), teamId)) {
+      throw new BusinessRuleException(
+          "Cannot delete a unit with contract history. Its past contracts must remain readable.");
+    }
+    if (occupancyPeriodRepository.existsByUnitIdAndTeamId(unit.getId(), teamId)) {
+      throw new BusinessRuleException(
+          "Cannot delete a unit with occupancy period history recorded against it.");
+    }
+    if (wwsCalculationRepository.existsByUnitIdAndTeamId(unit.getId(), teamId)) {
+      throw new BusinessRuleException(
+          "Cannot delete a unit with WWS calculations recorded against it.");
+    }
+    if (expenseAllocationRepository.existsByUnitIdAndTeamId(unit.getId(), teamId)) {
+      throw new BusinessRuleException(
+          "Cannot delete a unit with expense allocations recorded against it.");
     }
     unitRepository.softDelete(unit.getId(), teamId, principal.getUserId());
   }

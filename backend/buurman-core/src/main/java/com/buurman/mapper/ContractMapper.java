@@ -9,7 +9,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import com.buurman.domain.Contract;
 import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.UpdateContractRequest;
-import com.buurman.dto.response.ContractResponse;
 import com.buurman.dto.response.ContractSummary;
 
 @Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
@@ -48,33 +47,6 @@ public interface ContractMapper {
           "java(com.buurman.util.MoneyAmount.ofNullable(request.securityDeposit().orElse(null),"
               + " request.securityDepositCurrency().orElse(null)))")
   Contract toEntity(CreateContractRequest request);
-
-  @Mapping(target = "property", ignore = true)
-  @Mapping(target = "unitIdentifier", ignore = true)
-  @Mapping(target = "unitNumber", ignore = true)
-  @Mapping(target = "parties", ignore = true)
-  @Mapping(target = "primaryContact", ignore = true)
-  @Mapping(target = "countryMetadata", ignore = true)
-  @Mapping(target = "effectiveEndDate", ignore = true)
-  @Mapping(target = "extensionCount", ignore = true)
-  @Mapping(target = "extensionsRemaining", ignore = true)
-  @Mapping(target = "rentComponents", ignore = true)
-  @Mapping(target = "rentAmount", expression = "java(contract.getRentAmount().value())")
-  @Mapping(target = "rentAmountCurrency", expression = "java(contract.getRentAmount().currency())")
-  @Mapping(
-      target = "depositAmount",
-      expression = "java(contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value))")
-  @Mapping(
-      target = "depositAmountCurrency",
-      expression = "java(contract.getDepositAmount().map(com.buurman.util.MoneyAmount::currency))")
-  @Mapping(
-      target = "securityDeposit",
-      expression = "java(contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value))")
-  @Mapping(
-      target = "securityDepositCurrency",
-      expression =
-          "java(contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency))")
-  ContractResponse toResponse(Contract contract);
 
   @Mapping(target = "property", ignore = true)
   @Mapping(target = "primaryContact", ignore = true)

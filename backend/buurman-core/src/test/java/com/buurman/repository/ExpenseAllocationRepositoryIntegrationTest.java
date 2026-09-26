@@ -102,8 +102,6 @@ class ExpenseAllocationRepositoryIntegrationTest extends AbstractRepositoryInteg
 
     // A team-B-scoped read sees none of team A's allocation rows.
     assertThat(repository.findByExpenseIdAndTeamId(expenseId, TEAM_B_ID)).isEmpty();
-    assertThat(repository.findByUnitIdAndTeamId(unit1Id, TEAM_B_ID)).isEmpty();
-    assertThat(repository.findByUnitIdAndTeamId(unit1Id, TEAM_A_ID)).hasSize(1);
   }
 
   private ExpenseAllocation allocation(UUID unitId, String amount, AllocationBasis basis) {

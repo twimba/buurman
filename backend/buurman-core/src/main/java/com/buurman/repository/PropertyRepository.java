@@ -99,7 +99,7 @@ public class PropertyRepository {
                     .TEAM_ID
                     .eq(teamId)
                     .and(PROPERTIES.DELETED_AT.isNull())
-                    .and(hasUnitWithStatus(status)))
+                    .and(hasUnitWithStatus(teamId, status)))
             .orderBy(PROPERTIES.CREATED_AT.desc())
             .fetch()
             .map(mapper::toDomain));
@@ -275,7 +275,7 @@ public class PropertyRepository {
     if (status != null && !status.isEmpty()) {
       // "A vacant property" (etc.) now means "a property with at least one non-deleted unit in
       // that status" — status moved from properties to units in V068.
-      condition = condition.and(hasUnitWithStatus(UnitStatus.valueOf(status)));
+      condition = condition.and(hasUnitWithStatus(teamId, UnitStatus.valueOf(status)));
     }
     if (category != null && !category.isEmpty()) {
       condition = condition.and(PROPERTIES.PROPERTY_CATEGORY.eq(category));
@@ -365,6 +365,7 @@ public class PropertyRepository {
                 .TEAM_ID
                 .eq(teamId)
                 .and(PROPERTIES.DELETED_AT.isNull())
+                .and(UNITS.TEAM_ID.eq(teamId))
                 .and(UNITS.DELETED_AT.isNull()))
         .groupBy(UNITS.PROPERTY_ID)
         .fetch()
@@ -387,10 +388,12 @@ public class PropertyRepository {
    */
   public record UnitCounts(int total, int occupied, int vacant) {}
 
-  private Condition hasUnitWithStatus(UnitStatus status) {
+  private Condition hasUnitWithStatus(UUID teamId, UnitStatus status) {
     // "A vacant property" (etc.): the property has at least one non-deleted unit in that status.
     // Deliberate product decision (not an obvious 1:1 translation of the old properties.status
-    // column) now that a property may hold several independently-let units.
+    // column) now that a property may hold several independently-let units. UNITS.TEAM_ID is
+    // filtered explicitly, matching the codebase-wide rule that every repository query filters
+    // team_id itself rather than relying solely on the PROPERTIES.ID join staying team-scoped.
     return DSL.exists(
         DSL.selectOne()
             .from(UNITS)
@@ -398,6 +401,7 @@ public class PropertyRepository {
                 UNITS
                     .PROPERTY_ID
                     .eq(PROPERTIES.ID)
+                    .and(UNITS.TEAM_ID.eq(teamId))
                     .and(UNITS.STATUS.eq(status.name()))
                     .and(UNITS.DELETED_AT.isNull())));
   }

@@ -537,7 +537,6 @@ export const ExpensesPage = () => {
                           {expense.property ? (
                             <PropertyCell
                               propertyIdentifier={expense.property.identifier}
-                              propertyStatus={expense.property.status}
                               propertyType={expense.property.propertyType}
                               street={expense.property.street}
                               city={expense.property.city}

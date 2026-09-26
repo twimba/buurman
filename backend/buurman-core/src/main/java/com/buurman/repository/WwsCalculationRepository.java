@@ -89,6 +89,23 @@ public class WwsCalculationRepository {
         .flatMap(mapper::toDomain);
   }
 
+  /**
+   * Whether any WWS calculation still references this unit — used to guard unit deletion, since
+   * {@code GET /wws-calculations/{id}} and the property's calculation history resolve their unit by
+   * id and would otherwise throw once the unit is soft-deleted.
+   */
+  public boolean existsByUnitIdAndTeamId(UUID unitId, UUID teamId) {
+    return dsl.fetchExists(
+        dsl.selectOne()
+            .from(WWS_CALCULATIONS)
+            .where(
+                WWS_CALCULATIONS
+                    .UNIT_ID
+                    .eq(unitId)
+                    .and(WWS_CALCULATIONS.TEAM_ID.eq(teamId))
+                    .and(WWS_CALCULATIONS.DELETED_AT.isNull())));
+  }
+
   public Optional<WwsCalculation> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(WWS_CALCULATIONS)
         .where(

@@ -250,8 +250,9 @@ public class UnitRepository {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(UNITS)
         .set(UNITS.DELETED_AT, now)
+        .set(UNITS.UPDATED_AT, now)
         .set(UNITS.UPDATED_BY, actorId)
-        .where(UNITS.ID.eq(unitId).and(UNITS.TEAM_ID.eq(teamId)))
+        .where(UNITS.ID.eq(unitId).and(UNITS.TEAM_ID.eq(teamId)).and(UNITS.DELETED_AT.isNull()))
         .execute();
   }
 }

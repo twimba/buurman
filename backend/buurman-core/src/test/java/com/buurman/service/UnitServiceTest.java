@@ -44,8 +44,11 @@ import com.buurman.dto.response.UnitResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.UnitMapper;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ExpenseAllocationRepository;
+import com.buurman.repository.PropertyOccupancyPeriodRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitRepository;
+import com.buurman.repository.WwsCalculationRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.MoneyAmount;
 import com.buurman.util.SidGenerator;
@@ -57,6 +60,9 @@ class UnitServiceTest {
   @Mock private UnitRepository unitRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContractRepository contractRepository;
+  @Mock private PropertyOccupancyPeriodRepository occupancyPeriodRepository;
+  @Mock private WwsCalculationRepository wwsCalculationRepository;
+  @Mock private ExpenseAllocationRepository expenseAllocationRepository;
   @Mock private UnitMapper unitMapper;
 
   private final Clock clock = Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
@@ -107,6 +113,84 @@ class UnitServiceTest {
       assertThatThrownBy(() -> service().deleteUnit(unitIdentifier(), principal()))
           .isInstanceOf(BusinessRuleException.class)
           .hasMessageContaining("active contract");
+
+      verify(unitRepository, never()).softDelete(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName(
+        "refuses to delete a unit with only historical (non-active) contracts, so its tenancy"
+            + " history stays readable")
+    void refusesDeletingUnitWithHistoricalContracts() {
+      Unit target = unit("2", UnitStatus.VACANT);
+      when(unitRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(target);
+      when(unitRepository.countActiveByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(4);
+      when(contractRepository.countActiveByUnitId(target.getId(), TEAM_ID)).thenReturn(0);
+      when(contractRepository.existsByUnitId(target.getId(), TEAM_ID)).thenReturn(true);
+
+      assertThatThrownBy(() -> service().deleteUnit(unitIdentifier(), principal()))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("contract history");
+
+      verify(unitRepository, never()).softDelete(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("refuses to delete a unit with occupancy period history")
+    void refusesDeletingUnitWithOccupancyPeriods() {
+      Unit target = unit("2", UnitStatus.VACANT);
+      when(unitRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(target);
+      when(unitRepository.countActiveByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(4);
+      when(contractRepository.countActiveByUnitId(target.getId(), TEAM_ID)).thenReturn(0);
+      when(contractRepository.existsByUnitId(target.getId(), TEAM_ID)).thenReturn(false);
+      when(occupancyPeriodRepository.existsByUnitIdAndTeamId(target.getId(), TEAM_ID))
+          .thenReturn(true);
+
+      assertThatThrownBy(() -> service().deleteUnit(unitIdentifier(), principal()))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("occupancy period history");
+
+      verify(unitRepository, never()).softDelete(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("refuses to delete a unit with WWS calculations recorded against it")
+    void refusesDeletingUnitWithWwsCalculations() {
+      Unit target = unit("2", UnitStatus.VACANT);
+      when(unitRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(target);
+      when(unitRepository.countActiveByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(4);
+      when(contractRepository.countActiveByUnitId(target.getId(), TEAM_ID)).thenReturn(0);
+      when(contractRepository.existsByUnitId(target.getId(), TEAM_ID)).thenReturn(false);
+      when(occupancyPeriodRepository.existsByUnitIdAndTeamId(target.getId(), TEAM_ID))
+          .thenReturn(false);
+      when(wwsCalculationRepository.existsByUnitIdAndTeamId(target.getId(), TEAM_ID))
+          .thenReturn(true);
+
+      assertThatThrownBy(() -> service().deleteUnit(unitIdentifier(), principal()))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("WWS calculations");
+
+      verify(unitRepository, never()).softDelete(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("refuses to delete a unit with expense allocations recorded against it")
+    void refusesDeletingUnitWithExpenseAllocations() {
+      Unit target = unit("2", UnitStatus.VACANT);
+      when(unitRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(target);
+      when(unitRepository.countActiveByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(4);
+      when(contractRepository.countActiveByUnitId(target.getId(), TEAM_ID)).thenReturn(0);
+      when(contractRepository.existsByUnitId(target.getId(), TEAM_ID)).thenReturn(false);
+      when(occupancyPeriodRepository.existsByUnitIdAndTeamId(target.getId(), TEAM_ID))
+          .thenReturn(false);
+      when(wwsCalculationRepository.existsByUnitIdAndTeamId(target.getId(), TEAM_ID))
+          .thenReturn(false);
+      when(expenseAllocationRepository.existsByUnitIdAndTeamId(target.getId(), TEAM_ID))
+          .thenReturn(true);
+
+      assertThatThrownBy(() -> service().deleteUnit(unitIdentifier(), principal()))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("expense allocations");
 
       verify(unitRepository, never()).softDelete(any(), any(), any());
     }
@@ -559,7 +643,14 @@ class UnitServiceTest {
 
   private UnitService service() {
     return new UnitService(
-        unitRepository, propertyRepository, contractRepository, unitMapper, clock);
+        unitRepository,
+        propertyRepository,
+        contractRepository,
+        occupancyPeriodRepository,
+        wwsCalculationRepository,
+        expenseAllocationRepository,
+        unitMapper,
+        clock);
   }
 
   private Unit unit(String number, UnitStatus status) {
