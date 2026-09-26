@@ -21,7 +21,8 @@ a. **Review existing data** for mistakes (wrong %, wrong index value, wrong effe
 b. **Find new data** — regulations or index values published since `generatedAt` (new annual caps, new index releases, framework changes, new regions/zones).
 c. **Prefer authoritative sources.** Use the official body, not a news summary or aggregator. Many rows already carry a `sourceUrl` to the right body — start there; if missing, find the official source.
 d. **Update the JSON** with corrections and additions (and remove anything proven wrong/superseded), keeping the schema valid.
-e. **Report a summary** of everything added / updated / deleted / flagged.
+e. **Record tenancy facts that are not rent-increase caps** — notice periods, minimum/maximum tenancy duration, deposit rules, lease-form formalities, registration duties, fixed-amount fees and penalties — in `tenancyRules` (see Step 3) rather than discarding them because they don't fit a `CatalogRule` row.
+f. **Report a summary** of everything added / updated / deleted / flagged.
 
 ## Step 1 — Scope
 
@@ -86,6 +87,33 @@ Edit `rent-regulations.json` in place. The shape (see `CatalogRule` / `CatalogCo
 2. `openapi/src/app.yaml` and `openapi/backoffice.yaml` (the `MaxIncreaseType` enum), then `make bundle-openapi`
 
 Otherwise the value fails to load on reload (this exact gap once shipped a broken `CEILING_RENT`). Prefer an existing constant; only extend the enum when nothing fits, and call it out in the summary.
+
+### `tenancyRules` — display-only tenancy-law facts
+
+Alongside `rules[]`, each `CatalogCountry` carries an optional `tenancyRules[]` array for tenancy-law
+facts that are **not** rent-increase caps: notice periods, minimum/maximum tenancy duration, deposit
+rules, lease-form formalities, registration duties, fixed-amount fees and penalties. These render as
+reference material on the regulations page; nothing computes off them.
+
+**Fields** (camelCase, nulls omitted): `topic`, `regionCode` (omit for a national rule; when present
+it **must match a declared region of that country** — same rule as `CatalogRule.regionCode`), `label`,
+`value` (free text — the facts are heterogeneous, e.g. "5 years", "DKK 344", "2 months' rent"),
+`effectiveFrom` (`YYYY-MM-DD`), `legalBasis`, `sourceUrl`, `notes`.
+
+**`topic` must be one of exactly these constants** of `com.buurman.domain.TenancyRuleTopic` — an
+unknown value fails the catalog parse:
+`NOTICE_PERIOD`, `TENANCY_DURATION`, `DEPOSIT`, `LEASE_FORM`, `REGISTRATION`, `FEES_AND_PENALTIES`, `OTHER`.
+
+**Never put a rent-increase cap or index value in `tenancyRules`** — those belong in `rules[]` as a
+`CatalogRule`. `tenancyRules` is display-only reference material, not a computation input.
+
+**No-history rule:** unlike `rules[]` (which keeps historical rows per year), `tenancyRules` stores
+only the CURRENT fact. When a tenancy rule is superseded by a newer one, **replace the entry in
+place** — do not keep the old one alongside it — and set `effectiveFrom` to date the fact that is now
+current, not the date you happened to update the JSON.
+
+As with `rules[]`, never invent a `value`, `effectiveFrom` or `legalBasis` for a tenancy fact you
+could not confirm against an authoritative source this run; leave it out and flag it instead.
 
 After editing, **bump metadata**: set `version` (e.g. `2026.1` → `2026.2`) and `generatedAt` to today's date (`date +%F`).
 
