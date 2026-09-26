@@ -483,6 +483,15 @@ Each needs a follow-up Linear issue.
   codebase: no plan tier, no limit checks anywhere. This spec settles the
   question — each unit counts, implicit units included — and exposes
   `billableUnitCount`. Enforcement belongs to a billing project.
+- **Regulation thresholds counting units** (part of ticket scope item 6: "regulation
+  'landlord min properties' rules count units where the law counts dwellings").
+  `rent_regulation_rules.landlord_min_properties` exists (added in V053, seeded with
+  values such as 5) and is stored, mapped and exposed through
+  `RentRegulationRuleResponse` — but nothing in the codebase ever evaluates it against
+  a team's actual portfolio. There is no counting logic to change. When that evaluation
+  is built it must count **units**, not properties, and `billableUnitCount` is the
+  primitive to use. Recorded here so the decision is not re-litigated.
+
 - **`unit_id` on maintenance requests and meter readings** (part of ticket scope
   item 1). Neither `maintenance_requests` nor `meter_readings` exists in the
   schema; both are introduced by **BUUR-104**. That issue should add `unit_id`
