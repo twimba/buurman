@@ -10,10 +10,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Bedroom/bathroom/furnishing details for an APARTMENT {@link Unit}. One row per unit
- * (upsert-only, no soft delete): a landlord who changes a unit's type away from APARTMENT and
- * back must not lose this data, so it is intentionally never deleted, only hidden from callers
- * while the unit's type is not APARTMENT (see {@code UnitResidentialDetailsService}).
+ * Bedroom/bathroom/furnishing details for an APARTMENT {@link Unit}. One row per unit (upsert-only,
+ * no soft delete): a landlord who changes a unit's type away from APARTMENT and back must not lose
+ * this data, so it is intentionally never deleted, only hidden from callers while the unit's type
+ * is not APARTMENT (see {@code UnitResidentialDetailsService}).
  */
 @SuppressWarnings("NullAway.Init")
 @Data

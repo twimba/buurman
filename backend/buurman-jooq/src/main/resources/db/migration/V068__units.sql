@@ -73,11 +73,17 @@ CREATE TABLE units (
     ),
     CONSTRAINT chk_units_woz_share CHECK (
         woz_share_pct IS NULL
-        OR (woz_share_pct >= 0 AND woz_share_pct <= 100)
+        OR (
+            woz_share_pct >= 0
+            AND woz_share_pct <= 100
+        )
     ),
     CONSTRAINT chk_units_allocation_share CHECK (
         allocation_share IS NULL
-        OR (allocation_share >= 0 AND allocation_share <= 100)
+        OR (
+            allocation_share >= 0
+            AND allocation_share <= 100
+        )
     )
 );
 
@@ -87,7 +93,10 @@ WHERE
 
 CREATE UNIQUE INDEX uq_units_one_implicit_per_property ON units (property_id)
 WHERE
-    (is_implicit AND deleted_at IS NULL);
+    (
+        is_implicit
+        AND deleted_at IS NULL
+    );
 
 CREATE INDEX idx_units_team_id ON units (team_id);
 
@@ -162,9 +171,7 @@ CREATE TABLE expense_allocations (
     updated_by UUID REFERENCES users (id),
     deleted_at TIMESTAMP,
     CONSTRAINT uq_expense_allocations_team_identifier UNIQUE (team_id, identifier),
-    CONSTRAINT chk_expense_allocations_basis CHECK (
-        basis IN ('AREA', 'EQUAL', 'CUSTOM', 'MANUAL')
-    )
+    CONSTRAINT chk_expense_allocations_basis CHECK (basis IN ('AREA', 'EQUAL', 'CUSTOM', 'MANUAL'))
 );
 
 CREATE UNIQUE INDEX uq_expense_allocations_expense_unit ON expense_allocations (expense_id, unit_id)
