@@ -1,9 +1,11 @@
 package com.buurman.service;
 
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -17,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.Property;
 import com.buurman.domain.Unit;
 import com.buurman.domain.UnitActiveTenancy;
+import com.buurman.domain.UnitStatus;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.identifier.UnitIdentifier;
+import com.buurman.dto.request.BulkCreateUnitsRequest;
 import com.buurman.dto.request.CreateUnitRequest;
 import com.buurman.dto.request.UpdateUnitRequest;
 import com.buurman.dto.response.UnitGridRowResponse;
@@ -76,6 +80,131 @@ public class UnitService {
 
     Unit saved = saveOrTranslateDuplicate(unit, request.unitNumber());
     return unitMapper.toResponse(saved, propertyIdentifier);
+  }
+
+  /**
+   * Splits a property into {@code request.count()} labeled units in one batch (e.g. "6 apartments
+   * numbered 1-6"). If the property still has its implicit stand-in unit, that unit becomes #1 of
+   * the batch — promoted in place, keeping its id/identifier so its contracts, payments, occupancy
+   * history, photos and WWS calculations stay attached — and only the remaining {@code count - 1}
+   * rows are newly inserted. All labels are validated against the property's existing unit numbers
+   * before anything is written, and the whole batch is one {@code @Transactional} unit of work, so
+   * a collision (or a same-property duplicate slipping past validation, translated below) leaves
+   * zero units created rather than a partial batch.
+   */
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public List<UnitResponse> bulkCreateUnits(
+      PropertyIdentifier propertyIdentifier,
+      BulkCreateUnitsRequest request,
+      UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
+
+    List<Unit> existingUnits =
+        unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId);
+    Optional<Unit> implicitUnit = existingUnits.stream().filter(Unit::isImplicit).findFirst();
+
+    List<String> labels = numberingLabels(request);
+    rejectCollisionsWithExistingUnits(labels, existingUnits, implicitUnit);
+
+    List<UnitResponse> created = new ArrayList<>();
+    for (int i = 0; i < labels.size(); i++) {
+      String label = labels.get(i);
+      Unit unit =
+          (i == 0 && implicitUnit.isPresent())
+              ? promoteForBulkCreate(implicitUnit.get(), label, i, principal)
+              : newBulkUnit(property.getId(), teamId, label, i, request, principal);
+      Unit saved = saveOrTranslateDuplicate(unit, label);
+      created.add(unitMapper.toResponse(saved, propertyIdentifier));
+    }
+    return List.copyOf(created);
+  }
+
+  /**
+   * Checked up front so the batch fails atomically with a message naming the actual conflicting
+   * number(s), instead of surfacing whichever row happens to hit {@code uq_units_property_number}
+   * mid-loop. The implicit unit is excluded because this batch renumbers it away — its current
+   * label is not a real conflict.
+   */
+  private void rejectCollisionsWithExistingUnits(
+      List<String> labels, List<Unit> existingUnits, Optional<Unit> implicitUnit) {
+    Set<String> occupiedNumbers =
+        existingUnits.stream()
+            .filter(
+                unit ->
+                    implicitUnit
+                        .map(candidate -> !candidate.getId().equals(unit.getId()))
+                        .orElse(true))
+            .map(Unit::getUnitNumber)
+            .collect(Collectors.toSet());
+    List<String> collisions = labels.stream().filter(occupiedNumbers::contains).toList();
+    if (!collisions.isEmpty()) {
+      throw new BusinessRuleException(
+          "Cannot bulk-create units: unit number "
+              + String.join(", ", collisions)
+              + " already exists on this property.");
+    }
+  }
+
+  private Unit promoteForBulkCreate(
+      Unit implicitUnit, String label, int sortOrder, UserPrincipal principal) {
+    implicitUnit.setImplicit(false);
+    implicitUnit.setUnitNumber(label);
+    implicitUnit.setSortOrder(sortOrder);
+    implicitUnit.setUpdatedBy(Optional.of(principal.getUserId()));
+    return implicitUnit;
+  }
+
+  private Unit newBulkUnit(
+      UUID propertyId,
+      UUID teamId,
+      String label,
+      int sortOrder,
+      BulkCreateUnitsRequest request,
+      UserPrincipal principal) {
+    return Unit.builder()
+        .identifier(Optional.of(SidGenerator.newUnitId()))
+        .teamId(teamId)
+        .propertyId(propertyId)
+        .unitNumber(label)
+        .unitType(request.unitType())
+        .status(UnitStatus.VACANT)
+        .sortOrder(sortOrder)
+        .floor(
+            request.numberingPattern() == BulkCreateUnitsRequest.NumberingPattern.FLOOR_DOT_INDEX
+                ? Optional.of(request.startFloor().orElse(0))
+                : Optional.empty())
+        .createdBy(Optional.of(principal.getUserId()))
+        .updatedBy(Optional.of(principal.getUserId()))
+        .build();
+  }
+
+  private List<String> numberingLabels(BulkCreateUnitsRequest request) {
+    List<String> labels = new ArrayList<>();
+    for (int i = 0; i < request.count(); i++) {
+      switch (request.numberingPattern()) {
+        case NUMERIC -> labels.add(String.valueOf(i + 1));
+        case ALPHABETIC -> labels.add(alphabeticLabel(i));
+        case FLOOR_DOT_INDEX ->
+            labels.add(request.startFloor().orElse(0) + "." + String.format("%02d", i + 1));
+      }
+    }
+    return labels;
+  }
+
+  /**
+   * Spreadsheet-column style: {@code 0 -> "A"}, {@code 25 -> "Z"}, {@code 26 -> "AA"}, so a count
+   * above 26 still produces unique labels.
+   */
+  private String alphabeticLabel(int index) {
+    StringBuilder label = new StringBuilder();
+    int remaining = index;
+    while (remaining >= 0) {
+      label.insert(0, (char) ('A' + (remaining % 26)));
+      remaining = (remaining / 26) - 1;
+    }
+    return label.toString();
   }
 
   @Transactional

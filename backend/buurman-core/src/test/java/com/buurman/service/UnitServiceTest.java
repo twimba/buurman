@@ -36,6 +36,7 @@ import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.identifier.UnitIdentifier;
+import com.buurman.dto.request.BulkCreateUnitsRequest;
 import com.buurman.dto.request.CreateUnitRequest;
 import com.buurman.dto.request.UpdateUnitRequest;
 import com.buurman.dto.response.UnitGridRowResponse;
@@ -168,6 +169,211 @@ class UnitServiceTest {
       assertThat(response.unitNumber()).isEqualTo("2");
 
       verify(unitRepository, never()).softDelete(any(), any(), any());
+    }
+  }
+
+  @Nested
+  @DisplayName("bulkCreateUnits")
+  class BulkCreateUnits {
+
+    @Test
+    @DisplayName(
+        "reuses the implicit unit as #1 — preserving its id and identifier — and inserts the"
+            + " rest as new rows")
+    void reusesImplicitUnitAsFirst() {
+      Unit implicitUnit = unit("1", UnitStatus.OCCUPIED);
+      implicitUnit.setImplicit(true);
+      UUID implicitId = implicitUnit.getId();
+      Sid implicitIdentifier = implicitUnit.getIdentifier().orElseThrow();
+
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(implicitUnit));
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      List<UnitResponse> created =
+          service()
+              .bulkCreateUnits(
+                  propertyIdentifier(),
+                  new BulkCreateUnitsRequest(
+                      6,
+                      BulkCreateUnitsRequest.NumberingPattern.NUMERIC,
+                      UnitType.APARTMENT,
+                      Optional.empty()),
+                  principal());
+
+      assertThat(created).hasSize(6);
+      assertThat(created)
+          .extracting(UnitResponse::unitNumber)
+          .containsExactly("1", "2", "3", "4", "5", "6");
+
+      // Six saves total: the promoted implicit unit, then five new rows.
+      ArgumentCaptor<Unit> savedCaptor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository, times(6)).save(savedCaptor.capture());
+      Unit firstSaved = savedCaptor.getAllValues().get(0);
+
+      // The promoted unit keeps its identity — an implementation that instead creates a 7th
+      // row (leaving the implicit one orphaned with its contracts/payments/history) would
+      // save a Unit here with a freshly generated id and identifier, failing this assertion.
+      assertThat(firstSaved.getId()).isEqualTo(implicitId);
+      assertThat(firstSaved.getIdentifier()).contains(implicitIdentifier);
+      assertThat(firstSaved.isImplicit()).isFalse();
+      assertThat(firstSaved.getStatus()).isEqualTo(UnitStatus.OCCUPIED);
+      assertThat(implicitUnit.getId()).isEqualTo(implicitId);
+      assertThat(implicitUnit.isImplicit()).isFalse();
+    }
+
+    @Test
+    @DisplayName("numbers units 1..n for NUMERIC")
+    void numbersNumerically() {
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      List<UnitResponse> created =
+          service()
+              .bulkCreateUnits(
+                  propertyIdentifier(),
+                  new BulkCreateUnitsRequest(
+                      3,
+                      BulkCreateUnitsRequest.NumberingPattern.NUMERIC,
+                      UnitType.APARTMENT,
+                      Optional.empty()),
+                  principal());
+
+      assertThat(created).extracting(UnitResponse::unitNumber).containsExactly("1", "2", "3");
+    }
+
+    @Test
+    @DisplayName("numbers units A..Z, AA.. for ALPHABETIC, staying unique past 26")
+    void numbersAlphabetically() {
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      List<UnitResponse> created =
+          service()
+              .bulkCreateUnits(
+                  propertyIdentifier(),
+                  new BulkCreateUnitsRequest(
+                      28,
+                      BulkCreateUnitsRequest.NumberingPattern.ALPHABETIC,
+                      UnitType.APARTMENT,
+                      Optional.empty()),
+                  principal());
+
+      assertThat(created)
+          .extracting(UnitResponse::unitNumber)
+          .startsWith("A", "B")
+          .contains("Z", "AA", "AB")
+          .doesNotHaveDuplicates();
+      assertThat(created.get(2).unitNumber()).isEqualTo("C");
+      assertThat(created.get(25).unitNumber()).isEqualTo("Z");
+      assertThat(created.get(26).unitNumber()).isEqualTo("AA");
+      assertThat(created.get(27).unitNumber()).isEqualTo("AB");
+    }
+
+    @Test
+    @DisplayName("numbers units <floor>.<two-digit index> for FLOOR_DOT_INDEX")
+    void numbersByFloor() {
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      List<UnitResponse> created =
+          service()
+              .bulkCreateUnits(
+                  propertyIdentifier(),
+                  new BulkCreateUnitsRequest(
+                      3,
+                      BulkCreateUnitsRequest.NumberingPattern.FLOOR_DOT_INDEX,
+                      UnitType.APARTMENT,
+                      Optional.of(1)),
+                  principal());
+
+      assertThat(created)
+          .extracting(UnitResponse::unitNumber)
+          .containsExactly("1.01", "1.02", "1.03");
+    }
+
+    @Test
+    @DisplayName("treats an absent startFloor as floor 0 for FLOOR_DOT_INDEX")
+    void treatsAbsentStartFloorAsZero() {
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      List<UnitResponse> created =
+          service()
+              .bulkCreateUnits(
+                  propertyIdentifier(),
+                  new BulkCreateUnitsRequest(
+                      2,
+                      BulkCreateUnitsRequest.NumberingPattern.FLOOR_DOT_INDEX,
+                      UnitType.APARTMENT,
+                      Optional.empty()),
+                  principal());
+
+      assertThat(created).extracting(UnitResponse::unitNumber).containsExactly("0.01", "0.02");
+    }
+
+    @Test
+    @DisplayName(
+        "aborts the whole batch — saving nothing — when a generated label collides with a unit"
+            + " number that already exists on the property")
+    void abortsOnCollisionWithExistingUnit() {
+      Unit existingTwo = unit("2", UnitStatus.VACANT);
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(existingTwo));
+
+      BulkCreateUnitsRequest request =
+          new BulkCreateUnitsRequest(
+              3,
+              BulkCreateUnitsRequest.NumberingPattern.NUMERIC,
+              UnitType.APARTMENT,
+              Optional.empty());
+
+      assertThatThrownBy(
+              () -> service().bulkCreateUnits(propertyIdentifier(), request, principal()))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining(
+              "Cannot bulk-create units: unit number 2 already exists on this property.");
+
+      verify(unitRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("sets sortOrder to the 0-based batch position")
+    void setsSortOrderToBatchPosition() {
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      List<UnitResponse> created =
+          service()
+              .bulkCreateUnits(
+                  propertyIdentifier(),
+                  new BulkCreateUnitsRequest(
+                      3,
+                      BulkCreateUnitsRequest.NumberingPattern.NUMERIC,
+                      UnitType.APARTMENT,
+                      Optional.empty()),
+                  principal());
+
+      assertThat(created).extracting(UnitResponse::sortOrder).containsExactly(0, 1, 2);
     }
   }
 
