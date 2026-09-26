@@ -30,6 +30,10 @@ public class UnitRepository {
   private final UnitRecordMapper mapper;
   private final Clock clock;
 
+  // No PROPERTIES join here (unlike the listing/count methods below): a single-row lookup by
+  // identifier returns the unit as-is regardless of its parent property's soft-delete state,
+  // matching PropertyRepository's identifier-lookup pattern. Callers that must not resolve units
+  // of a soft-deleted property use the joined listing/count methods instead.
   public Optional<Unit> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(UNITS)
         .where(

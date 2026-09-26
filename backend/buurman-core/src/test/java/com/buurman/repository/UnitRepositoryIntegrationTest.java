@@ -2,6 +2,7 @@ package com.buurman.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import com.buurman.domain.Unit;
 import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
 import com.buurman.mapper.UnitRecordMapperImpl;
+import com.buurman.util.MoneyAmount;
 import com.buurman.util.SidGenerator;
 
 @DisplayName("UnitRepository")
@@ -46,6 +48,7 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
                 .unitNumber("2")
                 .unitType(UnitType.APARTMENT)
                 .status(UnitStatus.VACANT)
+                .wozValue(Optional.of(MoneyAmount.of(new BigDecimal("425000.50"), "EUR")))
                 .createdBy(Optional.of(USER_ID))
                 .updatedBy(Optional.of(USER_ID))
                 .build());
@@ -57,6 +60,9 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     assertThat(found.getUnitType()).isEqualTo(UnitType.APARTMENT);
     assertThat(found.getStatus()).isEqualTo(UnitStatus.VACANT);
     assertThat(found.getPropertyId()).isEqualTo(teamAPropertyId);
+    MoneyAmount wozValue = found.getWozValue().orElseThrow();
+    assertThat(wozValue.value()).isEqualByComparingTo(new BigDecimal("425000.50"));
+    assertThat(wozValue.currency()).isEqualTo("EUR");
   }
 
   @Test
@@ -88,6 +94,7 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
 
     assertThat(repository.countActiveByTeamId(TEAM_A_ID)).isZero();
     assertThat(repository.findAllByPropertyIdAndTeamId(teamAPropertyId, TEAM_A_ID)).isEmpty();
+    assertThat(repository.countActiveByPropertyIdAndTeamId(teamAPropertyId, TEAM_A_ID)).isZero();
   }
 
   @Test
