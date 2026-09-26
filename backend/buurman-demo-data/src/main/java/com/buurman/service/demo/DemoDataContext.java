@@ -73,6 +73,10 @@ public class DemoDataContext {
   // Property UUID -> country rent multiplier (reflects cost-of-living for expense scaling)
   private final Map<UUID, Double> propertyCountryRentMultipliers = new LinkedHashMap<>();
 
+  // Property UUID -> the implicit unit generated for it (BUUR-106: contracts.unit_id and friends
+  // are NOT NULL as of V068, so every demo property needs one before contracts are generated).
+  private final Map<UUID, UUID> implicitUnitIdsByProperty = new LinkedHashMap<>();
+
   // Counters
   @Getter private int teamsCreated;
   @Getter private int usersCreated;
@@ -170,6 +174,19 @@ public class DemoDataContext {
 
   public double getPropertyCountryRentMultiplier(UUID propertyId) {
     return propertyCountryRentMultipliers.getOrDefault(propertyId, 1.0);
+  }
+
+  public void putImplicitUnitId(UUID propertyId, UUID unitId) {
+    implicitUnitIdsByProperty.put(propertyId, unitId);
+  }
+
+  /** The implicit unit generated for a property. Fails loudly rather than insert a null FK. */
+  public UUID getImplicitUnitId(UUID propertyId) {
+    UUID unitId = implicitUnitIdsByProperty.get(propertyId);
+    if (unitId == null) {
+      throw new IllegalStateException("No implicit unit generated for property " + propertyId);
+    }
+    return unitId;
   }
 
   public void incrementTeams() {

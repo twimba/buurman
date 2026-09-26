@@ -76,6 +76,7 @@ public class DemoDataService {
   private final DemoUserGenerator userGenerator;
   private final DemoTeamMemberGenerator teamMemberGenerator;
   private final DemoPropertyGenerator propertyGenerator;
+  private final DemoUnitGenerator unitGenerator;
   private final DemoContactGenerator contactGenerator;
   private final DemoContactNoteGenerator contactNoteGenerator;
   private final DemoContactRelationshipGenerator contactRelationshipGenerator;
@@ -153,10 +154,11 @@ public class DemoDataService {
           teamMemberGenerator.generate(ctx);
         });
 
-    // Group 2: Properties + financing
+    // Group 2: Properties + units + financing
     tx.executeWithoutResult(
         status -> {
           propertyGenerator.generate(ctx);
+          unitGenerator.generate(ctx);
           financingPaymentGenerator.generate(ctx);
         });
 

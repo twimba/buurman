@@ -291,6 +291,7 @@ public class DemoContractGenerator {
                 contractIdentifier,
                 teamId,
                 propertyId,
+                ctx.getImplicitUnitId(propertyId),
                 contractType,
                 startDate,
                 endDate,
@@ -387,6 +388,7 @@ public class DemoContractGenerator {
                     CONTRACTS.IDENTIFIER,
                     CONTRACTS.TEAM_ID,
                     CONTRACTS.PROPERTY_ID,
+                    CONTRACTS.UNIT_ID,
                     CONTRACTS.CONTRACT_TYPE,
                     CONTRACTS.START_DATE,
                     CONTRACTS.END_DATE,
@@ -420,6 +422,7 @@ public class DemoContractGenerator {
                 .values(
                     (UUID) null,
                     (Sid) null,
+                    (UUID) null,
                     (UUID) null,
                     (UUID) null,
                     (String) null,
@@ -568,9 +571,18 @@ public class DemoContractGenerator {
         compBatch.execute();
       }
 
-      // TODO(BUUR-106 Task 9): status moved from properties to units in V068; demo data does not
-      // yet seed units, so there is nothing to mark OCCUPIED here. Restore once the demo-data
-      // unit generator exists.
+      // Status moved from properties to units in V068 (BUUR-106): flip the implicit unit of every
+      // property whose last contract is ACTIVE to OCCUPIED. All other units keep the VACANT
+      // default DemoUnitGenerator gave them.
+      if (!occupiedPropertyIds.isEmpty()) {
+        List<UUID> occupiedUnitIds =
+            occupiedPropertyIds.stream().map(ctx::getImplicitUnitId).toList();
+        dsl.update(table("units"))
+            .set(field("status", String.class), "OCCUPIED")
+            .set(field("updated_at", LocalDateTime.class), now)
+            .where(field("id", UUID.class).in(occupiedUnitIds))
+            .execute();
+      }
 
       ctx.getContractIdsByTeam().put(teamId, contractIds);
       log.info(
