@@ -115,6 +115,13 @@ current, not the date you happened to update the JSON.
 As with `rules[]`, never invent a `value`, `effectiveFrom` or `legalBasis` for a tenancy fact you
 could not confirm against an authoritative source this run; leave it out and flag it instead.
 
+**Unverified leads backlog:** `docs/rent-regulations/tenancy-rules-candidates.md` holds tenancy
+facts that a verifier surfaced with a source but whose cross-check never completed. Check it before
+starting research on a country it covers — it may save you rediscovering the same fact — but treat
+every entry there as a lead, not a confirmed value: it still needs its own source re-check and a
+second independent source before it can be seeded into `tenancyRules`. Remove an entry from that
+file once you've verified it and seeded it here.
+
 After editing, **bump metadata**: set `version` (e.g. `2026.1` → `2026.2`) and `generatedAt` to today's date (`date +%F`).
 
 ## Step 4 — Validate
