@@ -1568,11 +1568,13 @@ collection:
     parameters:
       - name: status
         in: query
-        description: Filter by status
+        description: >-
+          Filter by unit status: returns properties with at least one non-deleted unit in this
+          status.
         required: false
         schema:
           type: string
-          description: Current occupancy or availability status of the property
+          description: Current occupancy or availability status of a unit
           enum:
             - VACANT
             - OCCUPIED

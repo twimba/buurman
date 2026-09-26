@@ -3,6 +3,9 @@ package com.buurman.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
@@ -20,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -31,6 +35,7 @@ import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
 import com.buurman.exception.BadRequestException;
 import com.buurman.exception.NotFoundException;
+import com.buurman.repository.ContractRepository;
 import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.SidGenerator;
@@ -295,6 +300,138 @@ class ContractServiceTest {
       assertThatThrownBy(() -> invoke(property, identifierValue, principal(TEAM_ID)))
           .isInstanceOf(NotFoundException.class)
           .hasMessage("Unit not found");
+    }
+  }
+
+  /**
+   * Same reflection technique as {@link ResolveUnitId}, applied to {@code
+   * updateUnitStatusBasedOnContract} — the business rule reinstated for BUUR-106 Task 12 after
+   * {@code properties.status} was dropped in V068. Only {@code unitRepository} and {@code
+   * contractRepository} are reached, so only those two fields are injected.
+   */
+  @Nested
+  @DisplayName("updateUnitStatusBasedOnContract")
+  class UpdateUnitStatusBasedOnContract {
+
+    private static final UUID TEAM_ID = UUID.randomUUID();
+    private static final UUID UNIT_ID = UUID.randomUUID();
+    private static final UUID USER_ID = UUID.randomUUID();
+
+    private UnitRepository unitRepository;
+    private ContractRepository contractRepository;
+    private Method updateUnitStatusBasedOnContract;
+    private Object contractServiceInstance;
+
+    @BeforeEach
+    void setUp() throws Exception {
+      unitRepository = Mockito.mock(UnitRepository.class);
+      contractRepository = Mockito.mock(ContractRepository.class);
+
+      contractServiceInstance =
+          Mockito.mock(
+              ContractService.class,
+              Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
+
+      setField("unitRepository", unitRepository);
+      setField("contractRepository", contractRepository);
+
+      updateUnitStatusBasedOnContract =
+          ContractService.class.getDeclaredMethod(
+              "updateUnitStatusBasedOnContract",
+              UUID.class,
+              ContractStatus.class,
+              ContractStatus.class,
+              UserPrincipal.class);
+      updateUnitStatusBasedOnContract.setAccessible(true);
+    }
+
+    private void setField(String name, Object value) throws Exception {
+      Field field = ContractService.class.getDeclaredField(name);
+      field.setAccessible(true);
+      field.set(contractServiceInstance, value);
+    }
+
+    private void invoke(ContractStatus newStatus, ContractStatus oldStatus) throws Throwable {
+      try {
+        updateUnitStatusBasedOnContract.invoke(
+            contractServiceInstance, UNIT_ID, newStatus, oldStatus, principal(TEAM_ID));
+      } catch (InvocationTargetException e) {
+        throw e.getCause();
+      }
+    }
+
+    private Unit unit(UnitStatus status) {
+      return Unit.builder()
+          .id(UNIT_ID)
+          .identifier(Optional.of(SidGenerator.newUnitId()))
+          .teamId(TEAM_ID)
+          .propertyId(UUID.randomUUID())
+          .unitNumber("1")
+          .unitType(UnitType.APARTMENT)
+          .status(status)
+          .build();
+    }
+
+    private UserPrincipal principal(UUID teamId) {
+      return new UserPrincipal(
+          USER_ID,
+          "usr_test",
+          "kc-123",
+          "test@example.com",
+          "Test User",
+          teamId,
+          "team_test",
+          com.buurman.domain.TeamRole.TEAM_ADMIN);
+    }
+
+    @Test
+    @DisplayName("a contract becoming ACTIVE sets its unit OCCUPIED")
+    void activatingContractOccupiesUnit() throws Throwable {
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(unit(UnitStatus.VACANT));
+
+      invoke(ContractStatus.ACTIVE, ContractStatus.DRAFT);
+
+      ArgumentCaptor<Unit> captor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository).save(captor.capture());
+      assertThat(captor.getValue().getStatus()).isEqualTo(UnitStatus.OCCUPIED);
+    }
+
+    @Test
+    @DisplayName("a contract ending vacates its unit when no other active contract references it")
+    void endingContractVacatesUnitWhenNoOtherActiveContract() throws Throwable {
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(unit(UnitStatus.OCCUPIED));
+      when(contractRepository.countActiveByUnitId(UNIT_ID, TEAM_ID)).thenReturn(0);
+
+      invoke(ContractStatus.TERMINATED, ContractStatus.ACTIVE);
+
+      ArgumentCaptor<Unit> captor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository).save(captor.capture());
+      assertThat(captor.getValue().getStatus()).isEqualTo(UnitStatus.VACANT);
+    }
+
+    @Test
+    @DisplayName(
+        "a contract expiring does NOT vacate its unit while another active contract on the same"
+            + " unit still exists — the whole point of the no-other-active-contract clause")
+    void expiringContractDoesNotVacateUnitWithOverlappingActiveContract() throws Throwable {
+      // Two overlapping tenancies on the same unit: this one just expired, but a sibling
+      // contract on UNIT_ID is still ACTIVE (countActiveByUnitId reflects that, since the
+      // caller already persisted this contract's new status before calling this method).
+      when(contractRepository.countActiveByUnitId(UNIT_ID, TEAM_ID)).thenReturn(1);
+
+      invoke(ContractStatus.EXPIRED, ContractStatus.ACTIVE);
+
+      verify(unitRepository, never()).save(any(Unit.class));
+      verify(unitRepository, never()).getByIdAndTeamId(any(), any());
+    }
+
+    @Test
+    @DisplayName("a transition that never touches ACTIVE leaves the unit alone")
+    void nonActiveTransitionLeavesUnitAlone() throws Throwable {
+      invoke(ContractStatus.DRAFT, ContractStatus.PENDING_SIGNATURE);
+
+      verify(unitRepository, never()).save(any(Unit.class));
+      verify(contractRepository, never()).countActiveByUnitId(any(), any());
     }
   }
 }

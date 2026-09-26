@@ -24,6 +24,7 @@ import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyOccupancyPeriod;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Unit;
+import com.buurman.domain.UnitStatus;
 import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreateOccupancyPeriodRequest;
@@ -106,13 +107,12 @@ public class OccupancyPeriodService {
 
     repository.save(period);
 
-    // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
-    // Marking the unit SELF_OCCUPIED when a period starts today or earlier needs a unit join.
+    // Reinstated business rule (deleted when properties.status was dropped in V068), retargeted
+    // to the unit: a period that has already started marks its unit SELF_OCCUPIED.
     if (!request.startDate().isAfter(LocalDate.now(clock))) {
-      log.warn(
-          "Skipping automatic unit status update to SELF_OCCUPIED for property {}: status now"
-              + " lives on units, not properties (BUUR-106 Task 12)",
-          propertyIdentifier);
+      unit.setStatus(UnitStatus.SELF_OCCUPIED);
+      unit.setUpdatedBy(Optional.of(principal.getUserId()));
+      unitRepository.save(unit);
     }
 
     log.info(
@@ -185,18 +185,17 @@ public class OccupancyPeriodService {
     period.setUpdatedBy(principal.getUserId());
     repository.save(period);
 
-    // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
-    // Marking the unit VACANT when the active self-occupancy period ends needs a unit join.
-    //
-    // The deleted business rule, to reinstate at unit level: only set the unit to VACANT when
-    // the end date is today or earlier AND the unit's current status is SELF_OCCUPIED (i.e.
-    // `unit.getStatus() == SELF_OCCUPIED`). Do not unconditionally mark VACANT — a unit that is
-    // e.g. under maintenance or rented via a separate contract must not be overwritten.
+    // Reinstated business rule (deleted when properties.status was dropped in V068), retargeted
+    // to the unit: only set the unit to VACANT when the end date is today or earlier AND the
+    // unit's current status is still SELF_OCCUPIED. Do not unconditionally mark VACANT — a unit
+    // that is e.g. under maintenance or rented via a separate contract must not be overwritten.
     if (!request.endDate().isAfter(LocalDate.now(clock))) {
-      log.warn(
-          "Skipping automatic unit status update to VACANT for property {}: status now lives on"
-              + " units, not properties (BUUR-106 Task 12)",
-          propertyIdentifier);
+      Unit unit = unitRepository.getByIdAndTeamId(period.getUnitId(), teamId);
+      if (unit.getStatus() == UnitStatus.SELF_OCCUPIED) {
+        unit.setStatus(UnitStatus.VACANT);
+        unit.setUpdatedBy(Optional.of(principal.getUserId()));
+        unitRepository.save(unit);
+      }
     }
 
     log.info("Ended self-occupancy period {}", periodIdentifier);
@@ -215,25 +214,24 @@ public class OccupancyPeriodService {
 
     repository.softDeleteByIdAndTeamId(period.getId(), teamId);
 
-    // If active period was deleted, set property to VACANT
+    // If active period was deleted, set the unit to VACANT
     boolean wasActive =
         !period.getStartDate().isAfter(LocalDate.now(clock))
             && (period.getEndDate().isEmpty()
                 || !period.getEndDate().get().isBefore(LocalDate.now(clock)));
 
-    // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
-    // Marking the unit VACANT when an active self-occupancy period is deleted needs a unit join.
-    //
-    // The deleted business rule, to reinstate at unit level: only set the unit to VACANT when
-    // the deleted period was active (wasActive, computed above) AND the unit's current status
-    // is SELF_OCCUPIED (i.e. `unit.getStatus() == SELF_OCCUPIED`). Do not unconditionally mark
-    // VACANT — a unit that is e.g. under maintenance or rented via a separate contract must not
-    // be overwritten.
+    // Reinstated business rule (deleted when properties.status was dropped in V068), retargeted
+    // to the unit: only set the unit to VACANT when the deleted period was active (wasActive,
+    // computed above) AND the unit's current status is still SELF_OCCUPIED. Do not
+    // unconditionally mark VACANT — a unit that is e.g. under maintenance or rented via a
+    // separate contract must not be overwritten.
     if (wasActive) {
-      log.warn(
-          "Skipping automatic unit status update to VACANT for property {}: status now lives on"
-              + " units, not properties (BUUR-106 Task 12)",
-          propertyIdentifier);
+      Unit unit = unitRepository.getByIdAndTeamId(period.getUnitId(), teamId);
+      if (unit.getStatus() == UnitStatus.SELF_OCCUPIED) {
+        unit.setStatus(UnitStatus.VACANT);
+        unit.setUpdatedBy(Optional.of(principal.getUserId()));
+        unitRepository.save(unit);
+      }
     }
 
     log.info("Deleted self-occupancy period {}", periodIdentifier);

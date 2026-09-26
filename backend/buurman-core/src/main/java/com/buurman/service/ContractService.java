@@ -43,6 +43,7 @@ import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Unit;
+import com.buurman.domain.UnitStatus;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
@@ -724,8 +725,8 @@ public class ContractService {
     paymentSchedulingService.handleContractStatusChange(
         contractId, newStatus, teamId, principal.getUserId());
 
-    // Update property status based on contract status
-    updatePropertyStatusBasedOnContract(contract.getPropertyId(), newStatus, oldStatus, principal);
+    // Update the unit's status based on the contract's status
+    updateUnitStatusBasedOnContract(contract.getUnitId(), newStatus, oldStatus, principal);
 
     // Log to audit trail
     Map<String, Object> changedFields = new HashMap<>();
@@ -1413,30 +1414,44 @@ public class ContractService {
     return a.get().compareTo(b.get()) != 0;
   }
 
-  // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
-  // Automatically flipping occupancy status based on contract lifecycle needs to target the
-  // property's unit(s) instead of the property itself. Disabled for now rather than writing to
-  // a field that no longer exists on Property or faking a status transition.
-  //
-  // The deleted business rule, to reinstate at unit level:
-  //   - if newStatus == ACTIVE && oldStatus != ACTIVE: set the unit to OCCUPIED.
-  //   - if oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED): set the
-  //     unit to VACANT, but ONLY when there is no OTHER active contract still referencing that
-  //     unit/property (checked via
-  //     contractRepository.findActiveContractByPropertyId(propertyId, teamId).isPresent()).
-  //     Do not unconditionally mark VACANT on every expiry/termination — a property/unit with
-  //     multiple contracts (e.g. mid-transition) must stay OCCUPIED while another active
-  //     contract exists.
-  private void updatePropertyStatusBasedOnContract(
-      UUID propertyId,
+  /**
+   * Reinstates the business rule that was deleted when {@code properties.status} was dropped in
+   * V068, retargeted from the property to its unit:
+   *
+   * <ul>
+   *   <li>{@code newStatus == ACTIVE && oldStatus != ACTIVE}: the unit becomes {@code OCCUPIED}.
+   *   <li>{@code oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)}: the
+   *       unit becomes {@code VACANT}, but ONLY when no OTHER active contract still references it.
+   *       A unit can carry two overlapping tenancies (e.g. mid-transition between tenants), and
+   *       must stay {@code OCCUPIED} while any of them is still {@code ACTIVE}.
+   * </ul>
+   *
+   * <p>By the time this runs, the caller has already persisted {@code newStatus} on {@code
+   * contract} ({@link #changeContractStatus}), so {@link ContractRepository#countActiveByUnitId}
+   * naturally excludes the contract that just expired or was terminated — no explicit
+   * self-exclusion is needed.
+   */
+  private void updateUnitStatusBasedOnContract(
+      UUID unitId,
       Contract.ContractStatus newStatus,
       Contract.ContractStatus oldStatus,
       UserPrincipal principal) {
-    log.debug(
-        "Skipping automatic unit status update for property {} (contract status {} -> {}):"
-            + " status now lives on units, not properties (BUUR-106 Task 12)",
-        propertyId,
-        oldStatus,
-        newStatus);
+    UUID teamId = principal.requireTeamId();
+    if (newStatus == ACTIVE && oldStatus != ACTIVE) {
+      setUnitStatus(unitId, teamId, UnitStatus.OCCUPIED, principal);
+      return;
+    }
+    if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
+      if (contractRepository.countActiveByUnitId(unitId, teamId) == 0) {
+        setUnitStatus(unitId, teamId, UnitStatus.VACANT, principal);
+      }
+    }
+  }
+
+  private void setUnitStatus(UUID unitId, UUID teamId, UnitStatus status, UserPrincipal principal) {
+    Unit unit = unitRepository.getByIdAndTeamId(unitId, teamId);
+    unit.setStatus(status);
+    unit.setUpdatedBy(Optional.of(principal.getUserId()));
+    unitRepository.save(unit);
   }
 }

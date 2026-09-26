@@ -1,12 +1,15 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.UNITS;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,6 +19,8 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.Record3;
+import org.jooq.impl.DSL;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
@@ -81,10 +86,23 @@ public class PropertyRepository {
             .map(mapper::toDomain));
   }
 
+  /**
+   * "A property with status X" now means "a property with at least one non-deleted unit whose
+   * status is X" — status moved from {@code properties} to {@code units} in V068, and a property
+   * itself no longer carries a single status once it can hold several independently-let units.
+   */
   public List<Property> findByTeamIdAndStatus(UUID teamId, UnitStatus status) {
-    // Status moved from properties to units in V068. Filtering properties by status now
-    // requires a join against units, which is Task 12's job.
-    throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
+    return List.copyOf(
+        dsl.selectFrom(PROPERTIES)
+            .where(
+                PROPERTIES
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(PROPERTIES.DELETED_AT.isNull())
+                    .and(hasUnitWithStatus(status)))
+            .orderBy(PROPERTIES.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Property save(Property property) {
@@ -253,12 +271,12 @@ public class PropertyRepository {
       @Nullable String category,
       @Nullable String query,
       PageRequest pageRequest) {
-    if (status != null && !status.isEmpty()) {
-      // Status moved from properties to units in V068. Filtering properties by status now
-      // requires a join against units, which is Task 12's job.
-      throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
-    }
     Condition condition = PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull());
+    if (status != null && !status.isEmpty()) {
+      // "A vacant property" (etc.) now means "a property with at least one non-deleted unit in
+      // that status" — status moved from properties to units in V068.
+      condition = condition.and(hasUnitWithStatus(UnitStatus.valueOf(status)));
+    }
     if (category != null && !category.isEmpty()) {
       condition = condition.and(PROPERTIES.PROPERTY_CATEGORY.eq(category));
     }
@@ -319,5 +337,57 @@ public class PropertyRepository {
     return dsl.fetchCount(
         dsl.selectFrom(PROPERTIES)
             .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull())));
+  }
+
+  /**
+   * Grouped unit total/occupied counts for every property of {@code teamId}, in one query — so
+   * rendering a property list of N properties never fires N per-property count queries. Excludes
+   * units of soft-deleted properties, matching {@link UnitRepository}'s own listing/count methods.
+   * A property with zero units (which should not normally happen — see {@link
+   * com.buurman.service.UnitService}) is simply absent from the map; callers default to zero.
+   */
+  public Map<UUID, UnitCounts> findUnitCountsByTeamId(UUID teamId) {
+    Map<UUID, UnitCounts> counts = new HashMap<>();
+    dsl.select(
+            UNITS.PROPERTY_ID,
+            DSL.count(),
+            DSL.sum(
+                DSL.when(UNITS.STATUS.eq(UnitStatus.OCCUPIED.name()), DSL.inline(1))
+                    .otherwise(DSL.inline(0))))
+        .from(UNITS)
+        .join(PROPERTIES)
+        .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
+        .where(
+            PROPERTIES
+                .TEAM_ID
+                .eq(teamId)
+                .and(PROPERTIES.DELETED_AT.isNull())
+                .and(UNITS.DELETED_AT.isNull()))
+        .groupBy(UNITS.PROPERTY_ID)
+        .fetch()
+        .forEach(
+            (Record3<UUID, Integer, BigDecimal> r) -> {
+              int occupied = r.value3() == null ? 0 : r.value3().intValue();
+              counts.put(r.value1(), new UnitCounts(r.value2(), occupied));
+            });
+    return counts;
+  }
+
+  /** Per-property unit totals for {@link #findUnitCountsByTeamId}. */
+  public record UnitCounts(int total, int occupied) {}
+
+  private Condition hasUnitWithStatus(UnitStatus status) {
+    // "A vacant property" (etc.): the property has at least one non-deleted unit in that status.
+    // Deliberate product decision (not an obvious 1:1 translation of the old properties.status
+    // column) now that a property may hold several independently-let units.
+    return DSL.exists(
+        DSL.selectOne()
+            .from(UNITS)
+            .where(
+                UNITS
+                    .PROPERTY_ID
+                    .eq(PROPERTIES.ID)
+                    .and(UNITS.STATUS.eq(status.name()))
+                    .and(UNITS.DELETED_AT.isNull())));
   }
 }

@@ -6228,11 +6228,13 @@ paths:
       parameters:
         - name: status
           in: query
-          description: Filter by status
+          description: >-
+            Filter by unit status: returns properties with at least one non-deleted unit in this
+            status.
           required: false
           schema:
             type: string
-            description: Current occupancy or availability status of the property
+            description: Current occupancy or availability status of a unit
             enum:
               - VACANT
               - OCCUPIED
@@ -23690,18 +23692,6 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
         street:
           type: string
           minLength: 1
@@ -23722,11 +23712,6 @@ components:
           type: number
         geocodeAccuracy:
           type: string
-        areaValue:
-          type: number
-          exclusiveMinimum: 0
-        areaUnit:
-          type: string
         yearBuilt:
           type: integer
           format: int32
@@ -23741,27 +23726,10 @@ components:
           type: string
         wallConstruction:
           type: string
-        flooringType:
-          type: string
-        windowType:
-          type: string
         numberOfFloors:
           type: integer
           format: int32
         structuralNotes:
-          type: string
-        energyEfficiencyRating:
-          type: string
-        energyCertificateExpiryDate:
-          type: string
-          format: date
-        heatingType:
-          type: string
-        coolingType:
-          type: string
-        hotWaterSystem:
-          type: string
-        insulationNotes:
           type: string
         electricityConnectionType:
           type: string
@@ -23786,12 +23754,6 @@ components:
           format: int32
         parkingType:
           type: string
-        hasSmokeDetectors:
-          type: boolean
-        hasCoDetectors:
-          type: boolean
-        hasFireExtinguisher:
-          type: boolean
         hasSprinklerSystem:
           type: boolean
         hasAlarmSystem:
@@ -23808,10 +23770,6 @@ components:
           type: boolean
         hasStepFreeEntrance:
           type: boolean
-        hasAdaptedBathroom:
-          type: boolean
-        accessibilityNotes:
-          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsRequest"
         commercialDetails:
@@ -23825,7 +23783,6 @@ components:
         - country
         - postalCode
         - propertyType
-        - status
         - street
     AgriculturalDetailsResponse:
       type: object
@@ -24012,10 +23969,6 @@ components:
           type: number
         geocodeAccuracy:
           type: string
-        areaValue:
-          type: number
-        areaUnit:
-          type: string
         mainPhotoUrl:
           type: string
         mainPhotoThumbnailUrl:
@@ -24034,27 +23987,10 @@ components:
           type: string
         wallConstruction:
           type: string
-        flooringType:
-          type: string
-        windowType:
-          type: string
         numberOfFloors:
           type: integer
           format: int32
         structuralNotes:
-          type: string
-        energyEfficiencyRating:
-          type: string
-        energyCertificateExpiryDate:
-          type: string
-          format: date
-        heatingType:
-          type: string
-        coolingType:
-          type: string
-        hotWaterSystem:
-          type: string
-        insulationNotes:
           type: string
         electricityConnectionType:
           type: string
@@ -24079,12 +24015,6 @@ components:
           format: int32
         parkingType:
           type: string
-        hasSmokeDetectors:
-          type: boolean
-        hasCoDetectors:
-          type: boolean
-        hasFireExtinguisher:
-          type: boolean
         hasSprinklerSystem:
           type: boolean
         hasAlarmSystem:
@@ -24101,10 +24031,6 @@ components:
           type: boolean
         hasStepFreeEntrance:
           type: boolean
-        hasAdaptedBathroom:
-          type: boolean
-        accessibilityNotes:
-          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsResponse"
         commercialDetails:
@@ -24121,6 +24047,22 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PropertyAmenityResponse"
+        unitCount:
+          type: integer
+          format: int32
+          description: Total number of units on this property
+        occupiedUnitCount:
+          type: integer
+          format: int32
+          description: Number of units currently OCCUPIED
+        vacantUnitCount:
+          type: integer
+          format: int32
+          description: Number of units currently VACANT
+        units:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitSummaryResponse"
         createdAt:
           type: string
           format: date-time
@@ -24133,10 +24075,14 @@ components:
         - country
         - createdAt
         - identifier
+        - occupiedUnitCount
         - postalCode
         - propertyCategory
         - propertyType
         - street
+        - unitCount
+        - units
+        - vacantUnitCount
     ResidentialDetailsResponse:
       type: object
       properties:
@@ -26263,18 +26209,6 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
         street:
           type: string
           minLength: 1
@@ -26295,11 +26229,6 @@ components:
           type: number
         geocodeAccuracy:
           type: string
-        areaValue:
-          type: number
-          exclusiveMinimum: 0
-        areaUnit:
-          type: string
         yearBuilt:
           type: integer
           format: int32
@@ -26314,27 +26243,10 @@ components:
           type: string
         wallConstruction:
           type: string
-        flooringType:
-          type: string
-        windowType:
-          type: string
         numberOfFloors:
           type: integer
           format: int32
         structuralNotes:
-          type: string
-        energyEfficiencyRating:
-          type: string
-        energyCertificateExpiryDate:
-          type: string
-          format: date
-        heatingType:
-          type: string
-        coolingType:
-          type: string
-        hotWaterSystem:
-          type: string
-        insulationNotes:
           type: string
         electricityConnectionType:
           type: string
@@ -26359,12 +26271,6 @@ components:
           format: int32
         parkingType:
           type: string
-        hasSmokeDetectors:
-          type: boolean
-        hasCoDetectors:
-          type: boolean
-        hasFireExtinguisher:
-          type: boolean
         hasSprinklerSystem:
           type: boolean
         hasAlarmSystem:
@@ -26381,10 +26287,6 @@ components:
           type: boolean
         hasStepFreeEntrance:
           type: boolean
-        hasAdaptedBathroom:
-          type: boolean
-        accessibilityNotes:
-          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsRequest"
         commercialDetails:
@@ -26393,13 +26295,17 @@ components:
           $ref: "#/components/schemas/IndustrialDetailsRequest"
         agriculturalDetails:
           $ref: "#/components/schemas/AgriculturalDetailsRequest"
+        unit:
+          $ref: "#/components/schemas/CreateUnitRequest"
+          description: >-
+            The property's first unit. Omitted -> a single implicit VACANT unit numbered "1" is
+            created instead. A property is never created without at least one unit.
       required:
         - city
         - country
         - postalCode
         - propertyCategory
         - propertyType
-        - status
         - street
     CreateOccupancyPeriodRequest:
       type: object

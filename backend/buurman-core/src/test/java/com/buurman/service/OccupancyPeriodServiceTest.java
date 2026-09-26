@@ -353,9 +353,8 @@ class OccupancyPeriodServiceTest {
 
     @Test
     @DisplayName(
-        "does not persist property when period starts today or earlier"
-            + " (status moved to units, BUUR-106 Task 12)")
-    void setsPropertyStatusWhenStartsToday() {
+        "sets the unit SELF_OCCUPIED (not the property) when period starts today or earlier")
+    void setsUnitStatusWhenStartsToday() {
       when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
           .thenReturn(List.of(unit));
@@ -380,6 +379,37 @@ class OccupancyPeriodServiceTest {
       service.create(PROPERTY_SID, request, principal);
 
       verify(propertyRepository, never()).save(any(Property.class));
+      ArgumentCaptor<Unit> unitCaptor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository).save(unitCaptor.capture());
+      assertThat(unitCaptor.getValue().getStatus()).isEqualTo(UnitStatus.SELF_OCCUPIED);
+    }
+
+    @Test
+    @DisplayName("does not touch the unit when the period starts in the future")
+    void doesNotChangeUnitStatusWhenStartsInFuture() {
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(unit));
+      when(repository.findOverlapping(
+              eq(UNIT_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
+          .thenReturn(List.of());
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID)).thenReturn(List.of());
+      when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(), TEAM_ID))
+          .thenReturn(List.of());
+
+      CreateOccupancyPeriodRequest request =
+          new CreateOccupancyPeriodRequest(
+              LocalDate.of(2026, 5, 1),
+              OccupancyType.PERSONAL,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              null);
+
+      service.create(PROPERTY_SID, request, principal);
+
+      verify(unitRepository, never()).save(any(Unit.class));
     }
   }
 
@@ -427,7 +457,68 @@ class OccupancyPeriodServiceTest {
       assertThat(response.endDate()).isPresent().contains(LocalDate.of(2026, 3, 1));
       assertThat(response.unitIdentifier()).isEqualTo(UNIT_SID);
       verify(propertyRepository, never()).save(any(Property.class));
+      // Unit is already VACANT (setUp default), not SELF_OCCUPIED — the precondition must skip
+      // the write.
+      verify(unitRepository, never()).save(any(Unit.class));
       verify(repository).save(period);
+    }
+
+    @Test
+    @DisplayName("flips the unit from SELF_OCCUPIED to VACANT when ending on or before today")
+    void flipsSelfOccupiedUnitToVacant() {
+      PropertyOccupancyPeriod period = buildActivePeriod();
+      Unit selfOccupiedUnit =
+          Unit.builder()
+              .id(UNIT_ID)
+              .identifier(Optional.of(UNIT_SID))
+              .teamId(TEAM_ID)
+              .propertyId(PROPERTY_ID)
+              .unitNumber("1")
+              .unitType(UnitType.APARTMENT)
+              .status(UnitStatus.SELF_OCCUPIED)
+              .build();
+
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(selfOccupiedUnit);
+
+      EndOccupancyPeriodRequest request =
+          new EndOccupancyPeriodRequest(
+              LocalDate.of(2026, 3, 1), Optional.empty(), Optional.empty());
+
+      service.end(PROPERTY_SID, PERIOD_SID, request, principal);
+
+      ArgumentCaptor<Unit> unitCaptor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository).save(unitCaptor.capture());
+      assertThat(unitCaptor.getValue().getStatus()).isEqualTo(UnitStatus.VACANT);
+    }
+
+    @Test
+    @DisplayName("does not vacate a unit rented via a separate contract when its period ends")
+    void doesNotVacateOccupiedUnit() {
+      PropertyOccupancyPeriod period = buildActivePeriod();
+      Unit occupiedUnit =
+          Unit.builder()
+              .id(UNIT_ID)
+              .identifier(Optional.of(UNIT_SID))
+              .teamId(TEAM_ID)
+              .propertyId(PROPERTY_ID)
+              .unitNumber("1")
+              .unitType(UnitType.APARTMENT)
+              .status(UnitStatus.OCCUPIED)
+              .build();
+
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(occupiedUnit);
+
+      EndOccupancyPeriodRequest request =
+          new EndOccupancyPeriodRequest(
+              LocalDate.of(2026, 3, 1), Optional.empty(), Optional.empty());
+
+      service.end(PROPERTY_SID, PERIOD_SID, request, principal);
+
+      verify(unitRepository, never()).save(any(Unit.class));
     }
 
     @Test
@@ -466,6 +557,7 @@ class OccupancyPeriodServiceTest {
       period.setIdentifier(Optional.of(PERIOD_SID));
       period.setTeamId(TEAM_ID);
       period.setPropertyId(PROPERTY_ID);
+      period.setUnitId(UNIT_ID);
       // Active: started in the past, no end date
       period.setStartDate(LocalDate.of(2026, 1, 1));
       period.setEndDate(Optional.empty());
@@ -473,11 +565,50 @@ class OccupancyPeriodServiceTest {
 
       when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
+      // Unit is already VACANT (setUp default), not SELF_OCCUPIED — the precondition must skip
+      // the write rather than unconditionally forcing VACANT.
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(unit);
 
       service.delete(PROPERTY_SID, PERIOD_SID, principal);
 
       verify(repository).softDeleteByIdAndTeamId(period.getId(), TEAM_ID);
       verify(propertyRepository, never()).save(any(Property.class));
+      verify(unitRepository, never()).save(any(Unit.class));
+    }
+
+    @Test
+    @DisplayName("flips the unit from SELF_OCCUPIED to VACANT when an active period is deleted")
+    void flipsSelfOccupiedUnitToVacantOnDelete() {
+      PropertyOccupancyPeriod period = new PropertyOccupancyPeriod();
+      period.setId(UUID.randomUUID());
+      period.setIdentifier(Optional.of(PERIOD_SID));
+      period.setTeamId(TEAM_ID);
+      period.setPropertyId(PROPERTY_ID);
+      period.setUnitId(UNIT_ID);
+      period.setStartDate(LocalDate.of(2026, 1, 1));
+      period.setEndDate(Optional.empty());
+      period.setType(OccupancyType.PERSONAL);
+
+      Unit selfOccupiedUnit =
+          Unit.builder()
+              .id(UNIT_ID)
+              .identifier(Optional.of(UNIT_SID))
+              .teamId(TEAM_ID)
+              .propertyId(PROPERTY_ID)
+              .unitNumber("1")
+              .unitType(UnitType.APARTMENT)
+              .status(UnitStatus.SELF_OCCUPIED)
+              .build();
+
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(selfOccupiedUnit);
+
+      service.delete(PROPERTY_SID, PERIOD_SID, principal);
+
+      ArgumentCaptor<Unit> unitCaptor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository).save(unitCaptor.capture());
+      assertThat(unitCaptor.getValue().getStatus()).isEqualTo(UnitStatus.VACANT);
     }
   }
 }

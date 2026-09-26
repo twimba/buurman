@@ -77,6 +77,23 @@ public class UnitRepository {
             .map(mapper::toDomain));
   }
 
+  /** Every unit of a team, across all its properties, excluding soft-deleted properties. */
+  public List<Unit> findAllByTeamId(UUID teamId) {
+    return List.copyOf(
+        dsl.select(UNITS.fields())
+            .from(UNITS)
+            .join(PROPERTIES)
+            .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
+            .where(
+                UNITS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(UNITS.DELETED_AT.isNull())
+                    .and(PROPERTIES.DELETED_AT.isNull()))
+            .fetchInto(UNITS)
+            .map(mapper::toDomain));
+  }
+
   public List<Unit> findAllByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
     return List.copyOf(
         dsl.select(UNITS.fields())

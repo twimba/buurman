@@ -39,6 +39,7 @@ import static com.buurman.domain.Property.PropertyType.WAREHOUSE;
 import static com.buurman.domain.Property.PropertyType.WORKSHOP;
 import static com.buurman.util.SidGenerator.newPropertyId;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.List;
@@ -63,12 +64,15 @@ import com.buurman.domain.PropertyAgriculturalDetails;
 import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.Unit;
+import com.buurman.domain.UnitStatus;
+import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.AgriculturalDetailsRequest;
 import com.buurman.dto.request.CommercialDetailsRequest;
 import com.buurman.dto.request.CreatePropertyRequest;
+import com.buurman.dto.request.CreateUnitRequest;
 import com.buurman.dto.request.IndustrialDetailsRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.ResidentialDetailsRequest;
@@ -86,15 +90,18 @@ import com.buurman.dto.response.PropertyOutdoorAreaResponse;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.ResidentialDetailsResponse;
+import com.buurman.dto.response.UnitSummaryResponse;
 import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.PropertyMapper;
+import com.buurman.mapper.UnitMapper;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyAgriculturalDetailsRepository;
 import com.buurman.repository.PropertyCommercialDetailsRepository;
 import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.PropertyRepository.UnitCounts;
 import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
@@ -111,6 +118,8 @@ public class PropertyService {
 
   private final PropertyRepository propertyRepository;
   private final UnitRepository unitRepository;
+  private final UnitService unitService;
+  private final UnitMapper unitMapper;
   private final PropertyCommercialDetailsRepository commercialDetailsRepository;
   private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
   private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
@@ -181,6 +190,15 @@ public class PropertyService {
 
     Property savedProperty = propertyRepository.save(property);
 
+    // A property is never created without a unit: supplied -> created as-is, not implicit;
+    // omitted -> a single implicit VACANT unit numbered "1" is created instead. Both happen
+    // inside this @Transactional method, so the never-zero-units invariant holds from the first
+    // moment a property exists.
+    CreateUnitRequest unitRequest =
+        Optional.ofNullable(request.unit()).orElseGet(() -> implicitUnitRequest(request));
+    unitService.createInitialUnit(
+        savedProperty.getId(), unitRequest, request.unit() == null, principal);
+
     saveDetailsForCategory(
         request.propertyCategory(),
         savedProperty.getId(),
@@ -234,12 +252,20 @@ public class PropertyService {
       @Nullable String category,
       @Nullable String query,
       PageRequest pageRequest) {
+    UUID teamId = principal.requireTeamId();
     PaginatedResult<Property> result =
-        propertyRepository.findAllByTeamIdPaginated(
-            principal.requireTeamId(), status, category, query, pageRequest);
+        propertyRepository.findAllByTeamIdPaginated(teamId, status, category, query, pageRequest);
+
+    // One grouped query for every property in this page's team, instead of one unit-count query
+    // per property — a page of 50 properties must not fire 50 queries.
+    Map<UUID, UnitCounts> unitCountsByPropertyId =
+        propertyRepository.findUnitCountsByTeamId(teamId);
+
     List<PropertyResponse> responses =
         result.items().stream()
-            .map(property -> toResponseWithMainPhoto(property, principal.requireTeamId(), false))
+            .map(
+                property ->
+                    toResponseWithMainPhoto(property, teamId, false, unitCountsByPropertyId))
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
@@ -748,6 +774,20 @@ public class PropertyService {
 
   private PropertyResponse toResponseWithMainPhoto(
       Property property, UUID teamId, boolean includeNestedCollections) {
+    return toResponseWithMainPhoto(property, teamId, includeNestedCollections, null);
+  }
+
+  /**
+   * @param unitCountsByPropertyId precomputed unit counts for a whole page of properties (see
+   *     {@link #getPropertiesPaginated}), used only when {@code includeNestedCollections} is {@code
+   *     false}. {@code null} for a single-property response, where the full unit list is fetched
+   *     directly and is cheap enough to derive exact counts from.
+   */
+  private PropertyResponse toResponseWithMainPhoto(
+      Property property,
+      UUID teamId,
+      boolean includeNestedCollections,
+      @Nullable Map<UUID, UnitCounts> unitCountsByPropertyId) {
     PropertyResponse response = propertyMapper.toResponse(property);
 
     List<Photo> photos =
@@ -807,6 +847,11 @@ public class PropertyService {
       }
     }
 
+    UnitFacts unitFacts =
+        includeNestedCollections
+            ? unitFactsFromFullList(property.getId(), teamId)
+            : unitFactsFromCounts(property.getId(), unitCountsByPropertyId);
+
     return new PropertyResponse(
         response.identifier(),
         response.propertyCategory(),
@@ -820,8 +865,6 @@ public class PropertyService {
         response.latitude(),
         response.longitude(),
         response.geocodeAccuracy(),
-        response.areaValue(),
-        response.areaUnit(),
         mainPhotoUrl,
         mainPhotoThumbnailUrl,
         // Construction & Structure
@@ -831,17 +874,8 @@ public class PropertyService {
         response.foundationType(),
         response.roofType(),
         response.wallConstruction(),
-        response.flooringType(),
-        response.windowType(),
         response.numberOfFloors(),
         response.structuralNotes(),
-        // Energy & Climate
-        response.energyEfficiencyRating(),
-        response.energyCertificateExpiryDate(),
-        response.heatingType(),
-        response.coolingType(),
-        response.hotWaterSystem(),
-        response.insulationNotes(),
         // Utilities & Connections
         response.electricityConnectionType(),
         response.electricityCapacityValue(),
@@ -857,9 +891,6 @@ public class PropertyService {
         response.parkingSpaces(),
         response.parkingType(),
         // Safety & Security
-        response.hasSmokeDetectors(),
-        response.hasCoDetectors(),
-        response.hasFireExtinguisher(),
         response.hasSprinklerSystem(),
         response.hasAlarmSystem(),
         response.hasSecurityCameras(),
@@ -869,8 +900,6 @@ public class PropertyService {
         response.isWheelchairAccessible(),
         response.hasElevator(),
         response.hasStepFreeEntrance(),
-        response.hasAdaptedBathroom(),
-        response.accessibilityNotes(),
         // Category-specific details
         residentialDetails,
         commercialDetails,
@@ -879,7 +908,84 @@ public class PropertyService {
         // Nested collections
         outdoorAreas,
         amenities,
+        // Unit facts
+        unitFacts.total(),
+        unitFacts.occupied(),
+        unitFacts.vacant(),
+        unitFacts.units(),
         response.createdAt(),
         response.updatedAt());
+  }
+
+  /**
+   * Exact unit facts for a single property, from its full unit list — cheap here because the caller
+   * already needs that list for the {@code units} field itself.
+   */
+  private UnitFacts unitFactsFromFullList(UUID propertyId, UUID teamId) {
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(propertyId, teamId);
+    int occupied = (int) units.stream().filter(u -> u.getStatus() == UnitStatus.OCCUPIED).count();
+    int vacant = (int) units.stream().filter(u -> u.getStatus() == UnitStatus.VACANT).count();
+    List<UnitSummaryResponse> summaries = units.stream().map(unitMapper::toSummary).toList();
+    return new UnitFacts(units.size(), occupied, vacant, summaries);
+  }
+
+  /**
+   * Coarser unit facts for a list response, from the page-wide precomputed counts map (see {@link
+   * #getPropertiesPaginated}) rather than a per-property query. {@code vacant} here is "not
+   * occupied" (total minus occupied) rather than a literal count of VACANT-status units, since
+   * {@link UnitCounts} only tracks total/occupied — a deliberate simplification for list rendering;
+   * {@link #unitFactsFromFullList} is exact.
+   */
+  private UnitFacts unitFactsFromCounts(
+      UUID propertyId, @Nullable Map<UUID, UnitCounts> unitCountsByPropertyId) {
+    UnitCounts counts =
+        Optional.ofNullable(unitCountsByPropertyId)
+            .map(m -> m.get(propertyId))
+            .orElse(new UnitCounts(0, 0));
+    return new UnitFacts(
+        counts.total(), counts.occupied(), counts.total() - counts.occupied(), List.of());
+  }
+
+  private record UnitFacts(int total, int occupied, int vacant, List<UnitSummaryResponse> units) {}
+
+  /**
+   * Builds the implicit unit created when a property is submitted without an explicit {@code unit}:
+   * VACANT, numbered "1", holding the property's whole allocation (100%), with a unit type derived
+   * from the property's category — matching V068's backfill CASE exactly (RESIDENTIAL and MIXED_USE
+   * -> APARTMENT, everything else -> COMMERCIAL).
+   */
+  private CreateUnitRequest implicitUnitRequest(CreatePropertyRequest request) {
+    return new CreateUnitRequest(
+        "1",
+        Optional.empty(),
+        Optional.empty(),
+        defaultUnitType(request.propertyCategory()),
+        Optional.of(UnitStatus.VACANT),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.of(new BigDecimal("100")),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
+  }
+
+  private UnitType defaultUnitType(PropertyCategory category) {
+    return switch (category) {
+      case RESIDENTIAL, MIXED_USE -> UnitType.APARTMENT;
+      default -> UnitType.COMMERCIAL;
+    };
   }
 }

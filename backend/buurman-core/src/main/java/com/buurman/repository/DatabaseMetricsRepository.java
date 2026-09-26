@@ -6,6 +6,7 @@ import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
+import static com.buurman.jooq.generated.Tables.UNITS;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.select;
 
@@ -81,9 +82,25 @@ public class DatabaseMetricsRepository {
         .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 
+  /**
+   * Kept the name (and the Prometheus gauge it feeds) for continuity, but the breakdown is now by
+   * unit status, not property status — {@code properties.status} was dropped in V068 in favor of
+   * per-unit status.
+   */
   public List<LabelCount> countPropertiesByStatus() {
-    // Status moved from properties to units in V068. Grouping by status now requires a join
-    // against units, which is Task 12's job (unit-level status filtering/reporting).
-    throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
+    var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
+    return dsl.select(UNITS.STATUS, count())
+        .from(UNITS)
+        .join(PROPERTIES)
+        .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
+        .where(
+            UNITS
+                .DELETED_AT
+                .isNull()
+                .and(PROPERTIES.DELETED_AT.isNull())
+                .and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds)))
+        .groupBy(UNITS.STATUS)
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 }

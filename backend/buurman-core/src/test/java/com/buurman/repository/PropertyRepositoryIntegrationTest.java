@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -127,10 +128,17 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
     }
 
     @Test
-    @DisplayName("findByTeamIdAndStatus throws — status moved to units (BUUR-106 Task 12)")
+    @DisplayName("findByTeamIdAndStatus returns only properties with a unit in that status")
     void findByTeamIdAndStatusFilters() {
-      assertThatThrownBy(() -> repo.findByTeamIdAndStatus(TEAM_A_ID, UnitStatus.OCCUPIED))
-          .isInstanceOf(UnsupportedOperationException.class);
+      UUID occupiedPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+      TestDataHelper.insertUnit(
+          dsl, UUID.randomUUID(), occupiedPropertyId, TEAM_A_ID, "1", "OCCUPIED");
+      UUID vacantPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), vacantPropertyId, TEAM_A_ID, "1", "VACANT");
+
+      List<Property> occupied = repo.findByTeamIdAndStatus(TEAM_A_ID, UnitStatus.OCCUPIED);
+
+      assertThat(occupied).extracting(Property::getId).containsExactly(occupiedPropertyId);
     }
 
     @Test
@@ -160,6 +168,36 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
 
       assertThat(repo.findByIdsAndTeamId(List.of(p.getId()), TEAM_B_ID)).isEmpty();
     }
+
+    @Test
+    @DisplayName("findUnitCountsByTeamId groups units by property in one query")
+    void findUnitCountsByTeamIdGroupsPerProperty() {
+      UUID propertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "1", "OCCUPIED");
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "2", "VACANT");
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "3", "VACANT");
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "4", "VACANT");
+
+      Map<UUID, PropertyRepository.UnitCounts> counts = repo.findUnitCountsByTeamId(TEAM_A_ID);
+
+      assertThat(counts).containsKey(propertyId);
+      PropertyRepository.UnitCounts propertyCounts =
+          java.util.Objects.requireNonNull(counts.get(propertyId));
+      assertThat(propertyCounts.total()).isEqualTo(4);
+      assertThat(propertyCounts.occupied()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("findUnitCountsByTeamId excludes units of a soft-deleted property")
+    void findUnitCountsByTeamIdExcludesSoftDeletedProperty() {
+      UUID propertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), propertyId, TEAM_A_ID, "1", "OCCUPIED");
+      repo.softDeleteByIdAndTeamId(propertyId, TEAM_A_ID);
+
+      Map<UUID, PropertyRepository.UnitCounts> counts = repo.findUnitCountsByTeamId(TEAM_A_ID);
+
+      assertThat(counts).doesNotContainKey(propertyId);
+    }
   }
 
   @Nested
@@ -167,17 +205,24 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   class Pagination {
 
     @Test
-    @DisplayName("findAllByTeamIdPaginated with status filter throws (BUUR-106 Task 12)")
+    @DisplayName(
+        "findAllByTeamIdPaginated with status filter returns only properties with a matching unit")
     void paginatedWithStatusFilter() {
-      assertThatThrownBy(
-              () ->
-                  repo.findAllByTeamIdPaginated(
-                      TEAM_A_ID,
-                      "OCCUPIED",
-                      null,
-                      null,
-                      PageRequest.of(null, null, null, (SortDirection) null)))
-          .isInstanceOf(UnsupportedOperationException.class);
+      UUID occupiedPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+      TestDataHelper.insertUnit(
+          dsl, UUID.randomUUID(), occupiedPropertyId, TEAM_A_ID, "1", "OCCUPIED");
+      UUID vacantPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+      TestDataHelper.insertUnit(dsl, UUID.randomUUID(), vacantPropertyId, TEAM_A_ID, "1", "VACANT");
+
+      PaginatedResult<Property> result =
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID,
+              "OCCUPIED",
+              null,
+              null,
+              PageRequest.of(null, null, null, (SortDirection) null));
+
+      assertThat(result.items()).extracting(Property::getId).containsExactly(occupiedPropertyId);
     }
 
     @Test

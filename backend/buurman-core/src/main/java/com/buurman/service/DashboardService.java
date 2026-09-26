@@ -1,12 +1,16 @@
 package com.buurman.service;
 
+import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_UP;
 import static java.time.ZoneOffset.UTC;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,10 +22,13 @@ import org.springframework.stereotype.Service;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractIncomeEntry;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Unit;
+import com.buurman.domain.UnitStatus;
 import com.buurman.dto.response.ContractExtensionResponse;
 import com.buurman.dto.response.DashboardStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
@@ -32,6 +39,7 @@ import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,17 +49,107 @@ public class DashboardService {
 
   private final AuditLogRepository auditLogRepository;
   private final PropertyRepository propertyRepository;
+  private final UnitRepository unitRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository extensionRepository;
   private final ContactRepository contactRepository;
   private final ContractPartyService contractPartyService;
+  private final TeamService teamService;
   private final Clock clock;
 
+  /**
+   * Occupancy status moved from {@code properties} to {@code units} in V068, so every count below
+   * (occupied, vacant, maintenance, etc.) and both occupancy rates are now a breakdown of the
+   * team's units, not its properties. {@code totalProperties} alone still counts properties.
+   */
   public DashboardStatsResponse getDashboardStats(UUID teamId) {
-    // Occupancy status moved from `properties` to `units` in V068. Every stat below (occupied,
-    // vacant, maintenance, etc. counts and both occupancy rates) is a status breakdown and
-    // requires a join against units — Task 12's job. Throwing rather than faking the counts.
-    throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
+    int totalProperties = propertyRepository.countByTeamId(teamId);
+    List<Unit> units = unitRepository.findAllByTeamId(teamId);
+
+    int occupiedUnits = countByStatus(units, UnitStatus.OCCUPIED);
+    int selfOccupiedUnits = countByStatus(units, UnitStatus.SELF_OCCUPIED);
+    int vacantUnits = countByStatus(units, UnitStatus.VACANT);
+    int maintenanceUnits = countByStatus(units, UnitStatus.MAINTENANCE);
+    int unavailableUnits = countByStatus(units, UnitStatus.UNAVAILABLE);
+    int underRenovationUnits = countByStatus(units, UnitStatus.UNDER_RENOVATION);
+    int fallowUnits = countByStatus(units, UnitStatus.FALLOW);
+    int listedUnits = countByStatus(units, UnitStatus.LISTED);
+
+    int totalUnits = units.size();
+
+    // Occupancy rate: occupied + self-occupied vs available (excluding unavailable)
+    int availableUnits = totalUnits - unavailableUnits;
+    BigDecimal occupancyRate =
+        availableUnits > 0
+            ? BigDecimal.valueOf(occupiedUnits + selfOccupiedUnits)
+                .divide(BigDecimal.valueOf(availableUnits), 4, HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+            : ZERO;
+
+    // Rental occupancy rate: only rented units vs rental-eligible units.
+    // Excludes self-occupied from both numerator and denominator.
+    int rentalEligibleUnits = totalUnits - unavailableUnits - selfOccupiedUnits;
+    BigDecimal rentalOccupancyRate =
+        rentalEligibleUnits > 0
+            ? BigDecimal.valueOf(occupiedUnits)
+                .divide(BigDecimal.valueOf(rentalEligibleUnits), 4, HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+            : ZERO;
+
+    DashboardStatsResponse.MonthlyIncome monthlyIncome = calculateMonthlyIncome(teamId);
+
+    return new DashboardStatsResponse(
+        totalProperties,
+        occupiedUnits,
+        selfOccupiedUnits,
+        vacantUnits,
+        maintenanceUnits,
+        unavailableUnits,
+        underRenovationUnits,
+        fallowUnits,
+        listedUnits,
+        monthlyIncome,
+        occupancyRate,
+        rentalOccupancyRate);
+  }
+
+  private static int countByStatus(List<Unit> units, UnitStatus status) {
+    return (int) units.stream().filter(u -> u.getStatus() == status).count();
+  }
+
+  private DashboardStatsResponse.MonthlyIncome calculateMonthlyIncome(UUID teamId) {
+    List<ContractIncomeEntry> activeContracts =
+        contractRepository.findActiveContractIncomeByTeamId(teamId);
+
+    if (activeContracts.isEmpty()) {
+      return new DashboardStatsResponse.MonthlyIncome(ZERO, teamService.getDefaultCurrency(teamId));
+    }
+
+    // Group by currency and calculate monthly income
+    Map<String, BigDecimal> incomePerCurrency = new HashMap<>();
+
+    for (var contract : activeContracts) {
+      String currency = contract.rentAmountCurrency();
+      BigDecimal rentAmount = contract.rentAmount();
+      String paymentFrequency = contract.paymentFrequency();
+
+      // Convert to monthly amount based on payment frequency
+      BigDecimal monthlyAmount =
+          switch (paymentFrequency) {
+            case "MONTHLY" -> rentAmount;
+            case "QUARTERLY" -> rentAmount.divide(BigDecimal.valueOf(3), 2, HALF_UP);
+            case "ANNUALLY" -> rentAmount.divide(BigDecimal.valueOf(12), 2, HALF_UP);
+            default -> rentAmount;
+          };
+
+      incomePerCurrency.merge(currency, monthlyAmount, BigDecimal::add);
+    }
+
+    // For simplicity, return the first currency (typically EUR)
+    Map.Entry<String, BigDecimal> primaryIncome = incomePerCurrency.entrySet().iterator().next();
+
+    return new DashboardStatsResponse.MonthlyIncome(
+        primaryIncome.getValue().setScale(2, HALF_UP), primaryIncome.getKey());
   }
 
   public List<RecentActivityResponse> getRecentActivities(UUID teamId, int limit) {

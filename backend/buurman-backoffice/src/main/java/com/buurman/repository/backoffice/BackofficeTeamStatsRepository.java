@@ -6,6 +6,7 @@ import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.UNITS;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.sum;
 
@@ -110,10 +111,30 @@ public class BackofficeTeamStatsRepository {
         MoneyAmount.sumToMajorUnits(bestSum, bestCurrency), bestCurrency);
   }
 
+  /**
+   * Kept the name for continuity with {@link
+   * com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse#propertyStatusDistribution},
+   * but this is now a unit-status breakdown — {@code properties.status} was dropped in V068 in
+   * favor of per-unit status. This was the one live regression left by that migration: nothing
+   * caught the {@code UnsupportedOperationException} it used to throw, so the backoffice
+   * team-detail screen 500'd.
+   */
   public Map<String, Long> propertyStatusDistribution(UUID teamId) {
-    // Status moved from properties to units in V068. Grouping by status now requires a join
-    // against units, which is Task 12's job.
-    throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
+    Map<String, Long> result = new LinkedHashMap<>();
+    dsl.select(UNITS.STATUS, count())
+        .from(UNITS)
+        .join(PROPERTIES)
+        .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
+        .where(
+            UNITS
+                .TEAM_ID
+                .eq(teamId)
+                .and(UNITS.DELETED_AT.isNull())
+                .and(PROPERTIES.DELETED_AT.isNull()))
+        .groupBy(UNITS.STATUS)
+        .fetch()
+        .forEach(r -> result.put(r.value1(), r.value2().longValue()));
+    return result;
   }
 
   public Map<String, Long> contractStatusDistribution(UUID teamId) {

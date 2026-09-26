@@ -23,6 +23,13 @@ public interface PropertyMapper {
   @Mapping(target = "commercialDetails", ignore = true)
   @Mapping(target = "industrialDetails", ignore = true)
   @Mapping(target = "agriculturalDetails", ignore = true)
+  // Unit facts are assembled by PropertyService (they need a unit-repository lookup a pure
+  // domain-to-DTO mapper shouldn't perform); this method only ever produces an intermediate
+  // value that PropertyService#toResponseWithMainPhoto rebuilds into the final response.
+  @Mapping(target = "unitCount", ignore = true)
+  @Mapping(target = "occupiedUnitCount", ignore = true)
+  @Mapping(target = "vacantUnitCount", ignore = true)
+  @Mapping(target = "units", ignore = true)
   PropertyResponse toResponse(Property property);
 
   PropertySummary toSummary(Property property);

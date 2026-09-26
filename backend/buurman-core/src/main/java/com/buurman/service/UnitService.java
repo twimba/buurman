@@ -83,6 +83,30 @@ public class UnitService {
   }
 
   /**
+   * Creates the first unit of a brand-new property, called from {@link
+   * PropertyService#createProperty} inside the same transaction as the property insert, so the
+   * never-zero-units invariant holds from the property's first moment. Deliberately skips {@link
+   * #promoteImplicitUnit} — a property that was just created has no earlier implicit unit to
+   * promote — and takes {@code implicit} as an explicit argument rather than deriving it, since
+   * that decision ("did the caller supply unit details, or do we synthesize a default?") was
+   * already made by the caller.
+   */
+  Unit createInitialUnit(
+      UUID propertyId, CreateUnitRequest request, boolean implicit, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+
+    Unit unit = unitMapper.toEntity(request);
+    unit.setIdentifier(Optional.of(SidGenerator.newUnitId()));
+    unit.setTeamId(teamId);
+    unit.setPropertyId(propertyId);
+    unit.setImplicit(implicit);
+    unit.setCreatedBy(Optional.of(principal.getUserId()));
+    unit.setUpdatedBy(Optional.of(principal.getUserId()));
+
+    return saveOrTranslateDuplicate(unit, request.unitNumber());
+  }
+
+  /**
    * Splits a property into {@code request.count()} labeled units in one batch (e.g. "6 apartments
    * numbered 1-6"). If the property still has its implicit stand-in unit, that unit becomes #1 of
    * the batch — promoted in place, keeping its id/identifier so its contracts, payments, occupancy
