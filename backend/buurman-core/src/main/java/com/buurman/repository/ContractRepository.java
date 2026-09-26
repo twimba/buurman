@@ -513,7 +513,12 @@ public class ContractRepository {
                 .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
                 .and(CONTRACT_PARTIES.DELETED_AT.isNull()))
         .leftJoin(CONTACTS)
-        .on(CONTACTS.ID.eq(CONTRACT_PARTIES.CONTACT_ID).and(CONTACTS.TEAM_ID.eq(teamId)))
+        .on(
+            CONTACTS
+                .ID
+                .eq(CONTRACT_PARTIES.CONTACT_ID)
+                .and(CONTACTS.TEAM_ID.eq(teamId))
+                .and(CONTACTS.DELETED_AT.isNull()))
         .where(
             CONTRACTS
                 .UNIT_ID
@@ -521,6 +526,10 @@ public class ContractRepository {
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                 .and(CONTRACTS.DELETED_AT.isNull()))
+        // Deterministic order so that, in the schema-permitted case of two active contracts (or
+        // two PRIMARY_TENANT parties) on one unit, the caller's "keep the first" merge picks the
+        // most recently started tenancy rather than whatever order the planner returned.
+        .orderBy(CONTRACTS.START_DATE.desc())
         .fetch(
             r ->
                 new UnitActiveTenancy(

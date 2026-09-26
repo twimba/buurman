@@ -125,9 +125,15 @@ public class UnitService {
     List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId);
 
     List<UUID> unitIds = units.stream().map(Unit::getId).toList();
+    // The schema permits two ACTIVE contracts on one unit (contracts.unit_id has only a plain
+    // index, no uniqueness constraint), and findActiveTenanciesByUnitIds orders by start date
+    // descending, so keeping the first row per unit picks the most recently started tenancy
+    // instead of throwing on a duplicate key.
     Map<UUID, UnitActiveTenancy> tenancyByUnitId =
         contractRepository.findActiveTenanciesByUnitIds(unitIds, teamId).stream()
-            .collect(Collectors.toMap(UnitActiveTenancy::unitId, Function.identity()));
+            .collect(
+                Collectors.toMap(
+                    UnitActiveTenancy::unitId, Function.identity(), (first, second) -> first));
 
     return units.stream().map(unit -> toGridRow(unit, tenancyByUnitId.get(unit.getId()))).toList();
   }

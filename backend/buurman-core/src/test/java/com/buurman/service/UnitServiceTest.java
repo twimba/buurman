@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +23,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -124,14 +127,19 @@ class UnitServiceTest {
 
       assertThatThrownBy(() -> service().createUnit(propertyIdentifier(), request, principal()))
           .isInstanceOf(BusinessRuleException.class)
-          .hasMessageContaining("1");
+          .hasMessageContaining("A unit numbered 1 already exists on this property.");
     }
 
     @Test
-    @DisplayName("promotes the implicit unit instead of adding a second one")
+    @DisplayName(
+        "promotes the implicit unit in place — same id and identifier — instead of copying it"
+            + " into a new row")
     void promotesImplicitUnit() {
       Unit implicitUnit = unit("1", UnitStatus.VACANT);
       implicitUnit.setImplicit(true);
+      UUID originalId = implicitUnit.getId();
+      Sid originalIdentifier = implicitUnit.getIdentifier().orElseThrow();
+
       when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
       when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
           .thenReturn(List.of(implicitUnit));
@@ -145,9 +153,21 @@ class UnitServiceTest {
       UnitResponse response = service().createUnit(propertyIdentifier(), request, principal());
 
       // Two saves: the promoted implicit unit, then the new one.
-      verify(unitRepository, org.mockito.Mockito.times(2)).save(any());
+      ArgumentCaptor<Unit> savedCaptor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository, times(2)).save(savedCaptor.capture());
+      Unit firstSaved = savedCaptor.getAllValues().get(0);
+
+      // Promotion must flip the flag on the SAME row — an implementation that copies the implicit
+      // unit into a new row (new id, identifier cleared) and saves that would also flip the flag
+      // and issue two saves, passing a weaker check, while detaching every contract, payment,
+      // photo and WWS calculation from that row's history.
+      assertThat(firstSaved.getId()).isEqualTo(originalId);
+      assertThat(firstSaved.getIdentifier()).contains(originalIdentifier);
+      assertThat(firstSaved.isImplicit()).isFalse();
       assertThat(implicitUnit.isImplicit()).isFalse();
       assertThat(response.unitNumber()).isEqualTo("2");
+
+      verify(unitRepository, never()).softDelete(any(), any(), any());
     }
   }
 
@@ -162,6 +182,18 @@ class UnitServiceTest {
       when(unitRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(existing);
       when(unitRepository.save(existing)).thenReturn(existing);
       when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(property());
+      // Mimic what the real MapStruct-generated updateEntity would do, so the assertion below
+      // proves the mapped value flows through to the response rather than just checking "not
+      // null".
+      doAnswer(
+              inv -> {
+                Unit target = inv.getArgument(0);
+                UpdateUnitRequest req = inv.getArgument(1);
+                target.setUnitNumber(req.unitNumber());
+                return null;
+              })
+          .when(unitMapper)
+          .updateEntity(any(), any());
       when(unitMapper.toResponse(any(), any()))
           .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
 
@@ -171,7 +203,7 @@ class UnitServiceTest {
 
       verify(unitMapper).updateEntity(existing, request);
       verify(unitRepository).save(existing);
-      assertThat(response).isNotNull();
+      assertThat(response.unitNumber()).isEqualTo("1B");
     }
 
     @Test
@@ -186,7 +218,7 @@ class UnitServiceTest {
 
       assertThatThrownBy(() -> service().updateUnit(unitIdentifier(), request, principal()))
           .isInstanceOf(BusinessRuleException.class)
-          .hasMessageContaining("3");
+          .hasMessageContaining("A unit numbered 3 already exists on this property.");
     }
   }
 
@@ -244,6 +276,34 @@ class UnitServiceTest {
       assertThat(vacantRow.monthlyRent()).isEmpty();
       assertThat(vacantRow.monthlyRentCurrency()).isEmpty();
       assertThat(vacantRow.vacancyDays()).isEmpty();
+    }
+
+    @Test
+    @DisplayName(
+        "keeps the most recently started tenancy when two active contracts exist for one unit,"
+            + " instead of throwing on the duplicate key")
+    void keepsMostRecentTenancyOnDuplicate() {
+      Unit occupied = unit("1", UnitStatus.OCCUPIED);
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(occupied));
+      // uq_contract_parties_contract_contact is not role-scoped and contracts.unit_id has only a
+      // plain index, so the schema permits two ACTIVE contracts (or two PRIMARY_TENANT parties)
+      // on one unit. findActiveTenanciesByUnitIds orders by start date descending, so the newer
+      // tenancy is returned first — that's what the "keep first" merge below must pick.
+      when(contractRepository.findActiveTenanciesByUnitIds(any(), eqTeam()))
+          .thenReturn(
+              List.of(
+                  new UnitActiveTenancy(
+                      occupied.getId(), new BigDecimal("1500.00"), "EUR", "New Tenant"),
+                  new UnitActiveTenancy(
+                      occupied.getId(), new BigDecimal("1200.00"), "EUR", "Old Tenant")));
+
+      List<UnitGridRowResponse> rows = service().listUnits(propertyIdentifier(), principal());
+
+      assertThat(rows).hasSize(1);
+      assertThat(rows.get(0).tenantName()).contains("New Tenant");
+      assertThat(rows.get(0).monthlyRent()).contains(new BigDecimal("1500.00"));
     }
   }
 
