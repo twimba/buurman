@@ -29281,6 +29281,45 @@ components:
       type: string
       description: Whether flat late fees may be charged on overdue residential rent
       enum: [UNKNOWN, ALLOWED, CAPPED, INTEREST_ONLY, FORBIDDEN]
+    TenancyRuleTopic:
+      type: string
+      enum:
+        - NOTICE_PERIOD
+        - TENANCY_DURATION
+        - DEPOSIT
+        - LEASE_FORM
+        - REGISTRATION
+        - FEES_AND_PENALTIES
+        - OTHER
+
+    RentRegulationTenancyRuleResponse:
+      type: object
+      required: [identifier, topic, label, value]
+      properties:
+        identifier:
+          type: string
+        topic:
+          $ref: '#/components/schemas/TenancyRuleTopic'
+        regionCode:
+          type: string
+          nullable: true
+        label:
+          type: string
+        value:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+          nullable: true
+        legalBasis:
+          type: string
+          nullable: true
+        sourceUrl:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
     RentRegulationCountryResponse:
       type: object
       properties:
@@ -29355,6 +29394,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RentRegulationRuleResponse'
+        tenancyRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentRegulationTenancyRuleResponse'
       required:
         - identifier
         - countryCode

@@ -23,4 +23,5 @@ public record RentRegulationCountryDetailResponse(
     LateFeePolicy lateFeePolicy,
     Optional<BigDecimal> lateFeeMaxPercentage,
     Optional<String> lateFeeNotes,
-    Optional<Integer> formalNoticeDays) {}
+    Optional<Integer> formalNoticeDays,
+    List<RentRegulationTenancyRuleResponse> tenancyRules) {}
