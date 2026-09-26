@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buurman.util.MoneyAmount;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,8 +41,7 @@ public class Unit {
   @Builder.Default private boolean implicit = false;
 
   // Valuation & allocation shares
-  @Builder.Default private Optional<BigDecimal> wozValue = Optional.empty();
-  @Builder.Default private Optional<String> wozValueCurrency = Optional.empty();
+  @Builder.Default private Optional<MoneyAmount> wozValue = Optional.empty();
   @Builder.Default private Optional<BigDecimal> wozSharePct = Optional.empty();
   @Builder.Default private Optional<BigDecimal> allocationShare = Optional.empty();
 
