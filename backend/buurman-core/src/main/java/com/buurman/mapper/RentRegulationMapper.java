@@ -46,6 +46,11 @@ public class RentRegulationMapper {
         country.getFormalNoticeDays());
   }
 
+  /**
+   * Does not populate {@code tenancyRules} (always empty here); {@link
+   * com.buurman.service.RentRegulationService#getCountryDetail} is the real assembly path for the
+   * full detail response, including tenancy rules.
+   */
   public RentRegulationCountryDetailResponse toCountryDetailResponse(
       RentRegulationCountry country,
       List<RentRegulationRegion> regions,
