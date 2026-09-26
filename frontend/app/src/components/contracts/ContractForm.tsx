@@ -204,10 +204,12 @@ export const ContractForm = ({
   const propertyCountryCode =
     contract?.countryCode || selectedProperty?.country || undefined;
   const countryName = useCountryName(propertyCountryCode);
-  const { data: regulation } = useRentRegulationCountryDetail(propertyCountryCode);
+  const { data: regulation } =
+    useRentRegulationCountryDetail(propertyCountryCode);
   const lateFeePolicy = regulation?.lateFeePolicy ?? 'UNKNOWN';
   const lateFeeCap = regulation?.lateFeeMaxPercentage;
-  const lateFeeBlocked = lateFeePolicy === 'FORBIDDEN' || lateFeePolicy === 'INTEREST_ONLY';
+  const lateFeeBlocked =
+    lateFeePolicy === 'FORBIDDEN' || lateFeePolicy === 'INTEREST_ONLY';
   const lateFeeOverCap =
     lateFeePolicy === 'CAPPED' &&
     lateFeeCap != null &&
@@ -1141,7 +1143,8 @@ export const ContractForm = ({
                         country: countryName || propertyCountryCode,
                         percentage: lateFeeCap ?? '',
                       })}
-                      {lateFeeOverCap && ` ${t('form.lateFeeRegulation.overCap')}`}
+                      {lateFeeOverCap &&
+                        ` ${t('form.lateFeeRegulation.overCap')}`}
                     </p>
                   )}
                 </div>
@@ -1151,16 +1154,23 @@ export const ContractForm = ({
                   role="switch"
                   aria-checked={formData.lateFeeEnabled ?? false}
                   onClick={() =>
-                    handleChange('lateFeeEnabled', !(formData.lateFeeEnabled ?? false))
+                    handleChange(
+                      'lateFeeEnabled',
+                      !(formData.lateFeeEnabled ?? false)
+                    )
                   }
                   disabled={isLoading}
                   className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-ring ${
-                    formData.lateFeeEnabled ? 'bg-primary-500' : 'bg-surface-inset'
+                    formData.lateFeeEnabled
+                      ? 'bg-primary-500'
+                      : 'bg-surface-inset'
                   } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      formData.lateFeeEnabled ? 'translate-x-6' : 'translate-x-1'
+                      formData.lateFeeEnabled
+                        ? 'translate-x-6'
+                        : 'translate-x-1'
                     }`}
                   />
                 </button>

@@ -3,11 +3,19 @@ import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '@/test/test-utils';
 import { SendReminderDialog } from '../SendReminderDialog';
 
-function renderDialog(overrides: Partial<Parameters<typeof SendReminderDialog>[0]> = {}) {
+function renderDialog(
+  overrides: Partial<Parameters<typeof SendReminderDialog>[0]> = {}
+) {
   const onConfirm = vi.fn();
   const onClose = vi.fn();
   const result = renderWithProviders(
-    <SendReminderDialog open count={1} onConfirm={onConfirm} onClose={onClose} {...overrides} />
+    <SendReminderDialog
+      open
+      count={1}
+      onConfirm={onConfirm}
+      onClose={onClose}
+      {...overrides}
+    />
   );
   return { ...result, onConfirm, onClose };
 }
@@ -33,14 +41,19 @@ describe('SendReminderDialog', () => {
       'aria-checked',
       'true'
     );
-    expect(screen.getByText(/formal-notice PDF is attached/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/formal-notice PDF is attached/i)
+    ).toBeInTheDocument();
   });
 
   it('submits trimmed notes together with the selected tone', async () => {
     const user = userEvent.setup();
     const { onConfirm } = renderDialog();
     await user.click(screen.getByRole('radio', { name: 'Firm' }));
-    await user.type(screen.getByLabelText(/personal message/i), '  Please pay by Friday.  ');
+    await user.type(
+      screen.getByLabelText(/personal message/i),
+      '  Please pay by Friday.  '
+    );
     await user.click(screen.getByRole('button', { name: 'Send reminder' }));
     expect(onConfirm).toHaveBeenCalledWith('Please pay by Friday.', 'FIRM');
   });
@@ -54,8 +67,12 @@ describe('SendReminderDialog', () => {
 
   it('uses bulk wording when several payments are selected', () => {
     renderDialog({ count: 3 });
-    expect(screen.getByRole('button', { name: 'Send 3 reminders' })).toBeInTheDocument();
-    expect(screen.getByText(/without a tenant email address are skipped/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Send 3 reminders' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/without a tenant email address are skipped/i)
+    ).toBeInTheDocument();
   });
 
   it('closes without confirming on cancel', async () => {

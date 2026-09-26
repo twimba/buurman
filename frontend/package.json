@@ -14,6 +14,7 @@
     "dev:app": "dotenv -e ../.env -- yarn workspace buurman-app dev",
     "dev:backoffice": "dotenv -e ../.env -- yarn workspace buurman-backoffice dev",
     "format": "yarn workspaces foreach -A -p run format",
+    "format:check": "yarn workspaces foreach -A -p run format:check",
     "lint": "yarn workspaces foreach -A -p run lint",
     "test": "yarn workspace buurman-app test && yarn workspace buurman-backoffice test"
   },

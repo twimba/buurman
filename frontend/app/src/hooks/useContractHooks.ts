@@ -476,7 +476,8 @@ export const useChangePrimaryContact = (contractId: string) => {
 export const useContractDeposit = (contractId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contracts.deposit(contractId),
-    queryFn: async () => (await getContractDeposits(contractId ?? ''))[0] ?? null,
+    queryFn: async () =>
+      (await getContractDeposits(contractId ?? ''))[0] ?? null,
     enabled: !!contractId,
   });
 };
@@ -508,14 +509,21 @@ export const useUpsertDeposit = (contractId: string, successMessage: string) =>
     successMessage
   );
 
-export const useAddDepositDeduction = (contractId: string, successMessage: string) =>
+export const useAddDepositDeduction = (
+  contractId: string,
+  successMessage: string
+) =>
   useDepositMutation(
     contractId,
-    (data: CreateDepositDeductionRequest) => addDepositDeduction(contractId, data),
+    (data: CreateDepositDeductionRequest) =>
+      addDepositDeduction(contractId, data),
     successMessage
   );
 
-export const useRemoveDepositDeduction = (contractId: string, successMessage: string) =>
+export const useRemoveDepositDeduction = (
+  contractId: string,
+  successMessage: string
+) =>
   useDepositMutation(
     contractId,
     (deductionId: string) => removeDepositDeduction(contractId, deductionId),
@@ -553,7 +561,9 @@ const invalidateAfterPlanChange = (
   queryClient.invalidateQueries({
     queryKey: queryKeys.contracts.paymentPlans(contractId),
   });
-  queryClient.invalidateQueries({ queryKey: queryKeys.contracts.detail(contractId) });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.contracts.detail(contractId),
+  });
   queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
   queryClient.invalidateQueries({ queryKey: queryKeys.payments.stats() });
   queryClient.invalidateQueries({ queryKey: queryKeys.payments.arrears() });
@@ -562,7 +572,10 @@ const invalidateAfterPlanChange = (
   });
 };
 
-export const useCreatePaymentPlan = (contractId: string, successMessage: string) => {
+export const useCreatePaymentPlan = (
+  contractId: string,
+  successMessage: string
+) => {
   const queryClient = useQueryClient();
   return useMutationWithToast({
     mutationFn: (data: CreatePaymentPlanRequest) =>
@@ -575,11 +588,19 @@ export const useCreatePaymentPlan = (contractId: string, successMessage: string)
   });
 };
 
-export const useCancelPaymentPlan = (contractId: string, successMessage: string) => {
+export const useCancelPaymentPlan = (
+  contractId: string,
+  successMessage: string
+) => {
   const queryClient = useQueryClient();
   return useMutationWithToast({
-    mutationFn: ({ planId, data }: { planId: string; data: CancelPaymentPlanRequest }) =>
-      cancelContractPaymentPlan(contractId, planId, data),
+    mutationFn: ({
+      planId,
+      data,
+    }: {
+      planId: string;
+      data: CancelPaymentPlanRequest;
+    }) => cancelContractPaymentPlan(contractId, planId, data),
     successMessage,
     onSuccess: () => {
       invalidateAfterPlanChange(queryClient, contractId);

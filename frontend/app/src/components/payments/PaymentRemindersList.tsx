@@ -64,15 +64,18 @@ export const PaymentRemindersList = ({
                 )}
               </p>
               <span className="flex items-center gap-2">
-                {reminder.deliveryStatus && reminder.deliveryStatus !== 'UNKNOWN' && (
-                  <span title={reminder.deliveryError ?? undefined}>
-                    <StatusBadge
-                      label={t(`reminders.delivery.${reminder.deliveryStatus}`)}
-                      color={deliveryColor[reminder.deliveryStatus]}
-                      shape="pill"
-                    />
-                  </span>
-                )}
+                {reminder.deliveryStatus &&
+                  reminder.deliveryStatus !== 'UNKNOWN' && (
+                    <span title={reminder.deliveryError ?? undefined}>
+                      <StatusBadge
+                        label={t(
+                          `reminders.delivery.${reminder.deliveryStatus}`
+                        )}
+                        color={deliveryColor[reminder.deliveryStatus]}
+                        shape="pill"
+                      />
+                    </span>
+                  )}
                 <time
                   dateTime={reminder.sentAt}
                   title={formatDateTime(reminder.sentAt)}

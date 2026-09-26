@@ -261,7 +261,10 @@ export const TenantRemindersSection = () => {
                       disabled={!canEditTeamSettings}
                       onChange={(e) =>
                         updateStep(index, {
-                          offsetDays: Number.parseInt(e.target.value || '0', 10),
+                          offsetDays: Number.parseInt(
+                            e.target.value || '0',
+                            10
+                          ),
                         })
                       }
                       className="w-20 border border-border-strong rounded px-2 py-1 text-text-primary bg-surface-card"
@@ -274,7 +277,9 @@ export const TenantRemindersSection = () => {
                     value={step.tone}
                     disabled={!canEditTeamSettings}
                     onChange={(e) =>
-                      updateStep(index, { tone: e.target.value as ReminderTone })
+                      updateStep(index, {
+                        tone: e.target.value as ReminderTone,
+                      })
                     }
                     aria-label={t('tenantReminders.steps.tone')}
                     className="border border-border-strong rounded px-2 py-1 text-sm text-text-primary bg-surface-card"

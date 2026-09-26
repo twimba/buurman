@@ -9,11 +9,18 @@ interface SendReminderDialogProps {
   /** Number of payments the reminder will be sent for. 1 = single payment wording. */
   count: number;
   isLoading?: boolean;
-  onConfirm: (notes: string | undefined, tone: ReminderTone) => Promise<void> | void;
+  onConfirm: (
+    notes: string | undefined,
+    tone: ReminderTone
+  ) => Promise<void> | void;
   onClose: () => void;
 }
 
-const TONES: ReminderTone[] = [ReminderTone.FRIENDLY, ReminderTone.FIRM, ReminderTone.FINAL];
+const TONES: ReminderTone[] = [
+  ReminderTone.FRIENDLY,
+  ReminderTone.FIRM,
+  ReminderTone.FINAL,
+];
 
 export const SendReminderDialog = ({
   open,

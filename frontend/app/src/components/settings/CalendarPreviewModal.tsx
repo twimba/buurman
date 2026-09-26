@@ -7,7 +7,12 @@ import {
   ModalWrapper,
   Select,
 } from '@buurman/ui';
-import { AlertTriangle, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  AlertTriangle,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { useIcsFeed } from '../../hooks/useIcsFeed';
 import { useAnnounce } from '../../hooks/useAnnounce';
 import { MonthCalendar } from './MonthCalendar';

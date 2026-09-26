@@ -66,7 +66,9 @@ export const ReminderPreviewModal = ({
             <p className="text-xs uppercase tracking-wide text-text-muted mb-1">
               {t('tenantReminders.preview.subject')}
             </p>
-            <p className="text-sm font-medium text-text-primary">{data.subject}</p>
+            <p className="text-sm font-medium text-text-primary">
+              {data.subject}
+            </p>
           </div>
           <iframe
             title={t('tenantReminders.preview.title')}

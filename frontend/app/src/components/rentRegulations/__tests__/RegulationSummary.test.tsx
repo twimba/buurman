@@ -28,21 +28,29 @@ describe('RegulationSummary late-fee regime', () => {
     );
     expect(screen.getByText('Late fees')).toBeInTheDocument();
     expect(screen.getByText('Late fees capped')).toBeInTheDocument();
-    expect(screen.getByText('Maximum 20% of the amount due')).toBeInTheDocument();
+    expect(
+      screen.getByText('Maximum 20% of the amount due')
+    ).toBeInTheDocument();
     expect(screen.getByText('Art. 1041 CC. Advisory.')).toBeInTheDocument();
-    expect(screen.getByText('Formal notice period: 8 days')).toBeInTheDocument();
+    expect(
+      screen.getByText('Formal notice period: 8 days')
+    ).toBeInTheDocument();
   });
 
   it('shows a forbidden regime without a percentage', () => {
     renderWithProviders(
-      <RegulationSummary country={{ ...base, countryCode: 'FR', lateFeePolicy: 'FORBIDDEN' }} />
+      <RegulationSummary
+        country={{ ...base, countryCode: 'FR', lateFeePolicy: 'FORBIDDEN' }}
+      />
     );
     expect(screen.getByText('Late fees not permitted')).toBeInTheDocument();
     expect(screen.queryByText(/of the amount due/)).not.toBeInTheDocument();
   });
 
   it('hides the block when the regime is unknown', () => {
-    renderWithProviders(<RegulationSummary country={{ ...base, lateFeePolicy: 'UNKNOWN' }} />);
+    renderWithProviders(
+      <RegulationSummary country={{ ...base, lateFeePolicy: 'UNKNOWN' }} />
+    );
     expect(screen.queryByText('Late fees')).not.toBeInTheDocument();
   });
 });

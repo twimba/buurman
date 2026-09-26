@@ -76,7 +76,9 @@ export function parseIcsFeed(ics: string): CalendarEvent[] {
         const rawEnd = toLocalDay(event.endDate);
         // RFC 5545: DTEND is exclusive for date-only values, so step back a day
         // to get the last day the event actually covers.
-        const inclusiveEnd = event.endDate.isDate ? addDays(rawEnd, -1) : rawEnd;
+        const inclusiveEnd = event.endDate.isDate
+          ? addDays(rawEnd, -1)
+          : rawEnd;
         if (inclusiveEnd.getTime() > start.getTime()) {
           end = inclusiveEnd;
         }
@@ -95,7 +97,8 @@ export function parseIcsFeed(ics: string): CalendarEvent[] {
   });
 
   return events.sort(
-    (a, b) => a.start.getTime() - b.start.getTime() || a.title.localeCompare(b.title)
+    (a, b) =>
+      a.start.getTime() - b.start.getTime() || a.title.localeCompare(b.title)
   );
 }
 

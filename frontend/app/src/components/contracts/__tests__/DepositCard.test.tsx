@@ -9,7 +9,11 @@ import { downloadBlob } from '@/utils/downloadBlob';
 import type { ContractResponse, DepositResponse } from '@/types/contract';
 
 vi.mock('@/hooks/useContractHooks', () => {
-  const mutation = () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false });
+  const mutation = () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isPending: false,
+  });
   return {
     useContractDeposit: vi.fn(),
     useUpsertDeposit: mutation,
@@ -23,7 +27,9 @@ vi.mock('@/context/TeamContext', () => ({ useTeam: vi.fn() }));
 vi.mock('@/hooks/useFormatDate', () => ({
   useFormatDate: () => ({ formatDate: (d: string) => `fmt:${d}` }),
 }));
-vi.mock('@/generated/api/letters/letters', () => ({ getDepositStatement: vi.fn() }));
+vi.mock('@/generated/api/letters/letters', () => ({
+  getDepositStatement: vi.fn(),
+}));
 vi.mock('@/utils/downloadBlob', () => ({ downloadBlob: vi.fn() }));
 
 const contract = {
@@ -60,20 +66,36 @@ const mockUseDeposit = vi.mocked(useContractDeposit);
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockUseTeam.mockReturnValue({ canEditData: true } as ReturnType<typeof useTeam>);
+  mockUseTeam.mockReturnValue({ canEditData: true } as ReturnType<
+    typeof useTeam
+  >);
 });
 
 describe('DepositCard', () => {
   it('offers to record a deposit when none exists yet', () => {
-    mockUseDeposit.mockReturnValue({ data: undefined, isLoading: false } as never);
-    renderWithProviders(<DepositCard contract={contract} contractId="ctr_01TEST" />);
-    expect(screen.getByRole('button', { name: 'Record deposit' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Statement/ })).not.toBeInTheDocument();
+    mockUseDeposit.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+    } as never);
+    renderWithProviders(
+      <DepositCard contract={contract} contractId="ctr_01TEST" />
+    );
+    expect(
+      screen.getByRole('button', { name: 'Record deposit' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /Statement/ })
+    ).not.toBeInTheDocument();
   });
 
   it('shows the held deposit, its deductions and the refundable amount', () => {
-    mockUseDeposit.mockReturnValue({ data: deposit, isLoading: false } as never);
-    renderWithProviders(<DepositCard contract={contract} contractId="ctr_01TEST" />);
+    mockUseDeposit.mockReturnValue({
+      data: deposit,
+      isLoading: false,
+    } as never);
+    renderWithProviders(
+      <DepositCard contract={contract} contractId="ctr_01TEST" />
+    );
     expect(screen.getByText('Held')).toBeInTheDocument();
     expect(screen.getByText('Wall repair')).toBeInTheDocument();
     expect(screen.getByText('€1,150.00')).toBeInTheDocument();
@@ -81,23 +103,42 @@ describe('DepositCard', () => {
 
   it('downloads the statement in the contract document language', async () => {
     const user = userEvent.setup();
-    mockUseDeposit.mockReturnValue({ data: deposit, isLoading: false } as never);
+    mockUseDeposit.mockReturnValue({
+      data: deposit,
+      isLoading: false,
+    } as never);
     const blob = new Blob(['%PDF'], { type: 'application/pdf' });
     vi.mocked(getDepositStatement).mockResolvedValue(blob);
 
-    renderWithProviders(<DepositCard contract={contract} contractId="ctr_01TEST" />);
+    renderWithProviders(
+      <DepositCard contract={contract} contractId="ctr_01TEST" />
+    );
     await user.click(screen.getByRole('button', { name: 'Statement (PDF)' }));
 
     await waitFor(() => expect(downloadBlob).toHaveBeenCalled());
-    expect(getDepositStatement).toHaveBeenCalledWith('ctr_01TEST', { lang: 'nl' });
-    expect(downloadBlob).toHaveBeenCalledWith(blob, 'deposit-statement-ctr_01TEST-nl.pdf');
+    expect(getDepositStatement).toHaveBeenCalledWith('ctr_01TEST', {
+      lang: 'nl',
+    });
+    expect(downloadBlob).toHaveBeenCalledWith(
+      blob,
+      'deposit-statement-ctr_01TEST-nl.pdf'
+    );
   });
 
   it('hides editing actions for read-only members', () => {
-    mockUseTeam.mockReturnValue({ canEditData: false } as ReturnType<typeof useTeam>);
-    mockUseDeposit.mockReturnValue({ data: deposit, isLoading: false } as never);
-    renderWithProviders(<DepositCard contract={contract} contractId="ctr_01TEST" />);
+    mockUseTeam.mockReturnValue({ canEditData: false } as ReturnType<
+      typeof useTeam
+    >);
+    mockUseDeposit.mockReturnValue({
+      data: deposit,
+      isLoading: false,
+    } as never);
+    renderWithProviders(
+      <DepositCard contract={contract} contractId="ctr_01TEST" />
+    );
     expect(screen.queryByText('Add deduction')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Statement (PDF)' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Statement (PDF)' })
+    ).toBeInTheDocument();
   });
 });

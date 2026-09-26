@@ -11,7 +11,9 @@ import type { RichTextEditorProps } from './RichTextEditorImpl';
  * dynamic import while keeping the same public component API.
  */
 const RichTextEditorImpl = lazy(() =>
-  import('./RichTextEditorImpl').then((m) => ({ default: m.RichTextEditorImpl }))
+  import('./RichTextEditorImpl').then((m) => ({
+    default: m.RichTextEditorImpl,
+  }))
 );
 
 /**

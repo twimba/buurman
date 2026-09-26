@@ -1,6 +1,10 @@
 import { Clock, Globe, MapPin, Percent } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { RichTextDisplay, StatusBadge, type BadgeColorVariant } from '@buurman/ui';
+import {
+  RichTextDisplay,
+  StatusBadge,
+  type BadgeColorVariant,
+} from '@buurman/ui';
 import type { RentRegulationCountryDetailResponse } from '@/types/rentRegulation';
 import { RegulationDisclaimer } from './StalenessWarning';
 
@@ -77,24 +81,31 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge
-                label={t(`rentRegulations.lateFees.policy.${country.lateFeePolicy}`)}
+                label={t(
+                  `rentRegulations.lateFees.policy.${country.lateFeePolicy}`
+                )}
                 color={lateFeeColor[country.lateFeePolicy] ?? 'gray'}
                 shape="pill"
               />
-              {country.lateFeePolicy === 'CAPPED' && country.lateFeeMaxPercentage != null && (
-                <span className="text-sm text-text-primary">
-                  {t('rentRegulations.lateFees.maxPercentage', {
-                    percentage: country.lateFeeMaxPercentage,
-                  })}
-                </span>
-              )}
+              {country.lateFeePolicy === 'CAPPED' &&
+                country.lateFeeMaxPercentage != null && (
+                  <span className="text-sm text-text-primary">
+                    {t('rentRegulations.lateFees.maxPercentage', {
+                      percentage: country.lateFeeMaxPercentage,
+                    })}
+                  </span>
+                )}
             </div>
             {country.lateFeeNotes && (
-              <p className="text-sm text-text-secondary mt-2">{country.lateFeeNotes}</p>
+              <p className="text-sm text-text-secondary mt-2">
+                {country.lateFeeNotes}
+              </p>
             )}
             {country.formalNoticeDays != null && (
               <p className="text-sm text-text-primary mt-2">
-                {t('rentRegulations.lateFees.noticeDays', { count: country.formalNoticeDays })}
+                {t('rentRegulations.lateFees.noticeDays', {
+                  count: country.formalNoticeDays,
+                })}
               </p>
             )}
           </div>
