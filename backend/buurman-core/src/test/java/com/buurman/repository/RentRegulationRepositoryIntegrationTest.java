@@ -15,7 +15,6 @@ import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationTenancyRule;
 import com.buurman.domain.TenancyRuleTopic;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.SidGenerator;
 
 @DisplayName("RentRegulationRepository Integration")
@@ -34,7 +33,7 @@ class RentRegulationRepositoryIntegrationTest extends AbstractRepositoryIntegrat
     RentRegulationCountry country =
         repository.saveCountry(
             RentRegulationCountry.builder()
-                .identifier(Optional.of(SidGenerator.generate(EntityPrefix.RRC)))
+                .identifier(Optional.of(SidGenerator.newRentRegulationCountryId()))
                 .countryCode("XT")
                 .countryName("Testland")
                 .hasRegionalRegulations(true)
@@ -43,7 +42,7 @@ class RentRegulationRepositoryIntegrationTest extends AbstractRepositoryIntegrat
     RentRegulationRegion region =
         repository.saveRegion(
             RentRegulationRegion.builder()
-                .identifier(Optional.of(SidGenerator.generate(EntityPrefix.RRG)))
+                .identifier(Optional.of(SidGenerator.newRentRegulationRegionId()))
                 .countryId(country.getId())
                 .regionCode("XT-1")
                 .regionName("Region One")
@@ -51,7 +50,7 @@ class RentRegulationRepositoryIntegrationTest extends AbstractRepositoryIntegrat
 
     repository.saveTenancyRule(
         RentRegulationTenancyRule.builder()
-            .identifier(Optional.of(SidGenerator.generate(EntityPrefix.RRT)))
+            .identifier(Optional.of(SidGenerator.newRentRegulationTenancyRuleId()))
             .countryId(country.getId())
             .regionId(Optional.of(region.getId()))
             .topic(TenancyRuleTopic.TENANCY_DURATION)

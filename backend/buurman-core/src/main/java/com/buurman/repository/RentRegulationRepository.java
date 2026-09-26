@@ -474,6 +474,8 @@ public class RentRegulationRepository {
         .execute();
 
     rule.setId(id);
+    rule.setCreatedAt(now.toInstant());
+    rule.setUpdatedAt(now.toInstant());
     return rule;
   }
 

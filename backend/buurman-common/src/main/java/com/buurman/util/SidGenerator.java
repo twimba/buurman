@@ -45,6 +45,7 @@ import com.buurman.domain.identifier.RentComponentIdentifier;
 import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
+import com.buurman.domain.identifier.RentRegulationTenancyRuleIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
@@ -63,11 +64,6 @@ public class SidGenerator {
 
   private static String generateRaw(EntityPrefix prefix) {
     return prefix.getCode() + ulid.nextULID();
-  }
-
-  /** Generic Sid mint for entity families with no dedicated typed identifier subclass. */
-  public static Sid generate(EntityPrefix prefix) {
-    return Sid.of(generateRaw(prefix));
   }
 
   public static Sid newToken() {
@@ -244,6 +240,10 @@ public class SidGenerator {
 
   public static RentRegulationRuleIdentifier newRentRegulationRuleId() {
     return RentRegulationRuleIdentifier.of(generateRaw(EntityPrefix.RRL));
+  }
+
+  public static RentRegulationTenancyRuleIdentifier newRentRegulationTenancyRuleId() {
+    return RentRegulationTenancyRuleIdentifier.of(generateRaw(EntityPrefix.RRT));
   }
 
   public static CountryRequestIdentifier newCountryRequestId() {
