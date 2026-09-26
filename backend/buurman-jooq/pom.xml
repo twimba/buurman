@@ -140,7 +140,7 @@
                                             <forcedType>
                                                 <userType>java.math.BigDecimal</userType>
                                                 <converter>com.buurman.config.jooq.MoneyMinorUnitConverter</converter>
-                                                <includeExpression>.*\.(RENT_AMOUNT|DEPOSIT_AMOUNT|SECURITY_DEPOSIT|AMOUNT|TOTAL_AMOUNT|PRINCIPAL_AMOUNT|INTEREST_AMOUNT|ESCROW_AMOUNT|EXTRA_PAYMENT|ANNUAL_AMOUNT|ANNUAL_PREMIUM|COVERAGE_AMOUNT|ORIGINAL_AMOUNT|CURRENT_BALANCE|MONTHLY_PAYMENT|PURCHASE_PRICE|CLOSING_COSTS|RENOVATION_COSTS|LAND_VALUE)</includeExpression>
+                                                <includeExpression>.*\.(RENT_AMOUNT|DEPOSIT_AMOUNT|SECURITY_DEPOSIT|AMOUNT|TOTAL_AMOUNT|PRINCIPAL_AMOUNT|INTEREST_AMOUNT|ESCROW_AMOUNT|EXTRA_PAYMENT|ANNUAL_AMOUNT|ANNUAL_PREMIUM|COVERAGE_AMOUNT|ORIGINAL_AMOUNT|CURRENT_BALANCE|MONTHLY_PAYMENT|PURCHASE_PRICE|CLOSING_COSTS|RENOVATION_COSTS|LAND_VALUE|WOZ_VALUE)</includeExpression>
                                                 <includeTypes>BIGINT</includeTypes>
                                                 <ignoreUnused>true</ignoreUnused>
                                             </forcedType>
