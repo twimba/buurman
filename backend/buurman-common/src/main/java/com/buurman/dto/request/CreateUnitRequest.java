@@ -21,6 +21,8 @@ public record CreateUnitRequest(
     Optional<UnitStatus> status,
     Optional<@Positive(message = "Area value must be positive") BigDecimal> areaValue,
     Optional<String> areaUnit,
+    Optional<@Positive(message = "WOZ value must be positive") BigDecimal> wozValue,
+    Optional<String> wozValueCurrency,
     Optional<
             @DecimalMin(value = "0", message = "Allocation share must be at least 0") @DecimalMax(value = "100", message = "Allocation share must be at most 100") BigDecimal>
         allocationShare,

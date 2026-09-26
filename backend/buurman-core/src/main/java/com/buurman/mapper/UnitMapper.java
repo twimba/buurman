@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 
 import com.buurman.domain.Sid;
 import com.buurman.domain.Unit;
+import com.buurman.dto.request.CreateUnitRequest;
 import com.buurman.dto.response.UnitResponse;
 import com.buurman.dto.response.UnitSummaryResponse;
 
@@ -21,4 +22,25 @@ public interface UnitMapper {
   UnitResponse toResponse(Unit unit, Sid propertyIdentifier);
 
   UnitSummaryResponse toSummary(Unit unit);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "identifier", ignore = true)
+  @Mapping(target = "teamId", ignore = true)
+  @Mapping(target = "propertyId", ignore = true)
+  @Mapping(target = "implicit", ignore = true)
+  @Mapping(target = "sortOrder", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "createdBy", ignore = true)
+  @Mapping(target = "updatedBy", ignore = true)
+  @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(
+      target = "wozValue",
+      expression =
+          "java(com.buurman.util.MoneyAmount.ofNullable(request.wozValue().orElse(null),"
+              + " request.wozValueCurrency().orElse(null)))")
+  @Mapping(
+      target = "status",
+      expression = "java(request.status().orElse(com.buurman.domain.UnitStatus.VACANT))")
+  Unit toEntity(CreateUnitRequest request);
 }
