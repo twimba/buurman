@@ -114,6 +114,8 @@ tags:
     description: Data export and takeout management
   - name: Broadcasts
     description: Broadcast messages for users
+  - name: Units
+    description: Units within a property (dwellings, parking, storage, commercial space)
 paths:
   /users/preferences/notifications:
     $ref: 'paths/users.yaml#/users-preferences-notifications'
@@ -217,6 +219,16 @@ paths:
     $ref: 'paths/registration.yaml#/registration-invitations-validate'
   /properties:
     $ref: 'paths/properties.yaml#/collection'
+  /properties/{propertyIdentifier}/units:
+    $ref: 'paths/units.yaml#/units'
+  /properties/{propertyIdentifier}/units/bulk:
+    $ref: 'paths/units.yaml#/units-bulk'
+  /units/{identifier}:
+    $ref: 'paths/units.yaml#/units-item'
+  /units/{identifier}/residential-details:
+    $ref: 'paths/units.yaml#/units-residential-details'
+  /units/{identifier}/amenities:
+    $ref: 'paths/units.yaml#/units-amenities'
   /properties/{propertyIdentifier}/outdoor-areas:
     $ref: 'paths/properties.yaml#/outdoor-areas'
   /properties/{propertyIdentifier}/occupancy-periods:
@@ -734,6 +746,9 @@ components:
     PropertyIdentifier:
       type: string
       description: Property identifier
+    UnitIdentifier:
+      type: string
+      description: Unit identifier
     PropertyInsuranceIdentifier:
       type: string
       description: Property insurance identifier
@@ -1367,10 +1382,17 @@ components:
         memberCount:
           type: integer
           format: int64
+        billableUnitCount:
+          type: integer
+          format: int32
+          description: >-
+            Count of all non-deleted units across the team, implicit units
+            included.
         createdAt:
           type: string
           format: date-time
       required:
+        - billableUnitCount
         - createdAt
         - identifier
         - memberCount
@@ -9901,6 +9923,347 @@ components:
       required:
         - spreadsheetId
         - url
+    UnitType:
+      type: string
+      description: Kind of separately-lettable object within a property
+      enum: [APARTMENT, PARKING, STORAGE, COMMERCIAL]
+    UnitStatus:
+      type: string
+      description: Occupancy state of a single unit
+      enum:
+        - VACANT
+        - OCCUPIED
+        - SELF_OCCUPIED
+        - MAINTENANCE
+        - UNAVAILABLE
+        - UNDER_RENOVATION
+        - FALLOW
+        - LISTED
+    AllocationBasis:
+      type: string
+      description: How a building-level expense is divided across a property's units
+      enum: [AREA, EQUAL, CUSTOM, MANUAL]
+    UnitResponse:
+      type: object
+      description: A separately-lettable dwelling within a property
+      properties:
+        identifier:
+          type: string
+          description: Unit identifier
+        propertyIdentifier:
+          type: string
+          description: Identifier of the property this unit belongs to
+        unitNumber:
+          type: string
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        implicit:
+          type: boolean
+          description: True while this unit is the auto-created stand-in for a single-unit property
+        sortOrder:
+          type: integer
+          format: int32
+        areaValue:
+          type: number
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+        wozValueCurrency:
+          type: string
+        wozSharePct:
+          type: number
+        allocationShare:
+          type: number
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - identifier
+        - implicit
+        - propertyIdentifier
+        - sortOrder
+        - status
+        - unitNumber
+        - unitType
+    UnitSummaryResponse:
+      type: object
+      description: A short summary of a unit, for embedding in other responses
+      properties:
+        identifier:
+          type: string
+        unitNumber:
+          type: string
+        name:
+          type: string
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+      required:
+        - identifier
+        - status
+        - unitNumber
+        - unitType
+    UnitGridRowResponse:
+      type: object
+      description: A single row in the units grid view, joining unit identity with the current occupancy snapshot
+      properties:
+        identifier:
+          type: string
+        unitNumber:
+          type: string
+        name:
+          type: string
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        tenantName:
+          type: string
+        monthlyRent:
+          type: number
+        monthlyRentCurrency:
+          type: string
+        vacancyDays:
+          type: integer
+          format: int32
+      required:
+        - identifier
+        - status
+        - unitNumber
+        - unitType
+    CreateUnitRequest:
+      type: object
+      properties:
+        unitNumber:
+          type: string
+          minLength: 1
+          maxLength: 50
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        areaValue:
+          type: number
+          exclusiveMinimum: 0
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+          exclusiveMinimum: 0
+        wozValueCurrency:
+          type: string
+        allocationShare:
+          type: number
+          minimum: 0
+          maximum: 100
+        wozSharePct:
+          type: number
+          minimum: 0
+          maximum: 100
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+      required:
+        - unitNumber
+        - unitType
+    UpdateUnitRequest:
+      type: object
+      properties:
+        unitNumber:
+          type: string
+          minLength: 1
+          maxLength: 50
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        areaValue:
+          type: number
+          exclusiveMinimum: 0
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+          exclusiveMinimum: 0
+        wozValueCurrency:
+          type: string
+        allocationShare:
+          type: number
+          minimum: 0
+          maximum: 100
+        wozSharePct:
+          type: number
+          minimum: 0
+          maximum: 100
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+      required:
+        - unitNumber
+        - unitType
+    BulkCreateUnitsRequest:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 200
+        numberingPattern:
+          type: string
+          description: How generated unit numbers are formatted
+          enum: [NUMERIC, ALPHABETIC, FLOOR_DOT_INDEX]
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        startFloor:
+          type: integer
+          format: int32
+      required:
+        - count
+        - numberingPattern
+        - unitType
+    UnitResidentialDetailsResponse:
+      type: object
+      description: Bedroom/bathroom/furnishing details for an APARTMENT unit
+      properties:
+        bedrooms:
+          type: integer
+          format: int32
+        bathrooms:
+          type: integer
+          format: int32
+        furnished:
+          type: boolean
+        petPolicy:
+          type: string
+      required:
+        - furnished
+    UpdateUnitResidentialDetailsRequest:
+      type: object
+      properties:
+        bedrooms:
+          type: integer
+          format: int32
+          minimum: 0
+        bathrooms:
+          type: integer
+          format: int32
+          minimum: 0
+        furnished:
+          type: boolean
+        petPolicy:
+          type: string
+      required:
+        - furnished
+    UpdateUnitAmenitiesRequest:
+      type: object
+      description: Replaces the full set of amenities linked to a unit. An empty list clears all amenities.
+      properties:
+        amenityIdentifiers:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/AmenityIdentifier'
+      required:
+        - amenityIdentifiers
   securitySchemes:
     bearer-jwt:
       type: http

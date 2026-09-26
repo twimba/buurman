@@ -448,6 +448,11 @@
                                 <schemaMapping>RelationshipType=com.buurman.domain.RelationshipType</schemaMapping>
                                 <schemaMapping>ContactTag=com.buurman.domain.ContactTag</schemaMapping>
                                 <schemaMapping>DataRetentionStatus=com.buurman.domain.DataRetentionStatus</schemaMapping>
+                                <!-- BUUR-106: Unit schema mappings -->
+                                <schemaMapping>UnitIdentifier=com.buurman.domain.identifier.UnitIdentifier</schemaMapping>
+                                <schemaMapping>UnitType=com.buurman.domain.UnitType</schemaMapping>
+                                <schemaMapping>UnitStatus=com.buurman.domain.UnitStatus</schemaMapping>
+                                <schemaMapping>AllocationBasis=com.buurman.domain.AllocationBasis</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -690,6 +695,16 @@
                                 <importMapping>TakeoutResponse=com.buurman.dto.response.TakeoutResponse</importMapping>
                                 <importMapping>GoogleSheetExportRequest=com.buurman.dto.request.GoogleSheetExportRequest</importMapping>
                                 <importMapping>GoogleSheetExportResponse=com.buurman.dto.response.GoogleSheetExportResponse</importMapping>
+                                <!-- BUUR-106: Unit import mappings -->
+                                <importMapping>UnitResponse=com.buurman.dto.response.UnitResponse</importMapping>
+                                <importMapping>UnitSummaryResponse=com.buurman.dto.response.UnitSummaryResponse</importMapping>
+                                <importMapping>UnitGridRowResponse=com.buurman.dto.response.UnitGridRowResponse</importMapping>
+                                <importMapping>CreateUnitRequest=com.buurman.dto.request.CreateUnitRequest</importMapping>
+                                <importMapping>UpdateUnitRequest=com.buurman.dto.request.UpdateUnitRequest</importMapping>
+                                <importMapping>BulkCreateUnitsRequest=com.buurman.dto.request.BulkCreateUnitsRequest</importMapping>
+                                <importMapping>UnitResidentialDetailsResponse=com.buurman.dto.response.UnitResidentialDetailsResponse</importMapping>
+                                <importMapping>UpdateUnitResidentialDetailsRequest=com.buurman.dto.request.UpdateUnitResidentialDetailsRequest</importMapping>
+                                <importMapping>UpdateUnitAmenitiesRequest=com.buurman.dto.request.UpdateUnitAmenitiesRequest</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>
