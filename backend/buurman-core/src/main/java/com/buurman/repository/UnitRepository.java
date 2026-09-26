@@ -7,6 +7,7 @@ import static java.time.ZoneOffset.UTC;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,6 +50,31 @@ public class UnitRepository {
   public Unit getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Unit not found"));
+  }
+
+  // Same no-PROPERTIES-join rationale as findByIdentifierAndTeamId above: a single-row lookup by
+  // internal id is used to resolve an already-validated foreign key (e.g. contracts.unit_id), not
+  // to decide client-facing visibility.
+  public Optional<Unit> findByIdAndTeamId(UUID id, UUID teamId) {
+    return dsl.selectFrom(UNITS)
+        .where(UNITS.ID.eq(id).and(UNITS.TEAM_ID.eq(teamId)).and(UNITS.DELETED_AT.isNull()))
+        .fetchOptional()
+        .map(mapper::toDomain);
+  }
+
+  public Unit getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId).orElseThrow(() -> new NotFoundException("Unit not found"));
+  }
+
+  public List<Unit> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {
+    if (ids == null || ids.isEmpty()) {
+      return List.of();
+    }
+    return List.copyOf(
+        dsl.selectFrom(UNITS)
+            .where(UNITS.ID.in(ids).and(UNITS.TEAM_ID.eq(teamId)).and(UNITS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Unit> findAllByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {

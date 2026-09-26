@@ -56,6 +56,7 @@ public class Contract {
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID propertyId;
+  private UUID unitId;
   private ContractType contractType;
   private LocalDate startDate;
   @Builder.Default private Optional<LocalDate> endDate = Optional.empty();

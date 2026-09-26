@@ -208,6 +208,7 @@ public class ContractRepository {
           .set(CONTRACTS.IDENTIFIER, contract.getIdentifier().orElseThrow())
           .set(CONTRACTS.TEAM_ID, contract.getTeamId())
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
+          .set(CONTRACTS.UNIT_ID, contract.getUnitId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
           .set(CONTRACTS.START_DATE, contract.getStartDate())
           .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
@@ -271,6 +272,7 @@ public class ContractRepository {
       var query =
           dsl.update(CONTRACTS)
               .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
+              .set(CONTRACTS.UNIT_ID, contract.getUnitId())
               .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
               .set(CONTRACTS.START_DATE, contract.getStartDate())
               .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))

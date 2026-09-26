@@ -19,6 +19,7 @@ public interface ContractMapper {
   @Mapping(target = "identifier", ignore = true)
   @Mapping(target = "teamId", ignore = true)
   @Mapping(target = "propertyId", ignore = true)
+  @Mapping(target = "unitId", ignore = true)
   @Mapping(target = "status", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
@@ -49,6 +50,8 @@ public interface ContractMapper {
   Contract toEntity(CreateContractRequest request);
 
   @Mapping(target = "property", ignore = true)
+  @Mapping(target = "unitIdentifier", ignore = true)
+  @Mapping(target = "unitNumber", ignore = true)
   @Mapping(target = "parties", ignore = true)
   @Mapping(target = "primaryContact", ignore = true)
   @Mapping(target = "countryMetadata", ignore = true)
@@ -83,6 +86,7 @@ public interface ContractMapper {
   @Mapping(target = "identifier", ignore = true)
   @Mapping(target = "teamId", ignore = true)
   @Mapping(target = "propertyId", ignore = true)
+  @Mapping(target = "unitId", ignore = true)
   @Mapping(target = "status", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)

@@ -41,6 +41,8 @@ import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
+import com.buurman.domain.Sid;
+import com.buurman.domain.Unit;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
@@ -74,6 +76,7 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.RentRegulationRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -94,6 +97,7 @@ public class ContractService {
   private final ContractRentComponentRepository rentComponentRepository;
   private final ContractRentComponentMapper rentComponentMapper;
   private final PropertyRepository propertyRepository;
+  private final UnitRepository unitRepository;
   private final ContactRepository contactRepository;
   private final DocumentRepository documentRepository;
   private final ContractMapper contractMapper;
@@ -122,6 +126,8 @@ public class ContractService {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
 
+    UUID unitId = resolveUnitId(property, request.unitIdentifier(), principal);
+
     // Check no active contract exists for property
     contractRepository
         .findActiveContractByPropertyId(property.getId(), teamId)
@@ -144,6 +150,7 @@ public class ContractService {
 
     Contract contract = contractMapper.toEntity(request);
     contract.setPropertyId(property.getId());
+    contract.setUnitId(unitId);
     contract.setIdentifier(Optional.of(newContractId()));
     contract.setTeamId(teamId);
     contract.setStatus(DRAFT);
@@ -262,6 +269,37 @@ public class ContractService {
             .build());
 
     return toResponse(savedContract, property, teamId);
+  }
+
+  /**
+   * Resolves which unit of {@code property} a new contract is for. An explicit {@code
+   * unitIdentifier} must belong to this property (never a silent cross-property contract) and to
+   * this team ({@link UnitRepository#getByIdentifierAndTeamId} throws {@link
+   * com.buurman.exception.NotFoundException} for a wrong-team lookup, which maps to 404 without
+   * leaking existence). Omitting it only works when the property has exactly one unit.
+   */
+  private UUID resolveUnitId(
+      Property property, @Nullable String unitIdentifier, UserPrincipal principal) {
+    if (unitIdentifier != null) {
+      Unit unit =
+          unitRepository.getByIdentifierAndTeamId(
+              Sid.of(unitIdentifier), principal.requireTeamId());
+      if (!unit.getPropertyId().equals(property.getId())) {
+        throw new BadRequestException("The chosen unit does not belong to this property.");
+      }
+      return unit.getId();
+    }
+    List<Unit> units =
+        unitRepository.findAllByPropertyIdAndTeamId(property.getId(), principal.requireTeamId());
+    if (units.size() != 1) {
+      throw new BadRequestException(
+          "Property "
+              + property.getStreet()
+              + " has "
+              + units.size()
+              + " units. Specify which unit the contract is for.");
+    }
+    return units.get(0).getId();
   }
 
   public List<ContractResponse> getAllContracts(UserPrincipal principal) {
@@ -881,6 +919,7 @@ public class ContractService {
             .identifier(Optional.of(newContractId()))
             .teamId(teamId)
             .propertyId(sourceContract.getPropertyId())
+            .unitId(sourceContract.getUnitId())
             .contractType(sourceContract.getContractType())
             .startDate(sourceContract.getStartDate())
             .endDate(sourceContract.getEndDate())
@@ -1036,6 +1075,10 @@ public class ContractService {
 
     PropertySummary propertySummary = propertyMapper.toSummary(property);
 
+    Unit unit = unitRepository.getByIdAndTeamId(contract.getUnitId(), teamId);
+    String unitIdentifier = unit.getIdentifier().orElseThrow().value();
+    String unitNumber = unit.getUnitNumber();
+
     // Compute effective end date and extension statistics
     List<ContractExtension> extensions =
         contractExtensionService.getExtensionsForContract(contract.getId(), teamId);
@@ -1052,6 +1095,8 @@ public class ContractService {
     return new ContractResponse(
         contract.getIdentifier().orElseThrow(),
         Optional.of(propertySummary),
+        unitIdentifier,
+        unitNumber,
         partyResponses,
         primaryContact,
         contract.getContractType(),
@@ -1109,6 +1154,12 @@ public class ContractService {
         propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
             .collect(Collectors.toMap(Property::getId, p -> p));
 
+    // Batch load units
+    List<UUID> unitIds = contracts.stream().map(Contract::getUnitId).distinct().toList();
+    Map<UUID, Unit> unitMap =
+        unitRepository.findByIdsAndTeamId(unitIds, teamId).stream()
+            .collect(Collectors.toMap(Unit::getId, u -> u));
+
     // Batch load parties
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
     Map<UUID, List<ContractParty>> partiesByContract =
@@ -1141,6 +1192,11 @@ public class ContractService {
               Property property = propertyMap.get(contract.getPropertyId());
               Optional<PropertySummary> propertySummary =
                   Optional.ofNullable(property).map(propertyMapper::toSummary);
+
+              Optional<Unit> unit = Optional.ofNullable(unitMap.get(contract.getUnitId()));
+              String unitIdentifier =
+                  unit.map(u -> u.getIdentifier().orElseThrow().value()).orElse("");
+              String unitNumber = unit.map(Unit::getUnitNumber).orElse("");
 
               List<ContractParty> parties =
                   partiesByContract.getOrDefault(contract.getId(), List.of());
@@ -1189,6 +1245,8 @@ public class ContractService {
               return new ContractResponse(
                   contract.getIdentifier().orElseThrow(),
                   propertySummary,
+                  unitIdentifier,
+                  unitNumber,
                   partyResponses,
                   primaryContact,
                   contract.getContractType(),
