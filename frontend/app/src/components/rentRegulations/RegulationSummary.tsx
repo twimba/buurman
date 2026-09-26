@@ -16,6 +16,23 @@ function countryCodeToFlag(code: string): string {
     .join('');
 }
 
+/**
+ * Formats a `format: date` (date-only, no time component) value such as
+ * `effectiveFrom` for display. `new Date(isoDateString)` parses a date-only
+ * ISO string as UTC midnight, so calling `toLocaleDateString` on it rolls the
+ * displayed date back a day in any negative-UTC-offset timezone. Building the
+ * `Date` from explicit local-time components instead sidesteps that: it never
+ * touches UTC, so it can't shift.
+ */
+function formatCalendarDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 interface RegulationSummaryProps {
   country: RentRegulationCountryDetailResponse;
 }
@@ -160,13 +177,7 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
                           <span className="text-text-muted">
                             {' — '}
                             {t('rentRegulations.tenancyRules.effectiveFrom', {
-                              date: new Date(
-                                rule.effectiveFrom
-                              ).toLocaleDateString(undefined, {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                              }),
+                              date: formatCalendarDate(rule.effectiveFrom),
                             })}
                           </span>
                         )}

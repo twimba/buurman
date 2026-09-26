@@ -80,10 +80,16 @@ describe('RegulationSummary tenancy rules', () => {
     expect(screen.getByText('5 years')).toBeInTheDocument();
     expect(screen.getByText(/MRG § 29/)).toBeInTheDocument();
 
-    // Assert on the date the component actually renders (same Date +
-    // toLocaleDateString call as RegulationSummary), not a hardcoded format —
-    // that keeps this robust across locales/timezones.
-    const expectedDate = new Date('2026-01-01').toLocaleDateString(undefined, {
+    // Derive the expected date independently of how the component parses
+    // `effectiveFrom` — built from explicit local-time components (year,
+    // month, day), not from the ISO string. `effectiveFrom` is a date-only
+    // value with no time component: `new Date('2026-01-01')` parses as UTC
+    // midnight, which rolls back a day in any negative-UTC-offset timezone.
+    // If the component regresses to that parsing, this expectation (still
+    // "Jan 1, 2026" wherever the test runs) stops matching and this
+    // assertion fails — computing the expectation the same way the
+    // component does would hide exactly that bug.
+    const expectedDate = new Date(2026, 0, 1).toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
