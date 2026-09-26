@@ -104,6 +104,19 @@ it **must match a declared region of that country** — same rule as `CatalogRul
 unknown value fails the catalog parse:
 `NOTICE_PERIOD`, `TENANCY_DURATION`, `DEPOSIT`, `LEASE_FORM`, `REGISTRATION`, `FEES_AND_PENALTIES`, `OTHER`.
 
+Do not invent a new constant here to fit a fact that doesn't cleanly match one of the above — file
+it under `OTHER` (or flag it and leave it out) instead. Adding a genuinely new topic constant is a
+code change, not a dataset edit: it means updating FIVE places in lockstep —
+`com.buurman.domain.TenancyRuleTopic`, `openapi/src/app.yaml`'s `TenancyRuleTopic` schema (then
+`make bundle-openapi`), the `rentRegulations.tenancyRules.topic` key in all 13 locale files under
+`frontend/app/public/locales/*/contracts.json`, `TOPIC_ORDER` in
+`frontend/app/src/components/rentRegulations/RegulationSummary.tsx`, and this list. **Two of those
+fail silently**: a missing locale key renders the raw key path to the user, and a topic missing
+from `TOPIC_ORDER` is dropped from the UI with no error at all — so a new constant can pass every
+backend test and still silently lose data in production. See the Javadoc on
+`TenancyRuleTopic` for the full list. Do not add one mid-run of this skill; raise it with the team
+first.
+
 **Never put a rent-increase cap or index value in `tenancyRules`** — those belong in `rules[]` as a
 `CatalogRule`. `tenancyRules` is display-only reference material, not a computation input.
 

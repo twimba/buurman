@@ -489,7 +489,11 @@ public class RentRegulationRepository {
   }
 
   public List<RentRegulationTenancyRule> findAllTenancyRules() {
-    return List.copyOf(dsl.select().from(TENANCY_RULES).fetch(this::toTenancyRuleDomain));
+    return List.copyOf(
+        dsl.select()
+            .from(TENANCY_RULES)
+            .orderBy(T_COUNTRY_ID, T_TOPIC, T_LABEL, T_REGION_ID)
+            .fetch(this::toTenancyRuleDomain));
   }
 
   // ==================== Catalog reload (destructive) ====================

@@ -6,11 +6,16 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -88,7 +93,7 @@ public class RentRegulationCatalogService {
       UUID countryId = insertCountry(country, actor);
       countries++;
 
-      Map<String, UUID> regionIds = new java.util.HashMap<>();
+      Map<String, UUID> regionIds = new HashMap<>();
       for (CatalogRegion region : safe(country.regions())) {
         UUID regionId = insertRegion(region, countryId, actor);
         regionIds.put(region.regionCode(), regionId);
@@ -185,7 +190,7 @@ public class RentRegulationCatalogService {
     int[] ruAgg = new int[3]; // rules added/removed/changed
 
     List<String> codes =
-        java.util.stream.Stream.concat(target.keySet().stream(), current.keySet().stream())
+        Stream.concat(target.keySet().stream(), current.keySet().stream())
             .distinct()
             .sorted()
             .toList();
@@ -271,7 +276,7 @@ public class RentRegulationCatalogService {
   }
 
   private static Map<String, CatalogCountry> byCode(List<CatalogCountry> countries) {
-    Map<String, CatalogCountry> map = new java.util.LinkedHashMap<>();
+    Map<String, CatalogCountry> map = new LinkedHashMap<>();
     for (CatalogCountry c : safe(countries)) {
       map.put(c.countryCode(), c);
     }
@@ -305,15 +310,15 @@ public class RentRegulationCatalogService {
     addFieldDiff(
         fields, "formalNoticeDays", nv(cur.formalNoticeDays()), nv(tgt.formalNoticeDays()));
 
-    Map<String, CatalogTenancyRule> curTenancy = new java.util.LinkedHashMap<>();
+    Map<String, CatalogTenancyRule> curTenancy = new LinkedHashMap<>();
     for (CatalogTenancyRule t : safe(cur.tenancyRules())) {
-      curTenancy.put(t.topic().name() + "/" + t.label(), t);
+      curTenancy.put(tenancyRuleKey(t), t);
     }
-    Map<String, CatalogTenancyRule> tgtTenancy = new java.util.LinkedHashMap<>();
+    Map<String, CatalogTenancyRule> tgtTenancy = new LinkedHashMap<>();
     for (CatalogTenancyRule t : safe(tgt.tenancyRules())) {
-      tgtTenancy.put(t.topic().name() + "/" + t.label(), t);
+      tgtTenancy.put(tenancyRuleKey(t), t);
     }
-    java.util.Set<String> keys = new java.util.LinkedHashSet<>(curTenancy.keySet());
+    Set<String> keys = new LinkedHashSet<>(curTenancy.keySet());
     keys.addAll(tgtTenancy.keySet());
     for (String key : keys) {
       addFieldDiff(
@@ -326,21 +331,41 @@ public class RentRegulationCatalogService {
     return fields;
   }
 
+  /**
+   * Identity of a tenancy rule for diffing purposes: topic + label, scoped by region when the rule
+   * is region-specific. Two rules that share a topic and label but apply to different regions (e.g.
+   * a {@code REGISTRATION} / "Rent registry filing" rule for both {@code US-DC} and {@code US-NY})
+   * must never collide on the same key, or one silently disappears from the reload preview.
+   *
+   * <p>National rules (no region) keep the plain {@code TOPIC/label} form; region-scoped rules
+   * insert the region code between topic and label, e.g. {@code REGISTRATION/US-DC/Rent registry
+   * filing}, so the diff output reads sensibly either way.
+   */
+  private static String tenancyRuleKey(CatalogTenancyRule rule) {
+    return Optional.ofNullable(rule.regionCode())
+        .map(region -> rule.topic().name() + "/" + region + "/" + rule.label())
+        .orElseGet(() -> rule.topic().name() + "/" + rule.label());
+  }
+
   private String describeTenancyRule(CatalogTenancyRule rule) {
     StringBuilder sb = new StringBuilder(rule.value());
+    Optional.ofNullable(rule.regionCode())
+        .ifPresent(r -> sb.append(" (region ").append(r).append(")"));
     Optional.ofNullable(rule.effectiveFrom())
         .ifPresent(d -> sb.append(" (from ").append(d).append(")"));
     Optional.ofNullable(rule.legalBasis()).ifPresent(b -> sb.append(" [").append(b).append("]"));
+    Optional.ofNullable(rule.sourceUrl()).ifPresent(u -> sb.append(" <").append(u).append(">"));
+    Optional.ofNullable(rule.notes()).ifPresent(n -> sb.append(" — ").append(n));
     return sb.toString();
   }
 
   private int[] diffRegions(
       CatalogCountry cur, CatalogCountry tgt, List<RentRegulationDiffEntry> entries) {
-    Map<String, CatalogRegion> c = new java.util.LinkedHashMap<>();
+    Map<String, CatalogRegion> c = new LinkedHashMap<>();
     for (CatalogRegion r : safe(cur.regions())) {
       c.put(r.regionCode(), r);
     }
-    Map<String, CatalogRegion> t = new java.util.LinkedHashMap<>();
+    Map<String, CatalogRegion> t = new LinkedHashMap<>();
     for (CatalogRegion r : safe(tgt.regions())) {
       t.put(r.regionCode(), r);
     }
@@ -348,7 +373,7 @@ public class RentRegulationCatalogService {
     int removed = 0;
     int changed = 0;
     for (String key :
-        java.util.stream.Stream.concat(t.keySet().stream(), c.keySet().stream())
+        Stream.concat(t.keySet().stream(), c.keySet().stream())
             .distinct()
             .sorted()
             .toList()) {
@@ -375,11 +400,11 @@ public class RentRegulationCatalogService {
 
   private int[] diffRules(
       CatalogCountry cur, CatalogCountry tgt, List<RentRegulationDiffEntry> entries) {
-    Map<String, CatalogRule> c = new java.util.LinkedHashMap<>();
+    Map<String, CatalogRule> c = new LinkedHashMap<>();
     for (CatalogRule r : safe(cur.rules())) {
       c.put(ruleKey(r), r);
     }
-    Map<String, CatalogRule> t = new java.util.LinkedHashMap<>();
+    Map<String, CatalogRule> t = new LinkedHashMap<>();
     for (CatalogRule r : safe(tgt.rules())) {
       t.put(ruleKey(r), r);
     }
@@ -387,7 +412,7 @@ public class RentRegulationCatalogService {
     int removed = 0;
     int changed = 0;
     for (String key :
-        java.util.stream.Stream.concat(t.keySet().stream(), c.keySet().stream())
+        Stream.concat(t.keySet().stream(), c.keySet().stream())
             .distinct()
             .sorted()
             .toList()) {

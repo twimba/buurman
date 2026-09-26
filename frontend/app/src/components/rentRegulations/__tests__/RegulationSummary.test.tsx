@@ -79,6 +79,29 @@ describe('RegulationSummary tenancy rules', () => {
     expect(screen.getByText('Minimum fixed term')).toBeInTheDocument();
     expect(screen.getByText('5 years')).toBeInTheDocument();
     expect(screen.getByText(/MRG § 29/)).toBeInTheDocument();
+
+    // Assert on the date the component actually renders (same Date +
+    // toLocaleDateString call as RegulationSummary), not a hardcoded format —
+    // that keeps this robust across locales/timezones.
+    const expectedDate = new Date('2026-01-01').toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+    const expectedText = `From ${expectedDate}`;
+    expect(
+      screen.getByText((_content, element) => {
+        if (!element?.textContent?.includes(expectedText)) {
+          return false;
+        }
+        // Only match the innermost element containing the text — the date is
+        // rendered as a text node alongside an em dash, so the parent <li>
+        // and <ul> also "contain" it and would otherwise match too.
+        return Array.from(element.children).every(
+          (child) => !child.textContent?.includes(expectedText)
+        );
+      })
+    ).toBeInTheDocument();
   });
 
   it('hides the section when there are no tenancy rules', () => {

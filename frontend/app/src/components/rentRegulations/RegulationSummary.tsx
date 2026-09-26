@@ -160,7 +160,13 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
                           <span className="text-text-muted">
                             {' — '}
                             {t('rentRegulations.tenancyRules.effectiveFrom', {
-                              date: rule.effectiveFrom,
+                              date: new Date(
+                                rule.effectiveFrom
+                              ).toLocaleDateString(undefined, {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              }),
                             })}
                           </span>
                         )}
