@@ -23,9 +23,11 @@ import com.buurman.domain.MaxIncreaseType;
 import com.buurman.domain.RentFrequency;
 import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRule;
+import com.buurman.domain.TenancyRuleTopic;
 import com.buurman.domain.regulation.CatalogCountry;
 import com.buurman.domain.regulation.CatalogLateFee;
 import com.buurman.domain.regulation.CatalogRule;
+import com.buurman.domain.regulation.CatalogTenancyRule;
 import com.buurman.domain.regulation.RentRegulationCatalog;
 import com.buurman.dto.response.RentRegulationCatalogDiff;
 import com.buurman.dto.response.RentRegulationCountryDiff;
@@ -86,6 +88,7 @@ class RentRegulationCatalogDiffTest {
             List.of(
                 domainRule(NL_ID, 2026, "REGULATED", new BigDecimal("4.10"), "wage-growth"),
                 domainRule(NL_ID, 2026, "OLD_TIER", new BigDecimal("9.99"), "gone")));
+    when(repository.findAllTenancyRules()).thenReturn(List.of());
 
     RentRegulationCatalogDiff diff = service.diff();
 
@@ -138,6 +141,7 @@ class RentRegulationCatalogDiffTest {
     when(repository.findAllRegions()).thenReturn(List.of());
     when(repository.findAllRules())
         .thenReturn(List.of(domainRule(NL_ID, 2026, "REGULATED", new BigDecimal("4.10"), "same")));
+    when(repository.findAllTenancyRules()).thenReturn(List.of());
 
     RentRegulationCatalogDiff diff = service.diff();
 
@@ -166,6 +170,7 @@ class RentRegulationCatalogDiffTest {
     // DB column is DECIMAL(5,2) → value comes back as 2.00 (scale 2)
     when(repository.findAllRules())
         .thenReturn(List.of(domainRule(NL_ID, 2023, "ALL", new BigDecimal("2.00"), "same")));
+    when(repository.findAllTenancyRules()).thenReturn(List.of());
 
     RentRegulationCatalogDiff diff = service.diff();
 
@@ -194,6 +199,7 @@ class RentRegulationCatalogDiffTest {
     when(repository.findAllCountries()).thenReturn(List.of(domainCountry(NL_ID, "PT", "Portugal")));
     when(repository.findAllRegions()).thenReturn(List.of());
     when(repository.findAllRules()).thenReturn(List.of());
+    when(repository.findAllTenancyRules()).thenReturn(List.of());
 
     RentRegulationCatalogDiff diff = service.diff();
 
@@ -215,6 +221,69 @@ class RentRegulationCatalogDiffTest {
               assertThat(f.field()).isEqualTo("lateFeeMaxPercentage");
               assertThat(f.after()).isEqualTo("20.0");
             });
+  }
+
+  @Test
+  @DisplayName("a tenancy rule the catalogue adds is reported as a country change")
+  void diff_detectsAddedTenancyRule() {
+    CatalogCountry at =
+        new CatalogCountry(
+            "AT", "Austria", false, null, null, null, List.of(), null, 14,
+            List.of(
+                new CatalogTenancyRule(
+                    TenancyRuleTopic.TENANCY_DURATION,
+                    null,
+                    "Minimum fixed term",
+                    "5 years",
+                    "2026-01-01",
+                    "MRG § 29",
+                    "https://ris.bka.gv.at",
+                    null)));
+    when(loader.load())
+        .thenReturn(new RentRegulationCatalog("2026.6", "2026-09-26", "desc", List.of(at)));
+    when(repository.findAllCountries())
+        .thenReturn(List.of(domainCountry(NL_ID, "AT", "Austria")));
+    when(repository.findAllRegions()).thenReturn(List.of());
+    when(repository.findAllRules()).thenReturn(List.of());
+    when(repository.findAllTenancyRules()).thenReturn(List.of());
+
+    RentRegulationCatalogDiff diff = service.diff();
+
+    RentRegulationDiffEntry entry =
+        diff.byCountry().getFirst().changes().stream()
+            .filter(e -> e.entity().equals("COUNTRY"))
+            .findFirst()
+            .orElseThrow();
+    assertThat(entry.fields())
+        .anySatisfy(
+            f -> {
+              assertThat(f.field()).isEqualTo("tenancyRule[TENANCY_DURATION/Minimum fixed term]");
+              assertThat(f.before()).isEmpty();
+              assertThat(f.after()).contains("5 years");
+            });
+  }
+
+  @Test
+  @DisplayName("a country with no tenancy rules on either side reports no tenancy diff")
+  void diff_noTenancyRules_yieldsNoTenancyField() {
+    CatalogCountry at =
+        new CatalogCountry(
+            "AT", "Austria", false, null, null, null, List.of(), null, 14, List.of());
+    when(loader.load())
+        .thenReturn(new RentRegulationCatalog("2026.6", "2026-09-26", "desc", List.of(at)));
+    when(repository.findAllCountries())
+        .thenReturn(List.of(domainCountry(NL_ID, "AT", "Austria")));
+    when(repository.findAllRegions()).thenReturn(List.of());
+    when(repository.findAllRules()).thenReturn(List.of());
+    when(repository.findAllTenancyRules()).thenReturn(List.of());
+
+    RentRegulationCatalogDiff diff = service.diff();
+
+    assertThat(diff.byCountry().getFirst().changes())
+        .allSatisfy(
+            e ->
+                assertThat(e.fields())
+                    .noneSatisfy(f -> assertThat(f.field()).startsWith("tenancyRule[")));
   }
 
   // ---- builders ----

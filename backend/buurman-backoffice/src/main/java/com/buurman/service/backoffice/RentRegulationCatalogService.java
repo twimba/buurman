@@ -21,10 +21,12 @@ import com.buurman.domain.RentFrequency;
 import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
+import com.buurman.domain.RentRegulationTenancyRule;
 import com.buurman.domain.regulation.CatalogCountry;
 import com.buurman.domain.regulation.CatalogLateFee;
 import com.buurman.domain.regulation.CatalogRegion;
 import com.buurman.domain.regulation.CatalogRule;
+import com.buurman.domain.regulation.CatalogTenancyRule;
 import com.buurman.domain.regulation.RentRegulationCatalog;
 import com.buurman.dto.response.RentRegulationCatalogDiff;
 import com.buurman.dto.response.RentRegulationCatalogInfo;
@@ -80,6 +82,7 @@ public class RentRegulationCatalogService {
     int countries = 0;
     int regions = 0;
     int rules = 0;
+    int tenancyRules = 0;
 
     for (CatalogCountry country : safe(catalog.countries())) {
       UUID countryId = insertCountry(country, actor);
@@ -96,19 +99,25 @@ public class RentRegulationCatalogService {
         insertRule(rule, countryId, regionIds, actor);
         rules++;
       }
+
+      for (CatalogTenancyRule tenancyRule : safe(country.tenancyRules())) {
+        insertTenancyRule(tenancyRule, countryId, regionIds, actor);
+        tenancyRules++;
+      }
     }
 
     log.warn(
         "Backoffice user {} reloaded rent-regulation catalog v{} ({} countries, {} regions, {}"
-            + " rules) — previous reference data discarded",
+            + " rules, {} tenancy rules) — previous reference data discarded",
         actor,
         catalog.version(),
         countries,
         regions,
-        rules);
+        rules,
+        tenancyRules);
 
     return new RentRegulationReloadResult(
-        catalog.version(), catalog.generatedAt(), countries, regions, rules);
+        catalog.version(), catalog.generatedAt(), countries, regions, rules, tenancyRules);
   }
 
   /**
@@ -140,6 +149,9 @@ public class RentRegulationCatalogService {
     Map<UUID, List<RentRegulationRule>> rulesByCountry =
         repository.findAllRules().stream()
             .collect(Collectors.groupingBy(RentRegulationRule::getCountryId));
+    Map<UUID, List<RentRegulationTenancyRule>> tenancyByCountry =
+        repository.findAllTenancyRules().stream()
+            .collect(Collectors.groupingBy(RentRegulationTenancyRule::getCountryId));
 
     return countries.stream()
         .sorted(Comparator.comparing(RentRegulationCountry::getCountryCode))
@@ -149,6 +161,7 @@ public class RentRegulationCatalogService {
                     c,
                     regionsByCountry.getOrDefault(c.getId(), List.of()),
                     rulesByCountry.getOrDefault(c.getId(), List.of()),
+                    tenancyByCountry.getOrDefault(c.getId(), List.of()),
                     regionCodeById))
         .toList();
   }
@@ -291,7 +304,34 @@ public class RentRegulationCatalogService {
         Optional.ofNullable(tgt.lateFee()).map(l -> nv(l.notes())).orElse(""));
     addFieldDiff(
         fields, "formalNoticeDays", nv(cur.formalNoticeDays()), nv(tgt.formalNoticeDays()));
+
+    Map<String, CatalogTenancyRule> curTenancy = new java.util.LinkedHashMap<>();
+    for (CatalogTenancyRule t : safe(cur.tenancyRules())) {
+      curTenancy.put(t.topic().name() + "/" + t.label(), t);
+    }
+    Map<String, CatalogTenancyRule> tgtTenancy = new java.util.LinkedHashMap<>();
+    for (CatalogTenancyRule t : safe(tgt.tenancyRules())) {
+      tgtTenancy.put(t.topic().name() + "/" + t.label(), t);
+    }
+    java.util.Set<String> keys = new java.util.LinkedHashSet<>(curTenancy.keySet());
+    keys.addAll(tgtTenancy.keySet());
+    for (String key : keys) {
+      addFieldDiff(
+          fields,
+          "tenancyRule[" + key + "]",
+          Optional.ofNullable(curTenancy.get(key)).map(this::describeTenancyRule).orElse(""),
+          Optional.ofNullable(tgtTenancy.get(key)).map(this::describeTenancyRule).orElse(""));
+    }
+
     return fields;
+  }
+
+  private String describeTenancyRule(CatalogTenancyRule rule) {
+    StringBuilder sb = new StringBuilder(rule.value());
+    Optional.ofNullable(rule.effectiveFrom())
+        .ifPresent(d -> sb.append(" (from ").append(d).append(")"));
+    Optional.ofNullable(rule.legalBasis()).ifPresent(b -> sb.append(" [").append(b).append("]"));
+    return sb.toString();
   }
 
   private int[] diffRegions(
@@ -567,12 +607,45 @@ public class RentRegulationCatalogService {
     repository.saveRule(domain);
   }
 
+  private void insertTenancyRule(
+      CatalogTenancyRule rule, UUID countryId, Map<String, UUID> regionIds, String actor) {
+    Optional<UUID> regionId =
+        Optional.ofNullable(rule.regionCode())
+            .map(
+                code ->
+                    Optional.ofNullable(regionIds.get(code))
+                        .orElseThrow(
+                            () ->
+                                new IllegalStateException(
+                                    "Catalog tenancy rule references unknown region '"
+                                        + code
+                                        + "' in country "
+                                        + countryId)));
+
+    repository.saveTenancyRule(
+        RentRegulationTenancyRule.builder()
+            .identifier(Optional.of(SidGenerator.newRentRegulationTenancyRuleId()))
+            .countryId(countryId)
+            .regionId(regionId)
+            .topic(rule.topic())
+            .label(rule.label())
+            .value(rule.value())
+            .effectiveFrom(Optional.ofNullable(rule.effectiveFrom()).map(LocalDate::parse))
+            .legalBasis(Optional.ofNullable(rule.legalBasis()))
+            .sourceUrl(Optional.ofNullable(rule.sourceUrl()))
+            .notes(Optional.ofNullable(rule.notes()))
+            .createdBy(Optional.of(actor))
+            .updatedBy(Optional.of(actor))
+            .build());
+  }
+
   // ==================== Domain → catalog (export) ====================
 
   private CatalogCountry toCatalogCountry(
       RentRegulationCountry country,
       List<RentRegulationRegion> regions,
       List<RentRegulationRule> rules,
+      List<RentRegulationTenancyRule> tenancyRules,
       Map<UUID, String> regionCodeById) {
     List<CatalogRegion> catalogRegions =
         regions.stream()
@@ -597,6 +670,24 @@ public class RentRegulationCatalogService {
                     .thenComparing(CatalogRule::maxIncreaseType, Comparator.comparing(Enum::name)))
             .toList();
 
+    List<CatalogTenancyRule> catalogTenancyRules =
+        tenancyRules.stream()
+            .map(
+                t ->
+                    new CatalogTenancyRule(
+                        t.getTopic(),
+                        t.getRegionId().map(regionCodeById::get).orElse(null),
+                        t.getLabel(),
+                        t.getValue(),
+                        t.getEffectiveFrom().map(LocalDate::toString).orElse(null),
+                        t.getLegalBasis().orElse(null),
+                        t.getSourceUrl().orElse(null),
+                        t.getNotes().orElse(null)))
+            .sorted(
+                Comparator.comparing((CatalogTenancyRule t) -> t.topic().name())
+                    .thenComparing(CatalogTenancyRule::label))
+            .toList();
+
     return new CatalogCountry(
         country.getCountryCode(),
         country.getCountryName(),
@@ -614,7 +705,7 @@ public class RentRegulationCatalogService {
                 country.getLateFeeMaxPercentage().orElse(null),
                 country.getLateFeeNotes().orElse(null)),
         country.getFormalNoticeDays().orElse(null),
-        null);
+        catalogTenancyRules.isEmpty() ? null : catalogTenancyRules);
   }
 
   private CatalogRule toCatalogRule(RentRegulationRule rule, Map<UUID, String> regionCodeById) {
