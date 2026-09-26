@@ -65,6 +65,11 @@ public class SidGenerator {
     return prefix.getCode() + ulid.nextULID();
   }
 
+  /** Generic Sid mint for entity families with no dedicated typed identifier subclass. */
+  public static Sid generate(EntityPrefix prefix) {
+    return Sid.of(generateRaw(prefix));
+  }
+
   public static Sid newToken() {
     return Sid.of(generateRaw());
   }

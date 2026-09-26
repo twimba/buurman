@@ -25,7 +25,9 @@ import com.buurman.domain.RentFrequency;
 import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
+import com.buurman.domain.RentRegulationTenancyRule;
 import com.buurman.domain.Sid;
+import com.buurman.domain.TenancyRuleTopic;
 import com.buurman.dto.response.CountryRegulationRequestSummary;
 import com.buurman.dto.response.CountryRegulationRequester;
 import com.buurman.exception.NotFoundException;
@@ -73,6 +75,24 @@ public class RentRegulationRepository {
   private static final Field<Timestamp> R_UPDATED_AT = field("updated_at", Timestamp.class);
   private static final Field<String> R_CREATED_BY = field("created_by", String.class);
   private static final Field<String> R_UPDATED_BY = field("updated_by", String.class);
+
+  // --- Tenancy rules table ---
+  private static final Table<?> TENANCY_RULES = table("rent_regulation_tenancy_rules");
+  private static final Field<UUID> T_ID = field("id", UUID.class);
+  private static final Field<String> T_IDENTIFIER = field("identifier", String.class);
+  private static final Field<UUID> T_COUNTRY_ID = field("country_id", UUID.class);
+  private static final Field<UUID> T_REGION_ID = field("region_id", UUID.class);
+  private static final Field<String> T_TOPIC = field("topic", String.class);
+  private static final Field<String> T_LABEL = field("label", String.class);
+  private static final Field<String> T_VALUE = field("value", String.class);
+  private static final Field<Date> T_EFFECTIVE_FROM = field("effective_from", Date.class);
+  private static final Field<String> T_LEGAL_BASIS = field("legal_basis", String.class);
+  private static final Field<String> T_SOURCE_URL = field("source_url", String.class);
+  private static final Field<String> T_NOTES = field("notes", String.class);
+  private static final Field<Timestamp> T_CREATED_AT = field("created_at", Timestamp.class);
+  private static final Field<Timestamp> T_UPDATED_AT = field("updated_at", Timestamp.class);
+  private static final Field<String> T_CREATED_BY = field("created_by", String.class);
+  private static final Field<String> T_UPDATED_BY = field("updated_by", String.class);
 
   // --- Rules table ---
   private static final Table<?> RULES = table("rent_regulation_rules");
@@ -429,14 +449,56 @@ public class RentRegulationRepository {
     }
   }
 
+  // ==================== Tenancy rule operations ====================
+
+  public RentRegulationTenancyRule saveTenancyRule(RentRegulationTenancyRule rule) {
+    Timestamp now = Timestamp.from(clock.instant());
+    UUID id = UUID.randomUUID();
+
+    dsl.insertInto(TENANCY_RULES)
+        .set(T_ID, id)
+        .set(T_IDENTIFIER, rule.getIdentifier().orElseThrow().value())
+        .set(T_COUNTRY_ID, rule.getCountryId())
+        .set(T_REGION_ID, rule.getRegionId().orElse(null))
+        .set(T_TOPIC, rule.getTopic().name())
+        .set(T_LABEL, rule.getLabel())
+        .set(T_VALUE, rule.getValue())
+        .set(T_EFFECTIVE_FROM, rule.getEffectiveFrom().map(Date::valueOf).orElse(null))
+        .set(T_LEGAL_BASIS, rule.getLegalBasis().orElse(null))
+        .set(T_SOURCE_URL, rule.getSourceUrl().orElse(null))
+        .set(T_NOTES, rule.getNotes().orElse(null))
+        .set(T_CREATED_AT, now)
+        .set(T_UPDATED_AT, now)
+        .set(T_CREATED_BY, rule.getCreatedBy().orElse(null))
+        .set(T_UPDATED_BY, rule.getUpdatedBy().orElse(null))
+        .execute();
+
+    rule.setId(id);
+    return rule;
+  }
+
+  public List<RentRegulationTenancyRule> findTenancyRulesByCountryId(UUID countryId) {
+    return List.copyOf(
+        dsl.select()
+            .from(TENANCY_RULES)
+            .where(T_COUNTRY_ID.eq(countryId))
+            .orderBy(T_TOPIC, T_LABEL)
+            .fetch(this::toTenancyRuleDomain));
+  }
+
+  public List<RentRegulationTenancyRule> findAllTenancyRules() {
+    return List.copyOf(dsl.select().from(TENANCY_RULES).fetch(this::toTenancyRuleDomain));
+  }
+
   // ==================== Catalog reload (destructive) ====================
 
   /**
-   * Deletes all rent-regulation reference data (rules, then regions, then countries) in
+   * Deletes all rent-regulation reference data (tenancy rules, rules, regions, then countries) in
    * foreign-key-safe order. Intended to be called within a transaction immediately before
    * re-seeding from the bundled catalog. Does not touch team-scoped country requests.
    */
   public void deleteAllReferenceData() {
+    dsl.deleteFrom(TENANCY_RULES).execute();
     dsl.deleteFrom(RULES).execute();
     dsl.deleteFrom(REGIONS).execute();
     dsl.deleteFrom(COUNTRIES).execute();
@@ -678,6 +740,32 @@ public class RentRegulationRepository {
     }
     rule.setCreatedBy(Optional.ofNullable(record.get(RL_CREATED_BY)));
     rule.setUpdatedBy(Optional.ofNullable(record.get(RL_UPDATED_BY)));
+    return rule;
+  }
+
+  private RentRegulationTenancyRule toTenancyRuleDomain(Record record) {
+    RentRegulationTenancyRule rule = new RentRegulationTenancyRule();
+    rule.setId(record.get(T_ID));
+    rule.setIdentifier(Optional.ofNullable(record.get(T_IDENTIFIER)).map(Sid::of));
+    rule.setCountryId(record.get(T_COUNTRY_ID));
+    rule.setRegionId(Optional.ofNullable(record.get(T_REGION_ID)));
+    rule.setTopic(TenancyRuleTopic.valueOf(record.get(T_TOPIC)));
+    rule.setLabel(record.get(T_LABEL));
+    rule.setValue(record.get(T_VALUE));
+    rule.setEffectiveFrom(Optional.ofNullable(record.get(T_EFFECTIVE_FROM)).map(Date::toLocalDate));
+    rule.setLegalBasis(Optional.ofNullable(record.get(T_LEGAL_BASIS)));
+    rule.setSourceUrl(Optional.ofNullable(record.get(T_SOURCE_URL)));
+    rule.setNotes(Optional.ofNullable(record.get(T_NOTES)));
+    Timestamp createdAt = record.get(T_CREATED_AT);
+    if (createdAt != null) {
+      rule.setCreatedAt(createdAt.toInstant());
+    }
+    Timestamp updatedAt = record.get(T_UPDATED_AT);
+    if (updatedAt != null) {
+      rule.setUpdatedAt(updatedAt.toInstant());
+    }
+    rule.setCreatedBy(Optional.ofNullable(record.get(T_CREATED_BY)));
+    rule.setUpdatedBy(Optional.ofNullable(record.get(T_UPDATED_BY)));
     return rule;
   }
 }
