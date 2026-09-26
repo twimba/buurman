@@ -8106,6 +8106,9 @@ components:
         rulesLoaded:
           type: integer
           format: int32
+        tenancyRulesLoaded:
+          type: integer
+          format: int32
     RentRegulationCatalog:
       type: object
       description: Canonical rent-regulation dataset (countries carry nested regions and rules).
