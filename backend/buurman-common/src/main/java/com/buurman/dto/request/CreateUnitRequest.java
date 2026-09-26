@@ -1,6 +1,7 @@
 package com.buurman.dto.request;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.UnitStatus;
@@ -29,5 +30,24 @@ public record CreateUnitRequest(
     Optional<
             @DecimalMin(value = "0", message = "WOZ share must be at least 0") @DecimalMax(value = "100", message = "WOZ share must be at most 100") BigDecimal>
         wozSharePct,
+
+    // Energy & Climate
     Optional<String> energyEfficiencyRating,
-    Optional<String> heatingType) {}
+    Optional<LocalDate> energyCertificateExpiryDate,
+    Optional<String> heatingType,
+    Optional<String> coolingType,
+    Optional<String> hotWaterSystem,
+    Optional<String> insulationNotes,
+
+    // Finishes
+    Optional<String> flooringType,
+    Optional<String> windowType,
+
+    // Safety
+    Optional<Boolean> hasSmokeDetectors,
+    Optional<Boolean> hasCoDetectors,
+    Optional<Boolean> hasFireExtinguisher,
+
+    // Accessibility
+    Optional<Boolean> hasAdaptedBathroom,
+    Optional<String> accessibilityNotes) {}
