@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
+import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,75 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
     assertThat(units.get(0).value6()).isEqualTo("B");
     assertThat(units.get(0).value7()).isEqualTo("APARTMENT");
     assertThat(units.get(0).value8()).isEqualByComparingTo("100");
+  }
+
+  @Test
+  @DisplayName("gives each backfilled unit its own property's dwelling data, not another's")
+  void backfillsDistinctDwellingDataPerProperty() {
+    migrateTo("067");
+    UUID propertyOneId =
+        seedProperty(TEAM_A_ID, "Herengracht 1", "OCCUPIED", new BigDecimal("85.50"), "B");
+    UUID propertyTwoId =
+        seedProperty(TEAM_A_ID, "Herengracht 2", "VACANT", new BigDecimal("42.00"), "F");
+
+    migrateToLatest();
+
+    assertUnitMatchesOwnProperty(propertyOneId, "OCCUPIED", new BigDecimal("85.50"), "B");
+    assertUnitMatchesOwnProperty(propertyTwoId, "VACANT", new BigDecimal("42.00"), "F");
+  }
+
+  @Test
+  @DisplayName("points every occupancy period at a unit of its own property")
+  void backfillsOccupancyPeriodUnitId() {
+    migrateTo("067");
+    UUID propertyId =
+        seedProperty(TEAM_A_ID, "Bloemgracht 5", "SELF_OCCUPIED", new BigDecimal("60"), "D");
+    UUID occupancyPeriodId = seedOccupancyPeriod(TEAM_A_ID, propertyId);
+
+    migrateToLatest();
+
+    UUID occupancyPeriodUnitId =
+        dsl.select(DSL.field("unit_id", UUID.class))
+            .from(DSL.table("property_occupancy_periods"))
+            .where(DSL.field("id").eq(occupancyPeriodId))
+            .fetchOne(DSL.field("unit_id", UUID.class));
+
+    assertThat(occupancyPeriodUnitId).isNotNull();
+
+    UUID unitPropertyId =
+        dsl.select(DSL.field("property_id", UUID.class))
+            .from(DSL.table("units"))
+            .where(DSL.field("id").eq(occupancyPeriodUnitId))
+            .fetchOne(DSL.field("property_id", UUID.class));
+
+    assertThat(unitPropertyId).isEqualTo(propertyId);
+  }
+
+  @Test
+  @DisplayName("points every WWS calculation at a unit of its own property")
+  void backfillsWwsCalculationUnitId() {
+    migrateTo("067");
+    UUID propertyId =
+        seedProperty(TEAM_A_ID, "Bloemgracht 6", "OCCUPIED", new BigDecimal("65"), "E");
+    UUID wwsCalculationId = seedWwsCalculation(TEAM_A_ID, propertyId);
+
+    migrateToLatest();
+
+    UUID wwsCalculationUnitId =
+        dsl.select(DSL.field("unit_id", UUID.class))
+            .from(DSL.table("wws_calculations"))
+            .where(DSL.field("id").eq(wwsCalculationId))
+            .fetchOne(DSL.field("unit_id", UUID.class));
+
+    assertThat(wwsCalculationUnitId).isNotNull();
+
+    UUID unitPropertyId =
+        dsl.select(DSL.field("property_id", UUID.class))
+            .from(DSL.table("units"))
+            .where(DSL.field("id").eq(wwsCalculationUnitId))
+            .fetchOne(DSL.field("property_id", UUID.class));
+
+    assertThat(unitPropertyId).isEqualTo(propertyId);
   }
 
   @Test
@@ -116,6 +187,24 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
     assertThat(teamAUnits).isEqualTo(1);
   }
 
+  private void assertUnitMatchesOwnProperty(
+      UUID propertyId, String status, BigDecimal areaValue, String energyRating) {
+    var unit =
+        Objects.requireNonNull(
+            dsl.select(
+                    DSL.field("status", String.class),
+                    DSL.field("area_value", BigDecimal.class),
+                    DSL.field("energy_efficiency_rating", String.class))
+                .from(DSL.table("units"))
+                .where(DSL.field("property_id").eq(propertyId))
+                .fetchOne(),
+            "expected exactly one backfilled unit for property " + propertyId);
+
+    assertThat(unit.value1()).isEqualTo(status);
+    assertThat(unit.value2()).isEqualByComparingTo(areaValue);
+    assertThat(unit.value3()).isEqualTo(energyRating);
+  }
+
   // --- seeding helpers, written against the V067 schema ---
 
   private UUID seedProperty(
@@ -159,6 +248,40 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
         .set(DSL.field("updated_at", LocalDateTime.class), NOW)
         .set(DSL.field("created_by", UUID.class), USER_ID)
         .set(DSL.field("updated_by", UUID.class), USER_ID)
+        .execute();
+    return id;
+  }
+
+  private UUID seedOccupancyPeriod(UUID teamId, UUID propertyId) {
+    UUID id = UUID.randomUUID();
+    dsl.insertInto(DSL.table("property_occupancy_periods"))
+        .set(DSL.field("id", UUID.class), id)
+        .set(DSL.field("identifier", String.class), "OCP" + randomSuffix())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("property_id", UUID.class), propertyId)
+        .set(DSL.field("start_date", LocalDate.class), LocalDate.of(2026, 1, 1))
+        .set(DSL.field("type", String.class), "PRIMARY_RESIDENCE")
+        .set(DSL.field("created_at", LocalDateTime.class), NOW)
+        .set(DSL.field("updated_at", LocalDateTime.class), NOW)
+        .set(DSL.field("created_by", UUID.class), USER_ID)
+        .set(DSL.field("updated_by", UUID.class), USER_ID)
+        .execute();
+    return id;
+  }
+
+  private UUID seedWwsCalculation(UUID teamId, UUID propertyId) {
+    UUID id = UUID.randomUUID();
+    dsl.insertInto(DSL.table("wws_calculations"))
+        .set(DSL.field("id", UUID.class), id)
+        .set(DSL.field("identifier", String.class), "WWS" + randomSuffix())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("property_id", UUID.class), propertyId)
+        .set(DSL.field("system_version", String.class), "2026")
+        .set(DSL.field("total_points", BigDecimal.class), new BigDecimal("142.50"))
+        .set(DSL.field("sector_classification", String.class), "LIBERALIZED")
+        .set(DSL.field("category_breakdown", JSONB.class), JSONB.jsonb("{}"))
+        .set(DSL.field("input_data", JSONB.class), JSONB.jsonb("{}"))
+        .set(DSL.field("calculation_date", LocalDate.class), LocalDate.of(2026, 1, 1))
         .execute();
     return id;
   }
