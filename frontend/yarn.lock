@@ -2788,21 +2788,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.103.2":
-  version: 5.103.2
-  resolution: "@tanstack/query-core@npm:5.103.2"
-  checksum: 10c0/52362dd214a487b2194728a79c7fd1bd7af1831f21928030866a8ad28877eaec050e7215a6f3b3a0c4fdf601644ae8edb652e4cef7270f6f82d7371d2bbe9f41
+"@tanstack/query-core@npm:5.103.3":
+  version: 5.103.3
+  resolution: "@tanstack/query-core@npm:5.103.3"
+  checksum: 10c0/89c06c811f3bfe742d7cd0d267ca9ed090ed03f85d39dba9301351aea29d41bd9c541bf764d9ed675016e1a257763fecc4dd6d049c178839be8f897eb7955a55
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:5.103.2":
-  version: 5.103.2
-  resolution: "@tanstack/react-query@npm:5.103.2"
+"@tanstack/react-query@npm:5.103.3":
+  version: 5.103.3
+  resolution: "@tanstack/react-query@npm:5.103.3"
   dependencies:
-    "@tanstack/query-core": "npm:5.103.2"
+    "@tanstack/query-core": "npm:5.103.3"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10c0/7845c13af6761c00141ef6025c4ee385bff8f16e053f8583ba1b95db47a2c1df9764a751080981226658f45487881933517d24813f47c98238b8dbdd6acee80a
+  checksum: 10c0/2b6ab4d6b62760d7e90f992244c7fcd9fa9f98fef9925ca4eea76e1d0d5d47521ce260879d0b874a71aec181946bc76872af024e3aa5a115b6a3f1b6c62348f3
   languageName: node
   linkType: hard
 
@@ -4197,7 +4197,7 @@ __metadata:
     "@floating-ui/dom": "npm:1.8.0"
     "@playwright/test": "npm:1.63.0"
     "@tailwindcss/postcss": "npm:4.3.3"
-    "@tanstack/react-query": "npm:5.103.2"
+    "@tanstack/react-query": "npm:5.103.3"
     "@testing-library/dom": "npm:10.4.2"
     "@testing-library/jest-dom": "npm:7.0.1"
     "@testing-library/react": "npm:16.3.3"
@@ -4271,7 +4271,7 @@ __metadata:
     "@luma.gl/shadertools": "npm:^9.4.2"
     "@luma.gl/webgl": "npm:^9.4.2"
     "@tailwindcss/postcss": "npm:4.3.3"
-    "@tanstack/react-query": "npm:5.103.2"
+    "@tanstack/react-query": "npm:5.103.3"
     "@tiptap/core": "npm:3.31.3"
     "@tiptap/extension-highlight": "npm:3.31.3"
     "@tiptap/extension-link": "npm:3.31.3"
