@@ -263,15 +263,9 @@ public class ContractBookletExporter {
 
     v.put("propertyTypeLabel", enumLabels.label(property.getPropertyType(), locale));
     v.put("propertyCategoryLabel", enumLabels.label(property.getPropertyCategory(), locale));
-    v.put(
-        "propertyArea",
-        property
-            .getAreaValue()
-            .map(
-                a ->
-                    formatter.numberOrDash(a, locale)
-                        + property.getAreaUnit().map(u -> " " + u).orElse(""))
-            .orElse(null));
+    // TODO(BUUR-106 Task 12): area moved from properties to units in V068; null until derivable
+    // from the property's unit(s).
+    v.put("propertyArea", null);
 
     v.put("rentPeriods", buildRentPeriods(rentPeriods, locale));
     v.put(

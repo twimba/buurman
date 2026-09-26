@@ -818,7 +818,9 @@ public class ContactService {
                 property.getPostalCode(),
                 property.getPropertyCategory(),
                 property.getPropertyType(),
-                property.getStatus());
+                // TODO(BUUR-106 Task 12): status moved to units; derive from the property's
+                // unit(s) once unit-level status filtering lands.
+                null);
         activeProperties.add(
             new ContactPropertyAssignment(
                 summary, Optional.ofNullable(roleByContractId.get(activeContract.getId()))));
@@ -871,7 +873,9 @@ public class ContactService {
             property.getPostalCode(),
             property.getPropertyCategory(),
             property.getPropertyType(),
-            property.getStatus());
+            // TODO(BUUR-106 Task 12): status moved to units; derive from the property's unit(s)
+            // once unit-level status filtering lands.
+            null);
 
     String userName =
         Optional.ofNullable(usersById.get(history.getPerformedBy()))

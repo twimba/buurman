@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Property;
-import com.buurman.domain.Property.PropertyStatus;
 import com.buurman.domain.PropertyOccupancyPeriod;
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
 import com.buurman.domain.TeamRole;
@@ -96,7 +95,6 @@ class OccupancyPeriodServiceTest {
     property = new Property();
     property.setId(PROPERTY_ID);
     property.setIdentifier(Optional.of(PROPERTY_SID));
-    property.setStatus(PropertyStatus.VACANT);
   }
 
   @Nested
@@ -164,7 +162,6 @@ class OccupancyPeriodServiceTest {
 
       service.create(PROPERTY_SID, request, principal);
 
-      assertThat(property.getStatus()).isEqualTo(PropertyStatus.VACANT);
       verify(propertyRepository, never()).save(any(Property.class));
     }
 
@@ -194,7 +191,9 @@ class OccupancyPeriodServiceTest {
     }
 
     @Test
-    @DisplayName("sets property to SELF_OCCUPIED when period starts today or earlier")
+    @DisplayName(
+        "does not persist property when period starts today or earlier"
+            + " (status moved to units, BUUR-106 Task 12)")
     void setsPropertyStatusWhenStartsToday() {
       when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.findOverlapping(
@@ -216,8 +215,7 @@ class OccupancyPeriodServiceTest {
 
       service.create(PROPERTY_SID, request, principal);
 
-      assertThat(property.getStatus()).isEqualTo(PropertyStatus.SELF_OCCUPIED);
-      verify(propertyRepository).save(property);
+      verify(propertyRepository, never()).save(any(Property.class));
     }
   }
 
@@ -245,10 +243,10 @@ class OccupancyPeriodServiceTest {
     }
 
     @Test
-    @DisplayName("ends period and sets property to VACANT when end date is today or earlier")
+    @DisplayName(
+        "ends period and does not persist property (status moved to units, BUUR-106 Task 12)")
     void endsActivePeriod() {
       PropertyOccupancyPeriod period = buildActivePeriod();
-      property.setStatus(PropertyStatus.SELF_OCCUPIED);
 
       when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
@@ -261,8 +259,7 @@ class OccupancyPeriodServiceTest {
 
       assertThat(response).isNotNull();
       assertThat(response.endDate()).isPresent().contains(LocalDate.of(2026, 3, 1));
-      assertThat(property.getStatus()).isEqualTo(PropertyStatus.VACANT);
-      verify(propertyRepository).save(property);
+      verify(propertyRepository, never()).save(any(Property.class));
       verify(repository).save(period);
     }
 
@@ -293,10 +290,10 @@ class OccupancyPeriodServiceTest {
         OccupancyPeriodIdentifier.of("occ_01JTEST000000000000000002");
 
     @Test
-    @DisplayName("reverts property status to VACANT when active period deleted")
+    @DisplayName(
+        "does not persist property when active period deleted (status moved to units,"
+            + " BUUR-106 Task 12)")
     void revertsPropertyStatusToVacantWhenActivePeriodDeleted() {
-      property.setStatus(PropertyStatus.SELF_OCCUPIED);
-
       PropertyOccupancyPeriod period = new PropertyOccupancyPeriod();
       period.setId(UUID.randomUUID());
       period.setIdentifier(Optional.of(PERIOD_SID));
@@ -313,8 +310,7 @@ class OccupancyPeriodServiceTest {
       service.delete(PROPERTY_SID, PERIOD_SID, principal);
 
       verify(repository).softDeleteByIdAndTeamId(period.getId(), TEAM_ID);
-      assertThat(property.getStatus()).isEqualTo(PropertyStatus.VACANT);
-      verify(propertyRepository).save(property);
+      verify(propertyRepository, never()).save(any(Property.class));
     }
   }
 }

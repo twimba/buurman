@@ -9,7 +9,6 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_FINANCINGS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INDUSTRIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INSURANCES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
-import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.util.SidGenerator.newAcquisitionId;
@@ -862,23 +861,13 @@ public class DemoPropertyGenerator {
               BigDecimal.valueOf(lat),
               BigDecimal.valueOf(lon),
               propertyCategory,
-              area,
-              "sqm",
               propertyType,
-              status,
               yearBuilt,
               yearBuilt < 2000 ? yearBuilt + random.nextInt(5, 30) : null,
               constructionType,
               foundationType,
               roofType,
-              flooringType,
-              pick(WINDOW_TYPES),
               floors,
-              pick(ENERGY_RATINGS),
-              LocalDate.now(clock).plusYears(random.nextInt(1, 5)),
-              heatingType,
-              coolingType,
-              "BOILER",
               "MUNICIPAL",
               "INDUSTRIAL".equals(propertyCategory) ? 63 : random.nextBoolean() ? 25 : 35,
               "a",
@@ -891,9 +880,6 @@ public class DemoPropertyGenerator {
               "ACTIVE",
               "INDUSTRIAL".equals(propertyCategory) ? random.nextInt(5, 20) : random.nextInt(0, 3),
               "AGRICULTURAL".equals(propertyCategory) ? "NONE" : pick(PARKING_TYPES),
-              true,
-              random.nextBoolean(),
-              !"AGRICULTURAL".equals(propertyCategory),
               "INDUSTRIAL".equals(propertyCategory) && random.nextBoolean(),
               !"AGRICULTURAL".equals(propertyCategory) && random.nextBoolean(),
               "INDUSTRIAL".equals(propertyCategory) || "COMMERCIAL".equals(propertyCategory),
@@ -901,7 +887,6 @@ public class DemoPropertyGenerator {
               "COMMERCIAL".equals(propertyCategory) || random.nextInt(5) == 0,
               "APARTMENT".equals(propertyType) && random.nextBoolean(),
               "COMMERCIAL".equals(propertyCategory) || random.nextInt(3) == 0,
-              false,
               createdAt,
               now,
               createdBy,
@@ -990,7 +975,6 @@ public class DemoPropertyGenerator {
       executeBatchTaxes(taxRecords);
       executeBatchFees(feeRecords);
       executeBatchOutdoors(outdoorRecords);
-      executeBatchResidential(residentialRecords);
       executeBatchCommercial(commercialRecords);
       executeBatchIndustrial(industrialRecords);
       executeBatchAgricultural(agriculturalRecords);
@@ -1020,23 +1004,13 @@ public class DemoPropertyGenerator {
                 PROPERTIES.LATITUDE,
                 PROPERTIES.LONGITUDE,
                 PROPERTIES.PROPERTY_CATEGORY,
-                PROPERTIES.AREA_VALUE,
-                PROPERTIES.AREA_UNIT,
                 PROPERTIES.PROPERTY_TYPE,
-                PROPERTIES.STATUS,
                 PROPERTIES.YEAR_BUILT,
                 PROPERTIES.YEAR_LAST_RENOVATED,
                 PROPERTIES.CONSTRUCTION_TYPE,
                 PROPERTIES.FOUNDATION_TYPE,
                 PROPERTIES.ROOF_TYPE,
-                PROPERTIES.FLOORING_TYPE,
-                PROPERTIES.WINDOW_TYPE,
                 PROPERTIES.NUMBER_OF_FLOORS,
-                PROPERTIES.ENERGY_EFFICIENCY_RATING,
-                PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE,
-                PROPERTIES.HEATING_TYPE,
-                PROPERTIES.COOLING_TYPE,
-                PROPERTIES.HOT_WATER_SYSTEM,
                 PROPERTIES.ELECTRICITY_CONNECTION_TYPE,
                 PROPERTIES.ELECTRICITY_CAPACITY_VALUE,
                 PROPERTIES.ELECTRICITY_CAPACITY_UNIT,
@@ -1049,9 +1023,6 @@ public class DemoPropertyGenerator {
                 PROPERTIES.INTERNET_STATUS,
                 PROPERTIES.PARKING_SPACES,
                 PROPERTIES.PARKING_TYPE,
-                PROPERTIES.HAS_SMOKE_DETECTORS,
-                PROPERTIES.HAS_CO_DETECTORS,
-                PROPERTIES.HAS_FIRE_EXTINGUISHER,
                 PROPERTIES.HAS_SPRINKLER_SYSTEM,
                 PROPERTIES.HAS_ALARM_SYSTEM,
                 PROPERTIES.HAS_SECURITY_CAMERAS,
@@ -1059,7 +1030,6 @@ public class DemoPropertyGenerator {
                 PROPERTIES.IS_WHEELCHAIR_ACCESSIBLE,
                 PROPERTIES.HAS_ELEVATOR,
                 PROPERTIES.HAS_STEP_FREE_ENTRANCE,
-                PROPERTIES.HAS_ADAPTED_BATHROOM,
                 PROPERTIES.CREATED_AT,
                 PROPERTIES.UPDATED_AT,
                 PROPERTIES.CREATED_BY,
@@ -1076,23 +1046,13 @@ public class DemoPropertyGenerator {
                 (BigDecimal) null,
                 (BigDecimal) null,
                 (String) null,
-                (BigDecimal) null,
-                (String) null,
-                (String) null,
                 (String) null,
                 (Integer) null,
                 (Integer) null,
                 (String) null,
                 (String) null,
                 (String) null,
-                (String) null,
-                (String) null,
                 (Integer) null,
-                (String) null,
-                (LocalDate) null,
-                (String) null,
-                (String) null,
-                (String) null,
                 (String) null,
                 (Integer) null,
                 (String) null,
@@ -1105,10 +1065,6 @@ public class DemoPropertyGenerator {
                 (String) null,
                 (Integer) null,
                 (String) null,
-                (Boolean) null,
-                (Boolean) null,
-                (Boolean) null,
-                (Boolean) null,
                 (Boolean) null,
                 (Boolean) null,
                 (Boolean) null,
@@ -1486,43 +1442,6 @@ public class DemoPropertyGenerator {
     batch.execute();
   }
 
-  private void executeBatchResidential(List<Object[]> records) {
-    if (records.isEmpty()) {
-      return;
-    }
-    var insert =
-        dsl.insertInto(PROPERTY_RESIDENTIAL_DETAILS)
-            .columns(
-                PROPERTY_RESIDENTIAL_DETAILS.ID,
-                PROPERTY_RESIDENTIAL_DETAILS.PROPERTY_ID,
-                PROPERTY_RESIDENTIAL_DETAILS.TEAM_ID,
-                PROPERTY_RESIDENTIAL_DETAILS.BEDROOMS,
-                PROPERTY_RESIDENTIAL_DETAILS.BATHROOMS,
-                PROPERTY_RESIDENTIAL_DETAILS.FURNISHED,
-                PROPERTY_RESIDENTIAL_DETAILS.PET_POLICY,
-                PROPERTY_RESIDENTIAL_DETAILS.CREATED_AT,
-                PROPERTY_RESIDENTIAL_DETAILS.UPDATED_AT,
-                PROPERTY_RESIDENTIAL_DETAILS.CREATED_BY,
-                PROPERTY_RESIDENTIAL_DETAILS.UPDATED_BY)
-            .values(
-                (UUID) null,
-                (UUID) null,
-                (UUID) null,
-                (Integer) null,
-                (Integer) null,
-                (Boolean) null,
-                (String) null,
-                (LocalDateTime) null,
-                (LocalDateTime) null,
-                (UUID) null,
-                (UUID) null);
-    BatchBindStep batch = dsl.batch(insert);
-    for (Object[] r : records) {
-      batch = batch.bind(r);
-    }
-    batch.execute();
-  }
-
   private void executeBatchCommercial(List<Object[]> records) {
     if (records.isEmpty()) {
       return;
@@ -1797,22 +1716,8 @@ public class DemoPropertyGenerator {
       LocalDateTime now) {
     switch (category) {
       case "RESIDENTIAL" -> {
-        if (bedrooms > 0) {
-          residentialRecords.add(
-              new Object[] {
-                UUID.randomUUID(),
-                propertyId,
-                teamId,
-                bedrooms,
-                bathrooms,
-                random.nextBoolean(),
-                random.nextBoolean() ? "ALLOWED" : "NOT_ALLOWED",
-                now,
-                now,
-                createdBy,
-                createdBy
-              });
-        }
+        // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
+        // demo details move to unit_residential_details at unit level.
       }
       case "COMMERCIAL" -> {
         BigDecimal usable =

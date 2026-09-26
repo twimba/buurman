@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
-import com.buurman.domain.Property.PropertyStatus;
+import com.buurman.domain.UnitStatus;
 
 @DisplayName("EnumLabelResolver")
 class EnumLabelResolverTest {
@@ -32,19 +32,19 @@ class EnumLabelResolverTest {
   @Test
   @DisplayName("resolves a known enum value from the bundle, namespace derived from class name")
   void resolvesKnownValue() {
-    assertThat(resolver.label(PropertyStatus.VACANT, Locale.ENGLISH)).isEqualTo("Vacant");
+    assertThat(resolver.label(UnitStatus.VACANT, Locale.ENGLISH)).isEqualTo("Vacant");
   }
 
   @Test
   @DisplayName("resolves the locale-specific translation when present")
   void resolvesLocale() {
-    assertThat(resolver.label(PropertyStatus.VACANT, NL)).isEqualTo("Leegstaand");
+    assertThat(resolver.label(UnitStatus.VACANT, NL)).isEqualTo("Leegstaand");
   }
 
   @Test
   @DisplayName("falls back to a Title-Cased label for a missing key (never a raw SNAKE_CASE code)")
   void fallsBackToTitleCase() {
-    assertThat(resolver.label(PropertyStatus.UNDER_RENOVATION, Locale.ENGLISH))
+    assertThat(resolver.label(UnitStatus.UNDER_RENOVATION, Locale.ENGLISH))
         .isEqualTo("Under Renovation");
   }
 

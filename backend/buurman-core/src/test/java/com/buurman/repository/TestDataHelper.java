@@ -94,8 +94,6 @@ final class TestDataHelper {
     p.setCountryCode("NL");
     p.setPropertyCategory(Property.PropertyCategory.RESIDENTIAL);
     p.setPropertyType(Property.PropertyType.APARTMENT);
-    p.setStatus(Property.PropertyStatus.OCCUPIED);
-    p.setAreaUnit(Optional.of("sqm"));
     p.setCreatedBy(createdBy);
     p.setUpdatedBy(createdBy);
     return p;
@@ -113,14 +111,29 @@ final class TestDataHelper {
         .set(DSL.field("country_code", String.class), "NL")
         .set(DSL.field("property_category", String.class), "RESIDENTIAL")
         .set(DSL.field("property_type", String.class), "APARTMENT")
-        .set(DSL.field("status", String.class), "OCCUPIED")
-        .set(DSL.field("area_unit", String.class), "sqm")
         .set(DSL.field("created_at", LocalDateTime.class), NOW)
         .set(DSL.field("updated_at", LocalDateTime.class), NOW)
         .set(DSL.field("created_by", UUID.class), createdBy)
         .set(DSL.field("updated_by", UUID.class), createdBy)
         .execute();
     return id;
+  }
+
+  static void insertUnit(
+      DSLContext dsl, UUID unitId, UUID propertyId, UUID teamId, String unitNumber, String status) {
+    dsl.insertInto(DSL.table("units"))
+        .set(DSL.field("id", UUID.class), unitId)
+        .set(DSL.field("identifier", String.class), SidGenerator.newUnitId().value())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("property_id", UUID.class), propertyId)
+        .set(DSL.field("unit_number", String.class), unitNumber)
+        .set(DSL.field("unit_type", String.class), "APARTMENT")
+        .set(DSL.field("status", String.class), status)
+        .set(DSL.field("is_implicit", Boolean.class), false)
+        .set(DSL.field("area_unit", String.class), "sqm")
+        .set(DSL.field("created_at", LocalDateTime.class), NOW)
+        .set(DSL.field("updated_at", LocalDateTime.class), NOW)
+        .execute();
   }
 
   static Contact buildContact(UUID teamId, UUID createdBy) {

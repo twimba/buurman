@@ -20,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
-import com.buurman.domain.PropertyOutdoorArea;
-import com.buurman.domain.PropertyResidentialDetails;
 import com.buurman.domain.Sid;
 import com.buurman.domain.WwsCalculation;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -32,9 +30,7 @@ import com.buurman.dto.response.WwsCategoryBreakdown;
 import com.buurman.dto.response.WwsPreFillResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
-import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.PropertyResidentialDetailsRepository;
 import com.buurman.repository.WwsCalculationRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.SidGenerator;
@@ -51,8 +47,6 @@ public class WwsPointsCalculatorService {
   private final Clock clock;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final PropertyResidentialDetailsRepository residentialDetailsRepository;
-  private final PropertyOutdoorAreaRepository outdoorAreaRepository;
   private final WwsCalculationRepository wwsCalculationRepository;
   private final ObjectMapper objectMapper;
 
@@ -277,64 +271,12 @@ public class WwsPointsCalculatorService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public WwsPreFillResponse getPreFillData(
       PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId().orElseThrow();
-    Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
-
-    Optional<PropertyResidentialDetails> residential =
-        residentialDetailsRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
-
-    List<PropertyOutdoorArea> outdoorAreas =
-        outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
-
-    Optional<BigDecimal> surfaceArea =
-        property
-            .getAreaUnit()
-            .filter(unit -> "SQM".equalsIgnoreCase(unit) || "M2".equalsIgnoreCase(unit))
-            .flatMap(unit -> property.getAreaValue());
-
-    Optional<Integer> rooms = residential.flatMap(PropertyResidentialDetails::getBedrooms);
-
-    Optional<String> energyLabel = property.getEnergyEfficiencyRating();
-
-    BigDecimal outdoorTotal =
-        outdoorAreas.stream()
-            .filter(
-                oa ->
-                    "SQM".equalsIgnoreCase(oa.getAreaUnit())
-                        || "M2".equalsIgnoreCase(oa.getAreaUnit()))
-            .map(oa -> oa.getAreaValue().orElse(ZERO))
-            .reduce(ZERO, BigDecimal::add);
-
-    Optional<String> parkingType = property.getParkingType();
-    Optional<Integer> parkingSpaces = property.getParkingSpaces();
-
-    int accessibilityCount = 0;
-    if (property.getIsWheelchairAccessible().orElse(false)) {
-      accessibilityCount++;
-    }
-    if (property.getHasElevator().orElse(false)) {
-      accessibilityCount++;
-    }
-    if (property.getHasStepFreeEntrance().orElse(false)) {
-      accessibilityCount++;
-    }
-    if (property.getHasAdaptedBathroom().orElse(false)) {
-      accessibilityCount++;
-    }
-
-    String address =
-        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
-
-    return new WwsPreFillResponse(
-        surfaceArea,
-        rooms,
-        Optional.empty(),
-        energyLabel,
-        outdoorTotal.compareTo(ZERO) > 0 ? Optional.of(outdoorTotal) : Optional.empty(),
-        parkingType,
-        parkingSpaces,
-        accessibilityCount > 0 ? Optional.of(accessibilityCount) : Optional.empty(),
-        Optional.of(address));
+    // Surface area, energy label, bedrooms (residential details) and accessibility fields
+    // (hasAdaptedBathroom) all moved from `properties` to `units`/`unit_residential_details` in
+    // V068. Pre-filling this form now requires a unit join — Task 9/12's job. Throwing rather
+    // than returning a partially-wrong pre-fill.
+    throw new UnsupportedOperationException(
+        "Requires unit-level residential details/area/energy join — added in Task 9 (BUUR-106)");
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")

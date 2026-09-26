@@ -9,8 +9,6 @@ import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
 import static com.buurman.domain.NotificationType.CONTRACT_CREATED;
 import static com.buurman.domain.NotificationType.CONTRACT_REOPENED;
 import static com.buurman.domain.NotificationType.CONTRACT_STATUS_CHANGED;
-import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
-import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.SidGenerator.newContractId;
 import static com.buurman.util.SidGenerator.newRentComponentId;
 
@@ -1357,45 +1355,20 @@ public class ContractService {
     return a.get().compareTo(b.get()) != 0;
   }
 
+  // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
+  // Automatically flipping occupancy status based on contract lifecycle needs to target the
+  // property's unit(s) instead of the property itself. Disabled for now rather than writing to
+  // a field that no longer exists on Property or faking a status transition.
   private void updatePropertyStatusBasedOnContract(
       UUID propertyId,
       Contract.ContractStatus newStatus,
       Contract.ContractStatus oldStatus,
       UserPrincipal principal) {
-    Property property =
-        propertyRepository.findByIdAndTeamId(propertyId, principal.requireTeamId()).orElse(null);
-
-    if (property == null) {
-      log.warn("Property {} not found for contract status update", propertyId);
-      return;
-    }
-
-    Property.PropertyStatus newPropertyStatus = null;
-
-    if (newStatus == ACTIVE && oldStatus != ACTIVE) {
-      newPropertyStatus = OCCUPIED;
-    } else if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
-      boolean hasOtherActiveContracts =
-          contractRepository
-              .findActiveContractByPropertyId(propertyId, principal.requireTeamId())
-              .isPresent();
-
-      if (!hasOtherActiveContracts) {
-        newPropertyStatus = VACANT;
-      }
-    }
-
-    if (newPropertyStatus != null && property.getStatus() != newPropertyStatus) {
-      property.setStatus(newPropertyStatus);
-      property.setUpdatedBy(principal.getUserId());
-      property.setUpdatedAt(clock.instant());
-      propertyRepository.save(property);
-
-      log.info(
-          "Updated property {} status to {} based on contract status change to {}",
-          propertyId,
-          newPropertyStatus,
-          newStatus);
-    }
+    log.warn(
+        "Skipping automatic unit status update for property {} (contract status {} -> {}):"
+            + " status now lives on units, not properties (BUUR-106 Task 12)",
+        propertyId,
+        oldStatus,
+        newStatus);
   }
 }

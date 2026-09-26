@@ -62,7 +62,6 @@ import com.buurman.domain.Property.PropertyType;
 import com.buurman.domain.PropertyAgriculturalDetails;
 import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
-import com.buurman.domain.PropertyResidentialDetails;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -92,7 +91,6 @@ import com.buurman.repository.PropertyCommercialDetailsRepository;
 import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.PropertyResidentialDetailsRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -107,7 +105,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PropertyService {
 
   private final PropertyRepository propertyRepository;
-  private final PropertyResidentialDetailsRepository residentialDetailsRepository;
   private final PropertyCommercialDetailsRepository commercialDetailsRepository;
   private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
   private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
@@ -118,7 +115,6 @@ public class PropertyService {
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
   private final PropertyOutdoorAreaRepository outdoorAreaRepository;
-  private final PropertyAmenityService propertyAmenityService;
   private final MetricsService metricsService;
   private final NotificationService notificationService;
   private final AppProperties appProperties;
@@ -426,20 +422,10 @@ public class PropertyService {
       Optional<IndustrialDetailsRequest> industrial,
       Optional<AgriculturalDetailsRequest> agricultural) {
     switch (category) {
-      case RESIDENTIAL ->
-          residential.ifPresent(
-              r -> {
-                PropertyResidentialDetails d = new PropertyResidentialDetails();
-                d.setPropertyId(propertyId);
-                d.setTeamId(teamId);
-                d.setBedrooms(r.bedrooms());
-                d.setBathrooms(r.bathrooms());
-                d.setFurnished(Optional.of(r.furnished().orElse(false)));
-                d.setPetPolicy(r.petPolicy());
-                d.setCreatedBy(userId);
-                d.setUpdatedBy(userId);
-                residentialDetailsRepository.save(d);
-              });
+      case RESIDENTIAL -> {
+        // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
+        // detail storage moves to unit_residential_details at unit level.
+      }
       case COMMERCIAL ->
           commercial.ifPresent(
               c -> {
@@ -531,24 +517,10 @@ public class PropertyService {
       Optional<IndustrialDetailsRequest> industrial,
       Optional<AgriculturalDetailsRequest> agricultural) {
     switch (category) {
-      case RESIDENTIAL ->
-          residential.ifPresent(
-              r -> {
-                Optional<PropertyResidentialDetails> existing =
-                    residentialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-                PropertyResidentialDetails d = existing.orElseGet(PropertyResidentialDetails::new);
-                d.setPropertyId(propertyId);
-                d.setTeamId(teamId);
-                d.setBedrooms(r.bedrooms());
-                d.setBathrooms(r.bathrooms());
-                d.setFurnished(Optional.of(r.furnished().orElse(false)));
-                d.setPetPolicy(r.petPolicy());
-                d.setUpdatedBy(userId);
-                if (d.getId() == null) {
-                  d.setCreatedBy(userId);
-                }
-                residentialDetailsRepository.save(d);
-              });
+      case RESIDENTIAL -> {
+        // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
+        // detail storage moves to unit_residential_details at unit level.
+      }
       case COMMERCIAL ->
           commercial.ifPresent(
               c -> {
@@ -641,16 +613,6 @@ public class PropertyService {
         // No detail table
       }
     }
-  }
-
-  private Optional<ResidentialDetailsResponse> buildResidentialResponse(
-      UUID propertyId, UUID teamId) {
-    return residentialDetailsRepository
-        .findByPropertyIdAndTeamId(propertyId, teamId)
-        .map(
-            d ->
-                new ResidentialDetailsResponse(
-                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()));
   }
 
   private Optional<CommercialDetailsResponse> buildCommercialResponse(
@@ -761,20 +723,22 @@ public class PropertyService {
                     .toList())
             : Optional.empty();
 
-    Optional<List<PropertyAmenityResponse>> amenities =
-        includeNestedCollections
-            ? Optional.of(
-                propertyAmenityService.buildPropertyAmenityResponses(property.getId(), teamId))
-            : Optional.empty();
+    // TODO(BUUR-106 Task 9): property_amenities was dropped in V068; amenity links move to
+    // unit_amenities at unit level. Always empty until the unit-level endpoint is restored.
+    Optional<List<PropertyAmenityResponse>> amenities = Optional.empty();
 
     // Build category-specific detail responses
+    // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
+    // details move to unit_residential_details at unit level.
     Optional<ResidentialDetailsResponse> residentialDetails = Optional.empty();
     Optional<CommercialDetailsResponse> commercialDetails = Optional.empty();
     Optional<IndustrialDetailsResponse> industrialDetails = Optional.empty();
     Optional<AgriculturalDetailsResponse> agriculturalDetails = Optional.empty();
 
     switch (property.getPropertyCategory()) {
-      case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
+      case RESIDENTIAL -> {
+        // No-op: see TODO above.
+      }
       case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
       case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
       case AGRICULTURAL ->

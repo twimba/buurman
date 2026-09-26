@@ -41,7 +41,6 @@ class EnumLabelBundleParityTest {
   private static final List<Class<? extends Enum<?>>> ENUMS =
       List.of(
           Property.PropertyType.class,
-          Property.PropertyStatus.class,
           Property.PropertyCategory.class,
           Contract.ContractStatus.class,
           Contract.ContractType.class,

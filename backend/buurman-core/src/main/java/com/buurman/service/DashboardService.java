@@ -1,13 +1,5 @@
 package com.buurman.service;
 
-import static com.buurman.domain.Property.PropertyStatus.FALLOW;
-import static com.buurman.domain.Property.PropertyStatus.LISTED;
-import static com.buurman.domain.Property.PropertyStatus.MAINTENANCE;
-import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
-import static com.buurman.domain.Property.PropertyStatus.SELF_OCCUPIED;
-import static com.buurman.domain.Property.PropertyStatus.UNAVAILABLE;
-import static com.buurman.domain.Property.PropertyStatus.UNDER_RENOVATION;
-import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_UP;
 import static java.time.ZoneOffset.UTC;
@@ -61,57 +53,10 @@ public class DashboardService {
   private final Clock clock;
 
   public DashboardStatsResponse getDashboardStats(UUID teamId) {
-    List<Property> allProperties = propertyRepository.findAllByTeamId(teamId);
-
-    int totalProperties = allProperties.size();
-    int occupiedUnits = (int) allProperties.stream().filter(p -> p.getStatus() == OCCUPIED).count();
-    int selfOccupiedUnits =
-        (int) allProperties.stream().filter(p -> p.getStatus() == SELF_OCCUPIED).count();
-    int vacantUnits = (int) allProperties.stream().filter(p -> p.getStatus() == VACANT).count();
-    int maintenanceUnits =
-        (int) allProperties.stream().filter(p -> p.getStatus() == MAINTENANCE).count();
-    int unavailableUnits =
-        (int) allProperties.stream().filter(p -> p.getStatus() == UNAVAILABLE).count();
-    int underRenovationUnits =
-        (int) allProperties.stream().filter(p -> p.getStatus() == UNDER_RENOVATION).count();
-    int fallowUnits = (int) allProperties.stream().filter(p -> p.getStatus() == FALLOW).count();
-    int listedUnits = (int) allProperties.stream().filter(p -> p.getStatus() == LISTED).count();
-
-    // Occupancy rate: occupied + self-occupied vs available (excluding unavailable)
-    int availableUnits = totalProperties - unavailableUnits;
-    BigDecimal occupancyRate =
-        availableUnits > 0
-            ? BigDecimal.valueOf(occupiedUnits + selfOccupiedUnits)
-                .divide(BigDecimal.valueOf(availableUnits), 4, HALF_UP)
-                .multiply(BigDecimal.valueOf(100))
-            : ZERO;
-
-    // Rental occupancy rate: only rented units vs rental-eligible units
-    // Excludes self-occupied from both numerator and denominator
-    int rentalEligibleUnits = totalProperties - unavailableUnits - selfOccupiedUnits;
-    BigDecimal rentalOccupancyRate =
-        rentalEligibleUnits > 0
-            ? BigDecimal.valueOf(occupiedUnits)
-                .divide(BigDecimal.valueOf(rentalEligibleUnits), 4, HALF_UP)
-                .multiply(BigDecimal.valueOf(100))
-            : ZERO;
-
-    // Calculate monthly income from active contracts
-    DashboardStatsResponse.MonthlyIncome monthlyIncome = calculateMonthlyIncome(teamId);
-
-    return new DashboardStatsResponse(
-        totalProperties,
-        occupiedUnits,
-        selfOccupiedUnits,
-        vacantUnits,
-        maintenanceUnits,
-        unavailableUnits,
-        underRenovationUnits,
-        fallowUnits,
-        listedUnits,
-        monthlyIncome,
-        occupancyRate,
-        rentalOccupancyRate);
+    // Occupancy status moved from `properties` to `units` in V068. Every stat below (occupied,
+    // vacant, maintenance, etc. counts and both occupancy rates) is a status breakdown and
+    // requires a join against units — Task 12's job. Throwing rather than faking the counts.
+    throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
   }
 
   public List<RecentActivityResponse> getRecentActivities(UUID teamId, int limit) {

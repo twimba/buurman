@@ -76,6 +76,8 @@ public class DemoAuditLogGenerator {
   }
 
   private void collectPropertyAuditLogs(UUID teamId, List<Object[]> auditRecords) {
+    // Status/area/heating/energy fields moved from properties to units in V068 (BUUR-106);
+    // dropped from the demo audit payload rather than faking values here.
     var records =
         dsl.select(
                 PROPERTIES.ID,
@@ -85,12 +87,7 @@ public class DemoAuditLogGenerator {
                 PROPERTIES.COUNTRY_CODE,
                 PROPERTIES.PROPERTY_TYPE,
                 PROPERTIES.PROPERTY_CATEGORY,
-                PROPERTIES.STATUS,
-                PROPERTIES.AREA_VALUE,
-                PROPERTIES.AREA_UNIT,
                 PROPERTIES.YEAR_BUILT,
-                PROPERTIES.HEATING_TYPE,
-                PROPERTIES.ENERGY_EFFICIENCY_RATING,
                 PROPERTIES.CREATED_AT,
                 PROPERTIES.CREATED_BY)
             .from(PROPERTIES)
@@ -105,12 +102,7 @@ public class DemoAuditLogGenerator {
       values.put("country", r.get(PROPERTIES.COUNTRY_CODE));
       values.put("propertyType", r.get(PROPERTIES.PROPERTY_TYPE));
       values.put("propertyCategory", r.get(PROPERTIES.PROPERTY_CATEGORY));
-      values.put("status", r.get(PROPERTIES.STATUS));
-      values.put("area", r.get(PROPERTIES.AREA_VALUE));
-      values.put("areaUnit", r.get(PROPERTIES.AREA_UNIT));
       values.put("yearBuilt", r.get(PROPERTIES.YEAR_BUILT));
-      values.put("heatingType", r.get(PROPERTIES.HEATING_TYPE));
-      values.put("energyEfficiencyRating", r.get(PROPERTIES.ENERGY_EFFICIENCY_RATING));
 
       collectAuditLog(
           auditRecords,

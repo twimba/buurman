@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
+import com.buurman.domain.UnitStatus;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyRecordMapper;
@@ -80,18 +81,10 @@ public class PropertyRepository {
             .map(mapper::toDomain));
   }
 
-  public List<Property> findByTeamIdAndStatus(UUID teamId, Property.PropertyStatus status) {
-    return List.copyOf(
-        dsl.selectFrom(PROPERTIES)
-            .where(
-                PROPERTIES
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(PROPERTIES.STATUS.eq(status.name()))
-                    .and(PROPERTIES.DELETED_AT.isNull()))
-            .orderBy(PROPERTIES.CREATED_AT.desc())
-            .fetch()
-            .map(mapper::toDomain));
+  public List<Property> findByTeamIdAndStatus(UUID teamId, UnitStatus status) {
+    // Status moved from properties to units in V068. Filtering properties by status now
+    // requires a join against units, which is Task 12's job.
+    throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
   }
 
   public Property save(Property property) {
@@ -121,11 +114,9 @@ public class PropertyRepository {
           .set(PROPERTIES.LATITUDE, property.getLatitude().orElse(null))
           .set(PROPERTIES.LONGITUDE, property.getLongitude().orElse(null))
           .set(PROPERTIES.GEOCODE_ACCURACY, property.getGeocodeAccuracy().orElse(null))
-          .set(PROPERTIES.AREA_VALUE, property.getAreaValue().orElse(null))
-          .set(PROPERTIES.AREA_UNIT, property.getAreaUnit().orElse(null))
           .set(PROPERTIES.PROPERTY_CATEGORY, property.getPropertyCategory().name())
           .set(PROPERTIES.PROPERTY_TYPE, property.getPropertyType().name())
-          .set(PROPERTIES.STATUS, property.getStatus().name())
+          .set(PROPERTIES.ALLOCATION_BASIS, property.getAllocationBasis().name())
           // Construction & Structure
           .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt().orElse(null))
           .set(PROPERTIES.YEAR_LAST_RENOVATED, property.getYearLastRenovated().orElse(null))
@@ -133,21 +124,8 @@ public class PropertyRepository {
           .set(PROPERTIES.FOUNDATION_TYPE, property.getFoundationType().orElse(null))
           .set(PROPERTIES.ROOF_TYPE, property.getRoofType().orElse(null))
           .set(PROPERTIES.WALL_CONSTRUCTION, property.getWallConstruction().orElse(null))
-          .set(PROPERTIES.FLOORING_TYPE, property.getFlooringType().orElse(null))
-          .set(PROPERTIES.WINDOW_TYPE, property.getWindowType().orElse(null))
           .set(PROPERTIES.NUMBER_OF_FLOORS, property.getNumberOfFloors().orElse(null))
           .set(PROPERTIES.STRUCTURAL_NOTES, property.getStructuralNotes().orElse(null))
-          // Energy & Climate
-          .set(
-              PROPERTIES.ENERGY_EFFICIENCY_RATING,
-              property.getEnergyEfficiencyRating().orElse(null))
-          .set(
-              PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE,
-              property.getEnergyCertificateExpiryDate().orElse(null))
-          .set(PROPERTIES.HEATING_TYPE, property.getHeatingType().orElse(null))
-          .set(PROPERTIES.COOLING_TYPE, property.getCoolingType().orElse(null))
-          .set(PROPERTIES.HOT_WATER_SYSTEM, property.getHotWaterSystem().orElse(null))
-          .set(PROPERTIES.INSULATION_NOTES, property.getInsulationNotes().orElse(null))
           // Utilities & Connections
           .set(
               PROPERTIES.ELECTRICITY_CONNECTION_TYPE,
@@ -172,9 +150,6 @@ public class PropertyRepository {
           .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces().orElse(null))
           .set(PROPERTIES.PARKING_TYPE, property.getParkingType().orElse(null))
           // Safety & Security
-          .set(PROPERTIES.HAS_SMOKE_DETECTORS, property.getHasSmokeDetectors().orElse(null))
-          .set(PROPERTIES.HAS_CO_DETECTORS, property.getHasCoDetectors().orElse(null))
-          .set(PROPERTIES.HAS_FIRE_EXTINGUISHER, property.getHasFireExtinguisher().orElse(null))
           .set(PROPERTIES.HAS_SPRINKLER_SYSTEM, property.getHasSprinklerSystem().orElse(null))
           .set(PROPERTIES.HAS_ALARM_SYSTEM, property.getHasAlarmSystem().orElse(null))
           .set(PROPERTIES.HAS_SECURITY_CAMERAS, property.getHasSecurityCameras().orElse(null))
@@ -186,8 +161,6 @@ public class PropertyRepository {
               property.getIsWheelchairAccessible().orElse(null))
           .set(PROPERTIES.HAS_ELEVATOR, property.getHasElevator().orElse(null))
           .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance().orElse(null))
-          .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom().orElse(null))
-          .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes().orElse(null))
           // Audit
           .set(PROPERTIES.CREATED_AT, createdAt)
           .set(PROPERTIES.UPDATED_AT, updatedAt)
@@ -214,10 +187,8 @@ public class PropertyRepository {
           .set(PROPERTIES.LATITUDE, property.getLatitude().orElse(null))
           .set(PROPERTIES.LONGITUDE, property.getLongitude().orElse(null))
           .set(PROPERTIES.GEOCODE_ACCURACY, property.getGeocodeAccuracy().orElse(null))
-          .set(PROPERTIES.AREA_VALUE, property.getAreaValue().orElse(null))
-          .set(PROPERTIES.AREA_UNIT, property.getAreaUnit().orElse(null))
           .set(PROPERTIES.PROPERTY_TYPE, property.getPropertyType().name())
-          .set(PROPERTIES.STATUS, property.getStatus().name())
+          .set(PROPERTIES.ALLOCATION_BASIS, property.getAllocationBasis().name())
           // Note: property_category is NOT updated (immutable)
           // Construction & Structure
           .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt().orElse(null))
@@ -226,21 +197,8 @@ public class PropertyRepository {
           .set(PROPERTIES.FOUNDATION_TYPE, property.getFoundationType().orElse(null))
           .set(PROPERTIES.ROOF_TYPE, property.getRoofType().orElse(null))
           .set(PROPERTIES.WALL_CONSTRUCTION, property.getWallConstruction().orElse(null))
-          .set(PROPERTIES.FLOORING_TYPE, property.getFlooringType().orElse(null))
-          .set(PROPERTIES.WINDOW_TYPE, property.getWindowType().orElse(null))
           .set(PROPERTIES.NUMBER_OF_FLOORS, property.getNumberOfFloors().orElse(null))
           .set(PROPERTIES.STRUCTURAL_NOTES, property.getStructuralNotes().orElse(null))
-          // Energy & Climate
-          .set(
-              PROPERTIES.ENERGY_EFFICIENCY_RATING,
-              property.getEnergyEfficiencyRating().orElse(null))
-          .set(
-              PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE,
-              property.getEnergyCertificateExpiryDate().orElse(null))
-          .set(PROPERTIES.HEATING_TYPE, property.getHeatingType().orElse(null))
-          .set(PROPERTIES.COOLING_TYPE, property.getCoolingType().orElse(null))
-          .set(PROPERTIES.HOT_WATER_SYSTEM, property.getHotWaterSystem().orElse(null))
-          .set(PROPERTIES.INSULATION_NOTES, property.getInsulationNotes().orElse(null))
           // Utilities & Connections
           .set(
               PROPERTIES.ELECTRICITY_CONNECTION_TYPE,
@@ -265,9 +223,6 @@ public class PropertyRepository {
           .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces().orElse(null))
           .set(PROPERTIES.PARKING_TYPE, property.getParkingType().orElse(null))
           // Safety & Security
-          .set(PROPERTIES.HAS_SMOKE_DETECTORS, property.getHasSmokeDetectors().orElse(null))
-          .set(PROPERTIES.HAS_CO_DETECTORS, property.getHasCoDetectors().orElse(null))
-          .set(PROPERTIES.HAS_FIRE_EXTINGUISHER, property.getHasFireExtinguisher().orElse(null))
           .set(PROPERTIES.HAS_SPRINKLER_SYSTEM, property.getHasSprinklerSystem().orElse(null))
           .set(PROPERTIES.HAS_ALARM_SYSTEM, property.getHasAlarmSystem().orElse(null))
           .set(PROPERTIES.HAS_SECURITY_CAMERAS, property.getHasSecurityCameras().orElse(null))
@@ -279,8 +234,6 @@ public class PropertyRepository {
               property.getIsWheelchairAccessible().orElse(null))
           .set(PROPERTIES.HAS_ELEVATOR, property.getHasElevator().orElse(null))
           .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance().orElse(null))
-          .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom().orElse(null))
-          .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes().orElse(null))
           // Audit
           .set(PROPERTIES.UPDATED_AT, updatedAt)
           .set(PROPERTIES.UPDATED_BY, property.getUpdatedBy())
@@ -300,10 +253,12 @@ public class PropertyRepository {
       @Nullable String category,
       @Nullable String query,
       PageRequest pageRequest) {
-    Condition condition = PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
-      condition = condition.and(PROPERTIES.STATUS.eq(status));
+      // Status moved from properties to units in V068. Filtering properties by status now
+      // requires a join against units, which is Task 12's job.
+      throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
     }
+    Condition condition = PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull());
     if (category != null && !category.isEmpty()) {
       condition = condition.and(PROPERTIES.PROPERTY_CATEGORY.eq(category));
     }
@@ -324,7 +279,6 @@ public class PropertyRepository {
             "updatedAt", PROPERTIES.UPDATED_AT,
             "street", PROPERTIES.STREET,
             "city", PROPERTIES.CITY,
-            "status", PROPERTIES.STATUS,
             "propertyType", PROPERTIES.PROPERTY_TYPE,
             "propertyCategory", PROPERTIES.PROPERTY_CATEGORY);
     return PaginationHelper.paginate(

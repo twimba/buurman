@@ -82,12 +82,8 @@ public class DatabaseMetricsRepository {
   }
 
   public List<LabelCount> countPropertiesByStatus() {
-    var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
-    return dsl.select(PROPERTIES.STATUS, count())
-        .from(PROPERTIES)
-        .where(PROPERTIES.DELETED_AT.isNull().and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds)))
-        .groupBy(PROPERTIES.STATUS)
-        .fetch()
-        .map(r -> new LabelCount(r.value1(), r.value2()));
+    // Status moved from properties to units in V068. Grouping by status now requires a join
+    // against units, which is Task 12's job (unit-level status filtering/reporting).
+    throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
   }
 }

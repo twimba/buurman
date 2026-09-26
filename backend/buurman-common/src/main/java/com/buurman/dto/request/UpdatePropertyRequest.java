@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.buurman.domain.Property;
+import com.buurman.domain.UnitStatus;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +15,7 @@ import jakarta.validation.constraints.Positive;
 
 public record UpdatePropertyRequest(
     @NotNull(message = "Property type is required") Property.PropertyType propertyType,
-    @NotNull(message = "Status is required") Property.PropertyStatus status,
+    @NotNull(message = "Status is required") UnitStatus status,
     @NotBlank(message = "Street is required") String street,
     @NotBlank(message = "City is required") String city,
     @NotBlank(message = "Postal code is required") String postalCode,

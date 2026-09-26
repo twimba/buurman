@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.Property.PropertyCategory;
-import com.buurman.domain.Property.PropertyStatus;
 import com.buurman.domain.SortDirection;
+import com.buurman.domain.UnitStatus;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyRecordMapperImpl;
@@ -127,18 +127,10 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
     }
 
     @Test
-    @DisplayName("findByTeamIdAndStatus filters by status")
+    @DisplayName("findByTeamIdAndStatus throws — status moved to units (BUUR-106 Task 12)")
     void findByTeamIdAndStatusFilters() {
-      repo.save(TestDataHelper.buildProperty(TEAM_A_ID, USER_ID));
-      Property vacant = TestDataHelper.buildProperty(TEAM_A_ID, USER_ID);
-      vacant.setStatus(PropertyStatus.VACANT);
-      repo.save(vacant);
-
-      List<Property> occupied = repo.findByTeamIdAndStatus(TEAM_A_ID, PropertyStatus.OCCUPIED);
-      List<Property> vacantList = repo.findByTeamIdAndStatus(TEAM_A_ID, PropertyStatus.VACANT);
-
-      assertThat(occupied).hasSize(1);
-      assertThat(vacantList).hasSize(1);
+      assertThatThrownBy(() -> repo.findByTeamIdAndStatus(TEAM_A_ID, UnitStatus.OCCUPIED))
+          .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
@@ -175,23 +167,19 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   class Pagination {
 
     @Test
-    @DisplayName("findAllByTeamIdPaginated with status filter")
+    @DisplayName("findAllByTeamIdPaginated with status filter throws (BUUR-106 Task 12)")
     void paginatedWithStatusFilter() {
       repo.save(TestDataHelper.buildProperty(TEAM_A_ID, USER_ID));
-      Property vacant = TestDataHelper.buildProperty(TEAM_A_ID, USER_ID);
-      vacant.setStatus(PropertyStatus.VACANT);
-      repo.save(vacant);
 
-      PaginatedResult<Property> result =
-          repo.findAllByTeamIdPaginated(
-              TEAM_A_ID,
-              "OCCUPIED",
-              null,
-              null,
-              PageRequest.of(null, null, null, (SortDirection) null));
-
-      assertThat(result.items()).hasSize(1);
-      assertThat(result.totalElements()).isEqualTo(1);
+      assertThatThrownBy(
+              () ->
+                  repo.findAllByTeamIdPaginated(
+                      TEAM_A_ID,
+                      "OCCUPIED",
+                      null,
+                      null,
+                      PageRequest.of(null, null, null, (SortDirection) null)))
+          .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test

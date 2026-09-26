@@ -1,7 +1,5 @@
 package com.buurman.service;
 
-import static com.buurman.domain.Property.PropertyStatus.SELF_OCCUPIED;
-import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.SidGenerator.newOccupancyPeriodId;
 
 import java.time.Clock;
@@ -100,10 +98,13 @@ public class OccupancyPeriodService {
 
     repository.save(period);
 
-    // Update property status if period starts today or earlier
+    // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
+    // Marking the unit SELF_OCCUPIED when a period starts today or earlier needs a unit join.
     if (!request.startDate().isAfter(LocalDate.now(clock))) {
-      property.setStatus(SELF_OCCUPIED);
-      propertyRepository.save(property);
+      log.warn(
+          "Skipping automatic unit status update to SELF_OCCUPIED for property {}: status now"
+              + " lives on units, not properties (BUUR-106 Task 12)",
+          propertyIdentifier);
     }
 
     log.info(
@@ -174,10 +175,13 @@ public class OccupancyPeriodService {
     period.setUpdatedBy(principal.getUserId());
     repository.save(period);
 
-    // If the period was active, set property to VACANT
-    if (!request.endDate().isAfter(LocalDate.now(clock)) && property.getStatus() == SELF_OCCUPIED) {
-      property.setStatus(VACANT);
-      propertyRepository.save(property);
+    // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
+    // Marking the unit VACANT when the active self-occupancy period ends needs a unit join.
+    if (!request.endDate().isAfter(LocalDate.now(clock))) {
+      log.warn(
+          "Skipping automatic unit status update to VACANT for property {}: status now lives on"
+              + " units, not properties (BUUR-106 Task 12)",
+          propertyIdentifier);
     }
 
     log.info("Ended self-occupancy period {}", periodIdentifier);
@@ -202,9 +206,13 @@ public class OccupancyPeriodService {
             && (period.getEndDate().isEmpty()
                 || !period.getEndDate().get().isBefore(LocalDate.now(clock)));
 
-    if (wasActive && property.getStatus() == SELF_OCCUPIED) {
-      property.setStatus(VACANT);
-      propertyRepository.save(property);
+    // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
+    // Marking the unit VACANT when an active self-occupancy period is deleted needs a unit join.
+    if (wasActive) {
+      log.warn(
+          "Skipping automatic unit status update to VACANT for property {}: status now lives on"
+              + " units, not properties (BUUR-106 Task 12)",
+          propertyIdentifier);
     }
 
     log.info("Deleted self-occupancy period {}", periodIdentifier);

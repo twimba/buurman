@@ -22,9 +22,7 @@ import com.buurman.dto.request.WwsCalculationRequest;
 import com.buurman.dto.response.WwsCalculationResponse;
 import com.buurman.dto.response.WwsCategoryBreakdown;
 import com.buurman.repository.ContractRepository;
-import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.PropertyResidentialDetailsRepository;
 import com.buurman.repository.WwsCalculationRepository;
 import com.buurman.security.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,8 +33,6 @@ class WwsPointsCalculatorServiceTest {
 
   @Mock private ContractRepository contractRepository;
   @Mock private PropertyRepository propertyRepository;
-  @Mock private PropertyResidentialDetailsRepository residentialDetailsRepository;
-  @Mock private PropertyOutdoorAreaRepository outdoorAreaRepository;
   @Mock private WwsCalculationRepository wwsCalculationRepository;
 
   private WwsPointsCalculatorService service;
@@ -54,8 +50,6 @@ class WwsPointsCalculatorServiceTest {
             FIXED_CLOCK,
             contractRepository,
             propertyRepository,
-            residentialDetailsRepository,
-            outdoorAreaRepository,
             wwsCalculationRepository,
             new ObjectMapper());
     principal =

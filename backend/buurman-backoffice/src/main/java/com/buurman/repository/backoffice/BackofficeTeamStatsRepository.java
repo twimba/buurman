@@ -106,14 +106,9 @@ public class BackofficeTeamStatsRepository {
   }
 
   public Map<String, Long> propertyStatusDistribution(UUID teamId) {
-    Map<String, Long> result = new LinkedHashMap<>();
-    dsl.select(PROPERTIES.STATUS, count())
-        .from(PROPERTIES)
-        .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull()))
-        .groupBy(PROPERTIES.STATUS)
-        .fetch()
-        .forEach(r -> result.put(r.value1(), r.value2().longValue()));
-    return result;
+    // Status moved from properties to units in V068. Grouping by status now requires a join
+    // against units, which is Task 12's job.
+    throw new UnsupportedOperationException("Replaced by unit-level status filtering in Task 12");
   }
 
   public Map<String, Long> contractStatusDistribution(UUID teamId) {

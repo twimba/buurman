@@ -1,7 +1,6 @@
 package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
-import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.util.SidGenerator.newContractId;
 import static com.buurman.util.SidGenerator.newContractPartyId;
 import static com.buurman.util.SidGenerator.newContractRentPeriodId;
@@ -569,13 +568,9 @@ public class DemoContractGenerator {
         compBatch.execute();
       }
 
-      // 5. Batch update property statuses
-      if (!occupiedPropertyIds.isEmpty()) {
-        dsl.update(PROPERTIES)
-            .set(PROPERTIES.STATUS, "OCCUPIED")
-            .where(PROPERTIES.ID.in(occupiedPropertyIds))
-            .execute();
-      }
+      // TODO(BUUR-106 Task 9): status moved from properties to units in V068; demo data does not
+      // yet seed units, so there is nothing to mark OCCUPIED here. Restore once the demo-data
+      // unit generator exists.
 
       ctx.getContractIdsByTeam().put(teamId, contractIds);
       log.info(

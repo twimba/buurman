@@ -20,6 +20,8 @@ public class PropertyTabularExportBuilder {
   public TabularExport build(UUID teamId) {
     List<Property> properties = propertyRepository.findAllByTeamId(teamId);
 
+    // TODO(BUUR-106 Task 12): Status, Area, Energy Rating and Heating moved from properties to
+    // units in V068. Dropped from this export until unit-level data can be joined in.
     TabularExport export = new TabularExport("properties");
     TabularSheet sheet =
         export.addSheet(
@@ -33,15 +35,10 @@ public class PropertyTabularExportBuilder {
                 TabularColumn.text("Region"),
                 TabularColumn.text("Category"),
                 TabularColumn.text("Type"),
-                TabularColumn.text("Status"),
-                TabularColumn.of("Area", TabularColumnFormat.NUMBER),
-                TabularColumn.text("Area Unit"),
                 TabularColumn.of("Year Built", TabularColumnFormat.INTEGER),
                 TabularColumn.of("Year Last Renovated", TabularColumnFormat.INTEGER),
-                TabularColumn.text("Energy Rating"),
                 TabularColumn.of("Floors", TabularColumnFormat.INTEGER),
                 TabularColumn.of("Parking Spaces", TabularColumnFormat.INTEGER),
-                TabularColumn.text("Heating"),
                 TabularColumn.text("Has Elevator"),
                 TabularColumn.text("Wheelchair Accessible"),
                 TabularColumn.text("Created At"),
@@ -57,15 +54,10 @@ public class PropertyTabularExportBuilder {
           p.getRegionCode().orElse(""),
           p.getPropertyCategory().name(),
           p.getPropertyType().name(),
-          p.getStatus().name(),
-          p.getAreaValue().isPresent() ? p.getAreaValue().get() : "",
-          p.getAreaUnit().orElse(""),
           p.getYearBuilt().isPresent() ? p.getYearBuilt().get() : "",
           p.getYearLastRenovated().isPresent() ? p.getYearLastRenovated().get() : "",
-          p.getEnergyEfficiencyRating().orElse(""),
           p.getNumberOfFloors().isPresent() ? p.getNumberOfFloors().get() : "",
           p.getParkingSpaces().isPresent() ? p.getParkingSpaces().get() : "",
-          p.getHeatingType().orElse(""),
           p.getHasElevator().map(b -> b ? "Yes" : "No").orElse(""),
           p.getIsWheelchairAccessible().map(b -> b ? "Yes" : "No").orElse(""),
           p.getCreatedAt() != null ? p.getCreatedAt().toString() : "",

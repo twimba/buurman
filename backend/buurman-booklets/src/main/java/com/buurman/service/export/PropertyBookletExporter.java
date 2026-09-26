@@ -66,12 +66,10 @@ import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyAgriculturalDetailsRepository;
-import com.buurman.repository.PropertyAmenityRepository;
 import com.buurman.repository.PropertyCommercialDetailsRepository;
 import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.PropertyResidentialDetailsRepository;
 import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
@@ -93,7 +91,6 @@ import com.buurman.util.FeatureFlags;
 public class PropertyBookletExporter {
 
   private final PropertyRepository propertyRepository;
-  private final PropertyResidentialDetailsRepository residentialDetailsRepository;
   private final PropertyCommercialDetailsRepository commercialDetailsRepository;
   private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
   private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
@@ -101,7 +98,6 @@ public class PropertyBookletExporter {
   private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
-  private final PropertyAmenityRepository propertyAmenityRepository;
   private final PropertyOutdoorAreaRepository propertyOutdoorAreaRepository;
   private final AmenityRepository amenityRepository;
   private final PhotoRepository photoRepository;
@@ -121,7 +117,6 @@ public class PropertyBookletExporter {
 
   public PropertyBookletExporter(
       PropertyRepository propertyRepository,
-      PropertyResidentialDetailsRepository residentialDetailsRepository,
       PropertyCommercialDetailsRepository commercialDetailsRepository,
       PropertyIndustrialDetailsRepository industrialDetailsRepository,
       PropertyAgriculturalDetailsRepository agriculturalDetailsRepository,
@@ -129,7 +124,6 @@ public class PropertyBookletExporter {
       ContractExtensionRepository contractExtensionRepository,
       PaymentRepository paymentRepository,
       ExpenseRepository expenseRepository,
-      PropertyAmenityRepository propertyAmenityRepository,
       PropertyOutdoorAreaRepository propertyOutdoorAreaRepository,
       AmenityRepository amenityRepository,
       PhotoRepository photoRepository,
@@ -147,7 +141,6 @@ public class PropertyBookletExporter {
       Clock clock,
       @Value("${booklet.app-base-url:https://app.buurman.io}") String appBaseUrl) {
     this.propertyRepository = propertyRepository;
-    this.residentialDetailsRepository = residentialDetailsRepository;
     this.commercialDetailsRepository = commercialDetailsRepository;
     this.industrialDetailsRepository = industrialDetailsRepository;
     this.agriculturalDetailsRepository = agriculturalDetailsRepository;
@@ -155,7 +148,6 @@ public class PropertyBookletExporter {
     this.contractExtensionRepository = contractExtensionRepository;
     this.paymentRepository = paymentRepository;
     this.expenseRepository = expenseRepository;
-    this.propertyAmenityRepository = propertyAmenityRepository;
     this.propertyOutdoorAreaRepository = propertyOutdoorAreaRepository;
     this.amenityRepository = amenityRepository;
     this.photoRepository = photoRepository;
@@ -190,11 +182,10 @@ public class PropertyBookletExporter {
 
     if (category != null) {
       switch (category) {
-        case RESIDENTIAL ->
-            residentialDetails =
-                residentialDetailsRepository
-                    .findByPropertyIdAndTeamId(propertyId, teamId)
-                    .orElse(null);
+        case RESIDENTIAL -> {
+          // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
+          // details move to unit_residential_details at unit level. Always null for now.
+        }
         case COMMERCIAL ->
             commercialDetails =
                 commercialDetailsRepository
@@ -227,8 +218,9 @@ public class PropertyBookletExporter {
     List<Expense> expenses = expenseRepository.findByPropertyId(propertyId, teamId);
     List<PropertyOutdoorArea> outdoorAreas =
         propertyOutdoorAreaRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-    List<PropertyAmenity> propertyAmenities =
-        propertyAmenityRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+    // TODO(BUUR-106 Task 9): property_amenities was dropped in V068; amenity links move to
+    // unit_amenities at unit level. Always empty until the unit-level section is restored.
+    List<PropertyAmenity> propertyAmenities = List.of();
     List<Amenity> allAmenities = amenityRepository.findAll();
     List<Photo> photos = photoRepository.findByEntityAndTeamId("PROPERTY", propertyId, teamId);
 
@@ -298,10 +290,10 @@ public class PropertyBookletExporter {
     v.put("street", property.getStreet());
     v.put("location", buildLocationString(property));
     v.put("propertyTypeLabel", enumLabels.label(property.getPropertyType(), locale));
-    v.put("statusCode", property.getStatus() != null ? property.getStatus().name() : "VACANT");
-    v.put(
-        "statusLabel",
-        property.getStatus() != null ? enumLabels.label(property.getStatus(), locale) : "—");
+    // TODO(BUUR-106 Task 12): status moved from properties to units in V068; derive from the
+    // property's unit(s) once unit-level status filtering lands. Not faked as a real status here.
+    v.put("statusCode", "");
+    v.put("statusLabel", "—");
 
     v.put(
         "coverRows",
@@ -321,7 +313,7 @@ public class PropertyBookletExporter {
         details,
         msg("field.property.type", locale),
         enumLabels.label(property.getPropertyType(), locale));
-    addAlways(details, msg("field.status", locale), enumLabels.label(property.getStatus(), locale));
+    // TODO(BUUR-106 Task 12): status moved from properties to units; omitted until derivable.
     addAlways(details, msg("field.total.area", locale), area);
     addAlways(
         details,
@@ -353,10 +345,11 @@ public class PropertyBookletExporter {
     v.put("structuralNotes", property.getStructuralNotes().filter(s -> !s.isBlank()).orElse(null));
 
     // ── Building specifications (skipped for agricultural) ──
-    String energyRating =
-        property.getEnergyEfficiencyRating().filter(s -> !s.isBlank()).orElse(null);
+    // TODO(BUUR-106 Task 12): energy rating/insulation notes moved from properties to units in
+    // V068; null until derivable from the property's unit(s).
+    String energyRating = null;
     List<Map<String, Object>> energyFields = buildEnergyFields(property, locale);
-    String insulationNotes = property.getInsulationNotes().filter(s -> !s.isBlank()).orElse(null);
+    String insulationNotes = null;
     List<Map<String, Object>> utilitiesFields = buildUtilitiesFields(property, locale);
     List<Map<String, Object>> parkingFields = buildParkingFields(property, locale);
     boolean hasBuildingSpecs =
@@ -521,9 +514,8 @@ public class PropertyBookletExporter {
     addField(f, msg("field.construction.type", locale), enumStr(property.getConstructionType()));
     addField(f, msg("field.foundation", locale), enumStr(property.getFoundationType()));
     addField(f, msg("field.roof.type", locale), enumStr(property.getRoofType()));
-    addField(f, msg("field.window.type", locale), enumStr(property.getWindowType()));
     addField(f, msg("field.wall.construction", locale), enumStr(property.getWallConstruction()));
-    addField(f, msg("field.flooring", locale), enumStr(property.getFlooringType()));
+    // TODO(BUUR-106 Task 12): window type/flooring moved from properties to units in V068.
     return f;
   }
 
@@ -728,15 +720,9 @@ public class PropertyBookletExporter {
   // ── Building specifications ──────────────────────────────────────
 
   private List<Map<String, Object>> buildEnergyFields(Property property, Locale locale) {
-    List<Map<String, Object>> f = new ArrayList<>();
-    addField(f, msg("field.heating.system", locale), enumStr(property.getHeatingType()));
-    addField(f, msg("field.cooling.system", locale), enumStr(property.getCoolingType()));
-    addField(f, msg("field.hot.water.system", locale), enumStr(property.getHotWaterSystem()));
-    addField(
-        f,
-        msg("field.certificate.expiry", locale),
-        property.getEnergyCertificateExpiryDate().map(d -> formatter.date(d, locale)).orElse(null));
-    return f;
+    // TODO(BUUR-106 Task 12): heating/cooling/hot water/energy certificate expiry moved from
+    // properties to units in V068; empty until derivable from the property's unit(s).
+    return new ArrayList<>();
   }
 
   private List<Map<String, Object>> buildUtilitiesFields(Property property, Locale locale) {
@@ -824,16 +810,16 @@ public class PropertyBookletExporter {
 
   // ── Safety & accessibility ───────────────────────────────────────
 
+  // TODO(BUUR-106 Task 12): smoke/CO detectors, fire extinguisher, adapted bathroom and
+  // accessibility notes moved from properties to units in V068; dropped from this section until
+  // derivable from the property's unit(s).
   private void buildSafetySection(
       Map<String, Object> v,
       Property property,
       @Nullable PropertyCategory category,
       Locale locale) {
     boolean hasSafetyData =
-        isTrue(property.getHasSmokeDetectors().orElse(null))
-            || isTrue(property.getHasCoDetectors().orElse(null))
-            || isTrue(property.getHasFireExtinguisher().orElse(null))
-            || isTrue(property.getHasSprinklerSystem().orElse(null))
+        isTrue(property.getHasSprinklerSystem().orElse(null))
             || isTrue(property.getHasAlarmSystem().orElse(null))
             || isTrue(property.getHasSecurityCameras().orElse(null))
             || isTrue(property.getHasSecureEntry().orElse(null))
@@ -844,22 +830,11 @@ public class PropertyBookletExporter {
         !skipAccessibility
             && (isTrue(property.getIsWheelchairAccessible().orElse(null))
                 || isTrue(property.getHasElevator().orElse(null))
-                || isTrue(property.getHasStepFreeEntrance().orElse(null))
-                || isTrue(property.getHasAdaptedBathroom().orElse(null))
-                || property.getAccessibilityNotes().filter(s -> !s.isBlank()).isPresent());
+                || isTrue(property.getHasStepFreeEntrance().orElse(null)));
 
     List<Map<String, Object>> safetyChecks = new ArrayList<>();
     List<Map<String, Object>> accessChecks = new ArrayList<>();
     if (hasSafetyData) {
-      safetyChecks.add(
-          check(
-              msg("check.smoke.detectors", locale), property.getHasSmokeDetectors().orElse(null)));
-      safetyChecks.add(
-          check(msg("check.co.detectors", locale), property.getHasCoDetectors().orElse(null)));
-      safetyChecks.add(
-          check(
-              msg("check.fire.extinguisher", locale),
-              property.getHasFireExtinguisher().orElse(null)));
       safetyChecks.add(
           check(
               msg("check.sprinkler.system", locale),
@@ -884,10 +859,6 @@ public class PropertyBookletExporter {
           check(
               msg("check.step.free.entrance", locale),
               property.getHasStepFreeEntrance().orElse(null)));
-      accessChecks.add(
-          check(
-              msg("check.adapted.bathroom", locale),
-              property.getHasAdaptedBathroom().orElse(null)));
     }
 
     v.put("hasSafety", category != AGRICULTURAL && (hasSafetyData || hasAccessData));
@@ -896,11 +867,7 @@ public class PropertyBookletExporter {
         "safetyNotes",
         hasSafetyData ? property.getSafetyNotes().filter(s -> !s.isBlank()).orElse(null) : null);
     v.put("accessibilityChecks", accessChecks);
-    v.put(
-        "accessibilityNotes",
-        hasAccessData
-            ? property.getAccessibilityNotes().filter(s -> !s.isBlank()).orElse(null)
-            : null);
+    v.put("accessibilityNotes", null);
   }
 
   private Map<String, Object> check(String label, @Nullable Boolean value) {
@@ -1140,11 +1107,9 @@ public class PropertyBookletExporter {
   }
 
   private String buildAreaString(Property property) {
-    if (property.getAreaValue().isEmpty()) {
-      return "—";
-    }
-    String unit = property.getAreaUnit().orElse("sqm");
-    return property.getAreaValue().get() + " " + unit;
+    // TODO(BUUR-106 Task 12): area moved from properties to units in V068; "—" until derivable
+    // from the property's unit(s).
+    return "—";
   }
 
   private String areaDisplay(@Nullable BigDecimal value, @Nullable String unit) {
