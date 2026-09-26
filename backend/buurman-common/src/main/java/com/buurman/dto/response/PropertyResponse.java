@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
-import com.buurman.domain.UnitStatus;
 import com.buurman.util.SkipTestCoverage;
 
 @SkipTestCoverage
@@ -16,7 +15,6 @@ public record PropertyResponse(
     Sid identifier,
     Property.PropertyCategory propertyCategory,
     Property.PropertyType propertyType,
-    UnitStatus status,
     String street,
     String city,
     String postalCode,

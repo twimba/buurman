@@ -175,12 +175,18 @@ final class TestDataHelper {
   }
 
   static UUID insertContract(DSLContext dsl, UUID teamId, UUID propertyId, UUID createdBy) {
+    // contracts.unit_id is NOT NULL as of V068; create the implicit unit for this property so
+    // the contract has something valid to reference.
+    UUID unitId = UUID.randomUUID();
+    insertUnit(dsl, unitId, propertyId, teamId, "1", "OCCUPIED");
+
     UUID id = UUID.randomUUID();
     dsl.insertInto(DSL.table("contracts"))
         .set(DSL.field("id", UUID.class), id)
         .set(DSL.field("identifier", String.class), SidGenerator.newContractId().value())
         .set(DSL.field("team_id", UUID.class), teamId)
         .set(DSL.field("property_id", UUID.class), propertyId)
+        .set(DSL.field("unit_id", UUID.class), unitId)
         .set(DSL.field("contract_type", String.class), "FIXED_TERM")
         .set(DSL.field("start_date", LocalDate.class), LocalDate.of(2026, 1, 1))
         .set(DSL.field("rent_amount", Long.class), 100000L)

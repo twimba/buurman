@@ -86,8 +86,6 @@ tags:
     description: Dashboard statistics and recent activities
   - name: Registration
     description: Public registration endpoints
-  - name: Property Amenities
-    description: Manage amenities for properties
   - name: Payment Instructions
     description: Team-level payment instruction templates
   - name: Authentication
@@ -241,8 +239,6 @@ paths:
     $ref: 'paths/properties.yaml#/financials-financings-payments-bulk'
   /properties/{propertyIdentifier}/financials/fees:
     $ref: 'paths/properties.yaml#/financials-fees'
-  /properties/{propertyIdentifier}/amenities:
-    $ref: 'paths/properties.yaml#/amenities'
   /properties/{identifier}/photos:
     $ref: 'paths/properties.yaml#/photos'
   /properties/{identifier}/documents:
@@ -611,8 +607,6 @@ paths:
     $ref: 'paths/teams.yaml#/teams-members-item'
   /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments/documents/{documentIdentifier}:
     $ref: 'paths/properties.yaml#/financials-financings-payments-documents-item'
-  /properties/{propertyIdentifier}/amenities/{amenityIdentifier}:
-    $ref: 'paths/properties.yaml#/amenities-item'
   /properties/documents/{documentIdentifier}:
     $ref: 'paths/properties.yaml#/documents-item'
   /payments/documents/{documentIdentifier}:
@@ -2776,18 +2770,6 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
         street:
           type: string
         city:
@@ -2927,7 +2909,6 @@ components:
         - postalCode
         - propertyCategory
         - propertyType
-        - status
         - street
     ResidentialDetailsResponse:
       type: object

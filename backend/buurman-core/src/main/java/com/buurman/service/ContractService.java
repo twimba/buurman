@@ -1359,12 +1359,22 @@ public class ContractService {
   // Automatically flipping occupancy status based on contract lifecycle needs to target the
   // property's unit(s) instead of the property itself. Disabled for now rather than writing to
   // a field that no longer exists on Property or faking a status transition.
+  //
+  // The deleted business rule, to reinstate at unit level:
+  //   - if newStatus == ACTIVE && oldStatus != ACTIVE: set the unit to OCCUPIED.
+  //   - if oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED): set the
+  //     unit to VACANT, but ONLY when there is no OTHER active contract still referencing that
+  //     unit/property (checked via
+  //     contractRepository.findActiveContractByPropertyId(propertyId, teamId).isPresent()).
+  //     Do not unconditionally mark VACANT on every expiry/termination — a property/unit with
+  //     multiple contracts (e.g. mid-transition) must stay OCCUPIED while another active
+  //     contract exists.
   private void updatePropertyStatusBasedOnContract(
       UUID propertyId,
       Contract.ContractStatus newStatus,
       Contract.ContractStatus oldStatus,
       UserPrincipal principal) {
-    log.warn(
+    log.debug(
         "Skipping automatic unit status update for property {} (contract status {} -> {}):"
             + " status now lives on units, not properties (BUUR-106 Task 12)",
         propertyId,

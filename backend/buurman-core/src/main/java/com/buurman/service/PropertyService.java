@@ -752,7 +752,6 @@ public class PropertyService {
         response.identifier(),
         response.propertyCategory(),
         response.propertyType(),
-        response.status(),
         response.street(),
         response.city(),
         response.postalCode(),

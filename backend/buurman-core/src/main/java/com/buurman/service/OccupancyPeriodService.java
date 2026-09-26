@@ -177,6 +177,11 @@ public class OccupancyPeriodService {
 
     // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
     // Marking the unit VACANT when the active self-occupancy period ends needs a unit join.
+    //
+    // The deleted business rule, to reinstate at unit level: only set the unit to VACANT when
+    // the end date is today or earlier AND the unit's current status is SELF_OCCUPIED (i.e.
+    // `unit.getStatus() == SELF_OCCUPIED`). Do not unconditionally mark VACANT — a unit that is
+    // e.g. under maintenance or rented via a separate contract must not be overwritten.
     if (!request.endDate().isAfter(LocalDate.now(clock))) {
       log.warn(
           "Skipping automatic unit status update to VACANT for property {}: status now lives on"
@@ -208,6 +213,12 @@ public class OccupancyPeriodService {
 
     // TODO(BUUR-106 Task 12): occupancy status moved from `properties` to `units` in V068.
     // Marking the unit VACANT when an active self-occupancy period is deleted needs a unit join.
+    //
+    // The deleted business rule, to reinstate at unit level: only set the unit to VACANT when
+    // the deleted period was active (wasActive, computed above) AND the unit's current status
+    // is SELF_OCCUPIED (i.e. `unit.getStatus() == SELF_OCCUPIED`). Do not unconditionally mark
+    // VACANT — a unit that is e.g. under maintenance or rented via a separate contract must not
+    // be overwritten.
     if (wasActive) {
       log.warn(
           "Skipping automatic unit status update to VACANT for property {}: status now lives on"

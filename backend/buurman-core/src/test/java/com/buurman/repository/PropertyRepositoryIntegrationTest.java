@@ -169,8 +169,6 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
     @Test
     @DisplayName("findAllByTeamIdPaginated with status filter throws (BUUR-106 Task 12)")
     void paginatedWithStatusFilter() {
-      repo.save(TestDataHelper.buildProperty(TEAM_A_ID, USER_ID));
-
       assertThatThrownBy(
               () ->
                   repo.findAllByTeamIdPaginated(

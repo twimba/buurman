@@ -24,6 +24,7 @@ import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.Property;
+import com.buurman.domain.UnitStatus;
 
 /**
  * Guards {@code document-enum-labels}: (1) every supported locale defines exactly the English
@@ -42,6 +43,7 @@ class EnumLabelBundleParityTest {
       List.of(
           Property.PropertyType.class,
           Property.PropertyCategory.class,
+          UnitStatus.class,
           Contract.ContractStatus.class,
           Contract.ContractType.class,
           Contract.PaymentFrequency.class,

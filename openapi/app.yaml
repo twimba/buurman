@@ -86,8 +86,6 @@ tags:
     description: Dashboard statistics and recent activities
   - name: Registration
     description: Public registration endpoints
-  - name: Property Amenities
-    description: Manage amenities for properties
   - name: Payment Instructions
     description: Team-level payment instruction templates
   - name: Authentication
@@ -7430,131 +7428,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PropertyFeeResponse'
-        "400":
-          description: Bad request - validation error or malformed input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "401":
-          description: Unauthorized - missing or invalid JWT token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "403":
-          description: Forbidden - insufficient permissions
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "409":
-          description: Conflict - business rule violation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-      security:
-        - bearer-jwt: []
-  /properties/{propertyIdentifier}/amenities:
-    get:
-      tags:
-        - Property Amenities
-      summary: List property amenities
-      description: Get amenities linked to a property
-      operationId: getPropertyAmenities
-      parameters:
-        - name: propertyIdentifier
-          in: path
-          description: Property identifier
-          required: true
-          schema:
-            $ref: '#/components/schemas/PropertyIdentifier'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PropertyAmenityResponse'
-        "400":
-          description: Bad request - validation error or malformed input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "401":
-          description: Unauthorized - missing or invalid JWT token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "403":
-          description: Forbidden - insufficient permissions
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "409":
-          description: Conflict - business rule violation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-      security:
-        - bearer-jwt: []
-    post:
-      tags:
-        - Property Amenities
-      summary: Add amenity to property
-      description: Link an amenity to a property (Admin/Editor)
-      operationId: addAmenity
-      parameters:
-        - name: propertyIdentifier
-          in: path
-          description: Property identifier
-          required: true
-          schema:
-            $ref: '#/components/schemas/PropertyIdentifier'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PropertyAmenityRequest'
-        required: true
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PropertyAmenityResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -19752,67 +19625,6 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /properties/{propertyIdentifier}/amenities/{amenityIdentifier}:
-    delete:
-      tags:
-        - Property Amenities
-      summary: Remove amenity from property
-      description: Unlink an amenity from a property (Admin/Editor)
-      operationId: removeAmenity
-      parameters:
-        - name: propertyIdentifier
-          in: path
-          description: Property identifier
-          required: true
-          schema:
-            $ref: '#/components/schemas/PropertyIdentifier'
-        - name: amenityIdentifier
-          in: path
-          description: Amenity identifier
-          required: true
-          schema:
-            $ref: '#/components/schemas/AmenityIdentifier'
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad request - validation error or malformed input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "401":
-          description: Unauthorized - missing or invalid JWT token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "403":
-          description: Forbidden - insufficient permissions
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "409":
-          description: Conflict - business rule violation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-      security:
-        - bearer-jwt: []
   /properties/documents/{documentIdentifier}:
     delete:
       tags:
@@ -23291,18 +23103,6 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
         street:
           type: string
         city:
@@ -23442,7 +23242,6 @@ components:
         - postalCode
         - propertyCategory
         - propertyType
-        - status
         - street
     ResidentialDetailsResponse:
       type: object

@@ -56,10 +56,6 @@ public class DemoPropertyGenerator {
     "CONCRETE_SLAB", "CRAWL_SPACE", "BASEMENT", "PILE"
   };
   private static final String[] ROOF_TYPES = {"FLAT", "PITCHED", "HIP", "GABLE"};
-  private static final String[] FLOORING_TYPES = {"HARDWOOD", "LAMINATE", "TILE", "VINYL"};
-  private static final String[] WINDOW_TYPES = {"SINGLE_PANE", "DOUBLE_PANE", "TRIPLE_PANE"};
-  private static final String[] HEATING_TYPES = {"CENTRAL", "DISTRICT", "HEAT_PUMP", "GAS"};
-  private static final String[] ENERGY_RATINGS = {"A+", "A", "B", "C", "D"};
   private static final String[] INTERNET_TYPES = {"FIBER", "CABLE", "DSL"};
   private static final String[] PARKING_TYPES = {"GARAGE", "STREET", "UNDERGROUND", "NONE"};
   private static final String[] OUTDOOR_TYPES = {"BALCONY", "TERRACE", "GARDEN"};
@@ -814,9 +810,6 @@ public class DemoPropertyGenerator {
         String propertyCategory = entry.category();
         String propertyType = entry.propertyType();
 
-        // Default to VACANT; contract generator sets OCCUPIED for properties with ACTIVE contracts
-        String status = "VACANT";
-
         CountryData country = countryByName(entry.countryName());
         String street = entry.street() + " " + entry.houseNumber();
         String city = entry.city();
@@ -837,9 +830,6 @@ public class DemoPropertyGenerator {
         String constructionType = constructionTypeForCategory(propertyCategory);
         String foundationType = foundationTypeForCategory(propertyCategory);
         String roofType = roofTypeForCategory(propertyCategory);
-        String flooringType = flooringTypeForCategory(propertyCategory);
-        String heatingType = heatingTypeForCategory(propertyCategory);
-        String coolingType = coolingTypeForCategory(propertyCategory);
         int floors = floorsForCategory(propertyCategory);
 
         // created_at is around the acquisition date (property was "added" when acquired)
@@ -1642,29 +1632,6 @@ public class DemoPropertyGenerator {
       case "INDUSTRIAL" -> "FLAT";
       case "AGRICULTURAL" -> pick(new String[] {"PITCHED", "GABLE"});
       default -> pick(ROOF_TYPES);
-    };
-  }
-
-  private String flooringTypeForCategory(String category) {
-    return switch (category) {
-      case "INDUSTRIAL" -> "CONCRETE";
-      case "COMMERCIAL" -> pick(new String[] {"TILE", "LAMINATE", "VINYL"});
-      default -> pick(FLOORING_TYPES);
-    };
-  }
-
-  private String heatingTypeForCategory(String category) {
-    return switch (category) {
-      case "INDUSTRIAL", "AGRICULTURAL" -> "NONE";
-      default -> pick(HEATING_TYPES);
-    };
-  }
-
-  private String coolingTypeForCategory(String category) {
-    return switch (category) {
-      case "COMMERCIAL" -> "CENTRAL_AC";
-      case "INDUSTRIAL", "AGRICULTURAL" -> "NONE";
-      default -> random.nextBoolean() ? "CENTRAL_AC" : "NONE";
     };
   }
 

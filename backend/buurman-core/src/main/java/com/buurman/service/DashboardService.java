@@ -1,10 +1,7 @@
 package com.buurman.service;
 
-import static java.math.BigDecimal.ZERO;
-import static java.math.RoundingMode.HALF_UP;
 import static java.time.ZoneOffset.UTC;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
-import com.buurman.domain.ContractIncomeEntry;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
@@ -49,7 +45,6 @@ public class DashboardService {
   private final ContractExtensionRepository extensionRepository;
   private final ContactRepository contactRepository;
   private final ContractPartyService contractPartyService;
-  private final TeamService teamService;
   private final Clock clock;
 
   public DashboardStatsResponse getDashboardStats(UUID teamId) {
@@ -219,41 +214,6 @@ public class DashboardService {
         .sorted(Comparator.comparing(UpcomingRenewalResponse::getEffectiveEndDate))
         .limit(10)
         .toList();
-  }
-
-  private DashboardStatsResponse.MonthlyIncome calculateMonthlyIncome(UUID teamId) {
-    List<ContractIncomeEntry> activeContracts =
-        contractRepository.findActiveContractIncomeByTeamId(teamId);
-
-    if (activeContracts.isEmpty()) {
-      return new DashboardStatsResponse.MonthlyIncome(ZERO, teamService.getDefaultCurrency(teamId));
-    }
-
-    // Group by currency and calculate monthly income
-    Map<String, BigDecimal> incomePerCurrency = new java.util.HashMap<>();
-
-    for (var contract : activeContracts) {
-      String currency = contract.rentAmountCurrency();
-      BigDecimal rentAmount = contract.rentAmount();
-      String paymentFrequency = contract.paymentFrequency();
-
-      // Convert to monthly amount based on payment frequency
-      BigDecimal monthlyAmount =
-          switch (paymentFrequency) {
-            case "MONTHLY" -> rentAmount;
-            case "QUARTERLY" -> rentAmount.divide(BigDecimal.valueOf(3), 2, HALF_UP);
-            case "ANNUALLY" -> rentAmount.divide(BigDecimal.valueOf(12), 2, HALF_UP);
-            default -> rentAmount;
-          };
-
-      incomePerCurrency.merge(currency, monthlyAmount, BigDecimal::add);
-    }
-
-    // For simplicity, return the first currency (typically EUR)
-    Map.Entry<String, BigDecimal> primaryIncome = incomePerCurrency.entrySet().iterator().next();
-
-    return new DashboardStatsResponse.MonthlyIncome(
-        primaryIncome.getValue().setScale(2, HALF_UP), primaryIncome.getKey());
   }
 
   public List<ContractExtensionResponse> getPendingExtensions(UUID teamId) {
