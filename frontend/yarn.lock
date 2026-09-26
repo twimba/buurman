@@ -1044,7 +1044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/shadertools@npm:^9.4.0":
+"@luma.gl/shadertools@npm:^9.4.0, @luma.gl/shadertools@npm:^9.4.2":
   version: 9.4.2
   resolution: "@luma.gl/shadertools@npm:9.4.2"
   dependencies:
@@ -4270,7 +4270,7 @@ __metadata:
     "@loaders.gl/core": "npm:^4.5.2"
     "@luma.gl/core": "npm:^9.4.2"
     "@luma.gl/engine": "npm:^9.4.2"
-    "@luma.gl/shadertools": "npm:^9.4.0"
+    "@luma.gl/shadertools": "npm:^9.4.2"
     "@luma.gl/webgl": "npm:^9.4.2"
     "@tailwindcss/postcss": "npm:4.3.3"
     "@tanstack/react-query": "npm:5.103.2"
