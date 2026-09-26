@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.buurman.domain.AllocationBasis;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.util.SkipTestCoverage;
@@ -15,6 +16,7 @@ public record PropertyResponse(
     Sid identifier,
     Property.PropertyCategory propertyCategory,
     Property.PropertyType propertyType,
+    AllocationBasis allocationBasis,
     String street,
     String city,
     String postalCode,

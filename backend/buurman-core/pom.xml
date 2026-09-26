@@ -705,6 +705,10 @@
                                 <importMapping>UnitResidentialDetailsResponse=com.buurman.dto.response.UnitResidentialDetailsResponse</importMapping>
                                 <importMapping>UpdateUnitResidentialDetailsRequest=com.buurman.dto.request.UpdateUnitResidentialDetailsRequest</importMapping>
                                 <importMapping>UpdateUnitAmenitiesRequest=com.buurman.dto.request.UpdateUnitAmenitiesRequest</importMapping>
+                                <!-- BUUR-106: Expense allocation import mappings -->
+                                <importMapping>ExpenseAllocationResponse=com.buurman.dto.response.ExpenseAllocationResponse</importMapping>
+                                <importMapping>ManualAllocationRequest=com.buurman.dto.request.ManualAllocationRequest</importMapping>
+                                <importMapping>UpdateAllocationRequest=com.buurman.dto.request.UpdateAllocationRequest</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

@@ -1,8 +1,10 @@
 package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,17 +16,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.AllocationBasis;
+import com.buurman.domain.Expense;
 import com.buurman.domain.ExpenseAllocation;
 import com.buurman.domain.Unit;
 import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
+import com.buurman.domain.identifier.UnitIdentifier;
+import com.buurman.dto.request.ManualAllocationRequest;
+import com.buurman.dto.request.ManualAllocationRequest.ManualAllocationEntry;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.util.MoneyAmount;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ExpenseAllocationService.computeAllocations")
 class ExpenseAllocationServiceTest {
 
-  private final ExpenseAllocationService service = new ExpenseAllocationService(null, null, null);
+  private final ExpenseAllocationService service =
+      new ExpenseAllocationService(null, null, null, null);
 
   @Test
   @DisplayName("splits a 1200.00 expense equally across 4 units as 300.00 each")
@@ -132,6 +140,34 @@ class ExpenseAllocationServiceTest {
   void handlesNoUnits() {
     assertThat(service.computeAllocations(money("100.00"), AllocationBasis.EQUAL, List.of()))
         .isEmpty();
+  }
+
+  @Test
+  @DisplayName("rejects a MANUAL override whose entries don't sum to the expense total")
+  void rejectsManualOverrideSumMismatch() {
+    Expense expense =
+        Expense.builder()
+            .id(UUID.randomUUID())
+            .teamId(UUID.randomUUID())
+            .propertyId(UUID.randomUUID())
+            .category(Expense.ExpenseCategory.MAINTENANCE)
+            .amount(money("1000.00"))
+            .expenseDate(LocalDate.of(2026, 1, 1))
+            .description("Roof repair")
+            .build();
+
+    ManualAllocationRequest request =
+        new ManualAllocationRequest(
+            List.of(
+                new ManualAllocationEntry(
+                    UnitIdentifier.of("UNT0000000000000000000A"), new BigDecimal("400.00")),
+                new ManualAllocationEntry(
+                    UnitIdentifier.of("UNT0000000000000000000B"), new BigDecimal("500.00"))));
+
+    assertThatThrownBy(() -> service.overrideManual(expense, request, UUID.randomUUID()))
+        .isInstanceOf(BusinessRuleException.class)
+        .hasMessageContaining("900.00")
+        .hasMessageContaining("1000.00");
   }
 
   private static MoneyAmount money(String value) {

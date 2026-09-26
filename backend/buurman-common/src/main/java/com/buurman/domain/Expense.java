@@ -40,6 +40,10 @@ public class Expense {
   private UUID teamId;
   private UUID propertyId;
   @Builder.Default private Optional<UUID> contactId = Optional.empty();
+  // Empty means the expense is building-level and gets split across the property's units via
+  // ExpenseAllocationService; present means it belongs to exactly one unit and gets no allocation
+  // rows.
+  @Builder.Default private Optional<UUID> unitId = Optional.empty();
   private ExpenseCategory category;
   private MoneyAmount amount;
   private LocalDate expenseDate;

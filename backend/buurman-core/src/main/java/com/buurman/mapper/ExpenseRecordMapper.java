@@ -30,6 +30,7 @@ public class ExpenseRecordMapper {
     expense.setDescription(record.getDescription());
     expense.setNotes(Optional.ofNullable(record.getNotes()));
     expense.setContactId(java.util.Optional.ofNullable(record.getContactId()));
+    expense.setUnitId(java.util.Optional.ofNullable(record.getUnitId()));
     expense.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     expense.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     expense.setCreatedBy(record.getCreatedBy());

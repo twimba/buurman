@@ -136,6 +136,27 @@ final class TestDataHelper {
         .execute();
   }
 
+  static UUID insertExpense(
+      DSLContext dsl, UUID propertyId, UUID teamId, UUID createdBy, BigDecimal amountMinorUnits) {
+    UUID id = UUID.randomUUID();
+    dsl.insertInto(DSL.table("expenses"))
+        .set(DSL.field("id", UUID.class), id)
+        .set(DSL.field("identifier", String.class), SidGenerator.newExpenseId().value())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("property_id", UUID.class), propertyId)
+        .set(DSL.field("category", String.class), "MAINTENANCE")
+        .set(DSL.field("amount", Long.class), amountMinorUnits.longValueExact())
+        .set(DSL.field("currency", String.class), "EUR")
+        .set(DSL.field("expense_date", LocalDate.class), LocalDate.of(2026, 3, 1))
+        .set(DSL.field("description", String.class), "Roof repair")
+        .set(DSL.field("created_at", LocalDateTime.class), NOW)
+        .set(DSL.field("updated_at", LocalDateTime.class), NOW)
+        .set(DSL.field("created_by", UUID.class), createdBy)
+        .set(DSL.field("updated_by", UUID.class), createdBy)
+        .execute();
+    return id;
+  }
+
   static Contact buildContact(UUID teamId, UUID createdBy) {
     Contact c = new Contact();
     c.setIdentifier(Optional.of(SidGenerator.newContactId()));

@@ -15,6 +15,8 @@ public record ExpenseResponse(
     Sid identifier,
     Optional<PropertySummary> property,
     Optional<ContactSummary> contact,
+    // Empty means this is a building-level expense, split across the property's units.
+    Optional<Sid> unitIdentifier,
     Expense.ExpenseCategory category,
     BigDecimal amount,
     String currency,

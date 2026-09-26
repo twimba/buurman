@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.buurman.domain.Expense;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
@@ -23,4 +24,6 @@ public record CreateExpenseRequest(
     @NotNull(message = "Expense date is required") LocalDate expenseDate,
     @NotNull(message = "Description is required") @Size(min = 1, max = 500, message = "Description must be between 1 and 500 characters") String description,
     Optional<String> notes,
-    Optional<ContactIdentifier> contactIdentifier) {}
+    Optional<ContactIdentifier> contactIdentifier,
+    // Empty means the expense is building-level and gets split across the property's units.
+    Optional<UnitIdentifier> unitIdentifier) {}

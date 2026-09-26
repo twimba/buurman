@@ -62,6 +62,7 @@ import com.buurman.domain.Property.PropertyType;
 import com.buurman.domain.PropertyAgriculturalDetails;
 import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
+import com.buurman.domain.Unit;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -71,6 +72,8 @@ import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.IndustrialDetailsRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.ResidentialDetailsRequest;
+import com.buurman.dto.request.UpdateAllocationRequest;
+import com.buurman.dto.request.UpdateAllocationRequest.UnitShareEntry;
 import com.buurman.dto.request.UpdatePropertyRequest;
 import com.buurman.dto.response.AgriculturalDetailsResponse;
 import com.buurman.dto.response.CommercialDetailsResponse;
@@ -84,6 +87,7 @@ import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.ResidentialDetailsResponse;
 import com.buurman.exception.BadRequestException;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyAgriculturalDetailsRepository;
@@ -91,6 +95,7 @@ import com.buurman.repository.PropertyCommercialDetailsRepository;
 import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -105,6 +110,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PropertyService {
 
   private final PropertyRepository propertyRepository;
+  private final UnitRepository unitRepository;
   private final PropertyCommercialDetailsRepository commercialDetailsRepository;
   private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
   private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
@@ -305,6 +311,59 @@ public class PropertyService {
 
     auditService.logUpdate(
         principal.requireTeamId(),
+        "PROPERTY",
+        updatedProperty.getId(),
+        principal.getUserId(),
+        oldState,
+        newState,
+        auditService.getChangedFields(oldState, newState));
+
+    return newState;
+  }
+
+  /**
+   * Sets a property's allocation basis and, for CUSTOM, each unit's share. Does not retroactively
+   * rewrite any expense's already-persisted allocations — call {@code
+   * ExpenseService#recomputeExpenseAllocations} explicitly for that, since NL service-charge
+   * settlement statements built from these rows are legal documents.
+   */
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public PropertyResponse updateAllocation(
+      PropertyIdentifier identifier, UpdateAllocationRequest request, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Property property = propertyRepository.getByIdentifierAndTeamId(identifier, teamId);
+
+    PropertyResponse oldState = toResponseWithMainPhoto(property, teamId, true);
+
+    request
+        .shares()
+        .ifPresent(
+            shares -> {
+              for (UnitShareEntry share : shares) {
+                Unit unit = unitRepository.getByIdentifierAndTeamId(share.unitIdentifier(), teamId);
+                if (!unit.getPropertyId().equals(property.getId())) {
+                  throw new BusinessRuleException(
+                      "Unit "
+                          + share.unitIdentifier().value()
+                          + " does not belong to this property.");
+                }
+                unit.setAllocationShare(Optional.of(share.sharePct()));
+                unit.setUpdatedBy(Optional.of(principal.getUserId()));
+                unitRepository.save(unit);
+              }
+            });
+
+    property.setAllocationBasis(request.basis());
+    property.setUpdatedBy(principal.getUserId());
+    Property updatedProperty = propertyRepository.save(property);
+
+    PropertyResponse newState = toResponseWithMainPhoto(updatedProperty, teamId, true);
+
+    log.info("Property allocation updated: {} for team {}", identifier, teamId);
+
+    auditService.logUpdate(
+        teamId,
         "PROPERTY",
         updatedProperty.getId(),
         principal.getUserId(),
@@ -752,6 +811,7 @@ public class PropertyService {
         response.identifier(),
         response.propertyCategory(),
         response.propertyType(),
+        response.allocationBasis(),
         response.street(),
         response.city(),
         response.postalCode(),
