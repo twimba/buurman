@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Maximaal {{percentage}}% van het verschuldigde bedrag",
       "noticeDays": "Termijn ingebrekestelling: {{count}} dagen"
+    },
+    "tenancyRules": {
+      "title": "Huurregels",
+      "subtitle": "Alleen ter referentie — geen limieten voor huurverhoging. Controleer lokaal.",
+      "effectiveFrom": "Vanaf {{date}}",
+      "source": "Bron",
+      "topic": {
+        "NOTICE_PERIOD": "Opzegtermijnen",
+        "TENANCY_DURATION": "Duur van de huurovereenkomst",
+        "DEPOSIT": "Waarborgsommen",
+        "LEASE_FORM": "Formele vereisten huurovereenkomst",
+        "REGISTRATION": "Registratieverplichtingen",
+        "FEES_AND_PENALTIES": "Kosten en boetes",
+        "OTHER": "Overig"
+      }
     }
   },
   "rentIncrease": {

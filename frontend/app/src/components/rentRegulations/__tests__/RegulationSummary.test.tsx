@@ -54,3 +54,42 @@ describe('RegulationSummary late-fee regime', () => {
     expect(screen.queryByText('Late fees')).not.toBeInTheDocument();
   });
 });
+
+describe('RegulationSummary tenancy rules', () => {
+  it('groups tenancy rules by topic and shows value, date and legal basis', () => {
+    renderWithProviders(
+      <RegulationSummary
+        country={{
+          ...base,
+          tenancyRules: [
+            {
+              identifier: 'rrt_01TEST',
+              topic: 'TENANCY_DURATION',
+              label: 'Minimum fixed term',
+              value: '5 years',
+              effectiveFrom: '2026-01-01',
+              legalBasis: 'MRG § 29',
+            },
+          ],
+        }}
+      />
+    );
+    expect(screen.getByText('Tenancy rules')).toBeInTheDocument();
+    expect(screen.getByText('Tenancy duration')).toBeInTheDocument();
+    expect(screen.getByText('Minimum fixed term')).toBeInTheDocument();
+    expect(screen.getByText('5 years')).toBeInTheDocument();
+    expect(screen.getByText(/MRG § 29/)).toBeInTheDocument();
+  });
+
+  it('hides the section when there are no tenancy rules', () => {
+    renderWithProviders(
+      <RegulationSummary country={{ ...base, tenancyRules: [] }} />
+    );
+    expect(screen.queryByText('Tenancy rules')).not.toBeInTheDocument();
+  });
+
+  it('hides the section when tenancyRules is absent', () => {
+    renderWithProviders(<RegulationSummary country={base} />);
+    expect(screen.queryByText('Tenancy rules')).not.toBeInTheDocument();
+  });
+});
