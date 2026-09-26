@@ -105,7 +105,7 @@ body {
 
 .btn-secondary {
     background: var(--surface);
-    color: var(--primary);
+    color: var(--primary-dark);
     border: 2px solid var(--border);
 }
 .btn-secondary:hover {
@@ -119,7 +119,7 @@ body {
     color: var(--text-secondary);
     padding: 0.5rem 1rem;
 }
-.btn-ghost:hover { color: var(--primary); }
+.btn-ghost:hover { color: var(--primary-dark); }
 
 .btn-lg {
     padding: 1rem 2.5rem;
@@ -182,7 +182,7 @@ body {
     border-radius: var(--radius);
     transition: all 0.2s;
 }
-.nav-link:hover { color: var(--primary); background: var(--primary-50); }
+.nav-link:hover { color: var(--primary-dark); background: var(--primary-50); }
 
 /* Mobile menu */
 .menu-toggle {
@@ -225,8 +225,9 @@ body {
 .icon-gradient { background: linear-gradient(135deg, var(--primary), #f59f00, var(--success)); }
 
 /* ── Gradient Text ───────────────────────────────── */
+/* Kept dark enough to clear 3:1 against white at display sizes. */
 .gradient-text {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary-lighter) 100%);
+    background: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 45%, var(--primary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -325,7 +326,7 @@ body {
     line-height: 1.7;
 }
 
-.footer-col h4 {
+.footer-col h3 {
     color: #f5f5f4;
     font-size: 0.8125rem;
     font-weight: 700;
@@ -383,4 +384,37 @@ body {
 .reveal.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* ── Visible keyboard focus (everywhere) ─────────── */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ── Demo button (nav) ───────────────────────────── */
+.btn-demo {
+    background: var(--primary-50);
+    color: var(--primary-dark);
+    border: 1px solid var(--primary-100);
+    padding: 0.5rem 1.125rem;
+    font-size: 0.9375rem;
+    margin-left: 0.25rem;
+}
+.btn-demo:hover {
+    background: #e3f3fd;
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.cta-note {
+    margin: 1.5rem 0 0;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+.cta-note a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 768px) {
+    .header.menu-open .nav .btn { width: 100%; }
 }
