@@ -6,4 +6,5 @@ import com.buurman.domain.Sid;
 import com.buurman.util.SkipTestCoverage;
 
 @SkipTestCoverage
-public record TeamResponse(Sid identifier, String teamName, long memberCount, Instant createdAt) {}
+public record TeamResponse(
+    Sid identifier, String teamName, long memberCount, int billableUnitCount, Instant createdAt) {}

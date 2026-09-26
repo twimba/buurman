@@ -31,6 +31,7 @@ public record BackofficeTeamDetailResponse(
 
   public record DataCounts(
       long properties,
+      long units,
       long contacts,
       long contracts,
       long expenses,

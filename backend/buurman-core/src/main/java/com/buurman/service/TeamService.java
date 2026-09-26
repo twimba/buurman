@@ -50,6 +50,7 @@ import com.buurman.repository.TeamInvitationRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.TeamRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
@@ -62,6 +63,7 @@ import lombok.RequiredArgsConstructor;
 public class TeamService {
 
   private final TeamRepository teamRepository;
+  private final UnitRepository unitRepository;
   private final TeamPreferencesRepository teamPreferencesRepository;
   private final PaymentReminderService paymentReminderService;
   private final TeamMemberRepository teamMemberRepository;
@@ -77,7 +79,8 @@ public class TeamService {
     Team team = teamRepository.getById(principal.requireTeamId());
 
     long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
-    return teamMapper.toResponse(team, memberCount);
+    int billableUnitCount = unitRepository.countActiveByTeamId(team.getId());
+    return teamMapper.toResponse(team, memberCount, billableUnitCount);
   }
 
   public List<TeamMemberResponse> getTeamMembers(
@@ -455,7 +458,8 @@ public class TeamService {
     team = teamRepository.save(team);
 
     long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
-    return teamMapper.toResponse(team, memberCount);
+    int billableUnitCount = unitRepository.countActiveByTeamId(team.getId());
+    return teamMapper.toResponse(team, memberCount, billableUnitCount);
   }
 
   @Transactional

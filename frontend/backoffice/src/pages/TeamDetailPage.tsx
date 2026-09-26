@@ -5,6 +5,7 @@ import {
   Users,
   Calendar,
   Building2,
+  Home,
   UserCheck,
   FileText,
   Receipt,
@@ -229,12 +230,18 @@ export const TeamDetailPage = () => {
 
       {/* Data Volume */}
       <SectionTitle title="Data Overview" />
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 mb-6">
         <DataCard
           icon={Building2}
           label="Properties"
           value={team.dataCounts.properties}
           color="blue"
+        />
+        <DataCard
+          icon={Home}
+          label="Units"
+          value={team.dataCounts.units}
+          color="indigo"
         />
         <DataCard
           icon={UserCheck}
@@ -514,6 +521,11 @@ const colorClasses: Record<
     bg: 'bg-slate-100',
     icon: 'text-slate-600',
     value: 'text-slate-700',
+  },
+  indigo: {
+    bg: 'bg-indigo-50',
+    icon: 'text-indigo-600',
+    value: 'text-indigo-700',
   },
 };
 

@@ -19,6 +19,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
+import com.buurman.repository.UnitRepository;
 import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class BackofficeTeamStatsRepository {
 
   private final DSLContext dsl;
+  private final UnitRepository unitRepository;
 
   public DataCounts countEntitiesForTeam(UUID teamId) {
     long properties =
@@ -35,6 +37,9 @@ public class BackofficeTeamStatsRepository {
             dsl.selectCount()
                 .from(PROPERTIES)
                 .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull())));
+    // Delegates to UnitRepository so the same properties-join predicate (units of a
+    // soft-deleted property are excluded) is used everywhere this figure is surfaced.
+    long units = unitRepository.countActiveByTeamId(teamId);
     long contacts =
         fetchCount(
             dsl.selectCount()
@@ -60,7 +65,7 @@ public class BackofficeTeamStatsRepository {
             dsl.selectCount()
                 .from(DOCUMENTS)
                 .where(DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull())));
-    return new DataCounts(properties, contacts, contracts, expenses, payments, documents);
+    return new DataCounts(properties, units, contacts, contracts, expenses, payments, documents);
   }
 
   private static long fetchCount(org.jooq.SelectConditionStep<?> query) {

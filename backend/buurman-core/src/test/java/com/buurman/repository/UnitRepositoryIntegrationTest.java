@@ -98,6 +98,37 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
   }
 
   @Test
+  @DisplayName(
+      "sums units across all of a team's properties for billing, excluding a soft-deleted "
+          + "property's units (BUUR-106 Task 15)")
+  void sumsUnitsAcrossPropertiesForBillingExcludingSoftDeletedProperty() {
+    // Property 1 (active): 1 unit.
+    TestDataHelper.insertUnit(dsl, UUID.randomUUID(), teamAPropertyId, TEAM_A_ID, "1", "VACANT");
+
+    // Property 2 (active): 6 units.
+    UUID secondPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    for (int i = 1; i <= 6; i++) {
+      TestDataHelper.insertUnit(
+          dsl, UUID.randomUUID(), secondPropertyId, TEAM_A_ID, String.valueOf(i), "VACANT");
+    }
+
+    // Property 3: soft-deleted, but still has units left behind (a prior migration deliberately
+    // keeps implicit units around after a property is soft-deleted, so contracts retain a valid
+    // foreign key). Those units must not inflate the billable count.
+    UUID softDeletedPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    TestDataHelper.insertUnit(
+        dsl, UUID.randomUUID(), softDeletedPropertyId, TEAM_A_ID, "1", "VACANT");
+    TestDataHelper.insertUnit(
+        dsl, UUID.randomUUID(), softDeletedPropertyId, TEAM_A_ID, "2", "VACANT");
+    dsl.update(DSL.table("properties"))
+        .set(DSL.field("deleted_at", LocalDateTime.class), LocalDateTime.now(CLOCK))
+        .where(DSL.field("id").eq(softDeletedPropertyId))
+        .execute();
+
+    assertThat(repository.countActiveByTeamId(TEAM_A_ID)).isEqualTo(7);
+  }
+
+  @Test
   @DisplayName("excludes soft-deleted units from counts")
   void excludesSoftDeletedUnits() {
     UUID unitId = UUID.randomUUID();
