@@ -55,6 +55,18 @@ CREATE TABLE units (
     CONSTRAINT chk_units_type CHECK (
         unit_type IN ('APARTMENT', 'PARKING', 'STORAGE', 'COMMERCIAL')
     ),
+    CONSTRAINT chk_units_status CHECK (
+        status IN (
+            'VACANT',
+            'OCCUPIED',
+            'SELF_OCCUPIED',
+            'MAINTENANCE',
+            'UNAVAILABLE',
+            'UNDER_RENOVATION',
+            'FALLOW',
+            'LISTED'
+        )
+    ),
     CONSTRAINT chk_units_area_positive CHECK (
         area_value IS NULL
         OR area_value > 0
@@ -72,6 +84,10 @@ CREATE TABLE units (
 CREATE UNIQUE INDEX uq_units_property_number ON units (property_id, unit_number)
 WHERE
     (deleted_at IS NULL);
+
+CREATE UNIQUE INDEX uq_units_one_implicit_per_property ON units (property_id)
+WHERE
+    (is_implicit AND deleted_at IS NULL);
 
 CREATE INDEX idx_units_team_id ON units (team_id);
 
@@ -101,6 +117,10 @@ CREATE TABLE unit_residential_details (
     CONSTRAINT chk_unit_residential_bathrooms CHECK (bathrooms >= 0)
 );
 
+CREATE INDEX idx_unit_residential_details_team_id ON unit_residential_details (team_id);
+
+CREATE INDEX idx_unit_residential_details_unit_id ON unit_residential_details (unit_id);
+
 -- =============================================================================
 -- 3. unit_amenities
 -- =============================================================================
@@ -117,6 +137,12 @@ CREATE TABLE unit_amenities (
     deleted_at TIMESTAMP,
     CONSTRAINT uq_unit_amenities UNIQUE (unit_id, amenity_id, team_id)
 );
+
+CREATE INDEX idx_unit_amenities_team_id ON unit_amenities (team_id);
+
+CREATE INDEX idx_unit_amenities_team_unit ON unit_amenities (team_id, unit_id);
+
+CREATE INDEX idx_unit_amenities_amenity_id ON unit_amenities (amenity_id);
 
 -- =============================================================================
 -- 4. expense_allocations
@@ -205,8 +231,9 @@ SELECT
     '1',
     0,
     CASE p.property_category
-        WHEN 'COMMERCIAL' THEN 'COMMERCIAL'
-        ELSE 'APARTMENT'
+        WHEN 'RESIDENTIAL' THEN 'APARTMENT'
+        WHEN 'MIXED_USE' THEN 'APARTMENT'
+        ELSE 'COMMERCIAL'
     END,
     p.status,
     TRUE,
@@ -250,7 +277,7 @@ INSERT INTO
     )
 SELECT
     u.id,
-    d.team_id,
+    u.team_id,
     d.bedrooms,
     d.bathrooms,
     d.furnished,
@@ -280,7 +307,7 @@ INSERT INTO
 SELECT
     u.id,
     a.amenity_id,
-    a.team_id,
+    u.team_id,
     a.notes,
     a.created_at,
     a.updated_at,
