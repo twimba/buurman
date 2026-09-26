@@ -15654,18 +15654,21 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /wws/properties/{propertyIdentifier}/pre-fill:
+  /wws/units/{unitIdentifier}/pre-fill:
     get:
       tags:
         - WWS Calculator
-      summary: Get pre-filled WWS data from property
+      summary: Get pre-filled WWS data from unit
+      description: >-
+        WWS points are a per-dwelling figure, so pre-fill data (surface area, energy label,
+        bedrooms, accessibility) is read from the unit, not the building.
       operationId: getWwsPreFill
       parameters:
-        - name: propertyIdentifier
+        - name: unitIdentifier
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/PropertyIdentifier'
+            $ref: '#/components/schemas/UnitIdentifier'
       responses:
         "200":
           description: OK
@@ -15680,7 +15683,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
         "404":
-          description: Property not found
+          description: Unit not found
           content:
             application/json:
               schema:
@@ -22764,6 +22767,8 @@ components:
           type: string
         propertyIdentifier:
           type: string
+        unitIdentifier:
+          type: string
         startDate:
           type: string
           format: date
@@ -26421,6 +26426,10 @@ components:
         notes:
           type: string
           maxLength: 500
+        unitIdentifier:
+          $ref: "#/components/schemas/UnitIdentifier"
+          description: >-
+            Unit the period is for. Optional only when the property has exactly one unit.
       required:
         - startDate
         - type
@@ -29749,6 +29758,10 @@ components:
           example: "2024"
         propertyIdentifier:
           $ref: "#/components/schemas/PropertyIdentifier"
+        unitIdentifier:
+          $ref: "#/components/schemas/UnitIdentifier"
+          description: >-
+            Unit the calculation is for. Optional only when the property has exactly one unit.
         contractIdentifier:
           type: string
           description: Optional contract to link calculation to

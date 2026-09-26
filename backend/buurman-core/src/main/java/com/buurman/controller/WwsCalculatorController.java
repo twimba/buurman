@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
 import com.buurman.dto.request.WwsCalculationRequest;
 import com.buurman.dto.response.WwsCalculationResponse;
@@ -35,9 +36,9 @@ public class WwsCalculatorController implements WwsCalculatorApi {
   }
 
   @Override
-  public WwsPreFillResponse getWwsPreFill(PropertyIdentifier propertyIdentifier) {
+  public WwsPreFillResponse getWwsPreFill(UnitIdentifier unitIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return wwsService.getPreFillData(propertyIdentifier, principal);
+    return wwsService.getPreFillData(unitIdentifier, principal);
   }
 
   @Override

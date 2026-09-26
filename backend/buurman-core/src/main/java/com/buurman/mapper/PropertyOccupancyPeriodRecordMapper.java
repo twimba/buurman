@@ -26,6 +26,7 @@ public class PropertyOccupancyPeriodRecordMapper {
     period.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     period.setTeamId(record.getTeamId());
     period.setPropertyId(record.getPropertyId());
+    period.setUnitId(record.getUnitId());
     period.setStartDate(record.getStartDate());
     period.setEndDate(Optional.ofNullable(record.getEndDate()));
     period.setType(OccupancyType.valueOf(record.getType()));

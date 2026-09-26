@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
 import com.buurman.util.SkipTestCoverage;
 
@@ -18,4 +20,5 @@ public record CreateOccupancyPeriodRequest(
     Optional<LocalDate> endDate,
     Optional<@Size(max = 255) String> occupantName,
     Optional<@PositiveOrZero BigDecimal> monthlyImputedRent,
-    Optional<@Size(max = 500) String> notes) {}
+    Optional<@Size(max = 500) String> notes,
+    @Nullable String unitIdentifier) {}

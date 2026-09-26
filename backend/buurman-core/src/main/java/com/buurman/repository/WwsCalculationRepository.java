@@ -36,6 +36,7 @@ public class WwsCalculationRepository {
         .set(WWS_CALCULATIONS.IDENTIFIER, calc.getIdentifier().orElseThrow())
         .set(WWS_CALCULATIONS.TEAM_ID, calc.getTeamId())
         .set(WWS_CALCULATIONS.PROPERTY_ID, calc.getPropertyId())
+        .set(WWS_CALCULATIONS.UNIT_ID, calc.getUnitId())
         .set(WWS_CALCULATIONS.CONTRACT_ID, calc.getContractId().orElse(null))
         .set(WWS_CALCULATIONS.SYSTEM_VERSION, calc.getSystemVersion())
         .set(WWS_CALCULATIONS.TOTAL_POINTS, calc.getTotalPoints())

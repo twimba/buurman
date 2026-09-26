@@ -2,12 +2,15 @@ package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,12 +20,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.buurman.domain.Property;
+import com.buurman.domain.Unit;
+import com.buurman.domain.UnitStatus;
+import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.dto.request.WwsCalculationRequest;
 import com.buurman.dto.response.WwsCalculationResponse;
 import com.buurman.dto.response.WwsCategoryBreakdown;
+import com.buurman.dto.response.WwsPreFillResponse;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitAmenityRepository;
+import com.buurman.repository.UnitRepository;
+import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.repository.WwsCalculationRepository;
 import com.buurman.security.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +46,10 @@ class WwsPointsCalculatorServiceTest {
 
   @Mock private ContractRepository contractRepository;
   @Mock private PropertyRepository propertyRepository;
+  @Mock private UnitRepository unitRepository;
+  @Mock private UnitResidentialDetailsRepository unitResidentialDetailsRepository;
+  @Mock private UnitAmenityRepository unitAmenityRepository;
+  @Mock private PropertyOutdoorAreaRepository outdoorAreaRepository;
   @Mock private WwsCalculationRepository wwsCalculationRepository;
 
   private WwsPointsCalculatorService service;
@@ -50,6 +67,10 @@ class WwsPointsCalculatorServiceTest {
             FIXED_CLOCK,
             contractRepository,
             propertyRepository,
+            unitRepository,
+            unitResidentialDetailsRepository,
+            unitAmenityRepository,
+            outdoorAreaRepository,
             wwsCalculationRepository,
             new ObjectMapper());
     principal =
@@ -68,6 +89,7 @@ class WwsPointsCalculatorServiceTest {
     return new WwsCalculationRequest(
         version,
         PROP_ID,
+        null,
         Optional.empty(),
         Optional.of(new BigDecimal("75")),
         Optional.of(3),
@@ -133,6 +155,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2020",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.empty(),
               Optional.empty(),
@@ -192,6 +215,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.of(new BigDecimal("50")),
               Optional.empty(),
@@ -230,6 +254,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.of(new BigDecimal("30")),
               Optional.of(2),
@@ -260,6 +285,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.of(new BigDecimal("200")),
               Optional.of(8),
@@ -294,6 +320,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.of(new BigDecimal("50")),
               Optional.empty(),
@@ -327,6 +354,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2023",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.of(new BigDecimal("50")),
               Optional.empty(),
@@ -360,6 +388,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.empty(),
               Optional.empty(),
@@ -402,6 +431,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.of(new BigDecimal("10")),
               Optional.empty(),
@@ -452,6 +482,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.of(new BigDecimal("75")),
               Optional.empty(),
@@ -494,6 +525,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.empty(),
               Optional.empty(),
@@ -533,6 +565,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.empty(),
               Optional.empty(),
@@ -572,6 +605,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2023",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.empty(),
               Optional.empty(),
@@ -605,6 +639,7 @@ class WwsPointsCalculatorServiceTest {
           new WwsCalculationRequest(
               "2025",
               PROP_ID,
+              null,
               Optional.empty(),
               Optional.empty(),
               Optional.empty(),
@@ -630,6 +665,117 @@ class WwsPointsCalculatorServiceTest {
               .orElseThrow();
       // 10000 / 332 = 30.12
       assertThat(renovation.points()).isEqualByComparingTo("30.12");
+    }
+  }
+
+  @Nested
+  @DisplayName("Pre-fill (per-unit dwelling data)")
+  class PreFill {
+
+    private static final UnitIdentifier UNIT_A_ID =
+        UnitIdentifier.of("unit_testAAAAAAAAAAAAAAAAAA1");
+    private static final UnitIdentifier UNIT_B_ID =
+        UnitIdentifier.of("unit_testBBBBBBBBBBBBBBBBBB2");
+
+    private Unit unit(UnitIdentifier identifier, UUID propertyId, String energyLabel) {
+      return Unit.builder()
+          .id(UUID.randomUUID())
+          .identifier(Optional.of(identifier))
+          .teamId(principal.getTeamId().orElseThrow())
+          .propertyId(propertyId)
+          .unitNumber("1")
+          .unitType(UnitType.APARTMENT)
+          .status(UnitStatus.VACANT)
+          .areaValue(Optional.of(new BigDecimal("75")))
+          .areaUnit(Optional.of("sqm"))
+          .energyEfficiencyRating(Optional.of(energyLabel))
+          .build();
+    }
+
+    private Property buildingProperty(UUID propertyId) {
+      Property property = new Property();
+      property.setId(propertyId);
+      property.setStreet("Keizersgracht 1");
+      property.setPostalCode("1015 CJ");
+      property.setCity("Amsterdam");
+      return property;
+    }
+
+    private void stubDwellingLookups(Unit unit, Property property) {
+      UUID teamId = principal.getTeamId().orElseThrow();
+      when(unitRepository.getByIdentifierAndTeamId(unit.getIdentifier().orElseThrow(), teamId))
+          .thenReturn(unit);
+      when(propertyRepository.getByIdAndTeamId(property.getId(), teamId)).thenReturn(property);
+      when(unitResidentialDetailsRepository.findByUnitIdAndTeamId(unit.getId(), teamId))
+          .thenReturn(Optional.empty());
+      when(outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId))
+          .thenReturn(List.of());
+      when(unitAmenityRepository.findAmenitiesByUnitIdAndTeamId(unit.getId(), teamId))
+          .thenReturn(List.of());
+    }
+
+    private WwsCalculationRequest requestFromPreFill(WwsPreFillResponse preFill) {
+      return new WwsCalculationRequest(
+          "2025",
+          PROP_ID,
+          null,
+          Optional.empty(),
+          preFill.surfaceAreaSqm(),
+          preFill.numberOfRooms(),
+          preFill.numberOfHeatedRooms(),
+          preFill.energyLabel(),
+          Optional.empty(),
+          Optional.empty(),
+          Optional.empty(),
+          preFill.outdoorSpaceSqm(),
+          preFill.parkingType(),
+          preFill.parkingSpaces(),
+          Optional.empty(),
+          Optional.empty(),
+          preFill.accessibilityFeatures(),
+          Optional.empty());
+    }
+
+    @Test
+    @DisplayName("reads areaValue and energyEfficiencyRating from the unit, not the property")
+    void readsDwellingAttributesFromUnit() {
+      UUID propertyId = UUID.randomUUID();
+      Unit unit = unit(UNIT_A_ID, propertyId, "A");
+      Property property = buildingProperty(propertyId);
+      stubDwellingLookups(unit, property);
+
+      WwsPreFillResponse response = service.getPreFillData(UNIT_A_ID, principal);
+
+      assertThat(response.energyLabel()).contains("A");
+      assertThat(response.surfaceAreaSqm()).contains(new BigDecimal("75"));
+      assertThat(response.propertyAddress()).contains("Keizersgracht 1, 1015 CJ Amsterdam");
+    }
+
+    @Test
+    @DisplayName(
+        "two units of one building with different energy labels produce different WWS point"
+            + " totals")
+    void differentUnitsProduceDifferentWwsTotals() {
+      UUID propertyId = UUID.randomUUID();
+      Unit unitA = unit(UNIT_A_ID, propertyId, "A");
+      Unit unitB = unit(UNIT_B_ID, propertyId, "G");
+      Property property = buildingProperty(propertyId);
+      stubDwellingLookups(unitA, property);
+      stubDwellingLookups(unitB, property);
+
+      WwsPreFillResponse preFillA = service.getPreFillData(UNIT_A_ID, principal);
+      WwsPreFillResponse preFillB = service.getPreFillData(UNIT_B_ID, principal);
+
+      assertThat(preFillA.energyLabel()).contains("A");
+      assertThat(preFillB.energyLabel()).contains("G");
+
+      WwsCalculationResponse responseA = service.calculate(requestFromPreFill(preFillA), principal);
+      WwsCalculationResponse responseB = service.calculate(requestFromPreFill(preFillB), principal);
+
+      // Same building, same 75 m2 unit; only the energy label differs: A = 41 pts, G = -15 pts
+      // under the 2025 rules. Surface area (75) + energy label + no-outdoor-space (-5) = total.
+      assertThat(responseA.totalPoints()).isEqualByComparingTo("111.00");
+      assertThat(responseB.totalPoints()).isEqualByComparingTo("55.00");
     }
   }
 }

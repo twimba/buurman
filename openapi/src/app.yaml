@@ -451,8 +451,8 @@ paths:
     $ref: 'paths/reference.yaml#/wws-calculate'
   /wws/calculate-and-save:
     $ref: 'paths/reference.yaml#/wws-calculate-and-save'
-  /wws/properties/{propertyIdentifier}/pre-fill:
-    $ref: 'paths/reference.yaml#/wws-properties-pre-fill'
+  /wws/units/{unitIdentifier}/pre-fill:
+    $ref: 'paths/reference.yaml#/wws-units-pre-fill'
   /wws/properties/{propertyIdentifier}/calculations:
     $ref: 'paths/reference.yaml#/wws-properties-calculations'
   /wws/properties/{propertyIdentifier}/latest:
@@ -1574,6 +1574,8 @@ components:
         identifier:
           type: string
         propertyIdentifier:
+          type: string
+        unitIdentifier:
           type: string
         startDate:
           type: string
@@ -5232,6 +5234,10 @@ components:
         notes:
           type: string
           maxLength: 500
+        unitIdentifier:
+          $ref: "#/components/schemas/UnitIdentifier"
+          description: >-
+            Unit the period is for. Optional only when the property has exactly one unit.
       required:
         - startDate
         - type
@@ -8560,6 +8566,10 @@ components:
           example: "2024"
         propertyIdentifier:
           $ref: "#/components/schemas/PropertyIdentifier"
+        unitIdentifier:
+          $ref: "#/components/schemas/UnitIdentifier"
+          description: >-
+            Unit the calculation is for. Optional only when the property has exactly one unit.
         contractIdentifier:
           type: string
           description: Optional contract to link calculation to

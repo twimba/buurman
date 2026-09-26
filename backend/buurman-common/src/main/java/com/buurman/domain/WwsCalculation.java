@@ -23,6 +23,7 @@ public class WwsCalculation {
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID propertyId;
+  private UUID unitId;
   @Builder.Default private Optional<UUID> contractId = Optional.empty();
   private String systemVersion;
   private BigDecimal totalPoints;

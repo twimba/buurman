@@ -22,6 +22,7 @@ public class PropertyOccupancyPeriod {
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID propertyId;
+  private UUID unitId;
   private LocalDate startDate;
   @Builder.Default private Optional<LocalDate> endDate = Optional.empty();
   private OccupancyType type;

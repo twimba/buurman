@@ -85,18 +85,19 @@ public class PropertyOccupancyPeriodRepository {
   }
 
   /**
-   * Find overlapping periods for a property, optionally excluding a specific period (for updates).
+   * Find overlapping periods for a unit, optionally excluding a specific period (for updates).
+   *
+   * <p>Scoped by {@code unit_id}, matching the {@code excl_occupancy_periods_no_overlap} exclusion
+   * constraint (re-scoped from {@code property_id} to {@code unit_id} in V068): two units of the
+   * same property may legitimately have overlapping occupancy, so the check — like the constraint
+   * it mirrors — must never widen back out to property scope.
    */
   public List<PropertyOccupancyPeriod> findOverlapping(
-      UUID propertyId,
-      UUID teamId,
-      LocalDate startDate,
-      LocalDate endDate,
-      @Nullable UUID excludeId) {
+      UUID unitId, UUID teamId, LocalDate startDate, LocalDate endDate, @Nullable UUID excludeId) {
     Condition condition =
         PROPERTY_OCCUPANCY_PERIODS
-            .PROPERTY_ID
-            .eq(propertyId)
+            .UNIT_ID
+            .eq(unitId)
             .and(PROPERTY_OCCUPANCY_PERIODS.TEAM_ID.eq(teamId))
             .and(PROPERTY_OCCUPANCY_PERIODS.DELETED_AT.isNull())
             .and(PROPERTY_OCCUPANCY_PERIODS.START_DATE.le(endDate))
@@ -147,6 +148,7 @@ public class PropertyOccupancyPeriodRepository {
           .set(PROPERTY_OCCUPANCY_PERIODS.IDENTIFIER, period.getIdentifier().orElseThrow())
           .set(PROPERTY_OCCUPANCY_PERIODS.TEAM_ID, period.getTeamId())
           .set(PROPERTY_OCCUPANCY_PERIODS.PROPERTY_ID, period.getPropertyId())
+          .set(PROPERTY_OCCUPANCY_PERIODS.UNIT_ID, period.getUnitId())
           .set(PROPERTY_OCCUPANCY_PERIODS.START_DATE, period.getStartDate())
           .set(PROPERTY_OCCUPANCY_PERIODS.END_DATE, period.getEndDate().orElse(null))
           .set(PROPERTY_OCCUPANCY_PERIODS.TYPE, period.getType().name())

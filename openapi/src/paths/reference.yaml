@@ -307,18 +307,21 @@ wws-calculate-and-save:
     security:
       - bearer-jwt: []
 
-wws-properties-pre-fill:
+wws-units-pre-fill:
   get:
     tags:
       - WWS Calculator
-    summary: Get pre-filled WWS data from property
+    summary: Get pre-filled WWS data from unit
+    description: >-
+      WWS points are a per-dwelling figure, so pre-fill data (surface area, energy label,
+      bedrooms, accessibility) is read from the unit, not the building.
     operationId: getWwsPreFill
     parameters:
-      - name: propertyIdentifier
+      - name: unitIdentifier
         in: path
         required: true
         schema:
-          $ref: '#/components/schemas/PropertyIdentifier'
+          $ref: '#/components/schemas/UnitIdentifier'
     responses:
       "200":
         description: OK
@@ -333,7 +336,7 @@ wws-properties-pre-fill:
             schema:
               $ref: '#/components/schemas/ProblemDetail'
       "404":
-        description: Property not found
+        description: Unit not found
         content:
           application/json:
             schema:
