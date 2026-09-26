@@ -21,7 +21,8 @@ a. **Review existing data** for mistakes (wrong %, wrong index value, wrong effe
 b. **Find new data** — regulations or index values published since `generatedAt` (new annual caps, new index releases, framework changes, new regions/zones).
 c. **Prefer authoritative sources.** Use the official body, not a news summary or aggregator. Many rows already carry a `sourceUrl` to the right body — start there; if missing, find the official source.
 d. **Update the JSON** with corrections and additions (and remove anything proven wrong/superseded), keeping the schema valid.
-e. **Report a summary** of everything added / updated / deleted / flagged.
+e. **Record tenancy facts that are not rent-increase caps** — notice periods, minimum/maximum tenancy duration, deposit rules, lease-form formalities, registration duties, fixed-amount fees and penalties — in `tenancyRules` (see Step 3) rather than discarding them because they don't fit a `CatalogRule` row.
+f. **Report a summary** of everything added / updated / deleted / flagged.
 
 ## Step 1 — Scope
 
@@ -86,6 +87,53 @@ Edit `rent-regulations.json` in place. The shape (see `CatalogRule` / `CatalogCo
 2. `openapi/src/app.yaml` and `openapi/backoffice.yaml` (the `MaxIncreaseType` enum), then `make bundle-openapi`
 
 Otherwise the value fails to load on reload (this exact gap once shipped a broken `CEILING_RENT`). Prefer an existing constant; only extend the enum when nothing fits, and call it out in the summary.
+
+### `tenancyRules` — display-only tenancy-law facts
+
+Alongside `rules[]`, each `CatalogCountry` carries an optional `tenancyRules[]` array for tenancy-law
+facts that are **not** rent-increase caps: notice periods, minimum/maximum tenancy duration, deposit
+rules, lease-form formalities, registration duties, fixed-amount fees and penalties. These render as
+reference material on the regulations page; nothing computes off them.
+
+**Fields** (camelCase, nulls omitted): `topic`, `regionCode` (omit for a national rule; when present
+it **must match a declared region of that country** — same rule as `CatalogRule.regionCode`), `label`,
+`value` (free text — the facts are heterogeneous, e.g. "5 years", "DKK 344", "2 months' rent"),
+`effectiveFrom` (`YYYY-MM-DD`), `legalBasis`, `sourceUrl`, `notes`.
+
+**`topic` must be one of exactly these constants** of `com.buurman.domain.TenancyRuleTopic` — an
+unknown value fails the catalog parse:
+`NOTICE_PERIOD`, `TENANCY_DURATION`, `DEPOSIT`, `LEASE_FORM`, `REGISTRATION`, `FEES_AND_PENALTIES`, `OTHER`.
+
+Do not invent a new constant here to fit a fact that doesn't cleanly match one of the above — file
+it under `OTHER` (or flag it and leave it out) instead. Adding a genuinely new topic constant is a
+code change, not a dataset edit: it means updating FIVE places in lockstep —
+`com.buurman.domain.TenancyRuleTopic`, `openapi/src/app.yaml`'s `TenancyRuleTopic` schema (then
+`make bundle-openapi`), the `rentRegulations.tenancyRules.topic` key in all 13 locale files under
+`frontend/app/public/locales/*/contracts.json`, `TOPIC_ORDER` in
+`frontend/app/src/components/rentRegulations/RegulationSummary.tsx`, and this list. **Two of those
+fail silently**: a missing locale key renders the raw key path to the user, and a topic missing
+from `TOPIC_ORDER` is dropped from the UI with no error at all — so a new constant can pass every
+backend test and still silently lose data in production. See the Javadoc on
+`TenancyRuleTopic` for the full list. Do not add one mid-run of this skill; raise it with the team
+first.
+
+**Never put a rent-increase cap or index value in `tenancyRules`** — those belong in `rules[]` as a
+`CatalogRule`. `tenancyRules` is display-only reference material, not a computation input.
+
+**No-history rule:** unlike `rules[]` (which keeps historical rows per year), `tenancyRules` stores
+only the CURRENT fact. When a tenancy rule is superseded by a newer one, **replace the entry in
+place** — do not keep the old one alongside it — and set `effectiveFrom` to date the fact that is now
+current, not the date you happened to update the JSON.
+
+As with `rules[]`, never invent a `value`, `effectiveFrom` or `legalBasis` for a tenancy fact you
+could not confirm against an authoritative source this run; leave it out and flag it instead.
+
+**Unverified leads backlog:** `docs/rent-regulations/tenancy-rules-candidates.md` holds tenancy
+facts that a verifier surfaced with a source but whose cross-check never completed. Check it before
+starting research on a country it covers — it may save you rediscovering the same fact — but treat
+every entry there as a lead, not a confirmed value: it still needs its own source re-check and a
+second independent source before it can be seeded into `tenancyRules`. Remove an entry from that
+file once you've verified it and seeded it here.
 
 After editing, **bump metadata**: set `version` (e.g. `2026.1` → `2026.2`) and `generatedAt` to today's date (`date +%F`).
 

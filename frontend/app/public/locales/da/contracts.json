@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Højst {{percentage}} % af det forfaldne beløb",
       "noticeDays": "Betalingsfrist efter påkrav: {{count}} dage"
+    },
+    "tenancyRules": {
+      "title": "Lejeretlige regler",
+      "subtitle": "Kun til reference — ikke grænser for huslejestigning. Bekræft lokalt.",
+      "effectiveFrom": "Fra {{date}}",
+      "source": "Kilde",
+      "topic": {
+        "NOTICE_PERIOD": "Opsigelsesvarsler",
+        "TENANCY_DURATION": "Lejeperiodens varighed",
+        "DEPOSIT": "Depositum",
+        "LEASE_FORM": "Formkrav til lejekontrakt",
+        "REGISTRATION": "Registreringspligt",
+        "FEES_AND_PENALTIES": "Gebyrer og sanktioner",
+        "OTHER": "Andet"
+      }
     }
   },
   "rentIncrease": {

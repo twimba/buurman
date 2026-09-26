@@ -17,4 +17,5 @@ public record CatalogCountry(
     List<CatalogRegion> regions,
     List<CatalogRule> rules,
     CatalogLateFee lateFee,
-    Integer formalNoticeDays) {}
+    Integer formalNoticeDays,
+    List<CatalogTenancyRule> tenancyRules) {}

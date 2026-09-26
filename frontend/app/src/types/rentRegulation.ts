@@ -4,4 +4,5 @@ export type {
   RentRegulationCountryDetailResponse,
   RentRegulationRegionResponse,
   RentRegulationRuleResponse,
+  RentRegulationTenancyRuleResponse,
 } from '../generated/models';

@@ -48,6 +48,7 @@ public enum EntityPrefix {
   RRC("RRC", "Rent Regulation Countries"),
   RRG("RRG", "Rent Regulation Regions"),
   RRL("RRL", "Rent Regulation Rules"),
+  RRT("RRT", "Rent Regulation Tenancy Rules"),
   CRQ("CRQ", "Country Regulation Requests"),
   IMS("IMS", "Impersonation Sessions"),
   CEX("CEX", "Contract Extensions"),

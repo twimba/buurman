@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Maksymalnie {{percentage}}% należnej kwoty",
       "noticeDays": "Termin wezwania do zapłaty: {{count}} dni"
+    },
+    "tenancyRules": {
+      "title": "Zasady najmu",
+      "subtitle": "Wyłącznie informacyjnie — nie są to limity podwyżek czynszu. Zweryfikuj lokalnie.",
+      "effectiveFrom": "Od {{date}}",
+      "source": "Źródło",
+      "topic": {
+        "NOTICE_PERIOD": "Okresy wypowiedzenia",
+        "TENANCY_DURATION": "Czas trwania najmu",
+        "DEPOSIT": "Kaucje",
+        "LEASE_FORM": "Wymogi formalne umowy najmu",
+        "REGISTRATION": "Obowiązki rejestracyjne",
+        "FEES_AND_PENALTIES": "Opłaty i kary",
+        "OTHER": "Inne"
+      }
     }
   },
   "rentIncrease": {

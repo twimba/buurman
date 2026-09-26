@@ -45,6 +45,7 @@ import com.buurman.domain.identifier.RentComponentIdentifier;
 import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
+import com.buurman.domain.identifier.RentRegulationTenancyRuleIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
@@ -239,6 +240,10 @@ public class SidGenerator {
 
   public static RentRegulationRuleIdentifier newRentRegulationRuleId() {
     return RentRegulationRuleIdentifier.of(generateRaw(EntityPrefix.RRL));
+  }
+
+  public static RentRegulationTenancyRuleIdentifier newRentRegulationTenancyRuleId() {
+    return RentRegulationTenancyRuleIdentifier.of(generateRaw(EntityPrefix.RRT));
   }
 
   public static CountryRequestIdentifier newCountryRequestId() {

@@ -12,6 +12,7 @@ import com.buurman.domain.RentFrequency;
 import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
+import com.buurman.domain.RentRegulationTenancyRule;
 import com.buurman.dto.request.CreateRentRegulationCountryRequest;
 import com.buurman.dto.request.CreateRentRegulationRegionRequest;
 import com.buurman.dto.request.CreateRentRegulationRuleRequest;
@@ -22,6 +23,7 @@ import com.buurman.dto.response.RentRegulationCountryDetailResponse;
 import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRegionResponse;
 import com.buurman.dto.response.RentRegulationRuleResponse;
+import com.buurman.dto.response.RentRegulationTenancyRuleResponse;
 import com.buurman.util.SidGenerator;
 
 @Component
@@ -44,6 +46,11 @@ public class RentRegulationMapper {
         country.getFormalNoticeDays());
   }
 
+  /**
+   * Does not populate {@code tenancyRules} (always empty here); {@link
+   * com.buurman.service.RentRegulationService#getCountryDetail} is the real assembly path for the
+   * full detail response, including tenancy rules.
+   */
   public RentRegulationCountryDetailResponse toCountryDetailResponse(
       RentRegulationCountry country,
       List<RentRegulationRegion> regions,
@@ -61,7 +68,8 @@ public class RentRegulationMapper {
         country.getLateFeePolicy(),
         country.getLateFeeMaxPercentage(),
         country.getLateFeeNotes(),
-        country.getFormalNoticeDays());
+        country.getFormalNoticeDays(),
+        List.of());
   }
 
   public RentRegulationRegionResponse toRegionResponse(RentRegulationRegion region) {
@@ -100,6 +108,20 @@ public class RentRegulationMapper {
         rule.getContractSignedBefore(),
         rule.getLandlordMinProperties(),
         rule.getAreaCode());
+  }
+
+  public RentRegulationTenancyRuleResponse toTenancyRuleResponse(
+      RentRegulationTenancyRule rule, Optional<String> regionCode) {
+    return new RentRegulationTenancyRuleResponse(
+        rule.getIdentifier().orElseThrow(),
+        rule.getTopic(),
+        regionCode,
+        rule.getLabel(),
+        rule.getValue(),
+        rule.getEffectiveFrom(),
+        rule.getLegalBasis(),
+        rule.getSourceUrl(),
+        rule.getNotes());
   }
 
   // ==================== Request → Domain ====================

@@ -1,4 +1,4 @@
-import { Clock, Globe, MapPin, Percent } from 'lucide-react';
+import { Clock, Globe, MapPin, Percent, ScrollText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
   RichTextDisplay,
@@ -16,9 +16,36 @@ function countryCodeToFlag(code: string): string {
     .join('');
 }
 
+/**
+ * Formats a `format: date` (date-only, no time component) value such as
+ * `effectiveFrom` for display. `new Date(isoDateString)` parses a date-only
+ * ISO string as UTC midnight, so calling `toLocaleDateString` on it rolls the
+ * displayed date back a day in any negative-UTC-offset timezone. Building the
+ * `Date` from explicit local-time components instead sidesteps that: it never
+ * touches UTC, so it can't shift.
+ */
+function formatCalendarDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 interface RegulationSummaryProps {
   country: RentRegulationCountryDetailResponse;
 }
+
+const TOPIC_ORDER = [
+  'NOTICE_PERIOD',
+  'TENANCY_DURATION',
+  'DEPOSIT',
+  'LEASE_FORM',
+  'REGISTRATION',
+  'FEES_AND_PENALTIES',
+  'OTHER',
+] as const;
 
 const lateFeeColor: Record<string, BadgeColorVariant> = {
   ALLOWED: 'emerald',
@@ -108,6 +135,76 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
                 })}
               </p>
             )}
+          </div>
+        )}
+
+        {/* Tenancy-law reference */}
+        {country.tenancyRules != null && country.tenancyRules.length > 0 && (
+          <div className="px-6 py-5 border-b border-border-default">
+            <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-muted mb-1">
+              <ScrollText className="h-3.5 w-3.5" />
+              {t('rentRegulations.tenancyRules.title')}
+            </div>
+            <p className="text-xs text-text-muted mb-3">
+              {t('rentRegulations.tenancyRules.subtitle')}
+            </p>
+            {TOPIC_ORDER.filter((topic) =>
+              country.tenancyRules?.some((r) => r.topic === topic)
+            ).map((topic) => (
+              <div key={topic} className="mb-4 last:mb-0">
+                <div className="text-sm font-semibold text-text-primary mb-1.5">
+                  {t(`rentRegulations.tenancyRules.topic.${topic}`)}
+                </div>
+                <ul className="space-y-1.5">
+                  {country.tenancyRules
+                    ?.filter((r) => r.topic === topic)
+                    .map((rule) => (
+                      <li key={rule.identifier} className="text-sm">
+                        <span className="text-text-secondary">
+                          {rule.label}
+                        </span>
+                        {': '}
+                        <span className="text-text-primary font-medium">
+                          {rule.value}
+                        </span>
+                        {rule.regionCode && (
+                          <span className="text-text-muted">
+                            {' '}
+                            ({rule.regionCode})
+                          </span>
+                        )}
+                        {rule.effectiveFrom && (
+                          <span className="text-text-muted">
+                            {' — '}
+                            {t('rentRegulations.tenancyRules.effectiveFrom', {
+                              date: formatCalendarDate(rule.effectiveFrom),
+                            })}
+                          </span>
+                        )}
+                        {rule.legalBasis && (
+                          <span className="text-text-muted">
+                            {' '}
+                            [{rule.legalBasis}]
+                          </span>
+                        )}
+                        {rule.sourceUrl && (
+                          <>
+                            {' '}
+                            <a
+                              href={rule.sourceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-text-link underline"
+                            >
+                              {t('rentRegulations.tenancyRules.source')}
+                            </a>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ))}
           </div>
         )}
 

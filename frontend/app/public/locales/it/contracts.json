@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Massimo {{percentage}}% dell’importo dovuto",
       "noticeDays": "Termine della diffida: {{count}} giorni"
+    },
+    "tenancyRules": {
+      "title": "Regole del contratto di locazione",
+      "subtitle": "Solo a titolo di riferimento — non sono limiti di aumento del canone. Verificare localmente.",
+      "effectiveFrom": "Dal {{date}}",
+      "source": "Fonte",
+      "topic": {
+        "NOTICE_PERIOD": "Termini di preavviso",
+        "TENANCY_DURATION": "Durata della locazione",
+        "DEPOSIT": "Depositi cauzionali",
+        "LEASE_FORM": "Formalità contrattuali",
+        "REGISTRATION": "Obblighi di registrazione",
+        "FEES_AND_PENALTIES": "Spese e sanzioni",
+        "OTHER": "Altro"
+      }
     }
   },
   "rentIncrease": {

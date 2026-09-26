@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Högst {{percentage}} % av förfallet belopp",
       "noticeDays": "Betalningsfrist efter anmaning: {{count}} dagar"
+    },
+    "tenancyRules": {
+      "title": "Hyresregler",
+      "subtitle": "Endast referens — inte gränser för hyreshöjning. Kontrollera lokalt.",
+      "effectiveFrom": "Från {{date}}",
+      "source": "Källa",
+      "topic": {
+        "NOTICE_PERIOD": "Uppsägningstider",
+        "TENANCY_DURATION": "Hyrestidens längd",
+        "DEPOSIT": "Depositioner",
+        "LEASE_FORM": "Formkrav för hyresavtal",
+        "REGISTRATION": "Registreringsskyldigheter",
+        "FEES_AND_PENALTIES": "Avgifter och sanktioner",
+        "OTHER": "Övrigt"
+      }
     }
   },
   "rentIncrease": {

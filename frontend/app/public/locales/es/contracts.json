@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Máximo {{percentage}}% del importe debido",
       "noticeDays": "Plazo del requerimiento: {{count}} días"
+    },
+    "tenancyRules": {
+      "title": "Normas de arrendamiento",
+      "subtitle": "Solo de referencia — no son límites de subida de la renta. Verifique localmente.",
+      "effectiveFrom": "Desde {{date}}",
+      "source": "Fuente",
+      "topic": {
+        "NOTICE_PERIOD": "Plazos de preaviso",
+        "TENANCY_DURATION": "Duración del contrato",
+        "DEPOSIT": "Fianzas",
+        "LEASE_FORM": "Formalidades del contrato",
+        "REGISTRATION": "Obligaciones de registro",
+        "FEES_AND_PENALTIES": "Tasas y sanciones",
+        "OTHER": "Otros"
+      }
     }
   },
   "rentIncrease": {
