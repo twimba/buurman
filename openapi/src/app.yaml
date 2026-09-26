@@ -116,6 +116,8 @@ tags:
     description: Broadcast messages for users
   - name: Units
     description: Units within a property (dwellings, parking, storage, commercial space)
+  - name: Expense Allocations
+    description: Per-unit allocation of building-level expenses
 paths:
   /users/preferences/notifications:
     $ref: 'paths/users.yaml#/users-preferences-notifications'
@@ -159,6 +161,8 @@ paths:
     $ref: 'paths/properties.yaml#/financials-acquisition'
   /properties/{identifier}:
     $ref: 'paths/properties.yaml#/item'
+  /properties/{identifier}/allocation:
+    $ref: 'paths/properties.yaml#/allocation'
   /properties/{identifier}/photos/{photoIdentifier}/set-main:
     $ref: 'paths/properties.yaml#/photos-set-main'
   /photos/{identifier}:
@@ -173,6 +177,10 @@ paths:
     $ref: 'paths/payments.yaml#/payment-instructions-item'
   /expenses/{identifier}:
     $ref: 'paths/expenses.yaml#/item'
+  /expenses/{identifier}/allocations:
+    $ref: 'paths/expenses.yaml#/allocations'
+  /expenses/{identifier}/allocations/recompute:
+    $ref: 'paths/expenses.yaml#/allocations-recompute'
   /documents/{identifier}:
     $ref: 'paths/documents.yaml#/documents-item'
   /contracts/{identifier}:
@@ -2792,6 +2800,8 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
+        allocationBasis:
+          $ref: "#/components/schemas/AllocationBasis"
         street:
           type: string
         city:
@@ -2924,6 +2934,7 @@ components:
           type: string
           format: date-time
       required:
+        - allocationBasis
         - city
         - country
         - createdAt
@@ -3319,6 +3330,12 @@ components:
         contactIdentifier:
           type: string
           description: Identifier of the contact linked to this expense
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent makes (or
+            keeps) this a building-level expense, split across the property's
+            units.
     ExpenseResponse:
       type: object
       description: Property expense record with category, amount, and supporting documents
@@ -3329,6 +3346,11 @@ components:
           example: exp_01HZQX7V8B3K5M2N4P6R9T0W
         property:
           $ref: "#/components/schemas/PropertySummary"
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent means this
+            is a building-level expense, split across the property's units.
         category:
           type: string
           description: Category of the property-related expense
@@ -3749,6 +3771,12 @@ components:
           example: ctr_01HZQX7V8B3K5M2N4P6R9T0W
         property:
           $ref: "#/components/schemas/PropertySummary"
+        unitIdentifier:
+          type: string
+          description: Identifier of the unit this contract is for
+        unitNumber:
+          type: string
+          description: The unit's number/label within the property
         parties:
           type: array
           items:
@@ -5803,6 +5831,11 @@ components:
         contactIdentifier:
           type: string
           description: Identifier of the contact linked to this expense
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent makes this
+            a building-level expense, split across the property's units.
       required:
         - amount
         - category
@@ -5858,6 +5891,11 @@ components:
       properties:
         propertyIdentifier:
           type: string
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this contract is for. Optional when the property has
+            exactly one unit (resolved automatically); required when it has more than one.
         parties:
           type: array
           items:
@@ -9943,6 +9981,84 @@ components:
       type: string
       description: How a building-level expense is divided across a property's units
       enum: [AREA, EQUAL, CUSTOM, MANUAL]
+    ExpenseAllocationResponse:
+      type: object
+      description: One unit's stored share of a building-level expense
+      properties:
+        identifier:
+          type: string
+          description: Expense allocation identifier
+        unitIdentifier:
+          type: string
+          description: Identifier of the unit this allocation was made for
+        unitNumber:
+          type: string
+        amount:
+          type: number
+        amountCurrency:
+          type: string
+        basis:
+          $ref: "#/components/schemas/AllocationBasis"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - basis
+        - createdAt
+        - identifier
+        - unitIdentifier
+        - unitNumber
+    ManualAllocationEntry:
+      type: object
+      properties:
+        unitIdentifier:
+          type: string
+        amount:
+          type: number
+      required:
+        - amount
+        - unitIdentifier
+    ManualAllocationRequest:
+      type: object
+      description: >-
+        A caller-supplied, per-unit override of an expense's allocation
+        (MANUAL basis). Entries must sum to exactly the expense's total.
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManualAllocationEntry"
+          minItems: 1
+      required:
+        - entries
+    UnitShareEntry:
+      type: object
+      properties:
+        unitIdentifier:
+          type: string
+        sharePct:
+          type: number
+      required:
+        - sharePct
+        - unitIdentifier
+    UpdateAllocationRequest:
+      type: object
+      description: >-
+        Sets a property's allocation basis and, for CUSTOM, each unit's
+        share. Does not retroactively rewrite any expense's already-persisted
+        allocations.
+      properties:
+        basis:
+          $ref: "#/components/schemas/AllocationBasis"
+        shares:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitShareEntry"
+      required:
+        - basis
     UnitResponse:
       type: object
       description: A separately-lettable dwelling within a property

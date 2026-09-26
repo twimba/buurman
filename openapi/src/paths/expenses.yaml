@@ -810,3 +810,193 @@ documents-item:
               $ref: '#/components/schemas/ProblemDetail'
     security:
       - bearer-jwt: []
+
+allocations:
+  get:
+    tags:
+      - Expense Allocations
+    summary: Get expense allocations
+    description: Get the current per-unit allocation of a building-level expense
+    operationId: getExpenseAllocations
+    parameters:
+      - name: identifier
+        in: path
+        description: Expense identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ExpenseIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExpenseAllocationResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+  put:
+    tags:
+      - Expense Allocations
+    summary: Override expense allocations
+    description: Manually override a building-level expense's per-unit allocation (Admin/Editor). Entries must sum to exactly the expense's total.
+    operationId: updateExpenseAllocations
+    parameters:
+      - name: identifier
+        in: path
+        description: Expense identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ExpenseIdentifier'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ManualAllocationRequest'
+      required: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExpenseAllocationResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+allocations-recompute:
+  post:
+    tags:
+      - Expense Allocations
+    summary: Recompute expense allocations
+    description: Explicitly re-run the automatic allocation split using the property's current allocation basis (Admin/Editor). A property's basis change never rewrites history implicitly; this is the auditable, opt-in act that does.
+    operationId: recomputeExpenseAllocations
+    parameters:
+      - name: identifier
+        in: path
+        description: Expense identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ExpenseIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExpenseAllocationResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

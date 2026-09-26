@@ -116,6 +116,8 @@ tags:
     description: Broadcast messages for users
   - name: Units
     description: Units within a property (dwellings, parking, storage, commercial space)
+  - name: Expense Allocations
+    description: Per-unit allocation of building-level expenses
 paths:
   /users/preferences/notifications:
     get:
@@ -2961,6 +2963,71 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /properties/{identifier}/allocation:
+    put:
+      tags:
+        - Expense Allocations
+      summary: Update property allocation
+      description: Set a property's expense allocation basis and, for CUSTOM, each unit's share (Admin/Editor). Does not retroactively rewrite any expense's already-persisted allocations.
+      operationId: updatePropertyAllocation
+      parameters:
+        - name: identifier
+          in: path
+          description: Property identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/PropertyIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAllocationRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /properties/{identifier}/photos/{photoIdentifier}/set-main:
     put:
       tags:
@@ -3888,6 +3955,194 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /expenses/{identifier}/allocations:
+    get:
+      tags:
+        - Expense Allocations
+      summary: Get expense allocations
+      description: Get the current per-unit allocation of a building-level expense
+      operationId: getExpenseAllocations
+      parameters:
+        - name: identifier
+          in: path
+          description: Expense identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ExpenseIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExpenseAllocationResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Expense Allocations
+      summary: Override expense allocations
+      description: Manually override a building-level expense's per-unit allocation (Admin/Editor). Entries must sum to exactly the expense's total.
+      operationId: updateExpenseAllocations
+      parameters:
+        - name: identifier
+          in: path
+          description: Expense identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ExpenseIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualAllocationRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExpenseAllocationResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /expenses/{identifier}/allocations/recompute:
+    post:
+      tags:
+        - Expense Allocations
+      summary: Recompute expense allocations
+      description: Explicitly re-run the automatic allocation split using the property's current allocation basis (Admin/Editor). A property's basis change never rewrites history implicitly; this is the auditable, opt-in act that does.
+      operationId: recomputeExpenseAllocations
+      parameters:
+        - name: identifier
+          in: path
+          description: Expense identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ExpenseIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExpenseAllocationResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -23734,6 +23989,8 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
+        allocationBasis:
+          $ref: "#/components/schemas/AllocationBasis"
         street:
           type: string
         city:
@@ -23866,6 +24123,7 @@ components:
           type: string
           format: date-time
       required:
+        - allocationBasis
         - city
         - country
         - createdAt
@@ -24261,6 +24519,12 @@ components:
         contactIdentifier:
           type: string
           description: Identifier of the contact linked to this expense
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent makes (or
+            keeps) this a building-level expense, split across the property's
+            units.
     ExpenseResponse:
       type: object
       description: Property expense record with category, amount, and supporting documents
@@ -24271,6 +24535,11 @@ components:
           example: exp_01HZQX7V8B3K5M2N4P6R9T0W
         property:
           $ref: "#/components/schemas/PropertySummary"
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent means this
+            is a building-level expense, split across the property's units.
         category:
           type: string
           description: Category of the property-related expense
@@ -24691,6 +24960,12 @@ components:
           example: ctr_01HZQX7V8B3K5M2N4P6R9T0W
         property:
           $ref: "#/components/schemas/PropertySummary"
+        unitIdentifier:
+          type: string
+          description: Identifier of the unit this contract is for
+        unitNumber:
+          type: string
+          description: The unit's number/label within the property
         parties:
           type: array
           items:
@@ -26745,6 +27020,11 @@ components:
         contactIdentifier:
           type: string
           description: Identifier of the contact linked to this expense
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent makes this
+            a building-level expense, split across the property's units.
       required:
         - amount
         - category
@@ -26800,6 +27080,11 @@ components:
       properties:
         propertyIdentifier:
           type: string
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this contract is for. Optional when the property has
+            exactly one unit (resolved automatically); required when it has more than one.
         parties:
           type: array
           items:
@@ -30885,6 +31170,84 @@ components:
       type: string
       description: How a building-level expense is divided across a property's units
       enum: [AREA, EQUAL, CUSTOM, MANUAL]
+    ExpenseAllocationResponse:
+      type: object
+      description: One unit's stored share of a building-level expense
+      properties:
+        identifier:
+          type: string
+          description: Expense allocation identifier
+        unitIdentifier:
+          type: string
+          description: Identifier of the unit this allocation was made for
+        unitNumber:
+          type: string
+        amount:
+          type: number
+        amountCurrency:
+          type: string
+        basis:
+          $ref: "#/components/schemas/AllocationBasis"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - basis
+        - createdAt
+        - identifier
+        - unitIdentifier
+        - unitNumber
+    ManualAllocationEntry:
+      type: object
+      properties:
+        unitIdentifier:
+          type: string
+        amount:
+          type: number
+      required:
+        - amount
+        - unitIdentifier
+    ManualAllocationRequest:
+      type: object
+      description: >-
+        A caller-supplied, per-unit override of an expense's allocation
+        (MANUAL basis). Entries must sum to exactly the expense's total.
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManualAllocationEntry"
+          minItems: 1
+      required:
+        - entries
+    UnitShareEntry:
+      type: object
+      properties:
+        unitIdentifier:
+          type: string
+        sharePct:
+          type: number
+      required:
+        - sharePct
+        - unitIdentifier
+    UpdateAllocationRequest:
+      type: object
+      description: >-
+        Sets a property's allocation basis and, for CUSTOM, each unit's
+        share. Does not retroactively rewrite any expense's already-persisted
+        allocations.
+      properties:
+        basis:
+          $ref: "#/components/schemas/AllocationBasis"
+        shares:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitShareEntry"
+      required:
+        - basis
     UnitResponse:
       type: object
       description: A separately-lettable dwelling within a property

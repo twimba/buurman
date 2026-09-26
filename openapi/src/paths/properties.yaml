@@ -3949,3 +3949,69 @@ documents-item:
               $ref: '#/components/schemas/ProblemDetail'
     security:
       - bearer-jwt: []
+
+allocation:
+  put:
+    tags:
+      - Expense Allocations
+    summary: Update property allocation
+    description: Set a property's expense allocation basis and, for CUSTOM, each unit's share (Admin/Editor). Does not retroactively rewrite any expense's already-persisted allocations.
+    operationId: updatePropertyAllocation
+    parameters:
+      - name: identifier
+        in: path
+        description: Property identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/PropertyIdentifier'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateAllocationRequest'
+      required: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
