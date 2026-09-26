@@ -26,9 +26,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyOccupancyPeriod;
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
+import com.buurman.domain.Sid;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.Unit;
 import com.buurman.domain.UnitStatus;
@@ -132,7 +134,7 @@ class OccupancyPeriodServiceTest {
       when(repository.findOverlapping(
               eq(UNIT_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
           .thenReturn(List.of());
-      when(contractRepository.findByPropertyId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID)).thenReturn(List.of());
       when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(), TEAM_ID))
           .thenReturn(List.of());
 
@@ -175,7 +177,7 @@ class OccupancyPeriodServiceTest {
       when(repository.findOverlapping(
               eq(UNIT_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
           .thenReturn(List.of());
-      when(contractRepository.findByPropertyId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID)).thenReturn(List.of());
       when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(), TEAM_ID))
           .thenReturn(List.of());
 
@@ -244,7 +246,7 @@ class OccupancyPeriodServiceTest {
       when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(unitRepository.getByIdentifierAndTeamId(UNIT_SID, TEAM_ID)).thenReturn(unit);
       when(unitRepository.getByIdentifierAndTeamId(unitBSid, TEAM_ID)).thenReturn(unitB);
-      when(contractRepository.findByPropertyId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID)).thenReturn(List.of());
       when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(), TEAM_ID))
           .thenReturn(List.of());
 
@@ -300,6 +302,57 @@ class OccupancyPeriodServiceTest {
 
     @Test
     @DisplayName(
+        "allows self-occupancy on a unit whose sibling unit has an overlapping active contract")
+    void allowsSelfOccupancyWhenOnlyASiblingUnitHasAnOverlappingContract() {
+      // Keizersgracht 12 has two units: UNIT_ID (target of the self-occupancy period) and
+      // unitBId, which is let under an active contract covering the same dates.
+      UUID unitBId = UUID.randomUUID();
+
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(unitRepository.getByIdentifierAndTeamId(UNIT_SID, TEAM_ID)).thenReturn(unit);
+      when(repository.findOverlapping(
+              eq(UNIT_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
+          .thenReturn(List.of());
+      // This unit's own contracts: none.
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID)).thenReturn(List.of());
+      when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(), TEAM_ID))
+          .thenReturn(List.of());
+
+      // What the OLD, property-scoped implementation would have queried: every contract on the
+      // whole building, including unit B's active, overlapping one. If the service regressed to
+      // validateNoOverlappingContracts(property.getId(), ...), this stub would be hit and the
+      // create below would throw — exactly the bug this fix closes. Stubbed leniently: the whole
+      // point of this test is that the (correct) implementation never calls this overload.
+      Contract contractOnUnitB = new Contract();
+      contractOnUnitB.setId(UUID.randomUUID());
+      contractOnUnitB.setIdentifier(Optional.of(Sid.of("con_01JTEST000000000000000001")));
+      contractOnUnitB.setPropertyId(PROPERTY_ID);
+      contractOnUnitB.setUnitId(unitBId);
+      contractOnUnitB.setStartDate(LocalDate.of(2026, 1, 1));
+      contractOnUnitB.setEndDate(Optional.of(LocalDate.of(2026, 12, 31)));
+      contractOnUnitB.setStatus(Contract.ContractStatus.ACTIVE);
+      org.mockito.Mockito.lenient()
+          .when(contractRepository.findByPropertyId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(contractOnUnitB));
+
+      CreateOccupancyPeriodRequest request =
+          new CreateOccupancyPeriodRequest(
+              LocalDate.of(2026, 4, 1),
+              OccupancyType.PERSONAL,
+              Optional.of(LocalDate.of(2026, 6, 30)),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              UNIT_SID.value());
+
+      OccupancyPeriodResponse response = service.create(PROPERTY_SID, request, principal);
+
+      assertThat(response.unitIdentifier()).isEqualTo(UNIT_SID);
+      verify(contractRepository, never()).findByPropertyId(any(), any());
+    }
+
+    @Test
+    @DisplayName(
         "does not persist property when period starts today or earlier"
             + " (status moved to units, BUUR-106 Task 12)")
     void setsPropertyStatusWhenStartsToday() {
@@ -309,7 +362,7 @@ class OccupancyPeriodServiceTest {
       when(repository.findOverlapping(
               eq(UNIT_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
           .thenReturn(List.of());
-      when(contractRepository.findByPropertyId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID)).thenReturn(List.of());
       when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(), TEAM_ID))
           .thenReturn(List.of());
 

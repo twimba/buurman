@@ -138,6 +138,23 @@ public class ContractRepository {
         .toList();
   }
 
+  public List<Contract> findByUnitId(UUID unitId, UUID teamId) {
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .UNIT_ID
+                .eq(unitId)
+                .and(CONTRACTS.TEAM_ID.eq(teamId))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.START_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
   public List<Contract> findByContactIdViaParties(UUID contactId, UUID teamId) {
     var CONTRACT_PARTIES = org.jooq.impl.DSL.table("contract_parties");
     var CP_CONTRACT_ID = org.jooq.impl.DSL.field("contract_parties.contract_id", UUID.class);

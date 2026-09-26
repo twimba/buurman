@@ -82,8 +82,8 @@ public class OccupancyPeriodService {
           "Cannot create self-occupancy period: overlaps with an existing period");
     }
 
-    // Validate no overlapping contracts
-    validateNoOverlappingContracts(property.getId(), teamId, request.startDate(), endDate, null);
+    // Validate no overlapping contracts on this unit
+    validateNoOverlappingContracts(unit.getId(), teamId, request.startDate(), endDate, null);
 
     Instant now = Instant.now(clock);
     PropertyOccupancyPeriod period =
@@ -152,7 +152,8 @@ public class OccupancyPeriodService {
           "Cannot update self-occupancy period: overlaps with an existing period");
     }
 
-    validateNoOverlappingContracts(property.getId(), teamId, period.getStartDate(), endDate, null);
+    validateNoOverlappingContracts(
+        period.getUnitId(), teamId, period.getStartDate(), endDate, null);
 
     period.setUpdatedAt(Instant.now(clock));
     period.setUpdatedBy(principal.getUserId());
@@ -360,12 +361,8 @@ public class OccupancyPeriodService {
   }
 
   private void validateNoOverlappingContracts(
-      UUID propertyId,
-      UUID teamId,
-      LocalDate startDate,
-      LocalDate endDate,
-      @Nullable UUID excludeId) {
-    List<Contract> contracts = contractRepository.findByPropertyId(propertyId, teamId);
+      UUID unitId, UUID teamId, LocalDate startDate, LocalDate endDate, @Nullable UUID excludeId) {
+    List<Contract> contracts = contractRepository.findByUnitId(unitId, teamId);
 
     // Batch-load extensions for effective end date computation
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
