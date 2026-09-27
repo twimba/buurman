@@ -211,6 +211,22 @@ class PaymentReminderServiceTest {
     assertThat(variables).containsEntry("dueDate", expectedDate);
   }
 
+  @Test
+  @DisplayName("links the reminder to its payment and contract")
+  void linksTheReminderToItsEntities() {
+    stubHappyPath(payment(PaymentStatus.PENDING, TODAY.minusDays(10)), new BigDecimal("250.00"));
+
+    service.sendReminder(
+        PAYMENT_SID, new SendPaymentReminderRequest(Optional.empty()), principal);
+
+    ArgumentCaptor<SendNotificationRequest> captor =
+        ArgumentCaptor.forClass(SendNotificationRequest.class);
+    verify(notificationService).send(captor.capture());
+    // Both: the reminder belongs to the payment's timeline and the contract's.
+    assertThat(captor.getValue().relatedPaymentId()).contains(PAYMENT_ID);
+    assertThat(captor.getValue().relatedContractId()).contains(CONTRACT_ID);
+  }
+
   private void stubHappyPath(Payment payment, BigDecimal received) {
     org.mockito.Mockito.lenient()
         .when(paymentRepository.getByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID))

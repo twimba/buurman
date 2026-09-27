@@ -1317,6 +1317,8 @@ public class PaymentService {
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
             .notificationType(PAYMENT_PAID)
+            .relatedPaymentId(Optional.of(payment.getId()))
+            .relatedContractId(Optional.of(payment.getContractId()))
             .templateName("payment-paid")
             .templateVariables(
                 Map.of(
@@ -1375,6 +1377,8 @@ public class PaymentService {
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
             .notificationType(PAYMENT_RECEIVAL)
+            .relatedPaymentId(Optional.of(payment.getId()))
+            .relatedContractId(Optional.of(payment.getContractId()))
             .templateName("payment-receival")
             .templateVariables(vars)
             .createdBy(principal.getUserId())

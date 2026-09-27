@@ -257,6 +257,7 @@ public class ContractService {
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
             .notificationType(CONTRACT_CREATED)
+            .relatedContractId(Optional.of(savedContract.getId()))
             .templateName("contract-created")
             .templateVariables(contractVars)
             .createdBy(principal.getUserId())
@@ -771,6 +772,7 @@ public class ContractService {
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
             .notificationType(CONTRACT_STATUS_CHANGED)
+            .relatedContractId(Optional.of(contract.getId()))
             .templateName("contract-status-changed")
             .templateVariables(
                 Map.of(
@@ -897,6 +899,7 @@ public class ContractService {
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
             .notificationType(CONTRACT_REOPENED)
+            .relatedContractId(Optional.of(contract.getId()))
             .templateName("contract-reopened")
             .templateVariables(
                 Map.of(

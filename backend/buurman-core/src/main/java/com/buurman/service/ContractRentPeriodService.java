@@ -664,6 +664,7 @@ public class ContractRentPeriodService {
           SendNotificationRequest.builder()
               .teamId(Optional.of(teamId))
               .notificationType(CONTRACT_RENT_ADJUSTED)
+              .relatedContractId(Optional.of(contract.getId()))
               .templateName("contract-rent-adjusted")
               .templateVariables(vars)
               .createdBy(userId)

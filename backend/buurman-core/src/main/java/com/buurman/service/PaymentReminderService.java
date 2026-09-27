@@ -440,6 +440,8 @@ public class PaymentReminderService {
                 .teamId(Optional.of(teamId))
                 .notificationType(PAYMENT_REMINDER)
                 .recipientContactId(Optional.of(contact.getId()))
+                .relatedPaymentId(Optional.of(payment.getId()))
+                .relatedContractId(Optional.of(payment.getContractId()))
                 .recipientEmail(Optional.of(email))
                 .templateName(TEMPLATE_NAME)
                 .templateVariables(variables)
