@@ -22,9 +22,7 @@ vi.mock('@/components/common/InteractiveMap', () => ({
 describe('PropertyForm submit payload', () => {
   it('submits the building-level fields (street, city, postalCode, propertyCategory, propertyType)', async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
-    renderWithProviders(
-      <PropertyForm onSubmit={onSubmit} isLoading={false} />
-    );
+    renderWithProviders(<PropertyForm onSubmit={onSubmit} isLoading={false} />);
 
     fireEvent.change(screen.getByPlaceholderText('Main Street 123'), {
       target: { value: 'Main Street 1' },

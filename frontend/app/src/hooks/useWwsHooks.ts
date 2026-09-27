@@ -39,7 +39,8 @@ export const useLatestWwsCalculation = (
 ) => {
   return useQuery({
     queryKey: queryKeys.wws.latest(propertyIdentifier),
-    queryFn: () => getLatestWwsCalculation(propertyIdentifier as PropertyIdentifier),
+    queryFn: () =>
+      getLatestWwsCalculation(propertyIdentifier as PropertyIdentifier),
     enabled: !!propertyIdentifier,
     retry: false,
   });

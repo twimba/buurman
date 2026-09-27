@@ -20,10 +20,7 @@ import { PropertyLifecycleTimeline } from '@/components/properties/PropertyLifec
 import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
-import type {
-  PropertyIdentifier,
-  UnitIdentifier,
-} from '@/generated/models';
+import type { PropertyIdentifier, UnitIdentifier } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';

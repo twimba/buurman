@@ -585,7 +585,6 @@ export const PropertyForm = ({
                   }
                 />
               </div>
-
             </div>
           </div>
         </FormStepGate>
