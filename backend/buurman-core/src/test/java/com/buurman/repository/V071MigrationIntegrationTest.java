@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.jooq.impl.DSL;
@@ -202,6 +203,61 @@ class V071MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
         .set(DSL.field("updated_by", UUID.class), USER_ID)
         .execute();
     return id;
+  }
+
+  @Test
+  @DisplayName("index hygiene: drops the redundant units index, adds the hot-path composite index")
+  void unitsIndexesAreCorrect() {
+    migrateToLatest();
+
+    assertThat(indexExists("units", "idx_units_property_id")).isFalse();
+    assertThat(indexExists("units", "idx_units_team_property_status")).isTrue();
+  }
+
+  @Test
+  @DisplayName("index hygiene: expense_allocations.team_id (ON DELETE CASCADE) is now indexed")
+  void expenseAllocationsTeamIdIsIndexed() {
+    migrateToLatest();
+
+    assertThat(indexExists("expense_allocations", "idx_expense_allocations_team_id")).isTrue();
+  }
+
+  @Test
+  @DisplayName(
+      "index hygiene: photos/documents/expenses unit_id indexes are partial (unit_id IS NOT NULL)")
+  void unitIdIndexesArePartial() {
+    migrateToLatest();
+
+    assertThat(indexDefinition("photos", "idx_photos_unit_id"))
+        .containsIgnoringCase("unit_id IS NOT NULL");
+    assertThat(indexDefinition("documents", "idx_documents_unit_id"))
+        .containsIgnoringCase("unit_id IS NOT NULL");
+    assertThat(indexDefinition("expenses", "idx_expenses_unit_id"))
+        .containsIgnoringCase("unit_id IS NOT NULL");
+  }
+
+  private boolean indexExists(String tableName, String indexName) {
+    Integer count =
+        dsl.selectCount()
+            .from(DSL.table("pg_indexes"))
+            .where(
+                DSL.field("tablename", String.class)
+                    .eq(tableName)
+                    .and(DSL.field("indexname", String.class).eq(indexName)))
+            .fetchOne(0, Integer.class);
+    return count != null && count > 0;
+  }
+
+  private String indexDefinition(String tableName, String indexName) {
+    return Objects.requireNonNull(
+        dsl.select(DSL.field("indexdef", String.class))
+            .from(DSL.table("pg_indexes"))
+            .where(
+                DSL.field("tablename", String.class)
+                    .eq(tableName)
+                    .and(DSL.field("indexname", String.class).eq(indexName)))
+            .fetchOne(0, String.class),
+        "expected index " + indexName + " on " + tableName + " to exist");
   }
 
   private static String randomSuffix() {

@@ -135,3 +135,44 @@ WHERE
 -- =============================================================================
 ALTER TABLE units
 ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+
+-- =============================================================================
+-- 5. Index hygiene.
+-- =============================================================================
+-- idx_units_property_id (property_id) is a redundant prefix of
+-- uq_units_property_number (property_id, unit_number) WHERE deleted_at IS NULL,
+-- which already serves every lookup the plain index did.
+DROP INDEX idx_units_property_id;
+
+-- The two hottest unit queries (findUnitCountsByTeamId, hasUnitWithStatus)
+-- currently heap-fetch every unit in the team; this covers both.
+CREATE INDEX idx_units_team_property_status ON units (team_id, property_id, status)
+WHERE
+    deleted_at IS NULL;
+
+-- expense_allocations.team_id has ON DELETE CASCADE with no index, so a GDPR
+-- erasure (DELETE FROM teams) sequential-scans an unbounded table --
+-- replaceForExpense soft-deletes, so rows accumulate permanently.
+CREATE INDEX idx_expense_allocations_team_id ON expense_allocations (team_id);
+
+-- photos.unit_id, documents.unit_id and expenses.unit_id are ~100% NULL
+-- (optional columns added in V068, populated only when the entity is
+-- attached to a specific unit rather than the whole property). Make their
+-- indexes partial so they don't carry dead weight for the common case.
+DROP INDEX idx_photos_unit_id;
+
+CREATE INDEX idx_photos_unit_id ON photos (unit_id)
+WHERE
+    unit_id IS NOT NULL;
+
+DROP INDEX idx_documents_unit_id;
+
+CREATE INDEX idx_documents_unit_id ON documents (unit_id)
+WHERE
+    unit_id IS NOT NULL;
+
+DROP INDEX idx_expenses_unit_id;
+
+CREATE INDEX idx_expenses_unit_id ON expenses (unit_id)
+WHERE
+    unit_id IS NOT NULL;
