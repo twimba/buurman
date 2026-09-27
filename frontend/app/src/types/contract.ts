@@ -75,6 +75,8 @@ export interface ContractPartyRequest {
 export interface ContractResponse {
   identifier: string;
   property: PropertySummary;
+  /** Identifier of the unit this contract is for. Absent on properties predating BUUR-106 units. */
+  unitIdentifier?: string;
   parties: ContractPartyResponse[];
   primaryContact: ContactSummary;
   contractType: ContractResponseContractType;

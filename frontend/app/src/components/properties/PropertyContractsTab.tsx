@@ -8,6 +8,7 @@ import {
   useDeleteOccupancyPeriod,
 } from '@/hooks/useOccupancyPeriodHooks';
 import { useFinancings } from '@/hooks/usePropertyFinancialsHooks';
+import { useUnits } from '@/hooks/useUnitHooks';
 import { SelfOccupancyModal } from '@/components/properties/SelfOccupancyModal';
 import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
@@ -85,6 +86,11 @@ export const PropertyContractsTab = ({
   const totalPages = contractsData?.totalPages ?? 0;
 
   const { data: occupancyPeriods = [] } = useOccupancyPeriods(propertyId);
+  const { data: units = [] } = useUnits(propertyId);
+  const isMultiUnit = units.length > 1;
+  const unitLabelById = new Map(
+    units.map((u) => [u.identifier, u.name || u.unitNumber])
+  );
   const { data: financings = [] } = useFinancings(propertyId);
   const deleteOccupancyMutation = useDeleteOccupancyPeriod(propertyId);
 
@@ -435,6 +441,11 @@ export const PropertyContractsTab = ({
                     <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       {t('contracts.selfOccupancy.table.period')}
                     </th>
+                    {isMultiUnit && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                        {t('picker.label', { ns: 'units' })}
+                      </th>
+                    )}
                     <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       {t('contracts.selfOccupancy.table.type')}
                     </th>
@@ -464,6 +475,14 @@ export const PropertyContractsTab = ({
                             ? formatDate(period.endDate)
                             : t('contracts.selfOccupancy.ongoing')}
                         </td>
+                        {isMultiUnit && (
+                          <td className="px-4 py-3 text-sm text-text-secondary">
+                            {period.unitIdentifier
+                              ? (unitLabelById.get(period.unitIdentifier) ??
+                                '—')
+                              : '—'}
+                          </td>
+                        )}
                         <td className="px-4 py-3 text-sm text-text-secondary">
                           {t(`selfOccupancy.occupancyTypes.${period.type}`)}
                         </td>

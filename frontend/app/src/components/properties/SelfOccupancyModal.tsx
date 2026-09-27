@@ -6,8 +6,10 @@ import {
   useOccupancyPeriods,
 } from '@/hooks/useOccupancyPeriodHooks';
 import { useContracts } from '@/hooks/useContractHooks';
+import { useUnits } from '@/hooks/useUnitHooks';
 import { OccupancyType } from '@/types/occupancyPeriod';
 import { ContractStatus } from '@/types/contract';
+import type { UnitIdentifier } from '@/types/unit';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { X, Info } from 'lucide-react';
 
@@ -26,13 +28,10 @@ export const SelfOccupancyModal = ({
   const { data: existingPeriods = [] } =
     useOccupancyPeriods(propertyIdentifier);
   const { data: contractsData } = useContracts({ propertyIdentifier });
-  const takenContracts = (contractsData?.content ?? []).filter(
-    (c) =>
-      c.status !== ContractStatus.DRAFT &&
-      c.status !== ContractStatus.PENDING_SIGNATURE
-  );
-  const hasTakenPeriods =
-    existingPeriods.length > 0 || takenContracts.length > 0;
+  const { data: units = [] } = useUnits(propertyIdentifier);
+  // A single-unit property never asks — the backend only requires a choice when there is
+  // genuinely more than one unit to choose from.
+  const requiresUnitChoice = units.length > 1;
 
   const [startDate, setStartDate] = useState(
     new Date().toISOString().split('T')[0]
@@ -42,9 +41,32 @@ export const SelfOccupancyModal = ({
   const [occupantName, setOccupantName] = useState('');
   const [monthlyImputedRent, setMonthlyImputedRent] = useState('');
   const [notes, setNotes] = useState('');
+  const [unitIdentifier, setUnitIdentifier] = useState('');
+  const [unitError, setUnitError] = useState(false);
+
+  // Existing periods/contracts are read at the property level (the backend has no per-unit
+  // filter), so once a unit is chosen, only warn about overlaps on that same unit — otherwise a
+  // 6-unit building would falsely claim every unit is already taken.
+  const relevantPeriods = requiresUnitChoice
+    ? existingPeriods.filter((p) => p.unitIdentifier === unitIdentifier)
+    : existingPeriods;
+  const takenContracts = (contractsData?.content ?? [])
+    .filter(
+      (c) =>
+        c.status !== ContractStatus.DRAFT &&
+        c.status !== ContractStatus.PENDING_SIGNATURE
+    )
+    .filter((c) => !requiresUnitChoice || c.unitIdentifier === unitIdentifier);
+  const hasTakenPeriods =
+    (!requiresUnitChoice || !!unitIdentifier) &&
+    (relevantPeriods.length > 0 || takenContracts.length > 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (requiresUnitChoice && !unitIdentifier) {
+      setUnitError(true);
+      return;
+    }
     createMutation.mutate(
       {
         startDate,
@@ -55,6 +77,9 @@ export const SelfOccupancyModal = ({
           ? { monthlyImputedRent: parseFloat(monthlyImputedRent) }
           : {}),
         ...(notes ? { notes } : {}),
+        ...(unitIdentifier
+          ? { unitIdentifier: unitIdentifier as UnitIdentifier }
+          : {}),
       },
       { onSuccess: onClose }
     );
@@ -103,6 +128,40 @@ export const SelfOccupancyModal = ({
             </div>
           </div>
 
+          {requiresUnitChoice && (
+            <div>
+              <label
+                htmlFor="self-occupancy-unit"
+                className="block text-sm font-medium text-text-secondary mb-1"
+              >
+                {t('picker.label', { ns: 'units' })}
+              </label>
+              <select
+                id="self-occupancy-unit"
+                value={unitIdentifier}
+                onChange={(e) => {
+                  setUnitIdentifier(e.target.value);
+                  setUnitError(false);
+                }}
+                className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="">
+                  {t('picker.placeholder', { ns: 'units' })}
+                </option>
+                {units.map((u) => (
+                  <option key={u.identifier} value={u.identifier}>
+                    {u.name || u.unitNumber}
+                  </option>
+                ))}
+              </select>
+              {unitError && (
+                <p className="mt-1 text-sm text-error-text">
+                  {t('selfOccupancy.form.unitRequired')}
+                </p>
+              )}
+            </div>
+          )}
+
           {hasTakenPeriods && (
             <div className="bg-warning-bg border border-warning-border rounded-lg p-3">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-warning-text mb-2">
@@ -110,7 +169,7 @@ export const SelfOccupancyModal = ({
                 {t('selfOccupancy.form.alreadyTakenPeriods')}
               </div>
               <div className="space-y-1">
-                {existingPeriods.map((p) => (
+                {relevantPeriods.map((p) => (
                   <div
                     key={p.identifier}
                     className="flex items-center gap-1.5 text-xs text-warning-text"
