@@ -12,6 +12,8 @@ import com.buurman.util.SkipTestCoverage;
 @SkipTestCoverage
 public record WwsCalculationResponse(
     Optional<Sid> identifier,
+    Sid unitIdentifier,
+    String unitNumber,
     BigDecimal totalPoints,
     String sectorClassification,
     Optional<BigDecimal> maxRentIndication,

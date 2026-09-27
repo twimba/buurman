@@ -58,4 +58,16 @@ public class WwsCalculatorController implements WwsCalculatorApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     wwsService.deleteCalculation(calculationIdentifier, principal);
   }
+
+  @Override
+  public List<WwsCalculationResponse> getWwsCalculationsForUnit(UnitIdentifier identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return wwsService.getCalculationHistoryForUnit(identifier, principal);
+  }
+
+  @Override
+  public WwsCalculationResponse getLatestWwsCalculationForUnit(UnitIdentifier identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return wwsService.getLatestCalculationForUnit(identifier, principal);
+  }
 }

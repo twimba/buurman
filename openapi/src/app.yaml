@@ -459,6 +459,10 @@ paths:
     $ref: 'paths/reference.yaml#/wws-properties-latest'
   /wws/calculations/{calculationIdentifier}:
     $ref: 'paths/reference.yaml#/wws-calculations-item'
+  /units/{identifier}/wws/calculations:
+    $ref: 'paths/reference.yaml#/wws-units-calculations'
+  /units/{identifier}/wws/latest:
+    $ref: 'paths/reference.yaml#/wws-units-latest'
   /properties/{identifier}/audit-log:
     $ref: 'paths/properties.yaml#/audit-log'
   /properties/documents/{documentIdentifier}/download:
@@ -8509,6 +8513,11 @@ components:
       properties:
         identifier:
           type: string
+        unitIdentifier:
+          $ref: "#/components/schemas/UnitIdentifier"
+        unitNumber:
+          type: string
+          description: The dwelling this calculation was made for.
         totalPoints:
           type: number
         sectorClassification:
@@ -8528,6 +8537,8 @@ components:
         inputData:
           $ref: "#/components/schemas/WwsCalculationRequest"
       required:
+        - unitIdentifier
+        - unitNumber
         - totalPoints
         - sectorClassification
         - systemVersion

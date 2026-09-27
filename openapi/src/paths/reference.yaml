@@ -379,6 +379,10 @@ wws-properties-latest:
     tags:
       - WWS Calculator
     summary: Get latest WWS calculation for property
+    description: >-
+      Only unambiguous for a single-unit property. A multi-unit building has no single "latest
+      WWS figure" — this returns 409 instead, since each unit has its own legal rent ceiling. Use
+      the unit-scoped endpoint to target a specific unit.
     operationId: getLatestWwsCalculation
     parameters:
       - name: propertyIdentifier
@@ -401,6 +405,12 @@ wws-properties-latest:
               $ref: '#/components/schemas/ProblemDetail'
       "404":
         description: No calculation found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Property has more than one unit — ambiguous
         content:
           application/json:
             schema:
@@ -432,6 +442,82 @@ wws-calculations-item:
               $ref: '#/components/schemas/ProblemDetail'
       "404":
         description: Calculation not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+wws-units-calculations:
+  get:
+    tags:
+      - WWS Calculator
+    summary: Get WWS calculation history for a unit
+    description: >-
+      WWS points are a per-dwelling figure, so calculation history is scoped to a single unit.
+      Use the property-scoped endpoint only to list every unit's calculations at once.
+    operationId: getWwsCalculationsForUnit
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UnitIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WwsCalculationResponse'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Unit not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+wws-units-latest:
+  get:
+    tags:
+      - WWS Calculator
+    summary: Get latest WWS calculation for a unit
+    description: >-
+      WWS points are a per-dwelling figure, so the legal rent ceiling for a unit is only ever
+      read from that unit's own calculations.
+    operationId: getLatestWwsCalculationForUnit
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UnitIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WwsCalculationResponse'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: No calculation found for this unit
         content:
           application/json:
             schema:

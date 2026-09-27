@@ -89,6 +89,37 @@ public class WwsCalculationRepository {
         .flatMap(mapper::toDomain);
   }
 
+  public List<WwsCalculation> findByUnitIdAndTeamId(UUID unitId, UUID teamId) {
+    return dsl
+        .selectFrom(WWS_CALCULATIONS)
+        .where(
+            WWS_CALCULATIONS
+                .UNIT_ID
+                .eq(unitId)
+                .and(WWS_CALCULATIONS.TEAM_ID.eq(teamId))
+                .and(WWS_CALCULATIONS.DELETED_AT.isNull()))
+        .orderBy(WWS_CALCULATIONS.CALCULATION_DATE.desc(), WWS_CALCULATIONS.CREATED_AT.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  public Optional<WwsCalculation> findLatestByUnitIdAndTeamId(UUID unitId, UUID teamId) {
+    return dsl.selectFrom(WWS_CALCULATIONS)
+        .where(
+            WWS_CALCULATIONS
+                .UNIT_ID
+                .eq(unitId)
+                .and(WWS_CALCULATIONS.TEAM_ID.eq(teamId))
+                .and(WWS_CALCULATIONS.DELETED_AT.isNull()))
+        .orderBy(WWS_CALCULATIONS.CALCULATION_DATE.desc(), WWS_CALCULATIONS.CREATED_AT.desc())
+        .limit(1)
+        .fetchOptional()
+        .flatMap(mapper::toDomain);
+  }
+
   /**
    * Whether any WWS calculation still references this unit — used to guard unit deletion, since
    * {@code GET /wws-calculations/{id}} and the property's calculation history resolve their unit by

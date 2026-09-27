@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +37,7 @@ import com.buurman.dto.response.WwsCalculationResponse;
 import com.buurman.dto.response.WwsCategoryBreakdown;
 import com.buurman.dto.response.WwsPreFillResponse;
 import com.buurman.exception.BadRequestException;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
@@ -201,6 +203,12 @@ public class WwsPointsCalculatorService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public WwsCalculationResponse calculate(WwsCalculationRequest request, UserPrincipal principal) {
     WwsVersionConfig config = getVersionConfig(request.systemVersion());
+
+    UUID teamId = principal.getTeamId().orElseThrow();
+    Property property =
+        propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
+    Unit unit = resolveUnit(property, request.unitIdentifier(), principal);
+
     List<WwsCategoryBreakdown> breakdown = calculateBreakdown(request, config);
     BigDecimal totalPoints = sumPoints(breakdown);
 
@@ -209,6 +217,8 @@ public class WwsPointsCalculatorService {
 
     return new WwsCalculationResponse(
         Optional.empty(),
+        unit.getIdentifier().orElseThrow(),
+        unit.getUnitNumber(),
         totalPoints,
         classification,
         maxRent,
@@ -283,6 +293,8 @@ public class WwsPointsCalculatorService {
 
     return new WwsCalculationResponse(
         Optional.of(identifier),
+        unit.getIdentifier().orElseThrow(),
+        unit.getUnitNumber(),
         totalPoints,
         classification,
         maxRent,
@@ -365,27 +377,93 @@ public class WwsPointsCalculatorService {
         Optional.of(address));
   }
 
+  /**
+   * Calculation history across every unit of a property, each row labelled with the unit it
+   * belongs to. Never a single ambiguous figure — a multi-unit building has one legal ceiling per
+   * dwelling, so the caller must be able to tell rows apart.
+   */
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public List<WwsCalculationResponse> getCalculationHistory(
       PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId().orElseThrow();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
-    return wwsCalculationRepository.findByPropertyId(property.getId(), teamId).stream()
-        .map(this::toResponse)
+    List<WwsCalculation> calculations =
+        wwsCalculationRepository.findByPropertyId(property.getId(), teamId);
+    Map<UUID, Unit> unitsById = loadUnitsById(calculations, teamId);
+
+    return calculations.stream()
+        .map(
+            calc ->
+                toResponse(
+                    calc,
+                    Optional.ofNullable(unitsById.get(calc.getUnitId()))
+                        .orElseThrow(
+                            () ->
+                                new IllegalStateException(
+                                    "WWS calculation "
+                                        + calc.getIdentifier()
+                                        + " references a unit that could not be resolved"))))
         .toList();
   }
 
+  /**
+   * Latest calculation for a property, but only when the answer is unambiguous. A multi-unit
+   * building has no single "latest WWS figure" — refusing with 409 is correct here; a plausible
+   * wrong number is not. Use {@link #getLatestCalculationForUnit} to target a specific unit.
+   */
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public WwsCalculationResponse getLatestCalculation(
       PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId().orElseThrow();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId);
+    if (units.size() > 1) {
+      throw new BusinessRuleException(
+          "This building has " + units.size() + " units. Open a unit to see its WWS calculation.");
+    }
+    if (units.isEmpty()) {
+      throw new NotFoundException("No WWS calculation found for this property");
+    }
+    Unit unit = units.get(0);
+
     return wwsCalculationRepository
-        .findLatestByPropertyId(property.getId(), teamId)
-        .map(this::toResponse)
+        .findLatestByUnitIdAndTeamId(unit.getId(), teamId)
+        .map(calc -> toResponse(calc, unit))
         .orElseThrow(() -> new NotFoundException("No WWS calculation found for this property"));
+  }
+
+  /** Calculation history for a single unit — the only reliably unambiguous read. */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public List<WwsCalculationResponse> getCalculationHistoryForUnit(
+      UnitIdentifier unitIdentifier, UserPrincipal principal) {
+    UUID teamId = principal.getTeamId().orElseThrow();
+    Unit unit = unitRepository.getByIdentifierAndTeamId(unitIdentifier, teamId);
+
+    return wwsCalculationRepository.findByUnitIdAndTeamId(unit.getId(), teamId).stream()
+        .map(calc -> toResponse(calc, unit))
+        .toList();
+  }
+
+  /** Latest calculation for a single unit — the only reliably unambiguous read. */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public WwsCalculationResponse getLatestCalculationForUnit(
+      UnitIdentifier unitIdentifier, UserPrincipal principal) {
+    UUID teamId = principal.getTeamId().orElseThrow();
+    Unit unit = unitRepository.getByIdentifierAndTeamId(unitIdentifier, teamId);
+
+    return wwsCalculationRepository
+        .findLatestByUnitIdAndTeamId(unit.getId(), teamId)
+        .map(calc -> toResponse(calc, unit))
+        .orElseThrow(() -> new NotFoundException("No WWS calculation found for this unit"));
+  }
+
+  private Map<UUID, Unit> loadUnitsById(List<WwsCalculation> calculations, UUID teamId) {
+    Set<UUID> unitIds =
+        calculations.stream().map(WwsCalculation::getUnitId).collect(Collectors.toSet());
+    return unitRepository.findByIdsAndTeamId(unitIds, teamId).stream()
+        .collect(Collectors.toMap(Unit::getId, u -> u));
   }
 
   // --- Calculation logic ---
@@ -823,7 +901,12 @@ public class WwsPointsCalculatorService {
     }
   }
 
-  private WwsCalculationResponse toResponse(WwsCalculation calc) {
+  /**
+   * @param unit the dwelling this calculation was made for. Never null: {@code wws_calculations}
+   *     enforces {@code unit_id NOT NULL}, and unit deletion refuses to soft-delete a unit that
+   *     still has WWS calculations, so this lookup can never miss.
+   */
+  private WwsCalculationResponse toResponse(WwsCalculation calc, Unit unit) {
     Optional<WwsCalculationRequest> inputData = Optional.empty();
     try {
       inputData =
@@ -834,6 +917,8 @@ public class WwsPointsCalculatorService {
 
     return new WwsCalculationResponse(
         calc.getIdentifier(),
+        unit.getIdentifier().orElseThrow(),
+        unit.getUnitNumber(),
         calc.getTotalPoints(),
         calc.getSectorClassification(),
         calc.getMaxRentIndication(),
