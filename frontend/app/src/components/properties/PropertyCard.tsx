@@ -1,9 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { PropertyResponse } from '@/types/property';
 import { usePropertyLabels } from '@/hooks/usePropertyLabels';
-import { Bed, Bath, Ruler } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
 import { LazyImage } from '@buurman/ui';
+import { describePropertyOccupancy } from '@/utils/propertyOccupancy';
 import {
   PROPERTY_CATEGORY_ICONS,
   PROPERTY_TYPE_ICONS,
@@ -13,26 +14,21 @@ interface PropertyCardProps {
   property: PropertyResponse;
 }
 
-const statusColors: Record<string, string> = {
-  VACANT: 'bg-success-bg text-success-text',
-  OCCUPIED: 'bg-info-bg text-info-text',
-  MAINTENANCE: 'bg-warning-bg text-warning-text',
-  UNAVAILABLE: 'bg-surface-inset text-text-primary',
-  UNDER_RENOVATION: 'bg-warning-bg text-warning-text',
-  FALLOW: 'bg-surface-inset text-text-secondary',
-  LISTED: 'bg-info-bg text-info-text',
-  SELF_OCCUPIED: 'bg-info-bg text-info-text',
-};
-
 export const PropertyCard = ({ property }: PropertyCardProps) => {
   const navigate = useNavigate();
-  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
+  const { t } = useTranslation('properties');
+  const { typeLabel, categoryLabel } = usePropertyLabels();
   const PlaceholderIcon =
     PROPERTY_TYPE_ICONS[property.propertyType] ??
     PROPERTY_CATEGORY_ICONS[property.propertyCategory] ??
     PROPERTY_CATEGORY_ICONS.RESIDENTIAL;
-  const bedrooms = property.residentialDetails?.bedrooms;
-  const bathrooms = property.residentialDetails?.bathrooms;
+  // A property can hold several independently-let units (BUUR-106), so there is no single
+  // property-level status anymore -- derive a coarse one from unit counts instead.
+  const occupancy = describePropertyOccupancy(
+    t,
+    property.unitCount,
+    property.occupiedUnitCount
+  );
 
   return (
     <div
@@ -50,12 +46,12 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         ) : (
           <PlaceholderIcon className="h-16 w-16 text-text-muted " />
         )}
-        {/* Status Badge */}
+        {/* Occupancy Badge */}
         <div className="absolute top-3 right-3">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[property.status] ?? 'bg-surface-inset text-text-primary'}`}
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${occupancy.colorClass}`}
           >
-            {statusLabel(property.status)}
+            {occupancy.label}
           </span>
         </div>
       </div>
@@ -72,31 +68,6 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         <p className="text-sm text-text-secondary mb-3">
           {property.city}, {property.postalCode}
         </p>
-
-        {/* Specifications */}
-        <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 mb-3">
-          {bedrooms != null && (
-            <div className="flex items-center gap-1 text-text-secondary">
-              <Bed className="h-4 w-4 text-text-muted " />
-              <span className="text-sm">{bedrooms}</span>
-            </div>
-          )}
-          {bathrooms != null && (
-            <div className="flex items-center gap-1 text-text-secondary">
-              <Bath className="h-4 w-4 text-text-muted " />
-              <span className="text-sm">{bathrooms}</span>
-            </div>
-          )}
-          {property.areaValue != null && (
-            <div className="flex items-center gap-1 text-text-secondary">
-              <Ruler className="h-4 w-4 text-text-muted " />
-              <span className="text-sm">
-                {property.areaValue}
-                {property.areaUnit === 'sqft' ? 'ft²' : 'm²'}
-              </span>
-            </div>
-          )}
-        </div>
 
         {/* Category & Type badges */}
         <div className="flex gap-1.5 flex-wrap">
