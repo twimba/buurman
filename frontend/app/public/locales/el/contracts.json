@@ -579,7 +579,6 @@
     "retroactiveTooltip": "Θα δημιουργηθούν πληρωμές αναπροσαρμογής για τυχόν ήδη τακτοποιημένες πληρωμές που επηρεάζονται από αναδρομικές αλλαγές ημερομηνίας.",
     "exceedsMax": "Υπερβαίνει τη μέγιστη ρυθμιζόμενη αύξηση {{max}}%",
     "belowMin": "Κάτω από την ελάχιστη ρυθμιζόμενη αύξηση {{min}}%",
-    "leaseOfTotal": "Συμβόλαιο {{index}} από {{total}} σε αυτό το ακίνητο",
     "tableHeaders": {
       "property": "Ακίνητο",
       "currentRent": "Τρέχον Ενοίκιο",
@@ -604,7 +603,8 @@
     "increasesFailed_other": "{{count}} αυξήσεις απέτυχαν",
     "adjustmentPayments_one": "{{count}} πληρωμή αναπροσαρμογής δημιουργήθηκε για αναδρομικές αλλαγές",
     "adjustmentPayments_other": "{{count}} πληρωμές αναπροσαρμογής δημιουργήθηκαν για αναδρομικές αλλαγές",
-    "status": "Κατάσταση"
+    "status": "Κατάσταση",
+    "leaseOfTotal": "Συμβόλαιο {{index}} από {{total}} σε αυτό το ακίνητο"
   },
   "card": {
     "start": "Έναρξη",
@@ -816,7 +816,7 @@
       "bruksvardessystemApplicable": "Σύστημα Bruksvärde Εφαρμόζεται",
       "energyDeclarationRating": "Βαθμολογία Ενεργειακής Δήλωσης",
       "hyresnamndenEligible": "Επιλέξιμο Hyresnämnden",
-      "depositSum": "Ποσό Εγγύησης",
+      "depositSum": "Ποσό εγγύησης",
       "vuokrasopimustyyppi": "Τύπος Σύμβασης (FI)",
       "vakuusAmount": "Ποσό Εγγύησης",
       "vakuusMonths": "Εγγύηση σε Μήνες",

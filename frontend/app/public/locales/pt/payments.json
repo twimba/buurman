@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Falha ao carregar histórico"
   },
   "selection": {
-    "selected": "{{count}} selecionado",
+    "selected_one": "{{count}} selecionado",
+    "selected_other": "{{count}} selecionados",
     "selectAll": "Selecionar todos os não pagos desta página",
     "selectRow": "Selecionar pagamento {{id}}",
     "select": "Selecionar",

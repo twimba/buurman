@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Verlauf konnte nicht geladen werden"
   },
   "selection": {
-    "selected": "{{count}} ausgewählt",
+    "selected_one": "{{count}} ausgewählt",
+    "selected_other": "{{count}} ausgewählt",
     "selectAll": "Alle offenen auf dieser Seite auswählen",
     "selectRow": "Zahlung {{id}} auswählen",
     "select": "Auswählen",

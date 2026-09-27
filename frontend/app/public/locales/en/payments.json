@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Failed to load history"
   },
   "selection": {
-    "selected": "{{count}} selected",
+    "selected_one": "{{count}} selected",
+    "selected_other": "{{count}} selected",
     "selectAll": "Select all unpaid on this page",
     "selectRow": "Select payment {{id}}",
     "select": "Select",

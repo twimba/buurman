@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Historian lataus epaonnistui"
   },
   "selection": {
-    "selected": "{{count}} valittu",
+    "selected_one": "{{count}} valittu",
+    "selected_other": "{{count}} valittua",
     "selectAll": "Valitse kaikki sivun maksamattomat",
     "selectRow": "Valitse maksu {{id}}",
     "select": "Valitse",

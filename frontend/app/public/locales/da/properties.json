@@ -671,6 +671,7 @@
       "title_other": "Slet dokumenter",
       "message_one": "Er du sikker paa, at du vil slette dette dokument? Denne handling kan ikke fortrydes.",
       "message_other": "Du er ved at slette {{count}} dokumenter. Denne handling kan ikke fortrydes.",
+      "confirmLabel_one": "Slet {{count}} dokument",
       "confirmLabel_other": "Slet {{count}} dokumenter"
     },
     "editModal": "Rediger dokument",
@@ -698,6 +699,7 @@
       "mainPhotoWarning_other": "Du er ved at slette {{count}} fotos, inklusive hovedfotoet. Denne ejendom vil ikke laengere have et hovedfoto. Denne handling kan ikke fortrydes.",
       "message_one": "Er du sikker paa, at du vil slette dette foto? Denne handling kan ikke fortrydes.",
       "message_other": "Du er ved at slette {{count}} fotos. Denne handling kan ikke fortrydes.",
+      "confirmLabel_one": "Slet {{count}} foto",
       "confirmLabel_other": "Slet {{count}} fotos"
     },
     "editModal": "Rediger foto"

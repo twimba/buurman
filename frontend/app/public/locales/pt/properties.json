@@ -11,13 +11,13 @@
     "allStatuses": "Todos os Estados",
     "count_one": "{{count}} imóvel",
     "count_other": "{{count}} imóveis",
-    "count_many": "{{count}} imóveis",
     "empty": {
       "title": "Nenhum imóvel encontrado",
       "filtered": "Tente ajustar os seus filtros ou termos de pesquisa",
       "noData": "Comece por adicionar o seu primeiro imóvel"
     },
-    "error": "Falha ao carregar imóveis"
+    "error": "Falha ao carregar imóveis",
+    "count_many": "{{count}} imóveis"
   },
   "create": {
     "title": "Adicionar Novo Imóvel",
@@ -660,23 +660,24 @@
     "upload": {
       "title_one": "Carregar Documento",
       "title_other": "Carregar Documentos",
-      "title_many": "Carregar Documentos",
       "files": "{{count}} ficheiros",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "p. ex., Planta do Imóvel",
       "notesLabel": "Notas (opcional)",
       "notesPlaceholder": "Notas adicionais sobre este documento",
       "uploading": "A carregar {{current}} de {{total}}...",
-      "uploadCount": "Carregar {{count}} Documentos"
+      "uploadCount": "Carregar {{count}} Documentos",
+      "title_many": "Carregar Documentos"
     },
     "delete": {
       "title_one": "Eliminar documento",
       "title_other": "Eliminar documentos",
-      "title_many": "Eliminar documentos",
       "message_one": "Tem a certeza de que pretende eliminar este documento? Esta ação não pode ser revertida.",
       "message_other": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida.",
-      "message_many": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida.",
-      "confirmLabel_other": "Eliminar {{count}} documentos"
+      "confirmLabel_one": "Eliminar {{count}} documento",
+      "confirmLabel_other": "Eliminar {{count}} documentos",
+      "title_many": "Eliminar documentos",
+      "message_many": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida."
     },
     "editModal": "Editar Documento",
     "downloading": "A transferir..."
@@ -688,26 +689,27 @@
     "upload": {
       "title_one": "Carregar Foto",
       "title_other": "Carregar Fotos",
-      "title_many": "Carregar Fotos",
       "files": "{{count}} ficheiros",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "p. ex., Sala de estar",
       "notesLabel": "Notas (opcional)",
       "notesPlaceholder": "Notas adicionais sobre esta foto",
       "uploading": "A carregar {{current}} de {{total}}...",
-      "uploadCount": "Carregar {{count}} Fotos"
+      "uploadCount": "Carregar {{count}} Fotos",
+      "title_many": "Carregar Fotos"
     },
     "delete": {
       "title_one": "Eliminar foto",
       "title_other": "Eliminar fotos",
-      "title_many": "Eliminar fotos",
       "mainPhotoWarning_one": "Esta é a foto principal. Eliminá-la significa que este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
       "mainPhotoWarning_other": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
-      "mainPhotoWarning_many": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
       "message_one": "Tem a certeza de que pretende eliminar esta foto? Esta ação não pode ser revertida.",
       "message_other": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida.",
-      "message_many": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida.",
-      "confirmLabel_other": "Eliminar {{count}} fotos"
+      "confirmLabel_one": "Eliminar {{count}} foto",
+      "confirmLabel_other": "Eliminar {{count}} fotos",
+      "title_many": "Eliminar fotos",
+      "mainPhotoWarning_many": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
+      "message_many": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida."
     },
     "editModal": "Editar Foto"
   },

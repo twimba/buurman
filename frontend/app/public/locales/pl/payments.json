@@ -217,7 +217,10 @@
     "loadHistoryFailed": "Nie udało się załadować historii"
   },
   "selection": {
-    "selected": "Wybrano: {{count}}",
+    "selected_one": "{{count}} zaznaczony",
+    "selected_few": "{{count}} zaznaczone",
+    "selected_many": "{{count}} zaznaczonych",
+    "selected_other": "{{count}} zaznaczonych",
     "selectAll": "Zaznacz wszystkie nieopłacone na tej stronie",
     "selectRow": "Zaznacz płatność {{id}}",
     "select": "Zaznacz",

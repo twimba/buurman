@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Det gick inte att ladda historik"
   },
   "selection": {
-    "selected": "{{count}} vald",
+    "selected_one": "{{count}} vald",
+    "selected_other": "{{count}} valda",
     "selectAll": "Välj alla obetalda på sidan",
     "selectRow": "Välj betalning {{id}}",
     "select": "Välj",

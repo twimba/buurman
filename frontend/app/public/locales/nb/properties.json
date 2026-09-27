@@ -671,6 +671,7 @@
       "title_other": "Slett dokumenter",
       "message_one": "Er du sikker på at du vil slette dette dokumentet? Denne handlingen kan ikke angres.",
       "message_other": "Du er i ferd med å slette {{count}} dokumenter. Denne handlingen kan ikke angres.",
+      "confirmLabel_one": "Slett {{count}} dokument",
       "confirmLabel_other": "Slett {{count}} dokumenter"
     },
     "editModal": "Rediger dokument",
@@ -698,6 +699,7 @@
       "mainPhotoWarning_other": "Du er i ferd med å slette {{count}} bilder, inkludert hovedbildet. Denne eiendommen vil ikke lenger ha et hovedbilde. Denne handlingen kan ikke angres.",
       "message_one": "Er du sikker på at du vil slette dette bildet? Denne handlingen kan ikke angres.",
       "message_other": "Du er i ferd med å slette {{count}} bilder. Denne handlingen kan ikke angres.",
+      "confirmLabel_one": "Slett {{count}} bilde",
       "confirmLabel_other": "Slett {{count}} bilder"
     },
     "editModal": "Rediger bilde"
@@ -853,8 +855,8 @@
       "country": "Vi fant i hvert fall landet! Dra markøren til riktig sted."
     },
     "mapView": "Kart",
-    "streetView": "Gatevisning",
-    "noStreetView": "Ingen gatevisning tilgjengelig for dette stedet."
+    "noStreetView": "Ingen Street View tilgjengelig for dette stedet.",
+    "streetView": "Street View"
   },
   "timeline": {
     "selfOccupancy": "Egenbeboelse",

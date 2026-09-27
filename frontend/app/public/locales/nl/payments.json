@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Kan geschiedenis niet laden"
   },
   "selection": {
-    "selected": "{{count}} geselecteerd",
+    "selected_one": "{{count}} geselecteerd",
+    "selected_other": "{{count}} geselecteerd",
     "selectAll": "Alle onbetaalde op deze pagina selecteren",
     "selectRow": "Betaling {{id}} selecteren",
     "select": "Selecteren",

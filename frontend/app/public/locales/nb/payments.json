@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Kunne ikke laste historikk"
   },
   "selection": {
-    "selected": "{{count}} valgt",
+    "selected_one": "{{count}} valgt",
+    "selected_other": "{{count}} valgt",
     "selectAll": "Velg alle ubetalte på siden",
     "selectRow": "Velg betaling {{id}}",
     "select": "Velg",

@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Αποτυχία φόρτωσης ιστορικού"
   },
   "selection": {
-    "selected": "{{count}} επιλεγμένο",
+    "selected_one": "{{count}} επιλεγμένο",
+    "selected_other": "{{count}} επιλεγμένα",
     "selectAll": "Επιλογή όλων των απλήρωτων της σελίδας",
     "selectRow": "Επιλογή πληρωμής {{id}}",
     "select": "Επιλογή",

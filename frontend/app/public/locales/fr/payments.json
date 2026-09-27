@@ -217,7 +217,8 @@
     "loadHistoryFailed": "Échec du chargement de l'historique"
   },
   "selection": {
-    "selected": "{{count}} sélectionné",
+    "selected_one": "{{count}} sélectionné",
+    "selected_other": "{{count}} sélectionnés",
     "selectAll": "Sélectionner tous les impayés de cette page",
     "selectRow": "Sélectionner le paiement {{id}}",
     "select": "Sélectionner",

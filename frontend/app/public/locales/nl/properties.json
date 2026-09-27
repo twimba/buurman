@@ -221,6 +221,7 @@
       "title_other": "Documenten verwijderen",
       "message_one": "Weet u zeker dat u dit document wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
       "message_other": "U staat op het punt {{count}} documenten te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
+      "confirmLabel_one": "{{count}} document verwijderen",
       "confirmLabel_other": "{{count}} documenten verwijderen"
     },
     "editModal": "Document bewerken",
@@ -248,6 +249,7 @@
       "mainPhotoWarning_other": "U staat op het punt {{count}} foto's te verwijderen, waaronder de hoofdfoto. Dit pand zal geen hoofdfoto meer hebben. Deze actie kan niet ongedaan worden gemaakt.",
       "message_one": "Weet u zeker dat u deze foto wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
       "message_other": "U staat op het punt {{count}} foto's te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
+      "confirmLabel_one": "{{count}} foto verwijderen",
       "confirmLabel_other": "{{count}} foto's verwijderen"
     },
     "editModal": "Foto bewerken"
