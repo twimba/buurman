@@ -1,10 +1,12 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMutationWithToast } from './useMutationWithToast';
 import {
   updatePropertyAllocation,
   getExpenseAllocations,
 } from '../generated/api/expense-allocations/expense-allocations';
+import { getUnit } from '../generated/api/units/units';
 import type { UpdateAllocationRequest } from '../types/allocation';
+import type { UnitIdentifier } from '../types/unit';
 import { queryKeys } from '../lib/queryKeys';
 
 /**
@@ -17,6 +19,25 @@ export const useExpenseAllocations = (expenseIdentifier: string | undefined) =>
     queryKey: queryKeys.units.allocation(expenseIdentifier),
     queryFn: () => getExpenseAllocations(expenseIdentifier ?? ''),
     enabled: !!expenseIdentifier,
+  });
+
+/**
+ * Fetches the full `UnitResponse` (areaValue, allocationShare) for a set of units so the
+ * allocation settings panel can honestly render AREA/CUSTOM shares. Neither the units grid nor
+ * `PropertyResponse.units` carries those fields — only the single-unit `GET /units/{id}` does.
+ * Gated by `enabled` so this never fires until the settings panel is actually opened, and shares
+ * its cache key with `useUnit` so an already-visited unit doesn't refetch.
+ */
+export const useUnitDetailsBatch = (
+  unitIdentifiers: string[],
+  enabled: boolean
+) =>
+  useQueries({
+    queries: unitIdentifiers.map((identifier) => ({
+      queryKey: queryKeys.units.detail(identifier),
+      queryFn: () => getUnit(identifier as UnitIdentifier),
+      enabled,
+    })),
   });
 
 /**
