@@ -98,6 +98,12 @@ export const TeamsPage = () => {
                   Members
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                  Properties
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                  Units
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Owner
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
@@ -112,7 +118,7 @@ export const TeamsPage = () => {
               {teams.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={7}
                     className="px-4 py-12 text-center text-sm text-text-muted"
                   >
                     No teams found.
@@ -140,6 +146,16 @@ export const TeamsPage = () => {
                     <td className="px-4 py-3">
                       <span className="text-sm text-text-secondary">
                         {team.memberCount}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-text-secondary">
+                        {team.propertyCount}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-text-secondary">
+                        {team.unitCount}
                       </span>
                     </td>
                     <td className="px-4 py-3">

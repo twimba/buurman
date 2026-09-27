@@ -6482,6 +6482,12 @@ components:
         memberCount:
           type: integer
           format: int64
+        propertyCount:
+          type: integer
+          format: int64
+        unitCount:
+          type: integer
+          format: int64
         ownerEmail:
           type: string
         createdAt:
@@ -6495,7 +6501,9 @@ components:
         - demo
         - identifier
         - memberCount
+        - propertyCount
         - teamName
+        - unitCount
     UpdateRateLimitConfigRequest:
       type: object
       properties:
