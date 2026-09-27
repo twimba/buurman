@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import com.buurman.domain.Sid;
 import com.buurman.domain.Unit;
 import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.UnitRecordMapperImpl;
 import com.buurman.util.MoneyAmount;
 import com.buurman.util.SidGenerator;
@@ -137,5 +139,116 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     repository.softDelete(unitId, TEAM_A_ID, USER_ID);
 
     assertThat(repository.countActiveByPropertyIdAndTeamId(teamAPropertyId, TEAM_A_ID)).isZero();
+  }
+
+  @Test
+  @DisplayName("save() bumps version on every update, starting from 0 on insert (V071)")
+  void saveIncrementsVersionOnEveryUpdate() {
+    Unit saved =
+        repository.save(
+            Unit.builder()
+                .identifier(Optional.of(SidGenerator.newUnitId()))
+                .teamId(TEAM_A_ID)
+                .propertyId(teamAPropertyId)
+                .unitNumber("2")
+                .unitType(UnitType.APARTMENT)
+                .status(UnitStatus.VACANT)
+                .createdBy(Optional.of(USER_ID))
+                .updatedBy(Optional.of(USER_ID))
+                .build());
+    assertThat(saved.getVersion()).isZero();
+
+    saved.setStatus(UnitStatus.OCCUPIED);
+    Unit afterFirstUpdate = repository.save(saved);
+    assertThat(afterFirstUpdate.getVersion()).isEqualTo(1);
+
+    afterFirstUpdate.setStatus(UnitStatus.VACANT);
+    Unit afterSecondUpdate = repository.save(afterFirstUpdate);
+    assertThat(afterSecondUpdate.getVersion()).isEqualTo(2);
+  }
+
+  @Test
+  @DisplayName(
+      "a stale-version save is rejected with a BusinessRuleException (409) instead of silently"
+          + " overwriting a concurrent write -- the concurrent promote + edit race from BUUR-106"
+          + " wave3c Critical 3")
+  void rejectsAStaleVersionSave() {
+    Unit saved =
+        repository.save(
+            Unit.builder()
+                .identifier(Optional.of(SidGenerator.newUnitId()))
+                .teamId(TEAM_A_ID)
+                .propertyId(teamAPropertyId)
+                .unitNumber("2")
+                .unitType(UnitType.APARTMENT)
+                .status(UnitStatus.VACANT)
+                .implicit(true)
+                .createdBy(Optional.of(USER_ID))
+                .updatedBy(Optional.of(USER_ID))
+                .build());
+
+    // Two independent in-memory copies of the same row, as two concurrent requests would each
+    // hold after their own read.
+    Unit t1Copy = repository.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
+    Unit t2Copy = repository.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
+
+    // T1 promotes the unit (is_implicit -> false) and saves first.
+    t1Copy.setImplicit(false);
+    repository.save(t1Copy);
+
+    // T2 still holds the pre-promotion snapshot (version 0, implicit still true) and tries to
+    // save an unrelated edit. Before this fix, this UPDATE would blindly overwrite every column
+    // -- including is_implicit -- resurrecting it back to true.
+    t2Copy.setName(Optional.of("Back apartment"));
+    assertThatThrownBy(() -> repository.save(t2Copy)).isInstanceOf(BusinessRuleException.class);
+
+    Unit reloaded = repository.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
+    assertThat(reloaded.isImplicit()).isFalse();
+  }
+
+  @Test
+  @DisplayName("promotion (is_implicit -> false) still succeeds through the versioned save()")
+  void promotionStillWorksThroughVersionedSave() {
+    Unit saved =
+        repository.save(
+            Unit.builder()
+                .identifier(Optional.of(SidGenerator.newUnitId()))
+                .teamId(TEAM_A_ID)
+                .propertyId(teamAPropertyId)
+                .unitNumber("1")
+                .unitType(UnitType.APARTMENT)
+                .status(UnitStatus.VACANT)
+                .implicit(true)
+                .createdBy(Optional.of(USER_ID))
+                .updatedBy(Optional.of(USER_ID))
+                .build());
+
+    saved.setImplicit(false);
+    Unit promoted = repository.save(saved);
+
+    assertThat(promoted.isImplicit()).isFalse();
+    assertThat(repository.getByIdAndTeamId(saved.getId(), TEAM_A_ID).isImplicit()).isFalse();
+  }
+
+  @Test
+  @DisplayName(
+      "save()'s UPDATE does not resurrect a soft-deleted unit (V071: DELETED_AT IS NULL guard)")
+  void updateDoesNotResurrectASoftDeletedUnit() {
+    Unit saved =
+        repository.save(
+            Unit.builder()
+                .identifier(Optional.of(SidGenerator.newUnitId()))
+                .teamId(TEAM_A_ID)
+                .propertyId(teamAPropertyId)
+                .unitNumber("3")
+                .unitType(UnitType.APARTMENT)
+                .status(UnitStatus.VACANT)
+                .createdBy(Optional.of(USER_ID))
+                .updatedBy(Optional.of(USER_ID))
+                .build());
+    repository.softDelete(saved.getId(), TEAM_A_ID, USER_ID);
+
+    saved.setStatus(UnitStatus.OCCUPIED);
+    assertThatThrownBy(() -> repository.save(saved)).isInstanceOf(BusinessRuleException.class);
   }
 }

@@ -35,6 +35,13 @@ public class Unit {
   private UnitStatus status;
 
   /**
+   * Optimistic-lock counter. The repository's UPDATE is scoped to {@code version = <this value>}
+   * and bumps it by one; zero rows affected means a concurrent write won the race, which the
+   * repository turns into a {@link com.buurman.exception.BusinessRuleException} (409).
+   */
+  @Builder.Default private int version = 0;
+
+  /**
    * True while this unit is the auto-created stand-in for a single-unit property. A UI-visibility
    * hint only — never a filter in an aggregation.
    */

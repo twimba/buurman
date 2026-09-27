@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Sid;
 import com.buurman.domain.Unit;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.UnitRecordMapper;
 import com.buurman.util.MoneyAmount;
@@ -191,6 +192,7 @@ public class UnitRepository {
           .set(UNITS.HAS_FIRE_EXTINGUISHER, unit.getHasFireExtinguisher().orElse(null))
           .set(UNITS.HAS_ADAPTED_BATHROOM, unit.getHasAdaptedBathroom().orElse(null))
           .set(UNITS.ACCESSIBILITY_NOTES, unit.getAccessibilityNotes().orElse(null))
+          .set(UNITS.VERSION, 0)
           .set(UNITS.CREATED_AT, createdAt)
           .set(UNITS.UPDATED_AT, updatedAt)
           .set(UNITS.CREATED_BY, unit.getCreatedBy().orElse(null))
@@ -198,48 +200,64 @@ public class UnitRepository {
           .execute();
 
       unit.setId(newId);
+      unit.setVersion(0);
       unit.setCreatedAt(Optional.of(createdAt.toInstant(UTC)));
       unit.setUpdatedAt(Optional.of(updatedAt.toInstant(UTC)));
     } else {
       // UPDATE
       LocalDateTime updatedAt =
           unit.getUpdatedAt().map(instant -> LocalDateTime.ofInstant(instant, UTC)).orElse(now);
+      int currentVersion = unit.getVersion();
 
-      dsl.update(UNITS)
-          .set(UNITS.PROPERTY_ID, unit.getPropertyId())
-          .set(UNITS.NAME, unit.getName().orElse(null))
-          .set(UNITS.UNIT_NUMBER, unit.getUnitNumber())
-          .set(UNITS.FLOOR, unit.getFloor().orElse(null))
-          .set(UNITS.SORT_ORDER, unit.getSortOrder())
-          .set(UNITS.UNIT_TYPE, unit.getUnitType().name())
-          .set(UNITS.STATUS, unit.getStatus().name())
-          .set(UNITS.IS_IMPLICIT, unit.isImplicit())
-          .set(UNITS.WOZ_VALUE, wozValueAmount)
-          .set(UNITS.WOZ_VALUE_CURRENCY, wozValueCurrency)
-          .set(UNITS.WOZ_SHARE_PCT, unit.getWozSharePct().orElse(null))
-          .set(UNITS.ALLOCATION_SHARE, unit.getAllocationShare().orElse(null))
-          .set(UNITS.AREA_VALUE, unit.getAreaValue().orElse(null))
-          .set(UNITS.AREA_UNIT, unit.getAreaUnit().orElse("sqm"))
-          .set(UNITS.ENERGY_EFFICIENCY_RATING, unit.getEnergyEfficiencyRating().orElse(null))
-          .set(
-              UNITS.ENERGY_CERTIFICATE_EXPIRY_DATE,
-              unit.getEnergyCertificateExpiryDate().orElse(null))
-          .set(UNITS.HEATING_TYPE, unit.getHeatingType().orElse(null))
-          .set(UNITS.COOLING_TYPE, unit.getCoolingType().orElse(null))
-          .set(UNITS.HOT_WATER_SYSTEM, unit.getHotWaterSystem().orElse(null))
-          .set(UNITS.INSULATION_NOTES, unit.getInsulationNotes().orElse(null))
-          .set(UNITS.FLOORING_TYPE, unit.getFlooringType().orElse(null))
-          .set(UNITS.WINDOW_TYPE, unit.getWindowType().orElse(null))
-          .set(UNITS.HAS_SMOKE_DETECTORS, unit.getHasSmokeDetectors().orElse(null))
-          .set(UNITS.HAS_CO_DETECTORS, unit.getHasCoDetectors().orElse(null))
-          .set(UNITS.HAS_FIRE_EXTINGUISHER, unit.getHasFireExtinguisher().orElse(null))
-          .set(UNITS.HAS_ADAPTED_BATHROOM, unit.getHasAdaptedBathroom().orElse(null))
-          .set(UNITS.ACCESSIBILITY_NOTES, unit.getAccessibilityNotes().orElse(null))
-          .set(UNITS.UPDATED_AT, updatedAt)
-          .set(UNITS.UPDATED_BY, unit.getUpdatedBy().orElse(null))
-          .where(UNITS.ID.eq(unit.getId()).and(UNITS.TEAM_ID.eq(unit.getTeamId())))
-          .execute();
+      int updatedRows =
+          dsl.update(UNITS)
+              .set(UNITS.PROPERTY_ID, unit.getPropertyId())
+              .set(UNITS.NAME, unit.getName().orElse(null))
+              .set(UNITS.UNIT_NUMBER, unit.getUnitNumber())
+              .set(UNITS.FLOOR, unit.getFloor().orElse(null))
+              .set(UNITS.SORT_ORDER, unit.getSortOrder())
+              .set(UNITS.UNIT_TYPE, unit.getUnitType().name())
+              .set(UNITS.STATUS, unit.getStatus().name())
+              .set(UNITS.IS_IMPLICIT, unit.isImplicit())
+              .set(UNITS.WOZ_VALUE, wozValueAmount)
+              .set(UNITS.WOZ_VALUE_CURRENCY, wozValueCurrency)
+              .set(UNITS.WOZ_SHARE_PCT, unit.getWozSharePct().orElse(null))
+              .set(UNITS.ALLOCATION_SHARE, unit.getAllocationShare().orElse(null))
+              .set(UNITS.AREA_VALUE, unit.getAreaValue().orElse(null))
+              .set(UNITS.AREA_UNIT, unit.getAreaUnit().orElse("sqm"))
+              .set(UNITS.ENERGY_EFFICIENCY_RATING, unit.getEnergyEfficiencyRating().orElse(null))
+              .set(
+                  UNITS.ENERGY_CERTIFICATE_EXPIRY_DATE,
+                  unit.getEnergyCertificateExpiryDate().orElse(null))
+              .set(UNITS.HEATING_TYPE, unit.getHeatingType().orElse(null))
+              .set(UNITS.COOLING_TYPE, unit.getCoolingType().orElse(null))
+              .set(UNITS.HOT_WATER_SYSTEM, unit.getHotWaterSystem().orElse(null))
+              .set(UNITS.INSULATION_NOTES, unit.getInsulationNotes().orElse(null))
+              .set(UNITS.FLOORING_TYPE, unit.getFlooringType().orElse(null))
+              .set(UNITS.WINDOW_TYPE, unit.getWindowType().orElse(null))
+              .set(UNITS.HAS_SMOKE_DETECTORS, unit.getHasSmokeDetectors().orElse(null))
+              .set(UNITS.HAS_CO_DETECTORS, unit.getHasCoDetectors().orElse(null))
+              .set(UNITS.HAS_FIRE_EXTINGUISHER, unit.getHasFireExtinguisher().orElse(null))
+              .set(UNITS.HAS_ADAPTED_BATHROOM, unit.getHasAdaptedBathroom().orElse(null))
+              .set(UNITS.ACCESSIBILITY_NOTES, unit.getAccessibilityNotes().orElse(null))
+              .set(UNITS.VERSION, currentVersion + 1)
+              .set(UNITS.UPDATED_AT, updatedAt)
+              .set(UNITS.UPDATED_BY, unit.getUpdatedBy().orElse(null))
+              .where(
+                  UNITS
+                      .ID
+                      .eq(unit.getId())
+                      .and(UNITS.TEAM_ID.eq(unit.getTeamId()))
+                      .and(UNITS.DELETED_AT.isNull())
+                      .and(UNITS.VERSION.eq(currentVersion)))
+              .execute();
 
+      if (updatedRows == 0) {
+        throw new BusinessRuleException(
+            "This unit was changed by someone else in the meantime. Reload and try again.");
+      }
+
+      unit.setVersion(currentVersion + 1);
       unit.setUpdatedAt(Optional.of(updatedAt.toInstant(UTC)));
     }
 

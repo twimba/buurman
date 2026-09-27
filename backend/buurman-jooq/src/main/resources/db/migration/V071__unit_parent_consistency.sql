@@ -126,3 +126,12 @@ CREATE UNIQUE INDEX uq_contracts_one_active_per_unit ON contracts (unit_id)
 WHERE
     status = 'ACTIVE'
     AND deleted_at IS NULL;
+
+-- =============================================================================
+-- 4. Optimistic locking on units. UnitRepository.save()'s UPDATE branch writes
+--    all columns from an in-memory snapshot with no version check and no
+--    DELETED_AT IS NULL guard, so a concurrent promote + edit can resurrect
+--    is_implicit after it was cleared (see UnitRepository for the write side).
+-- =============================================================================
+ALTER TABLE units
+ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
