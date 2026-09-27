@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.AMENITIES;
+import static com.buurman.jooq.generated.Tables.UNITS;
 import static com.buurman.jooq.generated.Tables.UNIT_AMENITIES;
 import static java.time.ZoneOffset.UTC;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Amenity;
@@ -103,6 +105,33 @@ public class UnitAmenityRepository {
         .set(UNIT_AMENITIES.UPDATED_AT, now)
         .set(UNIT_AMENITIES.UPDATED_BY, actorId)
         .where(UNIT_AMENITIES.ID.eq(linkId).and(UNIT_AMENITIES.TEAM_ID.eq(teamId)))
+        .execute();
+  }
+
+  /**
+   * Soft-deletes every amenity link of every unit of {@code propertyId}, in one statement.
+   * PropertyService#deleteProperty calls this in the same transaction it soft-deletes the
+   * property's units, so a deleted property never leaves an active amenity link behind on a unit
+   * that {@code UnitRepository}'s single-row lookups (which deliberately skip the properties join)
+   * would otherwise still resolve.
+   */
+  public int softDeleteAllByPropertyIdAndTeamId(UUID propertyId, UUID teamId, UUID actorId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    return dsl.update(UNIT_AMENITIES)
+        .set(UNIT_AMENITIES.DELETED_AT, now)
+        .set(UNIT_AMENITIES.UPDATED_AT, now)
+        .set(UNIT_AMENITIES.UPDATED_BY, actorId)
+        .where(
+            UNIT_AMENITIES
+                .TEAM_ID
+                .eq(teamId)
+                .and(UNIT_AMENITIES.DELETED_AT.isNull())
+                .and(
+                    UNIT_AMENITIES.UNIT_ID.in(
+                        DSL.select(UNITS.ID)
+                            .from(UNITS)
+                            .where(
+                                UNITS.PROPERTY_ID.eq(propertyId).and(UNITS.TEAM_ID.eq(teamId))))))
         .execute();
   }
 

@@ -273,4 +273,26 @@ public class UnitRepository {
         .where(UNITS.ID.eq(unitId).and(UNITS.TEAM_ID.eq(teamId)).and(UNITS.DELETED_AT.isNull()))
         .execute();
   }
+
+  /**
+   * Soft-deletes every active unit of {@code propertyId}, in one statement. Called by
+   * PropertyService#deleteProperty in the same transaction as the property's own soft delete, so a
+   * deleted property never leaves an active unit behind -- which would otherwise still accept
+   * writes (UnitRepository's single-row lookups deliberately skip the properties join) and confuse
+   * unit-count-based business rules (e.g. "cannot delete the last unit").
+   */
+  public int softDeleteAllByPropertyIdAndTeamId(UUID propertyId, UUID teamId, UUID actorId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    return dsl.update(UNITS)
+        .set(UNITS.DELETED_AT, now)
+        .set(UNITS.UPDATED_AT, now)
+        .set(UNITS.UPDATED_BY, actorId)
+        .where(
+            UNITS
+                .PROPERTY_ID
+                .eq(propertyId)
+                .and(UNITS.TEAM_ID.eq(teamId))
+                .and(UNITS.DELETED_AT.isNull()))
+        .execute();
+  }
 }

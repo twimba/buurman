@@ -251,4 +251,40 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     saved.setStatus(UnitStatus.OCCUPIED);
     assertThatThrownBy(() -> repository.save(saved)).isInstanceOf(BusinessRuleException.class);
   }
+
+  @Test
+  @DisplayName(
+      "softDeleteAllByPropertyIdAndTeamId soft-deletes every active unit of the property in one"
+          + " statement, leaving another team's units untouched (BUUR-106 wave3c Critical 4)")
+  void softDeleteAllByPropertyIdAndTeamIdSoftDeletesEveryUnitOfTheProperty() {
+    UUID unit1Id = UUID.randomUUID();
+    UUID unit2Id = UUID.randomUUID();
+    TestDataHelper.insertUnit(dsl, unit1Id, teamAPropertyId, TEAM_A_ID, "1", "VACANT");
+    TestDataHelper.insertUnit(dsl, unit2Id, teamAPropertyId, TEAM_A_ID, "2", "OCCUPIED");
+    UUID otherTeamUnitId = UUID.randomUUID();
+    TestDataHelper.insertUnit(dsl, otherTeamUnitId, teamBPropertyId, TEAM_B_ID, "1", "VACANT");
+
+    int affected =
+        repository.softDeleteAllByPropertyIdAndTeamId(teamAPropertyId, TEAM_A_ID, USER_ID);
+
+    assertThat(affected).isEqualTo(2);
+    assertThat(
+            dsl.select(DSL.field("deleted_at", LocalDateTime.class))
+                .from(DSL.table("units"))
+                .where(DSL.field("id").eq(unit1Id))
+                .fetchOne(0, LocalDateTime.class))
+        .isNotNull();
+    assertThat(
+            dsl.select(DSL.field("deleted_at", LocalDateTime.class))
+                .from(DSL.table("units"))
+                .where(DSL.field("id").eq(unit2Id))
+                .fetchOne(0, LocalDateTime.class))
+        .isNotNull();
+    assertThat(
+            dsl.select(DSL.field("deleted_at", LocalDateTime.class))
+                .from(DSL.table("units"))
+                .where(DSL.field("id").eq(otherTeamUnitId))
+                .fetchOne(0, LocalDateTime.class))
+        .isNull();
+  }
 }

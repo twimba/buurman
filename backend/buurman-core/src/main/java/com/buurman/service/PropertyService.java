@@ -105,6 +105,7 @@ import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.PropertyRepository.UnitCounts;
+import com.buurman.repository.UnitAmenityRepository;
 import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
@@ -121,6 +122,7 @@ public class PropertyService {
 
   private final PropertyRepository propertyRepository;
   private final UnitRepository unitRepository;
+  private final UnitAmenityRepository unitAmenityRepository;
   private final UnitService unitService;
   private final UnitMapper unitMapper;
   private final PropertyCommercialDetailsRepository commercialDetailsRepository;
@@ -454,11 +456,20 @@ public class PropertyService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteProperty(PropertyIdentifier identifier, UserPrincipal principal) {
-    Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    UUID teamId = principal.requireTeamId();
+    Property property = propertyRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    propertyRepository.softDeleteByIdAndTeamId(property.getId(), principal.requireTeamId());
-    log.info("Property deleted: {} for team {}", identifier, principal.requireTeamId());
+    propertyRepository.softDeleteByIdAndTeamId(property.getId(), teamId);
+    // V068 established the invariant that a soft-deleted property's units carry the same
+    // deleted_at (see UnitBackfillMigrationIntegrationTest); cascade it here too, in the same
+    // transaction, so it holds for every property deleted after that migration, not just the ones
+    // backfilled by it. Without this, UnitRepository's single-row lookups (which deliberately skip
+    // the properties join) keep accepting writes on the deleted property's units.
+    unitRepository.softDeleteAllByPropertyIdAndTeamId(
+        property.getId(), teamId, principal.getUserId());
+    unitAmenityRepository.softDeleteAllByPropertyIdAndTeamId(
+        property.getId(), teamId, principal.getUserId());
+    log.info("Property deleted: {} for team {}", identifier, teamId);
 
     auditService.logDelete(
         principal.requireTeamId(), "PROPERTY", property.getId(), principal.getUserId(), property);

@@ -167,6 +167,16 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
             .fetchOne(0, Integer.class);
 
     assertThat(unitCount).isEqualTo(1);
+
+    // Not merely non-null: the backfilled unit's deleted_at must equal the property's own, since
+    // the copy is a straight column copy (see the migration's SELECT p.deleted_at FROM properties
+    // p), not just "happens to be set".
+    LocalDateTime unitDeletedAt =
+        dsl.select(DSL.field("deleted_at", LocalDateTime.class))
+            .from(DSL.table("units"))
+            .where(DSL.field("property_id").eq(propertyId))
+            .fetchOne(0, LocalDateTime.class);
+    assertThat(unitDeletedAt).isEqualTo(NOW);
   }
 
   @Test

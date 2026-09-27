@@ -57,6 +57,7 @@ import com.buurman.repository.PropertyCommercialDetailsRepository;
 import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitAmenityRepository;
 import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
@@ -75,6 +76,7 @@ class PropertyServiceTest {
 
   @Mock private PropertyRepository propertyRepository;
   @Mock private UnitRepository unitRepository;
+  @Mock private UnitAmenityRepository unitAmenityRepository;
   @Mock private UnitService unitService;
   @Mock private UnitMapper unitMapper;
   @Mock private PropertyCommercialDetailsRepository commercialDetailsRepository;
@@ -110,6 +112,7 @@ class PropertyServiceTest {
         new PropertyService(
             propertyRepository,
             unitRepository,
+            unitAmenityRepository,
             unitService,
             unitMapper,
             commercialDetailsRepository,
@@ -525,6 +528,27 @@ class PropertyServiceTest {
           .unitType(UnitType.APARTMENT)
           .status(status)
           .build();
+    }
+  }
+
+  @Nested
+  @DisplayName("deleteProperty")
+  class DeleteProperty {
+
+    @Test
+    @DisplayName(
+        "cascades the soft delete to the property's units and their amenity links, in the same"
+            + " transaction (BUUR-106 wave3c Critical 4)")
+    void cascadesSoftDeleteToUnitsAndAmenityLinks() {
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID))
+          .thenReturn(savedProperty(PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT));
+
+      service.deleteProperty(PROPERTY_SID, principal);
+
+      verify(propertyRepository).softDeleteByIdAndTeamId(PROPERTY_ID, TEAM_ID);
+      verify(unitRepository).softDeleteAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID, USER_ID);
+      verify(unitAmenityRepository)
+          .softDeleteAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID, USER_ID);
     }
   }
 }
