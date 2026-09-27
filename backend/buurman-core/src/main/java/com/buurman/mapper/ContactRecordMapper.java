@@ -24,6 +24,9 @@ public interface ContactRecordMapper {
       target = "contactType",
       expression = "java(com.buurman.domain.ContactType.valueOf(record.getContactType()))")
   @Mapping(
+      target = "preferredLanguage",
+      expression = "java(java.util.Optional.ofNullable(record.getPreferredLanguage()))")
+  @Mapping(
       target = "firstName",
       expression = "java(java.util.Optional.ofNullable(record.getFirstName()))")
   @Mapping(

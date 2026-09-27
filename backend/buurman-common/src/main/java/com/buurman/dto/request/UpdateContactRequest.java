@@ -36,4 +36,5 @@ public record UpdateContactRequest(
     Optional<LocalDate> idExpiryDate,
     Optional<String> notes,
     Optional<List<ContactTag>> tags,
-    Optional<Boolean> paymentRemindersEnabled) {}
+    Optional<Boolean> paymentRemindersEnabled,
+    Optional<String> preferredLanguage) {}

@@ -22344,6 +22344,10 @@ components:
         paymentRemindersEnabled:
           type: boolean
           description: Consent to receive tenant-facing payment reminder emails (off by default)
+        preferredLanguage:
+          allOf:
+            - $ref: "#/components/schemas/LanguageCode"
+          description: Language this contact is written to in; unset falls back to the team default
         website:
           type: string
         dateOfBirth:
@@ -22552,7 +22556,10 @@ components:
         paymentRemindersEnabled:
           type: boolean
           description: Consent to receive tenant-facing payment reminder emails (off by default)
-          format: email
+        preferredLanguage:
+          allOf:
+            - $ref: "#/components/schemas/LanguageCode"
+          description: Language this contact is written to in; unset falls back to the team default
         website:
           type: string
         dateOfBirth:
@@ -26116,6 +26123,10 @@ components:
         paymentRemindersEnabled:
           type: boolean
           description: Consent to receive tenant-facing payment reminder emails (off by default)
+        preferredLanguage:
+          allOf:
+            - $ref: "#/components/schemas/LanguageCode"
+          description: Language this contact is written to in; unset falls back to the team default
         website:
           type: string
         dateOfBirth:

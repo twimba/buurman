@@ -850,7 +850,8 @@ public class ContactService {
         balanceSummary,
         response.createdAt(),
         response.updatedAt(),
-        response.paymentRemindersEnabled());
+        response.paymentRemindersEnabled(),
+        response.preferredLanguage());
   }
 
   private PropertyContactHistoryResponse toHistoryResponse(
@@ -937,7 +938,8 @@ public class ContactService {
               request.idExpiryDate(),
               request.notes(),
               request.tags(),
-              request.paymentRemindersEnabled());
+              request.paymentRemindersEnabled(),
+              request.preferredLanguage());
       case COMPANY, SERVICE_PROVIDER ->
           new UpdateContactRequest(
               request.contactType(),
@@ -956,7 +958,8 @@ public class ContactService {
               Optional.empty(),
               request.notes(),
               request.tags(),
-              request.paymentRemindersEnabled());
+              request.paymentRemindersEnabled(),
+              request.preferredLanguage());
     };
   }
 
@@ -1000,6 +1003,7 @@ public class ContactService {
         .notes(contact.getNotes())
         .dataRetentionStatus(contact.getDataRetentionStatus())
         .paymentRemindersEnabled(contact.getPaymentRemindersEnabled())
+        .preferredLanguage(contact.getPreferredLanguage())
         .tags(contact.getTags())
         .createdAt(contact.getCreatedAt())
         .updatedAt(contact.getUpdatedAt())
