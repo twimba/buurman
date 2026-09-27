@@ -5,10 +5,12 @@ import java.math.RoundingMode;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,6 +25,7 @@ import com.buurman.domain.Expense;
 import com.buurman.domain.ExpenseAllocation;
 import com.buurman.domain.Property;
 import com.buurman.domain.Unit;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.dto.request.ManualAllocationRequest;
 import com.buurman.dto.request.ManualAllocationRequest.ManualAllocationEntry;
 import com.buurman.dto.response.ExpenseAllocationResponse;
@@ -211,6 +214,17 @@ public class ExpenseAllocationService {
     if (expense.getUnitId().isPresent()) {
       throw new BusinessRuleException(
           "Expense belongs to a single unit and cannot be allocated across units.");
+    }
+
+    // Caught here, up front, rather than left to trip uq_expense_allocations_expense_unit: a
+    // duplicate unitIdentifier would otherwise surface as an opaque 409 from the unique index,
+    // naming no unit and giving the caller nothing to fix.
+    Set<UnitIdentifier> seenUnitIdentifiers = new HashSet<>();
+    for (ManualAllocationEntry entry : request.entries()) {
+      if (!seenUnitIdentifiers.add(entry.unitIdentifier())) {
+        throw new BusinessRuleException(
+            "Duplicate allocation entry for unit " + entry.unitIdentifier().value() + ".");
+      }
     }
 
     String currency = expense.getAmount().currency();

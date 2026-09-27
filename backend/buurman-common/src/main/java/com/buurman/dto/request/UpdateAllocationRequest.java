@@ -11,7 +11,9 @@ import com.buurman.util.SkipTestCoverage;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * Sets a property's allocation basis and, for CUSTOM, each unit's share. Does not retroactively
@@ -21,9 +23,16 @@ import jakarta.validation.constraints.NotNull;
 @SkipTestCoverage
 public record UpdateAllocationRequest(
     @NotNull(message = "Allocation basis is required") AllocationBasis basis,
-    Optional<@Valid List<UnitShareEntry>> shares) {
+    Optional<
+            @Valid @Size(max = 200, message = "At most 200 unit shares are allowed") List<
+                UnitShareEntry>>
+        shares) {
 
   public record UnitShareEntry(
       @NotNull(message = "Unit identifier is required") UnitIdentifier unitIdentifier,
-      @NotNull(message = "Share percentage is required") @DecimalMin(value = "0", message = "Share percentage must be at least 0") @DecimalMax(value = "100", message = "Share percentage must be at most 100") BigDecimal sharePct) {}
+      @NotNull(message = "Share percentage is required") @DecimalMin(value = "0", message = "Share percentage must be at least 0") @DecimalMax(value = "100", message = "Share percentage must be at most 100") @Digits(
+              integer = 13,
+              fraction = 4,
+              message = "Share percentage must have at most 13 integer digits and 4 decimal places")
+          BigDecimal sharePct) {}
 }

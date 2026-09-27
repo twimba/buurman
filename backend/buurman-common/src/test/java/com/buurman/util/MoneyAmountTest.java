@@ -203,6 +203,54 @@ class MoneyAmountTest {
   }
 
   @Nested
+  @DisplayName("of — precision/scale bounds (BUUR-106 Important 6)")
+  class OfPrecisionBounds {
+
+    @Test
+    @DisplayName(
+        "rejects a huge-exponent literal (1E+10000000) before it ever reaches setScale — the"
+            + " unscaled value has precision 1, so precision() alone would miss this; only"
+            + " precision() - scale() correctly reports its ~10-million-digit integer part")
+    void rejectsHugePositiveExponent() {
+      assertThatThrownBy(() -> MoneyAmount.of(new BigDecimal("1E+10000000"), "EUR"))
+          .isInstanceOf(com.buurman.exception.BadRequestException.class)
+          .hasMessageContaining("out of range");
+    }
+
+    @Test
+    @DisplayName("rejects a huge-exponent fraction (1E-10000000) — far more than 6 decimal places")
+    void rejectsHugeNegativeExponent() {
+      assertThatThrownBy(() -> MoneyAmount.of(new BigDecimal("1E-10000000"), "EUR"))
+          .isInstanceOf(com.buurman.exception.BadRequestException.class)
+          .hasMessageContaining("out of range");
+    }
+
+    @Test
+    @DisplayName("rejects an ordinary value with more than 19 integer digits")
+    void rejectsTooManyIntegerDigits() {
+      assertThatThrownBy(() -> MoneyAmount.of(new BigDecimal("12345678901234567890"), "EUR"))
+          .isInstanceOf(com.buurman.exception.BadRequestException.class)
+          .hasMessageContaining("out of range");
+    }
+
+    @Test
+    @DisplayName("rejects an ordinary value with more than 6 decimal places")
+    void rejectsTooManyDecimalPlaces() {
+      assertThatThrownBy(() -> MoneyAmount.of(new BigDecimal("1.1234567"), "EUR"))
+          .isInstanceOf(com.buurman.exception.BadRequestException.class)
+          .hasMessageContaining("out of range");
+    }
+
+    @Test
+    @DisplayName("accepts a value right at the boundary: 19 integer digits, 6 decimal places")
+    void acceptsAtBoundary() {
+      MoneyAmount money = MoneyAmount.of(new BigDecimal("1234567890123456789.123456"), "EUR");
+
+      assertThat(money.currency()).isEqualTo("EUR");
+    }
+  }
+
+  @Nested
   @DisplayName("of null arguments")
   @SuppressWarnings("NullAway")
   class OfNullArguments {

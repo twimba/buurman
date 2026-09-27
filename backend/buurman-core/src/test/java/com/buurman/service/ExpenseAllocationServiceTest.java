@@ -247,6 +247,35 @@ class ExpenseAllocationServiceTest {
         .hasMessageContaining("1000.00");
   }
 
+  @Test
+  @DisplayName(
+      "rejects a MANUAL override with a duplicate unitIdentifier, naming the duplicate, instead of"
+          + " letting it trip the unique index and surface as an opaque 409")
+  void rejectsManualOverrideWithDuplicateUnit() {
+    Expense expense =
+        Expense.builder()
+            .id(UUID.randomUUID())
+            .teamId(UUID.randomUUID())
+            .propertyId(UUID.randomUUID())
+            .category(Expense.ExpenseCategory.MAINTENANCE)
+            .amount(money("1000.00"))
+            .expenseDate(LocalDate.of(2026, 1, 1))
+            .description("Roof repair")
+            .build();
+
+    ManualAllocationRequest request =
+        new ManualAllocationRequest(
+            List.of(
+                new ManualAllocationEntry(
+                    UnitIdentifier.of("UNT0000000000000000000A"), new BigDecimal("400.00")),
+                new ManualAllocationEntry(
+                    UnitIdentifier.of("UNT0000000000000000000A"), new BigDecimal("600.00"))));
+
+    assertThatThrownBy(() -> service.overrideManual(expense, request, UUID.randomUUID()))
+        .isInstanceOf(BusinessRuleException.class)
+        .hasMessageContaining("UNT0000000000000000000A");
+  }
+
   private static MoneyAmount money(String value) {
     return new MoneyAmount(new BigDecimal(value), "EUR");
   }

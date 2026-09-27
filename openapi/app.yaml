@@ -31140,6 +31140,7 @@ components:
           items:
             $ref: "#/components/schemas/ManualAllocationEntry"
           minItems: 1
+          maxItems: 200
       required:
         - entries
     UnitShareEntry:
@@ -31166,6 +31167,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/UnitShareEntry"
+          maxItems: 200
       required:
         - basis
     UnitResponse:
