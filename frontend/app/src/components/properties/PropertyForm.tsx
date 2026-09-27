@@ -372,15 +372,10 @@ export const PropertyForm = ({
     }
   };
 
-  // Overloaded so direct call sites below get per-field type checking, while
-  // PropertyCharacteristicsForm (whose inputs ferry mixed-type, less specific values) can still
-  // take this as a plain (field, value: unknown) => void.
   function handleChange<K extends keyof CreatePropertyRequest>(
     field: K,
     value: CreatePropertyRequest[K]
-  ): void;
-  function handleChange(field: keyof CreatePropertyRequest, value: unknown): void;
-  function handleChange(field: keyof CreatePropertyRequest, value: unknown) {
+  ): void {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field as string]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));

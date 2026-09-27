@@ -67,7 +67,7 @@ interface SelectFieldProps {
   label: string;
   value: string | null | undefined;
   options: Record<string, string>;
-  onChange: (v: string | null) => void;
+  onChange: (v: string | undefined) => void;
   tooltip?: string;
 }
 
@@ -87,7 +87,7 @@ const SelectField = ({
       </label>
       <select
         value={value ?? ''}
-        onChange={(e) => onChange(e.target.value || null)}
+        onChange={(e) => onChange(e.target.value || undefined)}
         className={inputCls}
       >
         <option value="">{t('characteristics.selectPlaceholder')}</option>
@@ -220,7 +220,7 @@ const ToggleField = ({ label, value, onChange }: ToggleFieldProps) => (
 interface RichTextNotesFieldProps {
   label: string;
   value: string | null | undefined;
-  onChange: (v: string | null) => void;
+  onChange: (v: string | undefined) => void;
   tooltip?: string;
 }
 
@@ -237,7 +237,7 @@ const RichTextNotesField = ({
     </label>
     <RichTextEditor
       value={value ?? ''}
-      onChange={(v) => onChange(v === '<p></p>' || !v ? null : v)}
+      onChange={(v) => onChange(v === '<p></p>' || !v ? undefined : v)}
     />
   </div>
 );
@@ -247,7 +247,10 @@ const RichTextNotesField = ({
 interface PropertyCharacteristicsFormProps {
   formData: CreatePropertyRequest;
   property?: PropertyResponse;
-  onChange: (field: keyof CreatePropertyRequest, value: unknown) => void;
+  onChange: <K extends keyof CreatePropertyRequest>(
+    field: K,
+    value: CreatePropertyRequest[K]
+  ) => void;
   // Outdoor areas (only in edit mode)
   outdoorAreas?: OutdoorAreaResponse[];
   onCreateOutdoorArea?: (area: {
