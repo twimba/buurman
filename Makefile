@@ -1,4 +1,10 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub seed-data
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub seed-data local
+
+# Absolute path to the directory holding THIS Makefile. Targets that have to
+# hand an absolute path to another process (the `local` iTerm2 panes below)
+# use this instead of a hardcoded one, so they follow the checkout they were
+# invoked from -- a git worktree included.
+ROOT_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -212,15 +218,15 @@ local:
 		-e '  tell current window' \
 		-e '    set newTab to (create tab with default profile)' \
 		-e '    tell current session of newTab' \
-		-e '      write text "cd /Users/luis/projects/buurman && make dev-fg"' \
+		-e '      write text "cd $(ROOT_DIR) && make dev-fg"' \
 		-e '      set backendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell backendPane' \
-		-e '      write text "cd /Users/luis/projects/buurman/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
+		-e '      write text "cd $(ROOT_DIR)/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
 		-e '      set frontendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell frontendPane' \
-		-e '      write text "cd /Users/luis/projects/buurman/frontend && yarn dev"' \
+		-e '      write text "cd $(ROOT_DIR)/frontend && yarn dev"' \
 		-e '    end tell' \
 		-e '  end tell' \
 		-e 'end tell'
