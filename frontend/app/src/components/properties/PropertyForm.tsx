@@ -7,11 +7,8 @@ import {
   PropertyResponse,
   CreatePropertyRequest,
   PropertyType,
-  PropertyStatus,
   PropertyCategory,
   OutdoorAreaResponse,
-  AmenityResponse,
-  PropertyAmenityResponse,
   PROPERTY_TYPES_BY_CATEGORY,
 } from '@/types/property';
 import { usePropertyLabels } from '@/hooks/usePropertyLabels';
@@ -49,10 +46,6 @@ interface PropertyFormProps {
     areaUnit?: string;
   }) => void;
   onDeleteOutdoorArea?: (id: string) => void;
-  allAmenities?: Record<string, AmenityResponse[]>;
-  propertyAmenities?: PropertyAmenityResponse[];
-  onAddAmenity?: (amenityIdentifier: string, notes?: string | null) => void;
-  onRemoveAmenity?: (amenityIdentifier: string) => void;
 }
 
 const selectCls =
@@ -67,15 +60,11 @@ export const PropertyForm = ({
   outdoorAreas,
   onCreateOutdoorArea,
   onDeleteOutdoorArea,
-  allAmenities,
-  propertyAmenities,
-  onAddAmenity,
-  onRemoveAmenity,
 }: PropertyFormProps) => {
   const { t } = useTranslation('properties');
   const navigate = useNavigate();
   const { defaultCountryCode } = useTeamDefaults();
-  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
+  const { typeLabel, categoryLabel } = usePropertyLabels();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
   const [geocodedAddress, setGeocodedAddress] = useState(() =>
@@ -100,7 +89,6 @@ export const PropertyForm = ({
   const [formData, setFormData] = useState<CreatePropertyRequest>({
     propertyCategory: resolveCategory(),
     propertyType: resolveType(),
-    status: (property?.status as PropertyStatus) ?? PropertyStatus.VACANT,
     street: property?.street ?? '',
     city: property?.city ?? '',
     postalCode: property?.postalCode ?? '',
@@ -109,8 +97,6 @@ export const PropertyForm = ({
     latitude: property?.latitude ?? undefined,
     longitude: property?.longitude ?? undefined,
     geocodeAccuracy: property?.geocodeAccuracy ?? undefined,
-    areaValue: property?.areaValue ?? undefined,
-    areaUnit: property?.areaUnit ?? 'sqm',
     // Characteristics
     yearBuilt: property?.yearBuilt,
     yearLastRenovated: property?.yearLastRenovated,
@@ -118,16 +104,8 @@ export const PropertyForm = ({
     foundationType: property?.foundationType,
     roofType: property?.roofType,
     wallConstruction: property?.wallConstruction,
-    flooringType: property?.flooringType,
-    windowType: property?.windowType,
     numberOfFloors: property?.numberOfFloors,
     structuralNotes: property?.structuralNotes,
-    energyEfficiencyRating: property?.energyEfficiencyRating,
-    energyCertificateExpiryDate: property?.energyCertificateExpiryDate,
-    heatingType: property?.heatingType,
-    coolingType: property?.coolingType,
-    hotWaterSystem: property?.hotWaterSystem,
-    insulationNotes: property?.insulationNotes,
     electricityConnectionType: property?.electricityConnectionType,
     electricityCapacityAmps: property?.electricityCapacityAmps,
     waterConnectionType: property?.waterConnectionType,
@@ -138,9 +116,6 @@ export const PropertyForm = ({
     internetStatus: property?.internetStatus,
     parkingSpaces: property?.parkingSpaces,
     parkingType: property?.parkingType,
-    hasSmokeDetectors: property?.hasSmokeDetectors ?? false,
-    hasCoDetectors: property?.hasCoDetectors ?? false,
-    hasFireExtinguisher: property?.hasFireExtinguisher ?? false,
     hasSprinklerSystem: property?.hasSprinklerSystem ?? false,
     hasAlarmSystem: property?.hasAlarmSystem ?? false,
     hasSecurityCameras: property?.hasSecurityCameras ?? false,
@@ -149,8 +124,6 @@ export const PropertyForm = ({
     isWheelchairAccessible: property?.isWheelchairAccessible ?? false,
     hasElevator: property?.hasElevator ?? false,
     hasStepFreeEntrance: property?.hasStepFreeEntrance ?? false,
-    hasAdaptedBathroom: property?.hasAdaptedBathroom ?? false,
-    accessibilityNotes: property?.accessibilityNotes,
     // Category-specific details
     residentialDetails:
       property?.residentialDetails as CreatePropertyRequest['residentialDetails'],
@@ -228,7 +201,6 @@ export const PropertyForm = ({
         (property.propertyCategory as PropertyCategory) ??
         PropertyCategory.RESIDENTIAL,
       propertyType: property.propertyType as PropertyType,
-      status: property.status as PropertyStatus,
       street: property.street,
       city: property.city,
       postalCode: property.postalCode,
@@ -237,24 +209,14 @@ export const PropertyForm = ({
       latitude: property.latitude,
       longitude: property.longitude,
       geocodeAccuracy: property.geocodeAccuracy,
-      areaValue: property.areaValue,
-      areaUnit: property.areaUnit ?? 'sqm',
       yearBuilt: property.yearBuilt,
       yearLastRenovated: property.yearLastRenovated,
       constructionType: property.constructionType,
       foundationType: property.foundationType,
       roofType: property.roofType,
       wallConstruction: property.wallConstruction,
-      flooringType: property.flooringType,
-      windowType: property.windowType,
       numberOfFloors: property.numberOfFloors,
       structuralNotes: property.structuralNotes,
-      energyEfficiencyRating: property.energyEfficiencyRating,
-      energyCertificateExpiryDate: property.energyCertificateExpiryDate,
-      heatingType: property.heatingType,
-      coolingType: property.coolingType,
-      hotWaterSystem: property.hotWaterSystem,
-      insulationNotes: property.insulationNotes,
       electricityConnectionType: property.electricityConnectionType,
       electricityCapacityAmps: property.electricityCapacityAmps,
       waterConnectionType: property.waterConnectionType,
@@ -265,9 +227,6 @@ export const PropertyForm = ({
       internetStatus: property.internetStatus,
       parkingSpaces: property.parkingSpaces,
       parkingType: property.parkingType,
-      hasSmokeDetectors: property.hasSmokeDetectors ?? false,
-      hasCoDetectors: property.hasCoDetectors ?? false,
-      hasFireExtinguisher: property.hasFireExtinguisher ?? false,
       hasSprinklerSystem: property.hasSprinklerSystem ?? false,
       hasAlarmSystem: property.hasAlarmSystem ?? false,
       hasSecurityCameras: property.hasSecurityCameras ?? false,
@@ -276,8 +235,6 @@ export const PropertyForm = ({
       isWheelchairAccessible: property.isWheelchairAccessible ?? false,
       hasElevator: property.hasElevator ?? false,
       hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
-      hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
-      accessibilityNotes: property.accessibilityNotes,
       residentialDetails:
         property.residentialDetails as CreatePropertyRequest['residentialDetails'],
       commercialDetails:
@@ -382,10 +339,6 @@ export const PropertyForm = ({
       newErrors.countryCode = t('form.validation.countryRequired');
     }
 
-    if (formData.areaValue != null && formData.areaValue <= 0) {
-      newErrors.areaValue = t('form.validation.areaPositive');
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -419,15 +372,20 @@ export const PropertyForm = ({
     }
   };
 
-  const handleChange = (
-    field: keyof CreatePropertyRequest,
-    value: string | number | boolean | undefined | unknown
-  ) => {
+  // Overloaded so direct call sites below get per-field type checking, while
+  // PropertyCharacteristicsForm (whose inputs ferry mixed-type, less specific values) can still
+  // take this as a plain (field, value: unknown) => void.
+  function handleChange<K extends keyof CreatePropertyRequest>(
+    field: K,
+    value: CreatePropertyRequest[K]
+  ): void;
+  function handleChange(field: keyof CreatePropertyRequest, value: unknown): void;
+  function handleChange(field: keyof CreatePropertyRequest, value: unknown) {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field as string]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
     }
-  };
+  }
 
   return (
     <MobileFormStepperProvider totalSteps={3}>
@@ -633,59 +591,6 @@ export const PropertyForm = ({
                 />
               </div>
 
-              {/* Status */}
-              <div>
-                <label className={labelCls}>
-                  {t('form.status')} <span className="text-error-text">*</span>
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    handleChange('status', e.target.value as PropertyStatus)
-                  }
-                  className={selectCls}
-                >
-                  {Object.values(PropertyStatus).map((status) => (
-                    <option key={status} value={status}>
-                      {statusLabel(status)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Area */}
-              <div>
-                <label className={labelCls}>{t('form.area')}</label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={formData.areaValue ?? ''}
-                    onChange={(e) =>
-                      handleChange(
-                        'areaValue',
-                        e.target.value ? parseFloat(e.target.value) : undefined
-                      )
-                    }
-                    className={`flex-1 ${inputCls}`}
-                    placeholder={t('form.areaPlaceholder')}
-                  />
-                  <select
-                    value={formData.areaUnit ?? 'sqm'}
-                    onChange={(e) => handleChange('areaUnit', e.target.value)}
-                    className="w-20 border border-border-strong rounded px-2 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                  >
-                    <option value="sqm">m²</option>
-                    <option value="sqft">ft²</option>
-                  </select>
-                </div>
-                {errors.areaValue && (
-                  <p className="text-error-text text-sm mt-1">
-                    {errors.areaValue}
-                  </p>
-                )}
-              </div>
             </div>
           </div>
         </FormStepGate>
@@ -699,10 +604,6 @@ export const PropertyForm = ({
             outdoorAreas={outdoorAreas}
             onCreateOutdoorArea={onCreateOutdoorArea}
             onDeleteOutdoorArea={onDeleteOutdoorArea}
-            allAmenities={allAmenities}
-            propertyAmenities={propertyAmenities}
-            onAddAmenity={onAddAmenity}
-            onRemoveAmenity={onRemoveAmenity}
           />
         </FormStepGate>
 
