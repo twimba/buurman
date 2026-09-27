@@ -802,6 +802,21 @@
 </section>
 
 <!-- ═══════════════ PRICING ═══════════════ -->
+<!--
+  Plan limits below are stated in PROPERTIES. That is accurate only while
+  multi-unit is off: the multi_unit flag is seeded FALSE (V071__multi_unit_flag.sql)
+  so every property has exactly one implicit unit, and 1 property == 1 unit.
+
+  Billing will be per UNIT, not per building — the decision is recorded in
+  docs/superpowers/specs/2026-09-26-units-multi-unit-buildings-design.md ("each
+  unit counts, implicit units included") and TeamService exposes billableUnitCount
+  for it. A five-flat building will consume five.
+
+  So when multi-unit ships, these limits have to be restated in units HERE and in
+  frontend/app/src/components/settings/SubscriptionSection.tsx (currently mock
+  data saying "5 Properties" with a currentProperties/propertiesLimit bar), in the
+  same release. Changing one without the other makes the site and the app disagree.
+-->
 <section class="section" id="pricing">
     <div class="container-wide">
         <div class="section-header reveal">
