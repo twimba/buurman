@@ -312,7 +312,7 @@
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </div>
                 <h3>Properties</h3>
-                <p>Photos, documents, and the numbers that tell you whether it was a good buy: ROI, cap rate, cash flow. A chart ranks every property you own by what it returns, so the one dragging is obvious.</p>
+                <p>Photos, documents, and the numbers that tell you whether it was a good buy: ROI, cap rate, cash flow. A building can hold several units, each with its own tenant, rent and contract, and a shared cost like a roof repair splits across them. A chart ranks everything you own by what it returns, so the one dragging is obvious.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -803,25 +803,22 @@
 
 <!-- ═══════════════ PRICING ═══════════════ -->
 <!--
-  Plan limits below are stated in PROPERTIES. That is accurate only while
-  multi-unit is off: the multi_unit flag is seeded FALSE (V071__multi_unit_flag.sql)
-  so every property has exactly one implicit unit, and 1 property == 1 unit.
+  Plan limits below are stated in UNITS, matching the billing decision recorded in
+  docs/superpowers/specs/2026-09-26-units-multi-unit-buildings-design.md ("each unit
+  counts, implicit units included") and the billableUnitCount that TeamService exposes.
 
-  Billing will be per UNIT, not per building — the decision is recorded in
-  docs/superpowers/specs/2026-09-26-units-multi-unit-buildings-design.md ("each
-  unit counts, implicit units included") and TeamService exposes billableUnitCount
-  for it. A five-flat building will consume five.
-
-  So when multi-unit ships, these limits have to be restated in units HERE and in
-  frontend/app/src/components/settings/SubscriptionSection.tsx (currently mock
-  data saying "5 Properties" with a currentProperties/propertiesLimit bar), in the
-  same release. Changing one without the other makes the site and the app disagree.
+  STILL OUT OF SYNC: frontend/app/src/components/settings/SubscriptionSection.tsx
+  says "1 Property" / "5 Properties" / "Unlimited Properties" and renders a
+  currentProperties/propertiesLimit progress bar. It is mock data today, but a
+  signed-in user reading it will see different limits from this page. Fixing it
+  properly also means the subscription.currentPlan.properties key across all 13
+  locales, which CI gates for parity.
 -->
 <section class="section" id="pricing">
     <div class="container-wide">
         <div class="section-header reveal">
             <h2>Pricing</h2>
-            <p>Start free and move up when you outgrow it.</p>
+            <p>Start free and move up when you outgrow it. Plans count rentable units: a house or a flat is one unit, a building with five flats is five.</p>
         </div>
 
         <div class="pricing-toggle reveal">
@@ -840,7 +837,7 @@
                 <div class="pricing-price" data-annual="0" data-monthly="0">&euro;0 <span class="period">/month</span></div>
                 <p class="pricing-subtitle pricing-billed">Perfect to get started</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Property</li>
+                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 unit</li>
                     <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Team Member</li>
                     <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
                     <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Community Support</li>
@@ -856,7 +853,7 @@
                 <div class="pricing-price" data-annual="1" data-monthly="1.99">&euro;1 <span class="period">/month</span></div>
                 <p class="pricing-subtitle pricing-billed">Billed annually at &euro;12</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Property</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 unit</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Team Member</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>200 Documents or Photos</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
@@ -873,7 +870,7 @@
                 <div class="pricing-price" data-annual="10" data-monthly="12.99">&euro;10 <span class="period">/month</span></div>
                 <p class="pricing-subtitle pricing-billed">Billed annually at &euro;120</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5 Properties</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5 units</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5 Team Members</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1,000 Documents or Photos</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
@@ -891,7 +888,7 @@
                 <div class="pricing-price" data-annual="50" data-monthly="65.99">&euro;50 <span class="period">/month</span></div>
                 <p class="pricing-subtitle pricing-billed">Billed annually at &euro;600</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Unlimited Properties</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Unlimited units</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Unlimited Team Members</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5,000 Documents or Photos</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Advanced Reports <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--primary-50);color:var(--primary);font-size:0.625rem;font-weight:700;cursor:help;">&#9733;</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#f5f5f4;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Coming soon<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
