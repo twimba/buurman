@@ -383,12 +383,24 @@ public class UnitService {
     }
   }
 
+  /**
+   * {@code units} has more than one CHECK/unique constraint that jOOQ reports through the same
+   * {@link IntegrityConstraintViolationException} type -- notably {@code
+   * chk_units_allocation_share} (0-100) alongside {@code uq_units_property_number}. Rewriting every
+   * such exception as "already exists" would misreport an out-of-range allocationShare as a
+   * duplicate unit number (BUUR-106 follow-up register, section F, item 9), so only the specific
+   * constraint this method is actually translating is caught here; anything else propagates
+   * unchanged.
+   */
   private Unit saveOrTranslateDuplicate(Unit unit, String unitNumber) {
     try {
       return unitRepository.save(unit);
     } catch (IntegrityConstraintViolationException e) {
-      throw new BusinessRuleException(
-          "A unit numbered " + unitNumber + " already exists on this property.");
+      if (e.getMessage() != null && e.getMessage().contains("uq_units_property_number")) {
+        throw new BusinessRuleException(
+            "A unit numbered " + unitNumber + " already exists on this property.");
+      }
+      throw e;
     }
   }
 
