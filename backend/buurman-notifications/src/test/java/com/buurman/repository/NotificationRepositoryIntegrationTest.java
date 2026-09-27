@@ -91,5 +91,46 @@ class NotificationRepositoryIntegrationTest extends AbstractRepositoryIntegratio
                 assertThat(found.getRelatedContractId()).isEmpty();
               });
     }
+
+    @Test
+    @DisplayName("finds only the notifications for that payment")
+    void findsOnlyThatPaymentsNotifications() {
+      UUID contractId = aContract();
+      UUID paymentId = TestDataHelper.insertPayment(dsl, TEAM_A_ID, contractId, USER_ID);
+      UUID otherPaymentId = TestDataHelper.insertPayment(dsl, TEAM_A_ID, contractId, USER_ID);
+      Notification mine = buildNotification(TEAM_A_ID);
+      mine.setRelatedPaymentId(Optional.of(paymentId));
+      repo.save(mine);
+      Notification other = buildNotification(TEAM_A_ID);
+      other.setRelatedPaymentId(Optional.of(otherPaymentId));
+      repo.save(other);
+
+      assertThat(repo.findByPaymentIdAndTeamId(paymentId, TEAM_A_ID)).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("another team sees none of them")
+    void anotherTeamSeesNone() {
+      UUID contractId = aContract();
+      UUID paymentId = TestDataHelper.insertPayment(dsl, TEAM_A_ID, contractId, USER_ID);
+      Notification mine = buildNotification(TEAM_A_ID);
+      mine.setRelatedPaymentId(Optional.of(paymentId));
+      repo.save(mine);
+
+      assertThat(repo.findByPaymentIdAndTeamId(paymentId, TEAM_B_ID)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("a contract sees the reminders sent for its payments")
+    void contractSeesItsPaymentReminders() {
+      UUID contractId = aContract();
+      UUID paymentId = TestDataHelper.insertPayment(dsl, TEAM_A_ID, contractId, USER_ID);
+      Notification reminder = buildNotification(TEAM_A_ID);
+      reminder.setRelatedPaymentId(Optional.of(paymentId));
+      reminder.setRelatedContractId(Optional.of(contractId));
+      repo.save(reminder);
+
+      assertThat(repo.findByContractIdAndTeamId(contractId, TEAM_A_ID)).hasSize(1);
+    }
   }
 }

@@ -116,6 +116,30 @@ public class NotificationRepository {
   }
 
   /** See {@link #findByIdentifierAndTeamId} — same null-teamId semantics. */
+  /** Newest first: a timeline reads top-down from the most recent message. */
+  public List<Notification> findByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
+    return findByEntityAndTeamId(NOTIFICATIONS.PAYMENT_ID.eq(paymentId), teamId);
+  }
+
+  public List<Notification> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
+    return findByEntityAndTeamId(NOTIFICATIONS.CONTRACT_ID.eq(contractId), teamId);
+  }
+
+  /**
+   * The team_id predicate is not redundant with the caller's entity lookup: it is the guarantee
+   * that holds even if a caller reaches this repository by another route.
+   */
+  private List<Notification> findByEntityAndTeamId(Condition entityMatches, UUID teamId) {
+    return dsl.selectFrom(NOTIFICATIONS)
+        .where(entityMatches.and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
+        .orderBy(NOTIFICATIONS.CREATED_AT.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
   public Optional<Notification> findByIdAndTeamId(UUID id, @Nullable UUID teamId) {
     Condition condition = NOTIFICATIONS.ID.eq(id);
     if (teamId != null) {
