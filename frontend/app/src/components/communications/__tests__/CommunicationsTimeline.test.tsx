@@ -109,4 +109,30 @@ describe('CommunicationsTimeline', () => {
     expect(screen.queryByText('CONTRACT_ROLLED_OVER_TO_INDEFINITE')).not.toBeInTheDocument();
     expect(screen.getByText('Contract rolled over')).toBeInTheDocument();
   });
+
+  it('shows the subject so a row is identifiable beyond its type', () => {
+    renderWithProviders(
+      <CommunicationsTimeline
+        communications={[row({ subject: 'Payment overdue for Keizersgracht 123-B' })]}
+        isLoading={false}
+      />
+    );
+
+    expect(screen.getByText('Payment overdue for Keizersgracht 123-B')).toBeInTheDocument();
+  });
+
+  it('shows why a message was not delivered', () => {
+    renderWithProviders(
+      <CommunicationsTimeline
+        communications={[
+          row({ status: 'BOUNCED', providerError: 'mailbox does not exist' }),
+        ]}
+        isLoading={false}
+      />
+    );
+
+    // A bounce the landlord cannot explain is a bounce they cannot act on: the reason is
+    // what tells them the address is wrong rather than the tenant ignoring them.
+    expect(screen.getByText(/mailbox does not exist/i)).toBeInTheDocument();
+  });
 });

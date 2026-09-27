@@ -330,7 +330,24 @@ export const ContractDetailPage = () => {
 
         {/* Tab Content */}
         {activeTab === 'overview' && (
-          <ContractOverviewTab contract={contract} contractId={id} />
+          <>
+            <ContractOverviewTab contract={contract} contractId={id} />
+            <section className="mt-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-3">
+                {t('common:communications.title')}
+              </h2>
+              <CommunicationsTimeline
+                communications={communications}
+                isLoading={communicationsLoading}
+                isError={communicationsError}
+                onResend={
+                  canEditData
+                    ? (communicationId) => resendCommunicationMutation.mutate(communicationId)
+                    : undefined
+                }
+              />
+            </section>
+          </>
         )}
 
         {activeTab === 'payments' && (
@@ -349,21 +366,6 @@ export const ContractDetailPage = () => {
         {activeTab === 'history' && <ContractHistoryTab contractId={id} />}
       </div>
 
-      <section className="mt-6">
-        <h2 className="text-lg font-semibold text-text-primary mb-3">
-          {t('common:communications.title')}
-        </h2>
-        <CommunicationsTimeline
-          communications={communications}
-          isLoading={communicationsLoading}
-          isError={communicationsError}
-          onResend={
-            canEditData
-              ? (communicationId) => resendCommunicationMutation.mutate(communicationId)
-              : undefined
-          }
-        />
-      </section>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

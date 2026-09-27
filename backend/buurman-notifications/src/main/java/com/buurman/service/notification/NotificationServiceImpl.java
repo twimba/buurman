@@ -243,6 +243,8 @@ public class NotificationServiceImpl implements NotificationService {
                         .recipientPhone(user.getPhone())
                         .templateName(request.templateName())
                         .templateVariables(perUserVars)
+                        .contextLanguageTag(request.contextLanguageTag())
+                        .attachments(request.attachments())
                         .urgency(request.urgency())
                         .createdBy(request.createdBy())
                         .build();

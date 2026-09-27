@@ -371,6 +371,58 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    @DisplayName("carries the context language and attachments onto every member's notification")
+    void sendToTeamCarriesContextAndAttachments() throws Exception {
+      UUID adminUserId = UUID.randomUUID();
+      when(teamMemberRepository.findByTeamId(TEAM_ID))
+          .thenReturn(
+              List.of(
+                  TeamMember.builder()
+                      .userId(adminUserId)
+                      .teamId(TEAM_ID)
+                      .role(TeamRole.TEAM_ADMIN)
+                      .build()));
+      when(userRepository.findById(adminUserId))
+          .thenReturn(
+              Optional.of(
+                  User.builder()
+                      .id(adminUserId)
+                      .email("admin@example.com")
+                      .firstName("Admin")
+                      .lastName("User")
+                      .build()));
+      stubEmailRender();
+      stubNotificationSave();
+
+      service.sendToTeam(
+          SendNotificationRequest.builder()
+              .teamId(Optional.of(TEAM_ID))
+              .notificationType(VERIFICATION_CODE)
+              .templateName("verification-code")
+              .templateVariables(Map.of())
+              .createdBy(CREATED_BY)
+              .contextLanguageTag(Optional.of("nl"))
+              .attachments(List.of(new EmailAttachment("notice.pdf", "application/pdf", "k/n.pdf")))
+              .build());
+
+      // The per-member rebuild discards silently anything it forgets to copy. No caller sets
+      // these on a sendToTeam path today, so this pins the trap rather than a live bug: the next
+      // person to attach a PDF to a team notification would watch it vanish.
+      ArgumentCaptor<NotificationOutbox> outboxCaptor =
+          ArgumentCaptor.forClass(NotificationOutbox.class);
+      verify(outboxRepository, atLeastOnce()).save(outboxCaptor.capture());
+      assertThat(outboxCaptor.getValue().getPayload()).contains("notice.pdf");
+
+      // The resolver is mocked here, so the rendered locale cannot show whether the context tag
+      // survived; what it receives can. This is the argument sendToTeam was dropping.
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<Optional<String>> contextCaptor = ArgumentCaptor.forClass(Optional.class);
+      verify(recipientLocaleResolver, atLeastOnce())
+          .resolve(any(), any(), any(), contextCaptor.capture());
+      assertThat(contextCaptor.getAllValues()).contains(Optional.of("nl"));
+    }
+
+    @Test
     @DisplayName("carries the entity link onto every member's notification")
     void sendToTeamCarriesTheEntityLink() {
       UUID adminUserId = UUID.randomUUID();

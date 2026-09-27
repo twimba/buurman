@@ -118,7 +118,6 @@ public class NotificationRepository {
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
 
-  /** See {@link #findByIdentifierAndTeamId} — same null-teamId semantics. */
   /** Newest first: a timeline reads top-down from the most recent message. */
   public List<Notification> findByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
     return findByEntityAndTeamId(NOTIFICATIONS.PAYMENT_ID.eq(paymentId), teamId);
@@ -147,6 +146,7 @@ public class NotificationRepository {
         .toList();
   }
 
+  /** See {@link #findByIdentifierAndTeamId} — same null-teamId semantics. */
   public Optional<Notification> findByIdAndTeamId(UUID id, @Nullable UUID teamId) {
     Condition condition = NOTIFICATIONS.ID.eq(id);
     if (teamId != null) {
@@ -266,6 +266,18 @@ public class NotificationRepository {
         .execute();
   }
 
+  /**
+   * Deliberately not team-scoped, unlike every other query here.
+   *
+   * <p>Provider webhooks are unauthenticated and carry no tenant: Mailgun and Twilio send back only
+   * their own message id. Deriving a team would mean reading the notification to learn which team
+   * it belongs to and then filtering by that, which constrains nothing. The id is opaque and
+   * globally unique per provider, so it cannot address another team's row.
+   *
+   * <p>The residual risk is the index on {@code provider_message_id} being non-unique: were an id
+   * ever reused, every matching row would be incremented. That has not happened and no provider
+   * documents it as possible, so this is recorded rather than defended against.
+   */
   public void incrementOpenCount(String providerMessageId) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
