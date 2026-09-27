@@ -11,7 +11,7 @@ spring:
 
   # Java 25: request handling and @Async work run on virtual threads. The
   # workload is I/O-bound almost end to end -- JDBC through JOOQ plus outbound
-  # calls to Keycloak, S3, Gotenberg, SendGrid and Twilio -- so carrier threads
+  # calls to Keycloak, S3, Gotenberg, Mailgun and Twilio -- so carrier threads
   # are released during every wait instead of a platform thread blocking.
   # JEP 491 (JDK 24) removed synchronized pinning, and this codebase has no
   # synchronized blocks or custom ThreadLocals, so there is nothing to pin.

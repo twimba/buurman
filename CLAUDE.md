@@ -159,11 +159,11 @@ backend/
 │       └── util/                PaginationHelper, S3BucketInitializer
 ├── buurman-notifications/   Notification system (~30 files)
 │   └── com.buurman
-│       ├── config/              SendGridConfig, TwilioConfig, NotificationQuartzConfig
-│       ├── config/models/       SendGridProperties, TwilioProperties, NotificationOutboxProperties
+│       ├── config/              MailgunConfig, TwilioConfig, NotificationQuartzConfig
+│       ├── config/models/       MailgunProperties, TwilioProperties, NotificationOutboxProperties
 │       ├── controller/          NotificationController, WebhookController
 │       ├── service/notification/ NotificationServiceImpl, NotificationCenterService, WebhookService
-│       ├── service/notification/channel/  Email/SMS senders (SendGrid, Twilio, local)
+│       ├── service/notification/channel/  Email/SMS senders (Mailgun, Twilio, local)
 │       ├── repository/          NotificationRepository, NotificationOutboxRepository
 │       ├── mapper/              NotificationRecordMapper, NotificationOutboxRecordMapper
 │       └── job/                 NotificationOutboxJob, ContractExpiryCheckJob, PaymentReminderCheckJob
