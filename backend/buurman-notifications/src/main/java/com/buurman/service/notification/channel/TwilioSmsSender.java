@@ -33,9 +33,14 @@ public class TwilioSmsSender implements NotificationChannelSender {
   private final String fromNumber;
   private final Optional<String> messagingServiceSid;
   private final Optional<String> statusCallbackUrl;
+  private final SmsBodyRenderer smsBodyRenderer;
 
-  public TwilioSmsSender(TwilioProperties twilioProperties, MetricsService metricsService) {
+  public TwilioSmsSender(
+      TwilioProperties twilioProperties,
+      MetricsService metricsService,
+      SmsBodyRenderer smsBodyRenderer) {
     this.metricsService = metricsService;
+    this.smsBodyRenderer = smsBodyRenderer;
     this.fromNumber = twilioProperties.fromNumber();
     this.messagingServiceSid = twilioProperties.messagingServiceSid();
     this.statusCallbackUrl = twilioProperties.statusCallbackUrl();
@@ -95,50 +100,7 @@ public class TwilioSmsSender implements NotificationChannelSender {
 
   @Override
   public RenderedContent render(String templateName, Map<String, Object> variables, Locale locale) {
-    String body = renderSmsTemplate(templateName, variables);
-    return new RenderedContent(Optional.empty(), body, SMS);
-  }
-
-  private String renderSmsTemplate(String templateName, Map<String, Object> variables) {
-    String template = getSmsTemplate(templateName);
-    if (variables != null) {
-      for (Map.Entry<String, Object> entry : variables.entrySet()) {
-        template = template.replace("{" + entry.getKey() + "}", String.valueOf(entry.getValue()));
-      }
-    }
-    return template;
-  }
-
-  private String getSmsTemplate(String templateName) {
-    return switch (templateName) {
-      case "welcome" -> "Buurman: Welcome, {userName}! Your account is ready at {baseUrl}";
-      case "verification-code" -> "Buurman: Your code is {verificationCode}. Expires in 15 min.";
-      case "phone-verification-code" ->
-          "Buurman: Your phone verification code is {verificationCode}. Expires in {expiresMinutes}"
-              + " min.";
-      case "team-invitation" ->
-          "Buurman: {inviterName} invited you to {teamName}. Check your email.";
-      case "invitation-accepted" -> "Buurman: {memberName} joined your team {teamName}.";
-      case "password-changed" ->
-          "Buurman: Your password was changed. Contact support if unexpected.";
-      case "payment-reminder" ->
-          "Buurman: Payment of {amount} for {propertyName} is overdue (due {dueDate}).";
-      case "contract-expiry" ->
-          "Buurman: Contract for {propertyName} expires in {daysUntilExpiry} days ({expiryDate}).";
-      case "property-created" -> "Buurman: Property {propertyName} has been created.";
-      case "contract-created" ->
-          "Buurman: New contract created for {propertyName} with {contactName}.";
-      case "contract-status-changed" ->
-          "Buurman: Contract for {propertyName} changed from {oldStatus} to {newStatus}.";
-      case "contract-reopened" ->
-          "Buurman: Contract for {propertyName} ({contactName}) has been reopened for editing.";
-      case "payment-paid" ->
-          "Buurman: Payment of {amount} for {propertyName} has been marked as paid.";
-      case "payment-receival" ->
-          "Buurman: Receival of {receivalAmount} registered for {propertyName} payment.";
-      case "expense-created" ->
-          "Buurman: Expense of {amount} ({category}) created for {propertyName}.";
-      default -> "Buurman: You have a new notification.";
-    };
+    return new RenderedContent(
+        Optional.empty(), smsBodyRenderer.render(templateName, variables, locale), SMS);
   }
 }
