@@ -839,11 +839,11 @@ export const PropertyDetailPage = () => {
 
             {/* Utilities & Connections */}
             {(property.electricityConnectionType ||
-              property.electricityCapacityAmps != null ||
+              property.electricityCapacityValue != null ||
               property.waterConnectionType ||
               property.sewageType ||
               property.internetConnectionType ||
-              property.internetMaxSpeedMbps != null ||
+              property.internetMaxSpeedValue != null ||
               property.internetStatus) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
@@ -863,13 +863,13 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.electricityCapacityAmps != null && (
+                  {property.electricityCapacityValue != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         {t('detail.utilities.capacity')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {property.electricityCapacityAmps} A
+                        {property.electricityCapacityValue} A
                       </div>
                     </div>
                   )}
@@ -919,13 +919,13 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.internetMaxSpeedMbps != null && (
+                  {property.internetMaxSpeedValue != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         {t('detail.utilities.internetSpeed')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {property.internetMaxSpeedMbps} Mbps
+                        {property.internetMaxSpeedValue} Mbps
                       </div>
                     </div>
                   )}

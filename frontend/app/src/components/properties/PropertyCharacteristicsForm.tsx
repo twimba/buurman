@@ -282,12 +282,12 @@ export const PropertyCharacteristicsForm = ({
   ];
   const utilityFields = [
     formData.electricityConnectionType,
-    formData.electricityCapacityAmps,
+    formData.electricityCapacityValue,
     formData.waterConnectionType,
     formData.hasGasConnection,
     formData.sewageType,
     formData.internetConnectionType,
-    formData.internetMaxSpeedMbps,
+    formData.internetMaxSpeedValue,
     formData.internetStatus,
   ];
   const parkingFields = [formData.parkingSpaces, formData.parkingType];
@@ -406,8 +406,14 @@ export const PropertyCharacteristicsForm = ({
           />
           <NumberField
             label={t('characteristics.utilities.electricityCapacity')}
-            value={formData.electricityCapacityAmps}
-            onChange={(v) => onChange('electricityCapacityAmps', v)}
+            value={formData.electricityCapacityValue}
+            onChange={(v) => {
+              onChange('electricityCapacityValue', v);
+              onChange(
+                'electricityCapacityUnit',
+                v === undefined ? undefined : 'A'
+              );
+            }}
             min={0}
             suffix="A"
             tooltip={t('characteristics.utilities.electricityCapacityTooltip')}
@@ -449,8 +455,14 @@ export const PropertyCharacteristicsForm = ({
           />
           <NumberField
             label={t('characteristics.utilities.internetMaxSpeed')}
-            value={formData.internetMaxSpeedMbps}
-            onChange={(v) => onChange('internetMaxSpeedMbps', v)}
+            value={formData.internetMaxSpeedValue}
+            onChange={(v) => {
+              onChange('internetMaxSpeedValue', v);
+              onChange(
+                'internetMaxSpeedUnit',
+                v === undefined ? undefined : 'Mbps'
+              );
+            }}
             min={0}
             suffix="Mbps"
           />
@@ -728,7 +740,7 @@ const CommercialDetailsSection = ({
     details.usableAreaValue,
     details.commonAreaValue,
     details.floorLevel,
-    details.ceilingHeightM,
+    details.ceilingHeightValue,
     details.hasStorefront,
     details.hasSignageRights,
     details.zoningClassification,
@@ -773,8 +785,14 @@ const CommercialDetailsSection = ({
         />
         <NumberField
           label={t('characteristics.commercial.ceilingHeight')}
-          value={details.ceilingHeightM}
-          onChange={(v) => update('ceilingHeightM', v)}
+          value={details.ceilingHeightValue}
+          onChange={(v) =>
+            onChange({
+              ...details,
+              ceilingHeightValue: v,
+              ceilingHeightUnit: v === undefined ? undefined : 'm',
+            } as CommercialDetailsRequest)
+          }
           min={0}
           step={0.1}
           suffix="m"
@@ -850,14 +868,14 @@ const IndustrialDetailsSection = ({
     onChange({ ...details, [field]: value } as IndustrialDetailsRequest);
 
   const fields = [
-    details.clearHeightM,
+    details.clearHeightValue,
     details.loadingDocks,
     details.driveInDoors,
-    details.floorLoadCapacityKgSqm,
-    details.powerCapacityKva,
+    details.floorLoadCapacityValue,
+    details.powerCapacityValue,
     details.hasThreePhasePower,
     details.hasCrane,
-    details.craneCapacityTons,
+    details.craneCapacityValue,
     details.hasHazmatCertification,
     details.hasVentilationSystem,
     details.hasClimateControl,
@@ -874,8 +892,14 @@ const IndustrialDetailsSection = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <NumberField
           label={t('characteristics.industrial.clearHeight')}
-          value={details.clearHeightM}
-          onChange={(v) => update('clearHeightM', v)}
+          value={details.clearHeightValue}
+          onChange={(v) =>
+            onChange({
+              ...details,
+              clearHeightValue: v,
+              clearHeightUnit: v === undefined ? undefined : 'm',
+            } as IndustrialDetailsRequest)
+          }
           min={0}
           step={0.1}
           suffix="m"
@@ -896,24 +920,42 @@ const IndustrialDetailsSection = ({
         />
         <NumberField
           label={t('characteristics.industrial.floorLoadCapacity')}
-          value={details.floorLoadCapacityKgSqm}
-          onChange={(v) => update('floorLoadCapacityKgSqm', v)}
+          value={details.floorLoadCapacityValue}
+          onChange={(v) =>
+            onChange({
+              ...details,
+              floorLoadCapacityValue: v,
+              floorLoadCapacityUnit: v === undefined ? undefined : 'kg/m2',
+            } as IndustrialDetailsRequest)
+          }
           min={0}
           step={1}
           suffix="kg/m²"
         />
         <NumberField
           label={t('characteristics.industrial.powerCapacity')}
-          value={details.powerCapacityKva}
-          onChange={(v) => update('powerCapacityKva', v)}
+          value={details.powerCapacityValue}
+          onChange={(v) =>
+            onChange({
+              ...details,
+              powerCapacityValue: v,
+              powerCapacityUnit: v === undefined ? undefined : 'kVA',
+            } as IndustrialDetailsRequest)
+          }
           min={0}
           step={1}
           suffix="kVA"
         />
         <NumberField
           label={t('characteristics.industrial.craneCapacity')}
-          value={details.craneCapacityTons}
-          onChange={(v) => update('craneCapacityTons', v)}
+          value={details.craneCapacityValue}
+          onChange={(v) =>
+            onChange({
+              ...details,
+              craneCapacityValue: v,
+              craneCapacityUnit: v === undefined ? undefined : 't',
+            } as IndustrialDetailsRequest)
+          }
           min={0}
           step={0.1}
           suffix="t"
