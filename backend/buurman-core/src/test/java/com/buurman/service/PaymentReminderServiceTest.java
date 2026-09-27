@@ -318,7 +318,7 @@ class PaymentReminderServiceTest {
       assertThat(sent.recipientEmail()).contains("jan@example.com");
       assertThat(sent.recipientContactId()).contains(CONTACT_ID);
       assertThat(sent.recipientUserId()).isEmpty();
-      assertThat(sent.languageTag()).contains("nl");
+      assertThat(sent.contextLanguageTag()).contains("nl");
       assertThat(sent.urgency()).isEqualTo(NotificationUrgency.URGENT);
       assertThat(sent.templateVariables())
           .containsEntry("daysOverdue", 10)

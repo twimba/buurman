@@ -431,7 +431,7 @@ public class PaymentReminderService {
                 .recipientEmail(Optional.of(email))
                 .templateName(TEMPLATE_NAME)
                 .templateVariables(variables)
-                .languageTag(Optional.of(languageTag))
+                .contextLanguageTag(Optional.of(languageTag))
                 .urgency(
                     tone == ReminderTone.FRIENDLY
                         ? NotificationUrgency.NORMAL

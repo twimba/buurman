@@ -64,6 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
   private final FeatureFlagService featureFlagService;
   private final Map<NotificationChannel, NotificationChannelSender> channelSenders;
   private final ObjectMapper objectMapper;
+  private final RecipientLocaleResolver recipientLocaleResolver;
 
   public NotificationServiceImpl(
       NotificationRepository notificationRepository,
@@ -75,7 +76,8 @@ public class NotificationServiceImpl implements NotificationService {
       UserNotificationTypePreferenceRepository notifTypePrefRepository,
       FeatureFlagService featureFlagService,
       List<NotificationChannelSender> senders,
-      ObjectMapper objectMapper) {
+      ObjectMapper objectMapper,
+      RecipientLocaleResolver recipientLocaleResolver) {
     this.notificationRepository = notificationRepository;
     this.outboxRepository = outboxRepository;
     this.teamMemberRepository = teamMemberRepository;
@@ -85,6 +87,7 @@ public class NotificationServiceImpl implements NotificationService {
     this.notifTypePrefRepository = notifTypePrefRepository;
     this.featureFlagService = featureFlagService;
     this.objectMapper = objectMapper;
+    this.recipientLocaleResolver = recipientLocaleResolver;
 
     this.channelSenders = new HashMap<>();
     for (NotificationChannelSender sender : senders) {
@@ -117,7 +120,12 @@ public class NotificationServiceImpl implements NotificationService {
       boolean deliveryBlocked =
           request.teamId().map(teamId -> isDeliveryBlocked(channel, teamId)).orElse(false);
 
-      Locale recipientLocale = resolveRecipientLocale(request);
+      Locale recipientLocale =
+          recipientLocaleResolver.resolve(
+              request.teamId(),
+              request.recipientContactId(),
+              request.recipientUserId(),
+              request.contextLanguageTag());
       RenderedContent content =
           sender.render(request.templateName(), request.templateVariables(), recipientLocale);
 
@@ -260,21 +268,13 @@ public class NotificationServiceImpl implements NotificationService {
           "Cannot resend notification without content template and variables");
     }
 
-    Optional<String> resentUserLang =
-        original
-            .getRecipientUserId()
-            .flatMap(userPreferencesRepository::findByUserId)
-            .map(UserPreferences::getLanguage);
+    // Same resolver as the send path, so a resend cannot come back in a different language.
     Locale resentLocale =
-        resentUserLang
-            .map(Locale::forLanguageTag)
-            .orElseGet(
-                () ->
-                    original
-                        .getTeamId()
-                        .flatMap(teamPreferencesRepository::findByTeamId)
-                        .map(tp -> Locale.forLanguageTag(tp.getDefaultLanguage()))
-                        .orElse(Locale.ENGLISH));
+        recipientLocaleResolver.resolve(
+            original.getTeamId(),
+            original.getRecipientContactId(),
+            original.getRecipientUserId(),
+            Optional.empty());
     RenderedContent content = sender.render(contentTemplate, contentVariables, resentLocale);
 
     Notification resent = new Notification();
@@ -429,28 +429,6 @@ public class NotificationServiceImpl implements NotificationService {
     };
   }
 
-  private Locale resolveRecipientLocale(SendNotificationRequest request) {
-    // 0. Explicit override from the caller (e.g. a tenant email in the contract's language)
-    Optional<String> explicit = request.languageTag().filter(tag -> !tag.isBlank());
-    if (explicit.isPresent()) {
-      return Locale.forLanguageTag(explicit.get());
-    }
-    // 1. User preference (highest priority)
-    Optional<String> userLang =
-        request
-            .recipientUserId()
-            .flatMap(userPreferencesRepository::findByUserId)
-            .map(UserPreferences::getLanguage);
-    if (userLang.isPresent()) {
-      return Locale.forLanguageTag(userLang.get());
-    }
-    // 2. Team default (fallback)
-    return request
-        .teamId()
-        .flatMap(teamPreferencesRepository::findByTeamId)
-        .map(tp -> Locale.forLanguageTag(tp.getDefaultLanguage()))
-        .orElse(Locale.ENGLISH);
-  }
 
   private boolean canSendViaChannel(NotificationChannel channel, SendNotificationRequest request) {
     return switch (channel) {

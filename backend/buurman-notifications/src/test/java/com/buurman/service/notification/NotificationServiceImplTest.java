@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,6 +64,7 @@ class NotificationServiceImplTest {
   @Mock private UserRepository userRepository;
   @Mock private UserNotificationTypePreferenceRepository notifTypePrefRepository;
   @Mock private FeatureFlagService featureFlagService;
+  @Mock private RecipientLocaleResolver recipientLocaleResolver;
   @Mock private NotificationChannelSender emailSender;
 
   private NotificationServiceImpl service;
@@ -74,6 +76,11 @@ class NotificationServiceImplTest {
   @BeforeEach
   void setUp() {
     lenient().when(emailSender.getChannel()).thenReturn(EMAIL);
+    // The resolver is exercised by RecipientLocaleResolverTest; here it just needs to yield a
+    // locale, since an unstubbed mock returns null and render() would not match its stub.
+    lenient()
+        .when(recipientLocaleResolver.resolve(any(), any(), any(), any()))
+        .thenReturn(Locale.ENGLISH);
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new Jdk8Module());
     service =
@@ -87,7 +94,8 @@ class NotificationServiceImplTest {
             notifTypePrefRepository,
             featureFlagService,
             List.of(emailSender),
-            mapper);
+            mapper,
+            recipientLocaleResolver);
   }
 
   private SendNotificationRequest.SendNotificationRequestBuilder baseRequest() {
@@ -419,7 +427,8 @@ class NotificationServiceImplTest {
               notifTypePrefRepository,
               featureFlagService,
               List.of(), // No senders
-              mapper);
+              mapper,
+              recipientLocaleResolver);
 
       // This request should resolve to EMAIL channel (no user = default EMAIL)
       SendNotificationRequest request =
