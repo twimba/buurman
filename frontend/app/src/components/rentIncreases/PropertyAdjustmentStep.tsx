@@ -223,6 +223,32 @@ export const PropertyAdjustmentStep = ({
     return result;
   }, [contracts, increases, t]);
 
+  // A multi-unit building can hold several active contracts, and this preview does not (yet)
+  // carry a unit identifier per contract — so rows sharing a property are distinguished only by
+  // their order in the list, never by a fabricated unit number/name.
+  const multiUnitLabels = useMemo(() => {
+    const countsByProperty: Record<string, number> = {};
+    contracts.forEach((c) => {
+      countsByProperty[c.propertyIdentifier] =
+        (countsByProperty[c.propertyIdentifier] ?? 0) + 1;
+    });
+    const seenByProperty: Record<string, number> = {};
+    const labels: Record<string, string> = {};
+    contracts.forEach((c) => {
+      const total = countsByProperty[c.propertyIdentifier];
+      if (total <= 1) {
+        return;
+      }
+      seenByProperty[c.propertyIdentifier] =
+        (seenByProperty[c.propertyIdentifier] ?? 0) + 1;
+      labels[c.contractIdentifier] = t('rentIncrease.leaseOfTotal', {
+        index: seenByProperty[c.propertyIdentifier],
+        total,
+      });
+    });
+    return labels;
+  }, [contracts, t]);
+
   // Summary stats
   const summary = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -395,6 +421,11 @@ export const PropertyAdjustmentStep = ({
                           <p className="text-xs text-text-muted mt-0.5">
                             {contract.propertyAddress}
                           </p>
+                          {multiUnitLabels[contract.contractIdentifier] && (
+                            <p className="text-xs text-text-muted mt-0.5">
+                              {multiUnitLabels[contract.contractIdentifier]}
+                            </p>
+                          )}
                         </div>
                         {isApplied && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-success-bg text-success-text ring-1 ring-success-border whitespace-nowrap">

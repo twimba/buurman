@@ -564,6 +564,7 @@
     "retroactiveTooltip": "Adjustment payments will be created for any already settled payments affected by retroactive date changes.",
     "exceedsMax": "Exceeds maximum regulated increase of {{max}}%",
     "belowMin": "Below minimum regulated increase of {{min}}%",
+    "leaseOfTotal": "Lease {{index}} of {{total}} at this property",
     "tableHeaders": {
       "property": "Property",
       "currentRent": "Current Rent",
