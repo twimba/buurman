@@ -1,9 +1,11 @@
 package com.buurman.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -154,5 +156,40 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
         .isEmpty();
     assertThat(repository.findByIdAndTeamId(saved.getId(), TEAM_B_ID)).isEmpty();
     assertThat(repository.findAllByTeamId(TEAM_B_ID)).isEmpty();
+  }
+
+  @Test
+  @DisplayName(
+      "the database itself rejects a contract whose unit_id belongs to a different property"
+          + " (fk_contracts_unit_property, V071)")
+  void rejectsUnitFromADifferentProperty() {
+    UUID otherPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    LocalDateTime now = LocalDateTime.of(2026, 3, 1, 12, 0);
+
+    // unitId (from setUp) belongs to propertyId, not otherPropertyId -- a plain application-level
+    // bug (or a sixth write site that forgets the check) would otherwise attach this contract to
+    // a neighbour's flat.
+    assertThatThrownBy(
+            () ->
+                dsl.insertInto(DSL.table("contracts"))
+                    .set(DSL.field("id", UUID.class), UUID.randomUUID())
+                    .set(
+                        DSL.field("identifier", String.class), SidGenerator.newContractId().value())
+                    .set(DSL.field("team_id", UUID.class), TEAM_A_ID)
+                    .set(DSL.field("property_id", UUID.class), otherPropertyId)
+                    .set(DSL.field("unit_id", UUID.class), unitId)
+                    .set(DSL.field("contract_type", String.class), "FIXED_TERM")
+                    .set(DSL.field("start_date", LocalDate.class), LocalDate.of(2026, 1, 1))
+                    .set(DSL.field("rent_amount", Long.class), 100000L)
+                    .set(DSL.field("rent_amount_currency", String.class), "EUR")
+                    .set(DSL.field("payment_frequency", String.class), "MONTHLY")
+                    .set(DSL.field("status", String.class), "ACTIVE")
+                    .set(DSL.field("created_at", LocalDateTime.class), now)
+                    .set(DSL.field("updated_at", LocalDateTime.class), now)
+                    .set(DSL.field("created_by", UUID.class), USER_ID)
+                    .set(DSL.field("updated_by", UUID.class), USER_ID)
+                    .execute())
+        .isInstanceOf(org.jooq.exception.DataAccessException.class)
+        .hasMessageContaining("fk_contracts_unit_property");
   }
 }
