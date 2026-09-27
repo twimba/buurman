@@ -222,7 +222,7 @@ local:
 		-e '      set backendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell backendPane' \
-		-e '      write text "cd $(ROOT_DIR)/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
+		-e '      write text "cd $(ROOT_DIR) && sleep 10 && make backend"' \
 		-e '      set frontendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell frontendPane' \
