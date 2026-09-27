@@ -211,7 +211,10 @@
       "invalidInvoiceEmail": "Adres e-mail do faktur musi być prawidłowy"
     },
     "paymentReminders": "Wysyłaj przypomnienia o płatności do tego kontaktu",
-    "paymentRemindersHelp": "Wyraźna zgoda na e-maile z przypomnieniem o zaległym czynszu. Przypomnienia są wysyłane tylko dla umów, w których również są włączone."
+    "paymentRemindersHelp": "Wyraźna zgoda na e-maile z przypomnieniem o zaległym czynszu. Przypomnienia są wysyłane tylko dla umów, w których również są włączone.",
+    "preferredLanguage": "Język",
+    "preferredLanguageDefault": "Użyj domyślnego ustawienia zespołu",
+    "preferredLanguageHint": "E-maile i SMS-y do tego kontaktu są pisane w tym języku."
   },
   "addresses": {
     "title": "Adresy",

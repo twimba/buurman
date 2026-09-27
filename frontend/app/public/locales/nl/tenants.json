@@ -201,7 +201,10 @@
       "invalidInvoiceEmail": "Factuur-e-mail moet geldig zijn"
     },
     "paymentReminders": "Betalingsherinneringen naar dit contact sturen",
-    "paymentRemindersHelp": "Expliciete toestemming voor herinneringsmails over achterstallige huur. Herinneringen worden alleen verstuurd voor contracten waarop herinneringen ook zijn ingeschakeld."
+    "paymentRemindersHelp": "Expliciete toestemming voor herinneringsmails over achterstallige huur. Herinneringen worden alleen verstuurd voor contracten waarop herinneringen ook zijn ingeschakeld.",
+    "preferredLanguage": "Taal",
+    "preferredLanguageDefault": "Teamstandaard gebruiken",
+    "preferredLanguageHint": "E-mails en sms-berichten aan deze contactpersoon worden in deze taal geschreven."
   },
   "addresses": {
     "title": "Adressen",

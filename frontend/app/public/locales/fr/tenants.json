@@ -206,7 +206,10 @@
       "invalidInvoiceEmail": "L'email de facturation doit être valide"
     },
     "paymentReminders": "Envoyer des rappels de paiement à ce contact",
-    "paymentRemindersHelp": "Accord explicite pour recevoir des e-mails de rappel de loyer impayé. Les rappels ne sont envoyés que pour les contrats où ils sont aussi activés."
+    "paymentRemindersHelp": "Accord explicite pour recevoir des e-mails de rappel de loyer impayé. Les rappels ne sont envoyés que pour les contrats où ils sont aussi activés.",
+    "preferredLanguage": "Langue",
+    "preferredLanguageDefault": "Utiliser la langue par défaut de l’équipe",
+    "preferredLanguageHint": "Les e-mails et SMS adressés à ce contact sont rédigés dans cette langue."
   },
   "addresses": {
     "title": "Adresses",

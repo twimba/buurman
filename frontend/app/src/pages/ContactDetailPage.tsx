@@ -66,6 +66,7 @@ import {
   CheckCircle2,
   Shield,
   BellRing,
+  Languages,
 } from 'lucide-react';
 import {
   exportContactBooklet,
@@ -765,6 +766,21 @@ export const ContactDetailPage = () => {
                       </p>
                     </div>
                   </div>
+                  {contact.preferredLanguage && (
+                    <div className="flex items-center gap-3">
+                      <Languages className="h-5 w-5 text-text-muted" />
+                      <div>
+                        <p className="text-sm text-text-secondary">
+                          {t('form.preferredLanguage')}
+                        </p>
+                        <p className="font-medium text-text-primary">
+                          {new Intl.DisplayNames([contact.preferredLanguage], {
+                            type: 'language',
+                          }).of(contact.preferredLanguage) ?? contact.preferredLanguage}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   {contact.phone && (
                     <div className="flex items-center gap-3">
                       <Phone className="h-5 w-5 text-text-muted" />

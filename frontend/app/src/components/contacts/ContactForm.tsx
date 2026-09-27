@@ -15,6 +15,8 @@ import {
   DuplicateContactWarning,
 } from '@/components/contacts/DuplicateContactWarning';
 import { useTranslation } from 'react-i18next';
+import { SUPPORTED_LANGUAGES } from '@/config/languages';
+import type { LanguageCode } from '@/generated/models';
 
 interface ContactFormProps {
   contact?: ContactResponse;
@@ -85,6 +87,7 @@ export const ContactForm = ({
     invoiceEmail: contact?.invoiceEmail ?? '',
     notes: contact?.notes ?? '',
     paymentRemindersEnabled: contact?.paymentRemindersEnabled ?? false,
+    preferredLanguage: contact?.preferredLanguage,
   }));
   const [contactIdentifier, setContactIdentifier] = useState(
     contact?.identifier
@@ -112,6 +115,7 @@ export const ContactForm = ({
         invoiceEmail: contact.invoiceEmail ?? '',
         notes: contact.notes ?? '',
         paymentRemindersEnabled: contact.paymentRemindersEnabled ?? false,
+        preferredLanguage: contact.preferredLanguage,
       });
       /* eslint-enable react-hooks/set-state-in-effect */
     }
@@ -453,6 +457,40 @@ export const ContactForm = ({
                 </span>
               </span>
             </label>
+
+            <div className="lg:col-span-2">
+              <label
+                htmlFor="preferredLanguage"
+                className="block text-sm font-medium text-text-secondary mb-1"
+              >
+                {t('form.preferredLanguage')}
+              </label>
+              <select
+                id="preferredLanguage"
+                value={formData.preferredLanguage ?? ''}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    // The options are exactly SUPPORTED_LANGUAGES, so a non-empty value is a
+                    // LanguageCode. The empty option means "use the team default", which is
+                    // undefined rather than "" — the enum has no empty member.
+                    preferredLanguage: e.target.value
+                      ? (e.target.value as LanguageCode)
+                      : undefined,
+                  }))
+                }
+                className="w-full rounded-md border border-border-default bg-surface-card px-3 py-2 text-sm focus-ring"
+              >
+                <option value="">{t('form.preferredLanguageDefault')}</option>
+                {SUPPORTED_LANGUAGES.map((language) => (
+                  <option key={language} value={language}>
+                    {new Intl.DisplayNames([language], { type: 'language' }).of(language) ??
+                      language}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-text-secondary">{t('form.preferredLanguageHint')}</p>
+            </div>
 
             {isCompanyLike && (
               <>

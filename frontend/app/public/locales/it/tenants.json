@@ -206,7 +206,10 @@
       "invalidInvoiceEmail": "L'email di fatturazione deve essere valida"
     },
     "paymentReminders": "Invia promemoria di pagamento a questo contatto",
-    "paymentRemindersHelp": "Consenso esplicito a ricevere e-mail di promemoria per affitti scaduti. I promemoria vengono inviati solo per i contratti in cui sono anch’essi attivati."
+    "paymentRemindersHelp": "Consenso esplicito a ricevere e-mail di promemoria per affitti scaduti. I promemoria vengono inviati solo per i contratti in cui sono anch’essi attivati.",
+    "preferredLanguage": "Lingua",
+    "preferredLanguageDefault": "Usa il valore predefinito del team",
+    "preferredLanguageHint": "Le email e gli SMS inviati a questo contatto sono scritti in questa lingua."
   },
   "addresses": {
     "title": "Indirizzi",
