@@ -42,6 +42,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
+import { describePropertyOccupancy } from '@/utils/propertyOccupancy';
 import { useTeam } from '@/context/TeamContext';
 import {
   exportPropertyBooklet,
@@ -53,9 +54,6 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   Edit,
   Trash2,
-  Bed,
-  Bath,
-  Ruler,
   MapPin,
   History,
   Image,
@@ -68,29 +66,6 @@ import {
   Calculator,
   X,
 } from 'lucide-react';
-
-const statusColors: Record<string, string> = {
-  VACANT: 'bg-success-bg text-success-text',
-  OCCUPIED: 'bg-info-bg text-info-text',
-  MAINTENANCE: 'bg-warning-bg text-warning-text',
-  UNAVAILABLE: 'bg-surface-inset text-text-primary',
-  UNDER_RENOVATION: 'bg-warning-bg text-warning-text',
-  FALLOW: 'bg-surface-inset text-text-primary',
-  LISTED: 'bg-info-bg text-info-text',
-  SELF_OCCUPIED: 'bg-info-bg text-info-text',
-};
-
-const formatEnumValue = (value: string | null): string => {
-  if (!value) {
-    return '';
-  }
-  return value
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .replace(/\bAc\b/g, 'AC')
-    .replace(/\bCo\b/g, 'CO')
-    .replace(/\bDsl\b/g, 'DSL');
-};
 
 export const PropertyDetailPage = () => {
   const { t } = useTranslation(['properties', 'common']);
@@ -109,7 +84,7 @@ export const PropertyDetailPage = () => {
     });
   };
   const { id = '' } = useParams<{ id: string }>();
-  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
+  const { typeLabel, categoryLabel } = usePropertyLabels();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
@@ -285,6 +260,14 @@ export const PropertyDetailPage = () => {
   // All rich text fields are sanitized with DOMPurify before rendering
   const sanitize = DOMPurify.sanitize;
 
+  // A property can hold several independently-let units (BUUR-106), so there is no single
+  // property-level status anymore -- derive a coarse one from unit counts instead.
+  const occupancy = describePropertyOccupancy(
+    t,
+    property.unitCount,
+    property.occupiedUnitCount
+  );
+
   return (
     <div className="min-h-full bg-background">
       <div className="px-4 py-8">
@@ -296,9 +279,9 @@ export const PropertyDetailPage = () => {
           backTo="/properties"
           badge={
             <span
-              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status] ?? 'bg-surface-inset text-text-primary'}`}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium ${occupancy.colorClass}`}
             >
-              {statusLabel(property.status)}
+              {occupancy.label}
             </span>
           }
           actions={
@@ -510,21 +493,10 @@ export const PropertyDetailPage = () => {
               <div className="flex items-center gap-4 text-sm pb-2 border-b border-border-subtle">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                      {
-                        VACANT: 'bg-success-text',
-                        OCCUPIED: 'bg-info-text',
-                        MAINTENANCE: 'bg-warning-text',
-                        UNAVAILABLE: 'bg-text-disabled',
-                        UNDER_RENOVATION: 'bg-warning-text',
-                        FALLOW: 'bg-text-disabled',
-                        LISTED: 'bg-info-text',
-                        SELF_OCCUPIED: 'bg-info-text',
-                      }[property.status] ?? 'bg-text-disabled'
-                    }`}
+                    className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${occupancy.dotColorClass}`}
                   />
                   <span className="font-semibold text-text-primary">
-                    {statusLabel(property.status)}
+                    {occupancy.label}
                   </span>
                 </div>
                 <span className="text-text-disabled">{'\u00b7'}</span>
@@ -544,49 +516,6 @@ export const PropertyDetailPage = () => {
 
               {/* Specifications Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {property.residentialDetails?.bedrooms != null && (
-                  <div>
-                    <div className="flex items-center gap-2 text-text-secondary mb-1">
-                      <Bed className="h-5 w-5" />
-                      <span className="text-sm font-medium">
-                        {t('detail.specs.bedrooms')}
-                      </span>
-                    </div>
-                    <p className="text-2xl font-semibold text-text-primary">
-                      {property.residentialDetails.bedrooms}
-                    </p>
-                  </div>
-                )}
-
-                {property.residentialDetails?.bathrooms != null && (
-                  <div>
-                    <div className="flex items-center gap-2 text-text-secondary mb-1">
-                      <Bath className="h-5 w-5" />
-                      <span className="text-sm font-medium">
-                        {t('detail.specs.bathrooms')}
-                      </span>
-                    </div>
-                    <p className="text-2xl font-semibold text-text-primary">
-                      {property.residentialDetails.bathrooms}
-                    </p>
-                  </div>
-                )}
-
-                {property.areaValue != null && (
-                  <div>
-                    <div className="flex items-center gap-2 text-text-secondary mb-1">
-                      <Ruler className="h-5 w-5" />
-                      <span className="text-sm font-medium">
-                        {t('detail.specs.area')}
-                      </span>
-                    </div>
-                    <p className="text-2xl font-semibold text-text-primary">
-                      {property.areaValue}
-                      {property.areaUnit === 'sqft' ? 'ft\u00b2' : 'm\u00b2'}
-                    </p>
-                  </div>
-                )}
-
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <PropertyTypeIcon type={property.propertyType} size={20} />
@@ -666,8 +595,6 @@ export const PropertyDetailPage = () => {
               property.foundationType ||
               property.roofType ||
               property.wallConstruction ||
-              property.flooringType ||
-              property.windowType ||
               property.numberOfFloors != null ||
               property.structuralNotes) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
@@ -735,26 +662,6 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.flooringType && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.construction.flooring')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('flooringType', property.flooringType)}
-                      </div>
-                    </div>
-                  )}
-                  {property.windowType && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.construction.windows')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('windowType', property.windowType)}
-                      </div>
-                    </div>
-                  )}
                   {property.numberOfFloors != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
@@ -775,106 +682,6 @@ export const PropertyDetailPage = () => {
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
                         __html: sanitize(property.structuralNotes),
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Energy & Climate */}
-            {(property.energyEfficiencyRating ||
-              property.energyCertificateExpiryDate ||
-              property.heatingType ||
-              property.coolingType ||
-              property.hotWaterSystem ||
-              property.insulationNotes) && (
-              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  {t('detail.energy.title')}
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {property.energyEfficiencyRating && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.energyRating')}
-                      </div>
-                      <div className="mt-1">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-white ${
-                            (
-                              {
-                                'A++++': 'bg-emerald-950',
-                                'A+++': 'bg-emerald-900',
-                                'A++': 'bg-green-900',
-                                'A+': 'bg-green-700',
-                                A: 'bg-green-500',
-                                B: 'bg-lime-500',
-                                C: 'bg-yellow-500',
-                                D: 'bg-orange-500',
-                                E: 'bg-orange-600',
-                                F: 'bg-red-500',
-                                G: 'bg-red-800',
-                              } as Record<string, string>
-                            )[property.energyEfficiencyRating] ||
-                            'bg-neutral-500'
-                          }`}
-                        >
-                          {property.energyEfficiencyRating}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  {property.energyCertificateExpiryDate && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.certificateExpiry')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatDate(property.energyCertificateExpiryDate)}
-                      </div>
-                    </div>
-                  )}
-                  {property.heatingType && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.heating')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('heatingType', property.heatingType)}
-                      </div>
-                    </div>
-                  )}
-                  {property.coolingType && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.cooling')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('coolingType', property.coolingType)}
-                      </div>
-                    </div>
-                  )}
-                  {property.hotWaterSystem && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.hotWater')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('hotWaterSystem', property.hotWaterSystem)}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {property.insulationNotes && (
-                  <div className="mt-4">
-                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      {t('detail.energy.insulationNotes')}
-                    </div>
-                    <div
-                      className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: sanitize(property.insulationNotes),
                       }}
                     />
                   </div>
@@ -1044,57 +851,8 @@ export const PropertyDetailPage = () => {
               </div>
             )}
 
-            {/* Amenities */}
-            {property.amenities && property.amenities.length > 0 && (
-              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  {t('detail.amenities.title')}
-                </h3>
-                <div className="space-y-4">
-                  {Object.entries(
-                    property.amenities.reduce<
-                      Record<string, typeof property.amenities>
-                    >((groups, amenity) => {
-                      const cat = amenity.amenityCategory;
-                      if (!groups[cat]) {
-                        groups[cat] = [];
-                      }
-                      groups[cat].push(amenity);
-                      return groups;
-                    }, {})
-                  ).map(([category, items]) => (
-                    <div key={category}>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
-                        {t(`enums.amenities.categories.${category}`, {
-                          defaultValue: formatEnumValue(category),
-                        })}
-                      </div>
-                      <div className="flex flex-wrap gap-x-6 gap-y-2">
-                        {(items ?? []).map((amenity) => (
-                          <span
-                            key={amenity.amenityIdentifier}
-                            className="inline-flex items-center gap-1.5 text-sm text-text-primary"
-                          >
-                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                              {'\u2713'}
-                            </span>
-                            {t(`enums.amenities.items.${amenity.amenityName}`, {
-                              defaultValue: amenity.amenityName,
-                            })}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Safety & Security */}
-            {(property.hasSmokeDetectors ||
-              property.hasCoDetectors ||
-              property.hasFireExtinguisher ||
-              property.hasSprinklerSystem ||
+            {(property.hasSprinklerSystem ||
               property.hasAlarmSystem ||
               property.hasSecurityCameras ||
               property.hasSecureEntry ||
@@ -1104,30 +862,6 @@ export const PropertyDetailPage = () => {
                   {t('detail.safety.title')}
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
-                  {property.hasSmokeDetectors && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                        {'\u2713'}
-                      </span>
-                      {t('detail.safety.smokeDetectors')}
-                    </span>
-                  )}
-                  {property.hasCoDetectors && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                        {'\u2713'}
-                      </span>
-                      {t('detail.safety.coDetectors')}
-                    </span>
-                  )}
-                  {property.hasFireExtinguisher && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                        {'\u2713'}
-                      </span>
-                      {t('detail.safety.fireExtinguisher')}
-                    </span>
-                  )}
                   {property.hasSprinklerSystem && (
                     <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
@@ -1180,9 +914,7 @@ export const PropertyDetailPage = () => {
             {/* Accessibility */}
             {(property.isWheelchairAccessible ||
               property.hasElevator ||
-              property.hasStepFreeEntrance ||
-              property.hasAdaptedBathroom ||
-              property.accessibilityNotes) && (
+              property.hasStepFreeEntrance) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   {t('detail.accessibility.title')}
@@ -1212,28 +944,7 @@ export const PropertyDetailPage = () => {
                       {t('detail.accessibility.stepFreeEntrance')}
                     </span>
                   )}
-                  {property.hasAdaptedBathroom && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                        {'\u2713'}
-                      </span>
-                      {t('detail.accessibility.adaptedBathroom')}
-                    </span>
-                  )}
                 </div>
-                {property.accessibilityNotes && (
-                  <div className="mt-4">
-                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      {t('detail.accessibility.accessibilityNotes')}
-                    </div>
-                    <div
-                      className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: sanitize(property.accessibilityNotes),
-                      }}
-                    />
-                  </div>
-                )}
               </div>
             )}
 

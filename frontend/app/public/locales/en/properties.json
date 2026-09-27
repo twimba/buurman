@@ -1111,5 +1111,11 @@
   "lifecycle": {
     "openContract": "Open contract",
     "clickToEdit": "Click to edit"
+  },
+  "unitOccupancy": {
+    "noUnits": "No units",
+    "allVacant": "Vacant",
+    "allOccupied": "Occupied",
+    "partiallyOccupied": "{{occupied}}/{{total}} occupied"
   }
 }
