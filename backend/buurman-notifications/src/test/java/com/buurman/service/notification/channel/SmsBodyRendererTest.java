@@ -77,6 +77,33 @@ class SmsBodyRendererTest {
   }
 
   @Test
+  @DisplayName("a value containing braces is not mistaken for an unfilled placeholder")
+  void braceInAValueIsNotAPlaceholder() {
+    Map<String, Object> variables = paymentReminderVariables();
+    variables.put("propertyName", "Unit {A1}");
+
+    String body = renderer.render("payment-reminder", variables, Locale.ENGLISH);
+
+    assertThat(body).contains("Unit {A1}");
+    assertThat(body).isNotEqualTo("Buurman: You have a new notification.");
+  }
+
+  @Test
+  @DisplayName("truncates a value the body actually contains, not merely the longest one supplied")
+  void truncatesAValuePresentInTheBody() {
+    Map<String, Object> variables = paymentReminderVariables();
+    // Longer than propertyName but never interpolated into the SMS body.
+    variables.put("baseUrl", "https://app.buurman.io/" + "u".repeat(200));
+    variables.put("propertyName", "P".repeat(200));
+
+    String body = renderer.render("payment-reminder", variables, Locale.ENGLISH);
+
+    assertThat(SmsSegment.fitsOneSegment(body)).isTrue();
+    assertThat(body).as("the sentence must survive").endsWith(".");
+    assertThat(body).startsWith("Buurman: Payment of ");
+  }
+
+  @Test
   @DisplayName("always returns a body that fits one segment")
   void alwaysFitsOneSegment() {
     Map<String, Object> variables = paymentReminderVariables();

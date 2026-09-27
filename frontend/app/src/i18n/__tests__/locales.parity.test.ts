@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { SUPPORTED_LANGUAGES } from '../../config/languages';
+import { LanguageCode } from '../../generated/models';
 
 const LOCALES_DIR = path.resolve(import.meta.dirname, '../../../public/locales');
 const BASE_LANGUAGE = 'en';
@@ -59,6 +60,14 @@ const suffixesFor = (keys: string[], base: string): Set<string> =>
   );
 
 describe('locale bundles', () => {
+  // Spec S1: the backend's DocumentLanguages.ORDERED reaches the frontend through the OpenAPI
+  // LanguageCode enum, which Orval generates. Asserting against it is what actually stops the
+  // list drifting across stacks — comparing the locale directories to SUPPORTED_LANGUAGES alone
+  // would pass happily while the backend had gained a language the frontend never learned about.
+  it('matches the language enum generated from the backend contract', () => {
+    expect([...SUPPORTED_LANGUAGES].sort()).toEqual(Object.values(LanguageCode).sort());
+  });
+
   it('discovers the namespaces it is meant to check', () => {
     expect(namespaces.length).toBeGreaterThanOrEqual(10);
   });

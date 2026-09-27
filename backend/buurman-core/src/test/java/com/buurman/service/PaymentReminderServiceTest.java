@@ -88,6 +88,7 @@ class PaymentReminderServiceTest {
   @Mock private PaymentInstructionRepository paymentInstructionRepository;
   @Mock private TeamRepository teamRepository;
   @Mock private com.buurman.repository.TeamPreferencesRepository teamPreferencesRepository;
+  @Mock private com.buurman.repository.UserPreferencesRepository userPreferencesRepository;
   @Mock private UserRepository userRepository;
   @Mock private NotificationService notificationService;
   @Mock private AuditService auditService;
@@ -111,6 +112,11 @@ class PaymentReminderServiceTest {
 
   @BeforeEach
   void setUp() {
+    // A real resolver over the mocked repositories, so this exercises the actual resolution
+    // chain rather than a stub that could agree with a broken implementation.
+    com.buurman.service.notification.RecipientLocaleResolver recipientLocaleResolver =
+        new com.buurman.service.notification.RecipientLocaleResolver(
+            contactRepository, userPreferencesRepository, teamPreferencesRepository);
     service =
         new PaymentReminderService(
             paymentRepository,
@@ -119,6 +125,7 @@ class PaymentReminderServiceTest {
             contractRepository,
             propertyRepository,
             contactRepository,
+            recipientLocaleResolver,
             contractPartyService,
             cpiRepository,
             paymentInstructionRepository,
@@ -172,6 +179,36 @@ class PaymentReminderServiceTest {
     c.setEmail(email);
     c.setPaymentRemindersEnabled(true);
     return c;
+  }
+
+  @Test
+  @DisplayName("formats the money and the date in the recipient's own language, not the contract's")
+  void formatsVariablesInRecipientLanguage() {
+    stubHappyPath(payment(PaymentStatus.PENDING, TODAY.minusDays(10)), new BigDecimal("250.00"));
+    Contact portuguese = contact(Optional.of("jan@example.com"));
+    portuguese.setPreferredLanguage(Optional.of("pt"));
+    org.mockito.Mockito.lenient()
+        .when(contactRepository.findByIdAndTeamId(CONTACT_ID, TEAM_ID))
+        .thenReturn(Optional.of(portuguese));
+
+    service.sendReminder(PAYMENT_SID, new SendPaymentReminderRequest(Optional.empty()), principal);
+
+    ArgumentCaptor<SendNotificationRequest> captor =
+        ArgumentCaptor.forClass(SendNotificationRequest.class);
+    verify(notificationService).send(captor.capture());
+    java.util.Map<String, Object> variables = captor.getValue().templateVariables();
+
+    // The contract files documents in Dutch, but this tenant reads Portuguese. The body is
+    // rendered in Portuguese, so the pre-formatted values must be Portuguese too — otherwise the
+    // tenant gets a Portuguese email quoting a Dutch date.
+    String expectedDate =
+        TODAY
+            .minusDays(10)
+            .format(
+                java.time.format.DateTimeFormatter.ofLocalizedDate(
+                        java.time.format.FormatStyle.LONG)
+                    .withLocale(java.util.Locale.forLanguageTag("pt")));
+    assertThat(variables).containsEntry("dueDate", expectedDate);
   }
 
   private void stubHappyPath(Payment payment, BigDecimal received) {

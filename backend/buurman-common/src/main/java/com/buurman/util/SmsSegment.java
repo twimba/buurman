@@ -145,21 +145,36 @@ public final class SmsSegment {
     return 1;
   }
 
+  /**
+   * Trims {@code value} one grapheme at a time until the whole body fits.
+   *
+   * <p>Counted by trimming rather than by arithmetic on lengths: an extension-table character costs
+   * two septets but one char, so a budget computed from {@code String.length()} silently
+   * under-counts and lets the one-segment guarantee lapse.
+   */
   private static String shrinkValue(String body, String value) {
-    int overflow = unitsOf(body) - singleSegmentBudget(body);
-    int keep = value.length() - overflow - TRUNCATION_MARKER.length();
-    if (keep < 1) {
-      keep = 1;
+    String kept = value;
+    while (!kept.isEmpty()) {
+      String candidate = body.replace(value, kept + TRUNCATION_MARKER);
+      if (fitsOneSegment(candidate)) {
+        return candidate;
+      }
+      kept = cutAtGrapheme(kept, kept.length() - 1);
     }
-    return body.replace(value, cutAtGrapheme(value, keep) + TRUNCATION_MARKER);
+    return body.replace(value, TRUNCATION_MARKER);
   }
 
+  /** Last resort: trim the whole body until it fits, again one grapheme at a time. */
   private static String hardTruncate(String body) {
-    int budget = singleSegmentBudget(body) - TRUNCATION_MARKER.length();
-    if (budget < 1) {
-      budget = 1;
+    String kept = body;
+    while (!kept.isEmpty()) {
+      String candidate = kept + TRUNCATION_MARKER;
+      if (fitsOneSegment(candidate)) {
+        return candidate;
+      }
+      kept = cutAtGrapheme(kept, kept.length() - 1);
     }
-    return cutAtGrapheme(body, budget) + TRUNCATION_MARKER;
+    return TRUNCATION_MARKER;
   }
 
   /** Cuts to at most {@code maxChars} UTF-16 units without splitting a grapheme cluster. */
@@ -171,7 +186,9 @@ public final class SmsSegment {
     boundaries.setText(text);
     int end = boundaries.preceding(maxChars + 1);
     if (end == BreakIterator.DONE || end == 0) {
-      end = Math.min(maxChars, text.length());
+      // No boundary at or before maxChars: cutting at a raw offset could orphan a surrogate,
+      // so give back nothing rather than mojibake. The callers trim further and re-check.
+      return "";
     }
     return text.substring(0, end);
   }

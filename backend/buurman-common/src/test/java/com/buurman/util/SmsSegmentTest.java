@@ -160,6 +160,35 @@ class SmsSegmentTest {
     }
 
     @Test
+    @DisplayName("extension-table characters cannot spill the result into a second segment")
+    void extensionCharactersCannotSpillTheResult() {
+      // Each of ^ { } \\ [ ~ ] | costs TWO septets, so a budget counted in characters
+      // under-counts them and lets the "one segment" guarantee lapse.
+      String result = SmsSegment.fitToOneSegment("\u20ac".repeat(200), "");
+
+      assertThat(SmsSegment.fitsOneSegment(result))
+          .as(
+              "%d units, budget %d",
+              SmsSegment.unitsOf(result), SmsSegment.singleSegmentBudget(result))
+          .isTrue();
+    }
+
+    @Test
+    @DisplayName("an extension-heavy value is shrunk until the whole body fits")
+    void extensionHeavyValueIsShrunkUntilItFits() {
+      String property = "[" + "|".repeat(120) + "]";
+      String body = "Buurman: Payment for " + property + " is overdue.";
+
+      String result = SmsSegment.fitToOneSegment(body, property);
+
+      assertThat(SmsSegment.fitsOneSegment(result))
+          .as(
+              "%d units, budget %d",
+              SmsSegment.unitsOf(result), SmsSegment.singleSegmentBudget(result))
+          .isTrue();
+    }
+
+    @Test
     @DisplayName("a body that already fits is returned folded and otherwise untouched")
     void shortBodyUntouched() {
       assertThat(SmsSegment.fitToOneSegment("Buurman: all good.", ""))
