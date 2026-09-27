@@ -498,7 +498,7 @@ export const PropertyForm = ({
 
               <div>
                 <label className={labelCls}>
-                  {t('form.countryCode')}{' '}
+                  {t('form.country')}{' '}
                   <span className="text-error-text">*</span>
                 </label>
                 <CountrySelector

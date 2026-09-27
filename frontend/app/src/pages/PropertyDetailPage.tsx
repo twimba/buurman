@@ -686,7 +686,7 @@ export const PropertyDetailPage = () => {
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
                     <span className="text-sm font-medium">
-                      {t('detail.specs.countryCode')}
+                      {t('detail.specs.country')}
                     </span>
                   </div>
                   <p className="text-lg text-text-primary">
