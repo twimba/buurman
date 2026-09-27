@@ -762,6 +762,13 @@
     },
     "pagination": {
       "showing": "Showing {{from}} to {{to}} of {{total}} expenses"
+    },
+    "allocation": {
+      "settingsToggle": "Cost allocation settings",
+      "buildingBadge": "Whole building",
+      "viewSplit": "View split",
+      "hideSplit": "Hide split",
+      "failedToLoad": "Failed to load the cost split"
     }
   },
   "audit": {
@@ -1116,6 +1123,7 @@
     "noUnits": "No units",
     "allVacant": "Vacant",
     "allOccupied": "Occupied",
-    "partiallyOccupied": "{{occupied}}/{{total}} occupied"
+    "allUnavailable": "Unavailable",
+    "mixed": "{{occupied}} let · {{vacant}} vacant · {{unavailable}} unavailable"
   }
 }
