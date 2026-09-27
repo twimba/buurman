@@ -49,6 +49,10 @@
     .yr .cell .v { font-size:21px; font-weight:800; margin-top:4px; }
     .yr .cell .v.inc { color:var(--c-success); } .yr .cell .v.exp { color:var(--c-error); } .yr .cell .v.net { color:var(--c-primary-600); }
     .submeta { font-size:11px; color:var(--muted); margin:2px 0 14px; letter-spacing:.4px; }
+    .unitcard { border:1px solid var(--hairline); border-radius:var(--radius-sm); padding:12px 16px;
+                margin-bottom:10px; page-break-inside:avoid; }
+    .unitcard .uc-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .unitcard .uc-num { font-size:13px; font-weight:700; color:var(--c-n-700); }
   </style>
 </head>
 <body>
@@ -130,6 +134,64 @@
           <div class="f" th:each="f : ${parkingFields}"><div class="l" th:text="${f.l}">Label</div><div class="v" th:text="${f.v}">—</div></div>
         </div>
       </th:block>
+    </div>
+    <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
+  </div>
+
+  <!-- UNITS (only when the property has more than one) -->
+  <div class="page" th:if="${hasUnitsSection}">
+    <div class="page-band"><span class="t" th:text="#{page.units}">Units</span><span class="k num" th:text="${identifier}">P-0001</span></div>
+    <div class="pad">
+      <div class="submeta" th:text="#{units.count(${unitCount})}">Units · 12</div>
+      <table class="tbl">
+        <thead><tr>
+          <th th:text="#{col.unit}">Unit</th>
+          <th th:text="#{col.type}">Type</th>
+          <th th:text="#{col.status}">Status</th>
+          <th class="r" th:text="#{col.area}">Area</th>
+          <th th:text="#{col.tenant}">Tenant</th>
+          <th class="r" th:text="#{col.rent}">Rent</th>
+        </tr></thead>
+        <tbody>
+          <tr th:each="u : ${unitsTable}">
+            <td class="num" th:text="${u.number}">1</td>
+            <td th:text="${u.typeLabel}">Apartment</td>
+            <td><span class="badge" style="font-size:9px;padding:2px 8px;" th:classappend="'s-' + ${#strings.toLowerCase(u.statusCode)}" th:text="${u.statusLabel}">Occupied</span></td>
+            <td class="r num" th:text="${u.area}">—</td>
+            <td th:text="${u.tenant}">—</td>
+            <td class="r num" th:text="${u.rent}">—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sec" th:text="#{section.unit.details}">Unit Details</div>
+      <div class="unitcard" th:each="d : ${unitDetails}">
+        <div class="uc-head">
+          <span class="uc-num" th:text="${d.name != null ? d.number + ' · ' + d.name : d.number}">1</span>
+          <span class="badge" style="font-size:9px;padding:2px 8px;" th:classappend="'s-' + ${#strings.toLowerCase(d.statusCode)}" th:text="${d.statusLabel}">Occupied</span>
+        </div>
+        <div class="grid" th:if="${!d.fields.isEmpty()}">
+          <div class="f" th:each="f : ${d.fields}"><div class="l" th:text="${f.l}">Label</div><div class="v" th:text="${f.v}">—</div></div>
+        </div>
+        <div class="prose" th:if="${d.insulationNotes}" th:text="${d.insulationNotes}">…</div>
+        <div class="checkbox" th:if="${!d.safetyChecks.isEmpty()}">
+          <div class="chk" th:each="c : ${d.safetyChecks}">
+            <span class="mk" th:classappend="${c.ok} ? 'y' : 'n'" th:text="${c.ok} ? '✓' : '✕'">✓</span>
+            <span th:text="${c.label}">Smoke detectors</span>
+          </div>
+        </div>
+        <div class="checkbox" th:if="${!d.accessibilityChecks.isEmpty()}">
+          <div class="chk" th:each="c : ${d.accessibilityChecks}">
+            <span class="mk" th:classappend="${c.ok} ? 'y' : 'n'" th:text="${c.ok} ? '✓' : '✕'">✓</span>
+            <span th:text="${c.label}">Adapted bathroom</span>
+          </div>
+        </div>
+        <div class="prose" th:if="${d.accessibilityNotes}" th:text="${d.accessibilityNotes}">…</div>
+        <div class="chips" th:if="${!d.amenities.isEmpty()}">
+          <span class="chip" th:each="a : ${d.amenities}" th:text="${a}">Amenity</span>
+        </div>
+      </div>
+      <div class="submeta" th:if="${remainingUnitCount > 0}" th:text="#{units.more(${remainingUnitCount})}">and 30 more units</div>
     </div>
     <div class="footer-note"><span th:text="'buurman · ' + ${identifier}">buurman</span><span th:text="${generatedDate} + ' · ' + #{booklet.confidential}">Generated</span></div>
   </div>

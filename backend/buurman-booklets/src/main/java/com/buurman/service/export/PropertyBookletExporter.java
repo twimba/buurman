@@ -48,18 +48,18 @@ import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
 import com.buurman.domain.Property.PropertyCategory;
 import com.buurman.domain.PropertyAgriculturalDetails;
-import com.buurman.domain.PropertyAmenity;
 import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.PropertyOutdoorArea;
-import com.buurman.domain.PropertyResidentialDetails;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Unit;
+import com.buurman.domain.UnitResidentialDetails;
+import com.buurman.domain.UnitStatus;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
-import com.buurman.repository.AmenityRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
@@ -71,6 +71,9 @@ import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamPreferencesRepository;
+import com.buurman.repository.UnitAmenityRepository;
+import com.buurman.repository.UnitRepository;
+import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.service.FeatureFlagService;
@@ -90,6 +93,12 @@ import com.buurman.util.FeatureFlags;
 @Component
 public class PropertyBookletExporter {
 
+  /**
+   * Verbose per-unit detail blocks are capped at 20 so a 50-unit building still renders within
+   * Gotenberg's budget; the summary table above them still lists every unit.
+   */
+  private static final int MAX_DETAILED_UNITS = 20;
+
   private final PropertyRepository propertyRepository;
   private final PropertyCommercialDetailsRepository commercialDetailsRepository;
   private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
@@ -99,7 +108,9 @@ public class PropertyBookletExporter {
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
   private final PropertyOutdoorAreaRepository propertyOutdoorAreaRepository;
-  private final AmenityRepository amenityRepository;
+  private final UnitRepository unitRepository;
+  private final UnitResidentialDetailsRepository unitResidentialDetailsRepository;
+  private final UnitAmenityRepository unitAmenityRepository;
   private final PhotoRepository photoRepository;
   private final ContractPartyService contractPartyService;
   private final S3StorageService s3StorageService;
@@ -125,7 +136,9 @@ public class PropertyBookletExporter {
       PaymentRepository paymentRepository,
       ExpenseRepository expenseRepository,
       PropertyOutdoorAreaRepository propertyOutdoorAreaRepository,
-      AmenityRepository amenityRepository,
+      UnitRepository unitRepository,
+      UnitResidentialDetailsRepository unitResidentialDetailsRepository,
+      UnitAmenityRepository unitAmenityRepository,
       PhotoRepository photoRepository,
       ContractPartyService contractPartyService,
       S3StorageService s3StorageService,
@@ -149,7 +162,9 @@ public class PropertyBookletExporter {
     this.paymentRepository = paymentRepository;
     this.expenseRepository = expenseRepository;
     this.propertyOutdoorAreaRepository = propertyOutdoorAreaRepository;
-    this.amenityRepository = amenityRepository;
+    this.unitRepository = unitRepository;
+    this.unitResidentialDetailsRepository = unitResidentialDetailsRepository;
+    this.unitAmenityRepository = unitAmenityRepository;
     this.photoRepository = photoRepository;
     this.contractPartyService = contractPartyService;
     this.s3StorageService = s3StorageService;
@@ -174,8 +189,14 @@ public class PropertyBookletExporter {
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     UUID propertyId = property.getId();
 
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(propertyId, teamId);
+    // The overwhelming majority of properties have exactly one unit (the implicit unit backfilled
+    // for every pre-existing property); that case reads every dwelling field directly off it,
+    // exactly as it did before floor area/energy/residential attributes moved off Property in V068.
+    Unit primaryUnit = units.size() == 1 ? units.get(0) : null;
+
     PropertyCategory category = property.getPropertyCategory();
-    PropertyResidentialDetails residentialDetails = null;
+    UnitResidentialDetails residentialDetails = null;
     PropertyCommercialDetails commercialDetails = null;
     PropertyIndustrialDetails industrialDetails = null;
     PropertyAgriculturalDetails agriculturalDetails = null;
@@ -183,8 +204,12 @@ public class PropertyBookletExporter {
     if (category != null) {
       switch (category) {
         case RESIDENTIAL -> {
-          // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
-          // details move to unit_residential_details at unit level. Always null for now.
+          if (primaryUnit != null) {
+            residentialDetails =
+                unitResidentialDetailsRepository
+                    .findByUnitIdAndTeamId(primaryUnit.getId(), teamId)
+                    .orElse(null);
+          }
         }
         case COMMERCIAL ->
             commercialDetails =
@@ -218,10 +243,15 @@ public class PropertyBookletExporter {
     List<Expense> expenses = expenseRepository.findByPropertyId(propertyId, teamId);
     List<PropertyOutdoorArea> outdoorAreas =
         propertyOutdoorAreaRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-    // TODO(BUUR-106 Task 9): property_amenities was dropped in V068; amenity links move to
-    // unit_amenities at unit level. Always empty until the unit-level section is restored.
-    List<PropertyAmenity> propertyAmenities = List.of();
-    List<Amenity> allAmenities = amenityRepository.findAll();
+    // property_amenities was dropped in V068; amenity links now live on unit_amenities. The
+    // property-wide Features page shows the single unit's amenities directly (single-unit case);
+    // a genuinely multi-unit property has no single amenity set to show here without misleadingly
+    // implying every unit has every amenity, so each unit's own amenities are listed in its detail
+    // block in the Units section instead (see #buildUnitDetail).
+    List<Amenity> unitAmenities =
+        primaryUnit != null
+            ? unitAmenityRepository.findAmenitiesByUnitIdAndTeamId(primaryUnit.getId(), teamId)
+            : List.of();
     List<Photo> photos = photoRepository.findByEntityAndTeamId("PROPERTY", propertyId, teamId);
 
     Map<Integer, FinancialYearSummary> yearSummaries = calculateYearSummaries(payments, expenses);
@@ -241,6 +271,8 @@ public class PropertyBookletExporter {
         buildModel(
             property,
             category,
+            primaryUnit,
+            units,
             residentialDetails,
             commercialDetails,
             industrialDetails,
@@ -249,8 +281,7 @@ public class PropertyBookletExporter {
             yearSummaries,
             teamId,
             outdoorAreas,
-            propertyAmenities,
-            allAmenities,
+            unitAmenities,
             photos,
             dashboard,
             teamCurrency,
@@ -266,7 +297,9 @@ public class PropertyBookletExporter {
   private Map<String, Object> buildModel(
       Property property,
       @Nullable PropertyCategory category,
-      @Nullable PropertyResidentialDetails residentialDetails,
+      @Nullable Unit primaryUnit,
+      List<Unit> units,
+      @Nullable UnitResidentialDetails residentialDetails,
       @Nullable PropertyCommercialDetails commercialDetails,
       @Nullable PropertyIndustrialDetails industrialDetails,
       @Nullable PropertyAgriculturalDetails agriculturalDetails,
@@ -274,14 +307,13 @@ public class PropertyBookletExporter {
       Map<Integer, FinancialYearSummary> yearSummaries,
       UUID teamId,
       List<PropertyOutdoorArea> outdoorAreas,
-      List<PropertyAmenity> propertyAmenities,
-      List<Amenity> allAmenities,
+      List<Amenity> unitAmenities,
       List<Photo> photos,
       @Nullable PropertyDashboardResponse dashboard,
       String teamCurrency,
       Locale locale) {
     String identifier = property.getIdentifier().map(Sid::value).orElse("—");
-    String area = buildAreaString(property);
+    String area = buildAreaString(units);
 
     Map<String, Object> v = new HashMap<>();
     v.put("lang", locale.getLanguage());
@@ -290,10 +322,12 @@ public class PropertyBookletExporter {
     v.put("street", property.getStreet());
     v.put("location", buildLocationString(property));
     v.put("propertyTypeLabel", enumLabels.label(property.getPropertyType(), locale));
-    // TODO(BUUR-106 Task 12): status moved from properties to units in V068; derive from the
-    // property's unit(s) once unit-level status filtering lands. Not faked as a real status here.
-    v.put("statusCode", "");
-    v.put("statusLabel", "—");
+    // Status moved from properties to units in V068. A single unit (the common case) reads its
+    // status directly, exactly as the property used to; several units get an occupancy fraction
+    // ("3/5 Occupied") since there is no longer one status value to show.
+    UnitStatusSummary statusSummary = summarizeStatus(units, locale);
+    v.put("statusCode", statusSummary.code());
+    v.put("statusLabel", statusSummary.label());
 
     v.put(
         "coverRows",
@@ -313,7 +347,7 @@ public class PropertyBookletExporter {
         details,
         msg("field.property.type", locale),
         enumLabels.label(property.getPropertyType(), locale));
-    // TODO(BUUR-106 Task 12): status moved from properties to units; omitted until derivable.
+    addAlways(details, msg("field.status", locale), statusSummary.label());
     addAlways(details, msg("field.total.area", locale), area);
     addAlways(
         details,
@@ -329,7 +363,7 @@ public class PropertyBookletExporter {
         property.getYearLastRenovated().map(Object::toString).orElse(null));
     v.put("detailsFields", details);
 
-    v.put("constructionFields", buildConstructionFields(property, locale));
+    v.put("constructionFields", buildConstructionFields(property, primaryUnit, locale));
 
     CategorySection cat =
         buildCategorySection(
@@ -345,11 +379,18 @@ public class PropertyBookletExporter {
     v.put("structuralNotes", property.getStructuralNotes().filter(s -> !s.isBlank()).orElse(null));
 
     // ── Building specifications (skipped for agricultural) ──
-    // TODO(BUUR-106 Task 12): energy rating/insulation notes moved from properties to units in
-    // V068; null until derivable from the property's unit(s).
-    String energyRating = null;
-    List<Map<String, Object>> energyFields = buildEnergyFields(property, locale);
-    String insulationNotes = null;
+    // Energy rating/insulation notes/heating specs moved from properties to units in V068. A
+    // letter grade can't be summed or averaged, so the rating shows for one unit directly and, for
+    // several units, only when every one of them agrees; insulation notes and the heating/cooling/
+    // hot-water/certificate-expiry fields are free text or unit-specific and have no meaningful
+    // aggregate, so those only show for the single-unit case (a multi-unit property gets them in
+    // its per-unit detail blocks in the Units section instead).
+    String energyRating = aggregateEnergyRating(units);
+    List<Map<String, Object>> energyFields = buildEnergyFields(primaryUnit, locale);
+    String insulationNotes =
+        primaryUnit != null
+            ? primaryUnit.getInsulationNotes().filter(s -> !s.isBlank()).orElse(null)
+            : null;
     List<Map<String, Object>> utilitiesFields = buildUtilitiesFields(property, locale);
     List<Map<String, Object>> parkingFields = buildParkingFields(property, locale);
     boolean hasBuildingSpecs =
@@ -368,14 +409,17 @@ public class PropertyBookletExporter {
     v.put("parkingFields", parkingFields);
 
     // ── Features & outdoor ──
-    List<Map<String, Object>> amenityGroups = buildAmenityGroups(propertyAmenities, allAmenities);
+    List<Map<String, Object>> amenityGroups = buildAmenityGroups(unitAmenities);
     List<Map<String, Object>> outdoor = buildOutdoorAreas(outdoorAreas);
     v.put("amenityGroups", amenityGroups);
     v.put("outdoorAreas", outdoor);
     v.put("hasFeatures", !amenityGroups.isEmpty() || !outdoor.isEmpty());
 
     // ── Safety & accessibility (skipped for agricultural; accessibility skipped for industrial) ──
-    buildSafetySection(v, property, category, locale);
+    buildSafetySection(v, property, primaryUnit, category, locale);
+
+    // ── Units (only when the property has more than one) ──
+    buildUnitsSection(v, units, teamId, locale);
 
     // ── Photo gallery ──
     v.put("photos", buildPhotos(photos));
@@ -409,7 +453,7 @@ public class PropertyBookletExporter {
   private List<Map<String, Object>> buildCoverRows(
       Property property,
       @Nullable PropertyCategory category,
-      @Nullable PropertyResidentialDetails residential,
+      @Nullable UnitResidentialDetails residential,
       @Nullable PropertyCommercialDetails commercial,
       @Nullable PropertyIndustrialDetails industrial,
       @Nullable PropertyAgriculturalDetails agricultural,
@@ -509,19 +553,26 @@ public class PropertyBookletExporter {
 
   // ── Property overview ────────────────────────────────────────────
 
-  private List<Map<String, Object>> buildConstructionFields(Property property, Locale locale) {
+  private List<Map<String, Object>> buildConstructionFields(
+      Property property, @Nullable Unit primaryUnit, Locale locale) {
     List<Map<String, Object>> f = new ArrayList<>();
     addField(f, msg("field.construction.type", locale), enumStr(property.getConstructionType()));
     addField(f, msg("field.foundation", locale), enumStr(property.getFoundationType()));
     addField(f, msg("field.roof.type", locale), enumStr(property.getRoofType()));
     addField(f, msg("field.wall.construction", locale), enumStr(property.getWallConstruction()));
-    // TODO(BUUR-106 Task 12): window type/flooring moved from properties to units in V068.
+    // Window type/flooring moved from properties to units in V068; a multi-unit property has no
+    // single value for these, so they only appear here for the single-unit case (and per-unit in
+    // the Units section's detail blocks otherwise).
+    if (primaryUnit != null) {
+      addField(f, msg("field.window.type", locale), enumStr(primaryUnit.getWindowType()));
+      addField(f, msg("field.flooring", locale), enumStr(primaryUnit.getFlooringType()));
+    }
     return f;
   }
 
   private CategorySection buildCategorySection(
       @Nullable PropertyCategory category,
-      @Nullable PropertyResidentialDetails residential,
+      @Nullable UnitResidentialDetails residential,
       @Nullable PropertyCommercialDetails commercial,
       @Nullable PropertyIndustrialDetails industrial,
       @Nullable PropertyAgriculturalDetails agricultural,
@@ -536,7 +587,8 @@ public class PropertyBookletExporter {
           f,
           msg("field.bathrooms", locale),
           residential.getBathrooms().map(Object::toString).orElse(null));
-      addField(f, msg("field.furnished", locale), yesNo(residential.getFurnished(), locale));
+      addField(
+          f, msg("field.furnished", locale), yesNo(Optional.of(residential.isFurnished()), locale));
       addField(
           f,
           msg("field.pet.policy", locale),
@@ -719,10 +771,19 @@ public class PropertyBookletExporter {
 
   // ── Building specifications ──────────────────────────────────────
 
-  private List<Map<String, Object>> buildEnergyFields(Property property, Locale locale) {
-    // TODO(BUUR-106 Task 12): heating/cooling/hot water/energy certificate expiry moved from
-    // properties to units in V068; empty until derivable from the property's unit(s).
-    return new ArrayList<>();
+  private List<Map<String, Object>> buildEnergyFields(@Nullable Unit unit, Locale locale) {
+    List<Map<String, Object>> f = new ArrayList<>();
+    if (unit == null) {
+      return f;
+    }
+    addField(f, msg("field.heating.system", locale), enumStr(unit.getHeatingType()));
+    addField(f, msg("field.cooling.system", locale), enumStr(unit.getCoolingType()));
+    addField(f, msg("field.hot.water.system", locale), enumStr(unit.getHotWaterSystem()));
+    addField(
+        f,
+        msg("field.certificate.expiry", locale),
+        unit.getEnergyCertificateExpiryDate().map(d -> formatter.date(d, locale)).orElse(null));
+    return f;
   }
 
   private List<Map<String, Object>> buildUtilitiesFields(Property property, Locale locale) {
@@ -770,16 +831,9 @@ public class PropertyBookletExporter {
 
   // ── Features & outdoor ───────────────────────────────────────────
 
-  private List<Map<String, Object>> buildAmenityGroups(
-      List<PropertyAmenity> propertyAmenities, List<Amenity> allAmenities) {
-    Map<UUID, Amenity> amenityMap =
-        allAmenities.stream().collect(Collectors.toMap(Amenity::getId, a -> a, (a, b) -> a));
+  private List<Map<String, Object>> buildAmenityGroups(List<Amenity> amenities) {
     Map<String, List<String>> grouped = new LinkedHashMap<>();
-    for (PropertyAmenity pa : propertyAmenities) {
-      Amenity amenity = amenityMap.get(pa.getAmenityId());
-      if (amenity == null) {
-        continue;
-      }
+    for (Amenity amenity : amenities) {
       String category = amenity.getCategory() != null ? amenity.getCategory() : "Other";
       grouped.computeIfAbsent(category, k -> new ArrayList<>()).add(amenity.getName());
     }
@@ -810,27 +864,43 @@ public class PropertyBookletExporter {
 
   // ── Safety & accessibility ───────────────────────────────────────
 
-  // TODO(BUUR-106 Task 12): smoke/CO detectors, fire extinguisher, adapted bathroom and
-  // accessibility notes moved from properties to units in V068; dropped from this section until
-  // derivable from the property's unit(s).
+  /**
+   * Smoke/CO detectors, fire extinguisher, adapted bathroom and accessibility notes moved from
+   * properties to units in V068. They read directly off the property's lone unit in the common
+   * single-unit case; a genuinely multi-unit property has no single answer for "does this building
+   * have smoke detectors" (unit 3 might, unit 7 might not), so those unit-specific checks are
+   * dropped from this page and shown per-unit in the Units section instead. The property-level
+   * safety/accessibility fields (sprinkler, alarm, cameras, secure entry, wheelchair access,
+   * elevator, step-free entrance) are unaffected by the migration and always shown here.
+   */
   private void buildSafetySection(
       Map<String, Object> v,
       Property property,
+      @Nullable Unit primaryUnit,
       @Nullable PropertyCategory category,
       Locale locale) {
+    boolean hasUnitSafetyData =
+        primaryUnit != null
+            && (isTrue(primaryUnit.getHasSmokeDetectors().orElse(null))
+                || isTrue(primaryUnit.getHasCoDetectors().orElse(null))
+                || isTrue(primaryUnit.getHasFireExtinguisher().orElse(null)));
     boolean hasSafetyData =
         isTrue(property.getHasSprinklerSystem().orElse(null))
             || isTrue(property.getHasAlarmSystem().orElse(null))
             || isTrue(property.getHasSecurityCameras().orElse(null))
             || isTrue(property.getHasSecureEntry().orElse(null))
-            || property.getSafetyNotes().filter(s -> !s.isBlank()).isPresent();
+            || property.getSafetyNotes().filter(s -> !s.isBlank()).isPresent()
+            || hasUnitSafetyData;
 
     boolean skipAccessibility = category == INDUSTRIAL;
+    boolean hasUnitAccessData =
+        primaryUnit != null && isTrue(primaryUnit.getHasAdaptedBathroom().orElse(null));
     boolean hasAccessData =
         !skipAccessibility
             && (isTrue(property.getIsWheelchairAccessible().orElse(null))
                 || isTrue(property.getHasElevator().orElse(null))
-                || isTrue(property.getHasStepFreeEntrance().orElse(null)));
+                || isTrue(property.getHasStepFreeEntrance().orElse(null))
+                || hasUnitAccessData);
 
     List<Map<String, Object>> safetyChecks = new ArrayList<>();
     List<Map<String, Object>> accessChecks = new ArrayList<>();
@@ -847,6 +917,18 @@ public class PropertyBookletExporter {
               property.getHasSecurityCameras().orElse(null)));
       safetyChecks.add(
           check(msg("check.secure.entry", locale), property.getHasSecureEntry().orElse(null)));
+      if (primaryUnit != null) {
+        safetyChecks.add(
+            check(
+                msg("check.smoke.detectors", locale),
+                primaryUnit.getHasSmokeDetectors().orElse(null)));
+        safetyChecks.add(
+            check(msg("check.co.detectors", locale), primaryUnit.getHasCoDetectors().orElse(null)));
+        safetyChecks.add(
+            check(
+                msg("check.fire.extinguisher", locale),
+                primaryUnit.getHasFireExtinguisher().orElse(null)));
+      }
     }
     if (hasAccessData) {
       accessChecks.add(
@@ -859,6 +941,12 @@ public class PropertyBookletExporter {
           check(
               msg("check.step.free.entrance", locale),
               property.getHasStepFreeEntrance().orElse(null)));
+      if (primaryUnit != null) {
+        accessChecks.add(
+            check(
+                msg("check.adapted.bathroom", locale),
+                primaryUnit.getHasAdaptedBathroom().orElse(null)));
+      }
     }
 
     v.put("hasSafety", category != AGRICULTURAL && (hasSafetyData || hasAccessData));
@@ -867,7 +955,11 @@ public class PropertyBookletExporter {
         "safetyNotes",
         hasSafetyData ? property.getSafetyNotes().filter(s -> !s.isBlank()).orElse(null) : null);
     v.put("accessibilityChecks", accessChecks);
-    v.put("accessibilityNotes", null);
+    v.put(
+        "accessibilityNotes",
+        primaryUnit != null
+            ? primaryUnit.getAccessibilityNotes().filter(s -> !s.isBlank()).orElse(null)
+            : null);
   }
 
   private Map<String, Object> check(String label, @Nullable Boolean value) {
@@ -875,6 +967,177 @@ public class PropertyBookletExporter {
     m.put("label", label);
     m.put("ok", isTrue(value));
     return m;
+  }
+
+  // ── Units ────────────────────────────────────────────────────────
+
+  /**
+   * A property with a single unit needs no separate Units page — everything about that unit is
+   * already on the overview/specs/features pages above. Several units get a summary table (every
+   * unit, so nothing is hidden) plus verbose per-unit detail blocks, capped at {@link
+   * #MAX_DETAILED_UNITS} so a 50-unit building doesn't produce 50 near-empty blocks or blow
+   * Gotenberg's render budget; the table above the cap still lists every unit.
+   */
+  private void buildUnitsSection(
+      Map<String, Object> v, List<Unit> units, UUID teamId, Locale locale) {
+    boolean multiUnit = units.size() > 1;
+    v.put("hasUnitsSection", multiUnit);
+    v.put("unitCount", units.size());
+    if (!multiUnit) {
+      v.put("unitsTable", List.of());
+      v.put("unitDetails", List.of());
+      v.put("remainingUnitCount", 0);
+      return;
+    }
+    List<Unit> sorted =
+        units.stream()
+            .sorted(Comparator.comparingInt(Unit::getSortOrder).thenComparing(Unit::getUnitNumber))
+            .toList();
+    v.put("unitsTable", sorted.stream().map(u -> buildUnitRow(u, teamId, locale)).toList());
+    List<Unit> detailed = sorted.stream().limit(MAX_DETAILED_UNITS).toList();
+    v.put("unitDetails", detailed.stream().map(u -> buildUnitDetail(u, teamId, locale)).toList());
+    v.put("remainingUnitCount", Math.max(0, sorted.size() - MAX_DETAILED_UNITS));
+  }
+
+  private Map<String, Object> buildUnitRow(Unit unit, UUID teamId, Locale locale) {
+    Optional<Contract> activeContract = contractRepository.findActiveByUnitId(unit.getId(), teamId);
+    Map<String, Object> m = new HashMap<>();
+    m.put(
+        "number",
+        unit.getName().map(n -> unit.getUnitNumber() + " · " + n).orElse(unit.getUnitNumber()));
+    m.put("typeLabel", enumLabels.label(unit.getUnitType(), locale));
+    m.put("statusLabel", enumLabels.label(unit.getStatus(), locale));
+    m.put("statusCode", unit.getStatus().name());
+    m.put("area", areaDisplay(unit.getAreaValue().orElse(null), unit.getAreaUnit().orElse(null)));
+    m.put("tenant", activeContract.map(c -> tenantName(c, teamId, locale)).orElse("—"));
+    m.put("rent", activeContract.map(c -> formatter.money(c.getRentAmount(), locale)).orElse("—"));
+    return m;
+  }
+
+  /** Per-unit detail block: everything that used to be a single property-level value. */
+  private Map<String, Object> buildUnitDetail(Unit unit, UUID teamId, Locale locale) {
+    Optional<UnitResidentialDetails> residential =
+        unitResidentialDetailsRepository.findByUnitIdAndTeamId(unit.getId(), teamId);
+
+    List<Map<String, Object>> fields = new ArrayList<>();
+    addField(
+        fields,
+        msg("field.total.area", locale),
+        areaDisplay(unit.getAreaValue().orElse(null), unit.getAreaUnit().orElse(null)));
+    residential.ifPresent(
+        r -> {
+          addField(
+              fields,
+              msg("field.bedrooms", locale),
+              r.getBedrooms().map(Object::toString).orElse(null));
+          addField(
+              fields,
+              msg("field.bathrooms", locale),
+              r.getBathrooms().map(Object::toString).orElse(null));
+          addField(
+              fields, msg("field.furnished", locale), yesNo(Optional.of(r.isFurnished()), locale));
+          addField(
+              fields,
+              msg("field.pet.policy", locale),
+              r.getPetPolicy().map(DocumentFormatting::formatEnumValue).orElse(null));
+        });
+    addField(
+        fields,
+        msg("field.energy.efficiency.rating", locale),
+        unit.getEnergyEfficiencyRating().orElse(null));
+    addField(fields, msg("field.heating.system", locale), enumStr(unit.getHeatingType()));
+    addField(fields, msg("field.cooling.system", locale), enumStr(unit.getCoolingType()));
+    addField(fields, msg("field.hot.water.system", locale), enumStr(unit.getHotWaterSystem()));
+    addField(
+        fields,
+        msg("field.certificate.expiry", locale),
+        unit.getEnergyCertificateExpiryDate().map(d -> formatter.date(d, locale)).orElse(null));
+    addField(fields, msg("field.window.type", locale), enumStr(unit.getWindowType()));
+    addField(fields, msg("field.flooring", locale), enumStr(unit.getFlooringType()));
+
+    List<Map<String, Object>> safetyChecks = new ArrayList<>();
+    if (unit.getHasSmokeDetectors().isPresent()
+        || unit.getHasCoDetectors().isPresent()
+        || unit.getHasFireExtinguisher().isPresent()) {
+      safetyChecks.add(
+          check(msg("check.smoke.detectors", locale), unit.getHasSmokeDetectors().orElse(null)));
+      safetyChecks.add(
+          check(msg("check.co.detectors", locale), unit.getHasCoDetectors().orElse(null)));
+      safetyChecks.add(
+          check(
+              msg("check.fire.extinguisher", locale), unit.getHasFireExtinguisher().orElse(null)));
+    }
+
+    List<Map<String, Object>> accessibilityChecks = new ArrayList<>();
+    unit.getHasAdaptedBathroom()
+        .ifPresent(b -> accessibilityChecks.add(check(msg("check.adapted.bathroom", locale), b)));
+
+    List<Amenity> amenities =
+        unitAmenityRepository.findAmenitiesByUnitIdAndTeamId(unit.getId(), teamId);
+
+    Map<String, Object> m = new HashMap<>();
+    m.put("number", unit.getUnitNumber());
+    m.put("name", unit.getName().orElse(null));
+    m.put("statusLabel", enumLabels.label(unit.getStatus(), locale));
+    m.put("statusCode", unit.getStatus().name());
+    m.put("fields", fields);
+    m.put("insulationNotes", unit.getInsulationNotes().filter(s -> !s.isBlank()).orElse(null));
+    m.put("safetyChecks", safetyChecks);
+    m.put("accessibilityChecks", accessibilityChecks);
+    m.put(
+        "accessibilityNotes", unit.getAccessibilityNotes().filter(s -> !s.isBlank()).orElse(null));
+    m.put("amenities", amenities.stream().map(Amenity::getName).toList());
+    return m;
+  }
+
+  private String tenantName(Contract contract, UUID teamId, Locale locale) {
+    Map<UUID, Contact> contacts =
+        contractPartyService.getPrimaryContactsForContracts(List.of(contract.getId()), teamId);
+    Contact contact = contacts.get(contract.getId());
+    return contact != null ? contact.getDisplayName() : msg("value.unknown", locale);
+  }
+
+  /**
+   * Occupancy status moved from properties to units in V068. One unit reads its status directly,
+   * exactly as the property used to; several units get an occupancy fraction ("3/5 Occupied") since
+   * there is no longer a single status value — mirrors {@code PropertySummaryAssembler}'s
+   * aggregation for the same field.
+   */
+  private UnitStatusSummary summarizeStatus(List<Unit> units, Locale locale) {
+    if (units.isEmpty()) {
+      return new UnitStatusSummary("", "—");
+    }
+    if (units.size() == 1) {
+      Unit unit = units.get(0);
+      return new UnitStatusSummary(
+          unit.getStatus().name(), enumLabels.label(unit.getStatus(), locale));
+    }
+    int total = units.size();
+    long occupied =
+        units.stream()
+            .filter(
+                u ->
+                    u.getStatus() == UnitStatus.OCCUPIED
+                        || u.getStatus() == UnitStatus.SELF_OCCUPIED)
+            .count();
+    String code = occupied == total ? "OCCUPIED" : occupied == 0 ? "VACANT" : "MIXED";
+    String fraction = occupied + "/" + total + " " + enumLabels.label(UnitStatus.OCCUPIED, locale);
+    return new UnitStatusSummary(code, fraction);
+  }
+
+  /**
+   * A letter grade can't be summed or averaged, so a multi-unit property only shows one when every
+   * unit agrees; a single unit trivially "agrees" with itself.
+   */
+  private @Nullable String aggregateEnergyRating(List<Unit> units) {
+    List<String> ratings =
+        units.stream()
+            .map(Unit::getEnergyEfficiencyRating)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .distinct()
+            .toList();
+    return ratings.size() == 1 ? ratings.get(0) : null;
   }
 
   // ── Photos ───────────────────────────────────────────────────────
@@ -1106,10 +1369,26 @@ public class PropertyBookletExporter {
     return location.toString();
   }
 
-  private String buildAreaString(Property property) {
-    // TODO(BUUR-106 Task 12): area moved from properties to units in V068; "—" until derivable
-    // from the property's unit(s).
-    return "—";
+  /**
+   * Area moved from properties to units in V068. A single unit's area reads exactly as the
+   * property's total area used to; several units get the sum, which is still meaningfully "the
+   * total area" the field label promises — unlike a status or an energy grade, floor area is
+   * additive.
+   */
+  private String buildAreaString(List<Unit> units) {
+    BigDecimal total = BigDecimal.ZERO;
+    boolean any = false;
+    String unit = null;
+    for (Unit u : units) {
+      if (u.getAreaValue().isPresent()) {
+        total = total.add(u.getAreaValue().get());
+        any = true;
+        if (unit == null) {
+          unit = u.getAreaUnit().orElse(null);
+        }
+      }
+    }
+    return any ? measureDisplay(total, unit, "sqm") : "—";
   }
 
   private String areaDisplay(@Nullable BigDecimal value, @Nullable String unit) {
@@ -1181,6 +1460,8 @@ public class PropertyBookletExporter {
   // ── Inner types ──────────────────────────────────────────────────
 
   private record CategorySection(@Nullable String title, List<Map<String, Object>> fields) {}
+
+  private record UnitStatusSummary(String code, String label) {}
 
   private static class FinancialYearSummary {
     private final int year;

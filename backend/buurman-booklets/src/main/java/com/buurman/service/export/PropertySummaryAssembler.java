@@ -34,8 +34,8 @@ import com.buurman.util.MoneyAmount;
  * BookletFormatter}.
  *
  * <p>Status/area/energy/bed-bath moved from {@code properties} to {@code units} in V068, so a
- * property with several units has N values for each of these, not one. The overwhelming majority
- * of properties still have exactly one unit (the implicit unit backfilled for every pre-existing
+ * property with several units has N values for each of these, not one. The overwhelming majority of
+ * properties still have exactly one unit (the implicit unit backfilled for every pre-existing
  * property), and for that case every field below reads exactly as it did before the migration —
  * sourced from that one unit instead of the property. A genuinely multi-unit property instead gets
  * an aggregate: an occupancy fraction for status, a sum for area, a sum for bed/bath counts, and a
@@ -109,7 +109,9 @@ public class PropertySummaryAssembler {
     return v;
   }
 
-  /** The common case: one unit, reading exactly as it did before dwelling fields moved off Property. */
+  /**
+   * The common case: one unit, reading exactly as it did before dwelling fields moved off Property.
+   */
   private void assembleSingleUnit(Map<String, Object> v, Unit unit, UUID teamId, Locale locale) {
     Optional<UnitResidentialDetails> residential =
         residentialDetailsRepository.findByUnitIdAndTeamId(unit.getId(), teamId);
@@ -156,7 +158,10 @@ public class PropertySummaryAssembler {
     int total = units.size();
     long occupied =
         units.stream()
-            .filter(u -> u.getStatus() == UnitStatus.OCCUPIED || u.getStatus() == UnitStatus.SELF_OCCUPIED)
+            .filter(
+                u ->
+                    u.getStatus() == UnitStatus.OCCUPIED
+                        || u.getStatus() == UnitStatus.SELF_OCCUPIED)
             .count();
     boolean allOccupied = total > 0 && occupied == total;
     boolean noneOccupied = occupied == 0;
