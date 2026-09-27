@@ -1,0 +1,117 @@
+{
+  "term": {
+    "one": "Lokal",
+    "other": "Lokale"
+  },
+  "tab": "Lokale",
+  "grid": {
+    "unit": "Lokal",
+    "tenant": "Najemca",
+    "rent": "Czynsz",
+    "status": "Status",
+    "vacancyDays": "Wolny od",
+    "vacancyDaysValue": "{{count}} dzień",
+    "vacancyDaysValue_other": "{{count}} dni",
+    "noTenant": "—",
+    "empty": "Brak lokali.",
+    "occupancySummary": "{{occupied}} z {{total}} wynajętych",
+    "addUnit": "Dodaj lokal"
+  },
+  "detail": {
+    "title": "Lokal {{number}}",
+    "backToProperty": "Wróć do {{street}}",
+    "characteristics": "Charakterystyka",
+    "amenities": "Udogodnienia",
+    "residential": "Pokoje i wyposażenie"
+  },
+  "fields": {
+    "unitNumber": "Numer lokalu",
+    "name": "Nazwa",
+    "floor": "Piętro",
+    "unitType": "Typ",
+    "status": "Status",
+    "areaValue": "Powierzchnia",
+    "allocationShare": "Udział w kosztach",
+    "wozSharePct": "Udział WOZ",
+    "energyEfficiencyRating": "Klasa energetyczna",
+    "energyCertificateExpiryDate": "Ważność certyfikatu",
+    "heatingType": "Ogrzewanie",
+    "coolingType": "Klimatyzacja",
+    "hotWaterSystem": "Ciepła woda",
+    "insulationNotes": "Uwagi o izolacji",
+    "flooringType": "Podłoga",
+    "windowType": "Okna",
+    "hasSmokeDetectors": "Czujniki dymu",
+    "hasCoDetectors": "Czujniki CO",
+    "hasFireExtinguisher": "Gaśnica",
+    "hasAdaptedBathroom": "Przystosowana łazienka",
+    "accessibilityNotes": "Uwagi o dostępności",
+    "bedrooms": "Sypialnie",
+    "bathrooms": "Łazienki",
+    "furnished": "Umeblowane",
+    "petPolicy": "Polityka dotycząca zwierząt"
+  },
+  "sections": {
+    "floorArea": "Powierzchnia",
+    "finishes": "Podłogi i okna",
+    "safety": "Bezpieczeństwo pożarowe i przeciwdymowe",
+    "accessibility": "Dostępność",
+    "accessibilityDetails": "Szczegóły dostępności"
+  },
+  "type": {
+    "APARTMENT": "Mieszkanie",
+    "PARKING": "Miejsce parkingowe",
+    "STORAGE": "Komórka lokatorska",
+    "COMMERCIAL": "Lokal użytkowy"
+  },
+  "status": {
+    "VACANT": "Wolny",
+    "OCCUPIED": "Wynajęty",
+    "SELF_OCCUPIED": "Użytkowanie własne",
+    "MAINTENANCE": "Konserwacja",
+    "UNAVAILABLE": "Niedostępny",
+    "UNDER_RENOVATION": "W remoncie",
+    "FALLOW": "Odłogowany",
+    "LISTED": "Wystawiony"
+  },
+  "split": {
+    "action": "Podziel na wiele lokali",
+    "title": "Podziel {{street}} na lokale",
+    "count": "Ile lokali?",
+    "numbering": "Numeracja",
+    "numberingPattern": {
+      "NUMERIC": "1, 2, 3 …",
+      "ALPHABETIC": "A, B, C …",
+      "FLOOR_DOT_INDEX": "1.01, 1.02, 1.03 …"
+    },
+    "startFloor": "Piętro początkowe",
+    "unitType": "Typ lokalu",
+    "keepsHistory": "Istniejący lokal staje się lokalem nr 1 i zachowuje umowę, zdjęcia oraz historię.",
+    "submit": "Utwórz lokale",
+    "movedExplainer": "Informacje o mieszkaniu znajdują się teraz przy każdym lokalu. Otwórz zakładkę Lokale, aby je edytować."
+  },
+  "allocation": {
+    "title": "Podział kosztów",
+    "basis": "Podziel koszty budynku według",
+    "basisOption": {
+      "AREA": "Powierzchnia",
+      "EQUAL": "Po równo",
+      "CUSTOM": "Niestandardowe procenty",
+      "MANUAL": "Ręcznie dla każdego wydatku"
+    },
+    "share": "Udział",
+    "noArea": "Nie ustawiono powierzchni",
+    "preview": "Udział każdego lokalu w kwocie {{amount}}",
+    "customTotalError": "Niestandardowe udziały muszą sumować się do 100%. Obecnie sumują się do {{total}}%."
+  },
+  "delete": {
+    "confirmTitle": "Usunąć lokal {{number}}?",
+    "lastUnitBlocked": "Nieruchomość musi mieć co najmniej jeden lokal, dlatego nie można go usunąć.",
+    "activeContractBlocked": "Ten lokal ma aktywną umowę. Najpierw zakończ umowę."
+  },
+  "picker": {
+    "label": "Lokal",
+    "placeholder": "Wybierz lokal",
+    "required": "Wybierz, którego lokalu dotyczy ta umowa."
+  }
+}

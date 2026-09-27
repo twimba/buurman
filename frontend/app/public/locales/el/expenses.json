@@ -74,7 +74,11 @@
     "createExpense": "Δημιουργία",
     "expenseSuffix": " Εξόδου",
     "saving": "Αποθήκευση...",
-    "currency": "Νόμισμα"
+    "currency": "Νόμισμα",
+    "target": "Ισχύει για",
+    "targetBuilding": "Ολόκληρο το κτίριο",
+    "targetUnit": "Μία μονάδα",
+    "unit": "Μονάδα"
   },
   "validation": {
     "propertyRequired": "Το ακίνητο είναι υποχρεωτικό",

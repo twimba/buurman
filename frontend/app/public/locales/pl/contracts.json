@@ -564,6 +564,7 @@
     "retroactiveTooltip": "Płatności korygujące zostaną utworzone dla już rozliczonych płatności dotkniętych zmianami dat wstecznych.",
     "exceedsMax": "Przekracza maksymalną regulowaną podwyżkę {{max}}%",
     "belowMin": "Poniżej minimalnej regulowanej podwyżki {{min}}%",
+    "leaseOfTotal": "Umowa {{index}} z {{total}} dla tej nieruchomości",
     "tableHeaders": {
       "property": "Nieruchomość",
       "currentRent": "Aktualny czynsz",
@@ -800,6 +801,7 @@
       "bruksvardessystemApplicable": "System Bruksvärde Stosowany",
       "energyDeclarationRating": "Klasa Deklaracji Energetycznej",
       "hyresnamndenEligible": "Uprawniony Hyresnämnden",
+      "depositSum": "Kwota Kaucji",
       "vuokrasopimustyyppi": "Typ Umowy (FI)",
       "vakuusAmount": "Kwota Kaucji",
       "vakuusMonths": "Kaucja w Miesiącach",

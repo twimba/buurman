@@ -136,7 +136,8 @@
       "history": "Historia",
       "noCalculation": "Brak obliczeń",
       "noCalculationDescription": "Oblicz punkty WWS, aby określić maksymalny regulowany czynsz dla tej nieruchomości.",
-      "noPreviousCalculations": "Brak poprzednich obliczeń."
+      "noPreviousCalculations": "Brak poprzednich obliczeń.",
+      "multiUnitUnsupported": "Ten budynek ma wiele lokali. Otwórz lokal, aby obliczyć jego punkty WWS."
     },
     "metadata": {
       "title": "Metadane",
@@ -419,7 +420,8 @@
       "occupancyIncomeTrend": "Trend obłożenia i przychodu",
       "expenseBreakdown": "Rozkład wydatków",
       "sixMonthProjection": "Prognoza na 6 miesięcy",
-      "equityOverview": "Przegląd kapitału własnego"
+      "equityOverview": "Przegląd kapitału własnego",
+      "unitOccupancy": "Obłożenie według lokalu"
     },
     "summary": {
       "totalRoi": "Łączny ROI",
@@ -448,7 +450,8 @@
       "contactOccupied": "Zajęte przez kontakty",
       "netIncomeTrend": "Trend dochodu netto",
       "netIncome": "Dochód netto",
-      "noData": "Brak danych o umowach"
+      "noData": "Brak danych o umowach",
+      "buildingVacancyRate": "Wskaźnik pustostanów budynku"
     },
     "expense": {
       "noData": "Brak danych o wydatkach"
@@ -761,6 +764,13 @@
     },
     "pagination": {
       "showing": "Wyświetlanie {{from}} do {{to}} z {{total}} wydatków"
+    },
+    "allocation": {
+      "settingsToggle": "Ustawienia podziału kosztów",
+      "buildingBadge": "Cały budynek",
+      "viewSplit": "Pokaż podział",
+      "hideSplit": "Ukryj podział",
+      "failedToLoad": "Nie udało się wczytać podziału kosztów"
     }
   },
   "audit": {
@@ -808,7 +818,8 @@
       "notesPlaceholder": "Dodatkowe notatki...",
       "reason": "Powód",
       "reasonPlaceholder": "Wybierz powód...",
-      "alreadyTakenPeriods": "Już zajęte okresy"
+      "alreadyTakenPeriods": "Już zajęte okresy",
+      "unitRequired": "Wybierz, którego lokalu dotyczy ten okres użytkowania."
     },
     "occupancyTypes": {
       "PERSONAL": "Osobiste",
@@ -1110,5 +1121,12 @@
   "lifecycle": {
     "openContract": "Otwórz umowę",
     "clickToEdit": "Kliknij, aby edytować"
+  },
+  "unitOccupancy": {
+    "noUnits": "Brak lokali",
+    "allVacant": "Wolny",
+    "allOccupied": "Wynajęty",
+    "allUnavailable": "Niedostępny",
+    "mixed": "{{occupied}} wynajętych · {{vacant}} wolnych · {{unavailable}} niedostępnych"
   }
 }

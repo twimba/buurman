@@ -1,0 +1,117 @@
+{
+  "term": {
+    "one": "Μονάδα",
+    "other": "Μονάδες"
+  },
+  "tab": "Μονάδες",
+  "grid": {
+    "unit": "Μονάδα",
+    "tenant": "Ενοικιαστής",
+    "rent": "Ενοίκιο",
+    "status": "Κατάσταση",
+    "vacancyDays": "Κενό από",
+    "vacancyDaysValue": "{{count}} ημέρα",
+    "vacancyDaysValue_other": "{{count}} ημέρες",
+    "noTenant": "—",
+    "empty": "Δεν υπάρχουν ακόμη μονάδες.",
+    "occupancySummary": "{{occupied}} από {{total}} ενοικιασμένες",
+    "addUnit": "Προσθήκη μονάδας"
+  },
+  "detail": {
+    "title": "Μονάδα {{number}}",
+    "backToProperty": "Επιστροφή στο {{street}}",
+    "characteristics": "Χαρακτηριστικά",
+    "amenities": "Ανέσεις",
+    "residential": "Δωμάτια & επίπλωση"
+  },
+  "fields": {
+    "unitNumber": "Αριθμός μονάδας",
+    "name": "Όνομα",
+    "floor": "Όροφος",
+    "unitType": "Τύπος",
+    "status": "Κατάσταση",
+    "areaValue": "Εμβαδόν",
+    "allocationShare": "Μερίδιο κόστους",
+    "wozSharePct": "Μερίδιο WOZ",
+    "energyEfficiencyRating": "Ενεργειακή κατάταξη",
+    "energyCertificateExpiryDate": "Λήξη πιστοποιητικού",
+    "heatingType": "Θέρμανση",
+    "coolingType": "Ψύξη",
+    "hotWaterSystem": "Ζεστό νερό",
+    "insulationNotes": "Σημειώσεις μόνωσης",
+    "flooringType": "Δάπεδο",
+    "windowType": "Παράθυρα",
+    "hasSmokeDetectors": "Ανιχνευτές καπνού",
+    "hasCoDetectors": "Ανιχνευτές CO",
+    "hasFireExtinguisher": "Πυροσβεστήρας",
+    "hasAdaptedBathroom": "Προσαρμοσμένο μπάνιο",
+    "accessibilityNotes": "Σημειώσεις προσβασιμότητας",
+    "bedrooms": "Υπνοδωμάτια",
+    "bathrooms": "Μπάνια",
+    "furnished": "Επιπλωμένο",
+    "petPolicy": "Πολιτική κατοικίδιων"
+  },
+  "sections": {
+    "floorArea": "Εμβαδόν",
+    "finishes": "Δάπεδα & παράθυρα",
+    "safety": "Ασφάλεια καπνού & πυρκαγιάς",
+    "accessibility": "Προσβασιμότητα",
+    "accessibilityDetails": "Λεπτομέρειες προσβασιμότητας"
+  },
+  "type": {
+    "APARTMENT": "Διαμέρισμα",
+    "PARKING": "Θέση στάθμευσης",
+    "STORAGE": "Αποθήκη",
+    "COMMERCIAL": "Επαγγελματικός χώρος"
+  },
+  "status": {
+    "VACANT": "Κενό",
+    "OCCUPIED": "Ενοικιασμένο",
+    "SELF_OCCUPIED": "Ιδιοκατοικούμενο",
+    "MAINTENANCE": "Συντήρηση",
+    "UNAVAILABLE": "Μη διαθέσιμο",
+    "UNDER_RENOVATION": "Υπό ανακαίνιση",
+    "FALLOW": "Αδρανές",
+    "LISTED": "Καταχωρημένο"
+  },
+  "split": {
+    "action": "Διαχωρισμός σε πολλαπλές μονάδες",
+    "title": "Διαχωρισμός {{street}} σε μονάδες",
+    "count": "Πόσες μονάδες;",
+    "numbering": "Αρίθμηση",
+    "numberingPattern": {
+      "NUMERIC": "1, 2, 3 …",
+      "ALPHABETIC": "A, B, C …",
+      "FLOOR_DOT_INDEX": "1.01, 1.02, 1.03 …"
+    },
+    "startFloor": "Όροφος έναρξης",
+    "unitType": "Τύπος μονάδας",
+    "keepsHistory": "Η υπάρχουσα μονάδα σας γίνεται η μονάδα #1 και διατηρεί το συμβόλαιο, τις φωτογραφίες και το ιστορικό της.",
+    "submit": "Δημιουργία μονάδων",
+    "movedExplainer": "Τα στοιχεία της κατοικίας βρίσκονται πλέον σε κάθε μονάδα. Ανοίξτε την καρτέλα Μονάδες για να τα επεξεργαστείτε."
+  },
+  "allocation": {
+    "title": "Κατανομή κόστους",
+    "basis": "Κατανομή εξόδων κτιρίου βάσει",
+    "basisOption": {
+      "AREA": "Εμβαδόν",
+      "EQUAL": "Ισομερώς",
+      "CUSTOM": "Προσαρμοσμένα ποσοστά",
+      "MANUAL": "Χειροκίνητα ανά έξοδο"
+    },
+    "share": "Μερίδιο",
+    "noArea": "Δεν έχει οριστεί εμβαδόν",
+    "preview": "Μερίδιο κάθε μονάδας στο {{amount}}",
+    "customTotalError": "Τα προσαρμοσμένα μερίδια πρέπει να αθροίζουν σε 100%. Αυτή τη στιγμή αθροίζουν σε {{total}}%."
+  },
+  "delete": {
+    "confirmTitle": "Διαγραφή μονάδας {{number}};",
+    "lastUnitBlocked": "Ένα ακίνητο πρέπει να διατηρεί τουλάχιστον μία μονάδα, επομένως αυτή δεν μπορεί να διαγραφεί.",
+    "activeContractBlocked": "Αυτή η μονάδα έχει ενεργό συμβόλαιο. Τερματίστε πρώτα το συμβόλαιο."
+  },
+  "picker": {
+    "label": "Μονάδα",
+    "placeholder": "Επιλέξτε μονάδα",
+    "required": "Επιλέξτε σε ποια μονάδα αναφέρεται αυτό το συμβόλαιο."
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "term": {
+    "one": "Yksikkö",
+    "other": "Yksiköt"
+  },
+  "tab": "Yksiköt",
+  "grid": {
+    "unit": "Yksikkö",
+    "tenant": "Vuokralainen",
+    "rent": "Vuokra",
+    "status": "Tila",
+    "vacancyDays": "Vapaana",
+    "vacancyDaysValue": "{{count}} päivä",
+    "vacancyDaysValue_other": "{{count}} päivää",
+    "noTenant": "—",
+    "empty": "Ei vielä yksiköitä.",
+    "occupancySummary": "{{occupied}} / {{total}} vuokrattu",
+    "addUnit": "Lisää yksikkö"
+  },
+  "detail": {
+    "title": "Yksikkö {{number}}",
+    "backToProperty": "Takaisin osoitteeseen {{street}}",
+    "characteristics": "Ominaisuudet",
+    "amenities": "Mukavuudet",
+    "residential": "Huoneet ja kalustus"
+  },
+  "fields": {
+    "unitNumber": "Yksikön numero",
+    "name": "Nimi",
+    "floor": "Kerros",
+    "unitType": "Tyyppi",
+    "status": "Tila",
+    "areaValue": "Pinta-ala",
+    "allocationShare": "Kustannusosuus",
+    "wozSharePct": "WOZ-osuus",
+    "energyEfficiencyRating": "Energialuokitus",
+    "energyCertificateExpiryDate": "Todistuksen vanheneminen",
+    "heatingType": "Lämmitys",
+    "coolingType": "Jäähdytys",
+    "hotWaterSystem": "Lämmin vesi",
+    "insulationNotes": "Eristysmuistiinpanot",
+    "flooringType": "Lattia",
+    "windowType": "Ikkunat",
+    "hasSmokeDetectors": "Palovaroittimet",
+    "hasCoDetectors": "CO-ilmaisimet",
+    "hasFireExtinguisher": "Sammutin",
+    "hasAdaptedBathroom": "Mukautettu kylpyhuone",
+    "accessibilityNotes": "Esteettömyysmuistiinpanot",
+    "bedrooms": "Makuuhuoneet",
+    "bathrooms": "Kylpyhuoneet",
+    "furnished": "Kalustettu",
+    "petPolicy": "Lemmikkikäytäntö"
+  },
+  "sections": {
+    "floorArea": "Pinta-ala",
+    "finishes": "Lattiat ja ikkunat",
+    "safety": "Palo- ja savuturvallisuus",
+    "accessibility": "Esteettömyys",
+    "accessibilityDetails": "Esteettömyyden tiedot"
+  },
+  "type": {
+    "APARTMENT": "Asunto",
+    "PARKING": "Autopaikka",
+    "STORAGE": "Varasto",
+    "COMMERCIAL": "Liiketila"
+  },
+  "status": {
+    "VACANT": "Vapaa",
+    "OCCUPIED": "Vuokrattu",
+    "SELF_OCCUPIED": "Omakäytössä",
+    "MAINTENANCE": "Huolto",
+    "UNAVAILABLE": "Ei käytettävissä",
+    "UNDER_RENOVATION": "Remontissa",
+    "FALLOW": "Kesanto",
+    "LISTED": "Ilmoitettu"
+  },
+  "split": {
+    "action": "Jaa useaan yksikköön",
+    "title": "Jaa {{street}} yksiköihin",
+    "count": "Kuinka monta yksikköä?",
+    "numbering": "Numerointi",
+    "numberingPattern": {
+      "NUMERIC": "1, 2, 3 …",
+      "ALPHABETIC": "A, B, C …",
+      "FLOOR_DOT_INDEX": "1.01, 1.02, 1.03 …"
+    },
+    "startFloor": "Aloituskerros",
+    "unitType": "Yksikkötyyppi",
+    "keepsHistory": "Nykyisestä yksiköstäsi tulee yksikkö 1, ja se säilyttää sopimuksensa, valokuvansa ja historiansa.",
+    "submit": "Luo yksiköt",
+    "movedExplainer": "Asuntotiedot löytyvät nyt jokaisesta yksiköstä. Avaa Yksiköt-välilehti muokataksesi niitä."
+  },
+  "allocation": {
+    "title": "Kustannusten jako",
+    "basis": "Jaa rakennuksen kulut",
+    "basisOption": {
+      "AREA": "Pinta-ala",
+      "EQUAL": "Tasan",
+      "CUSTOM": "Mukautetut prosenttiosuudet",
+      "MANUAL": "Manuaalisesti kulukohtaisesti"
+    },
+    "share": "Osuus",
+    "noArea": "Pinta-alaa ei ole asetettu",
+    "preview": "Kunkin yksikön osuus summasta {{amount}}",
+    "customTotalError": "Mukautettujen osuuksien on oltava yhteensä 100 %. Tällä hetkellä ne ovat yhteensä {{total}} %."
+  },
+  "delete": {
+    "confirmTitle": "Poistetaanko yksikkö {{number}}?",
+    "lastUnitBlocked": "Kohteella on oltava vähintään yksi yksikkö, joten tätä ei voi poistaa.",
+    "activeContractBlocked": "Tällä yksiköllä on voimassa oleva sopimus. Päätä sopimus ensin."
+  },
+  "picker": {
+    "label": "Yksikkö",
+    "placeholder": "Valitse yksikkö",
+    "required": "Valitse, mitä yksikköä tämä sopimus koskee."
+  }
+}

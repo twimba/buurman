@@ -136,7 +136,8 @@
       "history": "Ιστορικό",
       "noCalculation": "Δεν υπάρχει υπολογισμός ακόμα",
       "noCalculationDescription": "Υπολογίστε τα μόρια WWS για να προσδιορίσετε το μέγιστο ρυθμιζόμενο ενοίκιο για αυτό το ακίνητο.",
-      "noPreviousCalculations": "Δεν υπάρχουν προηγούμενοι υπολογισμοί."
+      "noPreviousCalculations": "Δεν υπάρχουν προηγούμενοι υπολογισμοί.",
+      "multiUnitUnsupported": "Αυτό το κτίριο έχει πολλαπλές μονάδες. Ανοίξτε μια μονάδα για να υπολογίσετε τα μόρια WWS της."
     },
     "metadata": {
       "title": "Μεταδεδομένα",
@@ -419,7 +420,8 @@
       "occupancyIncomeTrend": "Τάση Πληρότητας & Εσόδων",
       "expenseBreakdown": "Ανάλυση Εξόδων",
       "sixMonthProjection": "Πρόβλεψη 6 Μηνών",
-      "equityOverview": "Επισκόπηση Ιδίων Κεφαλαίων"
+      "equityOverview": "Επισκόπηση Ιδίων Κεφαλαίων",
+      "unitOccupancy": "Πληρότητα ανά μονάδα"
     },
     "summary": {
       "totalRoi": "Συνολική Απόδοση",
@@ -448,7 +450,8 @@
       "contactOccupied": "Κατειλημμένο από επαφή",
       "netIncomeTrend": "Τάση Καθαρών Εσόδων",
       "netIncome": "Καθαρά Έσοδα",
-      "noData": "Δεν υπάρχουν δεδομένα συμβολαίων"
+      "noData": "Δεν υπάρχουν δεδομένα συμβολαίων",
+      "buildingVacancyRate": "Ποσοστό κενών του κτιρίου"
     },
     "expense": {
       "noData": "Δεν υπάρχουν δεδομένα εξόδων"
@@ -761,6 +764,13 @@
     },
     "pagination": {
       "showing": "Εμφάνιση {{from}} έως {{to}} από {{total}} έξοδα"
+    },
+    "allocation": {
+      "settingsToggle": "Ρυθμίσεις κατανομής κόστους",
+      "buildingBadge": "Ολόκληρο το κτίριο",
+      "viewSplit": "Προβολή κατανομής",
+      "hideSplit": "Απόκρυψη κατανομής",
+      "failedToLoad": "Αποτυχία φόρτωσης της κατανομής κόστους"
     }
   },
   "audit": {
@@ -808,7 +818,8 @@
       "notesPlaceholder": "Πρόσθετες σημειώσεις...",
       "reason": "Λόγος",
       "reasonPlaceholder": "Επιλέξτε λόγο...",
-      "alreadyTakenPeriods": "Ήδη κατειλημμένες περίοδοι"
+      "alreadyTakenPeriods": "Ήδη κατειλημμένες περίοδοι",
+      "unitRequired": "Επιλέξτε σε ποια μονάδα αναφέρεται αυτή η περίοδος ιδιοκατοίκησης."
     },
     "occupancyTypes": {
       "PERSONAL": "Προσωπική",
@@ -1110,5 +1121,12 @@
   "lifecycle": {
     "openContract": "Άνοιγμα συμβολαίου",
     "clickToEdit": "Κάντε κλικ για επεξεργασία"
+  },
+  "unitOccupancy": {
+    "noUnits": "Καμία μονάδα",
+    "allVacant": "Κενό",
+    "allOccupied": "Ενοικιασμένο",
+    "allUnavailable": "Μη διαθέσιμο",
+    "mixed": "{{occupied}} ενοικιασμένες · {{vacant}} κενές · {{unavailable}} μη διαθέσιμες"
   }
 }

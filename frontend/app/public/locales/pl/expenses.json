@@ -74,7 +74,11 @@
     "createExpense": "Utwórz",
     "expenseSuffix": " wydatek",
     "saving": "Zapisywanie...",
-    "currency": "Waluta"
+    "currency": "Waluta",
+    "target": "Dotyczy",
+    "targetBuilding": "Cały budynek",
+    "targetUnit": "Jeden lokal",
+    "unit": "Lokal"
   },
   "validation": {
     "propertyRequired": "Nieruchomość jest wymagana",
