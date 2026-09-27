@@ -44,6 +44,7 @@ class ContractRecordMapperTest {
   private static final UUID ID = UUID.randomUUID();
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID PROPERTY_ID = UUID.randomUUID();
+  private static final UUID UNIT_ID = UUID.randomUUID();
   private static final UUID CREATED_BY = UUID.randomUUID();
   private static final UUID UPDATED_BY = UUID.randomUUID();
   private static final Sid IDENTIFIER = Sid.of("CON01HQJK4B2X5M3N7P8Q9R0S1T2");
@@ -74,6 +75,9 @@ class ContractRecordMapperTest {
       assertThat(contract.getIdentifier()).contains(IDENTIFIER);
       assertThat(contract.getTeamId()).isEqualTo(TEAM_ID);
       assertThat(contract.getPropertyId()).isEqualTo(PROPERTY_ID);
+      // Distinct from PROPERTY_ID: catches a setUnitId(record.getPropertyId()) copy-paste bug
+      // (BUUR-106 follow-up register, section F, item 8).
+      assertThat(contract.getUnitId()).isEqualTo(UNIT_ID);
       assertThat(contract.getContractType()).isEqualTo(ContractType.FIXED_TERM);
       assertThat(contract.getStartDate()).isEqualTo(LocalDate.of(2026, 1, 1));
       assertThat(contract.getEndDate()).contains(LocalDate.of(2027, 1, 1));
@@ -431,6 +435,7 @@ class ContractRecordMapperTest {
     record.setIdentifier(IDENTIFIER);
     record.setTeamId(TEAM_ID);
     record.setPropertyId(PROPERTY_ID);
+    record.setUnitId(UNIT_ID);
     record.setContractType("FIXED_TERM");
     record.setStartDate(LocalDate.of(2026, 1, 1));
     record.setEndDate(LocalDate.of(2027, 1, 1));

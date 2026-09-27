@@ -26,6 +26,7 @@ class ExpenseRecordMapperTest {
   private static final UUID ID = UUID.randomUUID();
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID PROPERTY_ID = UUID.randomUUID();
+  private static final UUID UNIT_ID = UUID.randomUUID();
   private static final UUID CREATED_BY = UUID.randomUUID();
   private static final UUID UPDATED_BY = UUID.randomUUID();
   private static final Sid IDENTIFIER = Sid.of("EXP01HQJK4B2X5M3N7P8Q9R0S1T2");
@@ -56,6 +57,9 @@ class ExpenseRecordMapperTest {
       assertThat(expense.getIdentifier()).contains(IDENTIFIER);
       assertThat(expense.getTeamId()).isEqualTo(TEAM_ID);
       assertThat(expense.getPropertyId()).isEqualTo(PROPERTY_ID);
+      // Distinct from PROPERTY_ID: catches a setUnitId(record.getPropertyId()) copy-paste bug
+      // (BUUR-106 follow-up register, section F, item 8).
+      assertThat(expense.getUnitId()).contains(UNIT_ID);
       assertThat(expense.getCategory()).isEqualTo(ExpenseCategory.MAINTENANCE);
       assertThat(expense.getAmount().value()).isEqualByComparingTo(new BigDecimal("500.00"));
       assertThat(expense.getAmount().currency()).isEqualTo("EUR");
@@ -115,6 +119,7 @@ class ExpenseRecordMapperTest {
     record.setIdentifier(IDENTIFIER);
     record.setTeamId(TEAM_ID);
     record.setPropertyId(PROPERTY_ID);
+    record.setUnitId(UNIT_ID);
     record.setCategory("MAINTENANCE");
     record.setAmount(new BigDecimal("500.00"));
     record.setCurrency("EUR");
