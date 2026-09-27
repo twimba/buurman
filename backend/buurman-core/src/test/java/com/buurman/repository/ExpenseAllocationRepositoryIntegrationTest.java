@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import org.postgresql.ds.PGSimpleDataSource;
 
 import com.buurman.domain.AllocationBasis;
 import com.buurman.domain.ExpenseAllocation;
+import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ExpenseAllocationRecordMapperImpl;
 import com.buurman.util.MoneyAmount;
 
@@ -227,6 +229,34 @@ class ExpenseAllocationRepositoryIntegrationTest extends AbstractRepositoryInteg
                 assertThat(active)
                     .extracting(ExpenseAllocation::getUnitId)
                     .containsExactlyInAnyOrder(unit4Id));
+  }
+
+  @Test
+  @DisplayName(
+      "replaceForExpense called with a foreign teamId is rejected instead of writing an"
+          + " allocation row whose expense_id belongs to another team (BUUR-106 follow-up"
+          + " register, section F, cross-tenant writes)")
+  void replaceForExpenseWithForeignTeamIdIsRejected() {
+    List<ExpenseAllocation> teamASet =
+        List.of(allocation(unit1Id, "1200.00", AllocationBasis.EQUAL));
+    repository.replaceForExpense(expenseId, TEAM_A_ID, teamASet, USER_ID);
+
+    // TEAM_B_ID does not own expenseId. Before the fix, the lock query's team_id filter simply
+    // found no row and the method carried on regardless: the team-scoped soft-delete matched
+    // nothing (team A's real row stayed active, untouched), but the insert loop ran
+    // unconditionally and created a NEW row for unit2Id with expense_id = team A's real expense
+    // and team_id = TEAM_B_ID -- a row team B's own scoped reads would then return.
+    List<ExpenseAllocation> foreignSet =
+        List.of(allocation(unit2Id, "999.00", AllocationBasis.MANUAL));
+    assertThatThrownBy(
+            () -> repository.replaceForExpense(expenseId, TEAM_B_ID, foreignSet, USER_ID))
+        .isInstanceOf(NotFoundException.class);
+
+    // Team A's original allocation is untouched, and team B sees nothing for this expense.
+    List<ExpenseAllocation> teamAView = repository.findByExpenseIdAndTeamId(expenseId, TEAM_A_ID);
+    assertThat(teamAView).hasSize(1);
+    assertThat(teamAView.get(0).getUnitId()).isEqualTo(unit1Id);
+    assertThat(repository.findByExpenseIdAndTeamId(expenseId, TEAM_B_ID)).isEmpty();
   }
 
   private static PGSimpleDataSource pgDataSource(String jdbcUrl) {

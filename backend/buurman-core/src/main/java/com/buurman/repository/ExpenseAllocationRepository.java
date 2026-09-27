@@ -15,6 +15,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ExpenseAllocation;
+import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ExpenseAllocationRecordMapper;
 import com.buurman.util.SidGenerator;
 
@@ -82,6 +83,13 @@ public class ExpenseAllocationRepository {
    * alive at once, silently doubling the expense on a settlement statement. The lock forces the
    * second caller's soft-delete to see the first caller's committed rows as the current active set,
    * so it retires them properly before inserting its own.
+   *
+   * <p>The lock query also doubles as a tenant check: it filters on {@code team_id}, so a caller
+   * passing a {@code teamId} that does not own {@code expenseId} finds no row. Without checking
+   * that, the soft-delete below (also team-scoped) would silently match nothing while the insert
+   * loop still ran unconditionally -- creating {@code expense_allocations} rows whose {@code
+   * expense_id} points at another team's expense while {@code team_id} says otherwise, and leaving
+   * that other team's real active allocations untouched but now shadowed by a bogus foreign set.
    */
   public List<ExpenseAllocation> replaceForExpense(
       UUID expenseId, UUID teamId, List<ExpenseAllocation> allocations, UUID actorId) {
@@ -90,11 +98,15 @@ public class ExpenseAllocationRepository {
           DSLContext tx = config.dsl();
           LocalDateTime now = LocalDateTime.now(clock);
 
-          tx.select(EXPENSES.ID)
-              .from(EXPENSES)
-              .where(EXPENSES.ID.eq(expenseId).and(EXPENSES.TEAM_ID.eq(teamId)))
-              .forUpdate()
-              .fetchOne();
+          UUID lockedExpenseId =
+              tx.select(EXPENSES.ID)
+                  .from(EXPENSES)
+                  .where(EXPENSES.ID.eq(expenseId).and(EXPENSES.TEAM_ID.eq(teamId)))
+                  .forUpdate()
+                  .fetchOne(EXPENSES.ID);
+          if (lockedExpenseId == null) {
+            throw new NotFoundException("Expense not found");
+          }
 
           tx.update(EXPENSE_ALLOCATIONS)
               .set(EXPENSE_ALLOCATIONS.DELETED_AT, now)
