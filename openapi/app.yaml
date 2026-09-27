@@ -22329,8 +22329,6 @@ components:
           type: string
         idNumber:
           type: string
-        additionalInfo:
-          type: string
         companyName:
           type: string
         tradeName:
@@ -22538,8 +22536,6 @@ components:
         taxNumber:
           type: string
         idNumber:
-          type: string
-        additionalInfo:
           type: string
         companyName:
           type: string
@@ -23645,9 +23641,11 @@ components:
         floorLevel:
           type: integer
           format: int32
-        ceilingHeightM:
+        ceilingHeightValue:
           type: number
           exclusiveMinimum: 0
+        ceilingHeightUnit:
+          type: string
         hasStorefront:
           type: boolean
         hasSignageRights:
@@ -23669,9 +23667,11 @@ components:
     IndustrialDetailsRequest:
       type: object
       properties:
-        clearHeightM:
+        clearHeightValue:
           type: number
           exclusiveMinimum: 0
+        clearHeightUnit:
+          type: string
         loadingDocks:
           type: integer
           format: int32
@@ -23680,20 +23680,26 @@ components:
           type: integer
           format: int32
           minimum: 0
-        floorLoadCapacityKgSqm:
+        floorLoadCapacityValue:
           type: number
           exclusiveMinimum: 0
-        powerCapacityKva:
+        floorLoadCapacityUnit:
+          type: string
+        powerCapacityValue:
           type: integer
           format: int32
           exclusiveMinimum: 0
+        powerCapacityUnit:
+          type: string
         hasThreePhasePower:
           type: boolean
         hasCrane:
           type: boolean
-        craneCapacityTons:
+        craneCapacityValue:
           type: number
           exclusiveMinimum: 0
+        craneCapacityUnit:
+          type: string
         hasHazmatCertification:
           type: boolean
         hasVentilationSystem:
@@ -23804,9 +23810,11 @@ components:
           type: string
         electricityConnectionType:
           type: string
-        electricityCapacityAmps:
+        electricityCapacityValue:
           type: integer
           format: int32
+        electricityCapacityUnit:
+          type: string
         waterConnectionType:
           type: string
         hasGasConnection:
@@ -23815,9 +23823,11 @@ components:
           type: string
         internetConnectionType:
           type: string
-        internetMaxSpeedMbps:
+        internetMaxSpeedValue:
           type: integer
           format: int32
+        internetMaxSpeedUnit:
+          type: string
         internetStatus:
           type: string
         parkingSpaces:
@@ -23898,8 +23908,10 @@ components:
         floorLevel:
           type: integer
           format: int32
-        ceilingHeightM:
+        ceilingHeightValue:
           type: number
+        ceilingHeightUnit:
+          type: string
         hasStorefront:
           type: boolean
         hasSignageRights:
@@ -23919,25 +23931,33 @@ components:
     IndustrialDetailsResponse:
       type: object
       properties:
-        clearHeightM:
+        clearHeightValue:
           type: number
+        clearHeightUnit:
+          type: string
         loadingDocks:
           type: integer
           format: int32
         driveInDoors:
           type: integer
           format: int32
-        floorLoadCapacityKgSqm:
+        floorLoadCapacityValue:
           type: number
-        powerCapacityKva:
+        floorLoadCapacityUnit:
+          type: string
+        powerCapacityValue:
           type: integer
           format: int32
+        powerCapacityUnit:
+          type: string
         hasThreePhasePower:
           type: boolean
         hasCrane:
           type: boolean
-        craneCapacityTons:
+        craneCapacityValue:
           type: number
+        craneCapacityUnit:
+          type: string
         hasHazmatCertification:
           type: boolean
         hasVentilationSystem:
@@ -24065,9 +24085,11 @@ components:
           type: string
         electricityConnectionType:
           type: string
-        electricityCapacityAmps:
+        electricityCapacityValue:
           type: integer
           format: int32
+        electricityCapacityUnit:
+          type: string
         waterConnectionType:
           type: string
         hasGasConnection:
@@ -24076,9 +24098,11 @@ components:
           type: string
         internetConnectionType:
           type: string
-        internetMaxSpeedMbps:
+        internetMaxSpeedValue:
           type: integer
           format: int32
+        internetMaxSpeedUnit:
+          type: string
         internetStatus:
           type: string
         parkingSpaces:
@@ -24729,8 +24753,6 @@ components:
           items:
             $ref: '#/components/schemas/RentComponentRequest'
           description: Optional rent breakdown into components
-        endDateAfterStartDate:
-          type: boolean
       required:
         - contractType
         - paymentFrequency
@@ -26092,8 +26114,6 @@ components:
           type: string
         idNumber:
           type: string
-        additionalInfo:
-          type: string
         companyName:
           type: string
         tradeName:
@@ -26321,9 +26341,11 @@ components:
           type: string
         electricityConnectionType:
           type: string
-        electricityCapacityAmps:
+        electricityCapacityValue:
           type: integer
           format: int32
+        electricityCapacityUnit:
+          type: string
         waterConnectionType:
           type: string
         hasGasConnection:
@@ -26332,9 +26354,11 @@ components:
           type: string
         internetConnectionType:
           type: string
-        internetMaxSpeedMbps:
+        internetMaxSpeedValue:
           type: integer
           format: int32
+        internetMaxSpeedUnit:
+          type: string
         internetStatus:
           type: string
         parkingSpaces:
@@ -27056,8 +27080,6 @@ components:
             - GUARANTOR
             - COSIGNER
             - EXTRA_TENANT
-        validPartySource:
-          type: boolean
       required:
         - role
     CreateContractRequest:
@@ -27179,15 +27201,11 @@ components:
         countryMetadata:
           type: object
           additionalProperties: {}
-        endDateAfterStartDate:
-          type: boolean
         rentComponents:
           type: array
           items:
             $ref: '#/components/schemas/RentComponentRequest'
           description: Optional rent breakdown into components
-        exactlyOnePrimaryTenant:
-          type: boolean
       required:
         - contractType
         - parties
@@ -27210,8 +27228,6 @@ components:
             - GUARANTOR
             - COSIGNER
             - EXTRA_TENANT
-        validPartySource:
-          type: boolean
       required:
         - role
     ChangePrimaryContactRequest:
@@ -27221,8 +27237,6 @@ components:
           type: string
         newContact:
           $ref: "#/components/schemas/CreateContactRequest"
-        validPartySource:
-          type: boolean
     GeneratePaymentsRequest:
       type: object
       properties:
@@ -28687,11 +28701,11 @@ components:
           items:
             $ref: "#/components/schemas/MonthlyTrend"
       required:
+        - pendingCount
         - monthlyTrend
         - overdueAmount
         - overdueCount
         - pendingAmount
-        - pendingCount
     PaymentType:
       type: string
       description: RENT for regular rent, LATE_FEE for a fee charged on an overdue rent payment
@@ -29334,37 +29348,23 @@ components:
     NotificationStatsResponse:
       type: object
       properties:
-        totalCount:
+        total:
           type: integer
           format: int64
-        pendingCount:
-          type: integer
-          format: int64
-        sentCount:
-          type: integer
-          format: int64
-        deliveredCount:
-          type: integer
-          format: int64
-        failedCount:
-          type: integer
-          format: int64
-        demoBlockedCount:
-          type: integer
-          format: int64
+        byStatus:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
         byChannel:
           type: object
           additionalProperties:
             type: integer
             format: int64
       required:
+        - total
+        - byStatus
         - byChannel
-        - deliveredCount
-        - demoBlockedCount
-        - failedCount
-        - pendingCount
-        - sentCount
-        - totalCount
     InfoResponse:
       type: object
       properties:

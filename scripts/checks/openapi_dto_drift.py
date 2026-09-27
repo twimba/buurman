@@ -18,8 +18,6 @@ import re
 import sys
 from pathlib import Path
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = ROOT / "openapi" / "app.yaml"
 DTO_ROOTS = [
@@ -93,10 +91,49 @@ def parse_record(source):
     return m.group(1), [n for n in names if n]
 
 
+def spec_schemas(text):
+    """{schema name: [direct property names]} for components.schemas.
+
+    Hand-rolled rather than via PyYAML so this runs on a bare CI runner with no
+    pip install, exactly like scripts/bundle_openapi.py.
+    Only keys indented 8 spaces inside a schema's `properties:` block count, so
+    a nested object's own properties are not mistaken for the parent's.
+    """
+    schemas = {}
+    current = None
+    in_props = False
+    for line in text.split("\n"):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        indent = len(line) - len(line.lstrip())
+        m = re.match(r"^ {4}([A-Za-z_]\w*):\s*$", line)
+        if m:
+            current = m.group(1)
+            schemas.setdefault(current, [])
+            in_props = False
+            continue
+        if current is None:
+            continue
+        if indent <= 4 and line.strip().endswith(":") and indent < 4:
+            current = None
+            in_props = False
+            continue
+        if re.match(r"^ {6}properties:\s*$", line):
+            in_props = True
+            continue
+        if in_props and indent <= 6:
+            in_props = False
+        if in_props:
+            pm = re.match(r"^ {8}([A-Za-z_]\w*):", line)
+            if pm:
+                schemas[current].append(pm.group(1))
+    return schemas
+
+
 def main():
     quiet = "--quiet" in sys.argv
-    spec = yaml.safe_load(SPEC.read_text())
-    schemas = spec.get("components", {}).get("schemas", {}) or {}
+    raw = SPEC.read_text()
+    schemas = {k: {"properties": {p: {} for p in v}} for k, v in spec_schemas(raw).items() if v}
 
     dtos = {}
     for root in DTO_ROOTS:
