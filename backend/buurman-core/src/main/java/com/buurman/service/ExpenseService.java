@@ -333,6 +333,15 @@ public class ExpenseService {
 
     ExpenseResponse oldState = enrichExpenseResponse(expense, principal.requireTeamId());
 
+    // Captured before the mapper mutates `expense`, so re-allocation can be gated on whether an
+    // allocation input actually changed. NL service-charge settlement statements built from these
+    // rows are legal documents — re-running the split on every edit (e.g. a description typo fix)
+    // silently launders the recorded basis and, worse, can erase a MANUAL override.
+    UUID priorPropertyId = expense.getPropertyId();
+    Optional<UUID> priorUnitId = expense.getUnitId();
+    BigDecimal priorAmountValue = expense.getAmount().value();
+    String priorAmountCurrency = expense.getAmount().currency();
+
     expenseMapper.updateEntity(expense, request);
     request
         .contactIdentifier()
@@ -367,8 +376,20 @@ public class ExpenseService {
 
     Expense updatedExpense = expenseRepository.save(expense);
 
+    boolean allocationInputChanged =
+        !updatedExpense.getPropertyId().equals(priorPropertyId)
+            || !updatedExpense.getUnitId().equals(priorUnitId)
+            || updatedExpense.getAmount().value().compareTo(priorAmountValue) != 0
+            || !updatedExpense.getAmount().currency().equals(priorAmountCurrency);
+
     if (updatedExpense.getUnitId().isEmpty()) {
-      expenseAllocationService.allocate(updatedExpense, principal.getUserId());
+      // Only re-run the automatic split when something allocation-relevant actually changed — an
+      // unrelated edit (description, notes, category, date, contact) must leave the persisted
+      // rows untouched. allocate() itself additionally refuses to overwrite an active MANUAL set;
+      // that override is only ever lifted through the explicit recompute endpoint.
+      if (allocationInputChanged) {
+        expenseAllocationService.allocate(updatedExpense, principal.getUserId());
+      }
     } else {
       // The expense may have just gained a unitId (was building-level with per-unit allocation
       // rows); those rows must be retired so a settlement doesn't double-charge the unit — once by

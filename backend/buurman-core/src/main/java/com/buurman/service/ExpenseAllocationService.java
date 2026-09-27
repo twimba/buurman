@@ -138,18 +138,28 @@ public class ExpenseAllocationService {
 
   /**
    * Runs automatically whenever a building-level expense is created or updated (the caller is
-   * responsible for only calling this when the expense's {@code unitId} is empty). Uses the
-   * property's current allocation basis.
+   * responsible for only calling this when the expense's {@code unitId} is empty, and for only
+   * calling it when an allocation-relevant field actually changed). Uses the property's current
+   * allocation basis.
+   *
+   * <p>Refuses to overwrite an active MANUAL set — a landlord's hand-split survives every unrelated
+   * edit to the expense. Lifting a MANUAL override is only ever done explicitly, via {@link
+   * #overrideManual} again or the recompute endpoint ({@link #recompute}).
    */
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public List<ExpenseAllocationResponse> allocate(Expense expense, UUID actorId) {
+    if (hasActiveManualBasis(expense)) {
+      return getAllocations(expense);
+    }
     return computeAndPersist(expense, actorId);
   }
 
   /**
    * Explicit, user-triggered re-run of the automatic split using the property's <em>current</em>
    * allocation basis. Does not run implicitly on a basis change — see the class Javadoc for why.
+   * Unlike {@link #allocate}, this overwrites an active MANUAL set too — recompute is the one
+   * auditable, opt-in act that is allowed to lift a hand-split override.
    */
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
@@ -289,6 +299,18 @@ public class ExpenseAllocationService {
                   allocation.getUpdatedAt());
             })
         .toList();
+  }
+
+  /**
+   * Whether the expense's currently active allocation rows were a MANUAL override. A MANUAL set is
+   * always written and retired as one unit ({@link #overrideManual} replaces the whole active set
+   * in one call), so checking the first row is sufficient.
+   */
+  private boolean hasActiveManualBasis(Expense expense) {
+    return requireExpenseAllocationRepository()
+        .findByExpenseIdAndTeamId(expense.getId(), expense.getTeamId())
+        .stream()
+        .anyMatch(allocation -> allocation.getBasis() == AllocationBasis.MANUAL);
   }
 
   private ExpenseAllocationRepository requireExpenseAllocationRepository() {
