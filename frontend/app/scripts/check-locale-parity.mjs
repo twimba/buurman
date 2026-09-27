@@ -24,7 +24,12 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const LOCALES_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'locales');
+const LOCALES_DIR = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'public',
+  'locales'
+);
 const SOURCE_LOCALE = 'en';
 const PLURAL_SUFFIXES = ['zero', 'one', 'two', 'few', 'many', 'other'];
 const jsonOutput = process.argv.includes('--json');
@@ -48,7 +53,12 @@ function readNamespace(locale, namespace) {
     if (error.code === 'ENOENT') {
       return null;
     }
-    throw new Error(`${locale}/${namespace} is not valid JSON: ${error.message}`);
+    throw new Error(
+      `${locale}/${namespace} is not valid JSON: ${error.message}`,
+      {
+        cause: error,
+      }
+    );
   }
 }
 
@@ -104,7 +114,7 @@ const requiredCategories = new Map(
   targets.map((locale) => [
     locale,
     new Set(new Intl.PluralRules(locale).resolvedOptions().pluralCategories),
-  ]),
+  ])
 );
 
 const problems = [];
@@ -112,7 +122,12 @@ const problems = [];
 for (const namespace of namespaces) {
   const source = readNamespace(SOURCE_LOCALE, namespace);
   if (source === null) {
-    problems.push({ locale: SOURCE_LOCALE, namespace, kind: 'unreadable', keys: [] });
+    problems.push({
+      locale: SOURCE_LOCALE,
+      namespace,
+      kind: 'unreadable',
+      keys: [],
+    });
     continue;
   }
   const sourceGroups = groupKeys(leafKeys(source));
@@ -124,7 +139,9 @@ for (const namespace of namespaces) {
         locale,
         namespace,
         kind: 'missing-file',
-        keys: [`(all ${sourceGroups.plain.size + sourceGroups.plural.size} keys)`],
+        keys: [
+          `(all ${sourceGroups.plain.size + sourceGroups.plural.size} keys)`,
+        ],
       });
       continue;
     }
@@ -172,7 +189,12 @@ for (const namespace of namespaces) {
     }
 
     if (missing.length > 0) {
-      problems.push({ locale, namespace, kind: 'missing-keys', keys: missing.sort() });
+      problems.push({
+        locale,
+        namespace,
+        kind: 'missing-keys',
+        keys: missing.sort(),
+      });
     }
     if (missingPluralForms.length > 0) {
       problems.push({
@@ -183,7 +205,12 @@ for (const namespace of namespaces) {
       });
     }
     if (extra.length > 0) {
-      problems.push({ locale, namespace, kind: 'extra-keys', keys: extra.sort() });
+      problems.push({
+        locale,
+        namespace,
+        kind: 'extra-keys',
+        keys: extra.sort(),
+      });
     }
   }
 }
@@ -193,19 +220,26 @@ if (jsonOutput) {
 } else {
   console.log(
     `Locale parity: ${namespaces.length} namespaces x ${targets.length} target locales ` +
-      `against "${SOURCE_LOCALE}".`,
+      `against "${SOURCE_LOCALE}".`
   );
   for (const [locale, cats] of requiredCategories) {
     if (cats.size > 2) {
-      console.log(`  ${locale} requires plural categories: ${[...cats].sort().join(', ')}`);
+      console.log(
+        `  ${locale} requires plural categories: ${[...cats].sort().join(', ')}`
+      );
     }
   }
   if (problems.length === 0) {
-    console.log('OK — every locale defines the source key set with its own plural categories.');
+    console.log(
+      'OK — every locale defines the source key set with its own plural categories.'
+    );
   } else {
     for (const { locale, namespace, kind, keys } of problems) {
       const shown = keys.slice(0, 15);
-      const suffix = keys.length > shown.length ? ` … and ${keys.length - shown.length} more` : '';
+      const suffix =
+        keys.length > shown.length
+          ? ` … and ${keys.length - shown.length} more`
+          : '';
       console.error(`\n${locale}/${namespace} — ${kind} (${keys.length}):`);
       console.error(`  ${shown.join('\n  ')}${suffix}`);
     }

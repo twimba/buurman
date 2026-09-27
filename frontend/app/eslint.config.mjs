@@ -30,13 +30,37 @@ export default tseslint.config(
     rules: {
       'react/prop-types': 'off', // Using TypeScript for type checking
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      'no-restricted-syntax': ['warn', {
-        selector: 'Literal[value=/\\[#[0-9a-fA-F]{3,8}\\]/]',
-        message: 'Use design tokens instead of hardcoded hex values in Tailwind classes. See docs/DESIGN_SYSTEM.md.',
-      }],
+      'no-restricted-syntax': [
+        'warn',
+        {
+          selector: 'Literal[value=/\\[#[0-9a-fA-F]{3,8}\\]/]',
+          message:
+            'Use design tokens instead of hardcoded hex values in Tailwind classes. See docs/DESIGN_SYSTEM.md.',
+        },
+      ],
     },
   },
   {
-    ignores: ['dist/', 'build/', 'node_modules/', 'src/generated/', '*.config.js', '*.config.ts', '.pnp.cjs', '.pnp.loader.mjs'],
+    // Build-time Node scripts (not browser code): they legitimately use the
+    // Node globals that the browser-oriented config above does not define.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
+  {
+    ignores: [
+      'dist/',
+      'build/',
+      'node_modules/',
+      'src/generated/',
+      '*.config.js',
+      '*.config.ts',
+      '.pnp.cjs',
+      '.pnp.loader.mjs',
+    ],
   }
 );
