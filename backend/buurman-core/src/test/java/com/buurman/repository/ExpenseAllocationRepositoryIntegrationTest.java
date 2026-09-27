@@ -6,11 +6,19 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.postgresql.ds.PGSimpleDataSource;
 
 import com.buurman.domain.AllocationBasis;
 import com.buurman.domain.ExpenseAllocation;
@@ -137,6 +145,96 @@ class ExpenseAllocationRepositoryIntegrationTest extends AbstractRepositoryInteg
                         .in(savedIds)
                         .and(DSL.field("deleted_at", LocalDateTime.class).isNotNull())));
     assertThat(softDeletedRows).isEqualTo(2);
+  }
+
+  @Test
+  @DisplayName(
+      "two concurrent replaceForExpense calls on the same expense, from two separate connections,"
+          + " never leave both sets active at once (BUUR-106 Critical 1 — the row lock on the"
+          + " parent expense serialises them so the surviving active rows always sum to exactly"
+          + " the expense total, never double)")
+  void replaceForExpenseSerialisesConcurrentCallsFromSeparateConnections() throws Exception {
+    UUID unit3Id = UUID.randomUUID();
+    UUID unit4Id = UUID.randomUUID();
+    TestDataHelper.insertUnit(dsl, unit3Id, teamAPropertyId, TEAM_A_ID, "3", "VACANT");
+    TestDataHelper.insertUnit(dsl, unit4Id, teamAPropertyId, TEAM_A_ID, "4", "VACANT");
+
+    // Two genuinely separate JDBC connections to the same Postgres testcontainer — not two
+    // handles onto one connection — each driving its own ExpenseAllocationRepository instance, so
+    // the two replaceForExpense calls below run as two independent database transactions.
+    String jdbcUrl = dsl.connectionResult(conn -> conn.getMetaData().getURL());
+    DSLContext dslA = DSL.using(pgDataSource(jdbcUrl), SQLDialect.POSTGRES);
+    DSLContext dslB = DSL.using(pgDataSource(jdbcUrl), SQLDialect.POSTGRES);
+    ExpenseAllocationRepository repositoryA =
+        new ExpenseAllocationRepository(
+            dslA, TestDataHelper.wireMapper(new ExpenseAllocationRecordMapperImpl()), CLOCK);
+    ExpenseAllocationRepository repositoryB =
+        new ExpenseAllocationRepository(
+            dslB, TestDataHelper.wireMapper(new ExpenseAllocationRecordMapperImpl()), CLOCK);
+
+    // T1 recomputes the whole expense over units 1-3 (400.00 each = 1200.00). T2 concurrently
+    // overrides the whole expense onto unit 4 alone (1200.00) — this is the exact reproduction a
+    // reviewer ran against a real postgres:18-alpine with the actual partial unique index: before
+    // the fix, both committed with no error and the active allocations summed to 2400.00.
+    List<ExpenseAllocation> setA =
+        List.of(
+            allocation(unit1Id, "400.00", AllocationBasis.EQUAL),
+            allocation(unit2Id, "400.00", AllocationBasis.EQUAL),
+            allocation(unit3Id, "400.00", AllocationBasis.EQUAL));
+    List<ExpenseAllocation> setB = List.of(allocation(unit4Id, "1200.00", AllocationBasis.MANUAL));
+
+    CyclicBarrier barrier = new CyclicBarrier(2);
+    ExecutorService executor = Executors.newFixedThreadPool(2);
+    try {
+      Future<List<ExpenseAllocation>> futureA =
+          executor.submit(
+              () -> {
+                barrier.await();
+                return repositoryA.replaceForExpense(expenseId, TEAM_A_ID, setA, USER_ID);
+              });
+      Future<List<ExpenseAllocation>> futureB =
+          executor.submit(
+              () -> {
+                barrier.await();
+                return repositoryB.replaceForExpense(expenseId, TEAM_A_ID, setB, USER_ID);
+              });
+      futureA.get(15, TimeUnit.SECONDS);
+      futureB.get(15, TimeUnit.SECONDS);
+    } finally {
+      executor.shutdownNow();
+    }
+
+    List<ExpenseAllocation> finalActive = repository.findByExpenseIdAndTeamId(expenseId, TEAM_A_ID);
+
+    BigDecimal sum =
+        finalActive.stream()
+            .map(a -> a.getAmount().value())
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    assertThat(sum)
+        .as("surviving active allocations must sum to exactly the expense total, never double")
+        .isEqualByComparingTo("1200.00");
+
+    // The lock forces one call's full set to lose entirely to the other's, never a mix of both —
+    // proving the two transactions serialised rather than both independently committing.
+    assertThat(finalActive)
+        .as("active set must be exactly one caller's full output, not a union of both")
+        .satisfiesAnyOf(
+            active ->
+                assertThat(active)
+                    .extracting(ExpenseAllocation::getUnitId)
+                    .containsExactlyInAnyOrder(unit1Id, unit2Id, unit3Id),
+            active ->
+                assertThat(active)
+                    .extracting(ExpenseAllocation::getUnitId)
+                    .containsExactlyInAnyOrder(unit4Id));
+  }
+
+  private static PGSimpleDataSource pgDataSource(String jdbcUrl) {
+    PGSimpleDataSource dataSource = new PGSimpleDataSource();
+    dataSource.setUrl(jdbcUrl);
+    dataSource.setUser("buurman");
+    dataSource.setPassword("buurman");
+    return dataSource;
   }
 
   private ExpenseAllocation allocation(UUID unitId, String amount, AllocationBasis basis) {
