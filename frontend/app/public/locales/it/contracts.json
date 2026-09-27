@@ -564,6 +564,7 @@
     "retroactiveTooltip": "Verranno creati pagamenti di conguaglio per i pagamenti già saldati interessati dalle modifiche retroattive della data.",
     "exceedsMax": "Supera l'aumento massimo regolamentato del {{max}}%",
     "belowMin": "Inferiore all'aumento minimo regolamentato del {{min}}%",
+    "leaseOfTotal": "Contratto {{index}} di {{total}} per questo immobile",
     "tableHeaders": {
       "property": "Immobile",
       "currentRent": "Canone attuale",
@@ -800,6 +801,7 @@
       "bruksvardessystemApplicable": "Sistema Bruksvärde Applicabile",
       "energyDeclarationRating": "Classe Dichiarazione Energetica",
       "hyresnamndenEligible": "Idoneo Hyresnämnden",
+      "depositSum": "Importo Deposito",
       "vuokrasopimustyyppi": "Tipo Contratto (FI)",
       "vakuusAmount": "Importo Deposito",
       "vakuusMonths": "Deposito in Mesi",

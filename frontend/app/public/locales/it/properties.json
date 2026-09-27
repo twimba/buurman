@@ -136,7 +136,8 @@
       "history": "Cronologia",
       "noCalculation": "Nessun calcolo ancora",
       "noCalculationDescription": "Calcoli i punti WWS per determinare il canone massimo regolamentato per questo immobile.",
-      "noPreviousCalculations": "Nessun calcolo precedente."
+      "noPreviousCalculations": "Nessun calcolo precedente.",
+      "multiUnitUnsupported": "Questo edificio ha più unità. Apra un'unità per calcolarne i punti WWS."
     },
     "metadata": {
       "title": "Metadati",
@@ -419,7 +420,8 @@
       "occupancyIncomeTrend": "Andamento occupazione e entrate",
       "expenseBreakdown": "Ripartizione delle spese",
       "sixMonthProjection": "Proiezione a 6 mesi",
-      "equityOverview": "Panoramica del patrimonio"
+      "equityOverview": "Panoramica del patrimonio",
+      "unitOccupancy": "Occupazione per unità"
     },
     "summary": {
       "totalRoi": "ROI totale",
@@ -448,7 +450,8 @@
       "contactOccupied": "Occupato da contatto",
       "netIncomeTrend": "Andamento del reddito netto",
       "netIncome": "Reddito netto",
-      "noData": "Nessun dato sui contratti"
+      "noData": "Nessun dato sui contratti",
+      "buildingVacancyRate": "Tasso di sfitto dell'edificio"
     },
     "expense": {
       "noData": "Nessun dato sulle spese"
@@ -761,6 +764,13 @@
     },
     "pagination": {
       "showing": "{{from}} a {{to}} di {{total}} spese"
+    },
+    "allocation": {
+      "settingsToggle": "Impostazioni di ripartizione dei costi",
+      "buildingBadge": "Intero edificio",
+      "viewSplit": "Visualizza ripartizione",
+      "hideSplit": "Nascondi ripartizione",
+      "failedToLoad": "Impossibile caricare la ripartizione dei costi"
     }
   },
   "audit": {
@@ -808,7 +818,8 @@
       "notesPlaceholder": "Note aggiuntive...",
       "reason": "Motivo",
       "reasonPlaceholder": "Selezioni un motivo...",
-      "alreadyTakenPeriods": "Periodi già occupati"
+      "alreadyTakenPeriods": "Periodi già occupati",
+      "unitRequired": "Scelga a quale unità si riferisce questo periodo di occupazione."
     },
     "occupancyTypes": {
       "PERSONAL": "Personale",
@@ -1110,5 +1121,12 @@
   "lifecycle": {
     "openContract": "Apri contratto",
     "clickToEdit": "Clicca per modificare"
+  },
+  "unitOccupancy": {
+    "noUnits": "Nessuna unità",
+    "allVacant": "Libero",
+    "allOccupied": "Affittato",
+    "allUnavailable": "Non disponibile",
+    "mixed": "{{occupied}} affittate · {{vacant}} libere · {{unavailable}} non disponibili"
   }
 }

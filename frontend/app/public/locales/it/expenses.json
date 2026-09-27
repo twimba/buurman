@@ -74,7 +74,11 @@
     "createExpense": "Crea",
     "expenseSuffix": " spesa",
     "saving": "Salvataggio...",
-    "currency": "Valuta"
+    "currency": "Valuta",
+    "target": "Si applica a",
+    "targetBuilding": "L'intero edificio",
+    "targetUnit": "Una unità",
+    "unit": "Unità"
   },
   "validation": {
     "propertyRequired": "L'immobile è obbligatorio",

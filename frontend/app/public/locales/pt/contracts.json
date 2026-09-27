@@ -564,6 +564,7 @@
     "retroactiveTooltip": "Serão criados pagamentos de ajuste para quaisquer pagamentos já liquidados afetados por alterações retroativas.",
     "exceedsMax": "Excede o aumento máximo regulado de {{max}}%",
     "belowMin": "Abaixo do aumento mínimo regulado de {{min}}%",
+    "leaseOfTotal": "Contrato {{index}} de {{total}} neste imóvel",
     "tableHeaders": {
       "property": "Imóvel",
       "currentRent": "Renda Atual",
@@ -800,6 +801,7 @@
       "bruksvardessystemApplicable": "Sistema Bruksvärde Aplicável",
       "energyDeclarationRating": "Classificação Declaração Energética",
       "hyresnamndenEligible": "Elegível Hyresnämnden",
+      "depositSum": "Valor do Depósito",
       "vuokrasopimustyyppi": "Tipo Contrato (FI)",
       "vakuusAmount": "Valor do Depósito",
       "vakuusMonths": "Depósito em Meses",

@@ -1,0 +1,117 @@
+{
+  "term": {
+    "one": "Unità",
+    "other": "Unità"
+  },
+  "tab": "Unità",
+  "grid": {
+    "unit": "Unità",
+    "tenant": "Inquilino",
+    "rent": "Canone",
+    "status": "Stato",
+    "vacancyDays": "Libero da",
+    "vacancyDaysValue": "{{count}} giorno",
+    "vacancyDaysValue_other": "{{count}} giorni",
+    "noTenant": "—",
+    "empty": "Nessuna unità ancora.",
+    "occupancySummary": "{{occupied}} di {{total}} affittate",
+    "addUnit": "Aggiungi unità"
+  },
+  "detail": {
+    "title": "Unità {{number}}",
+    "backToProperty": "Torna a {{street}}",
+    "characteristics": "Caratteristiche",
+    "amenities": "Servizi",
+    "residential": "Stanze e arredamento"
+  },
+  "fields": {
+    "unitNumber": "Numero unità",
+    "name": "Nome",
+    "floor": "Piano",
+    "unitType": "Tipo",
+    "status": "Stato",
+    "areaValue": "Superficie",
+    "allocationShare": "Quota di spesa",
+    "wozSharePct": "Quota WOZ",
+    "energyEfficiencyRating": "Classe energetica",
+    "energyCertificateExpiryDate": "Scadenza certificato",
+    "heatingType": "Riscaldamento",
+    "coolingType": "Climatizzazione",
+    "hotWaterSystem": "Acqua calda",
+    "insulationNotes": "Note sull'isolamento",
+    "flooringType": "Pavimentazione",
+    "windowType": "Finestre",
+    "hasSmokeDetectors": "Rilevatori di fumo",
+    "hasCoDetectors": "Rilevatori di CO",
+    "hasFireExtinguisher": "Estintore",
+    "hasAdaptedBathroom": "Bagno attrezzato",
+    "accessibilityNotes": "Note sull'accessibilità",
+    "bedrooms": "Camere da letto",
+    "bathrooms": "Bagni",
+    "furnished": "Arredato",
+    "petPolicy": "Politica animali"
+  },
+  "sections": {
+    "floorArea": "Superficie",
+    "finishes": "Pavimenti e finestre",
+    "safety": "Sicurezza antincendio e fumo",
+    "accessibility": "Accessibilità",
+    "accessibilityDetails": "Dettagli sull'accessibilità"
+  },
+  "type": {
+    "APARTMENT": "Appartamento",
+    "PARKING": "Posto auto",
+    "STORAGE": "Cantina",
+    "COMMERCIAL": "Locale commerciale"
+  },
+  "status": {
+    "VACANT": "Libero",
+    "OCCUPIED": "Affittato",
+    "SELF_OCCUPIED": "Uso proprio",
+    "MAINTENANCE": "Manutenzione",
+    "UNAVAILABLE": "Non disponibile",
+    "UNDER_RENOVATION": "In ristrutturazione",
+    "FALLOW": "Incolto",
+    "LISTED": "Annunciato"
+  },
+  "split": {
+    "action": "Dividi in più unità",
+    "title": "Dividi {{street}} in unità",
+    "count": "Quante unità?",
+    "numbering": "Numerazione",
+    "numberingPattern": {
+      "NUMERIC": "1, 2, 3 …",
+      "ALPHABETIC": "A, B, C …",
+      "FLOOR_DOT_INDEX": "1.01, 1.02, 1.03 …"
+    },
+    "startFloor": "Piano di partenza",
+    "unitType": "Tipo di unità",
+    "keepsHistory": "La Sua unità esistente diventa la n. 1 e mantiene il contratto, le foto e la cronologia.",
+    "submit": "Crea unità",
+    "movedExplainer": "I dettagli dell'abitazione si trovano ora su ogni unità. Apra la scheda Unità per modificarli."
+  },
+  "allocation": {
+    "title": "Ripartizione dei costi",
+    "basis": "Ripartisca i costi dell'edificio per",
+    "basisOption": {
+      "AREA": "Superficie",
+      "EQUAL": "In parti uguali",
+      "CUSTOM": "Percentuali personalizzate",
+      "MANUAL": "Manualmente per spesa"
+    },
+    "share": "Quota",
+    "noArea": "Nessuna superficie impostata",
+    "preview": "Quota di ciascuna unità su {{amount}}",
+    "customTotalError": "Le quote personalizzate devono sommare a 100%. Attualmente sommano a {{total}}%."
+  },
+  "delete": {
+    "confirmTitle": "Eliminare l'unità {{number}}?",
+    "lastUnitBlocked": "Un immobile deve mantenere almeno un'unità, quindi questa non può essere eliminata.",
+    "activeContractBlocked": "Questa unità ha un contratto attivo. Chiuda prima il contratto."
+  },
+  "picker": {
+    "label": "Unità",
+    "placeholder": "Selezioni un'unità",
+    "required": "Scelga a quale unità si riferisce questo contratto."
+  }
+}
