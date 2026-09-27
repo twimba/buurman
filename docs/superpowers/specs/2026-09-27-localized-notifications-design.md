@@ -22,7 +22,7 @@ The ticket's "current state" section is stale. Verified on this branch:
 
 | Ticket claim | Reality |
 | --- | --- |
-| 24 email templates, English only | 25 templates, every one on `#{...}`, no hardcoded copy |
+| 24 email templates, English only | 25 files — 24 renderable templates plus the shared `_email-base` fragment — all on `#{...}`, no hardcoded copy |
 | bundles not wired into email rendering | `EmailTemplateConfig` wires `emailMessageSource` (`email-subjects`, `email-bodies`) into a dedicated `emailTemplateEngine` |
 | no locale resolution | `NotificationServiceImpl.resolveRecipientLocale`: explicit → user pref → team default → `en` |
 | translations missing | 13 locales, 203 body + 21 subject keys, **0 key diff** vs `en`, **0** template keys absent from bundles |
@@ -131,8 +131,14 @@ pass it — `PaymentReminderService` (contract document language, via
 `DocumentLanguages.firstSupportedOrDefault`) and the reminder-preview path
 (team default). Both supply context rather than an override, so the re-rank is
 behaviour-preserving for them; `PaymentReminderServiceTest:321` asserts only
-that the request carries `nl` and is unaffected. The stored tag on
-`notifications` continues to drive resends unchanged.
+that the request carries `nl` and is unaffected.
+
+The resend path (`NotificationServiceImpl` ~line 262) carries its **own
+duplicated** copy of the resolution — user preference, else team default — and
+consults neither the contact nor the original's language. Nothing persists a
+language tag on `notifications`, so a resent tenant reminder can come back in a
+different language than the original. The extracted resolver serves both paths,
+fixing that.
 
 Then the ordinary entity trail: `Contact` POJO, `ContactResponse`, create and
 update requests, `ContactRepository` insert/update, MapStruct mapper, OpenAPI
@@ -148,7 +154,7 @@ covered the day it is added, with no test to update.
 | Test | Asserts |
 | --- | --- |
 | `I18nBundleParityTest` | discovers every `messages/*.properties` family; all 13 locales present, exact key parity against `en`, and equal `{0}`/`{1}` placeholder arity per key. Excludes `test-*` fixtures. |
-| `EmailRenderMatrixTest` | 25 templates × 13 locales render through `emailTemplateEngine` without throwing, produce no unresolved `#{` or `??key??` markers, and yield a non-empty subject. |
+| `EmailRenderMatrixTest` | 24 renderable templates × 13 locales render through `emailTemplateEngine` without throwing, produce no unresolved `#{` or `??key??` markers, and yield a non-empty subject. `_`-prefixed fragment files are skipped — they are not standalone templates. |
 | `SmsSegmentBudgetTest` | 16 bodies × 13 locales with worst-case fixtures (30-character property name, long contact name) resolve to exactly one segment after fold and truncation. |
 | `locales.parity.test.ts` | `public/locales/*/*.json` namespace set and flattened key set match `en`; the directory set equals the generated `LanguageCode`. |
 
