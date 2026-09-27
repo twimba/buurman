@@ -192,7 +192,7 @@ public class PropertyBookletExporter {
     List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(propertyId, teamId);
     // The overwhelming majority of properties have exactly one unit (the implicit unit backfilled
     // for every pre-existing property); that case reads every dwelling field directly off it,
-    // exactly as it did before floor area/energy/residential attributes moved off Property in V068.
+    // exactly as it did before floor area/energy/residential attributes moved off Property in V070.
     Unit primaryUnit = units.size() == 1 ? units.get(0) : null;
 
     PropertyCategory category = property.getPropertyCategory();
@@ -243,7 +243,7 @@ public class PropertyBookletExporter {
     List<Expense> expenses = expenseRepository.findByPropertyId(propertyId, teamId);
     List<PropertyOutdoorArea> outdoorAreas =
         propertyOutdoorAreaRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-    // property_amenities was dropped in V068; amenity links now live on unit_amenities. The
+    // property_amenities was dropped in V070; amenity links now live on unit_amenities. The
     // property-wide Features page shows the single unit's amenities directly (single-unit case);
     // a genuinely multi-unit property has no single amenity set to show here without misleadingly
     // implying every unit has every amenity, so each unit's own amenities are listed in its detail
@@ -322,7 +322,7 @@ public class PropertyBookletExporter {
     v.put("street", property.getStreet());
     v.put("location", buildLocationString(property));
     v.put("propertyTypeLabel", enumLabels.label(property.getPropertyType(), locale));
-    // Status moved from properties to units in V068. A single unit (the common case) reads its
+    // Status moved from properties to units in V070. A single unit (the common case) reads its
     // status directly, exactly as the property used to; several units get an occupancy fraction
     // ("3/5 Occupied") since there is no longer one status value to show.
     UnitStatusSummary statusSummary = summarizeStatus(units, locale);
@@ -379,7 +379,7 @@ public class PropertyBookletExporter {
     v.put("structuralNotes", property.getStructuralNotes().filter(s -> !s.isBlank()).orElse(null));
 
     // ── Building specifications (skipped for agricultural) ──
-    // Energy rating/insulation notes/heating specs moved from properties to units in V068. A
+    // Energy rating/insulation notes/heating specs moved from properties to units in V070. A
     // letter grade can't be summed or averaged, so the rating shows for one unit directly and, for
     // several units, only when every one of them agrees; insulation notes and the heating/cooling/
     // hot-water/certificate-expiry fields are free text or unit-specific and have no meaningful
@@ -560,7 +560,7 @@ public class PropertyBookletExporter {
     addField(f, msg("field.foundation", locale), enumStr(property.getFoundationType()));
     addField(f, msg("field.roof.type", locale), enumStr(property.getRoofType()));
     addField(f, msg("field.wall.construction", locale), enumStr(property.getWallConstruction()));
-    // Window type/flooring moved from properties to units in V068; a multi-unit property has no
+    // Window type/flooring moved from properties to units in V070; a multi-unit property has no
     // single value for these, so they only appear here for the single-unit case (and per-unit in
     // the Units section's detail blocks otherwise).
     if (primaryUnit != null) {
@@ -866,7 +866,7 @@ public class PropertyBookletExporter {
 
   /**
    * Smoke/CO detectors, fire extinguisher, adapted bathroom and accessibility notes moved from
-   * properties to units in V068. They read directly off the property's lone unit in the common
+   * properties to units in V070. They read directly off the property's lone unit in the common
    * single-unit case; a genuinely multi-unit property has no single answer for "does this building
    * have smoke detectors" (unit 3 might, unit 7 might not), so those unit-specific checks are
    * dropped from this page and shown per-unit in the Units section instead. The property-level
@@ -1098,7 +1098,7 @@ public class PropertyBookletExporter {
   }
 
   /**
-   * Occupancy status moved from properties to units in V068. One unit reads its status directly,
+   * Occupancy status moved from properties to units in V070. One unit reads its status directly,
    * exactly as the property used to; several units get an occupancy fraction ("3/5 Occupied") since
    * there is no longer a single status value — mirrors {@code PropertySummaryAssembler}'s
    * aggregation for the same field.
@@ -1370,7 +1370,7 @@ public class PropertyBookletExporter {
   }
 
   /**
-   * Area moved from properties to units in V068. A single unit's area reads exactly as the
+   * Area moved from properties to units in V070. A single unit's area reads exactly as the
    * property's total area used to; several units get the sum, which is still meaningfully "the
    * total area" the field label promises — unlike a status or an energy grade, floor area is
    * additive.

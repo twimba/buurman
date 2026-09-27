@@ -32,7 +32,7 @@ public class PropertyTabularExportBuilder {
         unitRepository.findAllByTeamId(teamId).stream()
             .collect(Collectors.groupingBy(Unit::getPropertyId));
 
-    // Status, Area, Energy Rating and Heating moved from properties to units in V068: a property
+    // Status, Area, Energy Rating and Heating moved from properties to units in V070: a property
     // now has N units, so each column is an aggregate across them. A single-unit property (the
     // overwhelming majority, backfilled as one implicit unit) degenerates to that one unit's raw
     // value, reading exactly as it did before the migration.

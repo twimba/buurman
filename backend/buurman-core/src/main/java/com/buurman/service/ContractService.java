@@ -1428,7 +1428,7 @@ public class ContractService {
 
   /**
    * Reinstates the business rule that was deleted when {@code properties.status} was dropped in
-   * V068, retargeted from the property to its unit:
+   * V070, retargeted from the property to its unit:
    *
    * <ul>
    *   <li>{@code newStatus == ACTIVE && oldStatus != ACTIVE}: the unit becomes {@code OCCUPIED}.

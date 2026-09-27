@@ -309,7 +309,7 @@ public class WwsPointsCalculatorService {
     UUID teamId = principal.getTeamId().orElseThrow();
 
     // Surface area, energy label, bedrooms (residential details) and accessibility fields
-    // (hasAdaptedBathroom) moved from `properties` to `units`/`unit_residential_details` in V068.
+    // (hasAdaptedBathroom) moved from `properties` to `units`/`unit_residential_details` in V070.
     // WWS points are a per-dwelling figure, so pre-fill reads the unit, not its building.
     Unit unit = unitRepository.getByIdentifierAndTeamId(unitIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(unit.getPropertyId(), teamId);

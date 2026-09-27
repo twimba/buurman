@@ -398,7 +398,7 @@ public class DemoDataService {
     log.debug("Deleted {} property outdoor areas", deleted);
 
     // 13b. Property category-specific details
-    // Note: property_amenities and property_residential_details were dropped in V068
+    // Note: property_amenities and property_residential_details were dropped in V070
     // (BUUR-106); their unit-level replacements (unit_amenities, unit_residential_details)
     // are deleted below, alongside units, before properties.
     deleted =

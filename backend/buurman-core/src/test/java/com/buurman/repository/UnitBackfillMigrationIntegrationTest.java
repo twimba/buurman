@@ -15,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("V068 units backfill")
+@DisplayName("V070 units backfill")
 class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationTest {
 
   private static final LocalDateTime NOW = LocalDateTime.of(2026, 3, 1, 12, 0);
@@ -28,7 +28,7 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
   private static final UUID OTHER_USER_ID = UUID.randomUUID();
 
   /**
-   * Every column V068's {@code INSERT INTO units ... SELECT ... FROM properties} copies off the
+   * Every column V070's {@code INSERT INTO units ... SELECT ... FROM properties} copies off the
    * property, plus the two it derives ({@code unit_type} from {@code property_category}, {@code
    * area_unit} via {@code coalesce}). Two instances with pairwise-different values are seeded so a
    * transposed pair of columns cannot pass.
@@ -110,7 +110,7 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
           USER_ID,
           "COMMERCIAL");
 
-  /** Every column V068's {@code INSERT INTO unit_residential_details ... SELECT} copies. */
+  /** Every column V070's {@code INSERT INTO unit_residential_details ... SELECT} copies. */
   private record ResidentialDetails(
       Integer bedrooms,
       Integer bathrooms,
@@ -143,7 +143,7 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
           OTHER_USER_ID,
           USER_ID);
 
-  /** Every column V068's {@code INSERT INTO unit_amenities ... SELECT} copies. */
+  /** Every column V070's {@code INSERT INTO unit_amenities ... SELECT} copies. */
   private record AmenityLink(
       String amenityName,
       String notes,
@@ -570,7 +570,7 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
     return id;
   }
 
-  /** Seeds a property with a value in every column V068's units backfill reads. */
+  /** Seeds a property with a value in every column V070's units backfill reads. */
   private UUID seedDwellingProperty(UUID teamId, String street, PropertyDwelling dwelling) {
     seedTeamAndUser(teamId);
     UUID id = UUID.randomUUID();

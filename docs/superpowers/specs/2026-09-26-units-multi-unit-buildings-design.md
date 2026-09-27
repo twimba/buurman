@@ -187,7 +187,7 @@ and a different practical cost split.
 
 ## 2. Migration & backfill
 
-One migration, `V068__units.sql`. Postgres DDL is transactional, so it is
+One migration, `V070__units.sql`. Postgres DDL is transactional, so it is
 all-or-nothing. Ordered steps:
 
 1. Create `units`, `unit_residential_details`, `unit_amenities`,
@@ -444,10 +444,10 @@ the production allocation path.
 ### The migration-test wrinkle
 
 `AbstractRepositoryIntegrationTest` applies *all* migrations once at container
-start, so it cannot seed pre-V068 state. The backfill test needs its own
+start, so it cannot seed pre-V070 state. The backfill test needs its own
 Testcontainer running Flyway with `target=V067`, seeding properties with dwelling
 data plus contracts, occupancy periods and WWS calculations, then migrating to
-V068 and asserting:
+V070 and asserting:
 
 - every property has exactly one unit, flagged `is_implicit`
 - every contract has a `unit_id` pointing at a unit of its own property
@@ -458,7 +458,7 @@ This is a new test base class, not a reuse of the existing one. Budget for it.
 
 ## Build sequence
 
-1. Migration `V068__units.sql` + JOOQ regen + backfill integration test
+1. Migration `V070__units.sql` + JOOQ regen + backfill integration test
 2. Backend domain / DTOs / repository / mapper / service / controller + OpenAPI +
    unit tests
 3. Allocation engine + tests

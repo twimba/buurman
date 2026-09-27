@@ -33,7 +33,7 @@ import com.buurman.util.MoneyAmount;
  * locale-neutral (area, bed/bath, energy grade, year); money/dates are localized via {@link
  * BookletFormatter}.
  *
- * <p>Status/area/energy/bed-bath moved from {@code properties} to {@code units} in V068, so a
+ * <p>Status/area/energy/bed-bath moved from {@code properties} to {@code units} in V070, so a
  * property with several units has N values for each of these, not one. The overwhelming majority of
  * properties still have exactly one unit (the implicit unit backfilled for every pre-existing
  * property), and for that case every field below reads exactly as it did before the migration —

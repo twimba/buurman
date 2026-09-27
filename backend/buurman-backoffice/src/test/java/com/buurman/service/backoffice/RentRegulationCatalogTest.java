@@ -1,6 +1,7 @@
 package com.buurman.service.backoffice;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.buurman.domain.LateFeePolicy;
 import com.buurman.domain.regulation.CatalogCountry;
 import com.buurman.domain.regulation.CatalogRegion;
 import com.buurman.domain.regulation.CatalogRule;
+import com.buurman.domain.regulation.CatalogTenancyRule;
 import com.buurman.domain.regulation.RentRegulationCatalog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -146,6 +148,60 @@ class RentRegulationCatalogTest {
         }
       }
     }
+  }
+
+  @Test
+  @DisplayName("every tenancy rule carries a topic, label and value, and resolves its region")
+  void tenancyRules_areWellFormed() {
+    RentRegulationCatalog catalog = loader.load();
+
+    for (CatalogCountry country : catalog.countries()) {
+      Set<String> regionCodes = new HashSet<>();
+      for (CatalogRegion region : safe(country.regions())) {
+        regionCodes.add(region.regionCode());
+      }
+      for (CatalogTenancyRule rule : safe(country.tenancyRules())) {
+        assertThat(rule.topic()).as("topic in %s", country.countryCode()).isNotNull();
+        assertThat(rule.label()).as("label in %s", country.countryCode()).isNotBlank();
+        assertThat(rule.value()).as("value in %s", country.countryCode()).isNotBlank();
+        if (rule.regionCode() != null) {
+          assertThat(regionCodes)
+              .as(
+                  "tenancy rule in %s references region '%s' that is not declared",
+                  country.countryCode(), rule.regionCode())
+              .contains(rule.regionCode());
+        }
+        if (rule.effectiveFrom() != null) {
+          assertThat(rule.effectiveFrom())
+              .as("effectiveFrom in %s", country.countryCode())
+              .matches("\\d{4}-\\d{2}-\\d{2}");
+        }
+      }
+    }
+  }
+
+  @Test
+  @DisplayName("a country with no tenancy rules loads cleanly")
+  void tenancyRules_areOptional() {
+    RentRegulationCatalog catalog = loader.load();
+
+    assertThat(catalog.countries())
+        .as("the bundled catalog ships most countries without tenancy rules")
+        .anySatisfy(c -> assertThat(safe(c.tenancyRules())).isEmpty());
+  }
+
+  @Test
+  @DisplayName("an unknown tenancy-rule topic fails the parse")
+  void unknownTopic_failsParse() {
+    String json =
+        """
+        {"version":"t","generatedAt":"2026-01-01","countries":[
+          {"countryCode":"XX","countryName":"X","hasRegionalRegulations":false,
+           "tenancyRules":[{"topic":"NOT_A_TOPIC","label":"l","value":"v"}]}]}
+        """;
+
+    assertThatThrownBy(() -> new ObjectMapper().readValue(json, RentRegulationCatalog.class))
+        .isInstanceOf(com.fasterxml.jackson.databind.exc.InvalidFormatException.class);
   }
 
   private static <T> List<T> safe(List<T> list) {

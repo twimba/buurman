@@ -56,7 +56,7 @@ const selectCls =
 const inputCls = selectCls;
 const labelCls = 'block text-sm font-medium text-text-secondary mb-1';
 
-// Mirrors the backend's own implicit-unit backfill rule (V068): a residential or mixed-use
+// Mirrors the backend's own implicit-unit backfill rule (V070): a residential or mixed-use
 // building's sole unit defaults to APARTMENT, everything else to COMMERCIAL. The landlord is
 // never asked to pick a "unit type" when creating a property -- this keeps the create form's
 // (optional) dwelling section consistent with what the backend would default to anyway.

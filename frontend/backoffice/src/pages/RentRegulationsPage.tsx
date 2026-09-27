@@ -301,7 +301,8 @@ function CountriesTab() {
             Reloaded catalog <strong>v{reloadResult.version}</strong> (
             {reloadResult.generatedAt}): {reloadResult.countriesLoaded}{' '}
             countries, {reloadResult.regionsLoaded} regions,{' '}
-            {reloadResult.rulesLoaded} rules.
+            {reloadResult.rulesLoaded} rules,{' '}
+            {reloadResult.tenancyRulesLoaded} tenancy rules.
           </p>
           <button
             onClick={() => setReloadResult(null)}

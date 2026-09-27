@@ -142,7 +142,7 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
   }
 
   @Test
-  @DisplayName("save() bumps version on every update, starting from 0 on insert (V071)")
+  @DisplayName("save() bumps version on every update, starting from 0 on insert (V072)")
   void saveIncrementsVersionOnEveryUpdate() {
     Unit saved =
         repository.save(
@@ -232,7 +232,7 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
 
   @Test
   @DisplayName(
-      "save()'s UPDATE does not resurrect a soft-deleted unit (V071: DELETED_AT IS NULL guard)")
+      "save()'s UPDATE does not resurrect a soft-deleted unit (V072: DELETED_AT IS NULL guard)")
   void updateDoesNotResurrectASoftDeletedUnit() {
     Unit saved =
         repository.save(

@@ -522,7 +522,7 @@ class ContractServiceTest {
   /**
    * Same reflection technique as {@link ResolveUnitId}, applied to {@code
    * updateUnitStatusBasedOnContract} — the business rule reinstated for BUUR-106 Task 12 after
-   * {@code properties.status} was dropped in V068. Only {@code unitRepository} and {@code
+   * {@code properties.status} was dropped in V070. Only {@code unitRepository} and {@code
    * contractRepository} are reached, so only those two fields are injected.
    */
   @Nested

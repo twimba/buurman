@@ -1,12 +1,12 @@
 -- =============================================================================
 -- BUUR-106 pre-flight checks — run against a RESTORED PRODUCTION SNAPSHOT
--- before deploying migrations V068..V071.
+-- before deploying migrations V070..V072.
 --
 -- Read-only. Safe to run against production directly, though a snapshot is
 -- preferred so that the rehearsal in buur-106-rehearsal.sh can follow it.
 --
 -- Every migration in this branch has only ever run against empty databases.
--- These checks assert the preconditions V068 and V071 silently assume. Each
+-- These checks assert the preconditions V070 and V072 silently assume. Each
 -- ABORT below corresponds to a statement that will fail the deploy partway
 -- through, leaving Flyway's schema_history marked failed and requiring the
 -- snapshot restore the deploy plan already provides for.
@@ -26,7 +26,7 @@ DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.tables
                WHERE table_schema = current_schema() AND table_name = 'units') THEN
-        RAISE EXCEPTION 'A "units" table already exists — V068 has already been applied to this database. Restore a pre-V068 snapshot.';
+        RAISE EXCEPTION 'A "units" table already exists — V070 has already been applied to this database. Restore a pre-V070 snapshot.';
     END IF;
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables
                    WHERE table_schema = current_schema() AND table_name = 'properties') THEN
@@ -50,7 +50,7 @@ ORDER BY 1;
 
 \echo ''
 \echo '--- 1. Sessions that would block the ALTER TABLEs ---------------'
-\echo '    V068 takes ACCESS EXCLUSIVE on contracts, property_occupancy_periods'
+\echo '    V070 takes ACCESS EXCLUSIVE on contracts, property_occupancy_periods'
 \echo '    and wws_calculations. Anything here queues the migration, and every'
 \echo '    later query queues behind the migration. Expect 0 rows at deploy'
 \echo '    time (Quartz paused, app stopped).'
@@ -75,7 +75,7 @@ SELECT count(*) AS abort_properties_null_status FROM properties WHERE status IS 
 
 \echo ''
 \echo '--- A2. child rows with no property -> unit_id stays NULL -------'
-\echo '    V068 populates unit_id by joining units on property_id, then does'
+\echo '    V070 populates unit_id by joining units on property_id, then does'
 \echo '    SET NOT NULL. A NULL or dangling property_id aborts that statement.'
 SELECT 'contracts.property_id IS NULL' AS problem, count(*) AS abort_rows FROM contracts WHERE property_id IS NULL
 UNION ALL SELECT 'contracts -> missing property', count(*) FROM contracts c WHERE c.property_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM properties p WHERE p.id = c.property_id)
@@ -100,8 +100,8 @@ ORDER BY 1;
 \echo ''
 \echo '--- A4. >1 ACTIVE contract per property -------------------------'
 \echo '    *** THE MOST LIKELY BLOCKER. READ THIS ONE CAREFULLY. ***'
-\echo '    V068 gives every property exactly ONE implicit unit, so all of a'
-\echo '    property''s contracts land on that single unit. V071 then creates'
+\echo '    V070 gives every property exactly ONE implicit unit, so all of a'
+\echo '    property''s contracts land on that single unit. V072 then creates'
 \echo '    uq_contracts_one_active_per_unit and RAISES if any unit carries two'
 \echo '    ACTIVE contracts. A duplex or HMO entered today as ONE property with'
 \echo '    two active tenancies -- precisely the case BUUR-106 exists to fix --'
@@ -130,7 +130,7 @@ LIMIT 200;
 
 \echo ''
 \echo '--- A5. team_id divergence between a child row and its property -'
-\echo '    V071 adds composite FKs. units.team_id is copied from the property,'
+\echo '    V072 adds composite FKs. units.team_id is copied from the property,'
 \echo '    so this only bites if a child row already disagrees with its parent.'
 SELECT 'contracts vs property' AS problem, count(*) AS abort_rows
 FROM contracts c JOIN properties p ON p.id = c.property_id WHERE c.team_id <> p.team_id
@@ -181,7 +181,7 @@ FROM properties;
 
 \echo ''
 \echo '--- W4. occupancy overlaps under the re-scoped GiST constraint --'
-\echo '    V068 re-scopes excl_occupancy_periods_no_overlap from property_id to'
+\echo '    V070 re-scopes excl_occupancy_periods_no_overlap from property_id to'
 \echo '    unit_id. With one unit per property the two are equivalent, so this'
 \echo '    should be 0; a non-zero value means the existing constraint is not'
 \echo '    doing what its name says.'

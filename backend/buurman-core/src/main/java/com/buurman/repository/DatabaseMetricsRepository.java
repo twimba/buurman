@@ -106,7 +106,7 @@ public class DatabaseMetricsRepository {
 
   /**
    * Renamed from {@code countPropertiesByStatus} (BUUR-106 wave3c Important 7): {@code
-   * properties.status} was dropped in V068 in favor of per-unit status, but the query kept grouping
+   * properties.status} was dropped in V070 in favor of per-unit status, but the query kept grouping
    * by {@code units.status} while still feeding a gauge registered as {@code
    * buurman.properties.by.status} -- {@code sum(by_status)} equalled {@code
    * buurman_properties_count} before that deploy and silently stopped after it. The gauge is now

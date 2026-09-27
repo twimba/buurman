@@ -19,11 +19,11 @@ import com.buurman.util.SidGenerator;
 
 /**
  * Proves the {@code excl_occupancy_periods_no_overlap} exclusion constraint against the real
- * PostgreSQL constraint (not a mock), for the exact behavior V068 re-scoped: two units of the same
+ * PostgreSQL constraint (not a mock), for the exact behavior V070 re-scoped: two units of the same
  * property may now overlap, which was impossible when the constraint was keyed by {@code
  * property_id}.
  */
-@DisplayName("PropertyOccupancyPeriodRepository — unit-scoped exclusion constraint (V068)")
+@DisplayName("PropertyOccupancyPeriodRepository — unit-scoped exclusion constraint (V070)")
 class PropertyOccupancyPeriodRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
 
   private PropertyOccupancyPeriodRepository repository;
@@ -74,7 +74,7 @@ class PropertyOccupancyPeriodRepositoryIntegrationTest extends AbstractRepositor
   @Test
   @DisplayName(
       "allows two overlapping self-occupancy periods on different units of the same property —"
-          + " impossible before the unit_id re-scope in V068")
+          + " impossible before the unit_id re-scope in V070")
   void allowsOverlapOnDifferentUnits() {
     repository.save(period(unit1Id, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 6, 30)));
 

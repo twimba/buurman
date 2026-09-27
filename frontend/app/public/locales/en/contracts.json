@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Maximum {{percentage}}% of the amount due",
       "noticeDays": "Formal notice period: {{count}} days"
+    },
+    "tenancyRules": {
+      "title": "Tenancy rules",
+      "subtitle": "Reference only — not rent-increase limits. Verify locally.",
+      "effectiveFrom": "From {{date}}",
+      "source": "Source",
+      "topic": {
+        "NOTICE_PERIOD": "Notice periods",
+        "TENANCY_DURATION": "Tenancy duration",
+        "DEPOSIT": "Deposits",
+        "LEASE_FORM": "Lease formalities",
+        "REGISTRATION": "Registration duties",
+        "FEES_AND_PENALTIES": "Fees and penalties",
+        "OTHER": "Other"
+      }
     }
   },
   "rentIncrease": {

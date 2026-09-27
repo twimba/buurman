@@ -253,7 +253,7 @@ class OccupancyPeriodServiceTest {
       // What the OLD, property-scoped implementation would have queried: an existing period
       // already recorded for this property. If the service regressed to keying findOverlapping()
       // by property_id instead of unit_id, both creates below would see this non-empty result and
-      // throw — exactly the bug the unit_id re-scope (V068) fixes. Stubbed leniently: the whole
+      // throw — exactly the bug the unit_id re-scope (V070) fixes. Stubbed leniently: the whole
       // point of this test is that the (correct) implementation never calls this overload.
       PropertyOccupancyPeriod existingOnProperty = new PropertyOccupancyPeriod();
       existingOnProperty.setId(UUID.randomUUID());

@@ -22,7 +22,7 @@
 - Use idiomatic `Optional` (`map`, `orElse`, `orElseThrow`, `ifPresent`, `flatMap`). Never `opt.get()` without an `isPresent()` check, never `if (opt != null)`.
 - Domain POJOs use `@Data @Builder @NoArgsConstructor @AllArgsConstructor` with `@Builder.Default private Optional<X> field = Optional.empty();` for nullable fields.
 - Google Java Style. Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`).
-- Flyway migrations are append-only. **Never modify an existing migration.** Next version is **V068**.
+- Flyway migrations are append-only. **Never modify an existing migration.** Next version is **V070**.
 - Sid identifiers are `VARCHAR(29)`: a 3-char `EntityPrefix` plus 26 ULID chars.
 - `UnitStatus` values are exactly: `VACANT`, `OCCUPIED`, `SELF_OCCUPIED`, `MAINTENANCE`, `UNAVAILABLE`, `UNDER_RENOVATION`, `FALLOW`, `LISTED`.
 - `UnitType` values are exactly: `APARTMENT`, `PARKING`, `STORAGE`, `COMMERCIAL`. ROOM is deliberately out of scope.
@@ -45,7 +45,7 @@ Five failure modes the spec implies but that no task's happy-path tests would ex
 ## File Structure
 
 **Migrations**
-- Create: `backend/buurman-jooq/src/main/resources/db/migration/V068__units.sql` — the entire model change in one transactional migration.
+- Create: `backend/buurman-jooq/src/main/resources/db/migration/V070__units.sql` — the entire model change in one transactional migration.
 
 **`buurman-common`**
 - Create: `domain/Unit.java` — dwelling POJO, Optional-based.
@@ -81,7 +81,7 @@ Five failure modes the spec implies but that no task's happy-path tests would ex
 
 ## Task 1: Migration test harness and the failing backfill test
 
-`AbstractRepositoryIntegrationTest` applies **all** migrations at container start, so it cannot seed pre-V068 state. This task builds a separate base class that migrates to V067, lets the test seed, then migrates the rest of the way.
+`AbstractRepositoryIntegrationTest` applies **all** migrations at container start, so it cannot seed pre-V070 state. This task builds a separate base class that migrates to V067, lets the test seed, then migrates the rest of the way.
 
 **Files:**
 - Create: `backend/buurman-core/src/test/java/com/buurman/repository/AbstractMigrationIntegrationTest.java`
@@ -171,7 +171,7 @@ abstract class AbstractMigrationIntegrationTest {
 
 - [ ] **Step 2: Write the failing backfill test**
 
-Create `UnitBackfillMigrationIntegrationTest.java`. This seeds a property with dwelling data, a contract, an occupancy period and a WWS calculation at V067, then migrates to V068 and asserts the backfill.
+Create `UnitBackfillMigrationIntegrationTest.java`. This seeds a property with dwelling data, a contract, an occupancy period and a WWS calculation at V067, then migrates to V070 and asserts the backfill.
 
 ```java
 package com.buurman.repository;
@@ -187,7 +187,7 @@ import org.jooq.impl.DSL;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("V068 units backfill")
+@DisplayName("V070 units backfill")
 class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationTest {
 
   private static final LocalDateTime NOW = LocalDateTime.of(2026, 3, 1, 12, 0);
@@ -368,7 +368,7 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
 
 Run: `cd backend && mvn test -pl buurman-core -Dtest='UnitBackfillMigrationIntegrationTest'`
 
-Expected: FAIL. Every test errors with a PostgreSQL error like `relation "units" does not exist`, because V068 has not been written yet. Docker must be running.
+Expected: FAIL. Every test errors with a PostgreSQL error like `relation "units" does not exist`, because V070 has not been written yet. Docker must be running.
 
 - [ ] **Step 4: Commit the harness**
 
@@ -380,12 +380,12 @@ git commit -m "test: add migration harness and failing units backfill test (BUUR
 
 ---
 
-## Task 2: The V068 migration
+## Task 2: The V070 migration
 
 Makes Task 1's test pass. **After this task the main source set will not compile** — dropping `properties.status` and the dwelling columns invalidates JOOQ-generated references in `Property`, `PropertyRecordMapper` and `PropertyRepository`. Task 4 restores compilation. This is expected and is why Task 3 and Task 4 follow immediately.
 
 **Files:**
-- Create: `backend/buurman-jooq/src/main/resources/db/migration/V068__units.sql`
+- Create: `backend/buurman-jooq/src/main/resources/db/migration/V070__units.sql`
 
 **Interfaces:**
 - Consumes: `AbstractMigrationIntegrationTest` from Task 1.
@@ -393,11 +393,11 @@ Makes Task 1's test pass. **After this task the main source set will not compile
 
 - [ ] **Step 1: Write the migration — table creation**
 
-Create `V068__units.sql` starting with:
+Create `V070__units.sql` starting with:
 
 ```sql
 -- =============================================================================
--- V068__units.sql
+-- V070__units.sql
 -- Introduce a Unit entity under Property (BUUR-106).
 -- Property becomes the building; Unit becomes the dwelling.
 -- Every existing property is backfilled with one implicit unit, so unit_id can
@@ -850,7 +850,7 @@ Expected: **FAIL** with `cannot find symbol` on `PROPERTIES.STATUS`, `PROPERTIES
 - [ ] **Step 8: Commit**
 
 ```bash
-git add backend/buurman-jooq/src/main/resources/db/migration/V068__units.sql
+git add backend/buurman-jooq/src/main/resources/db/migration/V070__units.sql
 git commit -m "feat(db): add units, unit details, amenities and expense allocations (BUUR-106)
 
 Backfills one implicit unit per property (soft-deleted included) so unit_id
@@ -900,7 +900,7 @@ public enum UnitType {
 }
 ```
 
-`UnitStatus.java` — a verbatim move of the former `Property.PropertyStatus`, so the V068 backfill copies values across with no mapping:
+`UnitStatus.java` — a verbatim move of the former `Property.PropertyStatus`, so the V070 backfill copies values across with no mapping:
 
 ```java
 package com.buurman.domain;
@@ -1330,7 +1330,7 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
 }
 ```
 
-`TestDataHelper.insertProperty(dsl, teamId, createdBy, street)` returning the new `UUID` may not exist in that exact shape. If it does not, add it in this task following the `insertUnit` helper's style, setting only the post-V068 property columns (no `status`, no `area_value`).
+`TestDataHelper.insertProperty(dsl, teamId, createdBy, street)` returning the new `UUID` may not exist in that exact shape. If it does not, add it in this task following the `insertUnit` helper's style, setting only the post-V070 property columns (no `status`, no `area_value`).
 
 - [ ] **Step 2: Run the test to verify it fails**
 
@@ -1963,7 +1963,7 @@ git commit -m "feat: bulk-create units, promoting the implicit unit in place (BU
 - Create: `backend/buurman-common/src/main/java/com/buurman/dto/request/UpdateUnitResidentialDetailsRequest.java`
 - Create: `openapi/src/paths/units.yaml`
 - Modify: `openapi/src/app.yaml`
-- Delete: the property-level residential-details and amenities controller/service/repository code that V068 orphaned
+- Delete: the property-level residential-details and amenities controller/service/repository code that V070 orphaned
 
 **Interfaces:**
 - Consumes: `UnitService` (Tasks 7–8).
@@ -1986,7 +1986,7 @@ GET     /units/{identifier}/amenities                -> List<AmenityResponse>
 PUT     /units/{identifier}/amenities                -> List<AmenityResponse>
 ```
 
-The residential-details and amenities pairs replace the property-level equivalents that V068 dropped. Find the existing property-level handlers — search `grep -rn "residential-details\|amenities" backend/buurman-core/src/main/java/com/buurman/controller/` — and move them onto the unit, reusing `AmenityResponse` unchanged. `UnitResidentialDetailsResponse` is a new record `(Integer bedrooms, Integer bathrooms, boolean furnished, String petPolicy)` mirroring the dropped `PropertyResidentialDetailsResponse`. A `UnitResidentialDetailsRepository` and `UnitAmenityRepository` follow the `UnitRepository` pattern from Task 5, both filtering `team_id`.
+The residential-details and amenities pairs replace the property-level equivalents that V070 dropped. Find the existing property-level handlers — search `grep -rn "residential-details\|amenities" backend/buurman-core/src/main/java/com/buurman/controller/` — and move them onto the unit, reusing `AmenityResponse` unchanged. `UnitResidentialDetailsResponse` is a new record `(Integer bedrooms, Integer bathrooms, boolean furnished, String petPolicy)` mirroring the dropped `PropertyResidentialDetailsResponse`. A `UnitResidentialDetailsRepository` and `UnitAmenityRepository` follow the `UnitRepository` pattern from Task 5, both filtering `team_id`.
 
 Read `PropertyController` for the project's `@Tag`, `@Operation`, `@ApiResponse` and `@Valid` conventions and mirror them. The controller carries no authorization annotations — those live on the service.
 
@@ -2652,7 +2652,7 @@ Expected: BUILD SUCCESS. Record the test count — it should be at or above the 
 
 Run: `make down-v && make dev`, wait ~30s, then `cd backend && mvn spring-boot:run -pl buurman-app -am`
 
-Expected: Flyway applies V068 cleanly on an empty database and the app starts. Then re-run against a database that already had pre-V068 data if one is available — that is the only end-to-end check of the backfill outside the test harness.
+Expected: Flyway applies V070 cleanly on an empty database and the app starts. Then re-run against a database that already had pre-V070 data if one is available — that is the only end-to-end check of the backfill outside the test harness.
 
 - [ ] **Step 6: Commit**
 
@@ -2667,6 +2667,6 @@ git commit -m "fix: green the backend suite after the units model change (BUUR-1
 
 - `cd backend && mvn test` is green.
 - `grep -rn "PropertyStatus" backend/ --include=*.java` returns nothing.
-- A fresh `make down-v && make dev` plus app boot applies V068 without error.
+- A fresh `make down-v && make dev` plus app boot applies V070 without error.
 - `openapi/app.yaml` contains the unit paths and `yarn generate:api` produces a client (plan 2 consumes it).
 - Plan 2 (frontend) and plan 3 (exports, letters, demo data, i18n) are unblocked.

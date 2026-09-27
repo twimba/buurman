@@ -76,7 +76,7 @@ public class DemoAuditLogGenerator {
   }
 
   private void collectPropertyAuditLogs(UUID teamId, List<Object[]> auditRecords) {
-    // Status/area/heating/energy fields moved from properties to units in V068 (BUUR-106);
+    // Status/area/heating/energy fields moved from properties to units in V070 (BUUR-106);
     // dropped from the demo audit payload rather than faking values here.
     var records =
         dsl.select(

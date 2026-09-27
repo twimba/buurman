@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Έως {{percentage}}% του οφειλόμενου ποσού",
       "noticeDays": "Προθεσμία όχλησης: {{count}} ημέρες"
+    },
+    "tenancyRules": {
+      "title": "Κανόνες μίσθωσης",
+      "subtitle": "Μόνο για ενημέρωση — όχι όρια αύξησης ενοικίου. Επαληθεύστε τοπικά.",
+      "effectiveFrom": "Από {{date}}",
+      "source": "Πηγή",
+      "topic": {
+        "NOTICE_PERIOD": "Προθεσμίες καταγγελίας",
+        "TENANCY_DURATION": "Διάρκεια μίσθωσης",
+        "DEPOSIT": "Εγγυήσεις",
+        "LEASE_FORM": "Τυπικές προϋποθέσεις μίσθωσης",
+        "REGISTRATION": "Υποχρεώσεις καταχώρισης",
+        "FEES_AND_PENALTIES": "Τέλη και κυρώσεις",
+        "OTHER": "Άλλο"
+      }
     }
   },
   "rentIncrease": {

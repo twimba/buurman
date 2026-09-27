@@ -271,7 +271,7 @@ public class ContractBookletExporter {
 
     v.put("propertyTypeLabel", enumLabels.label(property.getPropertyType(), locale));
     v.put("propertyCategoryLabel", enumLabels.label(property.getPropertyCategory(), locale));
-    // Area moved from properties to units in V068. A contract always belongs to exactly one unit,
+    // Area moved from properties to units in V070. A contract always belongs to exactly one unit,
     // so this is a direct read — no aggregation needed, unlike the property-level exports.
     v.put(
         "propertyArea",

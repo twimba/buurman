@@ -1,5 +1,5 @@
 -- =============================================================================
--- V068__units.sql
+-- V070__units.sql
 -- Introduce a Unit entity under Property (BUUR-106).
 -- Property becomes the building; Unit becomes the dwelling.
 -- Every existing property is backfilled with one implicit unit, so unit_id can

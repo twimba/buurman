@@ -98,7 +98,7 @@ public class TakeoutService {
    * row). Kept in sync by hand with {@code categories} -- a companion test in this module diffs
    * this set against every team-scoped table in the JOOQ meta-model, so a migration that adds a new
    * team-scoped table without updating either list fails the build instead of silently shipping an
-   * export with a hole in it (BUUR-106 wave3c Critical 5: V068 dropped ten-plus columns and two
+   * export with a hole in it (BUUR-106 wave3c Critical 5: V070 dropped ten-plus columns and two
    * whole tables from the export this way, unnoticed).
    */
   static final Set<Table<?>> EXPORTED_TABLES =

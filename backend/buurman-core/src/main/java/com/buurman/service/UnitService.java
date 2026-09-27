@@ -72,7 +72,7 @@ public class UnitService {
   // Gates createUnit/bulkCreateUnits only (BUUR-106). Several defects — WWS pricing reads,
   // occupancy reporting and expense-allocation edits — are still property-scoped rather than
   // unit-scoped, and only manifest once a property has more than one unit. createInitialUnit, the
-  // V068 backfill, reads (getUnit/listUnits) and edits of existing units (updateUnit/deleteUnit)
+  // V070 backfill, reads (getUnit/listUnits) and edits of existing units (updateUnit/deleteUnit)
   // are deliberately never gated: the never-zero-units invariant and read access must survive a
   // team being piloted and then switched back off.
   private final FeatureFlagService featureFlagService;
@@ -199,7 +199,7 @@ public class UnitService {
     implicitUnit.setImplicit(false);
     implicitUnit.setUnitNumber(label);
     implicitUnit.setSortOrder(sortOrder);
-    // V068 copies the building's whole area_value onto the implicit unit, and its
+    // V070 copies the building's whole area_value onto the implicit unit, and its
     // allocation_share (if any) likewise describes the whole building, not this one promoted unit
     // among its new siblings. Left in place, a split into N units would leave the entire
     // building's floor area on unit 1 — silently charging it every AREA-based expense in full

@@ -74,7 +74,7 @@ public class OccupancyPeriodService {
 
     // Validate no overlapping occupancy periods on this unit. Scoped by unit_id to match the
     // excl_occupancy_periods_no_overlap exclusion constraint (re-scoped from property_id to
-    // unit_id in V068): two units of the same property may legitimately overlap.
+    // unit_id in V070): two units of the same property may legitimately overlap.
     LocalDate endDate = request.endDate().orElse(LocalDate.of(9999, 12, 31));
     List<PropertyOccupancyPeriod> overlapping =
         repository.findOverlapping(unit.getId(), teamId, request.startDate(), endDate, null);
@@ -107,7 +107,7 @@ public class OccupancyPeriodService {
 
     repository.save(period);
 
-    // Reinstated business rule (deleted when properties.status was dropped in V068), retargeted
+    // Reinstated business rule (deleted when properties.status was dropped in V070), retargeted
     // to the unit: a period that is genuinely CURRENT marks its unit SELF_OCCUPIED. "Current" means
     // started (startDate not in the future) AND not already ended (endDate null or not in the
     // past) — a back-recorded historical period (e.g. "I lived here 2019-2020" for tax purposes)
@@ -189,7 +189,7 @@ public class OccupancyPeriodService {
     period.setUpdatedBy(principal.getUserId());
     repository.save(period);
 
-    // Reinstated business rule (deleted when properties.status was dropped in V068), retargeted
+    // Reinstated business rule (deleted when properties.status was dropped in V070), retargeted
     // to the unit: only set the unit to VACANT when the end date is today or earlier AND the
     // unit's current status is still SELF_OCCUPIED. Do not unconditionally mark VACANT — a unit
     // that is e.g. under maintenance or rented via a separate contract must not be overwritten.
@@ -220,7 +220,7 @@ public class OccupancyPeriodService {
             && (period.getEndDate().isEmpty()
                 || !period.getEndDate().get().isBefore(LocalDate.now(clock)));
 
-    // Reinstated business rule (deleted when properties.status was dropped in V068), retargeted
+    // Reinstated business rule (deleted when properties.status was dropped in V070), retargeted
     // to the unit: only set the unit to VACANT when the deleted period was active (wasActive,
     // computed above) AND the unit's current status is still SELF_OCCUPIED. Do not
     // unconditionally mark VACANT — a unit that is e.g. under maintenance or rented via a

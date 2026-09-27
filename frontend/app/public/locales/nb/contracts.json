@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Maks {{percentage}} % av forfalt beløp",
       "noticeDays": "Betalingsfrist etter varsel: {{count}} dager"
+    },
+    "tenancyRules": {
+      "title": "Leieforholdsregler",
+      "subtitle": "Kun til referanse — ikke grenser for husleieøkning. Bekreft lokalt.",
+      "effectiveFrom": "Fra {{date}}",
+      "source": "Kilde",
+      "topic": {
+        "NOTICE_PERIOD": "Oppsigelsesfrister",
+        "TENANCY_DURATION": "Leieperiodens varighet",
+        "DEPOSIT": "Depositum",
+        "LEASE_FORM": "Formkrav til leieavtale",
+        "REGISTRATION": "Registreringsplikt",
+        "FEES_AND_PENALTIES": "Gebyrer og sanksjoner",
+        "OTHER": "Annet"
+      }
     }
   },
   "rentIncrease": {

@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Höchstens {{percentage}}% des fälligen Betrags",
       "noticeDays": "Mahnfrist: {{count}} Tage"
+    },
+    "tenancyRules": {
+      "title": "Mietrechtliche Regelungen",
+      "subtitle": "Nur zur Information — keine Mieterhöhungsgrenzen. Bitte lokal prüfen.",
+      "effectiveFrom": "Ab {{date}}",
+      "source": "Quelle",
+      "topic": {
+        "NOTICE_PERIOD": "Kündigungsfristen",
+        "TENANCY_DURATION": "Mietdauer",
+        "DEPOSIT": "Kaution",
+        "LEASE_FORM": "Formvorschriften für Mietverträge",
+        "REGISTRATION": "Meldepflichten",
+        "FEES_AND_PENALTIES": "Gebühren und Strafen",
+        "OTHER": "Sonstiges"
+      }
     }
   },
   "rentIncrease": {

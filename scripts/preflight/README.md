@@ -1,10 +1,10 @@
 # BUUR-106 deploy pre-flight and rehearsal
 
-Migrations `V068__units.sql`, `V069__multi_unit_flag.sql` and
-`V071__unit_parent_consistency.sql` have only ever run against **empty** databases (fresh
+Migrations `V070__units.sql`, `V071__multi_unit_flag.sql` and
+`V072__unit_parent_consistency.sql` have only ever run against **empty** databases (fresh
 Testcontainers). This directory is what closes that gap before they meet production data.
 
-`V068` is **irreversible**: it drops 16 columns from `properties` and drops the
+`V070` is **irreversible**: it drops 16 columns from `properties` and drops the
 `property_amenities` and `property_residential_details` tables, seconds after copying them onto the
 new implicit units. There is no rollback migration. Recovery is the snapshot.
 
@@ -12,7 +12,7 @@ new implicit units. There is no rollback migration. Recovery is the snapshot.
 
 Agreed for this release:
 
-- **Announced maintenance window.** V068 is not split into expand/contract, so the old application
+- **Announced maintenance window.** V070 is not split into expand/contract, so the old application
   version cannot serve reads once it commits.
 - **Quartz paused before the deploy**, so no scheduled job holds a lock the `ALTER TABLE`s must
   queue behind.
@@ -22,12 +22,12 @@ Agreed for this release:
 ## Verified, not just written
 
 Both scripts were exercised end to end against a throwaway `postgres:18-alpine` with migrations
-V001-V067 applied (a genuine pre-V068 schema), seeded with two properties and a duplex holding two
+V001-V067 applied (a genuine pre-V070 schema), seeded with two properties and a duplex holding two
 ACTIVE contracts:
 
 - pre-flight ran clean (exit 0) and abort condition **A4 reported 1**, naming the offending property
   and both contract identifiers;
-- the rehearsal applied V068 and V069, then **V071 raised**
+- the rehearsal applied V070 and V071, then **V072 raised**
   `contracts: 1 unit(s) already carry more than one ACTIVE contract`, and the script exited non-zero
   with "Do NOT deploy" -- i.e. it catches this before a maintenance window, not during one;
 - after re-statusing the surplus contract, the rehearsal **passed**, its verification block reported
@@ -55,8 +55,8 @@ Steps 2 and 3 are cheap. Step 3 is the one that actually proves the deploy works
 
 **A4 — a property with more than one ACTIVE contract.**
 
-V068 gives every existing property exactly **one** implicit unit, so all of that property's
-contracts attach to that one unit. V071 then creates
+V070 gives every existing property exactly **one** implicit unit, so all of that property's
+contracts attach to that one unit. V072 then creates
 `uq_contracts_one_active_per_unit` and raises if any unit carries two active contracts.
 
 So a duplex, an HMO, or a subdivided house that a landlord entered **today as a single property with
@@ -70,8 +70,8 @@ If A4 is non-zero, pick one before deploying:
   data, but it changes what the landlord sees and loses the building grouping.
 - **(b) End or re-status the surplus contracts.** Fastest, and wrong: these are live tenancies, and
   the contract status is legally meaningful.
-- **(c) Write a data-repair migration (recommended).** A `V070`-style step that runs *between* V068
-  and V071: for each property with N active contracts, create N−1 additional **non-implicit** units
+- **(c) Write a data-repair migration (recommended).** A `V070`-style step that runs *between* V070
+  and V072: for each property with N active contracts, create N−1 additional **non-implicit** units
   and move the surplus contracts onto them. This is the only option that preserves both the tenancy
   records and the building grouping, and it leaves the customer with exactly the multi-unit building
   the feature is about. It needs the `unit_number` naming decision made deliberately, since tenants

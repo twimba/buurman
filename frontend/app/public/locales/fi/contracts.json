@@ -524,6 +524,21 @@
       },
       "maxPercentage": "Enintään {{percentage}} % erääntyneestä summasta",
       "noticeDays": "Maksuvaatimuksen määräaika: {{count}} päivää"
+    },
+    "tenancyRules": {
+      "title": "Vuokrasuhteen säännöt",
+      "subtitle": "Vain viitteellinen — ei vuokrankorotusrajoja. Tarkista paikallisesti.",
+      "effectiveFrom": "Alkaen {{date}}",
+      "source": "Lähde",
+      "topic": {
+        "NOTICE_PERIOD": "Irtisanomisajat",
+        "TENANCY_DURATION": "Vuokrasuhteen kesto",
+        "DEPOSIT": "Vakuudet",
+        "LEASE_FORM": "Vuokrasopimuksen muotovaatimukset",
+        "REGISTRATION": "Rekisteröintivelvollisuudet",
+        "FEES_AND_PENALTIES": "Maksut ja seuraamukset",
+        "OTHER": "Muu"
+      }
     }
   },
   "rentIncrease": {

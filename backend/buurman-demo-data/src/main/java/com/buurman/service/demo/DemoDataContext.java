@@ -95,7 +95,7 @@ public class DemoDataContext {
   private final Map<UUID, Double> propertyCountryRentMultipliers = new LinkedHashMap<>();
 
   // Property UUID -> every unit id generated for it, in unit-number order (BUUR-106:
-  // contracts.unit_id and friends are NOT NULL as of V068, so every demo property needs at least
+  // contracts.unit_id and friends are NOT NULL as of V070, so every demo property needs at least
   // one before contracts are generated). Single-unit properties get exactly one implicit unit;
   // curated multi-unit buildings get one entry per DemoUnitGenerator.UnitPlan below.
   private final Map<UUID, List<UUID>> unitIdsByProperty = new LinkedHashMap<>();

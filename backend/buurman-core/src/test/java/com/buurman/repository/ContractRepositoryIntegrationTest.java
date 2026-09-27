@@ -24,14 +24,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Proves {@code ContractRepository.save()} actually persists {@code unit_id} against a real
  * PostgreSQL NOT NULL constraint (BUUR-106 Task 16). {@code contracts.unit_id} became NOT NULL in
- * V068, but until this test existed, no integration test created a contract through {@link
+ * V070, but until this test existed, no integration test created a contract through {@link
  * ContractRepository#save} — every existing test either mocked the repository or inserted contracts
  * with raw SQL that included {@code unit_id} by hand (see {@link TestDataHelper#insertContract}).
  * That gap let a real regression (the repository silently dropping {@code unit_id} on insert) pass
  * the full suite; see the temporary revert performed while writing this test, recorded in the Task
  * 16 report.
  */
-@DisplayName("ContractRepository — unit_id write path (V068)")
+@DisplayName("ContractRepository — unit_id write path (V070)")
 class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
 
   private ContractRepository repository;
@@ -161,7 +161,7 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   @Test
   @DisplayName(
       "the database itself rejects a contract whose unit_id belongs to a different property"
-          + " (fk_contracts_unit_property, V071)")
+          + " (fk_contracts_unit_property, V072)")
   void rejectsUnitFromADifferentProperty() {
     UUID otherPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
     LocalDateTime now = LocalDateTime.of(2026, 3, 1, 12, 0);
@@ -196,7 +196,7 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   @Test
   @DisplayName(
       "the database itself rejects a second ACTIVE contract on the same unit"
-          + " (uq_contracts_one_active_per_unit, V071) -- a 409, not the 500 TooManyRowsException"
+          + " (uq_contracts_one_active_per_unit, V072) -- a 409, not the 500 TooManyRowsException"
           + " used to throw once two concurrent activations raced past the application-level guard")
   void rejectsASecondActiveContractOnTheSameUnit() {
     repository.save(contractBuilder().build());

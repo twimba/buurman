@@ -88,7 +88,7 @@ public class PropertyRepository {
 
   /**
    * "A property with status X" now means "a property with at least one non-deleted unit whose
-   * status is X" — status moved from {@code properties} to {@code units} in V068, and a property
+   * status is X" — status moved from {@code properties} to {@code units} in V070, and a property
    * itself no longer carries a single status once it can hold several independently-let units.
    */
   public List<Property> findByTeamIdAndStatus(UUID teamId, UnitStatus status) {
@@ -274,7 +274,7 @@ public class PropertyRepository {
     Condition condition = PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       // "A vacant property" (etc.) now means "a property with at least one non-deleted unit in
-      // that status" — status moved from properties to units in V068.
+      // that status" — status moved from properties to units in V070.
       condition = condition.and(hasUnitWithStatus(teamId, UnitStatus.valueOf(status)));
     }
     if (category != null && !category.isEmpty()) {

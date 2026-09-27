@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# BUUR-106 migration rehearsal — runs the REAL V068/V069/V071 against a
+# BUUR-106 migration rehearsal — runs the REAL V070/V071/V072 against a
 # restored production snapshot, times each one, then ROLLS BACK.
 #
 # Postgres makes all the DDL in these three migrations transactional, so the
@@ -9,8 +9,8 @@
 # migrations succeed against real data and (b) how long the maintenance window
 # has to be.
 #
-# This is the check that has never been performed. V068 and V071 have only ever
-# run against empty databases, and V071 contains DO blocks that RAISE EXCEPTION
+# This is the check that has never been performed. V070 and V072 have only ever
+# run against empty databases, and V072 contains DO blocks that RAISE EXCEPTION
 # on data that real tenants plausibly have (see abort condition A4 in
 # buur-106-preflight.sql).
 #
@@ -44,7 +44,7 @@ MIGRATION_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../backend/buurman-jooq/s
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
-MIGRATIONS=(V068__units.sql V069__multi_unit_flag.sql V071__unit_parent_consistency.sql)
+MIGRATIONS=(V070__units.sql V071__multi_unit_flag.sql V072__unit_parent_consistency.sql)
 
 for m in "${MIGRATIONS[@]}"; do
     if [[ ! -f "$MIGRATION_DIR/$m" ]]; then

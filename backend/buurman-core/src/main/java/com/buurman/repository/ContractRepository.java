@@ -218,7 +218,7 @@ public class ContractRepository {
   }
 
   /**
-   * At most one row is expected ({@code uq_contracts_one_active_per_unit}, added in V071), but a
+   * At most one row is expected ({@code uq_contracts_one_active_per_unit}, added in V072), but a
    * legacy duplicate predating that constraint is still possible. {@code limit(1)} with a
    * deterministic {@code orderBy} makes that degrade to "pick the oldest" instead of throwing
    * {@link org.jooq.exception.TooManyRowsException} (which {@code fetchOptional()} does on >1 row

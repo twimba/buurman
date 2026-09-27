@@ -379,7 +379,7 @@ class UnitServiceTest {
         "renumbers the promoted implicit unit to the batch's first label — not just its own"
             + " pre-existing number")
     void renumbersPromotedImplicitUnitToFirstLabel() {
-      // The implicit unit is seeded as "1" (V068 backfills every implicit unit's unit_number as
+      // The implicit unit is seeded as "1" (V070 backfills every implicit unit's unit_number as
       // literal "1"), which is realistic but means a NUMERIC batch's first label ("1") can't tell
       // "renumbered" apart from "never renumbered". ALPHABETIC's first label ("A") differs from
       // the seed, so this test can actually detect a missing setUnitNumber call.
@@ -419,7 +419,7 @@ class UnitServiceTest {
     @Test
     @DisplayName(
         "clears the promoted implicit unit's inherited area and allocation share (BUUR-106"
-            + " Important 4) — V068 copies the building's whole area onto the implicit unit, so"
+            + " Important 4) — V070 copies the building's whole area onto the implicit unit, so"
             + " left in place a 6-way split would leave the entire building's floor area (and its"
             + " WWS legal rent ceiling) on unit 1 alone")
     void clearsInheritedAreaAndAllocationShareOnPromotion() {

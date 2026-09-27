@@ -35,20 +35,20 @@ decomposed into three plans with the frontend in plan 2. Those decisions are inc
 
 Do **not** ship a compile-only stub patch: it deletes 16 dwelling fields from the property page
 for every existing landlord (the single-unit majority the implicit-unit design exists to shield),
-is ~600 lines that plan 2 then rewrites, and V068 is irreversible so "revert if users complain" is
+is ~600 lines that plan 2 then rewrites, and V070 is irreversible so "revert if users complain" is
 unavailable. Estimated: plan 2's minimum usable subset (Tasks 1–4, 6 partial, plus WWS repair
 which plan 2 does not currently contain) ≈ 45–50h.
 
-### A2. Split V068 into expand/contract before deploying
+### A2. Split V070 into expand/contract before deploying
 Severity: **blocker (deploy)**
 
-V068 creates tables, backfills, **and drops 16 columns plus two tables in one transaction**, while
+V070 creates tables, backfills, **and drops 16 columns plus two tables in one transaction**, while
 Flyway runs at application startup on a rolling-deploy platform. JOOQ never emits `SELECT *`, so
-the old jar names `properties.status` explicitly. At the instant V068 commits, the still-serving
+the old jar names `properties.status` explicitly. At the instant V070 commits, the still-serving
 old container fails **every** property read. If the new container fails its healthcheck for any
 unrelated reason there is no forward path and no backward path — only point-in-time recovery.
 
-Fix: V068 (expand — create, backfill, add nullable `unit_id`, populate) → an app release tolerating
+Fix: V070 (expand — create, backfill, add nullable `unit_id`, populate) → an app release tolerating
 both schemas → V070 (contract — `SET NOT NULL`, re-scope GiST, drop). If that is refused, stop all
 old containers before starting the new one and announce it as a planned maintenance window.
 
@@ -77,7 +77,7 @@ conditional ship defensible rather than optimistic.
 ### A4. Pre-flight queries against a restored production snapshot
 Severity: **blocker (deploy)**
 
-V068 has been verified only against an empty database, which exercises none of the backfill, none
+V070 has been verified only against an empty database, which exercises none of the backfill, none
 of the lock behaviour and none of the duration. Before deploying, run and record:
 
 ```sql
@@ -93,7 +93,7 @@ SELECT unit_id FROM contracts WHERE status = 'ACTIVE' AND deleted_at IS NULL
 
 `properties.status` never had a CHECK constraint while `units.status` does, so a single out-of-band
 value aborts an irreversible migration. The risk is low (the enum was only ever appended to) but
-the query costs five seconds. Also write and test a **forward-recovery V069** that re-creates the
+the query costs five seconds. Also write and test a **forward-recovery V071** that re-creates the
 two dropped tables and 16 columns from `units WHERE is_implicit` — for the single-unit majority it
 is lossless and converts "restore from backup" into "roll forward to the old schema".
 
@@ -153,7 +153,7 @@ zero metrics despite its Javadoc calling recomputation "an auditable, opt-in act
 Severity: **high**
 
 `TakeoutService` exports none of `units`, `unit_residential_details`, `unit_amenities`,
-`expense_allocations`. Because it projects the live JOOQ meta-model, V068's `DROP COLUMN`s silently
+`expense_allocations`. Because it projects the live JOOQ meta-model, V070's `DROP COLUMN`s silently
 removed area, energy rating, heating and ten more from the `properties` sheet, and the two dropped
 tables' sheets vanished with them. A landlord exercising data portability, or leaving for a
 competitor, receives an export with **no dwelling data** — and `property_occupancy_periods` ships a
@@ -222,7 +222,7 @@ first.
 ### C5. `deleteProperty` does not cascade the soft delete to units
 Severity: **medium**
 
-V068 itself copies `p.deleted_at` onto every backfilled unit, establishing the invariant — but
+V070 itself copies `p.deleted_at` onto every backfilled unit, establishing the invariant — but
 `deleteProperty` breaks it. Since `UnitRepository`'s single-row lookups deliberately omit the
 `properties` join, `PUT /units/{id}/amenities` and `…/residential-details` still **accept writes**
 on units of a deleted property, and `DELETE` returns a nonsensical "cannot delete the last unit".
@@ -258,7 +258,7 @@ it makes the spec's "the model stays extensible" true of the code rather than on
 ### C8. `buurman-booklets` imports `buurman-core`'s repositories
 Severity: **medium**
 
-Twelve of them, directly. V068 deleted two and the module's output degraded in place: residential
+Twelve of them, directly. V070 deleted two and the module's output degraded in place: residential
 details `null`, amenities empty, five CSV columns dropped from `properties.csv`/`.xlsx`, and one
 assembler throwing. Any core schema change is an N-module refactor.
 
@@ -330,7 +330,7 @@ same coupling by hand.
 
 Blocking (1–5), ship-with (6–12):
 
-1. Assert every field copied by V068's two `INSERT … SELECT` statements, on **two** properties with
+1. Assert every field copied by V070's two `INSERT … SELECT` statements, on **two** properties with
    different values — they immediately precede `DROP TABLE` and have zero coverage.
 2. Replace three `isNotNull()` assertions with per-property identity: each backfilled `unit_id`
    belongs to **its own** property and the two differ. Today a backfill missing

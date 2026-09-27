@@ -1,5 +1,5 @@
 -- =============================================================================
--- V071__unit_parent_consistency.sql
+-- V072__unit_parent_consistency.sql
 -- Make the unit/property/team parent-consistency invariant unwritable at the
 -- database level, instead of relying on it being enforced correctly at every
 -- Java call site (BUUR-106 wave3c review).
@@ -156,7 +156,7 @@ WHERE
 CREATE INDEX idx_expense_allocations_team_id ON expense_allocations (team_id);
 
 -- photos.unit_id, documents.unit_id and expenses.unit_id are ~100% NULL
--- (optional columns added in V068, populated only when the entity is
+-- (optional columns added in V070, populated only when the entity is
 -- attached to a specific unit rather than the whole property). Make their
 -- indexes partial so they don't carry dead weight for the common case.
 DROP INDEX idx_photos_unit_id;

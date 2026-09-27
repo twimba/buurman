@@ -24,10 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Creates the unit(s) for every demo property (BUUR-106). {@code contracts.unit_id}, {@code
  * property_occupancy_periods.unit_id} and {@code wws_calculations.unit_id} are all NOT NULL as of
- * V068, so every property generated for demo data needs at least one unit before contracts are
+ * V070, so every property generated for demo data needs at least one unit before contracts are
  * generated.
  *
- * <p>Most demo properties get a single "unit_number = 1" implicit unit, mirroring V068's own
+ * <p>Most demo properties get a single "unit_number = 1" implicit unit, mirroring V070's own
  * backfill — {@link DemoContractGenerator} later flips it to OCCUPIED for properties with an active
  * contract. A handful of curated properties instead carry a {@link DemoDataContext.UnitPlan} list
  * (set by {@link DemoPropertyGenerator}), producing genuine multi-unit buildings with differing

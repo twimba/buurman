@@ -75,7 +75,7 @@ public record PropertyResponse(
     Optional<List<PropertyOutdoorAreaResponse>> outdoorAreas,
     Optional<List<PropertyAmenityResponse>> amenities,
 
-    // Unit facts — properties.status was dropped in V068; these are the replacement. A property
+    // Unit facts — properties.status was dropped in V070; these are the replacement. A property
     // is never created without at least one unit (see PropertyService#createProperty), so
     // unitCount is always >= 1 for a property returned by this API.
     int unitCount,

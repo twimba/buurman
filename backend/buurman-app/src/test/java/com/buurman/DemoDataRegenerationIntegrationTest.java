@@ -21,12 +21,12 @@ import com.buurman.service.demo.DemoDataService;
 import com.buurman.service.demo.DemoUsers;
 
 /**
- * QA register section F item 10: regenerating demo data twice must not accumulate duplicate
- * units, properties or contracts. This is the test that would have caught both BUUR-106
- * regressions found on this branch — {@code ContractRepository.save()} and {@code
- * DemoContractGenerator} each once forgot to set {@code contracts.unit_id} (NOT NULL since V068)
- * — and it covers the 20-step FK-ordered cleanup {@link DemoDataService#cleanupDatabaseRecords}
- * performs before every regeneration.
+ * QA register section F item 10: regenerating demo data twice must not accumulate duplicate units,
+ * properties or contracts. This is the test that would have caught both BUUR-106 regressions found
+ * on this branch — {@code ContractRepository.save()} and {@code DemoContractGenerator} each once
+ * forgot to set {@code contracts.unit_id} (NOT NULL since V070) — and it covers the 20-step
+ * FK-ordered cleanup {@link DemoDataService#cleanupDatabaseRecords} performs before every
+ * regeneration.
  *
  * <p>Exercises only the database-writing half of demo data generation ({@link
  * DemoDataService#generateDatabaseRecords} / {@link DemoDataService#cleanupDatabaseRecords}), not
@@ -102,7 +102,10 @@ class DemoDataRegenerationIntegrationTest {
 
   private int countByTeam(org.jooq.TableField<?, UUID> teamIdField, UUID teamId) {
     Integer count =
-        dsl.selectCount().from(teamIdField.getTable()).where(teamIdField.eq(teamId)).fetchOne(0, Integer.class);
+        dsl.selectCount()
+            .from(teamIdField.getTable())
+            .where(teamIdField.eq(teamId))
+            .fetchOne(0, Integer.class);
     return count == null ? 0 : count;
   }
 }

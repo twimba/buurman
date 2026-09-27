@@ -170,7 +170,7 @@ void omitsUnitsOfDeletedProperties() {
 }
 ```
 
-The second test is Review Focus item 3: the V068 backfill deliberately created implicit units for soft-deleted properties to keep contract FKs valid, so an unguarded takeout query would hand the landlord rows for properties they deleted.
+The second test is Review Focus item 3: the V070 backfill deliberately created implicit units for soft-deleted properties to keep contract FKs valid, so an unguarded takeout query would hand the landlord rows for properties they deleted.
 
 - [ ] **Step 2: Run to verify they fail, then implement**
 
@@ -353,7 +353,7 @@ Owns Review Focus item 4.
 
 - [ ] **Step 1: Fix the truncation list first**
 
-`DemoDataService` currently imports `PROPERTY_AMENITIES` and `PROPERTY_RESIDENTIAL_DETAILS`, both dropped by V068. Plan 1 Task 16 should already have made this compile; verify and correct the truncation order so it reads, before `PROPERTIES`:
+`DemoDataService` currently imports `PROPERTY_AMENITIES` and `PROPERTY_RESIDENTIAL_DETAILS`, both dropped by V070. Plan 1 Task 16 should already have made this compile; verify and correct the truncation order so it reads, before `PROPERTIES`:
 
 ```java
         .add(EXPENSE_ALLOCATIONS)
@@ -584,7 +584,7 @@ Expected: all clean.
 
 - [ ] **Step 3: Fresh-database boot**
 
-Run: `make down-v && make dev`, wait ~30s, boot the backend, confirm Flyway applies V068 on an empty database and demo data generates without error.
+Run: `make down-v && make dev`, wait ~30s, boot the backend, confirm Flyway applies V070 on an empty database and demo data generates without error.
 
 - [ ] **Step 4: Walk the acceptance criteria one final time**
 

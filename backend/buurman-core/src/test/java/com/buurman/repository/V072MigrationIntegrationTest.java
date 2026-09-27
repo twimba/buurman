@@ -20,13 +20,13 @@ import com.buurman.util.SidGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * V071 adds composite FKs enforcing unit/property/team parent-consistency, plus a partial unique
+ * V072 adds composite FKs enforcing unit/property/team parent-consistency, plus a partial unique
  * index capping one ACTIVE contract per unit. Each is preceded by a pre-flight {@code DO} block
  * that must abort the migration loudly on pre-existing bad data, rather than failing obscurely (or
  * worse, silently succeeding) when the constraint itself is created.
  */
-@DisplayName("V071 unit parent-consistency migration")
-class V071MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
+@DisplayName("V072 unit parent-consistency migration")
+class V072MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
 
   private static final LocalDateTime NOW = LocalDateTime.of(2026, 3, 1, 12, 0);
 
@@ -35,13 +35,13 @@ class V071MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
       "aborts rather than silently succeeding when a contract's unit belongs to a different"
           + " property")
   void abortsOnContractUnitPropertyMismatch() {
-    migrateTo("069");
+    migrateTo("071");
     seedTeamAndUser();
     UUID propertyId = seedProperty();
     UUID otherPropertyId = seedProperty();
     UUID unitId = seedUnit(propertyId, "1");
     seedContract(propertyId, unitId);
-    // Corrupt it: point the contract at a unit of a *different* property, as V071's fk cannot yet
+    // Corrupt it: point the contract at a unit of a *different* property, as V072's fk cannot yet
     // forbid on this schema version.
     dsl.update(DSL.table("contracts"))
         .set(DSL.field("property_id", UUID.class), otherPropertyId)
@@ -57,7 +57,7 @@ class V071MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
   @DisplayName(
       "aborts rather than silently succeeding when a unit's team_id differs from its property's")
   void abortsOnUnitPropertyTeamMismatch() {
-    migrateTo("069");
+    migrateTo("071");
     seedTeamAndUser();
     UUID propertyId = seedProperty();
     UUID otherTeamId = UUID.randomUUID();
@@ -78,7 +78,7 @@ class V071MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
   @DisplayName(
       "aborts rather than silently succeeding when a unit already carries two ACTIVE contracts")
   void abortsOnPreExistingDuplicateActiveContracts() {
-    migrateTo("069");
+    migrateTo("071");
     seedTeamAndUser();
     UUID propertyId = seedProperty();
     UUID unitId = seedUnit(propertyId, "1");
@@ -94,8 +94,8 @@ class V071MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
   @DisplayName(
       "findActiveByUnitId degrades to the oldest match instead of throwing on a legacy duplicate"
           + " that predates uq_contracts_one_active_per_unit")
-  void findActiveByUnitIdDegradesGracefullyOnPreV071Duplicate() {
-    migrateTo("069");
+  void findActiveByUnitIdDegradesGracefullyOnPreV072Duplicate() {
+    migrateTo("071");
     seedTeamAndUser();
     UUID propertyId = seedProperty();
     UUID unitId = seedUnit(propertyId, "1");

@@ -58,7 +58,7 @@ public class DashboardService {
   private final Clock clock;
 
   /**
-   * Occupancy status moved from {@code properties} to {@code units} in V068, so every count below
+   * Occupancy status moved from {@code properties} to {@code units} in V070, so every count below
    * (occupied, vacant, maintenance, etc.) and both occupancy rates are now a breakdown of the
    * team's units, not its properties. {@code totalProperties} alone still counts properties.
    */

@@ -196,7 +196,7 @@ final class TestDataHelper {
   }
 
   static UUID insertContract(DSLContext dsl, UUID teamId, UUID propertyId, UUID createdBy) {
-    // contracts.unit_id is NOT NULL as of V068; create the implicit unit for this property so
+    // contracts.unit_id is NOT NULL as of V070; create the implicit unit for this property so
     // the contract has something valid to reference.
     UUID unitId = UUID.randomUUID();
     insertUnit(dsl, unitId, propertyId, teamId, "1", "OCCUPIED");

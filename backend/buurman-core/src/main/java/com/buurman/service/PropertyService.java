@@ -465,7 +465,7 @@ public class PropertyService {
     Property property = propertyRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     propertyRepository.softDeleteByIdAndTeamId(property.getId(), teamId);
-    // V068 established the invariant that a soft-deleted property's units carry the same
+    // V070 established the invariant that a soft-deleted property's units carry the same
     // deleted_at (see UnitBackfillMigrationIntegrationTest); cascade it here too, in the same
     // transaction, so it holds for every property deleted after that migration, not just the ones
     // backfilled by it. Without this, UnitRepository's single-row lookups (which deliberately skip
@@ -1099,7 +1099,7 @@ public class PropertyService {
   /**
    * Builds the implicit unit created when a property is submitted without an explicit {@code unit}:
    * VACANT, numbered "1", holding the property's whole allocation (100%), with a unit type derived
-   * from the property's category — matching V068's backfill CASE exactly (RESIDENTIAL and MIXED_USE
+   * from the property's category — matching V070's backfill CASE exactly (RESIDENTIAL and MIXED_USE
    * -> APARTMENT, everything else -> COMMERCIAL).
    */
   private CreateUnitRequest implicitUnitRequest(CreatePropertyRequest request) {

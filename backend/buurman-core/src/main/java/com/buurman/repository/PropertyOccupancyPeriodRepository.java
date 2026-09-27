@@ -85,7 +85,7 @@ public class PropertyOccupancyPeriodRepository {
    * Find overlapping periods for a unit, optionally excluding a specific period (for updates).
    *
    * <p>Scoped by {@code unit_id}, matching the {@code excl_occupancy_periods_no_overlap} exclusion
-   * constraint (re-scoped from {@code property_id} to {@code unit_id} in V068): two units of the
+   * constraint (re-scoped from {@code property_id} to {@code unit_id} in V070): two units of the
    * same property may legitimately have overlapping occupancy, so the check — like the constraint
    * it mirrors — must never widen back out to property scope.
    */

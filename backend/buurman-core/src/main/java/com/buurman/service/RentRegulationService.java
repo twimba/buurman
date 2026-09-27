@@ -4,8 +4,10 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,13 @@ import org.springframework.stereotype.Service;
 import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
+import com.buurman.domain.RentRegulationTenancyRule;
 import com.buurman.dto.request.CreateCountryRegulationRequestRequest;
 import com.buurman.dto.response.RentRegulationCountryDetailResponse;
 import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRegionResponse;
 import com.buurman.dto.response.RentRegulationRuleResponse;
+import com.buurman.dto.response.RentRegulationTenancyRuleResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.RentRegulationRepository;
 import com.buurman.security.UserPrincipal;
@@ -51,14 +55,24 @@ public class RentRegulationService {
             .findCountryByCode(countryCode)
             .orElseThrow(() -> new NotFoundException("Country not found: " + countryCode));
 
+    List<RentRegulationRegion> rawRegions =
+        rentRegulationRepository.findRegionsByCountryId(country.getId());
     List<RentRegulationRegionResponse> regions =
-        rentRegulationRepository.findRegionsByCountryId(country.getId()).stream()
-            .map(this::toRegionResponse)
-            .toList();
+        rawRegions.stream().map(this::toRegionResponse).toList();
+
+    Map<UUID, String> regionCodesById =
+        rawRegions.stream()
+            .collect(
+                Collectors.toMap(RentRegulationRegion::getId, RentRegulationRegion::getRegionCode));
 
     List<RentRegulationRuleResponse> rules =
         rentRegulationRepository.findRulesByCountryId(country.getId()).stream()
             .map(this::toRuleResponse)
+            .toList();
+
+    List<RentRegulationTenancyRuleResponse> tenancyRules =
+        rentRegulationRepository.findTenancyRulesByCountryId(country.getId()).stream()
+            .map(rule -> toTenancyRuleResponse(rule, regionCodesById))
             .toList();
 
     return new RentRegulationCountryDetailResponse(
@@ -74,7 +88,8 @@ public class RentRegulationService {
         country.getLateFeePolicy(),
         country.getLateFeeMaxPercentage(),
         country.getLateFeeNotes(),
-        country.getFormalNoticeDays());
+        country.getFormalNoticeDays(),
+        tenancyRules);
   }
 
   @PreAuthorize("isAuthenticated()")
@@ -207,5 +222,20 @@ public class RentRegulationService {
         rule.getContractSignedBefore(),
         rule.getLandlordMinProperties(),
         rule.getAreaCode());
+  }
+
+  private RentRegulationTenancyRuleResponse toTenancyRuleResponse(
+      RentRegulationTenancyRule rule, Map<UUID, String> regionCodesById) {
+    Optional<String> regionCode = rule.getRegionId().map(regionCodesById::get);
+    return new RentRegulationTenancyRuleResponse(
+        rule.getIdentifier().orElseThrow(),
+        rule.getTopic(),
+        regionCode,
+        rule.getLabel(),
+        rule.getValue(),
+        rule.getEffectiveFrom(),
+        rule.getLegalBasis(),
+        rule.getSourceUrl(),
+        rule.getNotes());
   }
 }

@@ -693,7 +693,7 @@ public class DemoContractGenerator {
         compBatch.execute();
       }
 
-      // Status moved from properties to units in V068 (BUUR-106): flip every unit whose last
+      // Status moved from properties to units in V070 (BUUR-106): flip every unit whose last
       // contract is ACTIVE to OCCUPIED. All other units keep the VACANT default DemoUnitGenerator
       // gave them, which is what leaves multi-unit buildings with a real, partial occupancy rate.
       if (!occupiedUnitIds.isEmpty()) {

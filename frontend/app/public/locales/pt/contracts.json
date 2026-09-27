@@ -526,6 +526,21 @@
       },
       "maxPercentage": "Máximo {{percentage}}% do montante devido",
       "noticeDays": "Prazo da interpelação: {{count}} dias"
+    },
+    "tenancyRules": {
+      "title": "Regras de arrendamento",
+      "subtitle": "Apenas para referência — não são limites de aumento de renda. Verifique localmente.",
+      "effectiveFrom": "A partir de {{date}}",
+      "source": "Fonte",
+      "topic": {
+        "NOTICE_PERIOD": "Prazos de aviso prévio",
+        "TENANCY_DURATION": "Duração do arrendamento",
+        "DEPOSIT": "Cauções",
+        "LEASE_FORM": "Formalidades do contrato",
+        "REGISTRATION": "Obrigações de registo",
+        "FEES_AND_PENALTIES": "Taxas e penalizações",
+        "OTHER": "Outro"
+      }
     }
   },
   "rentIncrease": {

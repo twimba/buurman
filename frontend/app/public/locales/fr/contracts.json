@@ -526,6 +526,21 @@
       },
       "maxPercentage": "Maximum {{percentage}} % du montant dû",
       "noticeDays": "Délai de mise en demeure : {{count}} jours"
+    },
+    "tenancyRules": {
+      "title": "Règles de bail",
+      "subtitle": "À titre indicatif uniquement — pas des plafonds d'augmentation de loyer. À vérifier localement.",
+      "effectiveFrom": "À partir du {{date}}",
+      "source": "Source",
+      "topic": {
+        "NOTICE_PERIOD": "Délais de préavis",
+        "TENANCY_DURATION": "Durée du bail",
+        "DEPOSIT": "Dépôts de garantie",
+        "LEASE_FORM": "Formalités du bail",
+        "REGISTRATION": "Obligations d'enregistrement",
+        "FEES_AND_PENALTIES": "Frais et pénalités",
+        "OTHER": "Autre"
+      }
     }
   },
   "rentIncrease": {

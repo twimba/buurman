@@ -1881,7 +1881,7 @@ public class DemoPropertyGenerator {
       LocalDateTime now) {
     switch (category) {
       case "RESIDENTIAL" -> {
-        // property_residential_details was dropped in V068 (BUUR-106): bedrooms/bathrooms/
+        // property_residential_details was dropped in V070 (BUUR-106): bedrooms/bathrooms/
         // furnished/pet_policy now live on unit_residential_details, written per unit by
         // DemoUnitGenerator once the property's unit(s) exist.
       }

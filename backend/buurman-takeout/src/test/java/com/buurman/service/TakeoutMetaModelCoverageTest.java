@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import com.buurman.jooq.generated.Tables;
 
 /**
- * BUUR-106 wave3c Critical 5: V068 dropped ten-plus columns from {@code properties} and two whole
+ * BUUR-106 wave3c Critical 5: V070 dropped ten-plus columns from {@code properties} and two whole
  * tables ({@code unit_residential_details}, {@code unit_amenities}) from underneath {@link
  * TakeoutService} without anyone noticing, because nothing asserted the export's table coverage
  * against the JOOQ meta-model. A landlord exercising GDPR Art. 20 data portability got an export
