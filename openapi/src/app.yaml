@@ -12,6 +12,8 @@ servers:
 security:
   - bearer-jwt: []
 tags:
+  - name: Communications
+    description: Delivery trail of notifications sent about a payment or contract
   - name: WWS Calculator
     description: Netherlands WWS (Woningwaarderingsstelsel) points calculator
   - name: Reference
@@ -169,6 +171,10 @@ paths:
     $ref: 'paths/documents.yaml#/photos-item'
   /payments/{identifier}:
     $ref: 'paths/payments.yaml#/payments-item'
+  /payments/{identifier}/communications:
+    $ref: 'paths/communications.yaml#/payment-communications'
+  /contracts/{identifier}/communications:
+    $ref: 'paths/communications.yaml#/contract-communications'
   /payments/{identifier}/receivals/{receivalIdentifier}:
     $ref: 'paths/payments.yaml#/payments-receivals-item'
   /payments/{identifier}/mark-paid:
@@ -689,6 +695,38 @@ paths:
     $ref: 'paths/impersonation.yaml#/end'
 components:
   schemas:
+    CommunicationResponse:
+      type: object
+      required: [identifier, notificationType, channel, status, opened, resend, createdAt]
+      properties:
+        identifier:
+          type: string
+        notificationType:
+          type: string
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        subject:
+          type: string
+        recipientEmail:
+          type: string
+        recipientPhone:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, QUEUED, SENT, DELIVERED, FAILED, BOUNCED, REJECTED]
+        providerError:
+          type: string
+        opened:
+          type: boolean
+        firstOpenedAt:
+          type: string
+          format: date-time
+        resend:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
     LanguageCode:
       type: string
       description: ISO 639-1 code of a language the product is translated into

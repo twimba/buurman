@@ -12,6 +12,8 @@ servers:
 security:
   - bearer-jwt: []
 tags:
+  - name: Communications
+    description: Delivery trail of notifications sent about a payment or contract
   - name: WWS Calculator
     description: Netherlands WWS (Woningwaarderingsstelsel) points calculator
   - name: Reference
@@ -3439,6 +3441,54 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /payments/{identifier}/communications:
+    get:
+      tags:
+        - Communications
+      summary: Communications sent about a payment
+      operationId: getPaymentCommunications
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Payment identifier (Sid)
+      responses:
+        '200':
+          description: Communications, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommunicationResponse'
+        '404':
+          description: Payment not found in this team
+  /contracts/{identifier}/communications:
+    get:
+      tags:
+        - Communications
+      summary: Communications sent about a contract
+      operationId: getContractCommunications
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Contract identifier (Sid)
+      responses:
+        '200':
+          description: Communications, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommunicationResponse'
+        '404':
+          description: Contract not found in this team
   /payments/{identifier}/receivals/{receivalIdentifier}:
     put:
       tags:
@@ -21963,6 +22013,38 @@ paths:
         - bearer-jwt: []
 components:
   schemas:
+    CommunicationResponse:
+      type: object
+      required: [identifier, notificationType, channel, status, opened, resend, createdAt]
+      properties:
+        identifier:
+          type: string
+        notificationType:
+          type: string
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        subject:
+          type: string
+        recipientEmail:
+          type: string
+        recipientPhone:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, QUEUED, SENT, DELIVERED, FAILED, BOUNCED, REJECTED]
+        providerError:
+          type: string
+        opened:
+          type: boolean
+        firstOpenedAt:
+          type: string
+          format: date-time
+        resend:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
     LanguageCode:
       type: string
       description: ISO 639-1 code of a language the product is translated into

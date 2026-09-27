@@ -1,0 +1,49 @@
+payment-communications:
+  get:
+    tags:
+      - Communications
+    summary: Communications sent about a payment
+    operationId: getPaymentCommunications
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Payment identifier (Sid)
+    responses:
+      '200':
+        description: Communications, newest first
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CommunicationResponse'
+      '404':
+        description: Payment not found in this team
+
+contract-communications:
+  get:
+    tags:
+      - Communications
+    summary: Communications sent about a contract
+    operationId: getContractCommunications
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Contract identifier (Sid)
+    responses:
+      '200':
+        description: Communications, newest first
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CommunicationResponse'
+      '404':
+        description: Contract not found in this team
