@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import { Info } from 'lucide-react';
+import { Info, Split } from 'lucide-react';
 import { CollapsibleSection } from '../properties/CollapsibleSection';
 import { MeasurementInput } from '@/components/common/MeasurementInput';
+import { FeatureGate } from '@/components/FeatureGate';
+import { FeatureFlags } from '@/constants/featureFlags';
 import type { UpdateUnitRequest } from '@/types/unit';
 import {
   FLOORING_TYPES,
@@ -105,7 +107,12 @@ interface ToggleFieldProps {
   disabled?: boolean;
 }
 
-const ToggleField = ({ label, value, onChange, disabled }: ToggleFieldProps) => (
+const ToggleField = ({
+  label,
+  value,
+  onChange,
+  disabled,
+}: ToggleFieldProps) => (
   <label
     className={`flex items-center gap-3 py-1 ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
   >
@@ -173,6 +180,19 @@ interface UnitCharacteristicsFormProps {
     value: UpdateUnitRequest[K]
   ) => void;
   disabled?: boolean;
+  /**
+   * When provided, the form renders its own header row (title + optional split action)
+   * instead of relying on the caller to render one -- see `onSplit`. Callers that render their
+   * own heading (e.g. the per-unit detail page, which is already past the split) omit this and
+   * get no internal header, unchanged from before.
+   */
+  title?: string;
+  /**
+   * Offers the 1 -> N split transition inline in the header, next to the title. Only relevant
+   * for a property's sole implicit unit -- omit entirely once a property has real units. Gated
+   * behind FeatureFlags.MULTI_UNIT regardless of whether the caller already gates it.
+   */
+  onSplit?: () => void;
 }
 
 /**
@@ -190,6 +210,8 @@ export const UnitCharacteristicsForm = ({
   value,
   onChange,
   disabled = false,
+  title,
+  onSplit,
 }: UnitCharacteristicsFormProps) => {
   const { t } = useTranslation(['properties', 'units']);
 
@@ -208,10 +230,33 @@ export const UnitCharacteristicsForm = ({
     value.hasCoDetectors,
     value.hasFireExtinguisher,
   ];
-  const accessibilityFields = [value.hasAdaptedBathroom, value.accessibilityNotes];
+  const accessibilityFields = [
+    value.hasAdaptedBathroom,
+    value.accessibilityNotes,
+  ];
 
   return (
     <div className="space-y-3">
+      {title && (
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">
+            {title}
+          </h3>
+          {onSplit && (
+            <FeatureGate flag={FeatureFlags.MULTI_UNIT}>
+              <button
+                type="button"
+                onClick={onSplit}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-500 hover:text-primary-600"
+              >
+                <Split className="h-3.5 w-3.5" />
+                {t('units:split.action')}
+              </button>
+            </FeatureGate>
+          )}
+        </div>
+      )}
+
       <CollapsibleSection
         title={t('units:sections.floorArea')}
         filledCount={countFilled(floorAreaFields)}
@@ -251,7 +296,9 @@ export const UnitCharacteristicsForm = ({
           <div>
             <label className={labelCls}>
               {t('characteristics.energy.certificateExpiry')}
-              <Tooltip text={t('characteristics.energy.certificateExpiryTooltip')} />
+              <Tooltip
+                text={t('characteristics.energy.certificateExpiryTooltip')}
+              />
             </label>
             <input
               type="date"

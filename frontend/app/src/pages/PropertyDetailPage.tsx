@@ -35,6 +35,7 @@ import { PropertyPhotosTab } from '@/components/properties/PropertyPhotosTab';
 import { PropertyAuditTab } from '@/components/properties/PropertyAuditTab';
 import { UnitCharacteristicsForm } from '@/components/units/UnitCharacteristicsForm';
 import { PropertyUnitsTab } from '@/components/units/PropertyUnitsTab';
+import { BulkCreateUnitsModal } from '@/components/units/BulkCreateUnitsModal';
 import { useUnit, useUpdateUnit } from '@/hooks/useUnitHooks';
 import { unitToUpdateRequest } from '@/utils/unitRequests';
 import type { UpdateUnitRequest } from '@/types/unit';
@@ -106,10 +107,12 @@ const DwellingCharacteristicsCard = ({
   propertyIdentifier,
   unitIdentifier,
   canEditData,
+  onSplit,
 }: {
   propertyIdentifier: PropertyIdentifier;
   unitIdentifier: UnitIdentifier;
   canEditData: boolean;
+  onSplit: () => void;
 }) => {
   const { t } = useTranslation(['units', 'common']);
   const { data: unit } = useUnit(unitIdentifier);
@@ -139,10 +142,9 @@ const DwellingCharacteristicsCard = ({
 
   return (
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-      <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-        {t('units:detail.characteristics')}
-      </h3>
       <UnitCharacteristicsForm
+        title={t('units:detail.characteristics')}
+        onSplit={onSplit}
         value={draft}
         onChange={handleChange}
         disabled={!canEditData || updateUnit.isPending}
@@ -246,6 +248,9 @@ export const PropertyDetailPage = () => {
   const [deleteOccupancyPeriodId, setDeleteOccupancyPeriodId] = useState<
     string | null
   >(null);
+  // Split transition (BUUR-106): converting the sole implicit unit into several real ones.
+  const [showSplitModal, setShowSplitModal] = useState(false);
+  const [showSplitMovedNotice, setShowSplitMovedNotice] = useState(false);
 
   useEffect(() => {
     if (propertyIdentifier) {
@@ -812,6 +817,22 @@ export const PropertyDetailPage = () => {
                 propertyIdentifier={propertyId}
                 unitIdentifier={soleUnitIdentifier}
                 canEditData={canEditData}
+                onSplit={() => setShowSplitModal(true)}
+              />
+            )}
+
+            {showSplitModal && (
+              <BulkCreateUnitsModal
+                propertyIdentifier={propertyId}
+                street={property.street}
+                open
+                mode="split"
+                onClose={() => setShowSplitModal(false)}
+                onCreated={() => {
+                  setShowSplitModal(false);
+                  setShowSplitMovedNotice(true);
+                  setActiveTab('units');
+                }}
               />
             )}
 
@@ -1298,7 +1319,24 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'units' && property.unitCount > 1 && (
-          <PropertyUnitsTab propertyIdentifier={propertyId} />
+          <div className="space-y-4">
+            {showSplitMovedNotice && (
+              <div className="flex items-start justify-between gap-3 rounded-md border border-info-border bg-info-bg px-4 py-3 text-sm text-info-text">
+                <p>{t('units:split.movedExplainer')}</p>
+                <button
+                  type="button"
+                  onClick={() => setShowSplitMovedNotice(false)}
+                  className="text-info-text hover:opacity-75"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            <PropertyUnitsTab
+              propertyIdentifier={propertyId}
+              street={property.street}
+            />
+          </div>
         )}
 
         {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id} />}

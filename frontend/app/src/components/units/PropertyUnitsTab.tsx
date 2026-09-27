@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { Button, Skeleton } from '@buurman/ui';
 import { UnitGrid } from './UnitGrid';
-import { useUnits, useCreateUnit } from '@/hooks/useUnitHooks';
-import { UnitStatus, UnitType } from '@/types/unit';
+import { BulkCreateUnitsModal } from './BulkCreateUnitsModal';
+import { useUnits } from '@/hooks/useUnitHooks';
+import { UnitStatus } from '@/types/unit';
 import type { PropertyIdentifier, UnitGridRow } from '@/types/unit';
 import { useTeam } from '@/context/TeamContext';
 import { FeatureGate } from '@/components/FeatureGate';
@@ -13,6 +15,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 
 interface PropertyUnitsTabProps {
   propertyIdentifier: PropertyIdentifier;
+  street: string;
 }
 
 /**
@@ -21,23 +24,17 @@ interface PropertyUnitsTabProps {
  */
 export const PropertyUnitsTab = ({
   propertyIdentifier,
+  street,
 }: PropertyUnitsTabProps) => {
   const { t } = useTranslation(['units', 'common']);
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { data: rows = [], isLoading, error } = useUnits(propertyIdentifier);
-  const createUnit = useCreateUnit(propertyIdentifier);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const occupied = rows.filter(
     (row) => row.status === UnitStatus.OCCUPIED
   ).length;
-
-  const handleAddUnit = () => {
-    createUnit.mutate({
-      unitNumber: String(rows.length + 1),
-      unitType: UnitType.APARTMENT,
-    });
-  };
 
   const handleRowClick = (row: UnitGridRow) => {
     navigate(`/properties/${propertyIdentifier}/units/${row.identifier}`);
@@ -64,8 +61,8 @@ export const PropertyUnitsTab = ({
           <Button
             variant="secondary"
             leftIcon={<Plus />}
-            onClick={handleAddUnit}
-            disabled={!canEditData || createUnit.isPending}
+            onClick={() => setShowAddModal(true)}
+            disabled={!canEditData}
           >
             {t('grid.addUnit')}
           </Button>
@@ -77,6 +74,16 @@ export const PropertyUnitsTab = ({
         onRowClick={handleRowClick}
         loading={isLoading}
       />
+      {showAddModal && (
+        <BulkCreateUnitsModal
+          propertyIdentifier={propertyIdentifier}
+          street={street}
+          open
+          mode="expand"
+          onClose={() => setShowAddModal(false)}
+          onCreated={() => setShowAddModal(false)}
+        />
+      )}
     </div>
   );
 };
