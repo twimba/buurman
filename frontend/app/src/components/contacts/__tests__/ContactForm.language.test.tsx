@@ -52,7 +52,9 @@ describe('ContactForm language selector', () => {
     await user.click(screen.getByRole('button', { name: /create contact/i }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
-    expect(onSubmit.mock.calls[0][0]).toMatchObject({ preferredLanguage: 'pt' });
+    expect(onSubmit.mock.calls[0][0]).toMatchObject({
+      preferredLanguage: 'pt',
+    });
   });
 
   it('omits the language when the team default is never touched', async () => {

@@ -776,7 +776,8 @@ export const ContactDetailPage = () => {
                         <p className="font-medium text-text-primary">
                           {new Intl.DisplayNames([contact.preferredLanguage], {
                             type: 'language',
-                          }).of(contact.preferredLanguage) ?? contact.preferredLanguage}
+                          }).of(contact.preferredLanguage) ??
+                            contact.preferredLanguage}
                         </p>
                       </div>
                     </div>

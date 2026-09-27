@@ -484,12 +484,15 @@ export const ContactForm = ({
                 <option value="">{t('form.preferredLanguageDefault')}</option>
                 {SUPPORTED_LANGUAGES.map((language) => (
                   <option key={language} value={language}>
-                    {new Intl.DisplayNames([language], { type: 'language' }).of(language) ??
-                      language}
+                    {new Intl.DisplayNames([language], { type: 'language' }).of(
+                      language
+                    ) ?? language}
                   </option>
                 ))}
               </select>
-              <p className="mt-1 text-xs text-text-secondary">{t('form.preferredLanguageHint')}</p>
+              <p className="mt-1 text-xs text-text-secondary">
+                {t('form.preferredLanguageHint')}
+              </p>
             </div>
 
             {isCompanyLike && (

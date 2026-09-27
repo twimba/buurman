@@ -12,7 +12,10 @@ import path from 'node:path';
  *
  * Only literal keys are checked; `t(\`prefix.${x}\`)` is invisible to any static rule.
  */
-const LOCALES_DIR = path.resolve(import.meta.dirname, '../../../public/locales');
+const LOCALES_DIR = path.resolve(
+  import.meta.dirname,
+  '../../../public/locales'
+);
 const SRC_DIR = path.resolve(import.meta.dirname, '../..');
 const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/;
 
@@ -52,7 +55,9 @@ const sourceFiles = (dir: string): string[] =>
 
 describe('translation keys used in code', () => {
   const byNamespace = englishKeysByNamespace();
-  const anyNamespace = new Set(Object.values(byNamespace).flatMap((keys) => [...keys]));
+  const anyNamespace = new Set(
+    Object.values(byNamespace).flatMap((keys) => [...keys])
+  );
   const files = sourceFiles(SRC_DIR);
 
   it('discovers the source tree it is meant to check', () => {
@@ -65,14 +70,20 @@ describe('translation keys used in code', () => {
 
     for (const file of files) {
       const source = fs.readFileSync(file, 'utf8');
-      for (const match of source.matchAll(/\bt\(\s*['"]([a-zA-Z0-9_.:-]+)['"]/g)) {
+      for (const match of source.matchAll(
+        /\bt\(\s*['"]([a-zA-Z0-9_.:-]+)['"]/g
+      )) {
         const raw = match[1];
-        const [namespace, bare] = raw.includes(':') ? raw.split(':') : [null, raw];
+        const [namespace, bare] = raw.includes(':')
+          ? raw.split(':')
+          : [null, raw];
         const key = bare.replace(PLURAL_SUFFIX, '');
         if (key.endsWith('.')) {
           continue; // t('prefix.' + something) — not statically checkable
         }
-        const known = namespace ? byNamespace[namespace]?.has(key) : anyNamespace.has(key);
+        const known = namespace
+          ? byNamespace[namespace]?.has(key)
+          : anyNamespace.has(key);
         if (!known) {
           missing.push(`${path.relative(SRC_DIR, file)}  ${raw}`);
         }

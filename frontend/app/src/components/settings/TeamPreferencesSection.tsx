@@ -83,8 +83,7 @@ export const TeamPreferencesSection = () => {
         regional: {
           defaultCountry: preferences.defaultCountryCode || undefined,
           fiscalYearStartMonth: preferences.fiscalYearStart,
-          defaultLanguage:
-            preferences.defaultLanguage as LanguageCode,
+          defaultLanguage: preferences.defaultLanguage as LanguageCode,
         },
       });
 

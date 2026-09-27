@@ -4,13 +4,18 @@ import path from 'node:path';
 import { SUPPORTED_LANGUAGES } from '../../config/languages';
 import { LanguageCode } from '../../generated/models';
 
-const LOCALES_DIR = path.resolve(import.meta.dirname, '../../../public/locales');
+const LOCALES_DIR = path.resolve(
+  import.meta.dirname,
+  '../../../public/locales'
+);
 const BASE_LANGUAGE = 'en';
 
 type Json = Record<string, unknown>;
 
 const readNamespace = (language: string, namespace: string): Json =>
-  JSON.parse(fs.readFileSync(path.join(LOCALES_DIR, language, namespace), 'utf8')) as Json;
+  JSON.parse(
+    fs.readFileSync(path.join(LOCALES_DIR, language, namespace), 'utf8')
+  ) as Json;
 
 const flatten = (value: Json, prefix = ''): string[] =>
   Object.entries(value).flatMap(([key, child]) =>
@@ -65,7 +70,9 @@ describe('locale bundles', () => {
   // list drifting across stacks — comparing the locale directories to SUPPORTED_LANGUAGES alone
   // would pass happily while the backend had gained a language the frontend never learned about.
   it('matches the language enum generated from the backend contract', () => {
-    expect([...SUPPORTED_LANGUAGES].sort()).toEqual(Object.values(LanguageCode).sort());
+    expect([...SUPPORTED_LANGUAGES].sort()).toEqual(
+      Object.values(LanguageCode).sort()
+    );
   });
 
   it('discovers the namespaces it is meant to check', () => {
@@ -74,14 +81,17 @@ describe('locale bundles', () => {
 
   // Namespaces are enumerated from en/, so a file present only in another locale would never be
   // opened or compared. Asserting the listings match closes that blind spot in both directions.
-  it.each(SUPPORTED_LANGUAGES)('%s ships exactly the namespaces en does', (language) => {
-    const files = fs
-      .readdirSync(path.join(LOCALES_DIR, language))
-      .filter((name) => name.endsWith('.json'))
-      .sort();
+  it.each(SUPPORTED_LANGUAGES)(
+    '%s ships exactly the namespaces en does',
+    (language) => {
+      const files = fs
+        .readdirSync(path.join(LOCALES_DIR, language))
+        .filter((name) => name.endsWith('.json'))
+        .sort();
 
-    expect(files).toEqual(namespaces);
-  });
+      expect(files).toEqual(namespaces);
+    }
+  );
 
   it('ships a directory for every supported language and nothing else', () => {
     const directories = fs
@@ -93,20 +103,21 @@ describe('locale bundles', () => {
     expect(directories).toEqual([...SUPPORTED_LANGUAGES].sort());
   });
 
-  describe.each(SUPPORTED_LANGUAGES.filter((language) => language !== BASE_LANGUAGE))(
-    '%s',
-    (language) => {
-      it.each(namespaces)('%s carries every key', (namespace) => {
-        const base = new Set(flatten(readNamespace(BASE_LANGUAGE, namespace)).map(stripPlural));
-        const translated = new Set(
-          flatten(readNamespace(language, namespace)).map(stripPlural)
-        );
+  describe.each(
+    SUPPORTED_LANGUAGES.filter((language) => language !== BASE_LANGUAGE)
+  )('%s', (language) => {
+    it.each(namespaces)('%s carries every key', (namespace) => {
+      const base = new Set(
+        flatten(readNamespace(BASE_LANGUAGE, namespace)).map(stripPlural)
+      );
+      const translated = new Set(
+        flatten(readNamespace(language, namespace)).map(stripPlural)
+      );
 
-        expect([...base].filter((key) => !translated.has(key))).toEqual([]);
-        expect([...translated].filter((key) => !base.has(key))).toEqual([]);
-      });
-    }
-  );
+      expect([...base].filter((key) => !translated.has(key))).toEqual([]);
+      expect([...translated].filter((key) => !base.has(key))).toEqual([]);
+    });
+  });
 
   it.each(SUPPORTED_LANGUAGES)(
     '%s can resolve every plural key at every count it will be asked for',

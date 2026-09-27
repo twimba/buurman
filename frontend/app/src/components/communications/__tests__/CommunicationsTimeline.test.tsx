@@ -14,11 +14,15 @@ const row = (overrides = {}) => ({
 
 describe('CommunicationsTimeline', () => {
   it('says why it is empty, not merely that it is', () => {
-    renderWithProviders(<CommunicationsTimeline communications={[]} isLoading={false} />);
+    renderWithProviders(
+      <CommunicationsTimeline communications={[]} isLoading={false} />
+    );
 
     // No backfill exists, so a pre-existing payment shows nothing. Without this line a
     // landlord concludes no reminder went out and sends a duplicate.
-    expect(screen.getByText(/only messages sent from now on/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/only messages sent from now on/i)
+    ).toBeInTheDocument();
   });
 
   it('shows Opened when the message was read', () => {
@@ -42,7 +46,10 @@ describe('CommunicationsTimeline', () => {
     ['FAILED', 'Failed'],
   ])('renders %s as %s', (status, label) => {
     renderWithProviders(
-      <CommunicationsTimeline communications={[row({ status })]} isLoading={false} />
+      <CommunicationsTimeline
+        communications={[row({ status })]}
+        isLoading={false}
+      />
     );
 
     expect(screen.getByText(label)).toBeInTheDocument();
@@ -51,7 +58,9 @@ describe('CommunicationsTimeline', () => {
   it('does not claim an SMS was unopened', () => {
     renderWithProviders(
       <CommunicationsTimeline
-        communications={[row({ channel: 'SMS', status: 'SENT', opened: false })]}
+        communications={[
+          row({ channel: 'SMS', status: 'SENT', opened: false }),
+        ]}
         isLoading={false}
       />
     );
@@ -94,31 +103,41 @@ describe('CommunicationsTimeline', () => {
     );
 
     // "Nothing sent yet" is a confident claim; a 403 or 500 must not make it.
-    expect(screen.queryByText(/only messages sent from now on/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/only messages sent from now on/i)
+    ).not.toBeInTheDocument();
     expect(screen.getByText(/could not be loaded/i)).toBeInTheDocument();
   });
 
   it('translates the notification type rather than showing the enum', () => {
     renderWithProviders(
       <CommunicationsTimeline
-        communications={[row({ notificationType: 'CONTRACT_ROLLED_OVER_TO_INDEFINITE' })]}
+        communications={[
+          row({ notificationType: 'CONTRACT_ROLLED_OVER_TO_INDEFINITE' }),
+        ]}
         isLoading={false}
       />
     );
 
-    expect(screen.queryByText('CONTRACT_ROLLED_OVER_TO_INDEFINITE')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('CONTRACT_ROLLED_OVER_TO_INDEFINITE')
+    ).not.toBeInTheDocument();
     expect(screen.getByText('Contract rolled over')).toBeInTheDocument();
   });
 
   it('shows the subject so a row is identifiable beyond its type', () => {
     renderWithProviders(
       <CommunicationsTimeline
-        communications={[row({ subject: 'Payment overdue for Keizersgracht 123-B' })]}
+        communications={[
+          row({ subject: 'Payment overdue for Keizersgracht 123-B' }),
+        ]}
         isLoading={false}
       />
     );
 
-    expect(screen.getByText('Payment overdue for Keizersgracht 123-B')).toBeInTheDocument();
+    expect(
+      screen.getByText('Payment overdue for Keizersgracht 123-B')
+    ).toBeInTheDocument();
   });
 
   it('shows why a message was not delivered', () => {
