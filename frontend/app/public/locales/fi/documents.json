@@ -9,7 +9,8 @@
       "contact": "Yhteystiedot",
       "contract": "Sopimukset",
       "payment": "Maksut",
-      "expense": "Kulut"
+      "expense": "Kulut",
+      "label": "Tyyppi"
     },
     "table": {
       "document": "Asiakirja",
@@ -24,7 +25,8 @@
       "count_other": "{{count}} asiakirjaa"
     },
     "empty": "Asiakirjoja ei loytynyt",
-    "editModal": "Muokkaa asiakirjaa"
+    "editModal": "Muokkaa asiakirjaa",
+    "titleShort": "Asiakirjat"
   },
   "photosPage": {
     "title": "Valokuvakirjasto",
@@ -36,10 +38,12 @@
       "contact": "Yhteystiedot",
       "contract": "Sopimukset",
       "payment": "Maksut",
-      "expense": "Kulut"
+      "expense": "Kulut",
+      "label": "Tyyppi"
     },
     "empty": "Valokuvia ei loytynyt",
-    "editModal": "Muokkaa valokuvaa"
+    "editModal": "Muokkaa valokuvaa",
+    "selectedCount": "{{count}} valittu"
   },
   "photoGrid": {
     "noPhotos": "Ei valokuvia viela",

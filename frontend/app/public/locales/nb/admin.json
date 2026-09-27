@@ -298,7 +298,8 @@
       "title": "Beleggstrend",
       "subtitle": "Månedlig beleggsprosent",
       "occupancyRate": "Beleggsgrad (%)"
-    }
+    },
+    "allProperties": "Alle eiendommer"
   },
   "auditLog": {
     "failedToLoad": "Kunne ikke laste aktivitetslogger"

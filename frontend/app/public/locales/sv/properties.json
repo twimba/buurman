@@ -632,7 +632,8 @@
       "postalCodeRequired": "Postnummer ar obligatoriskt",
       "countryRequired": "Land ar obligatoriskt",
       "areaPositive": "Ytan maste vara storre an 0"
-    }
+    },
+    "characteristics": "Egenskaper"
   },
   "collapsible": {
     "filledCount": "{{filled}} av {{total}} ifyllda"

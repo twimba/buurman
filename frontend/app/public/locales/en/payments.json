@@ -13,7 +13,8 @@
     "waiveLateFee": "Waive fee",
     "writeOff": "Write off",
     "cancelPayment": "Cancel payment",
-    "formalNotice": "Formal notice (PDF)"
+    "formalNotice": "Formal notice (PDF)",
+    "markPaid": "Mark paid"
   },
   "stats": {
     "pendingPayments": "Pending Payments",

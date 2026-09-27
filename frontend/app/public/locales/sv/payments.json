@@ -13,7 +13,8 @@
     "waiveLateFee": "Efterskänk avgift",
     "writeOff": "Skriv av",
     "cancelPayment": "Avbryt betalning",
-    "formalNotice": "Betalningsanmaning (PDF)"
+    "formalNotice": "Betalningsanmaning (PDF)",
+    "markPaid": "Markera som betald"
   },
   "stats": {
     "pendingPayments": "Vantande betalningar",

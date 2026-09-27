@@ -23,7 +23,11 @@
     "retry": "Retry",
     "continue": "Continue",
     "saveChanges": "Save Changes",
-    "discardChanges": "Discard Changes"
+    "discardChanges": "Discard Changes",
+    "dismiss": "Dismiss",
+    "clear": "Clear",
+    "deselect": "Deselect",
+    "select": "Select"
   },
   "status": {
     "active": "Active",
@@ -231,7 +235,9 @@
     "select": "Select...",
     "phoneNumber": "Phone number",
     "searchCountryOrCode": "Search country or code...",
-    "noCountriesFound": "No countries found"
+    "noCountriesFound": "No countries found",
+    "searchCurrencies": "Search currencies",
+    "currencies": "Currencies"
   },
   "impersonation": {
     "active": "Impersonation active",
@@ -240,7 +246,12 @@
     "notAvailable": "Not available during impersonation",
     "timeRemaining": "Time remaining",
     "endSession": "End Session",
-    "sessionEnded": "Impersonation session ended. You can close this tab."
+    "sessionEnded": "Impersonation session ended. You can close this tab.",
+    "missingToken": "No impersonation token was provided.",
+    "failedToExchange": "The impersonation token could not be exchanged.",
+    "failed": "Impersonation failed",
+    "closeTab": "You can close this tab.",
+    "settingUp": "Setting up the session..."
   },
   "teamSwitcher": {
     "yourTeams": "Your Teams ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Occupancy",
-      "dataPercent": "Data %"
+      "dataPercent": "Data %",
+      "topByNoi": "Top 5 by NOI",
+      "needsAttention": "Needs attention"
     },
     "occupancy": {
       "noData": "No occupancy data available",
@@ -381,7 +394,14 @@
       "noData": "No allocation data available",
       "byCategory": "By Category",
       "byCountry": "By Country"
-    }
+    },
+    "overdueCount": "{{count}} overdue",
+    "extensionsCount": "{{count}} extensions",
+    "monthlyCashFlow": "Monthly cash flow",
+    "incomeMinusExpenses": "Income minus expenses",
+    "occupancySublabel": "{{occupied}} of {{total}}",
+    "vacantSublabel": "Available to rent",
+    "portfolioAnalyticsCta": "Portfolio analytics"
   },
   "wws": {
     "title": "WWS Points Calculator",
@@ -618,5 +638,48 @@
     "description": "A one-page overview. Select a language.",
     "yourLanguage": "Your language",
     "downloadFailed": "Failed to download summary card"
+  },
+  "pwa": {
+    "installTitle": "Install Buurman",
+    "installSubtitle": "Faster access, full-screen, works offline",
+    "installAction": "Install"
+  },
+  "refresh": "Refresh",
+  "actions": {
+    "cancel": "Cancel"
+  },
+  "importHistory": {
+    "title": "Import history",
+    "subtitle": "Review earlier imports and undo one if it went wrong."
+  },
+  "invitation": {
+    "loading": "Loading the invitation...",
+    "invalid": {
+      "title": "Invitation not valid",
+      "message": "This invitation link is not valid. Ask for a new one.",
+      "goToLogin": "Go to login"
+    },
+    "accepted": {
+      "title": "Invitation accepted",
+      "message": "You are now a member of the team.",
+      "goToLogin": "Go to login"
+    },
+    "expired": {
+      "title": "Invitation expired",
+      "message": "This invitation has expired. Ask for a new one.",
+      "goToLogin": "Go to login"
+    },
+    "youreInvited": "You have been invited",
+    "inviterMessage": "{{inviterName}} invited you to join {{teamName}}.",
+    "yourRole": "Your role",
+    "invitedEmail": "Invited email",
+    "expires": "Expires",
+    "acceptError": "The invitation could not be accepted.",
+    "accepting": "Accepting...",
+    "acceptInvitation": "Accept invitation",
+    "joinNote": "Accepting adds this team to your account.",
+    "loginRequired": "Sign in to accept this invitation.",
+    "loginToAccept": "Sign in to accept",
+    "createAccount": "Create an account"
   }
 }

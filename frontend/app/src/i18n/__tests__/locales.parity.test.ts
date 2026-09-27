@@ -72,6 +72,17 @@ describe('locale bundles', () => {
     expect(namespaces.length).toBeGreaterThanOrEqual(10);
   });
 
+  // Namespaces are enumerated from en/, so a file present only in another locale would never be
+  // opened or compared. Asserting the listings match closes that blind spot in both directions.
+  it.each(SUPPORTED_LANGUAGES)('%s ships exactly the namespaces en does', (language) => {
+    const files = fs
+      .readdirSync(path.join(LOCALES_DIR, language))
+      .filter((name) => name.endsWith('.json'))
+      .sort();
+
+    expect(files).toEqual(namespaces);
+  });
+
   it('ships a directory for every supported language and nothing else', () => {
     const directories = fs
       .readdirSync(LOCALES_DIR, { withFileTypes: true })

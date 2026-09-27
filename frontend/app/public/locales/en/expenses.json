@@ -4,7 +4,8 @@
     "subtitle": "Track property expenses and costs"
   },
   "actions": {
-    "addExpense": "Add Expense"
+    "addExpense": "Add Expense",
+    "delete": "Delete"
   },
   "stats": {
     "totalExpenses": "Total Expenses",

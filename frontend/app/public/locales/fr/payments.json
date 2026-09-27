@@ -13,7 +13,8 @@
     "waiveLateFee": "Annuler la pénalité",
     "writeOff": "Passer en perte",
     "cancelPayment": "Annuler le paiement",
-    "formalNotice": "Mise en demeure (PDF)"
+    "formalNotice": "Mise en demeure (PDF)",
+    "markPaid": "Marquer comme payé"
   },
   "stats": {
     "pendingPayments": "Paiements en attente",

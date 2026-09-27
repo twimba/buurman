@@ -13,7 +13,8 @@
     "waiveLateFee": "Boete kwijtschelden",
     "writeOff": "Afboeken",
     "cancelPayment": "Betaling annuleren",
-    "formalNotice": "Ingebrekestelling (PDF)"
+    "formalNotice": "Ingebrekestelling (PDF)",
+    "markPaid": "Markeer als betaald"
   },
   "stats": {
     "pendingPayments": "Openstaande betalingen",

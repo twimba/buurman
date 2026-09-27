@@ -298,7 +298,8 @@
       "title": "Udlejningsgradstendens",
       "subtitle": "Maanedlig udlejningsgradsprocent",
       "occupancyRate": "Udlejningsgrad (%)"
-    }
+    },
+    "allProperties": "Alle ejendomme"
   },
   "auditLog": {
     "failedToLoad": "Kunne ikke indlaese aktivitetslogger"

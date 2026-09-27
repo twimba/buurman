@@ -633,7 +633,8 @@
       "postalCodeRequired": "O código postal é obrigatório",
       "countryRequired": "O país é obrigatório",
       "areaPositive": "A área deve ser superior a 0"
-    }
+    },
+    "characteristics": "Características"
   },
   "collapsible": {
     "filledCount": "{{filled}} de {{total}} preenchidos"

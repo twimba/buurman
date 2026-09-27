@@ -23,7 +23,11 @@
     "retry": "Forsok igen",
     "continue": "Fortsatt",
     "saveChanges": "Spara andringar",
-    "discardChanges": "Forkas andringar"
+    "discardChanges": "Forkas andringar",
+    "dismiss": "Stäng",
+    "clear": "Rensa",
+    "deselect": "Avmarkera",
+    "select": "Markera"
   },
   "status": {
     "active": "Aktiv",
@@ -231,7 +235,9 @@
     "select": "Valj...",
     "phoneNumber": "Telefonnummer",
     "searchCountryOrCode": "Sok land eller kod...",
-    "noCountriesFound": "Inga lander hittades"
+    "noCountriesFound": "Inga lander hittades",
+    "searchCurrencies": "Sök valutor",
+    "currencies": "Valutor"
   },
   "impersonation": {
     "active": "Imitation aktiv",
@@ -240,7 +246,12 @@
     "notAvailable": "Inte tillgangligt under imitation",
     "timeRemaining": "Aterstaende tid",
     "endSession": "Avsluta session",
-    "sessionEnded": "Imitation-sessionen avslutad. Du kan stanga denna flik."
+    "sessionEnded": "Imitation-sessionen avslutad. Du kan stanga denna flik.",
+    "missingToken": "Ingen imitationstoken angavs.",
+    "failedToExchange": "Imitationstoken kunde inte växlas in.",
+    "failed": "Imitationen misslyckades",
+    "closeTab": "Du kan stänga den här fliken.",
+    "settingUp": "Förbereder sessionen..."
   },
   "teamSwitcher": {
     "yourTeams": "Dina team ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Belaggning",
-      "dataPercent": "Data %"
+      "dataPercent": "Data %",
+      "topByNoi": "Topp 5 efter NOI",
+      "needsAttention": "Kräver uppmärksamhet"
     },
     "occupancy": {
       "noData": "Ingen belaggningsdata tillganglig",
@@ -381,7 +394,14 @@
       "noData": "Ingen fordelningsdata tillganglig",
       "byCategory": "Per kategori",
       "byCountry": "Per land"
-    }
+    },
+    "overdueCount": "{{count}} försenade",
+    "extensionsCount": "{{count}} förlängningar",
+    "monthlyCashFlow": "Månatligt kassaflöde",
+    "incomeMinusExpenses": "Intäkter minus utgifter",
+    "occupancySublabel": "{{occupied}} av {{total}}",
+    "vacantSublabel": "Tillgänglig för uthyrning",
+    "portfolioAnalyticsCta": "Portföljanalys"
   },
   "wws": {
     "title": "WWS-poangkalkylator",
@@ -618,5 +638,48 @@
     "description": "En översikt på en sida. Välj språk.",
     "yourLanguage": "Ditt språk",
     "downloadFailed": "Det gick inte att ladda ner sammanfattningen"
+  },
+  "pwa": {
+    "installTitle": "Installera Buurman",
+    "installSubtitle": "Snabbare åtkomst, helskärm, fungerar offline",
+    "installAction": "Installera"
+  },
+  "refresh": "Uppdatera",
+  "actions": {
+    "cancel": "Avbryt"
+  },
+  "importHistory": {
+    "title": "Importhistorik",
+    "subtitle": "Granska tidigare importer och ångra en om något blev fel."
+  },
+  "invitation": {
+    "loading": "Läser in inbjudan...",
+    "invalid": {
+      "title": "Ogiltig inbjudan",
+      "message": "Den här inbjudningslänken är ogiltig. Be om en ny.",
+      "goToLogin": "Gå till inloggning"
+    },
+    "accepted": {
+      "title": "Inbjudan accepterad",
+      "message": "Du är nu medlem i teamet.",
+      "goToLogin": "Gå till inloggning"
+    },
+    "expired": {
+      "title": "Inbjudan har gått ut",
+      "message": "Den här inbjudan har gått ut. Be om en ny.",
+      "goToLogin": "Gå till inloggning"
+    },
+    "youreInvited": "Du har blivit inbjuden",
+    "inviterMessage": "{{inviterName}} har bjudit in dig till {{teamName}}.",
+    "yourRole": "Din roll",
+    "invitedEmail": "Inbjuden e-post",
+    "expires": "Går ut",
+    "acceptError": "Inbjudan kunde inte accepteras.",
+    "accepting": "Accepterar...",
+    "acceptInvitation": "Acceptera inbjudan",
+    "joinNote": "När du accepterar läggs teamet till i ditt konto.",
+    "loginRequired": "Logga in för att acceptera inbjudan.",
+    "loginToAccept": "Logga in för att acceptera",
+    "createAccount": "Skapa ett konto"
   }
 }

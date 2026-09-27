@@ -182,7 +182,8 @@
       "postalCodeRequired": "Postleitzahl ist erforderlich",
       "countryRequired": "Land ist erforderlich",
       "areaPositive": "Fläche muss größer als 0 sein"
-    }
+    },
+    "characteristics": "Merkmale"
   },
   "collapsible": {
     "filledCount": "{{filled}} von {{total}} ausgefüllt"

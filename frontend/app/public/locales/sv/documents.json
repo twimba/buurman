@@ -9,7 +9,8 @@
       "contact": "Kontakter",
       "contract": "Kontrakt",
       "payment": "Betalningar",
-      "expense": "Kostnader"
+      "expense": "Kostnader",
+      "label": "Typ"
     },
     "table": {
       "document": "Dokument",
@@ -24,7 +25,8 @@
       "count_other": "{{count}} dokument"
     },
     "empty": "Inga dokument hittades",
-    "editModal": "Redigera dokument"
+    "editModal": "Redigera dokument",
+    "titleShort": "Dokument"
   },
   "photosPage": {
     "title": "Fotobibliotek",
@@ -36,10 +38,12 @@
       "contact": "Kontakter",
       "contract": "Kontrakt",
       "payment": "Betalningar",
-      "expense": "Kostnader"
+      "expense": "Kostnader",
+      "label": "Typ"
     },
     "empty": "Inga foton hittades",
-    "editModal": "Redigera foto"
+    "editModal": "Redigera foto",
+    "selectedCount": "{{count}} valda"
   },
   "photoGrid": {
     "noPhotos": "Inga foton annu",

@@ -634,7 +634,8 @@
       "postalCodeRequired": "Kod pocztowy jest wymagany",
       "countryRequired": "Kraj jest wymagany",
       "areaPositive": "Powierzchnia musi być większa od 0"
-    }
+    },
+    "characteristics": "Cechy"
   },
   "collapsible": {
     "filledCount": "{{filled}} z {{total}} wypełnionych"

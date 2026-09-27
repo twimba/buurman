@@ -298,7 +298,8 @@
     "income": "Revenus",
     "expenses": "Dépenses",
     "amount": "Montant",
-    "downloadPdf": "Télécharger PDF"
+    "downloadPdf": "Télécharger PDF",
+    "allProperties": "Tous les biens"
   },
   "auditLog": {
     "failedToLoad": "Échec du chargement des journaux d'activité"

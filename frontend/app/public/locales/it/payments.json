@@ -13,7 +13,8 @@
     "waiveLateFee": "Condona penale",
     "writeOff": "Stralcia",
     "cancelPayment": "Annulla pagamento",
-    "formalNotice": "Costituzione in mora (PDF)"
+    "formalNotice": "Costituzione in mora (PDF)",
+    "markPaid": "Segna come pagato"
   },
   "stats": {
     "pendingPayments": "Pagamenti in attesa",

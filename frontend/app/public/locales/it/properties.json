@@ -633,7 +633,8 @@
       "postalCodeRequired": "Il CAP è obbligatorio",
       "countryRequired": "Il paese è obbligatorio",
       "areaPositive": "La superficie deve essere maggiore di 0"
-    }
+    },
+    "characteristics": "Caratteristiche"
   },
   "collapsible": {
     "filledCount": "{{filled}} di {{total}} compilati"

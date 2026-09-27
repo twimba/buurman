@@ -3,6 +3,8 @@ package com.buurman;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,6 +26,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import com.buurman.service.notification.EmailSubjectResolver;
 import com.buurman.util.DocumentLanguages;
 
 /**
@@ -33,13 +36,40 @@ import com.buurman.util.DocumentLanguages;
 @DisplayName("every email template renders in every language")
 class EmailRenderMatrixTest {
 
-  private static final Path TEMPLATE_DIR = Paths.get("src/main/resources/templates/email");
+  /**
+   * Resolved from the classpath, not the working directory: a CWD-relative path works under
+   * Surefire but throws NoSuchFileException from an IDE run at the repo root, where the failure
+   * looks like a template-discovery bug rather than a path problem.
+   */
+  private static Path templateDir() throws IOException {
+    try {
+      URL location = EmailRenderMatrixTest.class.getClassLoader().getResource("templates/email");
+      if (location == null) {
+        throw new IOException("templates/email is not on the classpath");
+      }
+      return Paths.get(location.toURI());
+    } catch (URISyntaxException e) {
+      throw new IOException("templates/email resolved to an unusable URI", e);
+    }
+  }
 
   /**
    * A bare message key leaked into the output, e.g. {@code email.welcome.greeting}. Needs two
    * dotted segments so ordinary prose ("check your email. Then...") cannot trip it.
    */
   private static final Pattern MESSAGE_KEY = Pattern.compile("email\\.[a-z0-9-]+\\.[a-zA-Z0-9_-]+");
+
+  private static ReloadableResourceBundleMessageSource messages() {
+    ReloadableResourceBundleMessageSource messages = new ReloadableResourceBundleMessageSource();
+    messages.setBasenames(
+        "classpath:messages/email-subjects",
+        "classpath:messages/email-bodies",
+        "classpath:messages/sms-bodies");
+    messages.setDefaultEncoding("UTF-8");
+    messages.setFallbackToSystemLocale(false);
+    messages.setUseCodeAsDefaultMessage(true);
+    return messages;
+  }
 
   private static SpringTemplateEngine engine() {
     ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
@@ -49,18 +79,9 @@ class EmailRenderMatrixTest {
     resolver.setCharacterEncoding("UTF-8");
     resolver.setCacheable(false);
 
-    ReloadableResourceBundleMessageSource messages = new ReloadableResourceBundleMessageSource();
-    messages.setBasenames(
-        "classpath:messages/email-subjects",
-        "classpath:messages/email-bodies",
-        "classpath:messages/sms-bodies");
-    messages.setDefaultEncoding("UTF-8");
-    messages.setFallbackToSystemLocale(false);
-    messages.setUseCodeAsDefaultMessage(true);
-
     SpringTemplateEngine engine = new SpringTemplateEngine();
     engine.setTemplateResolver(resolver);
-    engine.setMessageSource(messages);
+    engine.setMessageSource(messages());
     return engine;
   }
 
@@ -169,7 +190,7 @@ class EmailRenderMatrixTest {
 
   /** Every template except the shared fragment, which is not renderable on its own. */
   private static List<String> templateNames() throws IOException {
-    try (Stream<Path> files = Files.list(TEMPLATE_DIR)) {
+    try (Stream<Path> files = Files.list(templateDir())) {
       return files
           .map(path -> path.getFileName().toString())
           .filter(name -> name.endsWith(".html"))
@@ -182,8 +203,9 @@ class EmailRenderMatrixTest {
 
   static Stream<Arguments> matrix() throws IOException {
     List<String> names = templateNames();
-    // A discovery bug that found nothing would otherwise make this whole suite vacuously green.
-    assertThat(names).hasSizeGreaterThanOrEqualTo(24);
+    // Pinned exactly: a floor lets a discovery regression drop a template silently. Adding a
+    // template is a deliberate act, so updating this number with it is the right friction.
+    assertThat(names).hasSize(24);
 
     List<Arguments> cases = new ArrayList<>();
     for (String language : DocumentLanguages.ORDERED) {
@@ -213,5 +235,51 @@ class EmailRenderMatrixTest {
     assertThat(html)
         .as("[%s] %s left a raw variable expression", language, templateName)
         .doesNotContain("${");
+  }
+
+  @ParameterizedTest(name = "[{0}] {1}")
+  @MethodSource("matrix")
+  void resolvesANonEmptySubject(String language, String templateName) {
+    String subject =
+        new EmailSubjectResolver(messages())
+            .resolve(templateName, variables(), Locale.forLanguageTag(language));
+
+    assertThat(subject).as("[%s] %s has a blank subject", language, templateName).isNotBlank();
+    assertThat(subject)
+        .as("[%s] %s subject leaked a raw message key", language, templateName)
+        .doesNotContainPattern(MESSAGE_KEY);
+  }
+
+  static Stream<Arguments> tenantReminderTones() {
+    List<Arguments> cases = new ArrayList<>();
+    for (String language : DocumentLanguages.ORDERED) {
+      for (String tone : List.of("FRIENDLY", "FIRM", "FINAL")) {
+        cases.add(Arguments.of(language, tone));
+      }
+    }
+    return cases.stream();
+  }
+
+  @ParameterizedTest(name = "[{0}] {1}")
+  @MethodSource("tenantReminderTones")
+  void resolvesADistinctSubjectPerTenantReminderTone(String language, String tone) {
+    Map<String, Object> variables = variables();
+    variables.put("tone", tone);
+
+    String subject =
+        new EmailSubjectResolver(messages())
+            .resolve("payment-reminder-tenant", variables, Locale.forLanguageTag(language));
+
+    // The tone keys are built dynamically (email.subject.payment-reminder-tenant.FIRM), so a
+    // missing one resolves to the generic subject rather than failing loudly.
+    assertThat(subject).as("[%s] tone %s has a blank subject", language, tone).isNotBlank();
+    assertThat(subject)
+        .as("[%s] tone %s subject leaked a raw message key", language, tone)
+        .doesNotContainPattern(MESSAGE_KEY);
+    assertThat(subject)
+        .as("[%s] tone %s fell back to the default subject", language, tone)
+        .isNotEqualTo(
+            new EmailSubjectResolver(messages())
+                .resolve("no-such-template", Map.of(), Locale.forLanguageTag(language)));
   }
 }

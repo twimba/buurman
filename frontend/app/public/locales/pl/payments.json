@@ -13,7 +13,8 @@
     "waiveLateFee": "Umorz opłatę",
     "writeOff": "Odpisz",
     "cancelPayment": "Anuluj płatność",
-    "formalNotice": "Wezwanie do zapłaty (PDF)"
+    "formalNotice": "Wezwanie do zapłaty (PDF)",
+    "markPaid": "Oznacz jako opłacone"
   },
   "stats": {
     "pendingPayments": "Oczekujące płatności",

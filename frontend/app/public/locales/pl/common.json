@@ -23,7 +23,11 @@
     "retry": "Ponów",
     "continue": "Kontynuuj",
     "saveChanges": "Zapisz zmiany",
-    "discardChanges": "Odrzuć zmiany"
+    "discardChanges": "Odrzuć zmiany",
+    "dismiss": "Zamknij",
+    "clear": "Wyczyść",
+    "deselect": "Odznacz",
+    "select": "Zaznacz"
   },
   "status": {
     "active": "Aktywny",
@@ -231,7 +235,9 @@
     "select": "Wybierz...",
     "phoneNumber": "Numer telefonu",
     "searchCountryOrCode": "Szukaj kraju lub kodu...",
-    "noCountriesFound": "Nie znaleziono krajów"
+    "noCountriesFound": "Nie znaleziono krajów",
+    "searchCurrencies": "Szukaj walut",
+    "currencies": "Waluty"
   },
   "impersonation": {
     "active": "Podszywanie aktywne",
@@ -240,7 +246,12 @@
     "notAvailable": "Niedostępne podczas podszywania",
     "timeRemaining": "Pozostały czas",
     "endSession": "Zakończ sesję",
-    "sessionEnded": "Sesja podszywania zakończona. Możesz zamknąć tę kartę."
+    "sessionEnded": "Sesja podszywania zakończona. Możesz zamknąć tę kartę.",
+    "missingToken": "Nie podano tokenu personifikacji.",
+    "failedToExchange": "Nie udało się wymienić tokenu personifikacji.",
+    "failed": "Personifikacja nie powiodła się",
+    "closeTab": "Możesz zamknąć tę kartę.",
+    "settingUp": "Przygotowywanie sesji..."
   },
   "teamSwitcher": {
     "yourTeams": "Twoje zespoły ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Stopa kap.",
       "coc": "CoC",
       "occupancy": "Obłożenie",
-      "dataPercent": "Dane %"
+      "dataPercent": "Dane %",
+      "topByNoi": "Top 5 wg NOI",
+      "needsAttention": "Wymaga uwagi"
     },
     "occupancy": {
       "noData": "Brak danych o obłożeniu",
@@ -381,7 +394,14 @@
       "noData": "Brak danych o alokacji",
       "byCategory": "Wg kategorii",
       "byCountry": "Wg kraju"
-    }
+    },
+    "overdueCount": "{{count}} zaległych",
+    "extensionsCount": "{{count}} przedłużeń",
+    "monthlyCashFlow": "Miesięczny przepływ pieniężny",
+    "incomeMinusExpenses": "Przychody minus wydatki",
+    "occupancySublabel": "{{occupied}} z {{total}}",
+    "vacantSublabel": "Dostępne do wynajmu",
+    "portfolioAnalyticsCta": "Analiza portfela"
   },
   "wws": {
     "title": "Kalkulator punktów WWS",
@@ -618,5 +638,48 @@
     "description": "Przegląd na jednej stronie. Wybierz język.",
     "yourLanguage": "Twój język",
     "downloadFailed": "Nie udało się pobrać podsumowania"
+  },
+  "pwa": {
+    "installTitle": "Zainstaluj Buurman",
+    "installSubtitle": "Szybszy dostęp, pełny ekran, działa offline",
+    "installAction": "Zainstaluj"
+  },
+  "refresh": "Odśwież",
+  "actions": {
+    "cancel": "Anuluj"
+  },
+  "importHistory": {
+    "title": "Historia importów",
+    "subtitle": "Przejrzyj wcześniejsze importy i cofnij jeden, jeśli coś poszło nie tak."
+  },
+  "invitation": {
+    "loading": "Wczytywanie zaproszenia...",
+    "invalid": {
+      "title": "Zaproszenie nieprawidłowe",
+      "message": "Ten link zaproszenia jest nieprawidłowy. Poproś o nowy.",
+      "goToLogin": "Przejdź do logowania"
+    },
+    "accepted": {
+      "title": "Zaproszenie zaakceptowane",
+      "message": "Jesteś teraz członkiem zespołu.",
+      "goToLogin": "Przejdź do logowania"
+    },
+    "expired": {
+      "title": "Zaproszenie wygasło",
+      "message": "To zaproszenie wygasło. Poproś o nowe.",
+      "goToLogin": "Przejdź do logowania"
+    },
+    "youreInvited": "Zostałeś zaproszony",
+    "inviterMessage": "{{inviterName}} zaprosił Cię do zespołu {{teamName}}.",
+    "yourRole": "Twoja rola",
+    "invitedEmail": "Zaproszony e-mail",
+    "expires": "Wygasa",
+    "acceptError": "Nie udało się zaakceptować zaproszenia.",
+    "accepting": "Akceptowanie...",
+    "acceptInvitation": "Zaakceptuj zaproszenie",
+    "joinNote": "Po zaakceptowaniu ten zespół zostanie dodany do Twojego konta.",
+    "loginRequired": "Zaloguj się, aby zaakceptować to zaproszenie.",
+    "loginToAccept": "Zaloguj się, aby zaakceptować",
+    "createAccount": "Utwórz konto"
   }
 }

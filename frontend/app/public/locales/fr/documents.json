@@ -9,7 +9,8 @@
       "contact": "Contacts",
       "contract": "Contrats",
       "payment": "Paiements",
-      "expense": "Dépenses"
+      "expense": "Dépenses",
+      "label": "Type"
     },
     "table": {
       "document": "Document",
@@ -24,7 +25,8 @@
       "count_other": "{{count}} documents"
     },
     "empty": "Aucun document trouvé",
-    "editModal": "Modifier le document"
+    "editModal": "Modifier le document",
+    "titleShort": "Documents"
   },
   "photosPage": {
     "title": "Bibliothèque de photos",
@@ -36,10 +38,12 @@
       "contact": "Contacts",
       "contract": "Contrats",
       "payment": "Paiements",
-      "expense": "Dépenses"
+      "expense": "Dépenses",
+      "label": "Type"
     },
     "empty": "Aucune photo trouvée",
-    "editModal": "Modifier la photo"
+    "editModal": "Modifier la photo",
+    "selectedCount": "{{count}} sélectionnés"
   },
   "photoGrid": {
     "noPhotos": "Pas encore de photos",

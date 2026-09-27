@@ -632,7 +632,8 @@
       "postalCodeRequired": "Ο ταχυδρομικός κώδικας είναι υποχρεωτικός",
       "countryRequired": "Η χώρα είναι υποχρεωτική",
       "areaPositive": "Το εμβαδόν πρέπει να είναι μεγαλύτερο από 0"
-    }
+    },
+    "characteristics": "Χαρακτηριστικά"
   },
   "collapsible": {
     "filledCount": "{{filled}} από {{total}} συμπληρωμένα"

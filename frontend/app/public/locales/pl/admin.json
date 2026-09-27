@@ -298,7 +298,8 @@
       "title": "Trend obłożenia",
       "subtitle": "Miesięczny wskaźnik obłożenia w procentach",
       "occupancyRate": "Wskaźnik obłożenia (%)"
-    }
+    },
+    "allProperties": "Wszystkie nieruchomości"
   },
   "auditLog": {
     "failedToLoad": "Nie udało się załadować dziennika aktywności"

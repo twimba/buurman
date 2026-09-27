@@ -632,7 +632,8 @@
       "postalCodeRequired": "Postnummer er paakraevet",
       "countryRequired": "Land er paakraevet",
       "areaPositive": "Areal skal vaere stoerre end 0"
-    }
+    },
+    "characteristics": "Egenskaber"
   },
   "collapsible": {
     "filledCount": "{{filled}} af {{total}} udfyldt"

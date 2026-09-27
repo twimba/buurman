@@ -4,7 +4,8 @@
     "subtitle": "Seuraa kiinteiston kuluja ja kustannuksia"
   },
   "actions": {
-    "addExpense": "Lisaa kulu"
+    "addExpense": "Lisaa kulu",
+    "delete": "Poista"
   },
   "stats": {
     "totalExpenses": "Kulut yhteensa",

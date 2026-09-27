@@ -183,7 +183,8 @@
       "postalCodeRequired": "El código postal es obligatorio",
       "countryRequired": "El país es obligatorio",
       "areaPositive": "La superficie debe ser mayor que 0"
-    }
+    },
+    "characteristics": "Características"
   },
   "collapsible": {
     "filledCount": "{{filled}} de {{total}} completados"

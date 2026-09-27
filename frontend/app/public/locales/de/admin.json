@@ -298,7 +298,8 @@
     "income": "Einnahmen",
     "expenses": "Ausgaben",
     "amount": "Betrag",
-    "downloadPdf": "PDF herunterladen"
+    "downloadPdf": "PDF herunterladen",
+    "allProperties": "Alle Objekte"
   },
   "auditLog": {
     "failedToLoad": "Aktivitätsprotokolle konnten nicht geladen werden"

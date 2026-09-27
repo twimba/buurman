@@ -298,7 +298,8 @@
     "income": "Inkomsten",
     "expenses": "Uitgaven",
     "amount": "Bedrag",
-    "downloadPdf": "PDF downloaden"
+    "downloadPdf": "PDF downloaden",
+    "allProperties": "Alle objecten"
   },
   "auditLog": {
     "failedToLoad": "Activiteitenlogboek laden mislukt"

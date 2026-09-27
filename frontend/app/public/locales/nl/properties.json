@@ -182,7 +182,8 @@
       "postalCodeRequired": "Postcode is verplicht",
       "countryRequired": "Land is verplicht",
       "areaPositive": "Oppervlakte moet groter zijn dan 0"
-    }
+    },
+    "characteristics": "Kenmerken"
   },
   "collapsible": {
     "filledCount": "{{filled}} van {{total}} ingevuld"

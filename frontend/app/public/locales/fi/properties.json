@@ -632,7 +632,8 @@
       "postalCodeRequired": "Postinumero on pakollinen",
       "countryRequired": "Maa on pakollinen",
       "areaPositive": "Pinta-alan on oltava suurempi kuin 0"
-    }
+    },
+    "characteristics": "Ominaisuudet"
   },
   "collapsible": {
     "filledCount": "{{filled}} / {{total}} taytetty"

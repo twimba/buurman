@@ -23,7 +23,11 @@
     "retry": "Riprova",
     "continue": "Continua",
     "saveChanges": "Salva modifiche",
-    "discardChanges": "Annulla modifiche"
+    "discardChanges": "Annulla modifiche",
+    "dismiss": "Chiudi",
+    "clear": "Cancella",
+    "deselect": "Deseleziona",
+    "select": "Seleziona"
   },
   "status": {
     "active": "Attivo",
@@ -231,7 +235,9 @@
     "select": "Seleziona...",
     "phoneNumber": "Numero di telefono",
     "searchCountryOrCode": "Cerca paese o prefisso...",
-    "noCountriesFound": "Nessun paese trovato"
+    "noCountriesFound": "Nessun paese trovato",
+    "searchCurrencies": "Cerca valute",
+    "currencies": "Valute"
   },
   "impersonation": {
     "active": "Impersonificazione attiva",
@@ -240,7 +246,12 @@
     "notAvailable": "Non disponibile durante l'impersonificazione",
     "timeRemaining": "Tempo rimanente",
     "endSession": "Termina sessione",
-    "sessionEnded": "Sessione di impersonificazione terminata. Può chiudere questa scheda."
+    "sessionEnded": "Sessione di impersonificazione terminata. Può chiudere questa scheda.",
+    "missingToken": "Non è stato fornito alcun token di impersonificazione.",
+    "failedToExchange": "Non è stato possibile scambiare il token di impersonificazione.",
+    "failed": "Impersonificazione non riuscita",
+    "closeTab": "Puoi chiudere questa scheda.",
+    "settingUp": "Preparazione della sessione..."
   },
   "teamSwitcher": {
     "yourTeams": "I Suoi team ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Occupazione",
-      "dataPercent": "Dati %"
+      "dataPercent": "Dati %",
+      "topByNoi": "Top 5 per NOI",
+      "needsAttention": "Richiede attenzione"
     },
     "occupancy": {
       "noData": "Nessun dato sull'occupazione disponibile",
@@ -381,7 +394,14 @@
       "noData": "Nessun dato sull'allocazione disponibile",
       "byCategory": "Per categoria",
       "byCountry": "Per paese"
-    }
+    },
+    "overdueCount": "{{count}} scaduti",
+    "extensionsCount": "{{count}} proroghe",
+    "monthlyCashFlow": "Flusso di cassa mensile",
+    "incomeMinusExpenses": "Entrate meno uscite",
+    "occupancySublabel": "{{occupied}} su {{total}}",
+    "vacantSublabel": "Disponibile per l'affitto",
+    "portfolioAnalyticsCta": "Analisi del portafoglio"
   },
   "wws": {
     "title": "Calcolatore punti WWS",
@@ -618,5 +638,48 @@
     "description": "Una panoramica di una pagina. Seleziona una lingua.",
     "yourLanguage": "La tua lingua",
     "downloadFailed": "Download della scheda riepilogo non riuscito"
+  },
+  "pwa": {
+    "installTitle": "Installa Buurman",
+    "installSubtitle": "Accesso più rapido, schermo intero, funziona offline",
+    "installAction": "Installa"
+  },
+  "refresh": "Aggiorna",
+  "actions": {
+    "cancel": "Annulla"
+  },
+  "importHistory": {
+    "title": "Cronologia delle importazioni",
+    "subtitle": "Controlla le importazioni precedenti e annullane una se è andata storta."
+  },
+  "invitation": {
+    "loading": "Caricamento dell'invito...",
+    "invalid": {
+      "title": "Invito non valido",
+      "message": "Questo link di invito non è valido. Richiedine uno nuovo.",
+      "goToLogin": "Vai al login"
+    },
+    "accepted": {
+      "title": "Invito accettato",
+      "message": "Ora fai parte del team.",
+      "goToLogin": "Vai al login"
+    },
+    "expired": {
+      "title": "Invito scaduto",
+      "message": "Questo invito è scaduto. Richiedine uno nuovo.",
+      "goToLogin": "Vai al login"
+    },
+    "youreInvited": "Sei stato invitato",
+    "inviterMessage": "{{inviterName}} ti ha invitato a unirti a {{teamName}}.",
+    "yourRole": "Il tuo ruolo",
+    "invitedEmail": "Email invitata",
+    "expires": "Scade",
+    "acceptError": "Non è stato possibile accettare l'invito.",
+    "accepting": "Accettazione...",
+    "acceptInvitation": "Accetta l'invito",
+    "joinNote": "Accettando, questo team viene aggiunto al tuo account.",
+    "loginRequired": "Accedi per accettare questo invito.",
+    "loginToAccept": "Accedi per accettare",
+    "createAccount": "Crea un account"
   }
 }

@@ -23,7 +23,11 @@
     "retry": "Réessayer",
     "continue": "Continuer",
     "saveChanges": "Enregistrer les modifications",
-    "discardChanges": "Annuler les modifications"
+    "discardChanges": "Annuler les modifications",
+    "dismiss": "Fermer",
+    "clear": "Effacer",
+    "deselect": "Désélectionner",
+    "select": "Sélectionner"
   },
   "status": {
     "active": "Actif",
@@ -231,7 +235,9 @@
     "select": "Sélectionner...",
     "phoneNumber": "Numéro de téléphone",
     "searchCountryOrCode": "Rechercher un pays ou un code...",
-    "noCountriesFound": "Aucun pays trouvé"
+    "noCountriesFound": "Aucun pays trouvé",
+    "searchCurrencies": "Rechercher une devise",
+    "currencies": "Devises"
   },
   "impersonation": {
     "active": "Simulation active",
@@ -240,7 +246,12 @@
     "notAvailable": "Non disponible pendant la simulation",
     "timeRemaining": "Temps restant",
     "endSession": "Terminer la session",
-    "sessionEnded": "Session de simulation terminée. Vous pouvez fermer cet onglet."
+    "sessionEnded": "Session de simulation terminée. Vous pouvez fermer cet onglet.",
+    "missingToken": "Aucun jeton d'usurpation n'a été fourni.",
+    "failedToExchange": "Le jeton d'usurpation n'a pas pu être échangé.",
+    "failed": "Usurpation d'identité échouée",
+    "closeTab": "Vous pouvez fermer cet onglet.",
+    "settingUp": "Préparation de la session..."
   },
   "teamSwitcher": {
     "yourTeams": "Vos équipes ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Occupation",
-      "dataPercent": "Données %"
+      "dataPercent": "Données %",
+      "topByNoi": "Top 5 par NOI",
+      "needsAttention": "Nécessite une attention"
     },
     "occupancy": {
       "noData": "Aucune donnée d'occupation disponible",
@@ -381,7 +394,14 @@
       "noData": "Aucune donnée de répartition disponible",
       "byCategory": "Par catégorie",
       "byCountry": "Par pays"
-    }
+    },
+    "overdueCount": "{{count}} en retard",
+    "extensionsCount": "{{count}} prolongations",
+    "monthlyCashFlow": "Flux de trésorerie mensuel",
+    "incomeMinusExpenses": "Revenus moins dépenses",
+    "occupancySublabel": "{{occupied}} sur {{total}}",
+    "vacantSublabel": "Disponible à la location",
+    "portfolioAnalyticsCta": "Analyse du portefeuille"
   },
   "wws": {
     "title": "Calculateur de points WWS",
@@ -618,5 +638,48 @@
     "description": "Un aperçu d'une page. Choisissez une langue.",
     "yourLanguage": "Votre langue",
     "downloadFailed": "Échec du téléchargement de la fiche récap"
+  },
+  "pwa": {
+    "installTitle": "Installer Buurman",
+    "installSubtitle": "Accès plus rapide, plein écran, fonctionne hors ligne",
+    "installAction": "Installer"
+  },
+  "refresh": "Actualiser",
+  "actions": {
+    "cancel": "Annuler"
+  },
+  "importHistory": {
+    "title": "Historique des imports",
+    "subtitle": "Consultez les imports précédents et annulez-en un en cas d'erreur."
+  },
+  "invitation": {
+    "loading": "Chargement de l'invitation...",
+    "invalid": {
+      "title": "Invitation non valide",
+      "message": "Ce lien d'invitation n'est pas valide. Demandez-en un nouveau.",
+      "goToLogin": "Aller à la connexion"
+    },
+    "accepted": {
+      "title": "Invitation acceptée",
+      "message": "Vous êtes désormais membre de l'équipe.",
+      "goToLogin": "Aller à la connexion"
+    },
+    "expired": {
+      "title": "Invitation expirée",
+      "message": "Cette invitation a expiré. Demandez-en une nouvelle.",
+      "goToLogin": "Aller à la connexion"
+    },
+    "youreInvited": "Vous avez été invité",
+    "inviterMessage": "{{inviterName}} vous a invité à rejoindre {{teamName}}.",
+    "yourRole": "Votre rôle",
+    "invitedEmail": "E-mail invité",
+    "expires": "Expire le",
+    "acceptError": "L'invitation n'a pas pu être acceptée.",
+    "accepting": "Acceptation...",
+    "acceptInvitation": "Accepter l'invitation",
+    "joinNote": "L'acceptation ajoute cette équipe à votre compte.",
+    "loginRequired": "Connectez-vous pour accepter cette invitation.",
+    "loginToAccept": "Se connecter pour accepter",
+    "createAccount": "Créer un compte"
   }
 }

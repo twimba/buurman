@@ -13,7 +13,8 @@
     "waiveLateFee": "Perdoar multa",
     "writeOff": "Abater",
     "cancelPayment": "Cancelar pagamento",
-    "formalNotice": "Interpelação (PDF)"
+    "formalNotice": "Interpelação (PDF)",
+    "markPaid": "Marcar como pago"
   },
   "stats": {
     "pendingPayments": "Pagamentos Pendentes",

@@ -13,7 +13,8 @@
     "waiveLateFee": "Frafall gebyr",
     "writeOff": "Avskriv",
     "cancelPayment": "Kanseller betaling",
-    "formalNotice": "Betalingsvarsel (PDF)"
+    "formalNotice": "Betalingsvarsel (PDF)",
+    "markPaid": "Merk som betalt"
   },
   "stats": {
     "pendingPayments": "Ventende betalinger",

@@ -23,7 +23,11 @@
     "retry": "Erneut versuchen",
     "continue": "Weiter",
     "saveChanges": "Änderungen speichern",
-    "discardChanges": "Änderungen verwerfen"
+    "discardChanges": "Änderungen verwerfen",
+    "dismiss": "Schließen",
+    "clear": "Zurücksetzen",
+    "deselect": "Abwählen",
+    "select": "Auswählen"
   },
   "status": {
     "active": "Aktiv",
@@ -231,7 +235,9 @@
     "select": "Auswählen...",
     "phoneNumber": "Telefonnummer",
     "searchCountryOrCode": "Land oder Vorwahl suchen...",
-    "noCountriesFound": "Keine Länder gefunden"
+    "noCountriesFound": "Keine Länder gefunden",
+    "searchCurrencies": "Währungen suchen",
+    "currencies": "Währungen"
   },
   "impersonation": {
     "active": "Impersonation aktiv",
@@ -240,7 +246,12 @@
     "notAvailable": "Während der Impersonation nicht verfügbar",
     "timeRemaining": "Verbleibende Zeit",
     "endSession": "Sitzung beenden",
-    "sessionEnded": "Impersonation-Sitzung beendet. Sie können diesen Tab schließen."
+    "sessionEnded": "Impersonation-Sitzung beendet. Sie können diesen Tab schließen.",
+    "missingToken": "Es wurde kein Identitätswechsel-Token übergeben.",
+    "failedToExchange": "Das Identitätswechsel-Token konnte nicht eingelöst werden.",
+    "failed": "Identitätswechsel fehlgeschlagen",
+    "closeTab": "Sie können diesen Tab schließen.",
+    "settingUp": "Sitzung wird vorbereitet..."
   },
   "teamSwitcher": {
     "yourTeams": "Ihre Teams ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Belegung",
-      "dataPercent": "Daten %"
+      "dataPercent": "Daten %",
+      "topByNoi": "Top 5 nach NOI",
+      "needsAttention": "Benötigt Aufmerksamkeit"
     },
     "occupancy": {
       "noData": "Keine Belegungsdaten verfügbar",
@@ -381,7 +394,14 @@
       "noData": "Keine Allokationsdaten verfügbar",
       "byCategory": "Nach Kategorie",
       "byCountry": "Nach Land"
-    }
+    },
+    "overdueCount": "{{count}} überfällig",
+    "extensionsCount": "{{count}} Verlängerungen",
+    "monthlyCashFlow": "Monatlicher Cashflow",
+    "incomeMinusExpenses": "Einnahmen minus Ausgaben",
+    "occupancySublabel": "{{occupied}} von {{total}}",
+    "vacantSublabel": "Verfügbar zur Vermietung",
+    "portfolioAnalyticsCta": "Portfolio-Analyse"
   },
   "wws": {
     "title": "WWS-Punkterechner",
@@ -618,5 +638,48 @@
     "description": "Eine einseitige Übersicht. Sprache wählen.",
     "yourLanguage": "Ihre Sprache",
     "downloadFailed": "Herunterladen der Übersicht fehlgeschlagen"
+  },
+  "pwa": {
+    "installTitle": "Buurman installieren",
+    "installSubtitle": "Schneller, Vollbild, funktioniert offline",
+    "installAction": "Installieren"
+  },
+  "refresh": "Aktualisieren",
+  "actions": {
+    "cancel": "Abbrechen"
+  },
+  "importHistory": {
+    "title": "Importverlauf",
+    "subtitle": "Frühere Importe prüfen und bei Bedarf einen rückgängig machen."
+  },
+  "invitation": {
+    "loading": "Einladung wird geladen...",
+    "invalid": {
+      "title": "Einladung ungültig",
+      "message": "Dieser Einladungslink ist ungültig. Bitten Sie um einen neuen.",
+      "goToLogin": "Zur Anmeldung"
+    },
+    "accepted": {
+      "title": "Einladung angenommen",
+      "message": "Sie sind jetzt Mitglied des Teams.",
+      "goToLogin": "Zur Anmeldung"
+    },
+    "expired": {
+      "title": "Einladung abgelaufen",
+      "message": "Diese Einladung ist abgelaufen. Bitten Sie um eine neue.",
+      "goToLogin": "Zur Anmeldung"
+    },
+    "youreInvited": "Sie wurden eingeladen",
+    "inviterMessage": "{{inviterName}} hat Sie zu {{teamName}} eingeladen.",
+    "yourRole": "Ihre Rolle",
+    "invitedEmail": "Eingeladene E-Mail-Adresse",
+    "expires": "Läuft ab",
+    "acceptError": "Die Einladung konnte nicht angenommen werden.",
+    "accepting": "Wird angenommen...",
+    "acceptInvitation": "Einladung annehmen",
+    "joinNote": "Mit der Annahme wird dieses Team Ihrem Konto hinzugefügt.",
+    "loginRequired": "Melden Sie sich an, um diese Einladung anzunehmen.",
+    "loginToAccept": "Zum Annehmen anmelden",
+    "createAccount": "Konto erstellen"
   }
 }

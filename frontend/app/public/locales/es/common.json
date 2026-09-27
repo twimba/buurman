@@ -23,7 +23,11 @@
     "retry": "Reintentar",
     "continue": "Continuar",
     "saveChanges": "Guardar Cambios",
-    "discardChanges": "Descartar Cambios"
+    "discardChanges": "Descartar Cambios",
+    "dismiss": "Cerrar",
+    "clear": "Borrar",
+    "deselect": "Deseleccionar",
+    "select": "Seleccionar"
   },
   "status": {
     "active": "Activo",
@@ -231,7 +235,9 @@
     "select": "Seleccionar...",
     "phoneNumber": "Número de teléfono",
     "searchCountryOrCode": "Buscar país o código...",
-    "noCountriesFound": "No se encontraron países"
+    "noCountriesFound": "No se encontraron países",
+    "searchCurrencies": "Buscar monedas",
+    "currencies": "Monedas"
   },
   "impersonation": {
     "active": "Suplantación activa",
@@ -240,7 +246,12 @@
     "notAvailable": "No disponible durante suplantación",
     "timeRemaining": "Tiempo restante",
     "endSession": "Finalizar Sesión",
-    "sessionEnded": "Sesión de suplantación finalizada. Puede cerrar esta pestaña."
+    "sessionEnded": "Sesión de suplantación finalizada. Puede cerrar esta pestaña.",
+    "missingToken": "No se ha proporcionado ningún token de suplantación.",
+    "failedToExchange": "No se ha podido canjear el token de suplantación.",
+    "failed": "Suplantación fallida",
+    "closeTab": "Puede cerrar esta pestaña.",
+    "settingUp": "Preparando la sesión..."
   },
   "teamSwitcher": {
     "yourTeams": "Sus Equipos ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Ocupación",
-      "dataPercent": "Datos %"
+      "dataPercent": "Datos %",
+      "topByNoi": "Top 5 por NOI",
+      "needsAttention": "Requiere atención"
     },
     "occupancy": {
       "noData": "Sin datos de ocupación disponibles",
@@ -381,7 +394,14 @@
       "noData": "Sin datos de asignación disponibles",
       "byCategory": "Por Categoría",
       "byCountry": "Por País"
-    }
+    },
+    "overdueCount": "{{count}} vencidos",
+    "extensionsCount": "{{count}} prórrogas",
+    "monthlyCashFlow": "Flujo de caja mensual",
+    "incomeMinusExpenses": "Ingresos menos gastos",
+    "occupancySublabel": "{{occupied}} de {{total}}",
+    "vacantSublabel": "Disponible para alquilar",
+    "portfolioAnalyticsCta": "Análisis de la cartera"
   },
   "wws": {
     "title": "Calculadora de Puntos WWS",
@@ -618,5 +638,48 @@
     "description": "Un resumen de una página. Seleccione un idioma.",
     "yourLanguage": "Su idioma",
     "downloadFailed": "Error al descargar el resumen"
+  },
+  "pwa": {
+    "installTitle": "Instalar Buurman",
+    "installSubtitle": "Acceso más rápido, pantalla completa, funciona sin conexión",
+    "installAction": "Instalar"
+  },
+  "refresh": "Actualizar",
+  "actions": {
+    "cancel": "Cancelar"
+  },
+  "importHistory": {
+    "title": "Historial de importaciones",
+    "subtitle": "Revise importaciones anteriores y deshaga una si salió mal."
+  },
+  "invitation": {
+    "loading": "Cargando la invitación...",
+    "invalid": {
+      "title": "Invitación no válida",
+      "message": "Este enlace de invitación no es válido. Solicite uno nuevo.",
+      "goToLogin": "Ir al inicio de sesión"
+    },
+    "accepted": {
+      "title": "Invitación aceptada",
+      "message": "Ya es miembro del equipo.",
+      "goToLogin": "Ir al inicio de sesión"
+    },
+    "expired": {
+      "title": "Invitación caducada",
+      "message": "Esta invitación ha caducado. Solicite una nueva.",
+      "goToLogin": "Ir al inicio de sesión"
+    },
+    "youreInvited": "Le han invitado",
+    "inviterMessage": "{{inviterName}} le ha invitado a unirse a {{teamName}}.",
+    "yourRole": "Su rol",
+    "invitedEmail": "Correo invitado",
+    "expires": "Caduca",
+    "acceptError": "No se ha podido aceptar la invitación.",
+    "accepting": "Aceptando...",
+    "acceptInvitation": "Aceptar invitación",
+    "joinNote": "Al aceptar, este equipo se añade a su cuenta.",
+    "loginRequired": "Inicie sesión para aceptar esta invitación.",
+    "loginToAccept": "Iniciar sesión para aceptar",
+    "createAccount": "Crear una cuenta"
   }
 }

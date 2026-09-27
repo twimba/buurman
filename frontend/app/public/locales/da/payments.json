@@ -13,7 +13,8 @@
     "waiveLateFee": "Eftergiv gebyr",
     "writeOff": "Afskriv",
     "cancelPayment": "Annullér betaling",
-    "formalNotice": "Betalingspåkrav (PDF)"
+    "formalNotice": "Betalingspåkrav (PDF)",
+    "markPaid": "Markér som betalt"
   },
   "stats": {
     "pendingPayments": "Afventende betalinger",

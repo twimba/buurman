@@ -298,7 +298,8 @@
       "title": "Belaggningstrend",
       "subtitle": "Manatlig belaggningsgrad i procent",
       "occupancyRate": "Belaggningsgrad (%)"
-    }
+    },
+    "allProperties": "Alla objekt"
   },
   "auditLog": {
     "failedToLoad": "Det gick inte att ladda aktivitetsloggar"

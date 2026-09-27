@@ -298,7 +298,8 @@
     "income": "Receita",
     "expenses": "Despesas",
     "amount": "Montante",
-    "downloadPdf": "Descarregar PDF"
+    "downloadPdf": "Descarregar PDF",
+    "allProperties": "Todos os imóveis"
   },
   "auditLog": {
     "failedToLoad": "Falha ao carregar registos de atividade"

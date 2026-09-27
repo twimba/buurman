@@ -298,7 +298,8 @@
       "title": "Kayttoastetrendi",
       "subtitle": "Kuukausittainen kayttoasteprosentti",
       "occupancyRate": "Kayttoaste (%)"
-    }
+    },
+    "allProperties": "Kaikki kohteet"
   },
   "auditLog": {
     "failedToLoad": "Toimintolokien lataus epaonnistui"

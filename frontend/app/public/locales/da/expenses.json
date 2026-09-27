@@ -4,7 +4,8 @@
     "subtitle": "Spoer ejendomsudgifter og omkostninger"
   },
   "actions": {
-    "addExpense": "Tilfoej udgift"
+    "addExpense": "Tilfoej udgift",
+    "delete": "Slet"
   },
   "stats": {
     "totalExpenses": "Samlede udgifter",

@@ -13,7 +13,8 @@
     "waiveLateFee": "Peru maksu",
     "writeOff": "Kirjaa luottotappioksi",
     "cancelPayment": "Peruuta maksu",
-    "formalNotice": "Maksuvaatimus (PDF)"
+    "formalNotice": "Maksuvaatimus (PDF)",
+    "markPaid": "Merkitse maksetuksi"
   },
   "stats": {
     "pendingPayments": "Odottavat maksut",

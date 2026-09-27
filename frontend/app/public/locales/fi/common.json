@@ -23,7 +23,11 @@
     "retry": "Yrita uudelleen",
     "continue": "Jatka",
     "saveChanges": "Tallenna muutokset",
-    "discardChanges": "Hylkaa muutokset"
+    "discardChanges": "Hylkaa muutokset",
+    "dismiss": "Sulje",
+    "clear": "Tyhjennä",
+    "deselect": "Poista valinta",
+    "select": "Valitse"
   },
   "status": {
     "active": "Aktiivinen",
@@ -231,7 +235,9 @@
     "select": "Valitse...",
     "phoneNumber": "Puhelinnumero",
     "searchCountryOrCode": "Hae maata tai suuntanumeroa...",
-    "noCountriesFound": "Maita ei loytynyt"
+    "noCountriesFound": "Maita ei loytynyt",
+    "searchCurrencies": "Hae valuuttoja",
+    "currencies": "Valuutat"
   },
   "impersonation": {
     "active": "Toisen kayttajan istunto aktiivinen",
@@ -240,7 +246,12 @@
     "notAvailable": "Ei kaytettavissa toisena kayttajana toimiessa",
     "timeRemaining": "Aikaa jaljella",
     "endSession": "Lopeta istunto",
-    "sessionEnded": "Toisen kayttajan istunto paattyi. Voit sulkea taman valilehden."
+    "sessionEnded": "Toisen kayttajan istunto paattyi. Voit sulkea taman valilehden.",
+    "missingToken": "Toisena käyttäjänä toimimisen tunnusta ei annettu.",
+    "failedToExchange": "Tunnusta ei voitu vaihtaa.",
+    "failed": "Toisena käyttäjänä toimiminen epäonnistui",
+    "closeTab": "Voit sulkea tämän välilehden.",
+    "settingUp": "Valmistellaan istuntoa..."
   },
   "teamSwitcher": {
     "yourTeams": "Tiimisi ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Tuottoprosentti",
       "coc": "CoC",
       "occupancy": "Kayttoaste",
-      "dataPercent": "Data %"
+      "dataPercent": "Data %",
+      "topByNoi": "5 parasta NOI:n mukaan",
+      "needsAttention": "Vaatii huomiota"
     },
     "occupancy": {
       "noData": "Kayttoastetietoja ei ole saatavilla",
@@ -381,7 +394,14 @@
       "noData": "Allokaatiotietoja ei ole saatavilla",
       "byCategory": "Kategorian mukaan",
       "byCountry": "Maan mukaan"
-    }
+    },
+    "overdueCount": "{{count}} myöhässä",
+    "extensionsCount": "{{count}} jatkoa",
+    "monthlyCashFlow": "Kuukausittainen kassavirta",
+    "incomeMinusExpenses": "Tulot miinus menot",
+    "occupancySublabel": "{{occupied}} / {{total}}",
+    "vacantSublabel": "Vuokrattavissa",
+    "portfolioAnalyticsCta": "Salkun analytiikka"
   },
   "wws": {
     "title": "WWS-pisteiden laskuri",
@@ -618,5 +638,48 @@
     "description": "Yhden sivun yhteenveto. Valitse kieli.",
     "yourLanguage": "Kielesi",
     "downloadFailed": "Yhteenvedon lataaminen epäonnistui"
+  },
+  "pwa": {
+    "installTitle": "Asenna Buurman",
+    "installSubtitle": "Nopeampi käyttö, koko näyttö, toimii offline-tilassa",
+    "installAction": "Asenna"
+  },
+  "refresh": "Päivitä",
+  "actions": {
+    "cancel": "Peruuta"
+  },
+  "importHistory": {
+    "title": "Tuontihistoria",
+    "subtitle": "Tarkastele aiempia tuonteja ja peru tuonti, jos se meni väärin."
+  },
+  "invitation": {
+    "loading": "Ladataan kutsua...",
+    "invalid": {
+      "title": "Kutsu ei kelpaa",
+      "message": "Tämä kutsulinkki ei kelpaa. Pyydä uusi.",
+      "goToLogin": "Siirry kirjautumiseen"
+    },
+    "accepted": {
+      "title": "Kutsu hyväksytty",
+      "message": "Olet nyt tiimin jäsen.",
+      "goToLogin": "Siirry kirjautumiseen"
+    },
+    "expired": {
+      "title": "Kutsu vanhentunut",
+      "message": "Tämä kutsu on vanhentunut. Pyydä uusi.",
+      "goToLogin": "Siirry kirjautumiseen"
+    },
+    "youreInvited": "Sinut on kutsuttu",
+    "inviterMessage": "{{inviterName}} kutsui sinut tiimiin {{teamName}}.",
+    "yourRole": "Roolisi",
+    "invitedEmail": "Kutsuttu sähköposti",
+    "expires": "Vanhenee",
+    "acceptError": "Kutsua ei voitu hyväksyä.",
+    "accepting": "Hyväksytään...",
+    "acceptInvitation": "Hyväksy kutsu",
+    "joinNote": "Hyväksyminen lisää tämän tiimin tiliisi.",
+    "loginRequired": "Kirjaudu sisään hyväksyäksesi tämän kutsun.",
+    "loginToAccept": "Kirjaudu hyväksyäksesi",
+    "createAccount": "Luo tili"
   }
 }

@@ -4,7 +4,8 @@
     "subtitle": "Immobilienausgaben und Kosten verfolgen"
   },
   "actions": {
-    "addExpense": "Ausgabe hinzufügen"
+    "addExpense": "Ausgabe hinzufügen",
+    "delete": "Löschen"
   },
   "stats": {
     "totalExpenses": "Gesamtausgaben",

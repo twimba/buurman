@@ -298,7 +298,8 @@
     "income": "Ingresos",
     "expenses": "Gastos",
     "amount": "Importe",
-    "downloadPdf": "Descargar PDF"
+    "downloadPdf": "Descargar PDF",
+    "allProperties": "Todos los inmuebles"
   },
   "auditLog": {
     "failedToLoad": "Error al cargar los registros de actividad"

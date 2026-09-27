@@ -4,7 +4,8 @@
     "subtitle": "Volg vastgoeduitgaven en kosten"
   },
   "actions": {
-    "addExpense": "Uitgave toevoegen"
+    "addExpense": "Uitgave toevoegen",
+    "delete": "Verwijderen"
   },
   "stats": {
     "totalExpenses": "Totale uitgaven",

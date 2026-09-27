@@ -632,7 +632,8 @@
       "postalCodeRequired": "Postnummer er obligatorisk",
       "countryRequired": "Land er obligatorisk",
       "areaPositive": "Areal må være større enn 0"
-    }
+    },
+    "characteristics": "Egenskaper"
   },
   "collapsible": {
     "filledCount": "{{filled}} av {{total}} utfylt"

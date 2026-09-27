@@ -298,7 +298,8 @@
       "title": "Andamento dell'occupazione",
       "subtitle": "Percentuale mensile del tasso di occupazione",
       "occupancyRate": "Tasso di occupazione (%)"
-    }
+    },
+    "allProperties": "Tutti gli immobili"
   },
   "auditLog": {
     "failedToLoad": "Impossibile caricare i registri di attività"

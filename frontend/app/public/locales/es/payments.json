@@ -13,7 +13,8 @@
     "waiveLateFee": "Condonar recargo",
     "writeOff": "Dar de baja",
     "cancelPayment": "Cancelar pago",
-    "formalNotice": "Requerimiento (PDF)"
+    "formalNotice": "Requerimiento (PDF)",
+    "markPaid": "Marcar como pagado"
   },
   "stats": {
     "pendingPayments": "Pagos Pendientes",

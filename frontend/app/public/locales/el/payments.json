@@ -13,7 +13,8 @@
     "waiveLateFee": "Απαλλαγή προστίμου",
     "writeOff": "Διαγραφή",
     "cancelPayment": "Ακύρωση πληρωμής",
-    "formalNotice": "Όχληση (PDF)"
+    "formalNotice": "Όχληση (PDF)",
+    "markPaid": "Σήμανση ως εξοφλημένο"
   },
   "stats": {
     "pendingPayments": "Εκκρεμείς Πληρωμές",

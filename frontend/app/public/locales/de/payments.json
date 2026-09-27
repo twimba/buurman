@@ -13,7 +13,8 @@
     "waiveLateFee": "Gebühr erlassen",
     "writeOff": "Abschreiben",
     "cancelPayment": "Zahlung stornieren",
-    "formalNotice": "Mahnschreiben (PDF)"
+    "formalNotice": "Mahnschreiben (PDF)",
+    "markPaid": "Als bezahlt markieren"
   },
   "stats": {
     "pendingPayments": "Ausstehende Zahlungen",

@@ -23,7 +23,11 @@
     "retry": "Proev igen",
     "continue": "Fortsaet",
     "saveChanges": "Gem aendringer",
-    "discardChanges": "Kassér aendringer"
+    "discardChanges": "Kassér aendringer",
+    "dismiss": "Luk",
+    "clear": "Ryd",
+    "deselect": "Fravælg",
+    "select": "Vælg"
   },
   "status": {
     "active": "Aktiv",
@@ -231,7 +235,9 @@
     "select": "Vaelg...",
     "phoneNumber": "Telefonnummer",
     "searchCountryOrCode": "Soeg land eller kode...",
-    "noCountriesFound": "Ingen lande fundet"
+    "noCountriesFound": "Ingen lande fundet",
+    "searchCurrencies": "Søg valutaer",
+    "currencies": "Valutaer"
   },
   "impersonation": {
     "active": "Efterligning aktiv",
@@ -240,7 +246,12 @@
     "notAvailable": "Ikke tilgaengelig under efterligning",
     "timeRemaining": "Tid tilbage",
     "endSession": "Afslut session",
-    "sessionEnded": "Efterligningssession afsluttet. Du kan lukke denne fane."
+    "sessionEnded": "Efterligningssession afsluttet. Du kan lukke denne fane.",
+    "missingToken": "Der blev ikke angivet noget impersonerings-token.",
+    "failedToExchange": "Impersonerings-tokenet kunne ikke ombyttes.",
+    "failed": "Impersonering mislykkedes",
+    "closeTab": "Du kan lukke denne fane.",
+    "settingUp": "Forbereder sessionen..."
   },
   "teamSwitcher": {
     "yourTeams": "Dine teams ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Udlejningsgrad",
-      "dataPercent": "Data %"
+      "dataPercent": "Data %",
+      "topByNoi": "Top 5 efter NOI",
+      "needsAttention": "Kræver opmærksomhed"
     },
     "occupancy": {
       "noData": "Ingen udlejningsgradsdata tilgaengelig",
@@ -381,7 +394,14 @@
       "noData": "Ingen allokeringsdata tilgaengelig",
       "byCategory": "Efter kategori",
       "byCountry": "Efter land"
-    }
+    },
+    "overdueCount": "{{count}} forfaldne",
+    "extensionsCount": "{{count}} forlængelser",
+    "monthlyCashFlow": "Månedligt pengestrøm",
+    "incomeMinusExpenses": "Indtægter minus udgifter",
+    "occupancySublabel": "{{occupied}} af {{total}}",
+    "vacantSublabel": "Ledig til udlejning",
+    "portfolioAnalyticsCta": "Porteføljeanalyse"
   },
   "wws": {
     "title": "WWS-pointberegner",
@@ -618,5 +638,48 @@
     "description": "Et overblik på én side. Vælg sprog.",
     "yourLanguage": "Dit sprog",
     "downloadFailed": "Kunne ikke downloade resumé"
+  },
+  "pwa": {
+    "installTitle": "Installer Buurman",
+    "installSubtitle": "Hurtigere adgang, fuld skærm, virker offline",
+    "installAction": "Installer"
+  },
+  "refresh": "Opdater",
+  "actions": {
+    "cancel": "Annuller"
+  },
+  "importHistory": {
+    "title": "Importhistorik",
+    "subtitle": "Gennemse tidligere importer, og fortryd en, hvis noget gik galt."
+  },
+  "invitation": {
+    "loading": "Indlæser invitationen...",
+    "invalid": {
+      "title": "Ugyldig invitation",
+      "message": "Dette invitationslink er ugyldigt. Bed om et nyt.",
+      "goToLogin": "Gå til login"
+    },
+    "accepted": {
+      "title": "Invitation accepteret",
+      "message": "Du er nu medlem af teamet.",
+      "goToLogin": "Gå til login"
+    },
+    "expired": {
+      "title": "Invitationen er udløbet",
+      "message": "Denne invitation er udløbet. Bed om en ny.",
+      "goToLogin": "Gå til login"
+    },
+    "youreInvited": "Du er blevet inviteret",
+    "inviterMessage": "{{inviterName}} har inviteret dig til {{teamName}}.",
+    "yourRole": "Din rolle",
+    "invitedEmail": "Inviteret e-mail",
+    "expires": "Udløber",
+    "acceptError": "Invitationen kunne ikke accepteres.",
+    "accepting": "Accepterer...",
+    "acceptInvitation": "Accepter invitation",
+    "joinNote": "Når du accepterer, føjes teamet til din konto.",
+    "loginRequired": "Log ind for at acceptere denne invitation.",
+    "loginToAccept": "Log ind for at acceptere",
+    "createAccount": "Opret en konto"
   }
 }
