@@ -8,12 +8,33 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.ContactType;
+import com.buurman.domain.UnitType;
 
 import lombok.Getter;
 
 /** Mutable context passed between demo data generators to share generated IDs. */
 public class DemoDataContext {
+
+  /**
+   * One planned unit of a curated multi-unit demo building (BUUR-106). {@link DemoUnitGenerator}
+   * creates exactly these units — with differing area/energy label/bedrooms so per-unit WWS and
+   * AREA-basis allocation are visibly different — instead of the single implicit unit every other
+   * demo property gets. {@code occupied} tells {@link DemoContractGenerator} which units should get
+   * a letting and which stay VACANT, so the portfolio shows a real, partial occupancy rate.
+   */
+  public record UnitPlan(
+      String unitNumber,
+      UnitType unitType,
+      java.math.BigDecimal areaSqm,
+      @Nullable String energyLabel,
+      int bedrooms,
+      int bathrooms,
+      boolean furnished,
+      long monthlyRentEuros,
+      boolean occupied) {}
 
   // Team key (e.g., "demo-team") -> team UUID
   @Getter private final Map<String, UUID> teamIds = new LinkedHashMap<>();
@@ -73,9 +94,19 @@ public class DemoDataContext {
   // Property UUID -> country rent multiplier (reflects cost-of-living for expense scaling)
   private final Map<UUID, Double> propertyCountryRentMultipliers = new LinkedHashMap<>();
 
-  // Property UUID -> the implicit unit generated for it (BUUR-106: contracts.unit_id and friends
-  // are NOT NULL as of V068, so every demo property needs one before contracts are generated).
-  private final Map<UUID, UUID> implicitUnitIdsByProperty = new LinkedHashMap<>();
+  // Property UUID -> every unit id generated for it, in unit-number order (BUUR-106:
+  // contracts.unit_id and friends are NOT NULL as of V068, so every demo property needs at least
+  // one before contracts are generated). Single-unit properties get exactly one implicit unit;
+  // curated multi-unit buildings get one entry per DemoUnitGenerator.UnitPlan below.
+  private final Map<UUID, List<UUID>> unitIdsByProperty = new LinkedHashMap<>();
+
+  // Property UUID -> the unit plan for curated multi-unit demo buildings. Absent (empty list) for
+  // every other property, which signals DemoUnitGenerator to create a single implicit unit.
+  private final Map<UUID, List<UnitPlan>> unitPlansByProperty = new LinkedHashMap<>();
+
+  // Property UUID -> short tag identifying a specific curated multi-unit building, for generators
+  // that need to single one out (e.g. DemoExpenseGenerator attaching a building-wide roof repair).
+  private final Map<UUID, String> buildingTagByProperty = new LinkedHashMap<>();
 
   // Counters
   @Getter private int teamsCreated;
@@ -176,17 +207,42 @@ public class DemoDataContext {
     return propertyCountryRentMultipliers.getOrDefault(propertyId, 1.0);
   }
 
-  public void putImplicitUnitId(UUID propertyId, UUID unitId) {
-    implicitUnitIdsByProperty.put(propertyId, unitId);
+  public void putUnitIds(UUID propertyId, List<UUID> unitIds) {
+    unitIdsByProperty.put(propertyId, List.copyOf(unitIds));
   }
 
-  /** The implicit unit generated for a property. Fails loudly rather than insert a null FK. */
-  public UUID getImplicitUnitId(UUID propertyId) {
-    UUID unitId = implicitUnitIdsByProperty.get(propertyId);
-    if (unitId == null) {
-      throw new IllegalStateException("No implicit unit generated for property " + propertyId);
+  public List<UUID> getUnitIds(UUID propertyId) {
+    return unitIdsByProperty.getOrDefault(propertyId, List.of());
+  }
+
+  /**
+   * The unit id for a property known to have exactly one unit. Fails loudly rather than silently
+   * picking one of several units or inserting a null FK.
+   */
+  public UUID getSoleUnitId(UUID propertyId) {
+    List<UUID> unitIds = getUnitIds(propertyId);
+    if (unitIds.size() != 1) {
+      throw new IllegalStateException(
+          "Expected exactly one unit for property " + propertyId + " but found " + unitIds.size());
     }
-    return unitId;
+    return unitIds.get(0);
+  }
+
+  public void putUnitPlans(UUID propertyId, List<UnitPlan> plans) {
+    unitPlansByProperty.put(propertyId, List.copyOf(plans));
+  }
+
+  /** Empty for every property except a curated multi-unit demo building. */
+  public List<UnitPlan> getUnitPlans(UUID propertyId) {
+    return unitPlansByProperty.getOrDefault(propertyId, List.of());
+  }
+
+  public void putBuildingTag(UUID propertyId, String tag) {
+    buildingTagByProperty.put(propertyId, tag);
+  }
+
+  public Optional<String> getBuildingTag(UUID propertyId) {
+    return Optional.ofNullable(buildingTagByProperty.get(propertyId));
   }
 
   public void incrementTeams() {

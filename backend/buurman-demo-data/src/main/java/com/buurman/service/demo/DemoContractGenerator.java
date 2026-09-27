@@ -96,10 +96,17 @@ public class DemoContractGenerator {
             return Boolean.compare(aBiz, bBiz);
           });
 
+      // Curated multi-unit buildings (BUUR-106) get their own, simpler per-unit lettings below —
+      // excluded here so the historical-chain machinery below (which assumes one unit per
+      // property) keeps producing exactly the same contracts for single-unit properties it always
+      // has, regardless of how many multi-unit buildings exist alongside them.
+      List<UUID> singleUnitPropertyIds =
+          propertyIds.stream().filter(id -> ctx.getUnitPlans(id).isEmpty()).toList();
+
       // Sort properties: residential first, non-residential last — except keep non-residential out
       // of the trailing DRAFT/TERMINATED/EXPIRED slots so a single commercial unit doesn't end up
       // vacant by accident. Sort puts non-residential FIRST so it lands at propIdx 0 (ACTIVE).
-      List<UUID> sortedProperties = new ArrayList<>(propertyIds);
+      List<UUID> sortedProperties = new ArrayList<>(singleUnitPropertyIds);
       sortedProperties.sort(
           (a, b) -> {
             boolean aRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(a));
@@ -116,7 +123,7 @@ public class DemoContractGenerator {
       List<Object[]> partyRecords = new ArrayList<>();
       List<Object[]> rentPeriodRecords = new ArrayList<>();
       List<Object[]> componentRecords = new ArrayList<>();
-      List<UUID> occupiedPropertyIds = new ArrayList<>();
+      List<UUID> occupiedUnitIds = new ArrayList<>();
 
       for (int propIdx = 0; propIdx < sortedProperties.size(); propIdx++) {
         UUID propertyId = sortedProperties.get(propIdx);
@@ -269,9 +276,9 @@ public class DemoContractGenerator {
             createdAt = now.minusDays(random.nextInt(1, 30));
           }
 
-          // Mark property as occupied if last contract is ACTIVE
+          // Mark the unit as occupied if last contract is ACTIVE
           if (isLastContract && "ACTIVE".equals(status)) {
-            occupiedPropertyIds.add(propertyId);
+            occupiedUnitIds.add(ctx.getSoleUnitId(propertyId));
           }
 
           UUID contractId = UUID.randomUUID();
@@ -291,7 +298,7 @@ public class DemoContractGenerator {
                 contractIdentifier,
                 teamId,
                 propertyId,
-                ctx.getImplicitUnitId(propertyId),
+                ctx.getSoleUnitId(propertyId),
                 contractType,
                 startDate,
                 endDate,
@@ -374,6 +381,121 @@ public class DemoContractGenerator {
           ctx.putIdentifier(contractId, contractIdentifier);
           ctx.incrementContracts();
           totalContracts++;
+        }
+      }
+
+      // Curated multi-unit buildings (BUUR-106): one straightforward, current contract per "let"
+      // unit in the property's plan, leaving the rest at the VACANT status DemoUnitGenerator gave
+      // them. No historical chain here — chains model single-unit tenant turnover over the years,
+      // which doesn't apply to a building freshly split into units for this demo.
+      for (UUID propertyId : propertyIds) {
+        List<DemoDataContext.UnitPlan> plans = ctx.getUnitPlans(propertyId);
+        if (plans.isEmpty()) {
+          continue;
+        }
+        List<UUID> unitIds = ctx.getUnitIds(propertyId);
+        String propertyCategory = ctx.getPropertyCategory(propertyId);
+        String countryCode =
+            CountryMetadataRegistry.normalizeCountryCode(ctx.getPropertyCountryCode(propertyId));
+        ContractCountryMetadata metadata =
+            countryCode != null ? buildDemoMetadata(countryCode, currency) : null;
+        JSONB metadataJsonb =
+            metadata != null ? JSONB.jsonb(countryMetadataSerializer.serialize(metadata)) : null;
+
+        for (int u = 0; u < plans.size(); u++) {
+          DemoDataContext.UnitPlan plan = plans.get(u);
+          if (!plan.occupied()) {
+            continue;
+          }
+          UUID unitId = unitIds.get(u);
+          UUID contactId = sortedContacts.get(contactIndex % sortedContacts.size());
+          contactIndex++;
+
+          LocalDate startDate = today.minusMonths(random.nextInt(6, 30));
+          LocalDate signedDate = startDate.minusDays(random.nextInt(7, 30));
+          BigDecimal rent = BigDecimal.valueOf(plan.monthlyRentEuros());
+          BigDecimal deposit = rent.multiply(depositMultiplierForCategory(propertyCategory));
+          String paymentFrequency = paymentFrequencyForCategory(propertyCategory);
+          int terminationNoticeDays = terminationNoticeForCategory(propertyCategory);
+          LocalDateTime createdAt = signedDate.atStartOfDay().minusDays(random.nextInt(1, 14));
+
+          UUID contractId = UUID.randomUUID();
+          Sid contractIdentifier = newContractId();
+
+          contractRecords.add(
+              new Object[] {
+                contractId,
+                contractIdentifier,
+                teamId,
+                propertyId,
+                unitId,
+                "INDEFINITE",
+                startDate,
+                null,
+                signedDate,
+                rent,
+                deposit,
+                rent,
+                currency,
+                currency,
+                currency,
+                paymentFrequency,
+                1,
+                "NONE",
+                12,
+                null,
+                30,
+                30,
+                false,
+                "NONE",
+                null,
+                terminationNoticeDays,
+                BigDecimal.valueOf(2),
+                "ACTIVE",
+                "Demo contract for testing purposes",
+                countryCode,
+                metadataJsonb,
+                createdAt,
+                now,
+                createdBy,
+                createdBy
+              });
+
+          partyRecords.add(
+              new Object[] {
+                UUID.randomUUID(),
+                newContractPartyId().value(),
+                teamId,
+                contractId,
+                contactId,
+                "PRIMARY_TENANT",
+                now,
+                now,
+                createdBy,
+                createdBy
+              });
+
+          UUID rentPeriodId = UUID.randomUUID();
+          rentPeriodRecords.add(
+              new Object[] {
+                rentPeriodId,
+                newContractRentPeriodId().value(),
+                teamId,
+                contractId,
+                rent.movePointRight(2).longValueExact(),
+                currency,
+                java.sql.Date.valueOf(startDate),
+                createdAt,
+                now,
+                createdBy,
+                createdBy
+              });
+
+          contractIds.add(contractId);
+          ctx.putIdentifier(contractId, contractIdentifier);
+          ctx.incrementContracts();
+          totalContracts++;
+          occupiedUnitIds.add(unitId);
         }
       }
 
@@ -571,12 +693,10 @@ public class DemoContractGenerator {
         compBatch.execute();
       }
 
-      // Status moved from properties to units in V068 (BUUR-106): flip the implicit unit of every
-      // property whose last contract is ACTIVE to OCCUPIED. All other units keep the VACANT
-      // default DemoUnitGenerator gave them.
-      if (!occupiedPropertyIds.isEmpty()) {
-        List<UUID> occupiedUnitIds =
-            occupiedPropertyIds.stream().map(ctx::getImplicitUnitId).toList();
+      // Status moved from properties to units in V068 (BUUR-106): flip every unit whose last
+      // contract is ACTIVE to OCCUPIED. All other units keep the VACANT default DemoUnitGenerator
+      // gave them, which is what leaves multi-unit buildings with a real, partial occupancy rate.
+      if (!occupiedUnitIds.isEmpty()) {
         dsl.update(table("units"))
             .set(field("status", String.class), "OCCUPIED")
             .set(field("updated_at", LocalDateTime.class), now)
@@ -588,7 +708,7 @@ public class DemoContractGenerator {
       log.info(
           "Created {} contracts across {} properties for team {}",
           totalContracts,
-          sortedProperties.size(),
+          propertyIds.size(),
           teamKey);
     }
   }

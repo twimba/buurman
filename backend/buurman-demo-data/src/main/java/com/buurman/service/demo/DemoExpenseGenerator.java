@@ -11,12 +11,22 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
+
+import com.buurman.domain.ExpenseAllocation;
+import com.buurman.domain.Property;
+import com.buurman.domain.Unit;
+import com.buurman.repository.ExpenseAllocationRepository;
+import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitRepository;
+import com.buurman.service.ExpenseAllocationService;
+import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +39,10 @@ public class DemoExpenseGenerator {
 
   private final DSLContext dsl;
   private final Clock clock;
+  private final UnitRepository unitRepository;
+  private final PropertyRepository propertyRepository;
+  private final ExpenseAllocationService expenseAllocationService;
+  private final ExpenseAllocationRepository expenseAllocationRepository;
   private final Faker faker = new Faker(Locale.ENGLISH, new Random(42));
   private final Random random = new Random(42);
 
@@ -349,6 +363,154 @@ public class DemoExpenseGenerator {
 
       log.info("Created {} expenses for team {}", teamExpenses, teamKey);
     }
+
+    generateMultiUnitBuildingExpenses(ctx, now);
+  }
+
+  /**
+   * Building-level demo expenses that exercise the real {@link ExpenseAllocationService} (BUUR-
+   * 106): the 4-unit building gets a one-off roof repair plus its own annual insurance and HOA fee,
+   * and the 6-unit "Keizersgracht 12" building gets a facade restoration. All are inserted with
+   * {@code unit_id = null} and then split with {@link ExpenseAllocationService#computeAllocations}
+   * — the production allocation logic, not a hand-written per-unit row — using each property's own
+   * allocation basis (EQUAL for the 4-unit building, AREA for the 6-unit one), so the demo shows
+   * both an even split (the ticket's "€300 per unit" example) and an uneven, area-proportional one.
+   */
+  private void generateMultiUnitBuildingExpenses(DemoDataContext ctx, LocalDateTime now) {
+    LocalDate today = LocalDate.now(clock);
+
+    for (var teamEntry : ctx.getTeamIds().entrySet()) {
+      String teamKey = teamEntry.getKey();
+      UUID teamId = teamEntry.getValue();
+      UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
+      String currency = ctx.getCurrencyForTeam(teamKey);
+      List<UUID> propertyIds = ctx.getPropertyIdsByTeam().getOrDefault(teamId, List.of());
+
+      for (UUID propertyId : propertyIds) {
+        Optional<String> tag = ctx.getBuildingTag(propertyId);
+        if (tag.isEmpty()) {
+          continue;
+        }
+
+        switch (tag.get()) {
+          case DemoPropertyGenerator.BUILDING_TAG_FOUR_UNIT -> {
+            allocateBuildingExpense(
+                ctx,
+                teamId,
+                propertyId,
+                createdBy,
+                currency,
+                "REPAIR",
+                BigDecimal.valueOf(1200),
+                today.withDayOfMonth(1),
+                "Roof repair",
+                now);
+            allocateBuildingExpense(
+                ctx,
+                teamId,
+                propertyId,
+                createdBy,
+                currency,
+                "INSURANCE",
+                BigDecimal.valueOf(960),
+                today.minusMonths(2),
+                "Annual building insurance premium",
+                now);
+            allocateBuildingExpense(
+                ctx,
+                teamId,
+                propertyId,
+                createdBy,
+                currency,
+                "FEES",
+                BigDecimal.valueOf(480),
+                today.minusMonths(5),
+                "Owners' association (HOA) fee",
+                now);
+          }
+          case DemoPropertyGenerator.BUILDING_TAG_SIX_UNIT ->
+              allocateBuildingExpense(
+                  ctx,
+                  teamId,
+                  propertyId,
+                  createdBy,
+                  currency,
+                  "REPAIR",
+                  BigDecimal.valueOf(4200),
+                  today.minusMonths(3),
+                  "Facade restoration",
+                  now);
+          default -> {
+            // No allocated building expense for this tag.
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Inserts one building-level expense ({@code unit_id = null}) and immediately splits it across
+   * {@code propertyId}'s units via the property's own allocation basis, persisting the result
+   * exactly as {@link ExpenseAllocationService#allocate} would.
+   */
+  @SuppressWarnings("NullAway")
+  private void allocateBuildingExpense(
+      DemoDataContext ctx,
+      UUID teamId,
+      UUID propertyId,
+      @Nullable UUID createdBy,
+      String currency,
+      String category,
+      BigDecimal amount,
+      LocalDate expenseDate,
+      String description,
+      LocalDateTime now) {
+    UUID expenseId = UUID.randomUUID();
+    LocalDateTime createdAt = expenseDate.atStartOfDay();
+
+    dsl.insertInto(EXPENSES)
+        .columns(
+            EXPENSES.ID,
+            EXPENSES.IDENTIFIER,
+            EXPENSES.TEAM_ID,
+            EXPENSES.PROPERTY_ID,
+            EXPENSES.CATEGORY,
+            EXPENSES.AMOUNT,
+            EXPENSES.CURRENCY,
+            EXPENSES.EXPENSE_DATE,
+            EXPENSES.DESCRIPTION,
+            EXPENSES.NOTES,
+            EXPENSES.CREATED_AT,
+            EXPENSES.UPDATED_AT,
+            EXPENSES.CREATED_BY,
+            EXPENSES.UPDATED_BY)
+        .values(
+            expenseId,
+            newExpenseId(),
+            teamId,
+            propertyId,
+            category,
+            amount,
+            currency,
+            expenseDate,
+            description,
+            null,
+            createdAt,
+            now,
+            createdBy,
+            createdBy)
+        .execute();
+    ctx.incrementExpenses();
+
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(propertyId, teamId);
+    if (units.isEmpty()) {
+      return;
+    }
+    Property property = propertyRepository.getByIdAndTeamId(propertyId, teamId);
+    List<ExpenseAllocation> allocations =
+        expenseAllocationService.computeAllocations(
+            MoneyAmount.of(amount, currency), property.getAllocationBasis(), units);
+    expenseAllocationRepository.replaceForExpense(expenseId, teamId, allocations, createdBy);
   }
 
   private BigDecimal randomAmount(int min, int max, double multiplier) {
