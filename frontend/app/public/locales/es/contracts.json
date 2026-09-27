@@ -20,6 +20,7 @@
     "terminated": "Terminado",
     "count_one": "{{count}} contrato",
     "count_other": "{{count}} contratos",
+    "count_many": "{{count}} contratos",
     "empty": {
       "title": "Aún sin contratos",
       "description": "Comience creando su primer contrato de alquiler"
@@ -154,6 +155,7 @@
       "renewalTerm": "Plazo de Renovación",
       "month_one": "{{count}} mes",
       "month_other": "{{count}} meses",
+      "month_many": "{{count}} meses",
       "extensions": "Extensiones",
       "remaining": "{{remaining}} de {{max}} restantes",
       "max": "{{max}} máx.",
@@ -542,6 +544,7 @@
     "backToAdjust": "Volver al Ajuste",
     "contract_one": "{{count}} contrato",
     "contract_other": "{{count}} contratos",
+    "contract_many": "{{count}} contratos",
     "adjustmentStrategy": "Estrategia de Ajuste",
     "strategies": {
       "maximum": "Máximo",
@@ -560,6 +563,7 @@
     "avgChange": "Cambio promedio:",
     "warning_one": "{{count}} advertencia",
     "warning_other": "{{count}} advertencias",
+    "warning_many": "{{count}} advertencias",
     "retroactive": "retroactivo",
     "retroactiveTooltip": "Se crearán pagos de ajuste para cualquier pago ya liquidado afectado por cambios retroactivos de fecha.",
     "exceedsMax": "Excede el aumento máximo regulado de {{max}}%",
@@ -583,12 +587,15 @@
     "applying": "Aplicando...",
     "applyAdjustments_one": "Aplicar {{count}} Ajuste",
     "applyAdjustments_other": "Aplicar {{count}} Ajustes",
+    "applyAdjustments_many": "Aplicar {{count}} Ajustes",
     "allSuccess": "Todos los ajustes de alquiler se aplicaron correctamente",
     "partialSuccess": "{{success}} de {{total}} ajustes aplicados",
     "increasesFailed_one": "{{count}} aumento falló",
     "increasesFailed_other": "{{count}} aumentos fallaron",
+    "increasesFailed_many": "{{count}} aumentos fallaron",
     "adjustmentPayments_one": "{{count}} pago de ajuste creado para cambios retroactivos",
     "adjustmentPayments_other": "{{count}} pagos de ajuste creados para cambios retroactivos",
+    "adjustmentPayments_many": "{{count}} pagos de ajuste creados para cambios retroactivos",
     "status": "Estado"
   },
   "card": {
@@ -614,12 +621,15 @@
     "translation": "Traducción",
     "willGenerate_one": "Generará 1 documento y lo guardará en los documentos del contrato",
     "willGenerate_other": "Generará {{count}} documentos y los guardará en los documentos del contrato",
+    "willGenerate_many": "Generará {{count}} documentos y los guardará en los documentos del contrato",
     "regenerating": "Regenerando...",
     "generating": "Generando...",
     "regenerateButton_one": "Regenerar 1 documento",
     "regenerateButton_other": "Regenerar {{count}} documentos",
+    "regenerateButton_many": "Regenerar {{count}} documentos",
     "generateButton_one": "Generar 1 documento",
     "generateButton_other": "Generar {{count}} documentos",
+    "generateButton_many": "Generar {{count}} documentos",
     "types": {
       "EXTENSION_ADDENDUM": {
         "label": "Adenda de extensión",
@@ -642,12 +652,15 @@
     "translation": "Traducción",
     "willGenerate_one": "Generará 1 documento",
     "willGenerate_other": "Generará {{count}} documentos",
+    "willGenerate_many": "Generará {{count}} documentos",
     "regenerating": "Regenerando...",
     "generating": "Generando...",
     "regenerateButton_one": "Regenerar 1 documento",
     "regenerateButton_other": "Regenerar {{count}} documentos",
+    "regenerateButton_many": "Regenerar {{count}} documentos",
     "generateButton_one": "Generar 1 documento",
-    "generateButton_other": "Generar {{count}} documentos"
+    "generateButton_other": "Generar {{count}} documentos",
+    "generateButton_many": "Generar {{count}} documentos"
   },
   "enums": {
     "partyRoles": {
@@ -839,6 +852,7 @@
     "generateDocumentTitle": "Generar documento de cambio de alquiler",
     "historyCount_one": "Historial (1 período)",
     "historyCount_other": "Historial ({{count}} períodos)",
+    "historyCount_many": "Historial ({{count}} períodos)",
     "deleteConfirm": "¿Está seguro de que desea eliminar este período de alquiler?"
   },
   "rentBreakdown": {
