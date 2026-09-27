@@ -2968,7 +2968,7 @@ paths:
       tags:
         - Expense Allocations
       summary: Update property allocation
-      description: Set a property's expense allocation basis and, for CUSTOM, each unit's share (Admin/Editor). Does not retroactively rewrite any expense's already-persisted allocations.
+      description: Set a property's expense allocation basis (AREA, EQUAL, or CUSTOM — MANUAL is a per-expense override and is rejected here) and, for CUSTOM, every active unit's share, which must sum to 100 (Admin/Editor). Does not retroactively rewrite any expense's already-persisted allocations.
       operationId: updatePropertyAllocation
       parameters:
         - name: identifier
@@ -31142,9 +31142,10 @@ components:
     UpdateAllocationRequest:
       type: object
       description: >-
-        Sets a property's allocation basis and, for CUSTOM, each unit's
-        share. Does not retroactively rewrite any expense's already-persisted
-        allocations.
+        Sets a property's allocation basis — AREA, EQUAL, or CUSTOM; MANUAL is
+        a per-expense override and is rejected here — and, for CUSTOM, every
+        active unit's share, which must sum to 100. Does not retroactively
+        rewrite any expense's already-persisted allocations.
       properties:
         basis:
           $ref: "#/components/schemas/AllocationBasis"

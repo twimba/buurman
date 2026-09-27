@@ -42,6 +42,8 @@ import static com.buurman.util.SidGenerator.newPropertyId;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,6 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.AllocationBasis;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
 import com.buurman.domain.Property.PropertyCategory;
@@ -360,25 +363,20 @@ public class PropertyService {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(identifier, teamId);
 
+    // MANUAL is a per-expense override (ExpenseAllocationService#overrideManual), never a
+    // property-level basis. Accepting it here would silently split every future expense EQUAL
+    // while stamping each row MANUAL — a statement asserting a split nobody actually chose.
+    if (request.basis() == AllocationBasis.MANUAL) {
+      throw new BusinessRuleException(
+          "MANUAL is a per-expense override, not a property allocation basis. Choose AREA, EQUAL,"
+              + " or CUSTOM.");
+    }
+
     PropertyResponse oldState = toResponseWithMainPhoto(property, teamId, true);
 
-    request
-        .shares()
-        .ifPresent(
-            shares -> {
-              for (UnitShareEntry share : shares) {
-                Unit unit = unitRepository.getByIdentifierAndTeamId(share.unitIdentifier(), teamId);
-                if (!unit.getPropertyId().equals(property.getId())) {
-                  throw new BusinessRuleException(
-                      "Unit "
-                          + share.unitIdentifier().value()
-                          + " does not belong to this property.");
-                }
-                unit.setAllocationShare(Optional.of(share.sharePct()));
-                unit.setUpdatedBy(Optional.of(principal.getUserId()));
-                unitRepository.save(unit);
-              }
-            });
+    if (request.basis() == AllocationBasis.CUSTOM) {
+      applyCustomShares(property, request, teamId, principal.getUserId());
+    }
 
     property.setAllocationBasis(request.basis());
     property.setUpdatedBy(principal.getUserId());
@@ -398,6 +396,59 @@ public class PropertyService {
         auditService.getChangedFields(oldState, newState));
 
     return newState;
+  }
+
+  /**
+   * Validates and persists CUSTOM per-unit shares. {@code computeAllocations} normalises by the
+   * observed total, so unvalidated entries behave as relative weights, not percentages: 40/30/20
+   * across three of six units would silently charge those three the full expense and the other
+   * three nothing. Every active unit must therefore have an entry, and the entries must sum to
+   * exactly 100.
+   */
+  private void applyCustomShares(
+      Property property, UpdateAllocationRequest request, UUID teamId, UUID actorId) {
+    List<UnitShareEntry> shares = request.shares().orElseGet(List::of);
+    List<Unit> activeUnits = unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId);
+
+    Map<UUID, BigDecimal> shareByUnitId = new HashMap<>();
+    for (UnitShareEntry share : shares) {
+      Unit unit = unitRepository.getByIdentifierAndTeamId(share.unitIdentifier(), teamId);
+      if (!unit.getPropertyId().equals(property.getId())) {
+        throw new BusinessRuleException(
+            "Unit " + share.unitIdentifier().value() + " does not belong to this property.");
+      }
+      shareByUnitId.put(unit.getId(), share.sharePct());
+    }
+
+    Set<UUID> missingUnitIds = new HashSet<>();
+    for (Unit unit : activeUnits) {
+      if (!shareByUnitId.containsKey(unit.getId())) {
+        missingUnitIds.add(unit.getId());
+      }
+    }
+    if (!missingUnitIds.isEmpty()) {
+      throw new BusinessRuleException(
+          "CUSTOM allocation requires a share for every active unit on this property; missing "
+              + missingUnitIds.size()
+              + " of "
+              + activeUnits.size()
+              + " unit(s).");
+    }
+
+    BigDecimal total = shareByUnitId.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    if (total.compareTo(new BigDecimal("100")) != 0) {
+      throw new BusinessRuleException(
+          "CUSTOM allocation shares must sum to 100, but summed to " + total.toPlainString() + ".");
+    }
+
+    for (Unit unit : activeUnits) {
+      // Coverage was just validated above, so shareByUnitId.get(unit.getId()) is always present
+      // for every active unit here; wrapping in Optional.ofNullable rather than Optional.of keeps
+      // this loop correct even if that invariant ever changes, clearing rather than crashing.
+      unit.setAllocationShare(Optional.ofNullable(shareByUnitId.get(unit.getId())));
+      unit.setUpdatedBy(Optional.of(actorId));
+      unitRepository.save(unit);
+    }
   }
 
   @Transactional

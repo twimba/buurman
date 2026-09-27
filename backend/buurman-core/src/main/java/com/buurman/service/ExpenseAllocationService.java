@@ -352,7 +352,15 @@ public class ExpenseAllocationService {
                 switch (basis) {
                   case AREA -> unit.getAreaValue().orElse(BigDecimal.ZERO);
                   case CUSTOM -> unit.getAllocationShare().orElse(BigDecimal.ZERO);
-                  case EQUAL, MANUAL -> BigDecimal.ONE;
+                  case EQUAL -> BigDecimal.ONE;
+                  // MANUAL is a per-expense override (see overrideManual), never a property-level
+                  // basis — PropertyService.updateAllocation rejects it before this is ever
+                  // reached, so getting here means that guard was bypassed. Silently treating it
+                  // as EQUAL would produce rows stamped MANUAL over a split nobody actually chose.
+                  case MANUAL ->
+                      throw new IllegalStateException(
+                          "MANUAL is a per-expense override and cannot be used as a property's"
+                              + " allocation basis.");
                 })
         .toList();
   }

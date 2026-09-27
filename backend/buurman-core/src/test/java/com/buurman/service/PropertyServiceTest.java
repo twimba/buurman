@@ -1,8 +1,10 @@
 package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,12 +37,16 @@ import com.buurman.domain.Unit;
 import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.CreateUnitRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.UpdateAllocationRequest;
+import com.buurman.dto.request.UpdateAllocationRequest.UnitShareEntry;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.UnitSummaryResponse;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.OptionalMappingConfig;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.PropertyMapperImpl;
@@ -422,6 +428,103 @@ class PropertyServiceTest {
       assertThat(listItem.unitCount()).isEqualTo(detail.unitCount());
       assertThat(listItem.occupiedUnitCount()).isEqualTo(detail.occupiedUnitCount());
       assertThat(listItem.vacantUnitCount()).isEqualTo(detail.vacantUnitCount());
+    }
+  }
+
+  @Nested
+  @DisplayName("updateAllocation (BUUR-106 Important 3 & 5)")
+  class UpdateAllocation {
+
+    @Test
+    @DisplayName("rejects MANUAL as a property-level basis — it is a per-expense override")
+    void rejectsManualBasis() {
+      Property property = savedProperty(PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+
+      UpdateAllocationRequest request =
+          new UpdateAllocationRequest(AllocationBasis.MANUAL, Optional.empty());
+
+      assertThatThrownBy(() -> service.updateAllocation(PROPERTY_SID, request, principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("per-expense override");
+
+      verify(propertyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("CUSTOM rejects a request missing a share for one of three active units")
+    void rejectsCustomMissingUnit() {
+      Property property = savedProperty(PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+
+      UnitIdentifier unit1Id = SidGenerator.newUnitId();
+      UnitIdentifier unit2Id = SidGenerator.newUnitId();
+      Unit unit1 = unitWithIdentifier(unit1Id, "1", UnitStatus.OCCUPIED);
+      Unit unit2 = unitWithIdentifier(unit2Id, "2", UnitStatus.OCCUPIED);
+      Unit unit3 = unitWithIdentifier(SidGenerator.newUnitId(), "3", UnitStatus.VACANT);
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(unit1, unit2, unit3));
+      when(unitRepository.getByIdentifierAndTeamId(unit1Id, TEAM_ID)).thenReturn(unit1);
+      when(unitRepository.getByIdentifierAndTeamId(unit2Id, TEAM_ID)).thenReturn(unit2);
+
+      UpdateAllocationRequest request =
+          new UpdateAllocationRequest(
+              AllocationBasis.CUSTOM,
+              Optional.of(
+                  List.of(
+                      new UnitShareEntry(unit1Id, new BigDecimal("60")),
+                      new UnitShareEntry(unit2Id, new BigDecimal("40")))));
+
+      assertThatThrownBy(() -> service.updateAllocation(PROPERTY_SID, request, principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("missing 1 of 3");
+
+      verify(unitRepository, never()).save(any());
+      verify(propertyRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("CUSTOM rejects shares that sum to 90 instead of 100, naming the actual total")
+    void rejectsCustomShareSumMismatch() {
+      Property property = savedProperty(PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+
+      UnitIdentifier unit1Id = SidGenerator.newUnitId();
+      UnitIdentifier unit2Id = SidGenerator.newUnitId();
+      Unit unit1 = unitWithIdentifier(unit1Id, "1", UnitStatus.OCCUPIED);
+      Unit unit2 = unitWithIdentifier(unit2Id, "2", UnitStatus.OCCUPIED);
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(unit1, unit2));
+      when(unitRepository.getByIdentifierAndTeamId(unit1Id, TEAM_ID)).thenReturn(unit1);
+      when(unitRepository.getByIdentifierAndTeamId(unit2Id, TEAM_ID)).thenReturn(unit2);
+
+      UpdateAllocationRequest request =
+          new UpdateAllocationRequest(
+              AllocationBasis.CUSTOM,
+              Optional.of(
+                  List.of(
+                      new UnitShareEntry(unit1Id, new BigDecimal("50")),
+                      new UnitShareEntry(unit2Id, new BigDecimal("40")))));
+
+      assertThatThrownBy(() -> service.updateAllocation(PROPERTY_SID, request, principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("90");
+
+      verify(unitRepository, never()).save(any());
+      verify(propertyRepository, never()).save(any());
+    }
+
+    private Unit unitWithIdentifier(
+        UnitIdentifier identifier, String unitNumber, UnitStatus status) {
+      return Unit.builder()
+          .id(UUID.randomUUID())
+          .identifier(Optional.of(identifier))
+          .teamId(TEAM_ID)
+          .propertyId(PROPERTY_ID)
+          .unitNumber(unitNumber)
+          .unitType(UnitType.APARTMENT)
+          .status(status)
+          .build();
     }
   }
 }
