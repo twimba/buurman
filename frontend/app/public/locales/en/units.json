@@ -1,0 +1,98 @@
+{
+  "term": {
+    "one": "Unit",
+    "other": "Units"
+  },
+  "tab": "Units",
+  "grid": {
+    "unit": "Unit",
+    "tenant": "Tenant",
+    "rent": "Rent",
+    "status": "Status",
+    "vacancyDays": "Vacant for",
+    "vacancyDaysValue": "{{count}} day",
+    "vacancyDaysValue_other": "{{count}} days",
+    "noTenant": "—",
+    "empty": "No units yet.",
+    "occupancySummary": "{{occupied}} of {{total}} let"
+  },
+  "detail": {
+    "title": "Unit {{number}}",
+    "backToProperty": "Back to {{street}}",
+    "characteristics": "Characteristics",
+    "amenities": "Amenities",
+    "residential": "Rooms & furnishing"
+  },
+  "fields": {
+    "unitNumber": "Unit number",
+    "name": "Name",
+    "floor": "Floor",
+    "unitType": "Type",
+    "status": "Status",
+    "areaValue": "Floor area",
+    "allocationShare": "Cost share",
+    "wozSharePct": "WOZ share",
+    "energyEfficiencyRating": "Energy label",
+    "heatingType": "Heating",
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "furnished": "Furnished",
+    "petPolicy": "Pet policy"
+  },
+  "type": {
+    "APARTMENT": "Apartment",
+    "PARKING": "Parking space",
+    "STORAGE": "Storage",
+    "COMMERCIAL": "Commercial space"
+  },
+  "status": {
+    "VACANT": "Vacant",
+    "OCCUPIED": "Let",
+    "SELF_OCCUPIED": "Self-occupied",
+    "MAINTENANCE": "Maintenance",
+    "UNAVAILABLE": "Unavailable",
+    "UNDER_RENOVATION": "Under renovation",
+    "FALLOW": "Fallow",
+    "LISTED": "Listed"
+  },
+  "split": {
+    "action": "Split into multiple units",
+    "title": "Split {{street}} into units",
+    "count": "How many units?",
+    "numbering": "Numbering",
+    "numberingPattern": {
+      "NUMERIC": "1, 2, 3 …",
+      "ALPHABETIC": "A, B, C …",
+      "FLOOR_DOT_INDEX": "1.01, 1.02, 1.03 …"
+    },
+    "startFloor": "Starting floor",
+    "unitType": "Unit type",
+    "keepsHistory": "Your existing unit becomes #1 and keeps its contract, photos and history.",
+    "submit": "Create units",
+    "movedExplainer": "Dwelling details now live on each unit. Open the Units tab to edit them."
+  },
+  "allocation": {
+    "title": "Cost allocation",
+    "basis": "Split building costs by",
+    "basisOption": {
+      "AREA": "Floor area",
+      "EQUAL": "Equally",
+      "CUSTOM": "Custom percentages",
+      "MANUAL": "Manually per expense"
+    },
+    "share": "Share",
+    "noArea": "No floor area set",
+    "preview": "Each unit's share of {{amount}}",
+    "customTotalError": "Custom shares must add up to 100%. They currently total {{total}}%."
+  },
+  "delete": {
+    "confirmTitle": "Delete unit {{number}}?",
+    "lastUnitBlocked": "A property must keep at least one unit, so this one cannot be deleted.",
+    "activeContractBlocked": "This unit has an active contract. End the contract first."
+  },
+  "picker": {
+    "label": "Unit",
+    "placeholder": "Choose a unit",
+    "required": "Choose which unit this contract is for."
+  }
+}

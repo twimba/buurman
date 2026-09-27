@@ -28,6 +28,7 @@ i18n
       'common',
       'navigation',
       'properties',
+      'units',
       'tenants',
       'contracts',
       'payments',
