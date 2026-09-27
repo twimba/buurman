@@ -240,6 +240,21 @@ export const queryKeys = {
     stats: () => k('notification-stats'),
   },
 
+  // --- Units ---
+  // `detail` (and its residentialDetails/amenities sub-keys) are nested under the same 'units'
+  // prefix as `all` so that invalidating the bare ['units'] prefix reaches every unit query —
+  // while `all(propertyIdentifier)` and `detail(unitIdentifier)` stay independently invalidatable.
+  units: {
+    all: (propertyIdentifier?: string) => k('units', propertyIdentifier),
+    detail: (unitIdentifier?: string) => k('units', 'detail', unitIdentifier),
+    residentialDetails: (unitIdentifier?: string) =>
+      k('units', 'detail', unitIdentifier, 'residentialDetails'),
+    amenities: (unitIdentifier?: string) =>
+      k('units', 'detail', unitIdentifier, 'amenities'),
+    allocation: (expenseIdentifier?: string) =>
+      k('unitAllocation', expenseIdentifier),
+  },
+
   // --- Occupancy Periods ---
   occupancyPeriods: {
     all: (propertyIdentifier?: string) =>
