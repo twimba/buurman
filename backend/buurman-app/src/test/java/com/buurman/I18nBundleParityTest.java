@@ -43,14 +43,17 @@ class I18nBundleParityTest {
   private static final String BASE_LANGUAGE = "en";
 
   /**
-   * Families whose copy is under a hard length budget and may therefore drop a token. Only SMS
-   * qualifies: Greek cannot fold to GSM-7, so it gets 70 UTF-16 units, and the worst-case property
-   * name and contact name alone spend 50 of them — carrying every token is not physically possible.
-   * The design records this as the deliberate tradeoff ("Greek copy is authored terse against that
-   * budget, dropping the property name where it does not fit"). Every other family is long-form
-   * copy with no budget, where a dropped token is a defect, not a tradeoff.
+   * The {@code family:language} pairs allowed to drop a token, because their copy is under a hard
+   * length budget. Only Greek SMS qualifies: its script cannot fold to GSM-7, so it gets 70 UTF-16
+   * units, and the worst-case property name and contact name alone spend 50 of them — carrying
+   * every token is not physically possible. The design records this as the deliberate tradeoff
+   * ("Greek copy is authored terse against that budget, dropping the property name where it does
+   * not fit").
+   *
+   * <p>Scoped per language, not per family: a Dutch retranslation that dropped {@code {amount}}
+   * from a payment SMS would ship a reminder with no amount in it, and must still fail.
    */
-  private static final Set<String> BUDGETED_FAMILIES = Set.of("sms-bodies");
+  private static final Set<String> BUDGETED = Set.of("sms-bodies:el");
 
   private record Family(String name, Map<String, Resource> byLanguage) {}
 
@@ -109,10 +112,26 @@ class I18nBundleParityTest {
 
   static Stream<Arguments> families() throws IOException {
     List<Family> discovered = discover();
-    // A discovery bug that found nothing would otherwise make this whole suite vacuously green.
+    // Pinned exactly: a floor lets a classpath-scanning regression lose a whole family in
+    // silence, which is the one failure that would make every assertion below vacuous.
     assertThat(discovered)
-        .as("classpath scan found no message bundles at all")
-        .hasSizeGreaterThanOrEqualTo(13);
+        .as("expected every message bundle family to be discovered")
+        .extracting(Family::name)
+        .containsExactlyInAnyOrder(
+            "api-errors",
+            "document-contact-booklet",
+            "document-contract-booklet",
+            "document-deposit-statement",
+            "document-enum-labels",
+            "document-extension",
+            "document-letter-chrome",
+            "document-payment-notice",
+            "document-property-booklet",
+            "document-rent-change",
+            "document-summary-card",
+            "email-bodies",
+            "email-subjects",
+            "sms-bodies");
     return discovered.stream().map(Arguments::of);
   }
 
@@ -158,7 +177,7 @@ class I18nBundleParityTest {
                 family.name(), language, key)
             .isSubsetOf(expected);
 
-        if (!BUDGETED_FAMILIES.contains(family.name())) {
+        if (!BUDGETED.contains(family.name() + ":" + language)) {
           assertThat(actual)
               .as("%s [%s] %s dropped a placeholder", family.name(), language, key)
               .isEqualTo(expected);

@@ -18,7 +18,12 @@ public record SendNotificationRequest(
     Optional<UUID> recipientContactId,
     Optional<String> recipientEmail,
     Optional<String> recipientPhone,
-    /** Explicit locale for rendering (BCP 47 tag). Overrides user/team preference resolution. */
+    /**
+     * Context language for rendering (BCP 47 tag) — typically a contract's document language.
+     * Ranked BELOW the recipient's own preference, not an override: the resolution order is the
+     * contact's language, then the recipient user's, then this, then the team default, then
+     * English. See {@code RecipientLocaleResolver}.
+     */
     Optional<String> contextLanguageTag,
     String templateName,
     Map<String, Object> templateVariables,

@@ -40,7 +40,6 @@ import com.buurman.exception.ExternalServiceException;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamMemberRepository;
-import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
@@ -57,7 +56,6 @@ public class NotificationServiceImpl implements NotificationService {
   private final NotificationRepository notificationRepository;
   private final NotificationOutboxRepository outboxRepository;
   private final TeamMemberRepository teamMemberRepository;
-  private final TeamPreferencesRepository teamPreferencesRepository;
   private final UserPreferencesRepository userPreferencesRepository;
   private final UserRepository userRepository;
   private final UserNotificationTypePreferenceRepository notifTypePrefRepository;
@@ -70,7 +68,6 @@ public class NotificationServiceImpl implements NotificationService {
       NotificationRepository notificationRepository,
       NotificationOutboxRepository outboxRepository,
       TeamMemberRepository teamMemberRepository,
-      TeamPreferencesRepository teamPreferencesRepository,
       UserPreferencesRepository userPreferencesRepository,
       UserRepository userRepository,
       UserNotificationTypePreferenceRepository notifTypePrefRepository,
@@ -81,7 +78,6 @@ public class NotificationServiceImpl implements NotificationService {
     this.notificationRepository = notificationRepository;
     this.outboxRepository = outboxRepository;
     this.teamMemberRepository = teamMemberRepository;
-    this.teamPreferencesRepository = teamPreferencesRepository;
     this.userPreferencesRepository = userPreferencesRepository;
     this.userRepository = userRepository;
     this.notifTypePrefRepository = notifTypePrefRepository;
