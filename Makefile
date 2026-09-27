@@ -215,18 +215,23 @@ workspace-teardown:
 local:
 	@osascript \
 		-e 'tell application "iTerm2"' \
-		-e '  tell current window' \
-		-e '    set newTab to (create tab with default profile)' \
-		-e '    tell current session of newTab' \
-		-e '      write text "cd $(ROOT_DIR) && make dev-fg"' \
-		-e '      set backendPane to (split horizontally with default profile)' \
+		-e '  activate' \
+		-e '  if (count of windows) = 0 then' \
+		-e '    set firstSession to (current session of (create window with default profile))' \
+		-e '  else' \
+		-e '    tell current window' \
+		-e '      set firstSession to (current session of (create tab with default profile))' \
 		-e '    end tell' \
-		-e '    tell backendPane' \
-		-e '      write text "cd $(ROOT_DIR) && sleep 10 && make backend"' \
-		-e '      set frontendPane to (split horizontally with default profile)' \
-		-e '    end tell' \
-		-e '    tell frontendPane' \
-		-e '      write text "cd $(ROOT_DIR)/frontend && yarn dev"' \
-		-e '    end tell' \
+		-e '  end if' \
+		-e '  tell firstSession' \
+		-e '    write text "cd $(ROOT_DIR) && make dev-fg"' \
+		-e '    set backendPane to (split horizontally with default profile)' \
+		-e '  end tell' \
+		-e '  tell backendPane' \
+		-e '    write text "cd $(ROOT_DIR) && sleep 10 && make backend"' \
+		-e '    set frontendPane to (split horizontally with default profile)' \
+		-e '  end tell' \
+		-e '  tell frontendPane' \
+		-e '    write text "cd $(ROOT_DIR)/frontend && yarn dev"' \
 		-e '  end tell' \
 		-e 'end tell'
