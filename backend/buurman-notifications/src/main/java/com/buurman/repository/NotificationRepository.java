@@ -78,6 +78,8 @@ public class NotificationRepository {
         .set(NOTIFICATIONS.RECIPIENT_PHONE, notification.getRecipientPhone().orElse(null))
         .set(NOTIFICATIONS.RECIPIENT_USER_ID, notification.getRecipientUserId().orElse(null))
         .set(NOTIFICATIONS.RECIPIENT_CONTACT_ID, notification.getRecipientContactId().orElse(null))
+        .set(NOTIFICATIONS.PAYMENT_ID, notification.getRelatedPaymentId().orElse(null))
+        .set(NOTIFICATIONS.CONTRACT_ID, notification.getRelatedContractId().orElse(null))
         .set(NOTIFICATIONS.CHANNEL, notification.getChannel().name())
         .set(NOTIFICATIONS.CONTENT_TEMPLATE, notification.getContentTemplate().orElse(null))
         .set(NOTIFICATIONS.CONTENT_VARIABLES, contentVariablesJson)

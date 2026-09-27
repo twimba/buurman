@@ -222,6 +222,26 @@ final class TestDataHelper {
     return id;
   }
 
+  static UUID insertPayment(DSLContext dsl, UUID teamId, UUID contractId, UUID createdBy) {
+    UUID id = UUID.randomUUID();
+    dsl.insertInto(DSL.table("payments"))
+        .set(DSL.field("id", UUID.class), id)
+        .set(DSL.field("identifier", String.class), SidGenerator.newPaymentId().value())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("contract_id", UUID.class), contractId)
+        .set(DSL.field("amount", Long.class), 100000L)
+        .set(DSL.field("currency", String.class), "EUR")
+        .set(DSL.field("due_date", LocalDate.class), LocalDate.of(2026, 2, 1))
+        .set(DSL.field("status", String.class), "PENDING")
+        .set(DSL.field("auto_generated", Boolean.class), false)
+        .set(DSL.field("created_at", LocalDateTime.class), NOW)
+        .set(DSL.field("updated_at", LocalDateTime.class), NOW)
+        .set(DSL.field("created_by", UUID.class), createdBy)
+        .set(DSL.field("updated_by", UUID.class), createdBy)
+        .execute();
+    return id;
+  }
+
   static ContactAddress buildContactAddress(UUID contactId, UUID teamId, UUID createdBy) {
     return ContactAddress.builder()
         .contactId(contactId)

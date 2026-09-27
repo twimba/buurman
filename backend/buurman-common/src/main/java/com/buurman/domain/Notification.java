@@ -27,6 +27,12 @@ public class Notification {
   @Builder.Default private Optional<String> recipientPhone = Optional.empty();
   @Builder.Default private Optional<UUID> recipientUserId = Optional.empty();
   @Builder.Default private Optional<UUID> recipientContactId = Optional.empty();
+
+  /** The payment this notification is about, when it is about one. */
+  @Builder.Default private Optional<UUID> relatedPaymentId = Optional.empty();
+
+  /** The contract this notification is about. A payment reminder sets this and the payment. */
+  @Builder.Default private Optional<UUID> relatedContractId = Optional.empty();
   private NotificationChannel channel;
   @Builder.Default private Optional<String> contentTemplate = Optional.empty();
   @Builder.Default private Optional<Map<String, Object>> contentVariables = Optional.empty();

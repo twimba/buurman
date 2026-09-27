@@ -255,6 +255,22 @@
 
     <build>
         <plugins>
+        <!-- Publishes AbstractRepositoryIntegrationTest and TestDataHelper so modules that
+             depend on core (notifications, backoffice, letters) can write integration tests
+             without duplicating the Testcontainer bootstrap. -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>test-jar</id>
+                    <goals>
+                        <goal>test-jar</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
