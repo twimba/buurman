@@ -12,6 +12,116 @@
 
 **Plan series:** Plan 2 of 3. **Depends on plan 1** (`2026-09-26-units-backend-foundation.md`) being merged — this plan consumes its endpoints and generated client. Plan 3 covers exports, booklets, takeout, letters, demo data and i18n for the 12 non-English locales.
 
+## PANEL AMENDMENTS — read before executing any task
+
+A nine-specialist review found five defects in this plan and several backend changes it does not
+account for. These amendments override the task text below wherever they conflict.
+
+**A1. Task 1's import block does not compile.** The plan lists exports `listUnits, create,
+bulkCreate, get, update, _delete`. The actual generated exports are `listUnits, createUnit,
+bulkCreateUnits, getUnit, updateUnit, deleteUnit, getUnitResidentialDetails,
+updateUnitResidentialDetails, getUnitAmenities, updateUnitAmenities`. Five of six names are wrong
+and the `_delete` convention does not exist. Task 1 Step 1 also tells the implementer to suspect
+plan 1 if the import fails — do not; check the generated file.
+
+**A2. Task 1 must also add hooks and query keys for the four residential-details and amenities
+endpoints.** Task 4 Step 4 requires both sections on `UnitDetailPage`, and they are the only paths
+to bedroom/bathroom/furnished/pet-policy and amenity data — which `PropertyResponse` now returns
+empty (see A6).
+
+**A3. Task 3's `visibleTabs` test asserts the wrong order and would ship a regression.** The array
+at `PropertyDetailPage.tsx:112-121` is `useTabState`'s *validation whitelist*; the rendered button
+order (`:327-406`) is `info, dashboard, financials, photos, documents, contracts, expenses, audit`.
+Driving both from one list, as Step 3 instructs, moves **Dashboard from tab 2 to tab 8** for every
+existing landlord — contradicting this plan's own acceptance criterion 1. Use two constants:
+`PROPERTY_TAB_IDS` (validation) and `PROPERTY_TAB_ORDER` (render, dashboard second), and assert
+`visibleTabs` against the latter.
+
+**A4. `UpdateUnitRequest` is PUT-replace: an omitted field CLEARS its column.** This is not a note,
+it is the plan's largest hazard. Task 3 Step 6's specified test — *"editing the floor area and
+submitting calls `onSubmit` with `{ areaValue: <new value> }`"* — codifies a destructive payload.
+Backend work has since removed `allocationShare`/`wozSharePct` from the request (they had two
+writers), but every remaining dwelling field is still clearable, and `heatingType`,
+`energyEfficiencyRating` and `areaValue` all feed the WWS statutory rent ceiling.
+
+**Required:** a single `unitToUpdateRequest(unit)` adapter is the *only* place an `UpdateUnitRequest`
+is ever constructed, spreading the full `UnitResponse`, with a unit test that fails when a field is
+added. Never construct a partial request. "The form always submits every field" is not safe in a
+form with `CollapsibleSection`s, conditional category branches, and a `useEffect` seeding state
+after first paint.
+
+**A5. `UnitCharacteristicsForm` must be fully controlled, not self-submitting.** The plan's
+signature `({ unit, onSubmit, disabled })` cannot compose into the property form on the Info tab —
+a component owning its own submit cannot participate in a parent's. Use
+`({ value, onChange, disabled })` and let each host own submission: `UnitDetailPage` wraps it in a
+small self-submitting shell, `PropertyDetailPage` folds it into the existing form. The
+"rendered in two places so they cannot drift" benefit survives.
+
+Related, and unmentioned in the plan: on the Info tab one Save now fans out to
+`PUT /properties/{id}` **and** `PUT /units/{id}` — two writes, no atomicity, no rollback. Either
+give the tab two visually distinct cards with independent Saves ("Building" / "This home") so
+partial success is legible, or add a combined endpoint. Do not hide two writes behind one button.
+
+**A6. Backend changes this plan does not account for.** All landed after the plan was written:
+
+- `PropertyResponse.residentialDetails` and `.amenities` are returned **empty for every property**,
+  and the property-level write path is gone. Read them from the sole unit when `unitCount === 1`.
+- `PropertyResponse.status` and `PropertySummary.status` no longer exist. `PropertyCard.tsx:56`
+  still reads `property.status`. `PropertySummary` has no `unitCount`/`occupiedUnitCount`, so Task 6
+  Step 4's occupancy badge is **unimplementable at its only call site** (`ExpensesPage.tsx:538`)
+  until the backend adds them — raise that rather than working around it.
+- WWS reads are now unit-scoped: `GET /units/{id}/wws/calculations` and `/latest`, with
+  `/properties/{id}/wws/latest` returning **409** on a multi-unit property. The pre-fill hook and
+  `WwsCalculatorModal` have been corrected backend-side and `UnitIdentifier` is now a branded type —
+  so passing a property Sid is a compile error. The WWS panel currently degrades silently on a 409;
+  give it the message the backend provides.
+- `PropertyResponse` now carries `totalUnits`-style per-status counts; `occupied + vacant` still does
+  **not** equal `unitCount` when a unit is `MAINTENANCE`/`UNDER_RENOVATION`/etc., so "3/4 let" reads
+  as one unit available. Render three segments (let / available / unavailable), not a fraction.
+- Unit creation and bulk-create are gated behind the **`MULTI_UNIT` feature flag**, default off.
+  Read the flag and hide the Units tab and the split action rather than surfacing a 409 after a
+  click.
+- `POST /properties/{id}/units/bulk` — do **not** reimplement `numberingLabels` client-side for the
+  preview as Task 5 does; it will drift from the server's `AA/AB` rollover and `%02d` widening. Ask
+  the backend for a dry-run, or preview only the simple numeric case.
+
+**A7. The locale term list in Global Constraints is obsolete.** "Unit localised to the local legal
+term" yields a *dwelling* noun in 7 of 13 locales (nl *Woning*, de *Wohnung*, sv *Lägenhet*,
+fi *Asunto*, el *Κατοικία*, da/nb *Bolig*) while `unit_type` includes `PARKING`, `STORAGE` and
+`COMMERCIAL`. "Woningen (3)" on a building holding two flats and a parking space is false — and in
+NL, *woning* is the term the WWS and the Huurcommissie use. Use a neutral **container** term
+(nl *Eenheid*, de *Einheit*, fr *Lot*, sv/da/nb *Enhet*, fi *Yksikkö*, el *Μονάδα*, es *Unidad*;
+pt *Fração*, it *Unità*, pl *Lokal* are already neutral) plus a per-type **member** label
+(*Woning* / *Parkeerplaats* / *Berging* / *Bedrijfsruimte*). Fix this **before** 13 locale files are
+written against the old list.
+
+**A8. Query keys as specified are prefix-incompatible.** `k('unit', id)` and `k('units', propId)`
+are separate families, so one `invalidateQueries({ queryKey: ['units'] })` will not match both. Use
+`['units', propertyIdentifier]` and `['units', 'detail', unitIdentifier]`.
+
+**A9. Avoid the three-hop waterfall.** Task 3 Step 5 goes property → `listUnits` → `getUnit` on the
+single-unit page, i.e. the majority of page views. `PropertyResponse.units[0].identifier` is already
+on the detail response — use it and drop `listUnits` from that path. Note `units` is `[]` on the
+**list** endpoint, so guard for it rather than trusting the schema's `required`.
+
+**A10. CI now gates this work.** `tsc --noEmit` and `yarn build` run on any change to `frontend/**`
+**or** `openapi/**`. `yarn test` and `yarn lint` both pass today on a frontend with 138 type errors
+(Vitest does not typecheck; ESLint is not type-aware), so they are not the gate. The 138 errors are
+this branch's and clearing them is Task 0 below.
+
+**A11. New Task 0 — clear the 138 existing type errors first.** They are all caused by the dwelling
+field move: `PropertyForm.tsx` (45), `PropertyDetailPage.tsx` (44),
+`PropertyCharacteristicsForm.tsx` (39), `PropertyCard.tsx` (5), `types/property.ts` (3),
+`PropertyListPage.tsx` (1), `usePropertyHooks.ts` (1). Note `PropertyCharacteristicsForm` renders
+every field **twice** (six view-mode plus six edit-mode `CollapsibleSection`s), so the deletion is
+~550 lines, not ~150 — and those four files have **no test coverage at all** (5,063 lines, zero
+test files). Before deleting, add a smoke render test per file asserting the section headings that
+must survive (`detail.construction.title`, `detail.utilities.title`, `detail.parking.title`,
+`detail.safety.title`). That is the only thing that will catch a stray `</CollapsibleSection>`
+taking the parking section with it.
+
+---
+
 ## Global Constraints
 
 - Airbnb JS style; the repo is prettier-clean and must stay that way (`yarn lint --fix` before every commit).
