@@ -66,6 +66,14 @@ jobs:
         working-directory: frontend
         run: yarn build
 
+      # Every locale must define exactly the `en` key set. A missing key is not
+      # cosmetic: react-i18next renders the raw key path to the landlord, e.g.
+      # a literal `units.term.one`. Neither tsc nor Vitest can see into the
+      # JSON locale bundles, so this is the only gate that catches it.
+      - name: Check locale key parity
+        working-directory: frontend
+        run: yarn check:locales
+
       - name: Lint
         working-directory: frontend
         run: yarn lint
