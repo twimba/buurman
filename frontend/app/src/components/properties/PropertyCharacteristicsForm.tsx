@@ -9,21 +9,12 @@ import {
   PropertyResponse,
   PropertyCategory,
   OutdoorAreaResponse,
-  AmenityResponse,
-  PropertyAmenityResponse,
-  ResidentialDetailsRequest,
   CommercialDetailsRequest,
   IndustrialDetailsRequest,
   AgriculturalDetailsRequest,
   CONSTRUCTION_TYPES,
   FOUNDATION_TYPES,
   ROOF_TYPES,
-  FLOORING_TYPES,
-  WINDOW_TYPES,
-  ENERGY_EFFICIENCY_RATINGS,
-  HEATING_TYPES,
-  COOLING_TYPES,
-  HOT_WATER_SYSTEMS,
   ELECTRICITY_CONNECTION_TYPES,
   WATER_CONNECTION_TYPES,
   SEWAGE_TYPES,
@@ -50,11 +41,6 @@ function humanize(val: string): string {
 
 function countFilled(values: (unknown | null | undefined)[]): number {
   return values.filter((v) => v != null && v !== '' && v !== false).length;
-}
-
-/** Build dropdown options from a readonly const array */
-function arrayOptions(arr: readonly string[]): Record<string, string> {
-  return Object.fromEntries(arr.map((v) => [v, humanize(v)]));
 }
 
 /** Build translated dropdown options, falling back to humanized value */
@@ -270,11 +256,6 @@ interface PropertyCharacteristicsFormProps {
     areaUnit?: string;
   }) => void;
   onDeleteOutdoorArea?: (id: string) => void;
-  // Amenities (only in edit mode) — grouped by category from GET /api/amenities
-  allAmenities?: Record<string, AmenityResponse[]>;
-  propertyAmenities?: PropertyAmenityResponse[];
-  onAddAmenity?: (amenityIdentifier: string, notes?: string | null) => void;
-  onRemoveAmenity?: (amenityIdentifier: string) => void;
 }
 
 export const PropertyCharacteristicsForm = ({
@@ -284,10 +265,6 @@ export const PropertyCharacteristicsForm = ({
   outdoorAreas = [],
   onCreateOutdoorArea,
   onDeleteOutdoorArea,
-  allAmenities = {},
-  propertyAmenities = [],
-  onAddAmenity,
-  onRemoveAmenity,
 }: PropertyCharacteristicsFormProps) => {
   const { t } = useTranslation('properties');
   const constructionFields = [
@@ -297,18 +274,8 @@ export const PropertyCharacteristicsForm = ({
     formData.foundationType,
     formData.roofType,
     formData.wallConstruction,
-    formData.flooringType,
-    formData.windowType,
     formData.numberOfFloors,
     formData.structuralNotes,
-  ];
-  const energyFields = [
-    formData.energyEfficiencyRating,
-    formData.energyCertificateExpiryDate,
-    formData.heatingType,
-    formData.coolingType,
-    formData.hotWaterSystem,
-    formData.insulationNotes,
   ];
   const utilityFields = [
     formData.electricityConnectionType,
@@ -322,9 +289,6 @@ export const PropertyCharacteristicsForm = ({
   ];
   const parkingFields = [formData.parkingSpaces, formData.parkingType];
   const safetyFields = [
-    formData.hasSmokeDetectors,
-    formData.hasCoDetectors,
-    formData.hasFireExtinguisher,
     formData.hasSprinklerSystem,
     formData.hasAlarmSystem,
     formData.hasSecurityCameras,
@@ -335,14 +299,7 @@ export const PropertyCharacteristicsForm = ({
     formData.isWheelchairAccessible,
     formData.hasElevator,
     formData.hasStepFreeEntrance,
-    formData.hasAdaptedBathroom,
-    formData.accessibilityNotes,
   ];
-
-  const totalAmenities = Object.values(allAmenities).reduce(
-    (sum, arr) => sum + arr.length,
-    0
-  );
 
   return (
     <div className="space-y-3">
@@ -411,26 +368,6 @@ export const PropertyCharacteristicsForm = ({
             )}
             onChange={(v) => onChange('wallConstruction', v)}
           />
-          <SelectField
-            label={t('characteristics.construction.flooringType')}
-            value={formData.flooringType}
-            options={translatedOptions(
-              FLOORING_TYPES,
-              t,
-              'enums.characteristics.flooringType'
-            )}
-            onChange={(v) => onChange('flooringType', v)}
-          />
-          <SelectField
-            label={t('characteristics.construction.windowType')}
-            value={formData.windowType}
-            options={translatedOptions(
-              WINDOW_TYPES,
-              t,
-              'enums.characteristics.windowType'
-            )}
-            onChange={(v) => onChange('windowType', v)}
-          />
           <NumberField
             label={t('characteristics.construction.numberOfFloors')}
             value={formData.numberOfFloors}
@@ -443,75 +380,6 @@ export const PropertyCharacteristicsForm = ({
             value={formData.structuralNotes}
             onChange={(v) => onChange('structuralNotes', v)}
             tooltip={t('characteristics.construction.structuralNotesTooltip')}
-          />
-        </div>
-      </CollapsibleSection>
-
-      {/* Energy & Climate */}
-      <CollapsibleSection
-        title={t('detail.energy.title')}
-        filledCount={countFilled(energyFields)}
-        totalCount={energyFields.length}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SelectField
-            label={t('characteristics.energy.energyEfficiencyRating')}
-            value={formData.energyEfficiencyRating}
-            options={arrayOptions(ENERGY_EFFICIENCY_RATINGS)}
-            onChange={(v) => onChange('energyEfficiencyRating', v)}
-            tooltip={t('characteristics.energy.energyRatingTooltip')}
-          />
-          <div>
-            <label className={labelCls}>
-              {t('characteristics.energy.certificateExpiry')}
-              <Tooltip
-                text={t('characteristics.energy.certificateExpiryTooltip')}
-              />
-            </label>
-            <input
-              type="date"
-              value={formData.energyCertificateExpiryDate ?? ''}
-              onChange={(e) =>
-                onChange('energyCertificateExpiryDate', e.target.value || null)
-              }
-              className={inputCls}
-            />
-          </div>
-          <SelectField
-            label={t('characteristics.energy.heatingType')}
-            value={formData.heatingType}
-            options={translatedOptions(
-              HEATING_TYPES,
-              t,
-              'enums.characteristics.heatingType'
-            )}
-            onChange={(v) => onChange('heatingType', v)}
-          />
-          <SelectField
-            label={t('characteristics.energy.coolingType')}
-            value={formData.coolingType}
-            options={translatedOptions(
-              COOLING_TYPES,
-              t,
-              'enums.characteristics.coolingType'
-            )}
-            onChange={(v) => onChange('coolingType', v)}
-          />
-          <SelectField
-            label={t('characteristics.energy.hotWaterSystem')}
-            value={formData.hotWaterSystem}
-            options={translatedOptions(
-              HOT_WATER_SYSTEMS,
-              t,
-              'enums.characteristics.hotWaterSystem'
-            )}
-            onChange={(v) => onChange('hotWaterSystem', v)}
-          />
-          <RichTextNotesField
-            label={t('characteristics.energy.insulationNotes')}
-            value={formData.insulationNotes}
-            onChange={(v) => onChange('insulationNotes', v)}
-            tooltip={t('characteristics.energy.insulationTooltip')}
           />
         </div>
       </CollapsibleSection>
@@ -631,21 +499,6 @@ export const PropertyCharacteristicsForm = ({
       >
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
           <ToggleField
-            label={t('characteristics.safety.smokeDetectors')}
-            value={formData.hasSmokeDetectors}
-            onChange={(v) => onChange('hasSmokeDetectors', v)}
-          />
-          <ToggleField
-            label={t('characteristics.safety.coDetectors')}
-            value={formData.hasCoDetectors}
-            onChange={(v) => onChange('hasCoDetectors', v)}
-          />
-          <ToggleField
-            label={t('characteristics.safety.fireExtinguisher')}
-            value={formData.hasFireExtinguisher}
-            onChange={(v) => onChange('hasFireExtinguisher', v)}
-          />
-          <ToggleField
             label={t('characteristics.safety.sprinklerSystem')}
             value={formData.hasSprinklerSystem}
             onChange={(v) => onChange('hasSprinklerSystem', v)}
@@ -696,27 +549,10 @@ export const PropertyCharacteristicsForm = ({
             value={formData.hasStepFreeEntrance}
             onChange={(v) => onChange('hasStepFreeEntrance', v)}
           />
-          <ToggleField
-            label={t('characteristics.accessibility.adaptedBathroom')}
-            value={formData.hasAdaptedBathroom}
-            onChange={(v) => onChange('hasAdaptedBathroom', v)}
-          />
         </div>
-        <RichTextNotesField
-          label={t('characteristics.accessibility.accessibilityNotes')}
-          value={formData.accessibilityNotes}
-          onChange={(v) => onChange('accessibilityNotes', v)}
-          tooltip={t('characteristics.accessibility.accessibilityNotesTooltip')}
-        />
       </CollapsibleSection>
 
       {/* Category-Specific Details */}
-      {formData.propertyCategory === PropertyCategory.RESIDENTIAL && (
-        <ResidentialDetailsSection
-          details={formData.residentialDetails ?? {}}
-          onChange={(details) => onChange('residentialDetails', details)}
-        />
-      )}
       {formData.propertyCategory === PropertyCategory.COMMERCIAL && (
         <CommercialDetailsSection
           details={formData.commercialDetails ?? {}}
@@ -742,16 +578,6 @@ export const PropertyCharacteristicsForm = ({
           areas={outdoorAreas}
           onCreate={onCreateOutdoorArea}
           onDelete={onDeleteOutdoorArea}
-        />
-      )}
-
-      {/* Amenities */}
-      {property && totalAmenities > 0 && (
-        <AmenitiesSection
-          grouped={allAmenities}
-          propertyAmenities={propertyAmenities}
-          onAdd={onAddAmenity}
-          onRemove={onRemoveAmenity}
         />
       )}
     </div>
@@ -876,76 +702,6 @@ const OutdoorAreasSection = ({
           {t('characteristics.outdoorAreas.addOutdoorArea')}
         </button>
       )}
-    </CollapsibleSection>
-  );
-};
-
-// --- Residential Details Section ---
-
-const PET_POLICIES = [
-  'ALLOWED',
-  'NOT_ALLOWED',
-  'NEGOTIABLE',
-  'SMALL_PETS_ONLY',
-] as const;
-
-interface ResidentialDetailsSectionProps {
-  details: Partial<ResidentialDetailsRequest>;
-  onChange: (details: ResidentialDetailsRequest) => void;
-}
-
-const ResidentialDetailsSection = ({
-  details,
-  onChange,
-}: ResidentialDetailsSectionProps) => {
-  const { t } = useTranslation('properties');
-  const update = (field: keyof ResidentialDetailsRequest, value: unknown) =>
-    onChange({ ...details, [field]: value } as ResidentialDetailsRequest);
-
-  const fields = [
-    details.bedrooms,
-    details.bathrooms,
-    details.furnished,
-    details.petPolicy,
-  ];
-
-  return (
-    <CollapsibleSection
-      title={t('characteristics.residential.title')}
-      filledCount={countFilled(fields)}
-      totalCount={fields.length}
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NumberField
-          label={t('characteristics.residential.bedrooms')}
-          value={details.bedrooms}
-          onChange={(v) => update('bedrooms', v)}
-          min={0}
-          step={1}
-        />
-        <NumberField
-          label={t('characteristics.residential.bathrooms')}
-          value={details.bathrooms}
-          onChange={(v) => update('bathrooms', v)}
-          min={0}
-          step={1}
-        />
-        <ToggleField
-          label={t('characteristics.residential.furnished')}
-          value={details.furnished ?? false}
-          onChange={(v) => update('furnished', v)}
-        />
-        <SelectField
-          label={t('characteristics.residential.petPolicy')}
-          value={details.petPolicy ?? null}
-          options={translatedOptions(
-            PET_POLICIES,
-            t,
-            'enums.characteristics.petPolicy'
-          )}
-          onChange={(v) => update('petPolicy', v)}
-        />
-      </div>
     </CollapsibleSection>
   );
 };
@@ -1407,91 +1163,6 @@ const AgriculturalDetailsSection = ({
           />
         </div>
       )}
-    </CollapsibleSection>
-  );
-};
-
-// --- Amenities Section ---
-
-interface AmenitiesSectionProps {
-  grouped: Record<string, AmenityResponse[]>;
-  propertyAmenities: PropertyAmenityResponse[];
-  onAdd?: (amenityIdentifier: string, notes?: string | null) => void;
-  onRemove?: (amenityIdentifier: string) => void;
-}
-
-const AmenitiesSection = ({
-  grouped,
-  propertyAmenities,
-  onAdd,
-  onRemove,
-}: AmenitiesSectionProps) => {
-  const { t } = useTranslation('properties');
-  const selectedIds = new Set(
-    propertyAmenities.map((a) => a.amenityIdentifier)
-  );
-  const totalAmenities = Object.values(grouped).reduce(
-    (sum, arr) => sum + arr.length,
-    0
-  );
-
-  const toggleAmenity = (id: string, checked: boolean) => {
-    if (checked) {
-      onAdd?.(id);
-    } else onRemove?.(id);
-  };
-
-  return (
-    <CollapsibleSection
-      title={t('detail.amenities.title')}
-      filledCount={selectedIds.size}
-      totalCount={totalAmenities}
-    >
-      <div className="space-y-4">
-        {Object.entries(grouped)
-          .sort(([a], [b]) => a.localeCompare(b))
-          .map(([category, amenities]) => (
-            <div key={category}>
-              <h4 className="text-sm font-semibold text-text-secondary mb-2 uppercase tracking-wide">
-                {t(`enums.amenities.categories.${category}`, {
-                  defaultValue: humanize(category),
-                })}
-              </h4>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
-                {amenities.map((amenity) => {
-                  const checked = selectedIds.has(amenity.identifier);
-                  const existing = propertyAmenities.find(
-                    (a) => a.amenityIdentifier === amenity.identifier
-                  );
-                  return (
-                    <div key={amenity.identifier}>
-                      <label className="flex items-center gap-2 cursor-pointer py-1">
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() =>
-                            toggleAmenity(amenity.identifier, !checked)
-                          }
-                          className="rounded border-border-strong text-primary-500 focus:ring-primary-500"
-                        />
-                        <span className="text-sm text-text-secondary">
-                          {t(`enums.amenities.items.${amenity.name}`, {
-                            defaultValue: amenity.name,
-                          })}
-                        </span>
-                      </label>
-                      {checked && existing?.notes && (
-                        <p className="ml-6 text-xs text-text-muted mb-1">
-                          {existing.notes}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-      </div>
     </CollapsibleSection>
   );
 };
