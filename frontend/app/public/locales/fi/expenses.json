@@ -74,7 +74,11 @@
     "createExpense": "Luo",
     "expenseSuffix": " kulu",
     "saving": "Tallennetaan...",
-    "currency": "Valuutta"
+    "currency": "Valuutta",
+    "target": "Koskee",
+    "targetBuilding": "Koko rakennusta",
+    "targetUnit": "Yhtä yksikköä",
+    "unit": "Yksikkö"
   },
   "validation": {
     "propertyRequired": "Kohde on pakollinen",

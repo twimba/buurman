@@ -42,6 +42,7 @@
     <table class="summary-table">
       <tr><td class="st-label" th:text="#{deposit.summary.contractRef}"></td><td class="st-value" th:text="${contractIdentifier}"></td></tr>
       <tr><td class="st-label" th:text="#{deposit.summary.property}"></td><td class="st-value" th:text="${propertyAddress}"></td></tr>
+      <tr th:if="${hasMultipleUnits}"><td class="st-label" th:text="#{deposit.summary.unit}"></td><td class="st-value" th:text="${unitDesignation}"></td></tr>
       <tr th:if="${contractEnd != null}"><td class="st-label" th:text="#{deposit.summary.contractEnd}"></td><td class="st-value" th:text="${contractEnd}"></td></tr>
       <tr><td class="st-label" th:text="#{deposit.summary.amount}"></td><td class="st-value" th:text="${depositAmount}"></td></tr>
       <tr th:if="${receivedDate != null}"><td class="st-label" th:text="#{deposit.summary.receivedDate}"></td><td class="st-value" th:text="${receivedDate}"></td></tr>

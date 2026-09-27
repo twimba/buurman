@@ -3,9 +3,11 @@ package com.buurman.repository;
 import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.EXPENSE_ALLOCATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
+import static com.buurman.jooq.generated.Tables.UNITS;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.select;
 
@@ -61,6 +63,27 @@ public class DatabaseMetricsRepository {
         EXPENSES, EXPENSES.DELETED_AT.isNull().and(EXPENSES.TEAM_ID.in(nonDemoTeamIds)));
   }
 
+  /** The entity the product now bills on -- see BUUR-106 wave3c Important 7. */
+  public long countUnits() {
+    var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
+    return dsl.fetchCount(
+        dsl.select(UNITS.ID)
+            .from(UNITS)
+            .join(PROPERTIES)
+            .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
+            .where(UnitScope.active().and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds))));
+  }
+
+  public long countAllocations() {
+    var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
+    return dsl.fetchCount(
+        EXPENSE_ALLOCATIONS,
+        EXPENSE_ALLOCATIONS
+            .DELETED_AT
+            .isNull()
+            .and(EXPENSE_ALLOCATIONS.TEAM_ID.in(nonDemoTeamIds)));
+  }
+
   public List<LabelCount> countContractsByStatus() {
     var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
     return dsl.select(CONTRACTS.STATUS, count())
@@ -81,12 +104,23 @@ public class DatabaseMetricsRepository {
         .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 
-  public List<LabelCount> countPropertiesByStatus() {
+  /**
+   * Renamed from {@code countPropertiesByStatus} (BUUR-106 wave3c Important 7): {@code
+   * properties.status} was dropped in V070 in favor of per-unit status, but the query kept grouping
+   * by {@code units.status} while still feeding a gauge registered as {@code
+   * buurman.properties.by.status} -- {@code sum(by_status)} equalled {@code
+   * buurman_properties_count} before that deploy and silently stopped after it. The gauge is now
+   * named to match what it actually measures; see {@link
+   * com.buurman.service.DatabaseMetricsService}.
+   */
+  public List<LabelCount> countUnitsByStatus() {
     var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
-    return dsl.select(PROPERTIES.STATUS, count())
-        .from(PROPERTIES)
-        .where(PROPERTIES.DELETED_AT.isNull().and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds)))
-        .groupBy(PROPERTIES.STATUS)
+    return dsl.select(UNITS.STATUS, count())
+        .from(UNITS)
+        .join(PROPERTIES)
+        .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
+        .where(UnitScope.active().and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds)))
+        .groupBy(UNITS.STATUS)
         .fetch()
         .map(r -> new LabelCount(r.value1(), r.value2()));
   }

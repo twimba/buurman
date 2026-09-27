@@ -23,6 +23,7 @@
     },
     "count_one": "{{count}} contact",
     "count_other": "{{count}} contacts",
+    "count_many": "{{count}} contacts",
     "empty": {
       "filtered": "Aucun contact ne correspond à vos filtres",
       "filteredDescription": "Essayez d'ajuster vos filtres ou termes de recherche.",
@@ -119,8 +120,10 @@
       "overdueAmount_other": "{{amount}} en retard ({{count}} paiements)",
       "overdueFollowUps_one": "{{count}} suivi en retard",
       "overdueFollowUps_other": "{{count}} suivis en retard",
+      "overdueFollowUps_many": "{{count}} suivis en retard",
       "expiringContracts_one": "{{count}} contrat expire dans les 30 jours",
       "expiringContracts_other": "{{count}} contrats expirent dans les 30 jours",
+      "expiringContracts_many": "{{count}} contrats expirent dans les 30 jours",
       "missingFields": "Manquants : {{fields}}"
     },
     "balance": {
@@ -141,9 +144,11 @@
     "guarantees": "Garantit {{amount}}",
     "activeContracts_one": "{{count}} contrat actif",
     "activeContracts_other": "{{count}} contrats actifs",
+    "activeContracts_many": "{{count}} contrats actifs",
     "noActiveContracts": "Aucun contrat actif",
     "payment_one": "{{count}} paiement",
     "payment_other": "{{count}} paiements",
+    "payment_many": "{{count}} paiements",
     "overdue": "en retard",
     "pending": "en attente",
     "allPaidAriaLabel": "Tous les paiements sont à jour"
@@ -339,6 +344,7 @@
     "notADuplicate": "Pas un doublon",
     "potentialDuplicate_one": "Doublon potentiel trouvé",
     "potentialDuplicate_other": "Doublons potentiels trouvés",
+    "potentialDuplicate_many": "Doublons potentiels trouvés",
     "view": "Voir",
     "matchInfo": "(correspondance {{matchType}} sur le champ {{matchField}})",
     "notADuplicateContinue": "Pas un doublon — continuer"
@@ -378,6 +384,7 @@
     "errors": "Erreurs",
     "rowsNotImported_one": "{{count}} ligne ne sera pas importée",
     "rowsNotImported_other": "{{count}} lignes ne seront pas importées",
+    "rowsNotImported_many": "{{count}} lignes ne seront pas importées",
     "errorSkipNote": "Les lignes avec des erreurs seront ignorées. Vous pouvez télécharger un rapport d'erreurs après l'importation.",
     "skipErrors": "Ignorer les erreurs et importer les lignes valides",
     "row": "Ligne",
@@ -389,6 +396,7 @@
     "importing": "Importation...",
     "importCount_one": "Importer {{count}} contact",
     "importCount_other": "Importer {{count}} contacts",
+    "importCount_many": "Importer {{count}} contacts",
     "importComplete": "Importation terminée",
     "importCompleteDescription": "Vos contacts ont été importés avec succès.",
     "imported": "Importés",

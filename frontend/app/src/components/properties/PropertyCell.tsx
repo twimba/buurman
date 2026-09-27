@@ -9,7 +9,10 @@ import { Home, Building2, Factory, Tractor, MapPin } from 'lucide-react';
 
 interface PropertyCellProps {
   propertyIdentifier: string;
-  propertyStatus: PropertyStatus;
+  // Optional: a property may hold several independently-let units, so there is no single
+  // well-defined status at the property level (BUUR-106). Callers that only have a
+  // PropertySummary (no per-unit breakdown) omit this and the status dot is hidden.
+  propertyStatus?: PropertyStatus;
   propertyType: PropertyType;
   propertyCategory?: PropertyCategory;
   street: string;
@@ -91,13 +94,15 @@ export const PropertyCell = ({
 "
     >
       <div className="flex items-start gap-3">
-        {/* Status indicator */}
-        <div className="flex-shrink-0 pt-1">
-          <div
-            className={`w-2 h-2 rounded-full ${statusColors[propertyStatus] ?? 'bg-neutral-400'}`}
-            title={statusLabel(propertyStatus)}
-          />
-        </div>
+        {/* Status indicator — only rendered when a status was supplied */}
+        {propertyStatus && (
+          <div className="flex-shrink-0 pt-1">
+            <div
+              className={`w-2 h-2 rounded-full ${statusColors[propertyStatus] ?? 'bg-neutral-400'}`}
+              title={statusLabel(propertyStatus)}
+            />
+          </div>
+        )}
 
         {/* Content */}
         <div className="min-w-0 flex-1">

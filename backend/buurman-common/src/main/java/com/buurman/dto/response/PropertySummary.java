@@ -11,5 +11,4 @@ public record PropertySummary(
     String city,
     String postalCode,
     Property.PropertyCategory propertyCategory,
-    Property.PropertyType propertyType,
-    Property.PropertyStatus status) {}
+    Property.PropertyType propertyType) {}

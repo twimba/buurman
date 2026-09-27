@@ -86,8 +86,6 @@ tags:
     description: Dashboard statistics and recent activities
   - name: Registration
     description: Public registration endpoints
-  - name: Property Amenities
-    description: Manage amenities for properties
   - name: Payment Instructions
     description: Team-level payment instruction templates
   - name: Authentication
@@ -116,6 +114,10 @@ tags:
     description: Data export and takeout management
   - name: Broadcasts
     description: Broadcast messages for users
+  - name: Units
+    description: Units within a property (dwellings, parking, storage, commercial space)
+  - name: Expense Allocations
+    description: Per-unit allocation of building-level expenses
 paths:
   /users/preferences/notifications:
     $ref: 'paths/users.yaml#/users-preferences-notifications'
@@ -159,6 +161,8 @@ paths:
     $ref: 'paths/properties.yaml#/financials-acquisition'
   /properties/{identifier}:
     $ref: 'paths/properties.yaml#/item'
+  /properties/{identifier}/allocation:
+    $ref: 'paths/properties.yaml#/allocation'
   /properties/{identifier}/photos/{photoIdentifier}/set-main:
     $ref: 'paths/properties.yaml#/photos-set-main'
   /photos/{identifier}:
@@ -173,6 +177,10 @@ paths:
     $ref: 'paths/payments.yaml#/payment-instructions-item'
   /expenses/{identifier}:
     $ref: 'paths/expenses.yaml#/item'
+  /expenses/{identifier}/allocations:
+    $ref: 'paths/expenses.yaml#/allocations'
+  /expenses/{identifier}/allocations/recompute:
+    $ref: 'paths/expenses.yaml#/allocations-recompute'
   /documents/{identifier}:
     $ref: 'paths/documents.yaml#/documents-item'
   /contracts/{identifier}:
@@ -219,6 +227,16 @@ paths:
     $ref: 'paths/registration.yaml#/registration-invitations-validate'
   /properties:
     $ref: 'paths/properties.yaml#/collection'
+  /properties/{propertyIdentifier}/units:
+    $ref: 'paths/units.yaml#/units'
+  /properties/{propertyIdentifier}/units/bulk:
+    $ref: 'paths/units.yaml#/units-bulk'
+  /units/{identifier}:
+    $ref: 'paths/units.yaml#/units-item'
+  /units/{identifier}/residential-details:
+    $ref: 'paths/units.yaml#/units-residential-details'
+  /units/{identifier}/amenities:
+    $ref: 'paths/units.yaml#/units-amenities'
   /properties/{propertyIdentifier}/outdoor-areas:
     $ref: 'paths/properties.yaml#/outdoor-areas'
   /properties/{propertyIdentifier}/occupancy-periods:
@@ -241,8 +259,6 @@ paths:
     $ref: 'paths/properties.yaml#/financials-financings-payments-bulk'
   /properties/{propertyIdentifier}/financials/fees:
     $ref: 'paths/properties.yaml#/financials-fees'
-  /properties/{propertyIdentifier}/amenities:
-    $ref: 'paths/properties.yaml#/amenities'
   /properties/{identifier}/photos:
     $ref: 'paths/properties.yaml#/photos'
   /properties/{identifier}/documents:
@@ -435,14 +451,18 @@ paths:
     $ref: 'paths/reference.yaml#/wws-calculate'
   /wws/calculate-and-save:
     $ref: 'paths/reference.yaml#/wws-calculate-and-save'
-  /wws/properties/{propertyIdentifier}/pre-fill:
-    $ref: 'paths/reference.yaml#/wws-properties-pre-fill'
+  /wws/units/{unitIdentifier}/pre-fill:
+    $ref: 'paths/reference.yaml#/wws-units-pre-fill'
   /wws/properties/{propertyIdentifier}/calculations:
     $ref: 'paths/reference.yaml#/wws-properties-calculations'
   /wws/properties/{propertyIdentifier}/latest:
     $ref: 'paths/reference.yaml#/wws-properties-latest'
   /wws/calculations/{calculationIdentifier}:
     $ref: 'paths/reference.yaml#/wws-calculations-item'
+  /units/{identifier}/wws/calculations:
+    $ref: 'paths/reference.yaml#/wws-units-calculations'
+  /units/{identifier}/wws/latest:
+    $ref: 'paths/reference.yaml#/wws-units-latest'
   /properties/{identifier}/audit-log:
     $ref: 'paths/properties.yaml#/audit-log'
   /properties/documents/{documentIdentifier}/download:
@@ -611,8 +631,6 @@ paths:
     $ref: 'paths/teams.yaml#/teams-members-item'
   /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments/documents/{documentIdentifier}:
     $ref: 'paths/properties.yaml#/financials-financings-payments-documents-item'
-  /properties/{propertyIdentifier}/amenities/{amenityIdentifier}:
-    $ref: 'paths/properties.yaml#/amenities-item'
   /properties/documents/{documentIdentifier}:
     $ref: 'paths/properties.yaml#/documents-item'
   /payments/documents/{documentIdentifier}:
@@ -740,6 +758,9 @@ components:
     PropertyIdentifier:
       type: string
       description: Property identifier
+    UnitIdentifier:
+      type: string
+      description: Unit identifier
     PropertyInsuranceIdentifier:
       type: string
       description: Property insurance identifier
@@ -1034,8 +1055,6 @@ components:
           type: string
         idNumber:
           type: string
-        additionalInfo:
-          type: string
         companyName:
           type: string
         tradeName:
@@ -1119,25 +1138,12 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
       required:
         - city
         - identifier
         - postalCode
         - propertyCategory
         - propertyType
-        - status
         - street
     BalanceStatus:
       type: string
@@ -1257,8 +1263,6 @@ components:
           type: string
         idNumber:
           type: string
-        additionalInfo:
-          type: string
         companyName:
           type: string
         tradeName:
@@ -1373,10 +1377,17 @@ components:
         memberCount:
           type: integer
           format: int64
+        billableUnitCount:
+          type: integer
+          format: int32
+          description: >-
+            Count of all non-deleted units across the team, implicit units
+            included.
         createdAt:
           type: string
           format: date-time
       required:
+        - billableUnitCount
         - createdAt
         - identifier
         - memberCount
@@ -1550,6 +1561,8 @@ components:
         identifier:
           type: string
         propertyIdentifier:
+          type: string
+        unitIdentifier:
           type: string
         startDate:
           type: string
@@ -2354,9 +2367,11 @@ components:
         floorLevel:
           type: integer
           format: int32
-        ceilingHeightM:
+        ceilingHeightValue:
           type: number
           exclusiveMinimum: 0
+        ceilingHeightUnit:
+          type: string
         hasStorefront:
           type: boolean
         hasSignageRights:
@@ -2378,9 +2393,11 @@ components:
     IndustrialDetailsRequest:
       type: object
       properties:
-        clearHeightM:
+        clearHeightValue:
           type: number
           exclusiveMinimum: 0
+        clearHeightUnit:
+          type: string
         loadingDocks:
           type: integer
           format: int32
@@ -2389,20 +2406,26 @@ components:
           type: integer
           format: int32
           minimum: 0
-        floorLoadCapacityKgSqm:
+        floorLoadCapacityValue:
           type: number
           exclusiveMinimum: 0
-        powerCapacityKva:
+        floorLoadCapacityUnit:
+          type: string
+        powerCapacityValue:
           type: integer
           format: int32
           exclusiveMinimum: 0
+        powerCapacityUnit:
+          type: string
         hasThreePhasePower:
           type: boolean
         hasCrane:
           type: boolean
-        craneCapacityTons:
+        craneCapacityValue:
           type: number
           exclusiveMinimum: 0
+        craneCapacityUnit:
+          type: string
         hasHazmatCertification:
           type: boolean
         hasVentilationSystem:
@@ -2472,18 +2495,6 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
         street:
           type: string
           minLength: 1
@@ -2493,7 +2504,7 @@ components:
         postalCode:
           type: string
           minLength: 1
-        country:
+        countryCode:
           type: string
           minLength: 1
         regionCode:
@@ -2503,11 +2514,6 @@ components:
         longitude:
           type: number
         geocodeAccuracy:
-          type: string
-        areaValue:
-          type: number
-          exclusiveMinimum: 0
-        areaUnit:
           type: string
         yearBuilt:
           type: integer
@@ -2523,33 +2529,18 @@ components:
           type: string
         wallConstruction:
           type: string
-        flooringType:
-          type: string
-        windowType:
-          type: string
         numberOfFloors:
           type: integer
           format: int32
         structuralNotes:
           type: string
-        energyEfficiencyRating:
-          type: string
-        energyCertificateExpiryDate:
-          type: string
-          format: date
-        heatingType:
-          type: string
-        coolingType:
-          type: string
-        hotWaterSystem:
-          type: string
-        insulationNotes:
-          type: string
         electricityConnectionType:
           type: string
-        electricityCapacityAmps:
+        electricityCapacityValue:
           type: integer
           format: int32
+        electricityCapacityUnit:
+          type: string
         waterConnectionType:
           type: string
         hasGasConnection:
@@ -2558,9 +2549,11 @@ components:
           type: string
         internetConnectionType:
           type: string
-        internetMaxSpeedMbps:
+        internetMaxSpeedValue:
           type: integer
           format: int32
+        internetMaxSpeedUnit:
+          type: string
         internetStatus:
           type: string
         parkingSpaces:
@@ -2568,12 +2561,6 @@ components:
           format: int32
         parkingType:
           type: string
-        hasSmokeDetectors:
-          type: boolean
-        hasCoDetectors:
-          type: boolean
-        hasFireExtinguisher:
-          type: boolean
         hasSprinklerSystem:
           type: boolean
         hasAlarmSystem:
@@ -2590,10 +2577,6 @@ components:
           type: boolean
         hasStepFreeEntrance:
           type: boolean
-        hasAdaptedBathroom:
-          type: boolean
-        accessibilityNotes:
-          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsRequest"
         commercialDetails:
@@ -2604,10 +2587,9 @@ components:
           $ref: "#/components/schemas/AgriculturalDetailsRequest"
       required:
         - city
-        - country
+        - countryCode
         - postalCode
         - propertyType
-        - status
         - street
     AgriculturalDetailsResponse:
       type: object
@@ -2652,8 +2634,10 @@ components:
         floorLevel:
           type: integer
           format: int32
-        ceilingHeightM:
+        ceilingHeightValue:
           type: number
+        ceilingHeightUnit:
+          type: string
         hasStorefront:
           type: boolean
         hasSignageRights:
@@ -2673,25 +2657,33 @@ components:
     IndustrialDetailsResponse:
       type: object
       properties:
-        clearHeightM:
+        clearHeightValue:
           type: number
+        clearHeightUnit:
+          type: string
         loadingDocks:
           type: integer
           format: int32
         driveInDoors:
           type: integer
           format: int32
-        floorLoadCapacityKgSqm:
+        floorLoadCapacityValue:
           type: number
-        powerCapacityKva:
+        floorLoadCapacityUnit:
+          type: string
+        powerCapacityValue:
           type: integer
           format: int32
+        powerCapacityUnit:
+          type: string
         hasThreePhasePower:
           type: boolean
         hasCrane:
           type: boolean
-        craneCapacityTons:
+        craneCapacityValue:
           type: number
+        craneCapacityUnit:
+          type: string
         hasHazmatCertification:
           type: boolean
         hasVentilationSystem:
@@ -2776,25 +2768,15 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
+        allocationBasis:
+          $ref: "#/components/schemas/AllocationBasis"
         street:
           type: string
         city:
           type: string
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
         regionCode:
           type: string
@@ -2803,10 +2785,6 @@ components:
         longitude:
           type: number
         geocodeAccuracy:
-          type: string
-        areaValue:
-          type: number
-        areaUnit:
           type: string
         mainPhotoUrl:
           type: string
@@ -2826,33 +2804,18 @@ components:
           type: string
         wallConstruction:
           type: string
-        flooringType:
-          type: string
-        windowType:
-          type: string
         numberOfFloors:
           type: integer
           format: int32
         structuralNotes:
           type: string
-        energyEfficiencyRating:
-          type: string
-        energyCertificateExpiryDate:
-          type: string
-          format: date
-        heatingType:
-          type: string
-        coolingType:
-          type: string
-        hotWaterSystem:
-          type: string
-        insulationNotes:
-          type: string
         electricityConnectionType:
           type: string
-        electricityCapacityAmps:
+        electricityCapacityValue:
           type: integer
           format: int32
+        electricityCapacityUnit:
+          type: string
         waterConnectionType:
           type: string
         hasGasConnection:
@@ -2861,9 +2824,11 @@ components:
           type: string
         internetConnectionType:
           type: string
-        internetMaxSpeedMbps:
+        internetMaxSpeedValue:
           type: integer
           format: int32
+        internetMaxSpeedUnit:
+          type: string
         internetStatus:
           type: string
         parkingSpaces:
@@ -2871,12 +2836,6 @@ components:
           format: int32
         parkingType:
           type: string
-        hasSmokeDetectors:
-          type: boolean
-        hasCoDetectors:
-          type: boolean
-        hasFireExtinguisher:
-          type: boolean
         hasSprinklerSystem:
           type: boolean
         hasAlarmSystem:
@@ -2893,10 +2852,6 @@ components:
           type: boolean
         hasStepFreeEntrance:
           type: boolean
-        hasAdaptedBathroom:
-          type: boolean
-        accessibilityNotes:
-          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsResponse"
         commercialDetails:
@@ -2913,6 +2868,22 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PropertyAmenityResponse"
+        unitCount:
+          type: integer
+          format: int32
+          description: Total number of units on this property
+        occupiedUnitCount:
+          type: integer
+          format: int32
+          description: Number of units currently OCCUPIED
+        vacantUnitCount:
+          type: integer
+          format: int32
+          description: Number of units currently VACANT
+        units:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitSummaryResponse"
         createdAt:
           type: string
           format: date-time
@@ -2920,15 +2891,19 @@ components:
           type: string
           format: date-time
       required:
+        - allocationBasis
         - city
-        - country
+        - countryCode
         - createdAt
         - identifier
+        - occupiedUnitCount
         - postalCode
         - propertyCategory
         - propertyType
-        - status
         - street
+        - unitCount
+        - units
+        - vacantUnitCount
     ResidentialDetailsResponse:
       type: object
       properties:
@@ -3316,6 +3291,12 @@ components:
         contactIdentifier:
           type: string
           description: Identifier of the contact linked to this expense
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent makes (or
+            keeps) this a building-level expense, split across the property's
+            units.
     ExpenseResponse:
       type: object
       description: Property expense record with category, amount, and supporting documents
@@ -3326,6 +3307,11 @@ components:
           example: exp_01HZQX7V8B3K5M2N4P6R9T0W
         property:
           $ref: "#/components/schemas/PropertySummary"
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent means this
+            is a building-level expense, split across the property's units.
         category:
           type: string
           description: Category of the property-related expense
@@ -3493,8 +3479,6 @@ components:
           items:
             $ref: '#/components/schemas/RentComponentRequest'
           description: Optional rent breakdown into components
-        endDateAfterStartDate:
-          type: boolean
       required:
         - contractType
         - paymentFrequency
@@ -3746,6 +3730,12 @@ components:
           example: ctr_01HZQX7V8B3K5M2N4P6R9T0W
         property:
           $ref: "#/components/schemas/PropertySummary"
+        unitIdentifier:
+          type: string
+          description: Identifier of the unit this contract is for
+        unitNumber:
+          type: string
+          description: The unit's number/label within the property
         parties:
           type: array
           items:
@@ -4850,8 +4840,6 @@ components:
           type: string
         idNumber:
           type: string
-        additionalInfo:
-          type: string
         companyName:
           type: string
         tradeName:
@@ -5038,18 +5026,6 @@ components:
             - OTHER_AGRICULTURAL
             - MIXED_USE
             - COMMERCIAL
-        status:
-          type: string
-          description: Current occupancy or availability status of the property
-          enum:
-            - VACANT
-            - OCCUPIED
-            - SELF_OCCUPIED
-            - MAINTENANCE
-            - UNAVAILABLE
-            - UNDER_RENOVATION
-            - FALLOW
-            - LISTED
         street:
           type: string
           minLength: 1
@@ -5059,7 +5035,7 @@ components:
         postalCode:
           type: string
           minLength: 1
-        country:
+        countryCode:
           type: string
           minLength: 1
         regionCode:
@@ -5069,11 +5045,6 @@ components:
         longitude:
           type: number
         geocodeAccuracy:
-          type: string
-        areaValue:
-          type: number
-          exclusiveMinimum: 0
-        areaUnit:
           type: string
         yearBuilt:
           type: integer
@@ -5089,33 +5060,18 @@ components:
           type: string
         wallConstruction:
           type: string
-        flooringType:
-          type: string
-        windowType:
-          type: string
         numberOfFloors:
           type: integer
           format: int32
         structuralNotes:
           type: string
-        energyEfficiencyRating:
-          type: string
-        energyCertificateExpiryDate:
-          type: string
-          format: date
-        heatingType:
-          type: string
-        coolingType:
-          type: string
-        hotWaterSystem:
-          type: string
-        insulationNotes:
-          type: string
         electricityConnectionType:
           type: string
-        electricityCapacityAmps:
+        electricityCapacityValue:
           type: integer
           format: int32
+        electricityCapacityUnit:
+          type: string
         waterConnectionType:
           type: string
         hasGasConnection:
@@ -5124,9 +5080,11 @@ components:
           type: string
         internetConnectionType:
           type: string
-        internetMaxSpeedMbps:
+        internetMaxSpeedValue:
           type: integer
           format: int32
+        internetMaxSpeedUnit:
+          type: string
         internetStatus:
           type: string
         parkingSpaces:
@@ -5134,12 +5092,6 @@ components:
           format: int32
         parkingType:
           type: string
-        hasSmokeDetectors:
-          type: boolean
-        hasCoDetectors:
-          type: boolean
-        hasFireExtinguisher:
-          type: boolean
         hasSprinklerSystem:
           type: boolean
         hasAlarmSystem:
@@ -5156,10 +5108,6 @@ components:
           type: boolean
         hasStepFreeEntrance:
           type: boolean
-        hasAdaptedBathroom:
-          type: boolean
-        accessibilityNotes:
-          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsRequest"
         commercialDetails:
@@ -5168,13 +5116,17 @@ components:
           $ref: "#/components/schemas/IndustrialDetailsRequest"
         agriculturalDetails:
           $ref: "#/components/schemas/AgriculturalDetailsRequest"
+        unit:
+          $ref: "#/components/schemas/CreateUnitRequest"
+          description: >-
+            The property's first unit. Omitted -> a single implicit VACANT unit numbered "1" is
+            created instead. A property is never created without at least one unit.
       required:
         - city
-        - country
+        - countryCode
         - postalCode
         - propertyCategory
         - propertyType
-        - status
         - street
     CreateOccupancyPeriodRequest:
       type: object
@@ -5201,6 +5153,10 @@ components:
         notes:
           type: string
           maxLength: 500
+        unitIdentifier:
+          $ref: "#/components/schemas/UnitIdentifier"
+          description: >-
+            Unit the period is for. Optional only when the property has exactly one unit.
       required:
         - startDate
         - type
@@ -5744,12 +5700,12 @@ components:
           minLength: 1
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
           minLength: 1
       required:
         - city
-        - country
+        - countryCode
         - street
     GeocodeResponse:
       type: object
@@ -5800,6 +5756,11 @@ components:
         contactIdentifier:
           type: string
           description: Identifier of the contact linked to this expense
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this expense belongs to. Absent makes this
+            a building-level expense, split across the property's units.
       required:
         - amount
         - category
@@ -5845,8 +5806,6 @@ components:
             - GUARANTOR
             - COSIGNER
             - EXTRA_TENANT
-        validPartySource:
-          type: boolean
       required:
         - role
     CreateContractRequest:
@@ -5855,6 +5814,11 @@ components:
       properties:
         propertyIdentifier:
           type: string
+        unitIdentifier:
+          type: string
+          description: >-
+            Identifier of the unit this contract is for. Optional when the property has
+            exactly one unit (resolved automatically); required when it has more than one.
         parties:
           type: array
           items:
@@ -5963,15 +5927,11 @@ components:
         countryMetadata:
           type: object
           additionalProperties: {}
-        endDateAfterStartDate:
-          type: boolean
         rentComponents:
           type: array
           items:
             $ref: '#/components/schemas/RentComponentRequest'
           description: Optional rent breakdown into components
-        exactlyOnePrimaryTenant:
-          type: boolean
       required:
         - contractType
         - parties
@@ -5994,8 +5954,6 @@ components:
             - GUARANTOR
             - COSIGNER
             - EXTRA_TENANT
-        validPartySource:
-          type: boolean
       required:
         - role
     ChangePrimaryContactRequest:
@@ -6005,8 +5963,6 @@ components:
           type: string
         newContact:
           $ref: "#/components/schemas/CreateContactRequest"
-        validPartySource:
-          type: boolean
     GeneratePaymentsRequest:
       type: object
       properties:
@@ -7471,11 +7427,11 @@ components:
           items:
             $ref: "#/components/schemas/MonthlyTrend"
       required:
+        - pendingCount
         - monthlyTrend
         - overdueAmount
         - overdueCount
         - pendingAmount
-        - pendingCount
     PaymentType:
       type: string
       description: RENT for regular rent, LATE_FEE for a fee charged on an overdue rent payment
@@ -8118,37 +8074,23 @@ components:
     NotificationStatsResponse:
       type: object
       properties:
-        totalCount:
+        total:
           type: integer
           format: int64
-        pendingCount:
-          type: integer
-          format: int64
-        sentCount:
-          type: integer
-          format: int64
-        deliveredCount:
-          type: integer
-          format: int64
-        failedCount:
-          type: integer
-          format: int64
-        demoBlockedCount:
-          type: integer
-          format: int64
+        byStatus:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
         byChannel:
           type: object
           additionalProperties:
             type: integer
             format: int64
       required:
+        - total
+        - byStatus
         - byChannel
-        - deliveredCount
-        - demoBlockedCount
-        - failedCount
-        - pendingCount
-        - sentCount
-        - totalCount
     InfoResponse:
       type: object
       properties:
@@ -8269,6 +8211,10 @@ components:
         totalProperties:
           type: integer
           format: int32
+        totalUnits:
+          type: integer
+          format: int32
+          description: Total units across the team's properties (denominator for both occupancy rates).
         occupiedUnits:
           type: integer
           format: int32
@@ -8309,6 +8255,7 @@ components:
         - rentalOccupancyRate
         - selfOccupiedUnits
         - totalProperties
+        - totalUnits
         - unavailableUnits
         - underRenovationUnits
         - vacantUnits
@@ -8519,6 +8466,10 @@ components:
           example: "2024"
         propertyIdentifier:
           $ref: "#/components/schemas/PropertyIdentifier"
+        unitIdentifier:
+          $ref: "#/components/schemas/UnitIdentifier"
+          description: >-
+            Unit the calculation is for. Optional only when the property has exactly one unit.
         contractIdentifier:
           type: string
           description: Optional contract to link calculation to
@@ -8567,6 +8518,11 @@ components:
       properties:
         identifier:
           type: string
+        unitIdentifier:
+          $ref: "#/components/schemas/UnitIdentifier"
+        unitNumber:
+          type: string
+          description: The dwelling this calculation was made for.
         totalPoints:
           type: number
         sectorClassification:
@@ -8586,6 +8542,8 @@ components:
         inputData:
           $ref: "#/components/schemas/WwsCalculationRequest"
       required:
+        - unitIdentifier
+        - unitNumber
         - totalPoints
         - sectorClassification
         - systemVersion
@@ -9963,6 +9921,433 @@ components:
       required:
         - spreadsheetId
         - url
+    UnitType:
+      type: string
+      description: Kind of separately-lettable object within a property
+      enum: [APARTMENT, PARKING, STORAGE, COMMERCIAL]
+    UnitStatus:
+      type: string
+      description: Occupancy state of a single unit
+      enum:
+        - VACANT
+        - OCCUPIED
+        - SELF_OCCUPIED
+        - MAINTENANCE
+        - UNAVAILABLE
+        - UNDER_RENOVATION
+        - FALLOW
+        - LISTED
+    AllocationBasis:
+      type: string
+      description: How a building-level expense is divided across a property's units
+      enum: [AREA, EQUAL, CUSTOM, MANUAL]
+    ExpenseAllocationResponse:
+      type: object
+      description: >-
+        One unit's stored share of a building-level expense. `basis` is what
+        was actually used; `requestedBasis` is the property's allocation
+        basis at the time of this read. They differ when AREA or CUSTOM
+        silently fell back to EQUAL because a sibling unit was missing its
+        weight, in which case `warnings` names the unit(s) that forced it.
+      properties:
+        identifier:
+          type: string
+          description: Expense allocation identifier
+        unitIdentifier:
+          type: string
+          description: Identifier of the unit this allocation was made for
+        unitNumber:
+          type: string
+        amount:
+          type: number
+        amountCurrency:
+          type: string
+        basis:
+          $ref: "#/components/schemas/AllocationBasis"
+        requestedBasis:
+          $ref: "#/components/schemas/AllocationBasis"
+        warnings:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - basis
+        - requestedBasis
+        - warnings
+        - createdAt
+        - identifier
+        - unitIdentifier
+        - unitNumber
+    ManualAllocationEntry:
+      type: object
+      properties:
+        unitIdentifier:
+          type: string
+        amount:
+          type: number
+      required:
+        - amount
+        - unitIdentifier
+    ManualAllocationRequest:
+      type: object
+      description: >-
+        A caller-supplied, per-unit override of an expense's allocation
+        (MANUAL basis). Entries must sum to exactly the expense's total.
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManualAllocationEntry"
+          minItems: 1
+          maxItems: 200
+      required:
+        - entries
+    UnitShareEntry:
+      type: object
+      properties:
+        unitIdentifier:
+          type: string
+        sharePct:
+          type: number
+      required:
+        - sharePct
+        - unitIdentifier
+    UpdateAllocationRequest:
+      type: object
+      description: >-
+        Sets a property's allocation basis — AREA, EQUAL, or CUSTOM; MANUAL is
+        a per-expense override and is rejected here — and, for CUSTOM, every
+        active unit's share, which must sum to 100. Does not retroactively
+        rewrite any expense's already-persisted allocations.
+      properties:
+        basis:
+          $ref: "#/components/schemas/AllocationBasis"
+        shares:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitShareEntry"
+          maxItems: 200
+      required:
+        - basis
+    UnitResponse:
+      type: object
+      description: A separately-lettable dwelling within a property
+      properties:
+        identifier:
+          type: string
+          description: Unit identifier
+        propertyIdentifier:
+          type: string
+          description: Identifier of the property this unit belongs to
+        unitNumber:
+          type: string
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        implicit:
+          type: boolean
+          description: True while this unit is the auto-created stand-in for a single-unit property
+        sortOrder:
+          type: integer
+          format: int32
+        areaValue:
+          type: number
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+        wozValueCurrency:
+          type: string
+        wozSharePct:
+          type: number
+        allocationShare:
+          type: number
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - identifier
+        - implicit
+        - propertyIdentifier
+        - sortOrder
+        - status
+        - unitNumber
+        - unitType
+    UnitSummaryResponse:
+      type: object
+      description: A short summary of a unit, for embedding in other responses
+      properties:
+        identifier:
+          type: string
+        unitNumber:
+          type: string
+        name:
+          type: string
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+      required:
+        - identifier
+        - status
+        - unitNumber
+        - unitType
+    UnitGridRowResponse:
+      type: object
+      description: A single row in the units grid view, joining unit identity with the current occupancy snapshot
+      properties:
+        identifier:
+          type: string
+        unitNumber:
+          type: string
+        name:
+          type: string
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        tenantName:
+          type: string
+        monthlyRent:
+          type: number
+        monthlyRentCurrency:
+          type: string
+        vacancyDays:
+          type: integer
+          format: int32
+      required:
+        - identifier
+        - status
+        - unitNumber
+        - unitType
+    CreateUnitRequest:
+      type: object
+      properties:
+        unitNumber:
+          type: string
+          minLength: 1
+          maxLength: 50
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        areaValue:
+          type: number
+          exclusiveMinimum: 0
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+          exclusiveMinimum: 0
+        wozValueCurrency:
+          type: string
+        allocationShare:
+          type: number
+          minimum: 0
+          maximum: 100
+        wozSharePct:
+          type: number
+          minimum: 0
+          maximum: 100
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+      required:
+        - unitNumber
+        - unitType
+    UpdateUnitRequest:
+      type: object
+      properties:
+        unitNumber:
+          type: string
+          minLength: 1
+          maxLength: 50
+        name:
+          type: string
+        floor:
+          type: integer
+          format: int32
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        status:
+          $ref: '#/components/schemas/UnitStatus'
+        areaValue:
+          type: number
+          exclusiveMinimum: 0
+        areaUnit:
+          type: string
+        wozValue:
+          type: number
+          exclusiveMinimum: 0
+        wozValueCurrency:
+          type: string
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+      required:
+        - unitNumber
+        - unitType
+    BulkCreateUnitsRequest:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 200
+        numberingPattern:
+          type: string
+          description: How generated unit numbers are formatted
+          enum: [NUMERIC, ALPHABETIC, FLOOR_DOT_INDEX]
+        unitType:
+          $ref: '#/components/schemas/UnitType'
+        startFloor:
+          type: integer
+          format: int32
+      required:
+        - count
+        - numberingPattern
+        - unitType
+    UnitResidentialDetailsResponse:
+      type: object
+      description: Bedroom/bathroom/furnishing details for an APARTMENT unit
+      properties:
+        bedrooms:
+          type: integer
+          format: int32
+        bathrooms:
+          type: integer
+          format: int32
+        furnished:
+          type: boolean
+        petPolicy:
+          type: string
+      required:
+        - furnished
+    UpdateUnitResidentialDetailsRequest:
+      type: object
+      properties:
+        bedrooms:
+          type: integer
+          format: int32
+          minimum: 0
+        bathrooms:
+          type: integer
+          format: int32
+          minimum: 0
+        furnished:
+          type: boolean
+        petPolicy:
+          type: string
+      required:
+        - furnished
+    UpdateUnitAmenitiesRequest:
+      type: object
+      description: Replaces the full set of amenities linked to a unit. An empty list clears all amenities.
+      properties:
+        amenityIdentifiers:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/AmenityIdentifier'
+      required:
+        - amenityIdentifiers
   securitySchemes:
     bearer-jwt:
       type: http

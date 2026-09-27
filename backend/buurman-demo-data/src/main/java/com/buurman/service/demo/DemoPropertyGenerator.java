@@ -9,7 +9,6 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_FINANCINGS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INDUSTRIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INSURANCES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
-import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.util.SidGenerator.newAcquisitionId;
@@ -28,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -40,6 +40,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Sid;
+import com.buurman.domain.UnitType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,10 +58,6 @@ public class DemoPropertyGenerator {
     "CONCRETE_SLAB", "CRAWL_SPACE", "BASEMENT", "PILE"
   };
   private static final String[] ROOF_TYPES = {"FLAT", "PITCHED", "HIP", "GABLE"};
-  private static final String[] FLOORING_TYPES = {"HARDWOOD", "LAMINATE", "TILE", "VINYL"};
-  private static final String[] WINDOW_TYPES = {"SINGLE_PANE", "DOUBLE_PANE", "TRIPLE_PANE"};
-  private static final String[] HEATING_TYPES = {"CENTRAL", "DISTRICT", "HEAT_PUMP", "GAS"};
-  private static final String[] ENERGY_RATINGS = {"A+", "A", "B", "C", "D"};
   private static final String[] INTERNET_TYPES = {"FIBER", "CABLE", "DSL"};
   private static final String[] PARKING_TYPES = {"GARAGE", "STREET", "UNDERGROUND", "NONE"};
   private static final String[] OUTDOOR_TYPES = {"BALCONY", "TERRACE", "GARDEN"};
@@ -334,11 +331,181 @@ public class DemoPropertyGenerator {
                 true,
                 165_000L,
                 2.0,
-                25));
+                25),
+            // --- Curated multi-unit buildings (BUUR-106) ---------------------------------------
+            // areaSqm/bedrooms/monthlyRentEuros below are building-level aggregates used only for
+            // valuation/financing/insurance sizing; the actual per-unit breakdown that matters for
+            // this feature — floor area, energy label, bedrooms, rent, occupancy — comes from
+            // MULTI_UNIT_PLANS and is applied to the units DemoUnitGenerator creates, not to this
+            // property row.
+            new PortfolioEntry(
+                "Netherlands",
+                "Amsterdam",
+                "Keizersgracht",
+                12,
+                "1015 CT",
+                52.3670,
+                4.8890,
+                "RESIDENTIAL",
+                "APARTMENT",
+                350,
+                0,
+                1910,
+                LocalDate.of(2010, 3, 1),
+                1_450_000L,
+                10_450L,
+                true,
+                900_000L,
+                3.2,
+                25),
+            new PortfolioEntry(
+                "Netherlands",
+                "Amsterdam",
+                "Bilderdijkstraat",
+                40,
+                "1053 KR",
+                52.3660,
+                4.8740,
+                "RESIDENTIAL",
+                "APARTMENT",
+                233,
+                0,
+                1932,
+                LocalDate.of(2015, 6, 1),
+                780_000L,
+                5_950L,
+                true,
+                500_000L,
+                2.8,
+                25),
+            new PortfolioEntry(
+                "Netherlands",
+                "Amsterdam",
+                "Overtoom",
+                210,
+                "1054 HW",
+                52.3630,
+                4.8710,
+                "MIXED_USE",
+                "MIXED_USE",
+                155,
+                0,
+                1955,
+                LocalDate.of(2012, 9, 1),
+                650_000L,
+                3_600L,
+                true,
+                400_000L,
+                3.0,
+                25),
+            new PortfolioEntry(
+                "Netherlands",
+                "Amsterdam",
+                "Rokin",
+                88,
+                "1012 KL",
+                52.3700,
+                4.8930,
+                "COMMERCIAL",
+                "OFFICE",
+                300,
+                0,
+                1975,
+                LocalDate.of(2011, 1, 1),
+                900_000L,
+                5_800L,
+                true,
+                550_000L,
+                3.3,
+                20));
 
     static PortfolioEntry get(int i) {
       return ENTRIES.get(i);
     }
+
+    /** Index of "Keizersgracht 12" within {@link #ENTRIES} — the 6-unit AREA-basis building. */
+    static final int KEIZERSGRACHT_12_INDEX = 10;
+
+    /** Index of the 4-unit, mostly-vacant EQUAL-basis building within {@link #ENTRIES}. */
+    static final int FOUR_UNIT_BUILDING_INDEX = 11;
+
+    static final int MIXED_BUILDING_INDEX = 12;
+    static final int COMMERCIAL_BUILDING_INDEX = 13;
+  }
+
+  /** Demo-portfolio tag for {@link DemoExpenseGenerator}'s building-wide allocated expenses. */
+  static final String BUILDING_TAG_FOUR_UNIT = "MULTI_UNIT_4";
+
+  static final String BUILDING_TAG_SIX_UNIT = "MULTI_UNIT_6";
+
+  /**
+   * Unit plans for the 4 curated multi-unit buildings above, keyed by their {@link
+   * PortfolioCatalog} index. Every other property gets no entry here, which tells {@link
+   * DemoUnitGenerator} to fall back to a single implicit unit.
+   */
+  private static Map<Integer, List<DemoDataContext.UnitPlan>> multiUnitPlans() {
+    Map<Integer, List<DemoDataContext.UnitPlan>> plans = new LinkedHashMap<>();
+
+    // Keizersgracht 12: 6 apartments, 5 let / 1 vacant — a non-trivial occupancy rate, and
+    // differing floor areas so the AREA allocation basis (set below) produces an uneven split.
+    plans.put(
+        PortfolioCatalog.KEIZERSGRACHT_12_INDEX,
+        List.of(
+            unit("1", UnitType.APARTMENT, 42, "D", 1, 1, true, 1_350, true),
+            unit("2", UnitType.APARTMENT, 48, "C", 1, 1, false, 1_450, true),
+            unit("3", UnitType.APARTMENT, 55, "C", 2, 1, false, 1_650, true),
+            unit("4", UnitType.APARTMENT, 62, "B", 2, 1, true, 1_850, true),
+            unit("5", UnitType.APARTMENT, 68, "B", 2, 2, false, 1_950, true),
+            unit("6", UnitType.APARTMENT, 75, "A", 3, 2, false, 2_200, false)));
+
+    // 4-unit building: 1 let / 3 vacant — the ticket's 25%-occupancy criterion, literally.
+    plans.put(
+        PortfolioCatalog.FOUR_UNIT_BUILDING_INDEX,
+        List.of(
+            unit("1", UnitType.APARTMENT, 55, "D", 1, 1, false, 1_400, true),
+            unit("2", UnitType.APARTMENT, 58, "D", 1, 1, false, 1_450, false),
+            unit("3", UnitType.APARTMENT, 60, "C", 2, 1, false, 1_550, false),
+            unit("4", UnitType.APARTMENT, 60, "C", 2, 1, false, 1_550, false)));
+
+    // Mixed building: 2 apartments (let) + 1 parking + 1 storage (unlet).
+    plans.put(
+        PortfolioCatalog.MIXED_BUILDING_INDEX,
+        List.of(
+            unit("1", UnitType.APARTMENT, 65, "C", 2, 1, false, 1_600, true),
+            unit("2", UnitType.APARTMENT, 70, "B", 2, 1, true, 1_750, true),
+            unit("P1", UnitType.PARKING, 12, null, 0, 0, false, 150, false),
+            unit("S1", UnitType.STORAGE, 8, null, 0, 0, false, 100, false)));
+
+    // Commercial building: 2 units, one let.
+    plans.put(
+        PortfolioCatalog.COMMERCIAL_BUILDING_INDEX,
+        List.of(
+            unit("1", UnitType.COMMERCIAL, 140, "C", 0, 0, false, 2_800, true),
+            unit("2", UnitType.COMMERCIAL, 160, "D", 0, 0, false, 3_000, false)));
+
+    return plans;
+  }
+
+  private static DemoDataContext.UnitPlan unit(
+      String unitNumber,
+      UnitType unitType,
+      int areaSqm,
+      @Nullable String energyLabel,
+      int bedrooms,
+      int bathrooms,
+      boolean furnished,
+      long monthlyRentEuros,
+      boolean occupied) {
+    return new DemoDataContext.UnitPlan(
+        unitNumber,
+        unitType,
+        BigDecimal.valueOf(areaSqm),
+        energyLabel,
+        bedrooms,
+        bathrooms,
+        furnished,
+        monthlyRentEuros,
+        occupied);
   }
 
   // Country data with category-specific street pools
@@ -786,6 +953,7 @@ public class DemoPropertyGenerator {
 
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
+    Map<Integer, List<DemoDataContext.UnitPlan>> multiUnitPlans = multiUnitPlans();
 
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
@@ -793,6 +961,9 @@ public class DemoPropertyGenerator {
       UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = new ArrayList<>();
+      // Properties that need a non-default allocation basis (BUUR-106) — set after the batch
+      // insert below since PROPERTIES.ALLOCATION_BASIS isn't in that column list.
+      List<UUID> areaBasisPropertyIds = new ArrayList<>();
 
       // Batch record lists for all sub-tables
       List<Object[]> propertyRecords = new ArrayList<>();
@@ -815,9 +986,6 @@ public class DemoPropertyGenerator {
         String propertyCategory = entry.category();
         String propertyType = entry.propertyType();
 
-        // Default to VACANT; contract generator sets OCCUPIED for properties with ACTIVE contracts
-        String status = "VACANT";
-
         CountryData country = countryByName(entry.countryName());
         String street = entry.street() + " " + entry.houseNumber();
         String city = entry.city();
@@ -838,9 +1006,6 @@ public class DemoPropertyGenerator {
         String constructionType = constructionTypeForCategory(propertyCategory);
         String foundationType = foundationTypeForCategory(propertyCategory);
         String roofType = roofTypeForCategory(propertyCategory);
-        String flooringType = flooringTypeForCategory(propertyCategory);
-        String heatingType = heatingTypeForCategory(propertyCategory);
-        String coolingType = coolingTypeForCategory(propertyCategory);
         int floors = floorsForCategory(propertyCategory);
 
         // created_at is around the acquisition date (property was "added" when acquired)
@@ -862,23 +1027,13 @@ public class DemoPropertyGenerator {
               BigDecimal.valueOf(lat),
               BigDecimal.valueOf(lon),
               propertyCategory,
-              area,
-              "sqm",
               propertyType,
-              status,
               yearBuilt,
               yearBuilt < 2000 ? yearBuilt + random.nextInt(5, 30) : null,
               constructionType,
               foundationType,
               roofType,
-              flooringType,
-              pick(WINDOW_TYPES),
               floors,
-              pick(ENERGY_RATINGS),
-              LocalDate.now(clock).plusYears(random.nextInt(1, 5)),
-              heatingType,
-              coolingType,
-              "BOILER",
               "MUNICIPAL",
               "INDUSTRIAL".equals(propertyCategory) ? 63 : random.nextBoolean() ? 25 : 35,
               "a",
@@ -891,9 +1046,6 @@ public class DemoPropertyGenerator {
               "ACTIVE",
               "INDUSTRIAL".equals(propertyCategory) ? random.nextInt(5, 20) : random.nextInt(0, 3),
               "AGRICULTURAL".equals(propertyCategory) ? "NONE" : pick(PARKING_TYPES),
-              true,
-              random.nextBoolean(),
-              !"AGRICULTURAL".equals(propertyCategory),
               "INDUSTRIAL".equals(propertyCategory) && random.nextBoolean(),
               !"AGRICULTURAL".equals(propertyCategory) && random.nextBoolean(),
               "INDUSTRIAL".equals(propertyCategory) || "COMMERCIAL".equals(propertyCategory),
@@ -901,7 +1053,6 @@ public class DemoPropertyGenerator {
               "COMMERCIAL".equals(propertyCategory) || random.nextInt(5) == 0,
               "APARTMENT".equals(propertyType) && random.nextBoolean(),
               "COMMERCIAL".equals(propertyCategory) || random.nextInt(3) == 0,
-              false,
               createdAt,
               now,
               createdBy,
@@ -955,6 +1106,19 @@ public class DemoPropertyGenerator {
         ctx.putPropertyCountryRentMultiplier(propertyId, countryRentMultiplier(country.name()));
         ctx.incrementProperties();
 
+        // Curated multi-unit buildings (BUUR-106): tell DemoUnitGenerator to create this
+        // property's real unit breakdown instead of a single implicit unit.
+        List<DemoDataContext.UnitPlan> plan = multiUnitPlans.get(i);
+        if (plan != null) {
+          ctx.putUnitPlans(propertyId, plan);
+          if (i == PortfolioCatalog.KEIZERSGRACHT_12_INDEX) {
+            areaBasisPropertyIds.add(propertyId);
+            ctx.putBuildingTag(propertyId, BUILDING_TAG_SIX_UNIT);
+          } else if (i == PortfolioCatalog.FOUR_UNIT_BUILDING_INDEX) {
+            ctx.putBuildingTag(propertyId, BUILDING_TAG_FOUR_UNIT);
+          }
+        }
+
         // Add outdoor areas for RESIDENTIAL properties only
         if ("RESIDENTIAL".equals(propertyCategory) && random.nextBoolean()) {
           int outdoorCount = random.nextInt(1, 3);
@@ -990,10 +1154,18 @@ public class DemoPropertyGenerator {
       executeBatchTaxes(taxRecords);
       executeBatchFees(feeRecords);
       executeBatchOutdoors(outdoorRecords);
-      executeBatchResidential(residentialRecords);
       executeBatchCommercial(commercialRecords);
       executeBatchIndustrial(industrialRecords);
       executeBatchAgricultural(agriculturalRecords);
+
+      // Keizersgracht 12 shows an uneven, AREA-proportional split on its allocated expenses
+      // instead of the EQUAL default, so the demo showcases both bases (BUUR-106).
+      for (UUID id : areaBasisPropertyIds) {
+        dsl.update(PROPERTIES)
+            .set(PROPERTIES.ALLOCATION_BASIS, "AREA")
+            .where(PROPERTIES.ID.eq(id))
+            .execute();
+      }
 
       ctx.getPropertyIdsByTeam().put(teamId, propertyIds);
       log.info("Created {} properties for team {}", PROPERTIES_PER_TEAM, teamKey);
@@ -1020,23 +1192,13 @@ public class DemoPropertyGenerator {
                 PROPERTIES.LATITUDE,
                 PROPERTIES.LONGITUDE,
                 PROPERTIES.PROPERTY_CATEGORY,
-                PROPERTIES.AREA_VALUE,
-                PROPERTIES.AREA_UNIT,
                 PROPERTIES.PROPERTY_TYPE,
-                PROPERTIES.STATUS,
                 PROPERTIES.YEAR_BUILT,
                 PROPERTIES.YEAR_LAST_RENOVATED,
                 PROPERTIES.CONSTRUCTION_TYPE,
                 PROPERTIES.FOUNDATION_TYPE,
                 PROPERTIES.ROOF_TYPE,
-                PROPERTIES.FLOORING_TYPE,
-                PROPERTIES.WINDOW_TYPE,
                 PROPERTIES.NUMBER_OF_FLOORS,
-                PROPERTIES.ENERGY_EFFICIENCY_RATING,
-                PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE,
-                PROPERTIES.HEATING_TYPE,
-                PROPERTIES.COOLING_TYPE,
-                PROPERTIES.HOT_WATER_SYSTEM,
                 PROPERTIES.ELECTRICITY_CONNECTION_TYPE,
                 PROPERTIES.ELECTRICITY_CAPACITY_VALUE,
                 PROPERTIES.ELECTRICITY_CAPACITY_UNIT,
@@ -1049,9 +1211,6 @@ public class DemoPropertyGenerator {
                 PROPERTIES.INTERNET_STATUS,
                 PROPERTIES.PARKING_SPACES,
                 PROPERTIES.PARKING_TYPE,
-                PROPERTIES.HAS_SMOKE_DETECTORS,
-                PROPERTIES.HAS_CO_DETECTORS,
-                PROPERTIES.HAS_FIRE_EXTINGUISHER,
                 PROPERTIES.HAS_SPRINKLER_SYSTEM,
                 PROPERTIES.HAS_ALARM_SYSTEM,
                 PROPERTIES.HAS_SECURITY_CAMERAS,
@@ -1059,7 +1218,6 @@ public class DemoPropertyGenerator {
                 PROPERTIES.IS_WHEELCHAIR_ACCESSIBLE,
                 PROPERTIES.HAS_ELEVATOR,
                 PROPERTIES.HAS_STEP_FREE_ENTRANCE,
-                PROPERTIES.HAS_ADAPTED_BATHROOM,
                 PROPERTIES.CREATED_AT,
                 PROPERTIES.UPDATED_AT,
                 PROPERTIES.CREATED_BY,
@@ -1076,23 +1234,13 @@ public class DemoPropertyGenerator {
                 (BigDecimal) null,
                 (BigDecimal) null,
                 (String) null,
-                (BigDecimal) null,
-                (String) null,
-                (String) null,
                 (String) null,
                 (Integer) null,
                 (Integer) null,
                 (String) null,
                 (String) null,
                 (String) null,
-                (String) null,
-                (String) null,
                 (Integer) null,
-                (String) null,
-                (LocalDate) null,
-                (String) null,
-                (String) null,
-                (String) null,
                 (String) null,
                 (Integer) null,
                 (String) null,
@@ -1105,10 +1253,6 @@ public class DemoPropertyGenerator {
                 (String) null,
                 (Integer) null,
                 (String) null,
-                (Boolean) null,
-                (Boolean) null,
-                (Boolean) null,
-                (Boolean) null,
                 (Boolean) null,
                 (Boolean) null,
                 (Boolean) null,
@@ -1486,43 +1630,6 @@ public class DemoPropertyGenerator {
     batch.execute();
   }
 
-  private void executeBatchResidential(List<Object[]> records) {
-    if (records.isEmpty()) {
-      return;
-    }
-    var insert =
-        dsl.insertInto(PROPERTY_RESIDENTIAL_DETAILS)
-            .columns(
-                PROPERTY_RESIDENTIAL_DETAILS.ID,
-                PROPERTY_RESIDENTIAL_DETAILS.PROPERTY_ID,
-                PROPERTY_RESIDENTIAL_DETAILS.TEAM_ID,
-                PROPERTY_RESIDENTIAL_DETAILS.BEDROOMS,
-                PROPERTY_RESIDENTIAL_DETAILS.BATHROOMS,
-                PROPERTY_RESIDENTIAL_DETAILS.FURNISHED,
-                PROPERTY_RESIDENTIAL_DETAILS.PET_POLICY,
-                PROPERTY_RESIDENTIAL_DETAILS.CREATED_AT,
-                PROPERTY_RESIDENTIAL_DETAILS.UPDATED_AT,
-                PROPERTY_RESIDENTIAL_DETAILS.CREATED_BY,
-                PROPERTY_RESIDENTIAL_DETAILS.UPDATED_BY)
-            .values(
-                (UUID) null,
-                (UUID) null,
-                (UUID) null,
-                (Integer) null,
-                (Integer) null,
-                (Boolean) null,
-                (String) null,
-                (LocalDateTime) null,
-                (LocalDateTime) null,
-                (UUID) null,
-                (UUID) null);
-    BatchBindStep batch = dsl.batch(insert);
-    for (Object[] r : records) {
-      batch = batch.bind(r);
-    }
-    batch.execute();
-  }
-
   private void executeBatchCommercial(List<Object[]> records) {
     if (records.isEmpty()) {
       return;
@@ -1726,29 +1833,6 @@ public class DemoPropertyGenerator {
     };
   }
 
-  private String flooringTypeForCategory(String category) {
-    return switch (category) {
-      case "INDUSTRIAL" -> "CONCRETE";
-      case "COMMERCIAL" -> pick(new String[] {"TILE", "LAMINATE", "VINYL"});
-      default -> pick(FLOORING_TYPES);
-    };
-  }
-
-  private String heatingTypeForCategory(String category) {
-    return switch (category) {
-      case "INDUSTRIAL", "AGRICULTURAL" -> "NONE";
-      default -> pick(HEATING_TYPES);
-    };
-  }
-
-  private String coolingTypeForCategory(String category) {
-    return switch (category) {
-      case "COMMERCIAL" -> "CENTRAL_AC";
-      case "INDUSTRIAL", "AGRICULTURAL" -> "NONE";
-      default -> random.nextBoolean() ? "CENTRAL_AC" : "NONE";
-    };
-  }
-
   private int floorsForCategory(String category) {
     return switch (category) {
       case "INDUSTRIAL" -> 1;
@@ -1797,22 +1881,9 @@ public class DemoPropertyGenerator {
       LocalDateTime now) {
     switch (category) {
       case "RESIDENTIAL" -> {
-        if (bedrooms > 0) {
-          residentialRecords.add(
-              new Object[] {
-                UUID.randomUUID(),
-                propertyId,
-                teamId,
-                bedrooms,
-                bathrooms,
-                random.nextBoolean(),
-                random.nextBoolean() ? "ALLOWED" : "NOT_ALLOWED",
-                now,
-                now,
-                createdBy,
-                createdBy
-              });
-        }
+        // property_residential_details was dropped in V070 (BUUR-106): bedrooms/bathrooms/
+        // furnished/pet_policy now live on unit_residential_details, written per unit by
+        // DemoUnitGenerator once the property's unit(s) exist.
       }
       case "COMMERCIAL" -> {
         BigDecimal usable =

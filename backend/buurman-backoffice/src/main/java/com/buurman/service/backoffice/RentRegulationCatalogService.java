@@ -373,10 +373,7 @@ public class RentRegulationCatalogService {
     int removed = 0;
     int changed = 0;
     for (String key :
-        Stream.concat(t.keySet().stream(), c.keySet().stream())
-            .distinct()
-            .sorted()
-            .toList()) {
+        Stream.concat(t.keySet().stream(), c.keySet().stream()).distinct().sorted().toList()) {
       CatalogRegion tr = t.get(key);
       CatalogRegion cr = c.get(key);
       if (tr != null && cr != null) {
@@ -412,10 +409,7 @@ public class RentRegulationCatalogService {
     int removed = 0;
     int changed = 0;
     for (String key :
-        Stream.concat(t.keySet().stream(), c.keySet().stream())
-            .distinct()
-            .sorted()
-            .toList()) {
+        Stream.concat(t.keySet().stream(), c.keySet().stream()).distinct().sorted().toList()) {
       CatalogRule tr = t.get(key);
       CatalogRule cr = c.get(key);
       if (tr != null && cr != null) {

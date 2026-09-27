@@ -44,6 +44,7 @@
     <table class="summary-table">
       <tr><td class="st-label" th:text="#{notice.summary.contractRef}"></td><td class="st-value" th:text="${contractIdentifier}"></td></tr>
       <tr><td class="st-label" th:text="#{notice.summary.property}"></td><td class="st-value" th:text="${propertyAddress}"></td></tr>
+      <tr th:if="${hasMultipleUnits}"><td class="st-label" th:text="#{notice.summary.unit}"></td><td class="st-value" th:text="${unitDesignation}"></td></tr>
       <tr><td class="st-label" th:text="#{notice.summary.amount}"></td><td class="st-value" th:text="${amount}"></td></tr>
       <tr th:if="${hasPartialPayment}"><td class="st-label" th:text="#{notice.summary.received}"></td><td class="st-value" th:text="${received}"></td></tr>
       <tr><td class="st-label" th:text="#{notice.summary.outstanding}"></td><td class="st-value"><strong th:text="${outstanding}"></strong></td></tr>

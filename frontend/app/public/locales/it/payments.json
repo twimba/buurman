@@ -218,7 +218,6 @@
   },
   "selection": {
     "selected": "{{count}} selezionato",
-    "selected_other": "{{count}} selezionati",
     "selectAll": "Seleziona tutti i non pagati di questa pagina",
     "selectRow": "Seleziona pagamento {{id}}",
     "select": "Seleziona",

@@ -817,8 +817,7 @@ public class ContactService {
                 property.getCity(),
                 property.getPostalCode(),
                 property.getPropertyCategory(),
-                property.getPropertyType(),
-                property.getStatus());
+                property.getPropertyType());
         activeProperties.add(
             new ContactPropertyAssignment(
                 summary, Optional.ofNullable(roleByContractId.get(activeContract.getId()))));
@@ -870,8 +869,7 @@ public class ContactService {
             property.getCity(),
             property.getPostalCode(),
             property.getPropertyCategory(),
-            property.getPropertyType(),
-            property.getStatus());
+            property.getPropertyType());
 
     String userName =
         Optional.ofNullable(usersById.get(history.getPerformedBy()))

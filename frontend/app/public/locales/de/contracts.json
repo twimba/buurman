@@ -579,6 +579,7 @@
     "retroactiveTooltip": "Für bereits abgewickelte Zahlungen, die von rückwirkenden Datumsänderungen betroffen sind, werden Anpassungszahlungen erstellt.",
     "exceedsMax": "Überschreitet die maximale regulierte Erhöhung von {{max}}%",
     "belowMin": "Unter der minimalen regulierten Erhöhung von {{min}}%",
+    "leaseOfTotal": "Vertrag {{index}} von {{total}} für diese Immobilie",
     "tableHeaders": {
       "property": "Immobilie",
       "currentRent": "Aktuelle Miete",
@@ -815,6 +816,7 @@
       "bruksvardessystemApplicable": "Bruksvärdesystem anwendbar",
       "energyDeclarationRating": "Energiedeklarationsbewertung",
       "hyresnamndenEligible": "Hyresnämnden berechtigt",
+      "depositSum": "Kautionsbetrag",
       "vuokrasopimustyyppi": "Mietvertragstyp (FI)",
       "vakuusAmount": "Kautionsbetrag",
       "vakuusMonths": "Kaution in Monaten",

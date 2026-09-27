@@ -20,6 +20,7 @@ import com.buurman.domain.identifier.DataTakeoutIdentifier;
 import com.buurman.domain.identifier.DepositDeductionIdentifier;
 import com.buurman.domain.identifier.DepositIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.ExpenseAllocationIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
 import com.buurman.domain.identifier.GeneratedReportIdentifier;
@@ -47,6 +48,7 @@ import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.RentRegulationTenancyRuleIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
 
@@ -108,6 +110,10 @@ public class SidGenerator {
 
   public static ExpenseIdentifier newExpenseId() {
     return ExpenseIdentifier.of(generateRaw(EntityPrefix.EXP));
+  }
+
+  public static ExpenseAllocationIdentifier newExpenseAllocationId() {
+    return ExpenseAllocationIdentifier.of(generateRaw(EntityPrefix.EAL));
   }
 
   public static GeneratedReportIdentifier newGeneratedReportId() {
@@ -192,6 +198,10 @@ public class SidGenerator {
 
   public static UserIdentifier newUserId() {
     return UserIdentifier.of(generateRaw(EntityPrefix.USR));
+  }
+
+  public static UnitIdentifier newUnitId() {
+    return UnitIdentifier.of(generateRaw(EntityPrefix.UNT));
   }
 
   public static PropertyAcquisitionIdentifier newAcquisitionId() {

@@ -25,10 +25,12 @@ import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
+import com.buurman.domain.Unit;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.exception.BadRequestException;
 import com.buurman.repository.ContactAddressRepository;
 import com.buurman.repository.ContactRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.util.CurrencyUtils;
 
@@ -42,14 +44,17 @@ class LetterExporterHelper {
   private final ContractPartyService contractPartyService;
   private final ContactRepository contactRepository;
   private final ContactAddressRepository contactAddressRepository;
+  private final UnitRepository unitRepository;
 
   LetterExporterHelper(
       ContractPartyService contractPartyService,
       ContactRepository contactRepository,
-      ContactAddressRepository contactAddressRepository) {
+      ContactAddressRepository contactAddressRepository,
+      UnitRepository unitRepository) {
     this.contractPartyService = contractPartyService;
     this.contactRepository = contactRepository;
     this.contactAddressRepository = contactAddressRepository;
+    this.unitRepository = unitRepository;
   }
 
   /** Every letter prints dates the same way. */
@@ -57,9 +62,61 @@ class LetterExporterHelper {
     return DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
   }
 
-  /** Street, postal code and city on one line. */
-  static String propertyAddress(Property property) {
-    return property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
+  /**
+   * The let premises' unit and its property's total unit count, resolved from the contract, plus
+   * the localized "unit " prefix used when a unit has no name of its own. Every exporter needs all
+   * three to build both {@link #premisesAddress} and the multi-unit summary-table row.
+   */
+  record PremisesInfo(Unit unit, int propertyUnitCount, String unitPrefix) {
+    boolean hasMultipleUnits() {
+      return propertyUnitCount > 1;
+    }
+
+    /** The unit's own name, or "unit " plus its number when it has none. */
+    String unitDesignation() {
+      return unit.getName().orElseGet(() -> unitPrefix + unit.getUnitNumber());
+    }
+  }
+
+  PremisesInfo premisesInfo(
+      Contract contract, Property property, MessageSource messageSource, Locale locale) {
+    UUID teamId = contract.getTeamId();
+    Unit unit = unitRepository.getByIdAndTeamId(contract.getUnitId(), teamId);
+    int propertyUnitCount =
+        unitRepository.countActiveByPropertyIdAndTeamId(property.getId(), teamId);
+    String unitPrefix = messageSource.getMessage("premises.unitPrefix", null, locale);
+    return new PremisesInfo(unit, propertyUnitCount, unitPrefix);
+  }
+
+  /**
+   * The address of the let premises, as it must appear on a legal notice. A multi-unit building
+   * names the specific dwelling — a notice naming only the building is defective when the tenant
+   * rents one apartment of several.
+   *
+   * <p>Keys on {@code propertyUnitCount}, not on {@link Unit#isImplicit()}: a landlord who split a
+   * property into units and later deleted back down to one still has a single-dwelling tenancy, and
+   * "Dorpsstraat 5, unit A" would read as an error to that tenant.
+   */
+  static String premisesAddress(
+      Property property, Unit unit, int propertyUnitCount, String unitPrefix) {
+    StringBuilder address = new StringBuilder(property.getStreet());
+    if (propertyUnitCount > 1) {
+      address
+          .append(", ")
+          .append(unit.getName().orElseGet(() -> unitPrefix + unit.getUnitNumber()));
+    }
+    return address
+        .append(", ")
+        .append(property.getPostalCode())
+        .append(" ")
+        .append(property.getCity())
+        .toString();
+  }
+
+  /** Convenience overload taking an already-resolved {@link PremisesInfo}. */
+  static String premisesAddress(Property property, PremisesInfo premisesInfo) {
+    return premisesAddress(
+        property, premisesInfo.unit(), premisesInfo.propertyUnitCount(), premisesInfo.unitPrefix());
   }
 
   /** Variables every letter starts with: generation date and the contract reference. */

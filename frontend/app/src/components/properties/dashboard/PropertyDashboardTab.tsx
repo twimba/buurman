@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { usePropertyDashboard } from '@/hooks/usePropertyHooks';
+import { useUnits } from '@/hooks/useUnitHooks';
 import {
   exportPdf,
   exportCsv,
@@ -294,6 +295,8 @@ export const PropertyDashboardTab = ({
     error,
     refetch,
   } = usePropertyDashboard(propertyId, months);
+  const { data: units = [] } = useUnits(propertyId);
+  const isMultiUnit = units.length > 1;
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
 
@@ -527,6 +530,22 @@ export const PropertyDashboardTab = ({
           />
         </ChartCard>
 
+        {isMultiUnit && (
+          <ChartCard
+            title={t('dashboard.charts.unitOccupancy')}
+            icon={<Home className="h-5 w-5" />}
+          >
+            <UnitOccupancySummary
+              units={units}
+              vacancyRatePercent={
+                summary.occupancyRatePercent != null
+                  ? 100 - summary.occupancyRatePercent
+                  : null
+              }
+            />
+          </ChartCard>
+        )}
+
         <ChartCard
           title={t('dashboard.charts.expenseBreakdown')}
           icon={<DollarSign className="h-5 w-5" />}
@@ -711,6 +730,68 @@ function ChartCard({
         <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
       </div>
       {children}
+    </div>
+  );
+}
+
+// --- Occupancy by unit (multi-unit properties only) ---
+
+const UNIT_STATUS_DOT: Record<string, string> = {
+  VACANT: 'bg-success-text',
+  OCCUPIED: 'bg-info-text',
+  SELF_OCCUPIED: 'bg-info-text',
+  MAINTENANCE: 'bg-warning-text',
+  UNAVAILABLE: 'bg-neutral-400',
+  UNDER_RENOVATION: 'bg-warning-text',
+  FALLOW: 'bg-neutral-500',
+  LISTED: 'bg-info-text',
+};
+
+function UnitOccupancySummary({
+  units,
+  vacancyRatePercent,
+}: {
+  units: {
+    identifier: string;
+    unitNumber: string;
+    name?: string | null;
+    status: string;
+    tenantName?: string | null;
+  }[];
+  vacancyRatePercent: number | null;
+}) {
+  const { t } = useTranslation('properties');
+  const { t: tUnits } = useTranslation('units');
+
+  return (
+    <div className="space-y-3">
+      {vacancyRatePercent != null && (
+        <div className="flex items-center justify-between pb-3 border-b border-border-default">
+          <span className="text-xs text-text-secondary">
+            {t('dashboard.occupancy.buildingVacancyRate')}
+          </span>
+          <span className="text-sm font-semibold text-text-primary">
+            {vacancyRatePercent.toFixed(1)}%
+          </span>
+        </div>
+      )}
+      <ul className="space-y-2 max-h-64 overflow-y-auto">
+        {units.map((u) => (
+          <li key={u.identifier} className="flex items-center gap-2 text-sm">
+            <span
+              className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                UNIT_STATUS_DOT[u.status] ?? 'bg-neutral-400'
+              }`}
+            />
+            <span className="flex-1 truncate text-text-primary">
+              {u.name || tUnits('detail.title', { number: u.unitNumber })}
+            </span>
+            <span className="text-text-secondary text-xs">
+              {u.tenantName || tUnits(`status.${u.status}`)}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

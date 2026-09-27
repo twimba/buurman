@@ -39,6 +39,7 @@ class WwsCalculationRecordMapperTest {
   private static final UUID ID = UUID.randomUUID();
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID PROPERTY_ID = UUID.randomUUID();
+  private static final UUID UNIT_ID = UUID.randomUUID();
   private static final UUID CONTRACT_ID = UUID.randomUUID();
   private static final UUID CREATED_BY = UUID.randomUUID();
   private static final UUID UPDATED_BY = UUID.randomUUID();
@@ -75,6 +76,9 @@ class WwsCalculationRecordMapperTest {
       assertThat(calc.getIdentifier()).contains(IDENTIFIER);
       assertThat(calc.getTeamId()).isEqualTo(TEAM_ID);
       assertThat(calc.getPropertyId()).isEqualTo(PROPERTY_ID);
+      // Distinct from PROPERTY_ID: catches a setUnitId(record.getPropertyId()) copy-paste bug
+      // (BUUR-106 follow-up register, section F, item 8).
+      assertThat(calc.getUnitId()).isEqualTo(UNIT_ID);
       assertThat(calc.getContractId()).contains(CONTRACT_ID);
       assertThat(calc.getSystemVersion()).isEqualTo("2026-v1");
       assertThat(calc.getTotalPoints()).isEqualByComparingTo(new BigDecimal("144.00"));
@@ -142,6 +146,7 @@ class WwsCalculationRecordMapperTest {
     record.setIdentifier(IDENTIFIER);
     record.setTeamId(TEAM_ID);
     record.setPropertyId(PROPERTY_ID);
+    record.setUnitId(UNIT_ID);
     record.setContractId(CONTRACT_ID);
     record.setSystemVersion("2026-v1");
     record.setTotalPoints(new BigDecimal("144.00"));

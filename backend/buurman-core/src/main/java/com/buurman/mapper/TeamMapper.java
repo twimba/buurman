@@ -18,7 +18,7 @@ public interface TeamMapper {
 
   @Mapping(target = "identifier", source = "team.identifier")
   @Mapping(target = "teamName", source = "team.name")
-  TeamResponse toResponse(Team team, long memberCount);
+  TeamResponse toResponse(Team team, long memberCount, int billableUnitCount);
 
   @Mapping(target = "userIdentifier", source = "user.identifier")
   @Mapping(target = "email", source = "user.email")

@@ -136,7 +136,8 @@
       "history": "Historia",
       "noCalculation": "Ei laskelmaa viela",
       "noCalculationDescription": "Laske WWS-pisteet selvittaaksesi taman kohteen enimmaiskorotus.",
-      "noPreviousCalculations": "Ei aiempia laskelmia."
+      "noPreviousCalculations": "Ei aiempia laskelmia.",
+      "multiUnitUnsupported": "Tässä rakennuksessa on useita yksiköitä. Avaa yksikkö laskeaksesi sen WWS-pisteet."
     },
     "metadata": {
       "title": "Metatiedot",
@@ -419,7 +420,8 @@
       "occupancyIncomeTrend": "Kayttoaste- ja tulotrendi",
       "expenseBreakdown": "Kuluerittely",
       "sixMonthProjection": "6 kuukauden ennuste",
-      "equityOverview": "Oman paaoman yleiskatsaus"
+      "equityOverview": "Oman paaoman yleiskatsaus",
+      "unitOccupancy": "Käyttöaste yksiköittäin"
     },
     "summary": {
       "totalRoi": "Kokonais-ROI",
@@ -448,7 +450,8 @@
       "contactOccupied": "Vuokrattu",
       "netIncomeTrend": "Nettotulotrendi",
       "netIncome": "Nettotulot",
-      "noData": "Ei sopimustietoja"
+      "noData": "Ei sopimustietoja",
+      "buildingVacancyRate": "Rakennuksen vajaakäyttöaste"
     },
     "expense": {
       "noData": "Ei kulutietoja"
@@ -761,6 +764,13 @@
     },
     "pagination": {
       "showing": "Naytettavissa {{from}}-{{to}} / {{total}} kulua"
+    },
+    "allocation": {
+      "settingsToggle": "Kustannusten jaon asetukset",
+      "buildingBadge": "Koko rakennus",
+      "viewSplit": "Näytä jako",
+      "hideSplit": "Piilota jako",
+      "failedToLoad": "Kustannusjaon lataaminen epäonnistui"
     }
   },
   "audit": {
@@ -808,7 +818,8 @@
       "notesPlaceholder": "Lisamuistiinpanoja...",
       "reason": "Syy",
       "reasonPlaceholder": "Valitse syy...",
-      "alreadyTakenPeriods": "Jo varatut jaksot"
+      "alreadyTakenPeriods": "Jo varatut jaksot",
+      "unitRequired": "Valitse, mitä yksikköä tämä käyttöjakso koskee."
     },
     "occupancyTypes": {
       "PERSONAL": "Henkilokohtainen",
@@ -1110,5 +1121,12 @@
   "lifecycle": {
     "openContract": "Avaa sopimus",
     "clickToEdit": "Muokkaa klikkaamalla"
+  },
+  "unitOccupancy": {
+    "noUnits": "Ei yksiköitä",
+    "allVacant": "Vapaa",
+    "allOccupied": "Vuokrattu",
+    "allUnavailable": "Ei käytettävissä",
+    "mixed": "{{occupied}} vuokrattu · {{vacant}} vapaana · {{unavailable}} ei käytettävissä"
   }
 }

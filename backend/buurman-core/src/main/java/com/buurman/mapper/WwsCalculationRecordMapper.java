@@ -39,6 +39,7 @@ public class WwsCalculationRecordMapper {
     calc.setIdentifier(Optional.of(record.getIdentifier()));
     calc.setTeamId(record.getTeamId());
     calc.setPropertyId(record.getPropertyId());
+    calc.setUnitId(record.getUnitId());
     calc.setContractId(Optional.ofNullable(record.getContractId()));
     calc.setSystemVersion(record.getSystemVersion());
     calc.setTotalPoints(record.getTotalPoints());

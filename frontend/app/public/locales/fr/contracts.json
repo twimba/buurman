@@ -20,6 +20,7 @@
     "terminated": "Résilié",
     "count_one": "{{count}} contrat",
     "count_other": "{{count}} contrats",
+    "count_many": "{{count}} contrats",
     "empty": {
       "title": "Pas encore de contrats",
       "description": "Commencez par créer votre premier bail"
@@ -154,6 +155,7 @@
       "renewalTerm": "Durée de renouvellement",
       "month_one": "{{count}} mois",
       "month_other": "{{count}} mois",
+      "month_many": "{{count}} mois",
       "extensions": "Prolongations",
       "remaining": "{{remaining}} sur {{max}} restantes",
       "max": "{{max}} max.",
@@ -557,6 +559,7 @@
     "backToAdjust": "Retour à l'ajustement",
     "contract_one": "{{count}} contrat",
     "contract_other": "{{count}} contrats",
+    "contract_many": "{{count}} contrats",
     "adjustmentStrategy": "Stratégie d'ajustement",
     "strategies": {
       "maximum": "Maximum",
@@ -575,10 +578,12 @@
     "avgChange": "Variation moyenne :",
     "warning_one": "{{count}} avertissement",
     "warning_other": "{{count}} avertissements",
+    "warning_many": "{{count}} avertissements",
     "retroactive": "rétroactif",
     "retroactiveTooltip": "Des paiements d'ajustement seront créés pour tous les paiements déjà réglés affectés par des modifications de date rétroactives.",
     "exceedsMax": "Dépasse l'augmentation maximale réglementée de {{max}}%",
     "belowMin": "En dessous de l'augmentation minimale réglementée de {{min}}%",
+    "leaseOfTotal": "Contrat {{index}} sur {{total}} pour cette propriété",
     "tableHeaders": {
       "property": "Propriété",
       "currentRent": "Loyer actuel",
@@ -597,12 +602,15 @@
     "applying": "Application...",
     "applyAdjustments_one": "Appliquer {{count}} ajustement",
     "applyAdjustments_other": "Appliquer {{count}} ajustements",
+    "applyAdjustments_many": "Appliquer {{count}} ajustements",
     "allSuccess": "Tous les ajustements de loyer ont été appliqués avec succès",
     "partialSuccess": "{{success}} sur {{total}} ajustements appliqués",
     "increasesFailed_one": "{{count}} augmentation échouée",
     "increasesFailed_other": "{{count}} augmentations échouées",
+    "increasesFailed_many": "{{count}} augmentations échouées",
     "adjustmentPayments_one": "{{count}} paiement d'ajustement créé pour les modifications rétroactives",
     "adjustmentPayments_other": "{{count}} paiements d'ajustement créés pour les modifications rétroactives",
+    "adjustmentPayments_many": "{{count}} paiements d'ajustement créés pour les modifications rétroactives",
     "status": "Statut"
   },
   "card": {
@@ -628,12 +636,15 @@
     "translation": "Traduction",
     "willGenerate_one": "Générera 1 document et l'enregistrera dans les documents du contrat",
     "willGenerate_other": "Générera {{count}} documents et les enregistrera dans les documents du contrat",
+    "willGenerate_many": "Générera {{count}} documents et les enregistrera dans les documents du contrat",
     "regenerating": "Régénération...",
     "generating": "Génération...",
     "regenerateButton_one": "Régénérer 1 document",
     "regenerateButton_other": "Régénérer {{count}} documents",
+    "regenerateButton_many": "Régénérer {{count}} documents",
     "generateButton_one": "Générer 1 document",
     "generateButton_other": "Générer {{count}} documents",
+    "generateButton_many": "Générer {{count}} documents",
     "types": {
       "EXTENSION_ADDENDUM": {
         "label": "Avenant de prolongation",
@@ -656,12 +667,15 @@
     "translation": "Traduction",
     "willGenerate_one": "Générera 1 document",
     "willGenerate_other": "Générera {{count}} documents",
+    "willGenerate_many": "Générera {{count}} documents",
     "regenerating": "Régénération...",
     "generating": "Génération...",
     "regenerateButton_one": "Régénérer 1 document",
     "regenerateButton_other": "Régénérer {{count}} documents",
+    "regenerateButton_many": "Régénérer {{count}} documents",
     "generateButton_one": "Générer 1 document",
-    "generateButton_other": "Générer {{count}} documents"
+    "generateButton_other": "Générer {{count}} documents",
+    "generateButton_many": "Générer {{count}} documents"
   },
   "enums": {
     "partyRoles": {
@@ -815,6 +829,7 @@
       "bruksvardessystemApplicable": "Système Bruksvärde Applicable",
       "energyDeclarationRating": "Classe Déclaration Énergétique",
       "hyresnamndenEligible": "Éligible Hyresnämnden",
+      "depositSum": "Montant du Dépôt",
       "vuokrasopimustyyppi": "Type de Bail (FI)",
       "vakuusAmount": "Montant de la Caution",
       "vakuusMonths": "Caution en Mois",
@@ -852,6 +867,7 @@
     "generateDocumentTitle": "Générer le document de modification de loyer",
     "historyCount_one": "Historique (1 période)",
     "historyCount_other": "Historique ({{count}} périodes)",
+    "historyCount_many": "Historique ({{count}} périodes)",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette période de loyer ?"
   },
   "rentBreakdown": {

@@ -9,30 +9,38 @@ import {
   deleteWwsCalculation,
 } from '../generated/api/wws-calculator/wws-calculator';
 import type { WwsCalculationRequest } from '../types/wws';
+import type { PropertyIdentifier, UnitIdentifier } from '../generated/models';
 import { queryKeys } from '../lib/queryKeys';
 
-export const useWwsPreFill = (propertyIdentifier: string | undefined) => {
+// WWS points are a per-dwelling figure (BUUR-106): pre-fill must be read from the specific unit
+// being priced, never from the property. Passing a PropertyIdentifier here is now a compile
+// error — UnitIdentifier and PropertyIdentifier are branded (see orval.config.ts) precisely so
+// this class of mistake can't compile silently again.
+export const useWwsPreFill = (unitIdentifier: UnitIdentifier | undefined) => {
   return useQuery({
-    queryKey: queryKeys.wws.preFill(propertyIdentifier),
-    queryFn: () => getWwsPreFill(propertyIdentifier ?? ''),
-    enabled: !!propertyIdentifier,
+    queryKey: queryKeys.wws.preFill(unitIdentifier),
+    queryFn: () => getWwsPreFill(unitIdentifier as UnitIdentifier),
+    enabled: !!unitIdentifier,
   });
 };
 
-export const useWwsCalculations = (propertyIdentifier: string | undefined) => {
+export const useWwsCalculations = (
+  propertyIdentifier: PropertyIdentifier | undefined
+) => {
   return useQuery({
     queryKey: queryKeys.wws.calculations(propertyIdentifier),
-    queryFn: () => getWwsCalculations(propertyIdentifier ?? ''),
+    queryFn: () => getWwsCalculations(propertyIdentifier as PropertyIdentifier),
     enabled: !!propertyIdentifier,
   });
 };
 
 export const useLatestWwsCalculation = (
-  propertyIdentifier: string | undefined
+  propertyIdentifier: PropertyIdentifier | undefined
 ) => {
   return useQuery({
     queryKey: queryKeys.wws.latest(propertyIdentifier),
-    queryFn: () => getLatestWwsCalculation(propertyIdentifier ?? ''),
+    queryFn: () =>
+      getLatestWwsCalculation(propertyIdentifier as PropertyIdentifier),
     enabled: !!propertyIdentifier,
     retry: false,
   });
@@ -60,7 +68,9 @@ export const useCalculateAndSaveWws = () => {
   });
 };
 
-export const useDeleteWwsCalculation = (propertyIdentifier: string) => {
+export const useDeleteWwsCalculation = (
+  propertyIdentifier: PropertyIdentifier
+) => {
   const queryClient = useQueryClient();
   return useMutationWithToast({
     successMessage: 'Calculation deleted',

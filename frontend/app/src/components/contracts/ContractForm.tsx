@@ -112,7 +112,7 @@ export const ContractForm = ({
   prefilledPropertyId,
   prefilledContactId,
 }: ContractFormProps) => {
-  const { t } = useTranslation('contracts');
+  const { t } = useTranslation(['contracts', 'units']);
   const navigate = useNavigate();
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -201,8 +201,15 @@ export const ContractForm = ({
 
   // Look up selected property's country for metadata form
   const { data: selectedProperty } = useProperty(formData.propertyIdentifier);
+  // `contracts.unit_id` is NOT NULL and the DB allows at most one ACTIVE contract per unit, so a
+  // multi-unit property requires an explicit choice -- a single-unit property resolves silently
+  // (submitForm below) exactly like the backend would, so the landlord never has to think about
+  // "units" for the common case. Create mode only: an existing contract's unit cannot be changed
+  // via update (UpdateContractRequest has no unitIdentifier field).
+  const requiresUnitChoice =
+    !isEditing && !!selectedProperty && selectedProperty.units.length > 1;
   const propertyCountryCode =
-    contract?.countryCode || selectedProperty?.country || undefined;
+    contract?.countryCode || selectedProperty?.countryCode || undefined;
   const countryName = useCountryName(propertyCountryCode);
   const { data: regulation } =
     useRentRegulationCountryDetail(propertyCountryCode);
@@ -284,6 +291,9 @@ export const ContractForm = ({
 
     if (!formData.propertyIdentifier) {
       newErrors.propertyIdentifier = t('form.validation.propertyRequired');
+    }
+    if (requiresUnitChoice && !formData.unitIdentifier) {
+      newErrors.unitIdentifier = t('units:picker.required');
     }
 
     // Validate primary contact
@@ -442,8 +452,17 @@ export const ContractForm = ({
           }))
         : undefined;
 
+      // A single-unit property resolves its one unit automatically -- sent explicitly so the
+      // request is unambiguous even though the backend would resolve it the same way.
+      const resolvedUnitIdentifier = isEditing
+        ? formData.unitIdentifier
+        : selectedProperty?.units.length === 1
+          ? selectedProperty.units[0].identifier
+          : formData.unitIdentifier || undefined;
+
       await onSubmit({
         ...formData,
+        unitIdentifier: resolvedUnitIdentifier,
         rentAmount: formData.rentAmount as number,
         endDate: formData.endDate || undefined,
         signedDate: formData.signedDate || undefined,
@@ -546,9 +565,10 @@ export const ContractForm = ({
                 </label>
                 <PropertySelector
                   value={formData.propertyIdentifier}
-                  onChange={(value) =>
-                    handleChange('propertyIdentifier', value)
-                  }
+                  onChange={(value) => {
+                    handleChange('propertyIdentifier', value);
+                    handleChange('unitIdentifier', undefined);
+                  }}
                   disabled={isLoading}
                 />
                 {errors.propertyIdentifier && (
@@ -557,6 +577,42 @@ export const ContractForm = ({
                   </p>
                 )}
               </div>
+
+              {/* Unit picker — only when the property has more than one unit (see
+                  requiresUnitChoice above); a single-unit property never surfaces the word
+                  "unit" at all. */}
+              {requiresUnitChoice && selectedProperty && (
+                <div>
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
+                    {t('units:picker.label')}{' '}
+                    <span className="text-error-text">*</span>
+                  </label>
+                  <select
+                    aria-label={t('units:picker.label')}
+                    value={formData.unitIdentifier ?? ''}
+                    onChange={(e) =>
+                      handleChange(
+                        'unitIdentifier',
+                        e.target.value || undefined
+                      )
+                    }
+                    className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                    disabled={isLoading}
+                  >
+                    <option value="">{t('units:picker.placeholder')}</option>
+                    {selectedProperty.units.map((unit) => (
+                      <option key={unit.identifier} value={unit.identifier}>
+                        {unit.name || unit.unitNumber}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.unitIdentifier && (
+                    <p className="text-error-text text-sm mt-1">
+                      {errors.unitIdentifier}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Parties section — create mode: inline editors */}
               {!isEditing && (
@@ -1140,7 +1196,7 @@ export const ContractForm = ({
                       }`}
                     >
                       {t(`form.lateFeeRegulation.${lateFeePolicy}`, {
-                        country: countryName || propertyCountryCode,
+                        countryCode: countryName || propertyCountryCode,
                         percentage: lateFeeCap ?? '',
                       })}
                       {lateFeeOverCap &&
@@ -1244,7 +1300,7 @@ export const ContractForm = ({
                 <p className="text-xs text-text-muted mt-1">
                   {regulation?.formalNoticeDays != null
                     ? t('form.formalNoticeDaysCountryDefault', {
-                        country: countryName || propertyCountryCode,
+                        countryCode: countryName || propertyCountryCode,
                         count: regulation.formalNoticeDays,
                       })
                     : t('form.formalNoticeDaysHelp', { count: 14 })}
@@ -1319,12 +1375,12 @@ export const ContractForm = ({
             <div>
               <h3 className="text-lg font-semibold text-text-primary mb-2">
                 {countryName
-                  ? t('form.countryRentalDetails', { country: countryName })
+                  ? t('form.countryRentalDetails', { countryCode: countryName })
                   : t('overview.countrySpecificDetails')}
               </h3>
               <p className="text-sm text-text-secondary mb-4">
                 {t('form.countryRegulatoryFields', {
-                  country: countryName || propertyCountryCode,
+                  countryCode: countryName || propertyCountryCode,
                 })}
               </p>
               <CountryMetadataForm

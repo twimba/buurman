@@ -28,15 +28,20 @@ import com.buurman.config.models.AppProperties;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.Expense;
 import com.buurman.domain.Property;
+import com.buurman.domain.Sid;
+import com.buurman.domain.Unit;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.dto.request.CreateExpenseRequest;
+import com.buurman.dto.request.ManualAllocationRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateExpenseRequest;
 import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.ContactSummary;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.ExpenseAllocationResponse;
 import com.buurman.dto.response.ExpenseResponse;
 import com.buurman.dto.response.ExpenseStatsResponse;
 import com.buurman.dto.response.PageResponse;
@@ -50,6 +55,7 @@ import com.buurman.repository.ContactRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -68,8 +74,10 @@ public class ExpenseService {
 
   private final ExpenseRepository expenseRepository;
   private final PropertyRepository propertyRepository;
+  private final UnitRepository unitRepository;
   private final ContactRepository contactRepository;
   private final DocumentRepository documentRepository;
+  private final ExpenseAllocationService expenseAllocationService;
   private final ExpenseMapper expenseMapper;
   private final PropertyMapper propertyMapper;
   private final ContactMapper contactMapper;
@@ -138,6 +146,18 @@ public class ExpenseService {
     return results;
   }
 
+  private Optional<UUID> resolveUnitId(
+      Optional<UnitIdentifier> unitIdentifier, Property property, UserPrincipal principal) {
+    return unitIdentifier.map(
+        uid -> {
+          Unit unit = unitRepository.getByIdentifierAndTeamId(uid, principal.requireTeamId());
+          if (!unit.getPropertyId().equals(property.getId())) {
+            throw new BadRequestException("Unit does not belong to the expense's property");
+          }
+          return unit.getId();
+        });
+  }
+
   private ExpenseResponse performCreateExpense(
       CreateExpenseRequest request, UserPrincipal principal) {
     Property property =
@@ -153,9 +173,12 @@ public class ExpenseService {
                         .getByIdentifierAndTeamId(cid, principal.requireTeamId())
                         .getId());
 
+    Optional<UUID> unitId = resolveUnitId(request.unitIdentifier(), property, principal);
+
     Expense expense = expenseMapper.toEntity(request);
     expense.setPropertyId(property.getId());
     expense.setContactId(contactId);
+    expense.setUnitId(unitId);
     expense.setIdentifier(Optional.of(newExpenseId()));
     expense.setTeamId(principal.requireTeamId());
     expense.setCreatedBy(principal.getUserId());
@@ -171,6 +194,10 @@ public class ExpenseService {
     currencyEnforcement.validateCurrency(request.currency(), principal.requireTeamId());
 
     Expense savedExpense = expenseRepository.save(expense);
+
+    if (savedExpense.getUnitId().isEmpty()) {
+      expenseAllocationService.allocate(savedExpense, principal.getUserId());
+    }
 
     log.info(
         "Created expense {} for property {} by user {}",
@@ -306,6 +333,15 @@ public class ExpenseService {
 
     ExpenseResponse oldState = enrichExpenseResponse(expense, principal.requireTeamId());
 
+    // Captured before the mapper mutates `expense`, so re-allocation can be gated on whether an
+    // allocation input actually changed. NL service-charge settlement statements built from these
+    // rows are legal documents — re-running the split on every edit (e.g. a description typo fix)
+    // silently launders the recorded basis and, worse, can erase a MANUAL override.
+    UUID priorPropertyId = expense.getPropertyId();
+    Optional<UUID> priorUnitId = expense.getUnitId();
+    BigDecimal priorAmountValue = expense.getAmount().value();
+    String priorAmountCurrency = expense.getAmount().currency();
+
     expenseMapper.updateEntity(expense, request);
     request
         .contactIdentifier()
@@ -317,6 +353,21 @@ public class ExpenseService {
                       .getId();
               expense.setContactId(Optional.of(resolvedContactId));
             });
+    // Per the API contract, unitIdentifier is not a "leave untouched when absent" field like the
+    // others above: absent makes (or keeps) the expense building-level, present assigns it to that
+    // unit. So both branches apply, not just ifPresent — otherwise a unit-level expense could never
+    // be moved back to building-level through this endpoint.
+    if (request.unitIdentifier().isPresent()) {
+      Unit unit =
+          unitRepository.getByIdentifierAndTeamId(
+              request.unitIdentifier().get(), principal.requireTeamId());
+      if (!unit.getPropertyId().equals(expense.getPropertyId())) {
+        throw new BadRequestException("Unit does not belong to the expense's property");
+      }
+      expense.setUnitId(Optional.of(unit.getId()));
+    } else {
+      expense.setUnitId(Optional.empty());
+    }
     expense.setUpdatedBy(principal.getUserId());
     expense.setUpdatedAt(clock.instant());
     request
@@ -324,6 +375,28 @@ public class ExpenseService {
         .ifPresent(c -> currencyEnforcement.validateCurrency(c, principal.requireTeamId()));
 
     Expense updatedExpense = expenseRepository.save(expense);
+
+    boolean allocationInputChanged =
+        !updatedExpense.getPropertyId().equals(priorPropertyId)
+            || !updatedExpense.getUnitId().equals(priorUnitId)
+            || updatedExpense.getAmount().value().compareTo(priorAmountValue) != 0
+            || !updatedExpense.getAmount().currency().equals(priorAmountCurrency);
+
+    if (updatedExpense.getUnitId().isEmpty()) {
+      // Only re-run the automatic split when something allocation-relevant actually changed — an
+      // unrelated edit (description, notes, category, date, contact) must leave the persisted
+      // rows untouched. allocate() itself additionally refuses to overwrite an active MANUAL set;
+      // that override is only ever lifted through the explicit recompute endpoint.
+      if (allocationInputChanged) {
+        expenseAllocationService.allocate(updatedExpense, principal.getUserId());
+      }
+    } else {
+      // The expense may have just gained a unitId (was building-level with per-unit allocation
+      // rows); those rows must be retired so a settlement doesn't double-charge the unit — once by
+      // allocation, once directly. A no-op when no rows existed.
+      expenseAllocationService.retireAllocations(updatedExpense, principal.getUserId());
+    }
+
     ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.requireTeamId());
 
     log.info(
@@ -406,6 +479,32 @@ public class ExpenseService {
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     return auditService.getEntityAuditLog(principal.requireTeamId(), "EXPENSE", expense.getId());
+  }
+
+  @Transactional(readOnly = true)
+  public List<ExpenseAllocationResponse> getExpenseAllocations(
+      ExpenseIdentifier identifier, UserPrincipal principal) {
+    Expense expense =
+        expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    return expenseAllocationService.getAllocations(expense);
+  }
+
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public List<ExpenseAllocationResponse> overrideExpenseAllocations(
+      ExpenseIdentifier identifier, ManualAllocationRequest request, UserPrincipal principal) {
+    Expense expense =
+        expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    return expenseAllocationService.overrideManual(expense, request, principal.getUserId());
+  }
+
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public List<ExpenseAllocationResponse> recomputeExpenseAllocations(
+      ExpenseIdentifier identifier, UserPrincipal principal) {
+    Expense expense =
+        expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    return expenseAllocationService.recompute(expense, principal.getUserId());
   }
 
   // Notification helpers
@@ -501,6 +600,13 @@ public class ExpenseService {
             .flatMap(cid -> contactRepository.findByIdAndTeamId(cid, teamId))
             .map(contactMapper::toSummary);
 
+    // Enrich with unit identifier (empty for a building-level expense)
+    Optional<Sid> unitIdentifier =
+        expense
+            .getUnitId()
+            .flatMap(uid -> unitRepository.findByIdAndTeamId(uid, teamId))
+            .flatMap(Unit::getIdentifier);
+
     // Get attached documents
     List<DocumentResponse> documents =
         documentRepository.findByEntityAndTeamId("EXPENSE", expense.getId(), teamId).stream()
@@ -511,6 +617,7 @@ public class ExpenseService {
         response.identifier(),
         Optional.ofNullable(propertySummary),
         contactSummary,
+        unitIdentifier,
         response.category(),
         response.amount(),
         response.currency(),

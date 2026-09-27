@@ -74,7 +74,11 @@
     "createExpense": "Créer",
     "expenseSuffix": " Dépense",
     "saving": "Enregistrement...",
-    "currency": "Devise"
+    "currency": "Devise",
+    "target": "S'applique à",
+    "targetBuilding": "Tout le bâtiment",
+    "targetUnit": "Une unité",
+    "unit": "Unité"
   },
   "validation": {
     "propertyRequired": "Le bien est obligatoire",

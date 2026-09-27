@@ -74,7 +74,11 @@
     "createExpense": "Crear",
     "expenseSuffix": " Gasto",
     "saving": "Guardando...",
-    "currency": "Moneda"
+    "currency": "Moneda",
+    "target": "Se aplica a",
+    "targetBuilding": "Todo el edificio",
+    "targetUnit": "Una unidad",
+    "unit": "Unidad"
   },
   "validation": {
     "propertyRequired": "La propiedad es obligatoria",

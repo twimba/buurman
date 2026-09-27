@@ -25,5 +25,7 @@ CREATE TABLE rent_regulation_tenancy_rules (
 );
 
 CREATE INDEX idx_rr_tenancy_rules_country ON rent_regulation_tenancy_rules (country_id);
+
 CREATE INDEX idx_rr_tenancy_rules_topic ON rent_regulation_tenancy_rules (country_id, topic);
+
 CREATE INDEX idx_rr_tenancy_rules_region ON rent_regulation_tenancy_rules (region_id);

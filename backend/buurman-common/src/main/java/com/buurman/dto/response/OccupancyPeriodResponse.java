@@ -14,6 +14,7 @@ import com.buurman.util.SkipTestCoverage;
 public record OccupancyPeriodResponse(
     Sid identifier,
     Sid propertyIdentifier,
+    Sid unitIdentifier,
     LocalDate startDate,
     Optional<LocalDate> endDate,
     OccupancyType type,

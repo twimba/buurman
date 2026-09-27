@@ -136,7 +136,8 @@
       "history": "Historik",
       "noCalculation": "Ingen berakning annu",
       "noCalculationDescription": "Berakna WWS-poangen for att avgora den maximala reglerade hyran for denna fastighet.",
-      "noPreviousCalculations": "Inga tidigare berakningar."
+      "noPreviousCalculations": "Inga tidigare berakningar.",
+      "multiUnitUnsupported": "Den här byggnaden har flera enheter. Öppna en enhet för att beräkna dess WWS-poäng."
     },
     "metadata": {
       "title": "Metadata",
@@ -419,7 +420,8 @@
       "occupancyIncomeTrend": "Belaggnings- & Inkomsttrend",
       "expenseBreakdown": "Utgiftsfordelning",
       "sixMonthProjection": "6-manadersprognos",
-      "equityOverview": "Oversikt eget kapital"
+      "equityOverview": "Oversikt eget kapital",
+      "unitOccupancy": "Beläggning per enhet"
     },
     "summary": {
       "totalRoi": "Total ROI",
@@ -448,7 +450,8 @@
       "contactOccupied": "Kontaktuthyrd",
       "netIncomeTrend": "Nettoinkomsttrend",
       "netIncome": "Nettoinkomst",
-      "noData": "Ingen kontraktsdata"
+      "noData": "Ingen kontraktsdata",
+      "buildingVacancyRate": "Byggnadens vakansgrad"
     },
     "expense": {
       "noData": "Ingen utgiftsdata"
@@ -761,6 +764,13 @@
     },
     "pagination": {
       "showing": "Visar {{from}} till {{to}} av {{total}} kostnader"
+    },
+    "allocation": {
+      "settingsToggle": "Inställningar för kostnadsfördelning",
+      "buildingBadge": "Hela byggnaden",
+      "viewSplit": "Visa fördelning",
+      "hideSplit": "Dölj fördelning",
+      "failedToLoad": "Det gick inte att läsa in kostnadsfördelningen"
     }
   },
   "audit": {
@@ -808,7 +818,8 @@
       "notesPlaceholder": "Ytterligare anteckningar...",
       "reason": "Anledning",
       "reasonPlaceholder": "Valj en anledning...",
-      "alreadyTakenPeriods": "Redan upptagna perioder"
+      "alreadyTakenPeriods": "Redan upptagna perioder",
+      "unitRequired": "Välj vilken enhet den här boendeperioden gäller för."
     },
     "occupancyTypes": {
       "PERSONAL": "Personligt",
@@ -1110,5 +1121,12 @@
   "lifecycle": {
     "openContract": "Oppna kontrakt",
     "clickToEdit": "Klicka for att redigera"
+  },
+  "unitOccupancy": {
+    "noUnits": "Inga enheter",
+    "allVacant": "Ledig",
+    "allOccupied": "Uthyrd",
+    "allUnavailable": "Otillgänglig",
+    "mixed": "{{occupied}} uthyrda · {{vacant}} lediga · {{unavailable}} otillgängliga"
   }
 }

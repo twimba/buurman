@@ -87,6 +87,10 @@
         <td class="st-label" th:text="#{rentchange.summary.property}">Property</td>
         <td class="st-value" th:text="${propertyAddress}"></td>
       </tr>
+      <tr th:if="${hasMultipleUnits}">
+        <td class="st-label" th:text="#{rentchange.summary.unit}">Unit</td>
+        <td class="st-value" th:text="${unitDesignation}"></td>
+      </tr>
       <tr th:if="${!isInitialRent}">
         <td class="st-label" th:text="#{rentchange.summary.previousRent}">Previous Rent</td>
         <td class="st-value" th:text="${previousRent}"></td>

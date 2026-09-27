@@ -10,6 +10,8 @@
     "status": "Status",
     "allStatuses": "Wszystkie statusy",
     "count_one": "{{count}} nieruchomość",
+    "count_few": "{{count}} nieruchomości",
+    "count_many": "{{count}} nieruchomości",
     "count_other": "{{count}} nieruchomości",
     "empty": {
       "title": "Nie znaleziono nieruchomości",
@@ -136,7 +138,8 @@
       "history": "Historia",
       "noCalculation": "Brak obliczeń",
       "noCalculationDescription": "Oblicz punkty WWS, aby określić maksymalny regulowany czynsz dla tej nieruchomości.",
-      "noPreviousCalculations": "Brak poprzednich obliczeń."
+      "noPreviousCalculations": "Brak poprzednich obliczeń.",
+      "multiUnitUnsupported": "Ten budynek ma wiele lokali. Otwórz lokal, aby obliczyć jego punkty WWS."
     },
     "metadata": {
       "title": "Metadane",
@@ -419,7 +422,8 @@
       "occupancyIncomeTrend": "Trend obłożenia i przychodu",
       "expenseBreakdown": "Rozkład wydatków",
       "sixMonthProjection": "Prognoza na 6 miesięcy",
-      "equityOverview": "Przegląd kapitału własnego"
+      "equityOverview": "Przegląd kapitału własnego",
+      "unitOccupancy": "Obłożenie według lokalu"
     },
     "summary": {
       "totalRoi": "Łączny ROI",
@@ -448,7 +452,8 @@
       "contactOccupied": "Zajęte przez kontakty",
       "netIncomeTrend": "Trend dochodu netto",
       "netIncome": "Dochód netto",
-      "noData": "Brak danych o umowach"
+      "noData": "Brak danych o umowach",
+      "buildingVacancyRate": "Wskaźnik pustostanów budynku"
     },
     "expense": {
       "noData": "Brak danych o wydatkach"
@@ -648,12 +653,16 @@
     "selection": {
       "selected": "{{selected}} z {{total}} zaznaczonych",
       "count_one": "{{count}} dokument",
+      "count_few": "{{count}} dokumenty",
+      "count_many": "{{count}} dokumentów",
       "count_other": "{{count}} dokumentów"
     },
     "preview": "Podgląd",
     "editTitleNotes": "Edytuj tytuł i notatki",
     "upload": {
       "title_one": "Prześlij dokument",
+      "title_few": "Prześlij dokumenty",
+      "title_many": "Prześlij dokumenty",
       "title_other": "Prześlij dokumenty",
       "files": "{{count}} plików",
       "titleLabel": "Tytuł (opcjonalny)",
@@ -665,8 +674,12 @@
     },
     "delete": {
       "title_one": "Usuń dokument",
+      "title_few": "Usuń dokumenty",
+      "title_many": "Usuń dokumenty",
       "title_other": "Usuń dokumenty",
       "message_one": "Czy na pewno chcesz usunąć ten dokument? Tej akcji nie można cofnąć.",
+      "message_few": "Zamierzasz usunąć {{count}} dokumenty. Tej akcji nie można cofnąć.",
+      "message_many": "Zamierzasz usunąć {{count}} dokumentów. Tej akcji nie można cofnąć.",
       "message_other": "Zamierzasz usunąć {{count}} dokumentów. Tej akcji nie można cofnąć.",
       "confirmLabel_other": "Usuń {{count}} dokumentów"
     },
@@ -679,6 +692,8 @@
     "empty": "Brak zdjęć",
     "upload": {
       "title_one": "Prześlij zdjęcie",
+      "title_few": "Prześlij zdjęcia",
+      "title_many": "Prześlij zdjęcia",
       "title_other": "Prześlij zdjęcia",
       "files": "{{count}} plików",
       "titleLabel": "Tytuł (opcjonalny)",
@@ -690,10 +705,16 @@
     },
     "delete": {
       "title_one": "Usuń zdjęcie",
+      "title_few": "Usuń zdjęcia",
+      "title_many": "Usuń zdjęcia",
       "title_other": "Usuń zdjęcia",
       "mainPhotoWarning_one": "To jest główne zdjęcie. Jego usunięcie sprawi, że ta nieruchomość nie będzie miała głównego zdjęcia. Tej akcji nie można cofnąć.",
+      "mainPhotoWarning_few": "Zamierzasz usunąć {{count}} zdjęcia, w tym główne zdjęcie. Ta nieruchomość nie będzie miała głównego zdjęcia. Tej akcji nie można cofnąć.",
+      "mainPhotoWarning_many": "Zamierzasz usunąć {{count}} zdjęć, w tym główne zdjęcie. Ta nieruchomość nie będzie miała głównego zdjęcia. Tej akcji nie można cofnąć.",
       "mainPhotoWarning_other": "Zamierzasz usunąć {{count}} zdjęć, w tym główne zdjęcie. Ta nieruchomość nie będzie miała głównego zdjęcia. Tej akcji nie można cofnąć.",
       "message_one": "Czy na pewno chcesz usunąć to zdjęcie? Tej akcji nie można cofnąć.",
+      "message_few": "Zamierzasz usunąć {{count}} zdjęcia. Tej akcji nie można cofnąć.",
+      "message_many": "Zamierzasz usunąć {{count}} zdjęć. Tej akcji nie można cofnąć.",
       "message_other": "Zamierzasz usunąć {{count}} zdjęć. Tej akcji nie można cofnąć.",
       "confirmLabel_other": "Usuń {{count}} zdjęć"
     },
@@ -761,6 +782,13 @@
     },
     "pagination": {
       "showing": "Wyświetlanie {{from}} do {{to}} z {{total}} wydatków"
+    },
+    "allocation": {
+      "settingsToggle": "Ustawienia podziału kosztów",
+      "buildingBadge": "Cały budynek",
+      "viewSplit": "Pokaż podział",
+      "hideSplit": "Ukryj podział",
+      "failedToLoad": "Nie udało się wczytać podziału kosztów"
     }
   },
   "audit": {
@@ -808,7 +836,8 @@
       "notesPlaceholder": "Dodatkowe notatki...",
       "reason": "Powód",
       "reasonPlaceholder": "Wybierz powód...",
-      "alreadyTakenPeriods": "Już zajęte okresy"
+      "alreadyTakenPeriods": "Już zajęte okresy",
+      "unitRequired": "Wybierz, którego lokalu dotyczy ten okres użytkowania."
     },
     "occupancyTypes": {
       "PERSONAL": "Osobiste",
@@ -991,6 +1020,8 @@
       "paymentDeleted": "Płatność usunięta pomyślnie",
       "paymentDeleteFailed": "Nie udało się usunąć płatności",
       "paymentsCreated_one": "{{count}} płatność utworzona pomyślnie",
+      "paymentsCreated_few": "{{count}} płatności utworzone pomyślnie",
+      "paymentsCreated_many": "{{count}} płatności utworzonych pomyślnie",
       "paymentsCreated_other": "{{count}} płatności utworzonych pomyślnie"
     },
     "months": {
@@ -1110,5 +1141,12 @@
   "lifecycle": {
     "openContract": "Otwórz umowę",
     "clickToEdit": "Kliknij, aby edytować"
+  },
+  "unitOccupancy": {
+    "noUnits": "Brak lokali",
+    "allVacant": "Wolny",
+    "allOccupied": "Wynajęty",
+    "allUnavailable": "Niedostępny",
+    "mixed": "{{occupied}} wynajętych · {{vacant}} wolnych · {{unavailable}} niedostępnych"
   }
 }

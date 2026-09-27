@@ -74,7 +74,11 @@
     "createExpense": "Skapa",
     "expenseSuffix": " kostnad",
     "saving": "Sparar...",
-    "currency": "Valuta"
+    "currency": "Valuta",
+    "target": "Gäller för",
+    "targetBuilding": "Hela byggnaden",
+    "targetUnit": "En enhet",
+    "unit": "Enhet"
   },
   "validation": {
     "propertyRequired": "Fastighet ar obligatorisk",

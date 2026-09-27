@@ -11,6 +11,7 @@ import { PropertySelector } from '@/components/common/PropertySelector';
 import { ContactSelector } from '@/components/common/ContactSelector';
 import { RichTextEditor } from '@buurman/ui';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
+import { useUnits } from '@/hooks/useUnitHooks';
 
 interface ExpenseFormProps {
   expense?: ExpenseResponse;
@@ -41,6 +42,7 @@ export const ExpenseForm = ({
     propertyIdentifier:
       prefilledPropertyId || expense?.property?.identifier || '',
     contactIdentifier: expense?.contact?.identifier,
+    unitIdentifier: expense?.unitIdentifier,
     category: expense?.category ?? ExpenseCategory.MAINTENANCE,
     amount: expense?.amount ?? 0,
     currency: expense?.currency || defaultCurrency || '',
@@ -49,12 +51,21 @@ export const ExpenseForm = ({
     notes: expense?.notes ?? '',
   });
 
+  // Building-vs-unit target. A property with a single implicit unit never shows this — there is
+  // nothing to choose, and forcing the landlord of a single-family house to think about "units"
+  // would be noise. Only fetched when a property is actually selected.
+  const { data: units = [] } = useUnits(
+    formData.propertyIdentifier || undefined
+  );
+  const showUnitTarget = units.length > 1;
+
   const [lastSyncedExpense, setLastSyncedExpense] = useState(expense);
   if (expense && expense !== lastSyncedExpense) {
     setLastSyncedExpense(expense);
     setFormData({
       propertyIdentifier: expense.property?.identifier ?? '',
       contactIdentifier: expense.contact?.identifier,
+      unitIdentifier: expense.unitIdentifier,
       category: expense.category,
       amount: expense.amount,
       currency: expense.currency,
@@ -153,6 +164,7 @@ export const ExpenseForm = ({
             setFormData({
               ...formData,
               propertyIdentifier: (selected as string) ?? '',
+              unitIdentifier: undefined,
             })
           }
           disabled={isLoading}
@@ -163,6 +175,67 @@ export const ExpenseForm = ({
           </p>
         )}
       </div>
+
+      {/* Building vs unit target — only shown for a property with more than one unit */}
+      {showUnitTarget && (
+        <div>
+          <label
+            className={'block text-sm font-medium text-text-secondary mb-2'}
+          >
+            {t('form.target')}
+          </label>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mb-2">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="radio"
+                name="expense-target"
+                checked={!formData.unitIdentifier}
+                onChange={() =>
+                  setFormData({ ...formData, unitIdentifier: undefined })
+                }
+                disabled={isLoading}
+              />
+              <span className="text-sm text-text-primary">
+                {t('form.targetBuilding')}
+              </span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="radio"
+                name="expense-target"
+                checked={!!formData.unitIdentifier}
+                onChange={() =>
+                  setFormData({
+                    ...formData,
+                    unitIdentifier: units[0]?.identifier,
+                  })
+                }
+                disabled={isLoading}
+              />
+              <span className="text-sm text-text-primary">
+                {t('form.targetUnit')}
+              </span>
+            </label>
+          </div>
+          {formData.unitIdentifier && (
+            <select
+              aria-label={t('form.unit')}
+              value={formData.unitIdentifier}
+              onChange={(e) =>
+                setFormData({ ...formData, unitIdentifier: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-border-strong rounded-md"
+              disabled={isLoading}
+            >
+              {units.map((u) => (
+                <option key={u.identifier} value={u.identifier}>
+                  {u.name || u.unitNumber}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+      )}
 
       {/* Category */}
       <div>

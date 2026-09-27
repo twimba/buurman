@@ -11,6 +11,7 @@
     "allStatuses": "Tous les statuts",
     "count_one": "{{count}} bien",
     "count_other": "{{count}} biens",
+    "count_many": "{{count}} biens",
     "empty": {
       "title": "Aucun bien trouvé",
       "filtered": "Essayez d'ajuster vos filtres ou termes de recherche",
@@ -136,7 +137,8 @@
       "history": "Historique",
       "noCalculation": "Pas encore de calcul",
       "noCalculationDescription": "Calculez les points WWS pour déterminer le loyer maximum réglementé pour ce bien.",
-      "noPreviousCalculations": "Pas de calculs précédents."
+      "noPreviousCalculations": "Pas de calculs précédents.",
+      "multiUnitUnsupported": "Cet immeuble comporte plusieurs unités. Ouvrez une unité pour calculer ses points WWS."
     },
     "metadata": {
       "title": "Métadonnées",
@@ -200,13 +202,15 @@
     "selection": {
       "selected": "{{selected}} sur {{total}} sélectionnés",
       "count_one": "{{count}} document",
-      "count_other": "{{count}} documents"
+      "count_other": "{{count}} documents",
+      "count_many": "{{count}} documents"
     },
     "preview": "Aperçu",
     "editTitleNotes": "Modifier le titre et les notes",
     "upload": {
       "title_one": "Téléverser un document",
       "title_other": "Téléverser des documents",
+      "title_many": "Téléverser des documents",
       "files": "{{count}} fichiers",
       "titleLabel": "Titre (optionnel)",
       "titlePlaceholder": "ex., Plan du bien",
@@ -218,8 +222,10 @@
     "delete": {
       "title_one": "Supprimer le document",
       "title_other": "Supprimer les documents",
+      "title_many": "Supprimer les documents",
       "message_one": "Êtes-vous sûr de vouloir supprimer ce document ? Cette action est irréversible.",
       "message_other": "Vous êtes sur le point de supprimer {{count}} documents. Cette action est irréversible.",
+      "message_many": "Vous êtes sur le point de supprimer {{count}} documents. Cette action est irréversible.",
       "confirmLabel_other": "Supprimer {{count}} documents"
     },
     "editModal": "Modifier le document",
@@ -232,6 +238,7 @@
     "upload": {
       "title_one": "Téléverser une photo",
       "title_other": "Téléverser des photos",
+      "title_many": "Téléverser des photos",
       "files": "{{count}} fichiers",
       "titleLabel": "Titre (optionnel)",
       "titlePlaceholder": "ex., Salon",
@@ -243,10 +250,13 @@
     "delete": {
       "title_one": "Supprimer la photo",
       "title_other": "Supprimer les photos",
+      "title_many": "Supprimer les photos",
       "mainPhotoWarning_one": "C'est la photo principale. La supprimer signifie que ce bien n'aura plus de photo principale. Cette action est irréversible.",
       "mainPhotoWarning_other": "Vous êtes sur le point de supprimer {{count}} photos, y compris la photo principale. Ce bien n'aura plus de photo principale. Cette action est irréversible.",
+      "mainPhotoWarning_many": "Vous êtes sur le point de supprimer {{count}} photos, y compris la photo principale. Ce bien n'aura plus de photo principale. Cette action est irréversible.",
       "message_one": "Êtes-vous sûr de vouloir supprimer cette photo ? Cette action est irréversible.",
       "message_other": "Vous êtes sur le point de supprimer {{count}} photos. Cette action est irréversible.",
+      "message_many": "Vous êtes sur le point de supprimer {{count}} photos. Cette action est irréversible.",
       "confirmLabel_other": "Supprimer {{count}} photos"
     },
     "editModal": "Modifier la photo"
@@ -313,6 +323,13 @@
     },
     "pagination": {
       "showing": "Affichage de {{from}} à {{to}} sur {{total}} dépenses"
+    },
+    "allocation": {
+      "settingsToggle": "Paramètres de répartition des charges",
+      "buildingBadge": "Tout le bâtiment",
+      "viewSplit": "Voir la répartition",
+      "hideSplit": "Masquer la répartition",
+      "failedToLoad": "Échec du chargement de la répartition des charges"
     }
   },
   "audit": {
@@ -360,7 +377,8 @@
       "notesPlaceholder": "Notes supplémentaires...",
       "reason": "Motif",
       "reasonPlaceholder": "Sélectionner un motif...",
-      "alreadyTakenPeriods": "Périodes déjà prises"
+      "alreadyTakenPeriods": "Périodes déjà prises",
+      "unitRequired": "Choisissez à quelle unité correspond cette période d'occupation."
     },
     "occupancyTypes": {
       "PERSONAL": "Personnel",
@@ -543,7 +561,8 @@
       "paymentDeleted": "Paiement supprimé avec succès",
       "paymentDeleteFailed": "Échec de la suppression du paiement",
       "paymentsCreated_one": "{{count}} paiement créé avec succès",
-      "paymentsCreated_other": "{{count}} paiements créés avec succès"
+      "paymentsCreated_other": "{{count}} paiements créés avec succès",
+      "paymentsCreated_many": "{{count}} paiements créés avec succès"
     },
     "months": {
       "jan": "Jan",
@@ -929,7 +948,8 @@
       "occupancyIncomeTrend": "Tendance d'occupation et de revenus",
       "expenseBreakdown": "Répartition des dépenses",
       "sixMonthProjection": "Projection à 6 mois",
-      "equityOverview": "Aperçu des capitaux propres"
+      "equityOverview": "Aperçu des capitaux propres",
+      "unitOccupancy": "Occupation par unité"
     },
     "summary": {
       "totalRoi": "ROI total",
@@ -958,7 +978,8 @@
       "contactOccupied": "Occupé par locataire",
       "netIncomeTrend": "Tendance du revenu net",
       "netIncome": "Revenu net",
-      "noData": "Aucune donnée de contrat"
+      "noData": "Aucune donnée de contrat",
+      "buildingVacancyRate": "Taux de vacance de l'immeuble"
     },
     "expense": {
       "noData": "Aucune donnée de dépense"
@@ -1110,5 +1131,12 @@
       "add": "Ajouter",
       "addOutdoorArea": "Ajouter un espace extérieur"
     }
+  },
+  "unitOccupancy": {
+    "noUnits": "Aucune unité",
+    "allVacant": "Vacant",
+    "allOccupied": "Loué",
+    "allUnavailable": "Indisponible",
+    "mixed": "{{occupied}} louées · {{vacant}} vacantes · {{unavailable}} indisponibles"
   }
 }

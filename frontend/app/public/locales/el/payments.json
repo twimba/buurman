@@ -218,7 +218,6 @@
   },
   "selection": {
     "selected": "{{count}} επιλεγμένο",
-    "selected_other": "{{count}} επιλεγμένα",
     "selectAll": "Επιλογή όλων των απλήρωτων της σελίδας",
     "selectRow": "Επιλογή πληρωμής {{id}}",
     "select": "Επιλογή",

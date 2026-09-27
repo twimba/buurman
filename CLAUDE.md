@@ -46,7 +46,7 @@ The backend is a 12-module Maven project:
 - Build: `cd backend && mvn clean install -DskipTests`
 - Run: `cd backend && mvn spring-boot:run -pl buurman-app -am` (port **8081**)
 - Quick build (skip formatting): `cd backend && mvn package -DskipTests -Pquick`
-- Tests: `cd backend && mvn test` / `mvn test -pl buurman-core -Dtest=ClassName#methodName`
+- Tests: `make test` (install-then-test; the sanctioned entry point — do not run bare `mvn test`, see Testing section) / for one class: `mvn clean install -DskipTests -pl buurman-core -am && mvn test -pl buurman-core -am -Dtest=ClassName#methodName` (`-pl` must always be paired with `-am`)
 - Regenerate JOOQ after migration changes: `cd backend && mvn generate-sources -pl buurman-jooq -am`
 - Build cache: enabled locally (`.mvn/extensions.xml`), disabled in CI (`-Dmaven.build.cache.enabled=false`)
 
@@ -103,7 +103,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `backend/buurman-jooq/src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V069)
+- Convention: `V<version>__<description>.sql` (currently at V072)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -142,7 +142,7 @@ backend/
 │       ├── util/                SidGenerator, EntityPrefix, MoneyAmount, DateUtils
 │       └── config/jooq/         SidJooqConverter, MoneyMinorUnitConverter
 ├── buurman-jooq/            JOOQ codegen + Flyway migrations (0 hand-written Java)
-│   ├── src/main/resources/db/migration/  (59 SQL migrations)
+│   ├── src/main/resources/db/migration/  (68 SQL migrations)
 │   └── target/generated-sources/jooq/   (generated JOOQ records)
 ├── buurman-core/            Core module (~259 files, buurman-core)
 │   └── com.buurman
@@ -214,10 +214,11 @@ frontend/
 ├── scripts/vite-build-info.ts  Build info plugin
 ├── app/                     Main React app
 │   └── src/
-│       ├── api/             Axios client + 16 API modules
+│       ├── api/             Axios instance + Orval custom instance (client.ts, orval-client.ts)
 │       ├── components/      Feature-organized React components
-│       ├── pages/           31 page components
-│       ├── hooks/           21 custom React Query hooks
+│       ├── pages/           32 page components
+│       ├── hooks/           47 hooks, 30 of which are React Query hooks over generated/
+│       ├── generated/       Orval-generated API functions + types (gitignored — run `yarn generate:api`)
 │       ├── context/         AuthContext, TeamContext
 │       ├── types/           TypeScript type definitions
 │       ├── config/          Keycloak configuration
@@ -240,7 +241,7 @@ frontend/
 
 **Mappers**: Mix of MapStruct interfaces (`componentModel = "spring"`) and manual `@Component` mapper classes. Map between JOOQ Records, domain POJOs, and DTOs.
 
-**Frontend API**: Axios instance with Keycloak token interceptor. React Query hooks per resource with automatic cache invalidation on mutations.
+**Frontend API**: Axios instance (`api/client.ts`) with Keycloak token interceptor, plus an Orval custom instance (`api/orval-client.ts`). All endpoint functions and types are generated into `generated/` by `yarn generate:api` (gitignored — required after clone and after every `make bundle-openapi`); no hand-rolled `axios`/`fetch` calls exist outside those two client files. React Query hooks per resource wrap the generated functions with automatic cache invalidation on mutations.
 
 **Document Storage**: S3 with metadata in `documents` + `photos` tables. AWRust uses direct URLs; production uses presigned URLs.
 
@@ -258,13 +259,18 @@ frontend/
 ## Testing
 
 ### Backend — JUnit 5 + Mockito + Testcontainers
-- 93 test classes across the modules; `mvn test` runs 1,036 tests (all green).
+- 93 test classes across the modules; the suite runs 1,255 tests (all green).
 - Integration tests (`*IntegrationTest`, 6 classes) extend `AbstractRepositoryIntegrationTest`,
   which starts a `postgres:18-alpine` Testcontainer, applies all Flyway migrations once, and
   truncates between tests. **Docker must be running.**
-- Run all: `cd backend && mvn test`
-- Run one: `mvn test -pl buurman-core -Dtest=ClassName#methodName`
-- Integration only: `mvn test -pl buurman-core -Dtest='*RepositoryIntegrationTest'`
+- Run all: `make test` (from repo root). This runs `mvn clean install -DskipTests` followed by
+  `mvn test` — the only reliable sequence. Bare `mvn test` without a prior `install` is
+  non-deterministic: reactor dependency resolution can pick up a module's stale/partial
+  `target/classes` instead of its installed jar, producing intermittent
+  `NoClassDefFoundError`/`ClassNotFoundException`.
+- Run one: `mvn clean install -DskipTests -pl buurman-core -am && mvn test -pl buurman-core -am -Dtest=ClassName#methodName`
+  — `-pl` must always be paired with `-am`.
+- Integration only: `mvn test -pl buurman-core -am -Dtest='*RepositoryIntegrationTest'`
 
 ### Frontend — Vitest
 - 14 test files, 105 tests. `frontend/app` runs under jsdom, `frontend/backoffice` under node.
@@ -280,7 +286,7 @@ frontend/
   that a query scoped to one `team_id` cannot see another team's rows.
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V069)
+1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V072)
 2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl buurman-jooq -am`
 3. Domain POJO in `backend/buurman-common/src/.../domain/`
 4. Request/Response DTOs in `backend/buurman-common/src/.../dto/`

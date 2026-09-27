@@ -21,6 +21,7 @@ public final class FeatureFlags {
   public static final String EXCEL_EXPORT = "excel_export";
   public static final String GOOGLE_SHEETS_EXPORT = "google_sheets_export";
   public static final String SWAGGER = "swagger";
+  public static final String MULTI_UNIT = "multi_unit";
 
   public static final List<String> ALL_KEYS =
       List.of(
@@ -33,7 +34,8 @@ public final class FeatureFlags {
           TAKEOUT_MAX_EXPORTS,
           EXCEL_EXPORT,
           GOOGLE_SHEETS_EXPORT,
-          SWAGGER);
+          SWAGGER,
+          MULTI_UNIT);
 
   /** Compile-time defaults — ultimate fallback when both cache and DB are unreachable. */
   public static final Map<String, Boolean> DEFAULTS =
@@ -47,7 +49,8 @@ public final class FeatureFlags {
           Map.entry(TAKEOUT_MAX_EXPORTS, true),
           Map.entry(EXCEL_EXPORT, false),
           Map.entry(GOOGLE_SHEETS_EXPORT, false),
-          Map.entry(SWAGGER, true));
+          Map.entry(SWAGGER, true),
+          Map.entry(MULTI_UNIT, false));
 
   /** Returns the compile-time default for a flag key, or false for unknown keys. */
   public static boolean defaultEnabled(String flagKey) {

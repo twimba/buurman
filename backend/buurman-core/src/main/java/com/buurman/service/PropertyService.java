@@ -39,8 +39,11 @@ import static com.buurman.domain.Property.PropertyType.WAREHOUSE;
 import static com.buurman.domain.Property.PropertyType.WORKSHOP;
 import static com.buurman.util.SidGenerator.newPropertyId;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,6 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.AllocationBasis;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
 import com.buurman.domain.Property.PropertyCategory;
@@ -62,16 +66,22 @@ import com.buurman.domain.Property.PropertyType;
 import com.buurman.domain.PropertyAgriculturalDetails;
 import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
-import com.buurman.domain.PropertyResidentialDetails;
+import com.buurman.domain.Unit;
+import com.buurman.domain.UnitResidentialDetails;
+import com.buurman.domain.UnitStatus;
+import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.AgriculturalDetailsRequest;
 import com.buurman.dto.request.CommercialDetailsRequest;
 import com.buurman.dto.request.CreatePropertyRequest;
+import com.buurman.dto.request.CreateUnitRequest;
 import com.buurman.dto.request.IndustrialDetailsRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.ResidentialDetailsRequest;
+import com.buurman.dto.request.UpdateAllocationRequest;
+import com.buurman.dto.request.UpdateAllocationRequest.UnitShareEntry;
 import com.buurman.dto.request.UpdatePropertyRequest;
 import com.buurman.dto.response.AgriculturalDetailsResponse;
 import com.buurman.dto.response.CommercialDetailsResponse;
@@ -84,15 +94,21 @@ import com.buurman.dto.response.PropertyOutdoorAreaResponse;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.ResidentialDetailsResponse;
+import com.buurman.dto.response.UnitSummaryResponse;
 import com.buurman.exception.BadRequestException;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.PropertyMapper;
+import com.buurman.mapper.UnitMapper;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyAgriculturalDetailsRepository;
 import com.buurman.repository.PropertyCommercialDetailsRepository;
 import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.PropertyResidentialDetailsRepository;
+import com.buurman.repository.PropertyRepository.UnitCounts;
+import com.buurman.repository.UnitAmenityRepository;
+import com.buurman.repository.UnitRepository;
+import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -107,7 +123,11 @@ import lombok.extern.slf4j.Slf4j;
 public class PropertyService {
 
   private final PropertyRepository propertyRepository;
-  private final PropertyResidentialDetailsRepository residentialDetailsRepository;
+  private final UnitRepository unitRepository;
+  private final UnitAmenityRepository unitAmenityRepository;
+  private final UnitResidentialDetailsRepository unitResidentialDetailsRepository;
+  private final UnitService unitService;
+  private final UnitMapper unitMapper;
   private final PropertyCommercialDetailsRepository commercialDetailsRepository;
   private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
   private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
@@ -118,7 +138,6 @@ public class PropertyService {
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
   private final PropertyOutdoorAreaRepository outdoorAreaRepository;
-  private final PropertyAmenityService propertyAmenityService;
   private final MetricsService metricsService;
   private final NotificationService notificationService;
   private final AppProperties appProperties;
@@ -179,9 +198,20 @@ public class PropertyService {
 
     Property savedProperty = propertyRepository.save(property);
 
+    // A property is never created without a unit: supplied -> created as-is, not implicit;
+    // omitted -> a single implicit VACANT unit numbered "1" is created instead. Both happen
+    // inside this @Transactional method, so the never-zero-units invariant holds from the first
+    // moment a property exists.
+    CreateUnitRequest unitRequest =
+        Optional.ofNullable(request.unit()).orElseGet(() -> implicitUnitRequest(request));
+    Unit initialUnit =
+        unitService.createInitialUnit(
+            savedProperty.getId(), unitRequest, request.unit() == null, principal);
+
     saveDetailsForCategory(
         request.propertyCategory(),
         savedProperty.getId(),
+        initialUnit,
         principal.requireTeamId(),
         principal.getUserId(),
         request.residentialDetails(),
@@ -232,12 +262,20 @@ public class PropertyService {
       @Nullable String category,
       @Nullable String query,
       PageRequest pageRequest) {
+    UUID teamId = principal.requireTeamId();
     PaginatedResult<Property> result =
-        propertyRepository.findAllByTeamIdPaginated(
-            principal.requireTeamId(), status, category, query, pageRequest);
+        propertyRepository.findAllByTeamIdPaginated(teamId, status, category, query, pageRequest);
+
+    // One grouped query for every property in this page's team, instead of one unit-count query
+    // per property — a page of 50 properties must not fire 50 queries.
+    Map<UUID, UnitCounts> unitCountsByPropertyId =
+        propertyRepository.findUnitCountsByTeamId(teamId);
+
     List<PropertyResponse> responses =
         result.items().stream()
-            .map(property -> toResponseWithMainPhoto(property, principal.requireTeamId(), false))
+            .map(
+                property ->
+                    toResponseWithMainPhoto(property, teamId, false, unitCountsByPropertyId))
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
@@ -319,14 +357,124 @@ public class PropertyService {
     return newState;
   }
 
+  /**
+   * Sets a property's allocation basis and, for CUSTOM, each unit's share. Does not retroactively
+   * rewrite any expense's already-persisted allocations — call {@code
+   * ExpenseService#recomputeExpenseAllocations} explicitly for that, since NL service-charge
+   * settlement statements built from these rows are legal documents.
+   */
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public PropertyResponse updateAllocation(
+      PropertyIdentifier identifier, UpdateAllocationRequest request, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Property property = propertyRepository.getByIdentifierAndTeamId(identifier, teamId);
+
+    // MANUAL is a per-expense override (ExpenseAllocationService#overrideManual), never a
+    // property-level basis. Accepting it here would silently split every future expense EQUAL
+    // while stamping each row MANUAL — a statement asserting a split nobody actually chose.
+    if (request.basis() == AllocationBasis.MANUAL) {
+      throw new BusinessRuleException(
+          "MANUAL is a per-expense override, not a property allocation basis. Choose AREA, EQUAL,"
+              + " or CUSTOM.");
+    }
+
+    PropertyResponse oldState = toResponseWithMainPhoto(property, teamId, true);
+
+    if (request.basis() == AllocationBasis.CUSTOM) {
+      applyCustomShares(property, request, teamId, principal.getUserId());
+    }
+
+    property.setAllocationBasis(request.basis());
+    property.setUpdatedBy(principal.getUserId());
+    Property updatedProperty = propertyRepository.save(property);
+
+    PropertyResponse newState = toResponseWithMainPhoto(updatedProperty, teamId, true);
+
+    log.info("Property allocation updated: {} for team {}", identifier, teamId);
+
+    auditService.logUpdate(
+        teamId,
+        "PROPERTY",
+        updatedProperty.getId(),
+        principal.getUserId(),
+        oldState,
+        newState,
+        auditService.getChangedFields(oldState, newState));
+
+    return newState;
+  }
+
+  /**
+   * Validates and persists CUSTOM per-unit shares. {@code computeAllocations} normalises by the
+   * observed total, so unvalidated entries behave as relative weights, not percentages: 40/30/20
+   * across three of six units would silently charge those three the full expense and the other
+   * three nothing. Every active unit must therefore have an entry, and the entries must sum to
+   * exactly 100.
+   */
+  private void applyCustomShares(
+      Property property, UpdateAllocationRequest request, UUID teamId, UUID actorId) {
+    List<UnitShareEntry> shares = request.shares().orElseGet(List::of);
+    List<Unit> activeUnits = unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId);
+
+    Map<UUID, BigDecimal> shareByUnitId = new HashMap<>();
+    for (UnitShareEntry share : shares) {
+      Unit unit = unitRepository.getByIdentifierAndTeamId(share.unitIdentifier(), teamId);
+      if (!unit.getPropertyId().equals(property.getId())) {
+        throw new BusinessRuleException(
+            "Unit " + share.unitIdentifier().value() + " does not belong to this property.");
+      }
+      shareByUnitId.put(unit.getId(), share.sharePct());
+    }
+
+    Set<UUID> missingUnitIds = new HashSet<>();
+    for (Unit unit : activeUnits) {
+      if (!shareByUnitId.containsKey(unit.getId())) {
+        missingUnitIds.add(unit.getId());
+      }
+    }
+    if (!missingUnitIds.isEmpty()) {
+      throw new BusinessRuleException(
+          "CUSTOM allocation requires a share for every active unit on this property; missing "
+              + missingUnitIds.size()
+              + " of "
+              + activeUnits.size()
+              + " unit(s).");
+    }
+
+    BigDecimal total = shareByUnitId.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    if (total.compareTo(new BigDecimal("100")) != 0) {
+      throw new BusinessRuleException(
+          "CUSTOM allocation shares must sum to 100, but summed to " + total.toPlainString() + ".");
+    }
+
+    for (Unit unit : activeUnits) {
+      // Coverage was just validated above, so shareByUnitId.get(unit.getId()) is always present
+      // for every active unit here; wrapping in Optional.ofNullable rather than Optional.of keeps
+      // this loop correct even if that invariant ever changes, clearing rather than crashing.
+      unit.setAllocationShare(Optional.ofNullable(shareByUnitId.get(unit.getId())));
+      unit.setUpdatedBy(Optional.of(actorId));
+      unitRepository.save(unit);
+    }
+  }
+
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteProperty(PropertyIdentifier identifier, UserPrincipal principal) {
-    Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    UUID teamId = principal.requireTeamId();
+    Property property = propertyRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    propertyRepository.softDeleteByIdAndTeamId(property.getId(), principal.requireTeamId());
-    log.info("Property deleted: {} for team {}", identifier, principal.requireTeamId());
+    propertyRepository.softDeleteByIdAndTeamId(property.getId(), teamId);
+    // V070 established the invariant that a soft-deleted property's units carry the same
+    // deleted_at (see UnitBackfillMigrationIntegrationTest); cascade it here too, in the same
+    // transaction, so it holds for every property deleted after that migration, not just the ones
+    // backfilled by it. Without this, UnitRepository's single-row lookups (which deliberately skip
+    // the properties join) keep accepting writes on the deleted property's units.
+    unitRepository.softDeleteAllByPropertyIdAndTeamId(
+        property.getId(), teamId, principal.getUserId());
+    unitAmenityRepository.softDeleteAllByPropertyIdAndTeamId(
+        property.getId(), teamId, principal.getUserId());
+    log.info("Property deleted: {} for team {}", identifier, teamId);
 
     auditService.logDelete(
         principal.requireTeamId(), "PROPERTY", property.getId(), principal.getUserId(), property);
@@ -419,6 +567,7 @@ public class PropertyService {
   private void saveDetailsForCategory(
       PropertyCategory category,
       UUID propertyId,
+      Unit implicitUnit,
       UUID teamId,
       UUID userId,
       Optional<ResidentialDetailsRequest> residential,
@@ -428,18 +577,7 @@ public class PropertyService {
     switch (category) {
       case RESIDENTIAL ->
           residential.ifPresent(
-              r -> {
-                PropertyResidentialDetails d = new PropertyResidentialDetails();
-                d.setPropertyId(propertyId);
-                d.setTeamId(teamId);
-                d.setBedrooms(r.bedrooms());
-                d.setBathrooms(r.bathrooms());
-                d.setFurnished(Optional.of(r.furnished().orElse(false)));
-                d.setPetPolicy(r.petPolicy());
-                d.setCreatedBy(userId);
-                d.setUpdatedBy(userId);
-                residentialDetailsRepository.save(d);
-              });
+              r -> saveUnitResidentialDetails(implicitUnit.getId(), teamId, userId, r));
       case COMMERCIAL ->
           commercial.ifPresent(
               c -> {
@@ -533,22 +671,9 @@ public class PropertyService {
     switch (category) {
       case RESIDENTIAL ->
           residential.ifPresent(
-              r -> {
-                Optional<PropertyResidentialDetails> existing =
-                    residentialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-                PropertyResidentialDetails d = existing.orElseGet(PropertyResidentialDetails::new);
-                d.setPropertyId(propertyId);
-                d.setTeamId(teamId);
-                d.setBedrooms(r.bedrooms());
-                d.setBathrooms(r.bathrooms());
-                d.setFurnished(Optional.of(r.furnished().orElse(false)));
-                d.setPetPolicy(r.petPolicy());
-                d.setUpdatedBy(userId);
-                if (d.getId() == null) {
-                  d.setCreatedBy(userId);
-                }
-                residentialDetailsRepository.save(d);
-              });
+              r ->
+                  saveUnitResidentialDetails(
+                      getSoleUnitIdOrThrow(propertyId, teamId), teamId, userId, r));
       case COMMERCIAL ->
           commercial.ifPresent(
               c -> {
@@ -643,14 +768,51 @@ public class PropertyService {
     }
   }
 
-  private Optional<ResidentialDetailsResponse> buildResidentialResponse(
-      UUID propertyId, UUID teamId) {
-    return residentialDetailsRepository
-        .findByPropertyIdAndTeamId(propertyId, teamId)
-        .map(
-            d ->
-                new ResidentialDetailsResponse(
-                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()));
+  /**
+   * Upserts bedroom/bathroom/furnished/pet-policy data onto {@code unitId}. Called only for
+   * RESIDENTIAL properties with exactly one unit, whose implicit unit is always {@code APARTMENT}
+   * (see {@link #defaultUnitType}) — the {@code UnitResidentialDetailsService} APARTMENT gate does
+   * not need to be re-applied here.
+   */
+  private void saveUnitResidentialDetails(
+      UUID unitId, UUID teamId, UUID userId, ResidentialDetailsRequest request) {
+    UnitResidentialDetails details =
+        unitResidentialDetailsRepository
+            .findByUnitIdAndTeamId(unitId, teamId)
+            .orElseGet(
+                () -> {
+                  UnitResidentialDetails created = new UnitResidentialDetails();
+                  created.setUnitId(unitId);
+                  created.setTeamId(teamId);
+                  created.setCreatedBy(Optional.of(userId));
+                  return created;
+                });
+    details.setBedrooms(request.bedrooms());
+    details.setBathrooms(request.bathrooms());
+    details.setFurnished(request.furnished().orElse(false));
+    details.setPetPolicy(request.petPolicy());
+    details.setUpdatedBy(Optional.of(userId));
+    unitResidentialDetailsRepository.save(details);
+  }
+
+  /**
+   * Resolves the single unit that property-level residential details must land on. A property with
+   * more than one unit has no unambiguous target — picking one arbitrarily would silently attribute
+   * another unit's bedroom/bathroom data to it, so that case is rejected with a 400 instead.
+   * Callers on the create path never hit the multi-unit branch: a brand-new property has exactly
+   * one unit.
+   */
+  private UUID getSoleUnitIdOrThrow(UUID propertyId, UUID teamId) {
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(propertyId, teamId);
+    if (units.size() > 1) {
+      throw new BadRequestException(
+          "Property has more than one unit. Residential details are ambiguous at the property"
+              + " level once a property is split — set them per unit instead.");
+    }
+    return units.stream()
+        .findFirst()
+        .map(Unit::getId)
+        .orElseThrow(() -> new IllegalStateException("Property " + propertyId + " has no units."));
   }
 
   private Optional<CommercialDetailsResponse> buildCommercialResponse(
@@ -725,8 +887,48 @@ public class PropertyService {
                     d.getZoningClassification()));
   }
 
+  private Optional<ResidentialDetailsResponse> buildUnitResidentialResponse(
+      UUID unitId, UUID teamId) {
+    return unitResidentialDetailsRepository
+        .findByUnitIdAndTeamId(unitId, teamId)
+        .map(
+            d ->
+                new ResidentialDetailsResponse(
+                    d.getBedrooms(),
+                    d.getBathrooms(),
+                    Optional.of(d.isFurnished()),
+                    d.getPetPolicy()));
+  }
+
+  private List<PropertyAmenityResponse> buildUnitAmenityResponses(UUID unitId, UUID teamId) {
+    return unitAmenityRepository.findAmenitiesByUnitIdAndTeamId(unitId, teamId).stream()
+        .map(
+            a ->
+                new PropertyAmenityResponse(
+                    a.getIdentifier().orElseThrow(),
+                    a.getName(),
+                    a.getCategory(),
+                    Optional.of(a.getIcon()),
+                    Optional.empty()))
+        .toList();
+  }
+
   private PropertyResponse toResponseWithMainPhoto(
       Property property, UUID teamId, boolean includeNestedCollections) {
+    return toResponseWithMainPhoto(property, teamId, includeNestedCollections, null);
+  }
+
+  /**
+   * @param unitCountsByPropertyId precomputed unit counts for a whole page of properties (see
+   *     {@link #getPropertiesPaginated}), used only when {@code includeNestedCollections} is {@code
+   *     false}. {@code null} for a single-property response, where the full unit list is fetched
+   *     directly and is cheap enough to derive exact counts from.
+   */
+  private PropertyResponse toResponseWithMainPhoto(
+      Property property,
+      UUID teamId,
+      boolean includeNestedCollections,
+      @Nullable Map<UUID, UnitCounts> unitCountsByPropertyId) {
     PropertyResponse response = propertyMapper.toResponse(property);
 
     List<Photo> photos =
@@ -761,11 +963,18 @@ public class PropertyService {
                     .toList())
             : Optional.empty();
 
-    Optional<List<PropertyAmenityResponse>> amenities =
+    // A property with more than one unit has no single unambiguous unit to answer "the"
+    // residential details / amenities question — the response leaves those empty rather than
+    // pick one unit's data arbitrarily and present it as the whole property's.
+    List<Unit> units =
         includeNestedCollections
-            ? Optional.of(
-                propertyAmenityService.buildPropertyAmenityResponses(property.getId(), teamId))
-            : Optional.empty();
+            ? unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId)
+            : List.of();
+    Optional<UUID> soleUnitId =
+        units.size() == 1 ? Optional.of(units.get(0).getId()) : Optional.empty();
+
+    Optional<List<PropertyAmenityResponse>> amenities =
+        soleUnitId.map(unitId -> buildUnitAmenityResponses(unitId, teamId));
 
     // Build category-specific detail responses
     Optional<ResidentialDetailsResponse> residentialDetails = Optional.empty();
@@ -774,7 +983,9 @@ public class PropertyService {
     Optional<AgriculturalDetailsResponse> agriculturalDetails = Optional.empty();
 
     switch (property.getPropertyCategory()) {
-      case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
+      case RESIDENTIAL ->
+          residentialDetails =
+              soleUnitId.flatMap(unitId -> buildUnitResidentialResponse(unitId, teamId));
       case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
       case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
       case AGRICULTURAL ->
@@ -784,11 +995,16 @@ public class PropertyService {
       }
     }
 
+    UnitFacts unitFacts =
+        includeNestedCollections
+            ? unitFactsFromFullList(units)
+            : unitFactsFromCounts(property.getId(), unitCountsByPropertyId);
+
     return new PropertyResponse(
         response.identifier(),
         response.propertyCategory(),
         response.propertyType(),
-        response.status(),
+        response.allocationBasis(),
         response.street(),
         response.city(),
         response.postalCode(),
@@ -797,8 +1013,6 @@ public class PropertyService {
         response.latitude(),
         response.longitude(),
         response.geocodeAccuracy(),
-        response.areaValue(),
-        response.areaUnit(),
         mainPhotoUrl,
         mainPhotoThumbnailUrl,
         // Construction & Structure
@@ -808,17 +1022,8 @@ public class PropertyService {
         response.foundationType(),
         response.roofType(),
         response.wallConstruction(),
-        response.flooringType(),
-        response.windowType(),
         response.numberOfFloors(),
         response.structuralNotes(),
-        // Energy & Climate
-        response.energyEfficiencyRating(),
-        response.energyCertificateExpiryDate(),
-        response.heatingType(),
-        response.coolingType(),
-        response.hotWaterSystem(),
-        response.insulationNotes(),
         // Utilities & Connections
         response.electricityConnectionType(),
         response.electricityCapacityValue(),
@@ -834,9 +1039,6 @@ public class PropertyService {
         response.parkingSpaces(),
         response.parkingType(),
         // Safety & Security
-        response.hasSmokeDetectors(),
-        response.hasCoDetectors(),
-        response.hasFireExtinguisher(),
         response.hasSprinklerSystem(),
         response.hasAlarmSystem(),
         response.hasSecurityCameras(),
@@ -846,8 +1048,6 @@ public class PropertyService {
         response.isWheelchairAccessible(),
         response.hasElevator(),
         response.hasStepFreeEntrance(),
-        response.hasAdaptedBathroom(),
-        response.accessibilityNotes(),
         // Category-specific details
         residentialDetails,
         commercialDetails,
@@ -856,7 +1056,84 @@ public class PropertyService {
         // Nested collections
         outdoorAreas,
         amenities,
+        // Unit facts
+        unitFacts.total(),
+        unitFacts.occupied(),
+        unitFacts.vacant(),
+        unitFacts.units(),
         response.createdAt(),
         response.updatedAt());
+  }
+
+  /**
+   * Exact unit facts for a single property, from its full unit list — cheap here because the caller
+   * already needs that list for the {@code units} field itself (and for residential
+   * details/amenities), so it is fetched once and passed in rather than re-queried.
+   */
+  private UnitFacts unitFactsFromFullList(List<Unit> units) {
+    int occupied = (int) units.stream().filter(u -> u.getStatus() == UnitStatus.OCCUPIED).count();
+    int vacant = (int) units.stream().filter(u -> u.getStatus() == UnitStatus.VACANT).count();
+    List<UnitSummaryResponse> summaries = units.stream().map(unitMapper::toSummary).toList();
+    return new UnitFacts(units.size(), occupied, vacant, summaries);
+  }
+
+  /**
+   * Unit facts for a list response, from the page-wide precomputed counts map (see {@link
+   * #getPropertiesPaginated}) rather than a per-property query. {@code vacant} is a literal count
+   * of VACANT-status units — the same conditional aggregate {@link
+   * PropertyRepository#findUnitCountsByTeamId} computes for {@code occupied} — so it agrees exactly
+   * with {@link #unitFactsFromFullList}'s count rather than approximating it as "not occupied"
+   * (which would silently fold MAINTENANCE/UNAVAILABLE/etc. units into "vacant").
+   */
+  private UnitFacts unitFactsFromCounts(
+      UUID propertyId, @Nullable Map<UUID, UnitCounts> unitCountsByPropertyId) {
+    UnitCounts counts =
+        Optional.ofNullable(unitCountsByPropertyId)
+            .map(m -> m.get(propertyId))
+            .orElse(new UnitCounts(0, 0, 0));
+    return new UnitFacts(counts.total(), counts.occupied(), counts.vacant(), List.of());
+  }
+
+  private record UnitFacts(int total, int occupied, int vacant, List<UnitSummaryResponse> units) {}
+
+  /**
+   * Builds the implicit unit created when a property is submitted without an explicit {@code unit}:
+   * VACANT, numbered "1", holding the property's whole allocation (100%), with a unit type derived
+   * from the property's category — matching V070's backfill CASE exactly (RESIDENTIAL and MIXED_USE
+   * -> APARTMENT, everything else -> COMMERCIAL).
+   */
+  private CreateUnitRequest implicitUnitRequest(CreatePropertyRequest request) {
+    return new CreateUnitRequest(
+        "1",
+        Optional.empty(),
+        Optional.empty(),
+        defaultUnitType(request.propertyCategory()),
+        Optional.of(UnitStatus.VACANT),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.of(new BigDecimal("100")),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
+  }
+
+  private UnitType defaultUnitType(PropertyCategory category) {
+    return switch (category) {
+      case RESIDENTIAL, MIXED_USE -> UnitType.APARTMENT;
+      default -> UnitType.COMMERCIAL;
+    };
   }
 }

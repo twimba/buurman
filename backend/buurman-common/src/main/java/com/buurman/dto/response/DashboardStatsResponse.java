@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public record DashboardStatsResponse(
     int totalProperties,
+    int totalUnits,
     int occupiedUnits,
     int selfOccupiedUnits,
     int vacantUnits,

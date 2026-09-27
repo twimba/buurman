@@ -136,7 +136,8 @@
       "history": "Historik",
       "noCalculation": "Ingen beregning endnu",
       "noCalculationDescription": "Beregn WWS-pointene for at bestemme den maksimale regulerede leje for denne ejendom.",
-      "noPreviousCalculations": "Ingen tidligere beregninger."
+      "noPreviousCalculations": "Ingen tidligere beregninger.",
+      "multiUnitUnsupported": "Denne ejendom har flere enheder. Åbn en enhed for at beregne dens WWS-point."
     },
     "metadata": {
       "title": "Metadata",
@@ -419,7 +420,8 @@
       "occupancyIncomeTrend": "Udlejnings- & Indtaegtstendens",
       "expenseBreakdown": "Udgiftsfordeling",
       "sixMonthProjection": "6-maaneders prognose",
-      "equityOverview": "Egenkapitaloversigt"
+      "equityOverview": "Egenkapitaloversigt",
+      "unitOccupancy": "Belægning pr. enhed"
     },
     "summary": {
       "totalRoi": "Samlet ROI",
@@ -448,7 +450,8 @@
       "contactOccupied": "Udlejet til kontakt",
       "netIncomeTrend": "Nettoindtaegtstendens",
       "netIncome": "Nettoindtaegt",
-      "noData": "Ingen kontraktdata"
+      "noData": "Ingen kontraktdata",
+      "buildingVacancyRate": "Ejendommens ledighedsprocent"
     },
     "expense": {
       "noData": "Ingen udgiftsdata"
@@ -761,6 +764,13 @@
     },
     "pagination": {
       "showing": "Viser {{from}} til {{to}} af {{total}} udgifter"
+    },
+    "allocation": {
+      "settingsToggle": "Indstillinger for omkostningsfordeling",
+      "buildingBadge": "Hele ejendommen",
+      "viewSplit": "Vis fordeling",
+      "hideSplit": "Skjul fordeling",
+      "failedToLoad": "Kunne ikke indlæse omkostningsfordelingen"
     }
   },
   "audit": {
@@ -808,7 +818,8 @@
       "notesPlaceholder": "Yderligere noter...",
       "reason": "Aarsag",
       "reasonPlaceholder": "Vaelg en aarsag...",
-      "alreadyTakenPeriods": "Allerede optagne perioder"
+      "alreadyTakenPeriods": "Allerede optagne perioder",
+      "unitRequired": "Vælg hvilken enhed denne beboelsesperiode gælder for."
     },
     "occupancyTypes": {
       "PERSONAL": "Personlig",
@@ -1110,5 +1121,12 @@
   "lifecycle": {
     "openContract": "Aabn kontrakt",
     "clickToEdit": "Klik for at redigere"
+  },
+  "unitOccupancy": {
+    "noUnits": "Ingen enheder",
+    "allVacant": "Ledig",
+    "allOccupied": "Udlejet",
+    "allUnavailable": "Utilgængelig",
+    "mixed": "{{occupied}} udlejet · {{vacant}} ledig · {{unavailable}} utilgængelig"
   }
 }

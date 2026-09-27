@@ -2,10 +2,10 @@ package com.buurman.dto.response;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.buurman.domain.AllocationBasis;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.util.SkipTestCoverage;
@@ -15,7 +15,7 @@ public record PropertyResponse(
     Sid identifier,
     Property.PropertyCategory propertyCategory,
     Property.PropertyType propertyType,
-    Property.PropertyStatus status,
+    AllocationBasis allocationBasis,
     String street,
     String city,
     String postalCode,
@@ -24,8 +24,6 @@ public record PropertyResponse(
     Optional<BigDecimal> latitude,
     Optional<BigDecimal> longitude,
     Optional<String> geocodeAccuracy,
-    Optional<BigDecimal> areaValue,
-    Optional<String> areaUnit,
     Optional<String> mainPhotoUrl,
     Optional<String> mainPhotoThumbnailUrl,
 
@@ -36,18 +34,8 @@ public record PropertyResponse(
     Optional<String> foundationType,
     Optional<String> roofType,
     Optional<String> wallConstruction,
-    Optional<String> flooringType,
-    Optional<String> windowType,
     Optional<Integer> numberOfFloors,
     Optional<String> structuralNotes,
-
-    // Energy & Climate
-    Optional<String> energyEfficiencyRating,
-    Optional<LocalDate> energyCertificateExpiryDate,
-    Optional<String> heatingType,
-    Optional<String> coolingType,
-    Optional<String> hotWaterSystem,
-    Optional<String> insulationNotes,
 
     // Utilities & Connections
     Optional<String> electricityConnectionType,
@@ -66,9 +54,6 @@ public record PropertyResponse(
     Optional<String> parkingType,
 
     // Safety & Security
-    Optional<Boolean> hasSmokeDetectors,
-    Optional<Boolean> hasCoDetectors,
-    Optional<Boolean> hasFireExtinguisher,
     Optional<Boolean> hasSprinklerSystem,
     Optional<Boolean> hasAlarmSystem,
     Optional<Boolean> hasSecurityCameras,
@@ -79,8 +64,6 @@ public record PropertyResponse(
     Optional<Boolean> isWheelchairAccessible,
     Optional<Boolean> hasElevator,
     Optional<Boolean> hasStepFreeEntrance,
-    Optional<Boolean> hasAdaptedBathroom,
-    Optional<String> accessibilityNotes,
 
     // Category-specific details (only one is non-null)
     Optional<ResidentialDetailsResponse> residentialDetails,
@@ -91,5 +74,13 @@ public record PropertyResponse(
     // Nested collections
     Optional<List<PropertyOutdoorAreaResponse>> outdoorAreas,
     Optional<List<PropertyAmenityResponse>> amenities,
+
+    // Unit facts — properties.status was dropped in V070; these are the replacement. A property
+    // is never created without at least one unit (see PropertyService#createProperty), so
+    // unitCount is always >= 1 for a property returned by this API.
+    int unitCount,
+    int occupiedUnitCount,
+    int vacantUnitCount,
+    List<UnitSummaryResponse> units,
     Instant createdAt,
     Optional<Instant> updatedAt) {}

@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - "frontend/**"
+      - "openapi/**"
       - ".github/workflows/visual-regression.yml"
   push:
     branches: [main]
     paths:
       - "frontend/**"
+      - "openapi/**"
 
 jobs:
   playwright:

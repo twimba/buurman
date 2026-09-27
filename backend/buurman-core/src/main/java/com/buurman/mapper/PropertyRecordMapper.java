@@ -11,9 +11,9 @@ import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import com.buurman.domain.AllocationBasis;
 import com.buurman.domain.Property;
 import com.buurman.domain.Property.PropertyCategory;
-import com.buurman.domain.Property.PropertyStatus;
 import com.buurman.domain.Property.PropertyType;
 import com.buurman.jooq.generated.tables.records.PropertiesRecord;
 
@@ -24,7 +24,9 @@ public interface PropertyRecordMapper {
       target = "propertyCategory",
       expression = "java(toPropertyCategory(record.getPropertyCategory()))")
   @Mapping(target = "propertyType", expression = "java(toPropertyType(record.getPropertyType()))")
-  @Mapping(target = "status", expression = "java(toPropertyStatus(record.getStatus()))")
+  @Mapping(
+      target = "allocationBasis",
+      expression = "java(toAllocationBasis(record.getAllocationBasis()))")
   @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toInstant(record.getUpdatedAt()))")
   @Mapping(target = "deletedAt", expression = "java(toOptionalInstant(record.getDeletedAt()))")
@@ -39,7 +41,7 @@ public interface PropertyRecordMapper {
   @Mapping(
       target = "propertyType",
       expression = "java(fromPropertyType(property.getPropertyType()))")
-  @Mapping(target = "status", expression = "java(fromPropertyStatus(property.getStatus()))")
+  @Mapping(target = "allocationBasis", expression = "java(property.getAllocationBasis().name())")
   @Mapping(target = "createdAt", expression = "java(toLocalDateTime(property.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toLocalDateTime(property.getUpdatedAt()))")
   @Mapping(target = "deletedAt", expression = "java(fromOptionalInstant(property.getDeletedAt()))")
@@ -80,11 +82,7 @@ public interface PropertyRecordMapper {
     return type == null ? null : type.name();
   }
 
-  default @Nullable PropertyStatus toPropertyStatus(@Nullable String value) {
-    return value == null ? null : PropertyStatus.valueOf(value);
-  }
-
-  default @Nullable String fromPropertyStatus(@Nullable PropertyStatus status) {
-    return status == null ? null : status.name();
+  default AllocationBasis toAllocationBasis(@Nullable String value) {
+    return value == null ? AllocationBasis.EQUAL : AllocationBasis.valueOf(value);
   }
 }

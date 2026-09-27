@@ -26,9 +26,11 @@ import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.Financia
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.MemberInfo;
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.SettingsInfo;
 import com.buurman.dto.response.backoffice.BackofficeTeamResponse;
+import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.TeamRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.repository.backoffice.BackofficeTeamStatsRepository;
 import com.buurman.security.BackofficePrincipal;
@@ -47,6 +49,8 @@ public class BackofficeTeamService {
   private final UserRepository userRepository;
   private final TeamPreferencesRepository teamPreferencesRepository;
   private final BackofficeTeamStatsRepository statsRepository;
+  private final PropertyRepository propertyRepository;
+  private final UnitRepository unitRepository;
 
   @Transactional(readOnly = true)
   public PageResponse<BackofficeTeamResponse> listTeams(
@@ -167,11 +171,18 @@ public class BackofficeTeamService {
             .map(User::getEmail)
             .orElse(null);
 
+    long propertyCount = propertyRepository.countByTeamId(team.getId());
+    // Same figure the team-facing app calls billableUnitCount (TeamService#getTeam) — units are
+    // what a landlord's plan is billed on, so backoffice needs to see it per team too.
+    long unitCount = unitRepository.countActiveByTeamId(team.getId());
+
     return new BackofficeTeamResponse(
         team.getIdentifier().orElseThrow(),
         team.getName(),
         team.isDemo(),
         memberCount,
+        propertyCount,
+        unitCount,
         Optional.ofNullable(ownerEmail),
         team.getCreatedAt(),
         Optional.of(team.getUpdatedAt()));

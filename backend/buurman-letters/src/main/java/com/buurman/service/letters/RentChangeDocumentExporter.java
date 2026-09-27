@@ -146,8 +146,12 @@ public class RentChangeDocumentExporter {
             .value());
 
     vars.putAll(addressee.variables());
-    String propertyAddress = LetterExporterHelper.propertyAddress(property);
-    vars.put("propertyAddress", propertyAddress);
+    LetterExporterHelper.PremisesInfo premisesInfo =
+        helper.premisesInfo(contract, property, messageSource, locale);
+    vars.put("propertyAddress", LetterExporterHelper.premisesAddress(property, premisesInfo));
+    vars.put("hasMultipleUnits", premisesInfo.hasMultipleUnits());
+    vars.put(
+        "unitDesignation", premisesInfo.hasMultipleUnits() ? premisesInfo.unitDesignation() : null);
 
     // Rent amounts
     vars.put("newRent", CurrencyUtils.formatCurrency(currentPeriod.getRentAmount().value(), ccy));

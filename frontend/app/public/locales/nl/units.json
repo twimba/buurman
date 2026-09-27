@@ -1,0 +1,117 @@
+{
+  "term": {
+    "one": "Eenheid",
+    "other": "Eenheden"
+  },
+  "tab": "Eenheden",
+  "grid": {
+    "unit": "Eenheid",
+    "tenant": "Huurder",
+    "rent": "Huur",
+    "status": "Status",
+    "vacancyDays": "Leegstand",
+    "vacancyDaysValue": "{{count}} dag",
+    "vacancyDaysValue_other": "{{count}} dagen",
+    "noTenant": "—",
+    "empty": "Nog geen eenheden.",
+    "occupancySummary": "{{occupied}} van {{total}} verhuurd",
+    "addUnit": "Eenheid toevoegen"
+  },
+  "detail": {
+    "title": "Eenheid {{number}}",
+    "backToProperty": "Terug naar {{street}}",
+    "characteristics": "Kenmerken",
+    "amenities": "Voorzieningen",
+    "residential": "Kamers & inrichting"
+  },
+  "fields": {
+    "unitNumber": "Eenheidnummer",
+    "name": "Naam",
+    "floor": "Verdieping",
+    "unitType": "Type",
+    "status": "Status",
+    "areaValue": "Vloeroppervlakte",
+    "allocationShare": "Kostenaandeel",
+    "wozSharePct": "WOZ-aandeel",
+    "energyEfficiencyRating": "Energielabel",
+    "energyCertificateExpiryDate": "Vervaldatum certificaat",
+    "heatingType": "Verwarming",
+    "coolingType": "Koeling",
+    "hotWaterSystem": "Warm water",
+    "insulationNotes": "Isolatie",
+    "flooringType": "Vloer",
+    "windowType": "Ramen",
+    "hasSmokeDetectors": "Rookmelders",
+    "hasCoDetectors": "CO-melders",
+    "hasFireExtinguisher": "Brandblusser",
+    "hasAdaptedBathroom": "Aangepaste badkamer",
+    "accessibilityNotes": "Toegankelijkheidsnotes",
+    "bedrooms": "Slaapkamers",
+    "bathrooms": "Badkamers",
+    "furnished": "Gemeubileerd",
+    "petPolicy": "Huisdierenbeleid"
+  },
+  "sections": {
+    "floorArea": "Vloeroppervlakte",
+    "finishes": "Vloeren & ramen",
+    "safety": "Rook- & brandveiligheid",
+    "accessibility": "Toegankelijkheid",
+    "accessibilityDetails": "Toegankelijkheidsdetails"
+  },
+  "type": {
+    "APARTMENT": "Woning",
+    "PARKING": "Parkeerplaats",
+    "STORAGE": "Berging",
+    "COMMERCIAL": "Bedrijfsruimte"
+  },
+  "status": {
+    "VACANT": "Leeg",
+    "OCCUPIED": "Verhuurd",
+    "SELF_OCCUPIED": "Eigen bewoning",
+    "MAINTENANCE": "Onderhoud",
+    "UNAVAILABLE": "Niet beschikbaar",
+    "UNDER_RENOVATION": "In renovatie",
+    "FALLOW": "Braakliggend",
+    "LISTED": "Te huur"
+  },
+  "split": {
+    "action": "Opsplitsen in meerdere eenheden",
+    "title": "{{street}} opsplitsen in eenheden",
+    "count": "Hoeveel eenheden?",
+    "numbering": "Nummering",
+    "numberingPattern": {
+      "NUMERIC": "1, 2, 3 …",
+      "ALPHABETIC": "A, B, C …",
+      "FLOOR_DOT_INDEX": "1.01, 1.02, 1.03 …"
+    },
+    "startFloor": "Beginverdieping",
+    "unitType": "Type eenheid",
+    "keepsHistory": "Uw bestaande eenheid wordt #1 en behoudt het contract, de foto's en de geschiedenis.",
+    "submit": "Eenheden aanmaken",
+    "movedExplainer": "Woninggegevens staan nu bij elke eenheid. Open het tabblad Eenheden om ze te bewerken."
+  },
+  "allocation": {
+    "title": "Kostenverdeling",
+    "basis": "Verdeel gebouwkosten op basis van",
+    "basisOption": {
+      "AREA": "Vloeroppervlakte",
+      "EQUAL": "Gelijk",
+      "CUSTOM": "Aangepaste percentages",
+      "MANUAL": "Handmatig per uitgave"
+    },
+    "share": "Aandeel",
+    "noArea": "Geen vloeroppervlakte ingesteld",
+    "preview": "Aandeel van elke eenheid in {{amount}}",
+    "customTotalError": "Aangepaste aandelen moeten optellen tot 100%. Ze komen nu uit op {{total}}%."
+  },
+  "delete": {
+    "confirmTitle": "Eenheid {{number}} verwijderen?",
+    "lastUnitBlocked": "Een pand moet minstens één eenheid behouden, dus deze kan niet worden verwijderd.",
+    "activeContractBlocked": "Deze eenheid heeft een actief contract. Beëindig eerst het contract."
+  },
+  "picker": {
+    "label": "Eenheid",
+    "placeholder": "Kies een eenheid",
+    "required": "Kies voor welke eenheid dit contract is."
+  }
+}

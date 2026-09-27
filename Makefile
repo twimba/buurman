@@ -1,4 +1,10 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub seed-data
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub seed-data local
+
+# Absolute path to the directory holding THIS Makefile. Targets that have to
+# hand an absolute path to another process (the `local` iTerm2 panes below)
+# use this instead of a hardcoded one, so they follow the checkout they were
+# invoked from -- a git worktree included.
+ROOT_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -40,9 +46,14 @@ certs:
 stats:
 	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --avg-wage 100000 --sloccount-format --cocomo-project-type "ai-solo,0.25,1.03,1.0,1.0"
 
-## Run backend unit tests
+## Run backend unit tests (install-then-test: the full reactor must be `install`ed first,
+## otherwise dependency resolution can pick up stale/partial `target/classes` from another
+## module instead of its installed jar, causing non-deterministic NoClassDefFoundError /
+## ClassNotFoundException. This is the single sanctioned entry point — do not run bare
+## `mvn test` and do not pair `-pl` without `-am`.
 test:
-	cd backend && mvn test -pl buurman-common,buurman-core,buurman-notifications,buurman-documents,buurman-booklets,buurman-letters -Pquick -Dmaven.build.cache.enabled=false
+	cd backend && mvn clean install -DskipTests -Dmaven.build.cache.enabled=false
+	cd backend && mvn test -Dmaven.build.cache.enabled=false
 
 ## Run backend unit tests with JaCoCo coverage report (per-module + aggregated)
 test-coverage:
@@ -202,21 +213,25 @@ workspace-teardown:
 
 ## Open iTerm2 tab with 3 panes: infrastructure (top), backend (middle), frontend (bottom)
 local:
-	colima start
 	@osascript \
 		-e 'tell application "iTerm2"' \
-		-e '  tell current window' \
-		-e '    set newTab to (create tab with default profile)' \
-		-e '    tell current session of newTab' \
-		-e '      write text "cd /Users/luis/projects/buurman && make dev-fg"' \
-		-e '      set backendPane to (split horizontally with default profile)' \
+		-e '  activate' \
+		-e '  if (count of windows) = 0 then' \
+		-e '    set firstSession to (current session of (create window with default profile))' \
+		-e '  else' \
+		-e '    tell current window' \
+		-e '      set firstSession to (current session of (create tab with default profile))' \
 		-e '    end tell' \
-		-e '    tell backendPane' \
-		-e '      write text "cd /Users/luis/projects/buurman/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
-		-e '      set frontendPane to (split horizontally with default profile)' \
-		-e '    end tell' \
-		-e '    tell frontendPane' \
-		-e '      write text "cd /Users/luis/projects/buurman/frontend && yarn dev"' \
-		-e '    end tell' \
+		-e '  end if' \
+		-e '  tell firstSession' \
+		-e '    write text "cd $(ROOT_DIR) && make dev-fg"' \
+		-e '    set backendPane to (split horizontally with default profile)' \
+		-e '  end tell' \
+		-e '  tell backendPane' \
+		-e '    write text "cd $(ROOT_DIR) && sleep 10 && make backend"' \
+		-e '    set frontendPane to (split horizontally with default profile)' \
+		-e '  end tell' \
+		-e '  tell frontendPane' \
+		-e '    write text "cd $(ROOT_DIR)/frontend && yarn dev"' \
 		-e '  end tell' \
 		-e 'end tell'

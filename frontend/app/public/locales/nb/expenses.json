@@ -74,7 +74,11 @@
     "createExpense": "Opprett",
     "expenseSuffix": " utgift",
     "saving": "Lagrer...",
-    "currency": "Valuta"
+    "currency": "Valuta",
+    "target": "Gjelder for",
+    "targetBuilding": "Hele bygningen",
+    "targetUnit": "Én enhet",
+    "unit": "Enhet"
   },
   "validation": {
     "propertyRequired": "Eiendom er obligatorisk",

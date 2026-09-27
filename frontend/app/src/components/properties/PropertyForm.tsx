@@ -7,16 +7,16 @@ import {
   PropertyResponse,
   CreatePropertyRequest,
   PropertyType,
-  PropertyStatus,
   PropertyCategory,
   OutdoorAreaResponse,
-  AmenityResponse,
-  PropertyAmenityResponse,
   PROPERTY_TYPES_BY_CATEGORY,
 } from '@/types/property';
 import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
+import { UnitCharacteristicsForm } from '../units/UnitCharacteristicsForm';
+import type { CreateUnitRequest, UpdateUnitRequest } from '@/types/unit';
+import { UnitType } from '@/types/unit';
 import { CountrySelector } from '../common/CountrySelector';
 import {
   FormStepGate,
@@ -49,16 +49,27 @@ interface PropertyFormProps {
     areaUnit?: string;
   }) => void;
   onDeleteOutdoorArea?: (id: string) => void;
-  allAmenities?: Record<string, AmenityResponse[]>;
-  propertyAmenities?: PropertyAmenityResponse[];
-  onAddAmenity?: (amenityIdentifier: string, notes?: string | null) => void;
-  onRemoveAmenity?: (amenityIdentifier: string) => void;
 }
 
 const selectCls =
   'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500';
 const inputCls = selectCls;
 const labelCls = 'block text-sm font-medium text-text-secondary mb-1';
+
+// Mirrors the backend's own implicit-unit backfill rule (V070): a residential or mixed-use
+// building's sole unit defaults to APARTMENT, everything else to COMMERCIAL. The landlord is
+// never asked to pick a "unit type" when creating a property -- this keeps the create form's
+// (optional) dwelling section consistent with what the backend would default to anyway.
+const defaultUnitTypeForCategory = (category: PropertyCategory): UnitType =>
+  category === PropertyCategory.RESIDENTIAL ||
+  category === PropertyCategory.MIXED_USE
+    ? UnitType.APARTMENT
+    : UnitType.COMMERCIAL;
+
+const defaultUnitDraft = (category: PropertyCategory): CreateUnitRequest => ({
+  unitNumber: '1',
+  unitType: defaultUnitTypeForCategory(category),
+});
 
 export const PropertyForm = ({
   property,
@@ -67,20 +78,16 @@ export const PropertyForm = ({
   outdoorAreas,
   onCreateOutdoorArea,
   onDeleteOutdoorArea,
-  allAmenities,
-  propertyAmenities,
-  onAddAmenity,
-  onRemoveAmenity,
 }: PropertyFormProps) => {
-  const { t } = useTranslation('properties');
+  const { t } = useTranslation(['properties', 'units']);
   const navigate = useNavigate();
   const { defaultCountryCode } = useTeamDefaults();
-  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
+  const { typeLabel, categoryLabel } = usePropertyLabels();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
   const [geocodedAddress, setGeocodedAddress] = useState(() =>
     property
-      ? `${property.street}|${property.city}|${property.postalCode}|${property.country}`
+      ? `${property.street}|${property.city}|${property.postalCode}|${property.countryCode}`
       : ''
   );
   const isEditMode = !!property;
@@ -100,17 +107,14 @@ export const PropertyForm = ({
   const [formData, setFormData] = useState<CreatePropertyRequest>({
     propertyCategory: resolveCategory(),
     propertyType: resolveType(),
-    status: (property?.status as PropertyStatus) ?? PropertyStatus.VACANT,
     street: property?.street ?? '',
     city: property?.city ?? '',
     postalCode: property?.postalCode ?? '',
-    country: property?.country || defaultCountryCode || '',
+    countryCode: property?.countryCode || defaultCountryCode || '',
     regionCode: property?.regionCode,
     latitude: property?.latitude ?? undefined,
     longitude: property?.longitude ?? undefined,
     geocodeAccuracy: property?.geocodeAccuracy ?? undefined,
-    areaValue: property?.areaValue ?? undefined,
-    areaUnit: property?.areaUnit ?? 'sqm',
     // Characteristics
     yearBuilt: property?.yearBuilt,
     yearLastRenovated: property?.yearLastRenovated,
@@ -118,29 +122,20 @@ export const PropertyForm = ({
     foundationType: property?.foundationType,
     roofType: property?.roofType,
     wallConstruction: property?.wallConstruction,
-    flooringType: property?.flooringType,
-    windowType: property?.windowType,
     numberOfFloors: property?.numberOfFloors,
     structuralNotes: property?.structuralNotes,
-    energyEfficiencyRating: property?.energyEfficiencyRating,
-    energyCertificateExpiryDate: property?.energyCertificateExpiryDate,
-    heatingType: property?.heatingType,
-    coolingType: property?.coolingType,
-    hotWaterSystem: property?.hotWaterSystem,
-    insulationNotes: property?.insulationNotes,
     electricityConnectionType: property?.electricityConnectionType,
-    electricityCapacityAmps: property?.electricityCapacityAmps,
+    electricityCapacityValue: property?.electricityCapacityValue,
+    electricityCapacityUnit: property?.electricityCapacityUnit,
     waterConnectionType: property?.waterConnectionType,
     hasGasConnection: property?.hasGasConnection ?? false,
     sewageType: property?.sewageType,
     internetConnectionType: property?.internetConnectionType,
-    internetMaxSpeedMbps: property?.internetMaxSpeedMbps,
+    internetMaxSpeedValue: property?.internetMaxSpeedValue,
+    internetMaxSpeedUnit: property?.internetMaxSpeedUnit,
     internetStatus: property?.internetStatus,
     parkingSpaces: property?.parkingSpaces,
     parkingType: property?.parkingType,
-    hasSmokeDetectors: property?.hasSmokeDetectors ?? false,
-    hasCoDetectors: property?.hasCoDetectors ?? false,
-    hasFireExtinguisher: property?.hasFireExtinguisher ?? false,
     hasSprinklerSystem: property?.hasSprinklerSystem ?? false,
     hasAlarmSystem: property?.hasAlarmSystem ?? false,
     hasSecurityCameras: property?.hasSecurityCameras ?? false,
@@ -149,11 +144,8 @@ export const PropertyForm = ({
     isWheelchairAccessible: property?.isWheelchairAccessible ?? false,
     hasElevator: property?.hasElevator ?? false,
     hasStepFreeEntrance: property?.hasStepFreeEntrance ?? false,
-    hasAdaptedBathroom: property?.hasAdaptedBathroom ?? false,
-    accessibilityNotes: property?.accessibilityNotes,
     // Category-specific details
-    residentialDetails:
-      property?.residentialDetails as CreatePropertyRequest['residentialDetails'],
+    residentialDetails: property?.residentialDetails,
     commercialDetails:
       property?.commercialDetails as CreatePropertyRequest['commercialDetails'],
     industrialDetails:
@@ -166,6 +158,22 @@ export const PropertyForm = ({
     property?.identifier
   );
 
+  // Create-mode only: the property's first unit. A landlord adding a single-family house never
+  // has to think about "units" -- this stays collapsed and defaulted (see defaultUnitDraft) unless
+  // they open it, and edit mode never renders it at all (dwelling fields are edited on the
+  // property's Info tab / the unit's own page once the property exists, per UpdatePropertyRequest
+  // dropping dwelling fields entirely).
+  const [unitDraft, setUnitDraft] = useState<CreateUnitRequest>(() =>
+    defaultUnitDraft(resolveCategory())
+  );
+
+  function handleUnitChange<K extends keyof UpdateUnitRequest>(
+    field: K,
+    value: UpdateUnitRequest[K]
+  ): void {
+    setUnitDraft((prev) => ({ ...prev, [field]: value }));
+  }
+
   // Fetch rent regulation countries to know which ones have regional regulations
   const { data: regulationCountries } = useQuery({
     queryKey: ['rentRegulationCountries'],
@@ -174,15 +182,15 @@ export const PropertyForm = ({
   });
 
   const selectedRegCountry = regulationCountries?.find(
-    (c) => c.countryCode === formData.country
+    (c) => c.countryCode === formData.countryCode
   );
   const hasRegions = selectedRegCountry?.hasRegionalRegulations ?? false;
 
   // Fetch regions for the selected country (only if it has regional regulations)
   const { data: countryDetail } = useQuery({
-    queryKey: ['rentRegulationCountryDetail', formData.country],
-    queryFn: () => getRentRegulationCountryDetail(formData.country),
-    enabled: hasRegions && !!formData.country,
+    queryKey: ['rentRegulationCountryDetail', formData.countryCode],
+    queryFn: () => getRentRegulationCountryDetail(formData.countryCode),
+    enabled: hasRegions && !!formData.countryCode,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -221,53 +229,41 @@ export const PropertyForm = ({
   if (property && property.identifier !== propertyIdentifier) {
     setPropertyIdentifier(property.identifier);
     setGeocodedAddress(
-      `${property.street}|${property.city}|${property.postalCode}|${property.country}`
+      `${property.street}|${property.city}|${property.postalCode}|${property.countryCode}`
     );
     setFormData({
       propertyCategory:
         (property.propertyCategory as PropertyCategory) ??
         PropertyCategory.RESIDENTIAL,
       propertyType: property.propertyType as PropertyType,
-      status: property.status as PropertyStatus,
       street: property.street,
       city: property.city,
       postalCode: property.postalCode,
-      country: property.country,
+      countryCode: property.countryCode,
       regionCode: property.regionCode,
       latitude: property.latitude,
       longitude: property.longitude,
       geocodeAccuracy: property.geocodeAccuracy,
-      areaValue: property.areaValue,
-      areaUnit: property.areaUnit ?? 'sqm',
       yearBuilt: property.yearBuilt,
       yearLastRenovated: property.yearLastRenovated,
       constructionType: property.constructionType,
       foundationType: property.foundationType,
       roofType: property.roofType,
       wallConstruction: property.wallConstruction,
-      flooringType: property.flooringType,
-      windowType: property.windowType,
       numberOfFloors: property.numberOfFloors,
       structuralNotes: property.structuralNotes,
-      energyEfficiencyRating: property.energyEfficiencyRating,
-      energyCertificateExpiryDate: property.energyCertificateExpiryDate,
-      heatingType: property.heatingType,
-      coolingType: property.coolingType,
-      hotWaterSystem: property.hotWaterSystem,
-      insulationNotes: property.insulationNotes,
       electricityConnectionType: property.electricityConnectionType,
-      electricityCapacityAmps: property.electricityCapacityAmps,
+      electricityCapacityValue: property.electricityCapacityValue,
+      electricityCapacityUnit: property.electricityCapacityUnit,
       waterConnectionType: property.waterConnectionType,
       hasGasConnection: property.hasGasConnection ?? false,
       sewageType: property.sewageType,
       internetConnectionType: property.internetConnectionType,
-      internetMaxSpeedMbps: property.internetMaxSpeedMbps,
+      internetMaxSpeedValue: property.internetMaxSpeedValue,
+      internetMaxSpeedUnit: property.internetMaxSpeedUnit,
       internetStatus: property.internetStatus,
       parkingSpaces: property.parkingSpaces,
       parkingType: property.parkingType,
-      hasSmokeDetectors: property.hasSmokeDetectors ?? false,
-      hasCoDetectors: property.hasCoDetectors ?? false,
-      hasFireExtinguisher: property.hasFireExtinguisher ?? false,
       hasSprinklerSystem: property.hasSprinklerSystem ?? false,
       hasAlarmSystem: property.hasAlarmSystem ?? false,
       hasSecurityCameras: property.hasSecurityCameras ?? false,
@@ -276,10 +272,7 @@ export const PropertyForm = ({
       isWheelchairAccessible: property.isWheelchairAccessible ?? false,
       hasElevator: property.hasElevator ?? false,
       hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
-      hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
-      accessibilityNotes: property.accessibilityNotes,
-      residentialDetails:
-        property.residentialDetails as CreatePropertyRequest['residentialDetails'],
+      residentialDetails: property.residentialDetails,
       commercialDetails:
         property.commercialDetails as CreatePropertyRequest['commercialDetails'],
       industrialDetails:
@@ -289,21 +282,21 @@ export const PropertyForm = ({
     });
   }
 
-  const currentAddressKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.country}`;
+  const currentAddressKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.countryCode}`;
   const addressDirty =
-    !!(formData.street && formData.city && formData.country) &&
+    !!(formData.street && formData.city && formData.countryCode) &&
     currentAddressKey !== geocodedAddress;
 
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
-    const addrKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.country}`;
+    const addrKey = `${formData.street}|${formData.city}|${formData.postalCode}|${formData.countryCode}`;
     const timeoutId = setTimeout(() => {
-      if (formData.street && formData.city && formData.country) {
+      if (formData.street && formData.city && formData.countryCode) {
         const hasChanged = property
           ? formData.street !== property.street ||
             formData.city !== property.city ||
             formData.postalCode !== property.postalCode ||
-            formData.country !== property.country
+            formData.countryCode !== property.countryCode
           : true;
 
         if (hasChanged) {
@@ -312,7 +305,7 @@ export const PropertyForm = ({
               street: formData.street,
               city: formData.city,
               postalCode: formData.postalCode,
-              country: formData.country,
+              countryCode: formData.countryCode,
             },
             {
               onSuccess: (result) => {
@@ -348,7 +341,7 @@ export const PropertyForm = ({
     formData.street,
     formData.city,
     formData.postalCode,
-    formData.country,
+    formData.countryCode,
     property,
   ]);
 
@@ -364,6 +357,10 @@ export const PropertyForm = ({
       industrialDetails: undefined,
       agriculturalDetails: undefined,
     }));
+    setUnitDraft((prev) => ({
+      ...prev,
+      unitType: defaultUnitTypeForCategory(category),
+    }));
   };
 
   const validate = (): boolean => {
@@ -378,12 +375,8 @@ export const PropertyForm = ({
     if (!formData.postalCode.trim()) {
       newErrors.postalCode = t('form.validation.postalCodeRequired');
     }
-    if (!formData.country.trim()) {
+    if (!formData.countryCode.trim()) {
       newErrors.countryCode = t('form.validation.countryRequired');
-    }
-
-    if (formData.areaValue != null && formData.areaValue <= 0) {
-      newErrors.areaValue = t('form.validation.areaPositive');
     }
 
     setErrors(newErrors);
@@ -396,7 +389,7 @@ export const PropertyForm = ({
     }
 
     try {
-      await onSubmit(formData);
+      await onSubmit(isEditMode ? formData : { ...formData, unit: unitDraft });
       if (property) {
         navigate(`/properties/${property.identifier}`);
       } else {
@@ -419,15 +412,15 @@ export const PropertyForm = ({
     }
   };
 
-  const handleChange = (
-    field: keyof CreatePropertyRequest,
-    value: string | number | boolean | undefined | unknown
-  ) => {
+  function handleChange<K extends keyof CreatePropertyRequest>(
+    field: K,
+    value: CreatePropertyRequest[K]
+  ): void {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field as string]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
     }
-  };
+  }
 
   return (
     <MobileFormStepperProvider totalSteps={3}>
@@ -505,14 +498,15 @@ export const PropertyForm = ({
 
               <div>
                 <label className={labelCls}>
-                  {t('form.country')} <span className="text-error-text">*</span>
+                  {t('form.countryCode')}{' '}
+                  <span className="text-error-text">*</span>
                 </label>
                 <CountrySelector
-                  value={formData.country}
+                  value={formData.countryCode}
                   onChange={(v) => {
                     setFormData((prev) => ({
                       ...prev,
-                      country: v,
+                      countryCode: v,
                       regionCode: undefined,
                     }));
                     if (errors.countryCode) {
@@ -550,7 +544,7 @@ export const PropertyForm = ({
             </div>
 
             {/* Location Preview */}
-            {formData.street && formData.city && formData.country && (
+            {formData.street && formData.city && formData.countryCode && (
               <div className="mt-6">
                 <h4 className="text-sm font-semibold text-text-secondary mb-3">
                   {t('form.locationPreview')}
@@ -562,7 +556,9 @@ export const PropertyForm = ({
                   longitude={formData.longitude}
                   geocodeAccuracy={formData.geocodeAccuracy}
                   isGeocoding={addressDirty || geocodeMutation.isPending}
-                  defaultCountryCode={formData.country || defaultCountryCode}
+                  defaultCountryCode={
+                    formData.countryCode || defaultCountryCode
+                  }
                   onLocationChange={(lat, lng) => {
                     setFormData((prev) => ({
                       ...prev,
@@ -632,60 +628,6 @@ export const PropertyForm = ({
                   }
                 />
               </div>
-
-              {/* Status */}
-              <div>
-                <label className={labelCls}>
-                  {t('form.status')} <span className="text-error-text">*</span>
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    handleChange('status', e.target.value as PropertyStatus)
-                  }
-                  className={selectCls}
-                >
-                  {Object.values(PropertyStatus).map((status) => (
-                    <option key={status} value={status}>
-                      {statusLabel(status)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Area */}
-              <div>
-                <label className={labelCls}>{t('form.area')}</label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={formData.areaValue ?? ''}
-                    onChange={(e) =>
-                      handleChange(
-                        'areaValue',
-                        e.target.value ? parseFloat(e.target.value) : undefined
-                      )
-                    }
-                    className={`flex-1 ${inputCls}`}
-                    placeholder={t('form.areaPlaceholder')}
-                  />
-                  <select
-                    value={formData.areaUnit ?? 'sqm'}
-                    onChange={(e) => handleChange('areaUnit', e.target.value)}
-                    className="w-20 border border-border-strong rounded px-2 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                  >
-                    <option value="sqm">m²</option>
-                    <option value="sqft">ft²</option>
-                  </select>
-                </div>
-                {errors.areaValue && (
-                  <p className="text-error-text text-sm mt-1">
-                    {errors.areaValue}
-                  </p>
-                )}
-              </div>
             </div>
           </div>
         </FormStepGate>
@@ -699,11 +641,21 @@ export const PropertyForm = ({
             outdoorAreas={outdoorAreas}
             onCreateOutdoorArea={onCreateOutdoorArea}
             onDeleteOutdoorArea={onDeleteOutdoorArea}
-            allAmenities={allAmenities}
-            propertyAmenities={propertyAmenities}
-            onAddAmenity={onAddAmenity}
-            onRemoveAmenity={onRemoveAmenity}
           />
+
+          {/* This home's dwelling attributes (floor area, energy label, heating, safety,
+              accessibility) -- create mode only. Edit mode drops these entirely: once the
+              property exists they are edited on its Info tab (single unit) or the unit's own
+              page (multiple units), never here. */}
+          {!isEditMode && (
+            <div className="mt-6 pt-6 border-t border-border-default">
+              <UnitCharacteristicsForm
+                title={t('units:detail.characteristics')}
+                value={unitDraft}
+                onChange={handleUnitChange}
+              />
+            </div>
+          )}
         </FormStepGate>
 
         {/* Actions — md+ inline save bar (single-scroll desktop UX) */}

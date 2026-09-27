@@ -3,6 +3,8 @@ package com.buurman.dto.request;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.identifier.PropertyIdentifier;
 
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 public record WwsCalculationRequest(
     @NotNull String systemVersion,
     @NotNull PropertyIdentifier propertyIdentifier,
+    @Nullable String unitIdentifier,
     Optional<String> contractIdentifier,
     Optional<BigDecimal> surfaceAreaSqm,
     Optional<Integer> numberOfRooms,

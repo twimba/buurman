@@ -74,7 +74,11 @@
     "createExpense": "Opret",
     "expenseSuffix": " udgift",
     "saving": "Gemmer...",
-    "currency": "Valuta"
+    "currency": "Valuta",
+    "target": "Gælder for",
+    "targetBuilding": "Hele ejendommen",
+    "targetUnit": "Én enhed",
+    "unit": "Enhed"
   },
   "validation": {
     "propertyRequired": "Ejendom er paakraevet",

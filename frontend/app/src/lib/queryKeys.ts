@@ -49,7 +49,6 @@ export const queryKeys = {
     auditLog: (propertyId?: string) => k('propertyAuditLog', propertyId),
     photos: (propertyId?: string) => k('propertyPhotos', propertyId),
     outdoorAreas: (propertyId?: string) => k('outdoor-areas', propertyId),
-    amenities: (propertyId?: string) => k('property-amenities', propertyId),
     amenitiesCatalog: (category?: string) => k('amenities', category),
     dashboard: (propertyId?: string, months?: number) =>
       k('propertyDashboard', propertyId, months),
@@ -240,6 +239,21 @@ export const queryKeys = {
     stats: () => k('notification-stats'),
   },
 
+  // --- Units ---
+  // `detail` (and its residentialDetails/amenities sub-keys) are nested under the same 'units'
+  // prefix as `all` so that invalidating the bare ['units'] prefix reaches every unit query —
+  // while `all(propertyIdentifier)` and `detail(unitIdentifier)` stay independently invalidatable.
+  units: {
+    all: (propertyIdentifier?: string) => k('units', propertyIdentifier),
+    detail: (unitIdentifier?: string) => k('units', 'detail', unitIdentifier),
+    residentialDetails: (unitIdentifier?: string) =>
+      k('units', 'detail', unitIdentifier, 'residentialDetails'),
+    amenities: (unitIdentifier?: string) =>
+      k('units', 'detail', unitIdentifier, 'amenities'),
+    allocation: (expenseIdentifier?: string) =>
+      k('unitAllocation', expenseIdentifier),
+  },
+
   // --- Occupancy Periods ---
   occupancyPeriods: {
     all: (propertyIdentifier?: string) =>
@@ -296,8 +310,7 @@ export const queryKeys = {
 
   // --- WWS ---
   wws: {
-    preFill: (propertyIdentifier?: string) =>
-      k('wwsPreFill', propertyIdentifier),
+    preFill: (unitIdentifier?: string) => k('wwsPreFill', unitIdentifier),
     calculations: (propertyIdentifier?: string) =>
       k('wwsCalculations', propertyIdentifier),
     latest: (propertyIdentifier?: string) => k('wwsLatest', propertyIdentifier),

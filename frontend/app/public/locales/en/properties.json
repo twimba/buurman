@@ -136,7 +136,8 @@
       "history": "History",
       "noCalculation": "No calculation yet",
       "noCalculationDescription": "Calculate the WWS points to determine the maximum regulated rent for this property.",
-      "noPreviousCalculations": "No previous calculations."
+      "noPreviousCalculations": "No previous calculations.",
+      "multiUnitUnsupported": "This building has multiple units. Open a unit to calculate its WWS points."
     },
     "metadata": {
       "title": "Metadata",
@@ -419,7 +420,8 @@
       "occupancyIncomeTrend": "Occupancy & Income Trend",
       "expenseBreakdown": "Expense Breakdown",
       "sixMonthProjection": "6-Month Projection",
-      "equityOverview": "Equity Overview"
+      "equityOverview": "Equity Overview",
+      "unitOccupancy": "Occupancy by Unit"
     },
     "summary": {
       "totalRoi": "Total ROI",
@@ -448,7 +450,8 @@
       "contactOccupied": "Contact occupied",
       "netIncomeTrend": "Net Income Trend",
       "netIncome": "Net Income",
-      "noData": "No contract data"
+      "noData": "No contract data",
+      "buildingVacancyRate": "Building vacancy rate"
     },
     "expense": {
       "noData": "No expense data"
@@ -761,6 +764,13 @@
     },
     "pagination": {
       "showing": "Showing {{from}} to {{to}} of {{total}} expenses"
+    },
+    "allocation": {
+      "settingsToggle": "Cost allocation settings",
+      "buildingBadge": "Whole building",
+      "viewSplit": "View split",
+      "hideSplit": "Hide split",
+      "failedToLoad": "Failed to load the cost split"
     }
   },
   "audit": {
@@ -808,7 +818,8 @@
       "notesPlaceholder": "Additional notes...",
       "reason": "Reason",
       "reasonPlaceholder": "Select a reason...",
-      "alreadyTakenPeriods": "Already taken periods"
+      "alreadyTakenPeriods": "Already taken periods",
+      "unitRequired": "Choose which unit this occupancy period is for."
     },
     "occupancyTypes": {
       "PERSONAL": "Personal",
@@ -1110,5 +1121,12 @@
   "lifecycle": {
     "openContract": "Open contract",
     "clickToEdit": "Click to edit"
+  },
+  "unitOccupancy": {
+    "noUnits": "No units",
+    "allVacant": "Vacant",
+    "allOccupied": "Occupied",
+    "allUnavailable": "Unavailable",
+    "mixed": "{{occupied}} let · {{vacant}} vacant · {{unavailable}} unavailable"
   }
 }

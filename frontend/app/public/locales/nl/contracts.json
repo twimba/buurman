@@ -579,6 +579,7 @@
     "retroactiveTooltip": "Aanpassingsbetalingen worden aangemaakt voor reeds afgehandelde betalingen die worden beïnvloed door retroactieve datumwijzigingen.",
     "exceedsMax": "Overschrijdt maximale gereguleerde verhoging van {{max}}%",
     "belowMin": "Onder minimale gereguleerde verhoging van {{min}}%",
+    "leaseOfTotal": "Contract {{index}} van {{total}} voor dit pand",
     "tableHeaders": {
       "property": "Vastgoed",
       "currentRent": "Huidige huur",
@@ -815,6 +816,7 @@
       "bruksvardessystemApplicable": "Bruksvärdesysteem van toepassing",
       "energyDeclarationRating": "Energieverklaringsbeoordeling",
       "hyresnamndenEligible": "Hyresnämnden bevoegd",
+      "depositSum": "Borgbedrag",
       "vuokrasopimustyyppi": "Huurcontracttype (FI)",
       "vakuusAmount": "Borgbedrag",
       "vakuusMonths": "Borg in maanden",

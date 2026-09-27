@@ -9,6 +9,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
 import static com.buurman.jooq.generated.Tables.CONTRACT_RENT_PERIODS;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.EXPENSE_ALLOCATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
 import static com.buurman.jooq.generated.Tables.PHOTOS;
@@ -23,6 +24,9 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
+import static com.buurman.jooq.generated.Tables.UNITS;
+import static com.buurman.jooq.generated.Tables.UNIT_AMENITIES;
+import static com.buurman.jooq.generated.Tables.UNIT_RESIDENTIAL_DETAILS;
 import static com.buurman.util.FeatureFlags.TAKEOUT_MAX_EXPORTS;
 
 import java.io.ByteArrayOutputStream;
@@ -86,6 +90,46 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class TakeoutService {
+
+  /**
+   * Every JOOQ table whose rows this takeout exports: every table backing an entry of the {@code
+   * categories} array in {@link #processTakeout}, plus {@link
+   * com.buurman.jooq.generated.Tables#TEAMS} (exported separately as {@code team.json}, not a CSV
+   * row). Kept in sync by hand with {@code categories} -- a companion test in this module diffs
+   * this set against every team-scoped table in the JOOQ meta-model, so a migration that adds a new
+   * team-scoped table without updating either list fails the build instead of silently shipping an
+   * export with a hole in it (BUUR-106 wave3c Critical 5: V070 dropped ten-plus columns and two
+   * whole tables from the export this way, unnoticed).
+   */
+  static final Set<Table<?>> EXPORTED_TABLES =
+      Set.of(
+          PROPERTIES,
+          UNITS,
+          UNIT_RESIDENTIAL_DETAILS,
+          UNIT_AMENITIES,
+          CONTACTS,
+          CONTACT_ADDRESSES,
+          CONTRACTS,
+          CONTRACT_PARTIES,
+          CONTRACT_RENT_PERIODS,
+          CONTRACT_PAYMENT_INSTRUCTIONS,
+          PAYMENTS,
+          PAYMENT_RECEIVALS,
+          EXPENSES,
+          EXPENSE_ALLOCATIONS,
+          DOCUMENTS,
+          PHOTOS,
+          PROPERTY_ACQUISITIONS,
+          PROPERTY_VALUATIONS,
+          PROPERTY_FEES,
+          PROPERTY_TAXES,
+          PROPERTY_INSURANCES,
+          PROPERTY_FINANCINGS,
+          PROPERTY_OUTDOOR_AREAS,
+          AMENITIES,
+          PROPERTY_OCCUPANCY_PERIODS,
+          TEAM_MEMBERS,
+          TEAMS);
 
   @Setter(
       onMethod_ = {
@@ -172,8 +216,21 @@ public class TakeoutService {
         ExportCategory[] categories = {
           new ExportCategory(
               "properties.csv",
-              "All properties (units, buildings, etc.) registered in your portfolio.",
+              "All properties (buildings) registered in your portfolio.",
               () -> exportTable(PROPERTIES, teamId)),
+          new ExportCategory(
+              "units.csv",
+              "Dwellings (units) within each property -- area, energy rating, valuation and"
+                  + " allocation share.",
+              () -> exportTable(UNITS, teamId)),
+          new ExportCategory(
+              "unit-residential-details.csv",
+              "Bedroom/bathroom counts, furnishing and pet policy for each residential unit.",
+              () -> exportTable(UNIT_RESIDENTIAL_DETAILS, teamId)),
+          new ExportCategory(
+              "unit-amenities.csv",
+              "Amenities (appliances, features) attached to each unit.",
+              () -> exportTable(UNIT_AMENITIES, teamId)),
           new ExportCategory(
               "contacts.csv",
               "Contacts in your address book (tenants, landlords, agents, vendors).",
@@ -210,6 +267,11 @@ public class TakeoutService {
               "expenses.csv",
               "Expenses incurred against properties (repairs, utilities, etc.).",
               () -> exportTable(EXPENSES, teamId)),
+          new ExportCategory(
+              "expense-allocations.csv",
+              "How each expense is split across units (by area, equally, custom share or manual"
+                  + " override).",
+              () -> exportTable(EXPENSE_ALLOCATIONS, teamId)),
           new ExportCategory(
               "documents-metadata.csv",
               "Metadata for every document attached to any entity (the files themselves are in"

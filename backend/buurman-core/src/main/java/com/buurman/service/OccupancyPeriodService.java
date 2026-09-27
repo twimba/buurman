@@ -1,7 +1,5 @@
 package com.buurman.service;
 
-import static com.buurman.domain.Property.PropertyStatus.SELF_OCCUPIED;
-import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.SidGenerator.newOccupancyPeriodId;
 
 import java.time.Clock;
@@ -25,6 +23,8 @@ import com.buurman.domain.PropertyAcquisition;
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyOccupancyPeriod;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Unit;
+import com.buurman.domain.UnitStatus;
 import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreateOccupancyPeriodRequest;
@@ -34,6 +34,7 @@ import com.buurman.dto.response.OccupancyPeriodResponse;
 import com.buurman.dto.response.PropertyTimelineResponse;
 import com.buurman.dto.response.PropertyTimelineResponse.TimelineEntry;
 import com.buurman.dto.response.PropertyTimelineResponse.TimelineEntryType;
+import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
@@ -41,6 +42,7 @@ import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyFinancingRepository;
 import com.buurman.repository.PropertyOccupancyPeriodRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
@@ -53,6 +55,7 @@ public class OccupancyPeriodService {
 
   private final PropertyOccupancyPeriodRepository repository;
   private final PropertyRepository propertyRepository;
+  private final UnitRepository unitRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
   private final PropertyAcquisitionRepository acquisitionRepository;
@@ -67,18 +70,21 @@ public class OccupancyPeriodService {
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
+    Unit unit = resolveUnit(property, request.unitIdentifier(), principal);
 
-    // Validate no overlapping occupancy periods
+    // Validate no overlapping occupancy periods on this unit. Scoped by unit_id to match the
+    // excl_occupancy_periods_no_overlap exclusion constraint (re-scoped from property_id to
+    // unit_id in V070): two units of the same property may legitimately overlap.
     LocalDate endDate = request.endDate().orElse(LocalDate.of(9999, 12, 31));
     List<PropertyOccupancyPeriod> overlapping =
-        repository.findOverlapping(property.getId(), teamId, request.startDate(), endDate, null);
+        repository.findOverlapping(unit.getId(), teamId, request.startDate(), endDate, null);
     if (!overlapping.isEmpty()) {
       throw new BusinessRuleException(
           "Cannot create self-occupancy period: overlaps with an existing period");
     }
 
-    // Validate no overlapping contracts
-    validateNoOverlappingContracts(property.getId(), teamId, request.startDate(), endDate, null);
+    // Validate no overlapping contracts on this unit
+    validateNoOverlappingContracts(unit.getId(), teamId, request.startDate(), endDate);
 
     Instant now = Instant.now(clock);
     PropertyOccupancyPeriod period =
@@ -86,6 +92,7 @@ public class OccupancyPeriodService {
             .identifier(Optional.of(newOccupancyPeriodId()))
             .teamId(teamId)
             .propertyId(property.getId())
+            .unitId(unit.getId())
             .startDate(request.startDate())
             .endDate(request.endDate())
             .type(request.type())
@@ -100,10 +107,17 @@ public class OccupancyPeriodService {
 
     repository.save(period);
 
-    // Update property status if period starts today or earlier
-    if (!request.startDate().isAfter(LocalDate.now(clock))) {
-      property.setStatus(SELF_OCCUPIED);
-      propertyRepository.save(property);
+    // Reinstated business rule (deleted when properties.status was dropped in V070), retargeted
+    // to the unit: a period that is genuinely CURRENT marks its unit SELF_OCCUPIED. "Current" means
+    // started (startDate not in the future) AND not already ended (endDate null or not in the
+    // past) — a back-recorded historical period (e.g. "I lived here 2019-2020" for tax purposes)
+    // must never flip a unit's live status.
+    LocalDate today = LocalDate.now(clock);
+    boolean isCurrent =
+        !request.startDate().isAfter(today)
+            && (request.endDate().isEmpty() || !request.endDate().get().isBefore(today));
+    if (isCurrent) {
+      promoteToSelfOccupancy(unit, principal.getUserId());
     }
 
     log.info(
@@ -111,7 +125,7 @@ public class OccupancyPeriodService {
         period.getIdentifier().orElseThrow(),
         propertyIdentifier);
 
-    return toResponse(period, propertyIdentifier);
+    return toResponse(period, propertyIdentifier, unit.getIdentifier().orElseThrow());
   }
 
   @Transactional
@@ -132,24 +146,25 @@ public class OccupancyPeriodService {
     request.monthlyImputedRent().ifPresent(r -> period.setMonthlyImputedRent(Optional.of(r)));
     request.notes().ifPresent(n -> period.setNotes(Optional.of(n)));
 
-    // Validate no overlapping periods (excluding self)
+    // Validate no overlapping periods on this unit (excluding self). The unit a period belongs to
+    // is fixed at creation, so this stays scoped to period.getUnitId() rather than the property.
     LocalDate endDate = period.getEndDate().orElse(LocalDate.of(9999, 12, 31));
     List<PropertyOccupancyPeriod> overlapping =
         repository.findOverlapping(
-            property.getId(), teamId, period.getStartDate(), endDate, period.getId());
+            period.getUnitId(), teamId, period.getStartDate(), endDate, period.getId());
     if (!overlapping.isEmpty()) {
       throw new BusinessRuleException(
           "Cannot update self-occupancy period: overlaps with an existing period");
     }
 
-    validateNoOverlappingContracts(property.getId(), teamId, period.getStartDate(), endDate, null);
+    validateNoOverlappingContracts(period.getUnitId(), teamId, period.getStartDate(), endDate);
 
     period.setUpdatedAt(Instant.now(clock));
     period.setUpdatedBy(principal.getUserId());
     repository.save(period);
 
     log.info("Updated self-occupancy period {}", periodIdentifier);
-    return toResponse(period, propertyIdentifier);
+    return toResponse(period, propertyIdentifier, teamId);
   }
 
   @Transactional
@@ -174,14 +189,17 @@ public class OccupancyPeriodService {
     period.setUpdatedBy(principal.getUserId());
     repository.save(period);
 
-    // If the period was active, set property to VACANT
-    if (!request.endDate().isAfter(LocalDate.now(clock)) && property.getStatus() == SELF_OCCUPIED) {
-      property.setStatus(VACANT);
-      propertyRepository.save(property);
+    // Reinstated business rule (deleted when properties.status was dropped in V070), retargeted
+    // to the unit: only set the unit to VACANT when the end date is today or earlier AND the
+    // unit's current status is still SELF_OCCUPIED. Do not unconditionally mark VACANT — a unit
+    // that is e.g. under maintenance or rented via a separate contract must not be overwritten.
+    if (!request.endDate().isAfter(LocalDate.now(clock))) {
+      Unit unit = unitRepository.getByIdAndTeamId(period.getUnitId(), teamId);
+      demoteFromSelfOccupancy(unit, principal.getUserId());
     }
 
     log.info("Ended self-occupancy period {}", periodIdentifier);
-    return toResponse(period, propertyIdentifier);
+    return toResponse(period, propertyIdentifier, teamId);
   }
 
   @Transactional
@@ -196,18 +214,50 @@ public class OccupancyPeriodService {
 
     repository.softDeleteByIdAndTeamId(period.getId(), teamId);
 
-    // If active period was deleted, set property to VACANT
+    // If active period was deleted, set the unit to VACANT
     boolean wasActive =
         !period.getStartDate().isAfter(LocalDate.now(clock))
             && (period.getEndDate().isEmpty()
                 || !period.getEndDate().get().isBefore(LocalDate.now(clock)));
 
-    if (wasActive && property.getStatus() == SELF_OCCUPIED) {
-      property.setStatus(VACANT);
-      propertyRepository.save(property);
+    // Reinstated business rule (deleted when properties.status was dropped in V070), retargeted
+    // to the unit: only set the unit to VACANT when the deleted period was active (wasActive,
+    // computed above) AND the unit's current status is still SELF_OCCUPIED. Do not
+    // unconditionally mark VACANT — a unit that is e.g. under maintenance or rented via a
+    // separate contract must not be overwritten.
+    if (wasActive) {
+      Unit unit = unitRepository.getByIdAndTeamId(period.getUnitId(), teamId);
+      demoteFromSelfOccupancy(unit, principal.getUserId());
     }
 
     log.info("Deleted self-occupancy period {}", periodIdentifier);
+  }
+
+  /**
+   * Promotes a unit to SELF_OCCUPIED, but only from VACANT. A unit that is e.g. UNDER_RENOVATION,
+   * LISTED, or OCCUPIED must not be silently clobbered by a self-occupancy record — its real status
+   * is more informative than "someone lives there now" and must survive the round trip through
+   * {@link #demoteFromSelfOccupancy}. Used by {@code create} — the only promotion site.
+   */
+  private void promoteToSelfOccupancy(Unit unit, UUID actorId) {
+    if (unit.getStatus() == UnitStatus.VACANT) {
+      unit.setStatus(UnitStatus.SELF_OCCUPIED);
+      unit.setUpdatedBy(Optional.of(actorId));
+      unitRepository.save(unit);
+    }
+  }
+
+  /**
+   * Demotes a unit from SELF_OCCUPIED back to VACANT, but only from SELF_OCCUPIED. Any other status
+   * (MAINTENANCE, a separate rental contract, ...) is left untouched. Used by {@code end} and
+   * {@code delete} — the two demotion sites.
+   */
+  private void demoteFromSelfOccupancy(Unit unit, UUID actorId) {
+    if (unit.getStatus() == UnitStatus.SELF_OCCUPIED) {
+      unit.setStatus(UnitStatus.VACANT);
+      unit.setUpdatedBy(Optional.of(actorId));
+      unitRepository.save(unit);
+    }
   }
 
   @Transactional(readOnly = true)
@@ -216,8 +266,25 @@ public class OccupancyPeriodService {
       PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
-    return repository.findByPropertyIdAndTeamId(property.getId(), teamId).stream()
-        .map(p -> toResponse(p, propertyIdentifier))
+    List<PropertyOccupancyPeriod> periods =
+        repository.findByPropertyIdAndTeamId(property.getId(), teamId);
+
+    // Batch-load units so listing a property's periods doesn't do one unit lookup per period.
+    List<UUID> unitIds =
+        periods.stream().map(PropertyOccupancyPeriod::getUnitId).distinct().toList();
+    java.util.Map<UUID, Sid> unitIdentifiersById =
+        unitRepository.findByIdsAndTeamId(unitIds, teamId).stream()
+            .collect(
+                java.util.stream.Collectors.toMap(
+                    Unit::getId, u -> u.getIdentifier().orElseThrow()));
+
+    return periods.stream()
+        .map(
+            p ->
+                toResponse(
+                    p,
+                    propertyIdentifier,
+                    Optional.ofNullable(unitIdentifiersById.get(p.getUnitId())).orElseThrow()))
         .toList();
   }
 
@@ -230,7 +297,7 @@ public class OccupancyPeriodService {
     UUID teamId = principal.requireTeamId();
     propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     PropertyOccupancyPeriod period = repository.getByIdentifierAndTeamId(periodIdentifier, teamId);
-    return toResponse(period, propertyIdentifier);
+    return toResponse(period, propertyIdentifier, teamId);
   }
 
   @Transactional(readOnly = true)
@@ -315,12 +382,8 @@ public class OccupancyPeriodService {
   }
 
   private void validateNoOverlappingContracts(
-      UUID propertyId,
-      UUID teamId,
-      LocalDate startDate,
-      LocalDate endDate,
-      @Nullable UUID excludeId) {
-    List<Contract> contracts = contractRepository.findByPropertyId(propertyId, teamId);
+      UUID unitId, UUID teamId, LocalDate startDate, LocalDate endDate) {
+    List<Contract> contracts = contractRepository.findByUnitId(unitId, teamId);
 
     // Batch-load extensions for effective end date computation
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
@@ -357,11 +420,47 @@ public class OccupancyPeriodService {
     }
   }
 
+  /**
+   * Resolves which unit of {@code property} a self-occupancy period is for. An explicit {@code
+   * unitIdentifier} must belong to this property (never a silent cross-property period) and to this
+   * team ({@link UnitRepository#getByIdentifierAndTeamId} throws {@link
+   * com.buurman.exception.NotFoundException} for a wrong-team lookup, which maps to 404 without
+   * leaking existence). Omitting it only works when the property has exactly one unit.
+   */
+  private Unit resolveUnit(
+      Property property, @Nullable String unitIdentifier, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    if (unitIdentifier != null) {
+      Unit unit = unitRepository.getByIdentifierAndTeamId(Sid.of(unitIdentifier), teamId);
+      if (!unit.getPropertyId().equals(property.getId())) {
+        throw new BadRequestException("The chosen unit does not belong to this property.");
+      }
+      return unit;
+    }
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId);
+    if (units.size() != 1) {
+      throw new BadRequestException(
+          "Property "
+              + property.getStreet()
+              + " has "
+              + units.size()
+              + " units. Specify which unit the occupancy period is for.");
+    }
+    return units.get(0);
+  }
+
   private OccupancyPeriodResponse toResponse(
-      PropertyOccupancyPeriod period, Sid propertyIdentifier) {
+      PropertyOccupancyPeriod period, Sid propertyIdentifier, UUID teamId) {
+    Unit unit = unitRepository.getByIdAndTeamId(period.getUnitId(), teamId);
+    return toResponse(period, propertyIdentifier, unit.getIdentifier().orElseThrow());
+  }
+
+  private OccupancyPeriodResponse toResponse(
+      PropertyOccupancyPeriod period, Sid propertyIdentifier, Sid unitIdentifier) {
     return new OccupancyPeriodResponse(
         period.getIdentifier().orElseThrow(),
         propertyIdentifier,
+        unitIdentifier,
         period.getStartDate(),
         period.getEndDate(),
         period.getType(),

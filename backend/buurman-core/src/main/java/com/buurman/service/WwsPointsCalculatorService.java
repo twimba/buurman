@@ -12,29 +12,39 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Amenity;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyOutdoorArea;
-import com.buurman.domain.PropertyResidentialDetails;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Unit;
+import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.WwsCalculation;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
 import com.buurman.dto.request.WwsCalculationRequest;
 import com.buurman.dto.response.WwsCalculationResponse;
 import com.buurman.dto.response.WwsCategoryBreakdown;
 import com.buurman.dto.response.WwsPreFillResponse;
+import com.buurman.exception.BadRequestException;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.PropertyResidentialDetailsRepository;
+import com.buurman.repository.UnitAmenityRepository;
+import com.buurman.repository.UnitRepository;
+import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.repository.WwsCalculationRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.SidGenerator;
@@ -51,10 +61,18 @@ public class WwsPointsCalculatorService {
   private final Clock clock;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final PropertyResidentialDetailsRepository residentialDetailsRepository;
+  private final UnitRepository unitRepository;
+  private final UnitResidentialDetailsRepository unitResidentialDetailsRepository;
+  private final UnitAmenityRepository unitAmenityRepository;
   private final PropertyOutdoorAreaRepository outdoorAreaRepository;
   private final WwsCalculationRepository wwsCalculationRepository;
   private final ObjectMapper objectMapper;
+
+  // Amenity names (see the `amenities` catalogue) that indicate a dwelling-level accessibility
+  // feature. None are seeded yet, but WWS pre-fill should reflect them the moment they are, rather
+  // than silently ignoring unit amenities.
+  private static final Set<String> ACCESSIBILITY_AMENITY_NAMES =
+      Set.of("WHEELCHAIR_ACCESS", "STEP_FREE_ACCESS", "ACCESSIBLE_BATHROOM");
 
   // --- Year-specific version configuration ---
 
@@ -185,6 +203,12 @@ public class WwsPointsCalculatorService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public WwsCalculationResponse calculate(WwsCalculationRequest request, UserPrincipal principal) {
     WwsVersionConfig config = getVersionConfig(request.systemVersion());
+
+    UUID teamId = principal.getTeamId().orElseThrow();
+    Property property =
+        propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
+    Unit unit = resolveUnit(property, request.unitIdentifier(), principal);
+
     List<WwsCategoryBreakdown> breakdown = calculateBreakdown(request, config);
     BigDecimal totalPoints = sumPoints(breakdown);
 
@@ -193,6 +217,8 @@ public class WwsPointsCalculatorService {
 
     return new WwsCalculationResponse(
         Optional.empty(),
+        unit.getIdentifier().orElseThrow(),
+        unit.getUnitNumber(),
         totalPoints,
         classification,
         maxRent,
@@ -211,6 +237,7 @@ public class WwsPointsCalculatorService {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
+    Unit unit = resolveUnit(property, request.unitIdentifier(), principal);
 
     WwsVersionConfig config = getVersionConfig(request.systemVersion());
     List<WwsCategoryBreakdown> breakdown = calculateBreakdown(request, config);
@@ -242,6 +269,7 @@ public class WwsPointsCalculatorService {
             .identifier(Optional.of(identifier))
             .teamId(teamId)
             .propertyId(property.getId())
+            .unitId(unit.getId())
             .contractId(request.contractIdentifier().map(ci -> resolveContractId(ci, teamId)))
             .systemVersion(request.systemVersion())
             .totalPoints(totalPoints)
@@ -265,6 +293,8 @@ public class WwsPointsCalculatorService {
 
     return new WwsCalculationResponse(
         Optional.of(identifier),
+        unit.getIdentifier().orElseThrow(),
+        unit.getUnitNumber(),
         totalPoints,
         classification,
         maxRent,
@@ -275,27 +305,29 @@ public class WwsPointsCalculatorService {
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
-  public WwsPreFillResponse getPreFillData(
-      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
+  public WwsPreFillResponse getPreFillData(UnitIdentifier unitIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId().orElseThrow();
-    Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
-    Optional<PropertyResidentialDetails> residential =
-        residentialDetailsRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
+    // Surface area, energy label, bedrooms (residential details) and accessibility fields
+    // (hasAdaptedBathroom) moved from `properties` to `units`/`unit_residential_details` in V070.
+    // WWS points are a per-dwelling figure, so pre-fill reads the unit, not its building.
+    Unit unit = unitRepository.getByIdentifierAndTeamId(unitIdentifier, teamId);
+    Property property = propertyRepository.getByIdAndTeamId(unit.getPropertyId(), teamId);
+
+    Optional<BigDecimal> surfaceArea =
+        unit.getAreaUnit()
+            .filter(u -> "sqm".equalsIgnoreCase(u) || "m2".equalsIgnoreCase(u))
+            .flatMap(u -> unit.getAreaValue());
+
+    Optional<Integer> rooms =
+        unitResidentialDetailsRepository
+            .findByUnitIdAndTeamId(unit.getId(), teamId)
+            .flatMap(UnitResidentialDetails::getBedrooms);
+
+    Optional<String> energyLabel = unit.getEnergyEfficiencyRating();
 
     List<PropertyOutdoorArea> outdoorAreas =
         outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
-
-    Optional<BigDecimal> surfaceArea =
-        property
-            .getAreaUnit()
-            .filter(unit -> "SQM".equalsIgnoreCase(unit) || "M2".equalsIgnoreCase(unit))
-            .flatMap(unit -> property.getAreaValue());
-
-    Optional<Integer> rooms = residential.flatMap(PropertyResidentialDetails::getBedrooms);
-
-    Optional<String> energyLabel = property.getEnergyEfficiencyRating();
-
     BigDecimal outdoorTotal =
         outdoorAreas.stream()
             .filter(
@@ -318,7 +350,15 @@ public class WwsPointsCalculatorService {
     if (property.getHasStepFreeEntrance().orElse(false)) {
       accessibilityCount++;
     }
-    if (property.getHasAdaptedBathroom().orElse(false)) {
+    if (unit.getHasAdaptedBathroom().orElse(false)) {
+      accessibilityCount++;
+    }
+
+    List<Amenity> unitAmenities =
+        unitAmenityRepository.findAmenitiesByUnitIdAndTeamId(unit.getId(), teamId);
+    boolean hasAccessibilityAmenity =
+        unitAmenities.stream().anyMatch(a -> ACCESSIBILITY_AMENITY_NAMES.contains(a.getName()));
+    if (hasAccessibilityAmenity) {
       accessibilityCount++;
     }
 
@@ -337,27 +377,93 @@ public class WwsPointsCalculatorService {
         Optional.of(address));
   }
 
+  /**
+   * Calculation history across every unit of a property, each row labelled with the unit it belongs
+   * to. Never a single ambiguous figure — a multi-unit building has one legal ceiling per dwelling,
+   * so the caller must be able to tell rows apart.
+   */
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public List<WwsCalculationResponse> getCalculationHistory(
       PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId().orElseThrow();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
-    return wwsCalculationRepository.findByPropertyId(property.getId(), teamId).stream()
-        .map(this::toResponse)
+    List<WwsCalculation> calculations =
+        wwsCalculationRepository.findByPropertyId(property.getId(), teamId);
+    Map<UUID, Unit> unitsById = loadUnitsById(calculations, teamId);
+
+    return calculations.stream()
+        .map(
+            calc ->
+                toResponse(
+                    calc,
+                    Optional.ofNullable(unitsById.get(calc.getUnitId()))
+                        .orElseThrow(
+                            () ->
+                                new IllegalStateException(
+                                    "WWS calculation "
+                                        + calc.getIdentifier()
+                                        + " references a unit that could not be resolved"))))
         .toList();
   }
 
+  /**
+   * Latest calculation for a property, but only when the answer is unambiguous. A multi-unit
+   * building has no single "latest WWS figure" — refusing with 409 is correct here; a plausible
+   * wrong number is not. Use {@link #getLatestCalculationForUnit} to target a specific unit.
+   */
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public WwsCalculationResponse getLatestCalculation(
       PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId().orElseThrow();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId);
+    if (units.size() > 1) {
+      throw new BusinessRuleException(
+          "This building has " + units.size() + " units. Open a unit to see its WWS calculation.");
+    }
+    if (units.isEmpty()) {
+      throw new NotFoundException("No WWS calculation found for this property");
+    }
+    Unit unit = units.get(0);
+
     return wwsCalculationRepository
-        .findLatestByPropertyId(property.getId(), teamId)
-        .map(this::toResponse)
+        .findLatestByUnitIdAndTeamId(unit.getId(), teamId)
+        .map(calc -> toResponse(calc, unit))
         .orElseThrow(() -> new NotFoundException("No WWS calculation found for this property"));
+  }
+
+  /** Calculation history for a single unit — the only reliably unambiguous read. */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public List<WwsCalculationResponse> getCalculationHistoryForUnit(
+      UnitIdentifier unitIdentifier, UserPrincipal principal) {
+    UUID teamId = principal.getTeamId().orElseThrow();
+    Unit unit = unitRepository.getByIdentifierAndTeamId(unitIdentifier, teamId);
+
+    return wwsCalculationRepository.findByUnitIdAndTeamId(unit.getId(), teamId).stream()
+        .map(calc -> toResponse(calc, unit))
+        .toList();
+  }
+
+  /** Latest calculation for a single unit — the only reliably unambiguous read. */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public WwsCalculationResponse getLatestCalculationForUnit(
+      UnitIdentifier unitIdentifier, UserPrincipal principal) {
+    UUID teamId = principal.getTeamId().orElseThrow();
+    Unit unit = unitRepository.getByIdentifierAndTeamId(unitIdentifier, teamId);
+
+    return wwsCalculationRepository
+        .findLatestByUnitIdAndTeamId(unit.getId(), teamId)
+        .map(calc -> toResponse(calc, unit))
+        .orElseThrow(() -> new NotFoundException("No WWS calculation found for this unit"));
+  }
+
+  private Map<UUID, Unit> loadUnitsById(List<WwsCalculation> calculations, UUID teamId) {
+    Set<UUID> unitIds =
+        calculations.stream().map(WwsCalculation::getUnitId).collect(Collectors.toSet());
+    return unitRepository.findByIdsAndTeamId(unitIds, teamId).stream()
+        .collect(Collectors.toMap(Unit::getId, u -> u));
   }
 
   // --- Calculation logic ---
@@ -795,7 +901,12 @@ public class WwsPointsCalculatorService {
     }
   }
 
-  private WwsCalculationResponse toResponse(WwsCalculation calc) {
+  /**
+   * @param unit the dwelling this calculation was made for. Never null: {@code wws_calculations}
+   *     enforces {@code unit_id NOT NULL}, and unit deletion refuses to soft-delete a unit that
+   *     still has WWS calculations, so this lookup can never miss.
+   */
+  private WwsCalculationResponse toResponse(WwsCalculation calc, Unit unit) {
     Optional<WwsCalculationRequest> inputData = Optional.empty();
     try {
       inputData =
@@ -806,6 +917,8 @@ public class WwsPointsCalculatorService {
 
     return new WwsCalculationResponse(
         calc.getIdentifier(),
+        unit.getIdentifier().orElseThrow(),
+        unit.getUnitNumber(),
         calc.getTotalPoints(),
         calc.getSectorClassification(),
         calc.getMaxRentIndication(),
@@ -825,5 +938,34 @@ public class WwsPointsCalculatorService {
         .findByIdentifierAndTeamId(Sid.of(contractIdentifier), teamId)
         .map(Contract::getId)
         .orElseThrow(() -> new NotFoundException("Contract not found: " + contractIdentifier));
+  }
+
+  /**
+   * Resolves which unit of {@code property} a WWS calculation is for. An explicit {@code
+   * unitIdentifier} must belong to this property (never a silent cross-property calculation) and to
+   * this team ({@link UnitRepository#getByIdentifierAndTeamId} throws {@link NotFoundException} for
+   * a wrong-team lookup, which maps to 404 without leaking existence). Omitting it only works when
+   * the property has exactly one unit.
+   */
+  private Unit resolveUnit(
+      Property property, @Nullable String unitIdentifier, UserPrincipal principal) {
+    UUID teamId = principal.getTeamId().orElseThrow();
+    if (unitIdentifier != null) {
+      Unit unit = unitRepository.getByIdentifierAndTeamId(Sid.of(unitIdentifier), teamId);
+      if (!unit.getPropertyId().equals(property.getId())) {
+        throw new BadRequestException("The chosen unit does not belong to this property.");
+      }
+      return unit;
+    }
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId);
+    if (units.size() != 1) {
+      throw new BadRequestException(
+          "Property "
+              + property.getStreet()
+              + " has "
+              + units.size()
+              + " units. Specify which unit the calculation is for.");
+    }
+    return units.get(0);
   }
 }

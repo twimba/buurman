@@ -9,8 +9,6 @@ import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
 import static com.buurman.domain.NotificationType.CONTRACT_CREATED;
 import static com.buurman.domain.NotificationType.CONTRACT_REOPENED;
 import static com.buurman.domain.NotificationType.CONTRACT_STATUS_CHANGED;
-import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
-import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.SidGenerator.newContractId;
 import static com.buurman.util.SidGenerator.newRentComponentId;
 
@@ -43,6 +41,9 @@ import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
+import com.buurman.domain.Sid;
+import com.buurman.domain.Unit;
+import com.buurman.domain.UnitStatus;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
@@ -76,6 +77,7 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.RentRegulationRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -96,6 +98,7 @@ public class ContractService {
   private final ContractRentComponentRepository rentComponentRepository;
   private final ContractRentComponentMapper rentComponentMapper;
   private final PropertyRepository propertyRepository;
+  private final UnitRepository unitRepository;
   private final ContactRepository contactRepository;
   private final DocumentRepository documentRepository;
   private final ContractMapper contractMapper;
@@ -124,15 +127,10 @@ public class ContractService {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
 
-    // Check no active contract exists for property
-    contractRepository
-        .findActiveContractByPropertyId(property.getId(), teamId)
-        .ifPresent(
-            existing -> {
-              throw new IllegalArgumentException(
-                  "Property already has an active contract. Please terminate the existing contract"
-                      + " first.");
-            });
+    UUID unitId = resolveUnitId(property, request.unitIdentifier(), principal);
+
+    // Check no active contract exists for the unit
+    assertUnitHasNoActiveContract(unitId, teamId, null);
 
     // Validate dates
     if (request.endDate().isPresent() && request.endDate().get().isBefore(request.startDate())) {
@@ -146,6 +144,7 @@ public class ContractService {
 
     Contract contract = contractMapper.toEntity(request);
     contract.setPropertyId(property.getId());
+    contract.setUnitId(unitId);
     contract.setIdentifier(Optional.of(newContractId()));
     contract.setTeamId(teamId);
     contract.setStatus(DRAFT);
@@ -266,6 +265,62 @@ public class ContractService {
     return toResponse(savedContract, property, teamId);
   }
 
+  /**
+   * Resolves which unit of {@code property} a new contract is for. An explicit {@code
+   * unitIdentifier} must belong to this property (never a silent cross-property contract) and to
+   * this team ({@link UnitRepository#getByIdentifierAndTeamId} throws {@link
+   * com.buurman.exception.NotFoundException} for a wrong-team lookup, which maps to 404 without
+   * leaking existence). Omitting it only works when the property has exactly one unit.
+   */
+  private UUID resolveUnitId(
+      Property property, @Nullable String unitIdentifier, UserPrincipal principal) {
+    if (unitIdentifier != null) {
+      Unit unit =
+          unitRepository.getByIdentifierAndTeamId(
+              Sid.of(unitIdentifier), principal.requireTeamId());
+      if (!unit.getPropertyId().equals(property.getId())) {
+        throw new BadRequestException("The chosen unit does not belong to this property.");
+      }
+      return unit.getId();
+    }
+    List<Unit> units =
+        unitRepository.findAllByPropertyIdAndTeamId(property.getId(), principal.requireTeamId());
+    if (units.size() != 1) {
+      throw new BadRequestException(
+          "Property "
+              + property.getStreet()
+              + " has "
+              + units.size()
+              + " units. Specify which unit the contract is for.");
+    }
+    return units.get(0).getId();
+  }
+
+  /**
+   * Guards against two ACTIVE contracts on the same unit. Scoped by <em>unit</em>, not property —
+   * BUUR-106 made it valid for two different units of the same property to each have their own
+   * active contract, so this must never widen back out to property scope (that was Critical 1 of
+   * the final review: the old property-scoped guard made a second unit of an already-let building
+   * un-lettable, and its {@code fetchOptional()} would 500 once two units really could both be
+   * active). {@code excludeContractId} lets {@link #changeContractStatus} re-activate a contract
+   * that is itself the one found "active" (e.g. a no-op transition) without rejecting itself;
+   * {@link #createContract} passes {@code null} since a brand-new contract can never be the one
+   * found.
+   */
+  private void assertUnitHasNoActiveContract(
+      UUID unitId, UUID teamId, @Nullable UUID excludeContractId) {
+    contractRepository
+        .findActiveByUnitId(unitId, teamId)
+        .ifPresent(
+            existing -> {
+              if (excludeContractId == null || !existing.getId().equals(excludeContractId)) {
+                throw new IllegalArgumentException(
+                    "Unit already has an active contract. Please terminate the existing contract"
+                        + " first.");
+              }
+            });
+  }
+
   public List<ContractResponse> getAllContracts(UserPrincipal principal) {
     List<Contract> contracts = contractRepository.findAllByTeamId(principal.requireTeamId());
     return toResponses(contracts, principal.requireTeamId());
@@ -350,6 +405,7 @@ public class ContractService {
             .identifier(contract.getIdentifier())
             .teamId(contract.getTeamId())
             .propertyId(contract.getPropertyId())
+            .unitId(contract.getUnitId())
             .contractType(contract.getContractType())
             .startDate(contract.getStartDate())
             .endDate(contract.getEndDate())
@@ -594,18 +650,9 @@ public class ContractService {
     // Validate status transitions
     validateStatusTransition(oldStatus, newStatus);
 
-    // If changing to ACTIVE, ensure no other active contract on property
+    // If changing to ACTIVE, ensure no other active contract on the unit
     if (newStatus == ACTIVE) {
-      contractRepository
-          .findActiveContractByPropertyId(contract.getPropertyId(), teamId)
-          .ifPresent(
-              existing -> {
-                if (!existing.getId().equals(contractId)) {
-                  throw new IllegalArgumentException(
-                      "Property already has an active contract. Please terminate the existing"
-                          + " contract first.");
-                }
-              });
+      assertUnitHasNoActiveContract(contract.getUnitId(), teamId, contractId);
     }
 
     // Store old values for audit
@@ -615,6 +662,7 @@ public class ContractService {
             .identifier(contract.getIdentifier())
             .teamId(contract.getTeamId())
             .propertyId(contract.getPropertyId())
+            .unitId(contract.getUnitId())
             .contractType(contract.getContractType())
             .startDate(contract.getStartDate())
             .endDate(contract.getEndDate())
@@ -688,8 +736,8 @@ public class ContractService {
     paymentSchedulingService.handleContractStatusChange(
         contractId, newStatus, teamId, principal.getUserId());
 
-    // Update property status based on contract status
-    updatePropertyStatusBasedOnContract(contract.getPropertyId(), newStatus, oldStatus, principal);
+    // Update the unit's status based on the contract's status
+    updateUnitStatusBasedOnContract(contract.getUnitId(), newStatus, oldStatus, principal);
 
     // Log to audit trail
     Map<String, Object> changedFields = new HashMap<>();
@@ -770,6 +818,7 @@ public class ContractService {
             .identifier(contract.getIdentifier())
             .teamId(contract.getTeamId())
             .propertyId(contract.getPropertyId())
+            .unitId(contract.getUnitId())
             .contractType(contract.getContractType())
             .startDate(contract.getStartDate())
             .endDate(contract.getEndDate())
@@ -883,6 +932,7 @@ public class ContractService {
             .identifier(Optional.of(newContractId()))
             .teamId(teamId)
             .propertyId(sourceContract.getPropertyId())
+            .unitId(sourceContract.getUnitId())
             .contractType(sourceContract.getContractType())
             .startDate(sourceContract.getStartDate())
             .endDate(sourceContract.getEndDate())
@@ -1038,6 +1088,10 @@ public class ContractService {
 
     PropertySummary propertySummary = propertyMapper.toSummary(property);
 
+    Unit unit = unitRepository.getByIdAndTeamId(contract.getUnitId(), teamId);
+    String unitIdentifier = unit.getIdentifier().orElseThrow().value();
+    String unitNumber = unit.getUnitNumber();
+
     // Compute effective end date and extension statistics
     List<ContractExtension> extensions =
         contractExtensionService.getExtensionsForContract(contract.getId(), teamId);
@@ -1054,6 +1108,8 @@ public class ContractService {
     return new ContractResponse(
         contract.getIdentifier().orElseThrow(),
         Optional.of(propertySummary),
+        unitIdentifier,
+        unitNumber,
         partyResponses,
         primaryContact,
         contract.getContractType(),
@@ -1111,6 +1167,12 @@ public class ContractService {
         propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
             .collect(Collectors.toMap(Property::getId, p -> p));
 
+    // Batch load units
+    List<UUID> unitIds = contracts.stream().map(Contract::getUnitId).distinct().toList();
+    Map<UUID, Unit> unitMap =
+        unitRepository.findByIdsAndTeamId(unitIds, teamId).stream()
+            .collect(Collectors.toMap(Unit::getId, u -> u));
+
     // Batch load parties
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
     Map<UUID, List<ContractParty>> partiesByContract =
@@ -1143,6 +1205,11 @@ public class ContractService {
               Property property = propertyMap.get(contract.getPropertyId());
               Optional<PropertySummary> propertySummary =
                   Optional.ofNullable(property).map(propertyMapper::toSummary);
+
+              Optional<Unit> unit = Optional.ofNullable(unitMap.get(contract.getUnitId()));
+              String unitIdentifier =
+                  unit.map(u -> u.getIdentifier().orElseThrow().value()).orElse("");
+              String unitNumber = unit.map(Unit::getUnitNumber).orElse("");
 
               List<ContractParty> parties =
                   partiesByContract.getOrDefault(contract.getId(), List.of());
@@ -1191,6 +1258,8 @@ public class ContractService {
               return new ContractResponse(
                   contract.getIdentifier().orElseThrow(),
                   propertySummary,
+                  unitIdentifier,
+                  unitNumber,
                   partyResponses,
                   primaryContact,
                   contract.getContractType(),
@@ -1357,45 +1426,44 @@ public class ContractService {
     return a.get().compareTo(b.get()) != 0;
   }
 
-  private void updatePropertyStatusBasedOnContract(
-      UUID propertyId,
+  /**
+   * Reinstates the business rule that was deleted when {@code properties.status} was dropped in
+   * V070, retargeted from the property to its unit:
+   *
+   * <ul>
+   *   <li>{@code newStatus == ACTIVE && oldStatus != ACTIVE}: the unit becomes {@code OCCUPIED}.
+   *   <li>{@code oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)}: the
+   *       unit becomes {@code VACANT}, but ONLY when no OTHER active contract still references it.
+   *       A unit can carry two overlapping tenancies (e.g. mid-transition between tenants), and
+   *       must stay {@code OCCUPIED} while any of them is still {@code ACTIVE}.
+   * </ul>
+   *
+   * <p>By the time this runs, the caller has already persisted {@code newStatus} on {@code
+   * contract} ({@link #changeContractStatus}), so {@link ContractRepository#countActiveByUnitId}
+   * naturally excludes the contract that just expired or was terminated — no explicit
+   * self-exclusion is needed.
+   */
+  private void updateUnitStatusBasedOnContract(
+      UUID unitId,
       Contract.ContractStatus newStatus,
       Contract.ContractStatus oldStatus,
       UserPrincipal principal) {
-    Property property =
-        propertyRepository.findByIdAndTeamId(propertyId, principal.requireTeamId()).orElse(null);
-
-    if (property == null) {
-      log.warn("Property {} not found for contract status update", propertyId);
+    UUID teamId = principal.requireTeamId();
+    if (newStatus == ACTIVE && oldStatus != ACTIVE) {
+      setUnitStatus(unitId, teamId, UnitStatus.OCCUPIED, principal);
       return;
     }
-
-    Property.PropertyStatus newPropertyStatus = null;
-
-    if (newStatus == ACTIVE && oldStatus != ACTIVE) {
-      newPropertyStatus = OCCUPIED;
-    } else if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
-      boolean hasOtherActiveContracts =
-          contractRepository
-              .findActiveContractByPropertyId(propertyId, principal.requireTeamId())
-              .isPresent();
-
-      if (!hasOtherActiveContracts) {
-        newPropertyStatus = VACANT;
+    if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
+      if (contractRepository.countActiveByUnitId(unitId, teamId) == 0) {
+        setUnitStatus(unitId, teamId, UnitStatus.VACANT, principal);
       }
     }
+  }
 
-    if (newPropertyStatus != null && property.getStatus() != newPropertyStatus) {
-      property.setStatus(newPropertyStatus);
-      property.setUpdatedBy(principal.getUserId());
-      property.setUpdatedAt(clock.instant());
-      propertyRepository.save(property);
-
-      log.info(
-          "Updated property {} status to {} based on contract status change to {}",
-          propertyId,
-          newPropertyStatus,
-          newStatus);
-    }
+  private void setUnitStatus(UUID unitId, UUID teamId, UnitStatus status, UserPrincipal principal) {
+    Unit unit = unitRepository.getByIdAndTeamId(unitId, teamId);
+    unit.setStatus(status);
+    unit.setUpdatedBy(Optional.of(principal.getUserId()));
+    unitRepository.save(unit);
   }
 }

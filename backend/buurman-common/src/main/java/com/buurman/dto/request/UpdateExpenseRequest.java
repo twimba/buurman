@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.buurman.domain.Expense.ExpenseCategory;
 import com.buurman.domain.identifier.ContactIdentifier;
+import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Positive;
@@ -21,4 +22,5 @@ public record UpdateExpenseRequest(
             @Size(min = 1, max = 500, message = "Description must be between 1 and 500 characters") String>
         description,
     Optional<String> notes,
-    Optional<ContactIdentifier> contactIdentifier) {}
+    Optional<ContactIdentifier> contactIdentifier,
+    Optional<UnitIdentifier> unitIdentifier) {}

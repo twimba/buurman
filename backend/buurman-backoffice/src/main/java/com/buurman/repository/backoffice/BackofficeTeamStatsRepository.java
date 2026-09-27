@@ -6,6 +6,7 @@ import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.UNITS;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.sum;
 
@@ -19,6 +20,8 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
+import com.buurman.repository.UnitRepository;
+import com.buurman.repository.UnitScope;
 import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class BackofficeTeamStatsRepository {
 
   private final DSLContext dsl;
+  private final UnitRepository unitRepository;
 
   public DataCounts countEntitiesForTeam(UUID teamId) {
     long properties =
@@ -35,6 +39,9 @@ public class BackofficeTeamStatsRepository {
             dsl.selectCount()
                 .from(PROPERTIES)
                 .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull())));
+    // Delegates to UnitRepository so the same properties-join predicate (units of a
+    // soft-deleted property are excluded) is used everywhere this figure is surfaced.
+    long units = unitRepository.countActiveByTeamId(teamId);
     long contacts =
         fetchCount(
             dsl.selectCount()
@@ -60,7 +67,7 @@ public class BackofficeTeamStatsRepository {
             dsl.selectCount()
                 .from(DOCUMENTS)
                 .where(DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull())));
-    return new DataCounts(properties, contacts, contracts, expenses, payments, documents);
+    return new DataCounts(properties, units, contacts, contracts, expenses, payments, documents);
   }
 
   private static long fetchCount(org.jooq.SelectConditionStep<?> query) {
@@ -105,12 +112,22 @@ public class BackofficeTeamStatsRepository {
         MoneyAmount.sumToMajorUnits(bestSum, bestCurrency), bestCurrency);
   }
 
+  /**
+   * Kept the name for continuity with {@link
+   * com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse#propertyStatusDistribution},
+   * but this is now a unit-status breakdown — {@code properties.status} was dropped in V070 in
+   * favor of per-unit status. This was the one live regression left by that migration: nothing
+   * caught the {@code UnsupportedOperationException} it used to throw, so the backoffice
+   * team-detail screen 500'd.
+   */
   public Map<String, Long> propertyStatusDistribution(UUID teamId) {
     Map<String, Long> result = new LinkedHashMap<>();
-    dsl.select(PROPERTIES.STATUS, count())
-        .from(PROPERTIES)
-        .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull()))
-        .groupBy(PROPERTIES.STATUS)
+    dsl.select(UNITS.STATUS, count())
+        .from(UNITS)
+        .join(PROPERTIES)
+        .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
+        .where(UNITS.TEAM_ID.eq(teamId).and(UnitScope.active()))
+        .groupBy(UNITS.STATUS)
         .fetch()
         .forEach(r -> result.put(r.value1(), r.value2().longValue()));
     return result;

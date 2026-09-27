@@ -579,6 +579,7 @@
     "retroactiveTooltip": "Justeringsbetalningar skapas for alla redan reglerade betalningar som paverkas av retroaktiva datumändringar.",
     "exceedsMax": "Overskrider maximalt reglerad okning pa {{max}}%",
     "belowMin": "Under minimalt reglerad okning pa {{min}}%",
+    "leaseOfTotal": "Kontrakt {{index}} av {{total}} för denna fastighet",
     "tableHeaders": {
       "property": "Fastighet",
       "currentRent": "Aktuell hyra",
@@ -815,6 +816,7 @@
       "bruksvardessystemApplicable": "Bruksvärdesystem tillämpas",
       "energyDeclarationRating": "Energideklarationsklass",
       "hyresnamndenEligible": "Berättigad Hyresnämnden",
+      "depositSum": "Depositionsbelopp",
       "vuokrasopimustyyppi": "Hyresavtalstyp (FI)",
       "vakuusAmount": "Depositionsbelopp",
       "vakuusMonths": "Deposition i månader",

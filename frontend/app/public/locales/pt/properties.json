@@ -11,6 +11,7 @@
     "allStatuses": "Todos os Estados",
     "count_one": "{{count}} imóvel",
     "count_other": "{{count}} imóveis",
+    "count_many": "{{count}} imóveis",
     "empty": {
       "title": "Nenhum imóvel encontrado",
       "filtered": "Tente ajustar os seus filtros ou termos de pesquisa",
@@ -136,7 +137,8 @@
       "history": "Histórico",
       "noCalculation": "Sem cálculo ainda",
       "noCalculationDescription": "Calcule os pontos WWS para determinar a renda máxima regulada para este imóvel.",
-      "noPreviousCalculations": "Sem cálculos anteriores."
+      "noPreviousCalculations": "Sem cálculos anteriores.",
+      "multiUnitUnsupported": "Este edifício tem várias unidades. Abra uma unidade para calcular os respetivos pontos WWS."
     },
     "metadata": {
       "title": "Metadados",
@@ -419,7 +421,8 @@
       "occupancyIncomeTrend": "Tendência de Ocupação e Rendimento",
       "expenseBreakdown": "Decomposição de Despesas",
       "sixMonthProjection": "Projeção a 6 Meses",
-      "equityOverview": "Visão Geral do Capital"
+      "equityOverview": "Visão Geral do Capital",
+      "unitOccupancy": "Ocupação por unidade"
     },
     "summary": {
       "totalRoi": "ROI Total",
@@ -448,7 +451,8 @@
       "contactOccupied": "Ocupado por inquilino",
       "netIncomeTrend": "Tendência de Rendimento Líquido",
       "netIncome": "Rendimento Líquido",
-      "noData": "Sem dados de contratos"
+      "noData": "Sem dados de contratos",
+      "buildingVacancyRate": "Taxa de vacância do edifício"
     },
     "expense": {
       "noData": "Sem dados de despesas"
@@ -648,13 +652,15 @@
     "selection": {
       "selected": "{{selected}} de {{total}} selecionados",
       "count_one": "{{count}} documento",
-      "count_other": "{{count}} documentos"
+      "count_other": "{{count}} documentos",
+      "count_many": "{{count}} documentos"
     },
     "preview": "Pré-visualização",
     "editTitleNotes": "Editar título e notas",
     "upload": {
       "title_one": "Carregar Documento",
       "title_other": "Carregar Documentos",
+      "title_many": "Carregar Documentos",
       "files": "{{count}} ficheiros",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "p. ex., Planta do Imóvel",
@@ -666,8 +672,10 @@
     "delete": {
       "title_one": "Eliminar documento",
       "title_other": "Eliminar documentos",
+      "title_many": "Eliminar documentos",
       "message_one": "Tem a certeza de que pretende eliminar este documento? Esta ação não pode ser revertida.",
       "message_other": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida.",
+      "message_many": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida.",
       "confirmLabel_other": "Eliminar {{count}} documentos"
     },
     "editModal": "Editar Documento",
@@ -680,6 +688,7 @@
     "upload": {
       "title_one": "Carregar Foto",
       "title_other": "Carregar Fotos",
+      "title_many": "Carregar Fotos",
       "files": "{{count}} ficheiros",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "p. ex., Sala de estar",
@@ -691,10 +700,13 @@
     "delete": {
       "title_one": "Eliminar foto",
       "title_other": "Eliminar fotos",
+      "title_many": "Eliminar fotos",
       "mainPhotoWarning_one": "Esta é a foto principal. Eliminá-la significa que este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
       "mainPhotoWarning_other": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
+      "mainPhotoWarning_many": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
       "message_one": "Tem a certeza de que pretende eliminar esta foto? Esta ação não pode ser revertida.",
       "message_other": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida.",
+      "message_many": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida.",
       "confirmLabel_other": "Eliminar {{count}} fotos"
     },
     "editModal": "Editar Foto"
@@ -761,6 +773,13 @@
     },
     "pagination": {
       "showing": "A mostrar {{from}} a {{to}} de {{total}} despesas"
+    },
+    "allocation": {
+      "settingsToggle": "Definições de divisão de custos",
+      "buildingBadge": "Edifício inteiro",
+      "viewSplit": "Ver divisão",
+      "hideSplit": "Ocultar divisão",
+      "failedToLoad": "Não foi possível carregar a divisão de custos"
     }
   },
   "audit": {
@@ -808,7 +827,8 @@
       "notesPlaceholder": "Notas adicionais...",
       "reason": "Motivo",
       "reasonPlaceholder": "Selecione um motivo...",
-      "alreadyTakenPeriods": "Períodos já ocupados"
+      "alreadyTakenPeriods": "Períodos já ocupados",
+      "unitRequired": "Escolha a que unidade se refere este período de ocupação."
     },
     "occupancyTypes": {
       "PERSONAL": "Pessoal",
@@ -991,7 +1011,8 @@
       "paymentDeleted": "Pagamento eliminado com sucesso",
       "paymentDeleteFailed": "Falha ao eliminar pagamento",
       "paymentsCreated_one": "{{count}} pagamento criado com sucesso",
-      "paymentsCreated_other": "{{count}} pagamentos criados com sucesso"
+      "paymentsCreated_other": "{{count}} pagamentos criados com sucesso",
+      "paymentsCreated_many": "{{count}} pagamentos criados com sucesso"
     },
     "months": {
       "jan": "Jan",
@@ -1110,5 +1131,12 @@
   "lifecycle": {
     "openContract": "Abrir contrato",
     "clickToEdit": "Clique para editar"
+  },
+  "unitOccupancy": {
+    "noUnits": "Sem unidades",
+    "allVacant": "Vago",
+    "allOccupied": "Arrendado",
+    "allUnavailable": "Indisponível",
+    "mixed": "{{occupied}} arrendadas · {{vacant}} vagas · {{unavailable}} indisponíveis"
   }
 }

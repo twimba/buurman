@@ -30,7 +30,6 @@ import static com.buurman.jooq.generated.Tables.PHOTOS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_ACQUISITIONS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_AGRICULTURAL_DETAILS;
-import static com.buurman.jooq.generated.Tables.PROPERTY_AMENITIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_COMMERCIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_CONTACT_HISTORY;
 import static com.buurman.jooq.generated.Tables.PROPERTY_FEES;
@@ -38,7 +37,6 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_FINANCINGS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INDUSTRIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INSURANCES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
-import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.jooq.generated.Tables.TEAMS;
@@ -78,6 +76,7 @@ public class DemoDataService {
   private final DemoUserGenerator userGenerator;
   private final DemoTeamMemberGenerator teamMemberGenerator;
   private final DemoPropertyGenerator propertyGenerator;
+  private final DemoUnitGenerator unitGenerator;
   private final DemoContactGenerator contactGenerator;
   private final DemoContactNoteGenerator contactNoteGenerator;
   private final DemoContactRelationshipGenerator contactRelationshipGenerator;
@@ -155,10 +154,11 @@ public class DemoDataService {
           teamMemberGenerator.generate(ctx);
         });
 
-    // Group 2: Properties + financing
+    // Group 2: Properties + units + financing
     tx.executeWithoutResult(
         status -> {
           propertyGenerator.generate(ctx);
+          unitGenerator.generate(ctx);
           financingPaymentGenerator.generate(ctx);
         });
 
@@ -390,13 +390,6 @@ public class DemoDataService {
     deleted = dsl.deleteFrom(CONTACTS).where(CONTACTS.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} contacts", deleted);
 
-    // 12. Property amenities
-    deleted =
-        dsl.deleteFrom(PROPERTY_AMENITIES)
-            .where(PROPERTY_AMENITIES.TEAM_ID.in(demoTeamIds))
-            .execute();
-    log.debug("Deleted {} property amenities", deleted);
-
     // 13. Property outdoor areas
     deleted =
         dsl.deleteFrom(PROPERTY_OUTDOOR_AREAS)
@@ -405,12 +398,9 @@ public class DemoDataService {
     log.debug("Deleted {} property outdoor areas", deleted);
 
     // 13b. Property category-specific details
-    deleted =
-        dsl.deleteFrom(PROPERTY_RESIDENTIAL_DETAILS)
-            .where(PROPERTY_RESIDENTIAL_DETAILS.TEAM_ID.in(demoTeamIds))
-            .execute();
-    log.debug("Deleted {} property residential details", deleted);
-
+    // Note: property_amenities and property_residential_details were dropped in V070
+    // (BUUR-106); their unit-level replacements (unit_amenities, unit_residential_details)
+    // are deleted below, alongside units, before properties.
     deleted =
         dsl.deleteFrom(PROPERTY_COMMERCIAL_DETAILS)
             .where(PROPERTY_COMMERCIAL_DETAILS.TEAM_ID.in(demoTeamIds))
@@ -481,7 +471,32 @@ public class DemoDataService {
             .execute();
     log.debug("Deleted {} wws calculations", deleted);
 
-    // 14c. Properties
+    // 14c. Units and unit-level details (BUUR-106; FK -> properties)
+    deleted =
+        dsl.deleteFrom(DSL.table("expense_allocations"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} expense allocations", deleted);
+
+    deleted =
+        dsl.deleteFrom(DSL.table("unit_amenities"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} unit amenities", deleted);
+
+    deleted =
+        dsl.deleteFrom(DSL.table("unit_residential_details"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} unit residential details", deleted);
+
+    deleted =
+        dsl.deleteFrom(DSL.table("units"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} units", deleted);
+
+    // 14d. Properties
     deleted = dsl.deleteFrom(PROPERTIES).where(PROPERTIES.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} properties", deleted);
 

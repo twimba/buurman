@@ -36,6 +36,7 @@ public class WwsCalculationRepository {
         .set(WWS_CALCULATIONS.IDENTIFIER, calc.getIdentifier().orElseThrow())
         .set(WWS_CALCULATIONS.TEAM_ID, calc.getTeamId())
         .set(WWS_CALCULATIONS.PROPERTY_ID, calc.getPropertyId())
+        .set(WWS_CALCULATIONS.UNIT_ID, calc.getUnitId())
         .set(WWS_CALCULATIONS.CONTRACT_ID, calc.getContractId().orElse(null))
         .set(WWS_CALCULATIONS.SYSTEM_VERSION, calc.getSystemVersion())
         .set(WWS_CALCULATIONS.TOTAL_POINTS, calc.getTotalPoints())
@@ -86,6 +87,54 @@ public class WwsCalculationRepository {
         .limit(1)
         .fetchOptional()
         .flatMap(mapper::toDomain);
+  }
+
+  public List<WwsCalculation> findByUnitIdAndTeamId(UUID unitId, UUID teamId) {
+    return dsl
+        .selectFrom(WWS_CALCULATIONS)
+        .where(
+            WWS_CALCULATIONS
+                .UNIT_ID
+                .eq(unitId)
+                .and(WWS_CALCULATIONS.TEAM_ID.eq(teamId))
+                .and(WWS_CALCULATIONS.DELETED_AT.isNull()))
+        .orderBy(WWS_CALCULATIONS.CALCULATION_DATE.desc(), WWS_CALCULATIONS.CREATED_AT.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  public Optional<WwsCalculation> findLatestByUnitIdAndTeamId(UUID unitId, UUID teamId) {
+    return dsl.selectFrom(WWS_CALCULATIONS)
+        .where(
+            WWS_CALCULATIONS
+                .UNIT_ID
+                .eq(unitId)
+                .and(WWS_CALCULATIONS.TEAM_ID.eq(teamId))
+                .and(WWS_CALCULATIONS.DELETED_AT.isNull()))
+        .orderBy(WWS_CALCULATIONS.CALCULATION_DATE.desc(), WWS_CALCULATIONS.CREATED_AT.desc())
+        .limit(1)
+        .fetchOptional()
+        .flatMap(mapper::toDomain);
+  }
+
+  /**
+   * Whether any WWS calculation still references this unit — used to guard unit deletion, since
+   * {@code GET /wws-calculations/{id}} and the property's calculation history resolve their unit by
+   * id and would otherwise throw once the unit is soft-deleted.
+   */
+  public boolean existsByUnitIdAndTeamId(UUID unitId, UUID teamId) {
+    return dsl.fetchExists(
+        dsl.selectOne()
+            .from(WWS_CALCULATIONS)
+            .where(
+                WWS_CALCULATIONS
+                    .UNIT_ID
+                    .eq(unitId)
+                    .and(WWS_CALCULATIONS.TEAM_ID.eq(teamId))
+                    .and(WWS_CALCULATIONS.DELETED_AT.isNull())));
   }
 
   public Optional<WwsCalculation> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {

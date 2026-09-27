@@ -135,7 +135,12 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
         LetterExporterHelper.headerVariables(data.contract(), today, dateFmt);
     vars.put("paymentIdentifier", data.payment().getIdentifier().map(Object::toString).orElse(""));
     vars.putAll(helper.addressee(data.contact(), teamId).variables());
-    vars.put("propertyAddress", LetterExporterHelper.propertyAddress(property));
+    LetterExporterHelper.PremisesInfo premisesInfo =
+        helper.premisesInfo(data.contract(), property, messageSource, locale);
+    vars.put("propertyAddress", LetterExporterHelper.premisesAddress(property, premisesInfo));
+    vars.put("hasMultipleUnits", premisesInfo.hasMultipleUnits());
+    vars.put(
+        "unitDesignation", premisesInfo.hasMultipleUnits() ? premisesInfo.unitDesignation() : null);
     vars.put(
         "amount",
         CurrencyUtils.formatCurrency(data.payment().getAmount().value(), currency, locale));

@@ -1,17 +1,83 @@
-import { useState, useMemo } from 'react';
+import { Fragment, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
+import { useProperty } from '@/hooks/usePropertyHooks';
+import {
+  useExpenseAllocations,
+  useUnitDetailsBatch,
+  useUpdatePropertyAllocation,
+} from '@/hooks/useAllocationHooks';
+import {
+  UnitAllocationSettings,
+  type UnitAllocationUnit,
+} from '@/components/units/UnitAllocationSettings';
+import { AllocationBasis } from '@/types/allocation';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { DataList, EmptyState, LoadingSpinner } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { Plus, Search, ChevronUp, ChevronDown, Receipt } from 'lucide-react';
+import { formatMoney } from '@/utils/formatMoney';
+import {
+  Plus,
+  Search,
+  ChevronUp,
+  ChevronDown,
+  ChevronRight,
+  Receipt,
+} from 'lucide-react';
 
 interface PropertyExpensesTabProps {
   propertyId: string;
 }
+
+/** The stored, backend-computed per-unit split of one building-level expense. Read-only — never
+ * recomputed here. This is what a tenant's service-charge statement will show. */
+const ExpenseAllocationSplit = ({
+  expenseIdentifier,
+}: {
+  expenseIdentifier: string;
+}) => {
+  const { t } = useTranslation('properties');
+  const { t: tUnits } = useTranslation('units');
+  const {
+    data: allocations,
+    isLoading,
+    error,
+  } = useExpenseAllocations(expenseIdentifier);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+  if (error || !allocations) {
+    return <ErrorMessage message={t('expenses.allocation.failedToLoad')} />;
+  }
+
+  const warnings = allocations.flatMap((a) => a.warnings);
+
+  return (
+    <div className="text-sm">
+      <ul className="divide-y divide-border-default">
+        {allocations.map((a) => (
+          <li key={a.identifier} className="flex justify-between py-1">
+            <span className="text-text-secondary">
+              {tUnits('detail.title', { number: a.unitNumber })}
+            </span>
+            <span className="font-medium text-text-primary">
+              {a.amount != null
+                ? formatMoney(a.amount, a.amountCurrency ?? '')
+                : '—'}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {warnings.length > 0 && (
+        <p className="mt-2 text-xs text-warning-text">{warnings.join(' ')}</p>
+      )}
+    </div>
+  );
+};
 
 type ExpenseSortField = 'expenseDate' | 'amount' | 'category' | 'description';
 
@@ -28,6 +94,10 @@ export const PropertyExpensesTab = ({
   const [sortField, setSortField] = useState<ExpenseSortField>('expenseDate');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedExpenseId, setExpandedExpenseId] = useState<string | null>(
+    null
+  );
+  const [showAllocationSettings, setShowAllocationSettings] = useState(false);
   const perPage = 10;
 
   // Data fetching
@@ -36,6 +106,36 @@ export const PropertyExpensesTab = ({
     isLoading,
     error,
   } = useExpensesByProperty(propertyId);
+
+  // Allocation is only meaningful for a building split across several units — a single-unit
+  // property never shows any of this, so the landlord of a single-family house never has to
+  // think about "units" to record an expense.
+  const { data: property } = useProperty(propertyId);
+  const unitCount = property?.unitCount ?? 1;
+  const isMultiUnit = unitCount > 1;
+  const unitIdentifiers = useMemo(
+    () => (property?.units ?? []).map((u) => u.identifier),
+    [property]
+  );
+  const unitDetails = useUnitDetailsBatch(
+    unitIdentifiers,
+    isMultiUnit && showAllocationSettings
+  );
+  const allocationUnitsLoading = unitDetails.some((q) => q.isLoading);
+  const allocationUnits: UnitAllocationUnit[] = unitIdentifiers.map(
+    (identifier, index) => {
+      const summary = property?.units?.[index];
+      const detail = unitDetails[index]?.data;
+      return {
+        identifier,
+        unitNumber: summary?.unitNumber ?? '',
+        name: summary?.name,
+        areaValue: detail?.areaValue ?? null,
+        sharePct: detail?.allocationShare ?? null,
+      };
+    }
+  );
+  const updateAllocation = useUpdatePropertyAllocation(propertyId);
 
   // Filtering, sorting, and pagination
   const filteredAndSortedExpenses = useMemo(() => {
@@ -135,6 +235,38 @@ export const PropertyExpensesTab = ({
         </button>
       </div>
 
+      {isMultiUnit && (
+        <div className="mb-6 pb-4 border-b border-border-default">
+          <button
+            type="button"
+            onClick={() => setShowAllocationSettings((s) => !s)}
+            className="flex items-center gap-1 text-sm font-medium text-primary-500 hover:text-primary-600"
+          >
+            {showAllocationSettings ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+            {t('expenses.allocation.settingsToggle')}
+          </button>
+          {showAllocationSettings &&
+            (allocationUnitsLoading ? (
+              <LoadingSpinner />
+            ) : (
+              <div className="mt-4">
+                <UnitAllocationSettings
+                  propertyIdentifier={propertyId}
+                  basis={property?.allocationBasis ?? AllocationBasis.EQUAL}
+                  units={allocationUnits}
+                  onSave={(request) => updateAllocation.mutate(request)}
+                  isSaving={updateAllocation.isPending}
+                  disabled={!canEditData}
+                />
+              </div>
+            ))}
+        </div>
+      )}
+
       {isLoading ? (
         <LoadingSpinner />
       ) : error ? (
@@ -197,7 +329,14 @@ export const PropertyExpensesTab = ({
                     <DataList
                       title={expense.description}
                       trailing={
-                        <ExpenseCategoryBadge category={expense.category} />
+                        <div className="flex flex-col items-end gap-1">
+                          <ExpenseCategoryBadge category={expense.category} />
+                          {isMultiUnit && !expense.unitIdentifier && (
+                            <span className="text-xs text-text-muted">
+                              {t('expenses.allocation.buildingBadge')}
+                            </span>
+                          )}
+                        </div>
                       }
                       items={[
                         {
@@ -278,35 +417,73 @@ export const PropertyExpensesTab = ({
                     </td>
                   </tr>
                 ) : (
-                  paginatedExpenses.map((expense) => (
-                    <tr
-                      key={expense.identifier}
-                      className="hover:bg-primary-50 cursor-pointer"
-                      onClick={() =>
-                        navigate(`/expenses/${expense.identifier}`, {
-                          state: {
-                            backTo: `/properties/${propertyId}?tab=expenses`,
-                          },
-                        })
-                      }
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-500 dark:text-primary-300">
-                        #{expense.identifier}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
-                        {formatDate(expense.expenseDate)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-text-primary">
-                        {expense.description}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <ExpenseCategoryBadge category={expense.category} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-text-primary">
-                        {expense.currency} {expense.amount.toFixed(2)}
-                      </td>
-                    </tr>
-                  ))
+                  paginatedExpenses.map((expense) => {
+                    const isBuildingLevel =
+                      isMultiUnit && !expense.unitIdentifier;
+                    const isExpanded = expandedExpenseId === expense.identifier;
+                    return (
+                      <Fragment key={expense.identifier}>
+                        <tr
+                          className="hover:bg-primary-50 cursor-pointer"
+                          onClick={() =>
+                            navigate(`/expenses/${expense.identifier}`, {
+                              state: {
+                                backTo: `/properties/${propertyId}?tab=expenses`,
+                              },
+                            })
+                          }
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-500 dark:text-primary-300">
+                            #{expense.identifier}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
+                            {formatDate(expense.expenseDate)}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-text-primary">
+                            {expense.description}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <ExpenseCategoryBadge
+                                category={expense.category}
+                              />
+                              {isBuildingLevel && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedExpenseId(
+                                      isExpanded ? null : expense.identifier
+                                    );
+                                  }}
+                                  className="text-xs text-primary-500 hover:underline"
+                                >
+                                  {isExpanded
+                                    ? t('expenses.allocation.hideSplit')
+                                    : t('expenses.allocation.viewSplit')}
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-text-primary">
+                            {expense.currency} {expense.amount.toFixed(2)}
+                          </td>
+                        </tr>
+                        {isBuildingLevel && isExpanded && (
+                          <tr>
+                            <td
+                              colSpan={5}
+                              className="px-6 py-4 bg-surface-inset"
+                            >
+                              <ExpenseAllocationSplit
+                                expenseIdentifier={expense.identifier}
+                              />
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
+                    );
+                  })
                 )}
               </tbody>
             </table>

@@ -136,7 +136,8 @@
       "history": "Geschiedenis",
       "noCalculation": "Nog geen berekening",
       "noCalculationDescription": "Bereken de WWS-punten om de maximale gereguleerde huur voor dit pand te bepalen.",
-      "noPreviousCalculations": "Geen eerdere berekeningen."
+      "noPreviousCalculations": "Geen eerdere berekeningen.",
+      "multiUnitUnsupported": "Dit pand heeft meerdere eenheden. Open een eenheid om de WWS-punten ervan te berekenen."
     },
     "metadata": {
       "title": "Metadata",
@@ -313,6 +314,13 @@
     },
     "pagination": {
       "showing": "{{from}} tot {{to}} van {{total}} uitgaven weergegeven"
+    },
+    "allocation": {
+      "settingsToggle": "Instellingen kostenverdeling",
+      "buildingBadge": "Hele pand",
+      "viewSplit": "Verdeling tonen",
+      "hideSplit": "Verdeling verbergen",
+      "failedToLoad": "De kostenverdeling kon niet worden geladen"
     }
   },
   "audit": {
@@ -360,7 +368,8 @@
       "notesPlaceholder": "Extra opmerkingen...",
       "reason": "Reden",
       "reasonPlaceholder": "Selecteer een reden...",
-      "alreadyTakenPeriods": "Reeds bezette perioden"
+      "alreadyTakenPeriods": "Reeds bezette perioden",
+      "unitRequired": "Kies voor welke eenheid deze bewoningsperiode is."
     },
     "occupancyTypes": {
       "PERSONAL": "Persoonlijk",
@@ -929,7 +938,8 @@
       "occupancyIncomeTrend": "Bezettings- & inkomstentrend",
       "expenseBreakdown": "Kostenspecificatie",
       "sixMonthProjection": "6-maanden prognose",
-      "equityOverview": "Overzicht eigen vermogen"
+      "equityOverview": "Overzicht eigen vermogen",
+      "unitOccupancy": "Bezetting per eenheid"
     },
     "summary": {
       "totalRoi": "Totaal ROI",
@@ -958,7 +968,8 @@
       "contactOccupied": "Verhuurd",
       "netIncomeTrend": "Netto-inkomstentrend",
       "netIncome": "Netto-inkomen",
-      "noData": "Geen contractgegevens"
+      "noData": "Geen contractgegevens",
+      "buildingVacancyRate": "Leegstandspercentage van het pand"
     },
     "expense": {
       "noData": "Geen kostengegevens"
@@ -1110,5 +1121,12 @@
       "add": "Toevoegen",
       "addOutdoorArea": "Buitenruimte toevoegen"
     }
+  },
+  "unitOccupancy": {
+    "noUnits": "Geen eenheden",
+    "allVacant": "Leeg",
+    "allOccupied": "Verhuurd",
+    "allUnavailable": "Niet beschikbaar",
+    "mixed": "{{occupied}} verhuurd · {{vacant}} leeg · {{unavailable}} niet beschikbaar"
   }
 }

@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - "backend/**"
+      - "openapi/**"
       - ".github/workflows/test-backend.yml"
   push:
     branches: [main]
     paths:
       - "backend/**"
+      - "openapi/**"
 
 env:
   DOCKER_API_VERSION: "1.44"
@@ -31,11 +33,29 @@ jobs:
           java-version: 25
           cache: maven
 
-      - name: Run tests with coverage
+      - name: Verify committed OpenAPI bundle matches source
+        run: |
+          python3 scripts/bundle_openapi.py
+          git diff --exit-code openapi/app.yaml
+
+      # openapi-generator produces the *Api INTERFACES, but the controllers bind the
+      # hand-written DTOs in buurman-common (PropertyController implements PropertiesApi
+      # yet takes com.buurman.dto.request.CreatePropertyRequest). So code generation
+      # verifies paths and verbs and never field names, and the spec can drift from the
+      # DTOs silently: a client sends a key the server ignores, or reads one it never
+      # emits. That shipped as "country" vs "countryCode" (a 400 on every property
+      # create) plus 10 more schemas. Stdlib only — no pip install needed.
+      - name: Verify OpenAPI schemas match the Java DTOs
+        run: python3 scripts/checks/openapi_dto_drift.py
+
+      - name: Run tests with coverage (full reactor — no -pl subset)
+        # No -Pquick: this lets spotless:check (bound to the `verify` phase) run as
+        # a real merge gate. Building the full reactor (no -pl) is deliberate too —
+        # buurman-demo-data, buurman-takeout and buurman-app were previously excluded
+        # here and only ever compiled during the production image build.
         working-directory: backend
         run: |
-          mvn verify -pl buurman-common,buurman-core,buurman-notifications,buurman-documents,buurman-booklets,buurman-letters,buurman-backoffice \
-            -am -Pquick -B -Dmaven.build.cache.enabled=false
+          mvn verify -B -Dmaven.build.cache.enabled=false
 
       - name: Generate coverage summary
         if: always()

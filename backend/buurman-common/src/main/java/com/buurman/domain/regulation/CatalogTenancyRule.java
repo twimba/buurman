@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * lease formalities, registration duties, fixed-amount fees. Nothing computes off them; they are
  * rendered as reference material.
  *
- * <p>{@code regionCode} links the entry to a {@link CatalogRegion} of the same country; {@code null}
- * denotes a national rule. Only the CURRENT rule is stored — a superseded entry is replaced, not
- * retained, so {@code effectiveFrom} dates the present fact rather than opening a history.
+ * <p>{@code regionCode} links the entry to a {@link CatalogRegion} of the same country; {@code
+ * null} denotes a national rule. Only the CURRENT rule is stored — a superseded entry is replaced,
+ * not retained, so {@code effectiveFrom} dates the present fact rather than opening a history.
  *
  * <p>{@code value} is free text ("5 years", "DKK 344", "2 months' rent", "Mandatory, written")
  * because the facts are heterogeneous and no unit system fits them; a topic that later needs to

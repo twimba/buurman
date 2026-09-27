@@ -96,8 +96,7 @@ class RentRegulationServiceTest {
 
   private void stubCountryAndEmptyExtras() {
     when(rentRegulationRepository.findCountryByCode("NL")).thenReturn(Optional.of(country()));
-    when(rentRegulationRepository.findRegionsByCountryId(COUNTRY_ID))
-        .thenReturn(List.of(region()));
+    when(rentRegulationRepository.findRegionsByCountryId(COUNTRY_ID)).thenReturn(List.of(region()));
     when(rentRegulationRepository.findRulesByCountryId(COUNTRY_ID)).thenReturn(List.of());
   }
 

@@ -1,7 +1,9 @@
 package com.buurman.repository;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.min;
 
@@ -23,7 +25,9 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractIncomeEntry;
+import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Sid;
+import com.buurman.domain.UnitActiveTenancy;
 import com.buurman.domain.metadata.CountryMetadataSerializer;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
@@ -134,6 +138,40 @@ public class ContractRepository {
         .toList();
   }
 
+  public List<Contract> findByUnitId(UUID unitId, UUID teamId) {
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .UNIT_ID
+                .eq(unitId)
+                .and(CONTRACTS.TEAM_ID.eq(teamId))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.START_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  /**
+   * Whether any contract (active or historical) still references this unit — used to guard unit
+   * deletion, since {@code GET /contracts/{id}} resolves the contract's unit by id and would
+   * otherwise 404 once the unit is soft-deleted, permanently hiding the tenancy's history.
+   */
+  public boolean existsByUnitId(UUID unitId, UUID teamId) {
+    return dsl.fetchExists(
+        dsl.selectOne()
+            .from(CONTRACTS)
+            .where(
+                CONTRACTS
+                    .UNIT_ID
+                    .eq(unitId)
+                    .and(CONTRACTS.TEAM_ID.eq(teamId))
+                    .and(CONTRACTS.DELETED_AT.isNull())));
+  }
+
   public List<Contract> findByContactIdViaParties(UUID contactId, UUID teamId) {
     var CONTRACT_PARTIES = org.jooq.impl.DSL.table("contract_parties");
     var CP_CONTRACT_ID = org.jooq.impl.DSL.field("contract_parties.contract_id", UUID.class);
@@ -179,15 +217,24 @@ public class ContractRepository {
         .toList();
   }
 
-  public Optional<Contract> findActiveContractByPropertyId(UUID propertyId, UUID teamId) {
+  /**
+   * At most one row is expected ({@code uq_contracts_one_active_per_unit}, added in V072), but a
+   * legacy duplicate predating that constraint is still possible. {@code limit(1)} with a
+   * deterministic {@code orderBy} makes that degrade to "pick the oldest" instead of throwing
+   * {@link org.jooq.exception.TooManyRowsException} (which {@code fetchOptional()} does on >1 row
+   * and which was previously an unhandled 500).
+   */
+  public Optional<Contract> findActiveByUnitId(UUID unitId, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
         .where(
             CONTRACTS
-                .PROPERTY_ID
-                .eq(propertyId)
+                .UNIT_ID
+                .eq(unitId)
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                 .and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.CREATED_AT.asc(), CONTRACTS.ID.asc())
+        .limit(1)
         .fetchOptional()
         .flatMap(mapper::toDomain);
   }
@@ -204,6 +251,7 @@ public class ContractRepository {
           .set(CONTRACTS.IDENTIFIER, contract.getIdentifier().orElseThrow())
           .set(CONTRACTS.TEAM_ID, contract.getTeamId())
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
+          .set(CONTRACTS.UNIT_ID, contract.getUnitId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
           .set(CONTRACTS.START_DATE, contract.getStartDate())
           .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
@@ -267,6 +315,7 @@ public class ContractRepository {
       var query =
           dsl.update(CONTRACTS)
               .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
+              .set(CONTRACTS.UNIT_ID, contract.getUnitId())
               .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
               .set(CONTRACTS.START_DATE, contract.getStartDate())
               .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
@@ -469,5 +518,69 @@ public class ContractRepository {
     return dsl.fetchCount(
         dsl.selectFrom(CONTRACTS)
             .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull())));
+  }
+
+  /** Active, as used throughout this codebase: {@code status = ACTIVE} and not soft-deleted. */
+  public int countActiveByUnitId(UUID unitId, UUID teamId) {
+    return dsl.fetchCount(
+        dsl.selectFrom(CONTRACTS)
+            .where(
+                CONTRACTS
+                    .UNIT_ID
+                    .eq(unitId)
+                    .and(CONTRACTS.TEAM_ID.eq(teamId))
+                    .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                    .and(CONTRACTS.DELETED_AT.isNull())));
+  }
+
+  /**
+   * Active contracts for the given units, paired with the rent charged and the primary tenant's
+   * display name (via {@code contract_parties}/{@code contacts}), for assembling the units grid
+   * view. {@code tenantName} is {@code null} when no primary-tenant party is recorded.
+   */
+  public List<UnitActiveTenancy> findActiveTenanciesByUnitIds(
+      Collection<UUID> unitIds, UUID teamId) {
+    if (unitIds == null || unitIds.isEmpty()) {
+      return List.of();
+    }
+    return dsl.select(
+            CONTRACTS.UNIT_ID,
+            CONTRACTS.RENT_AMOUNT,
+            CONTRACTS.RENT_AMOUNT_CURRENCY,
+            CONTACTS.DISPLAY_NAME)
+        .from(CONTRACTS)
+        .leftJoin(CONTRACT_PARTIES)
+        .on(
+            CONTRACT_PARTIES
+                .CONTRACT_ID
+                .eq(CONTRACTS.ID)
+                .and(CONTRACT_PARTIES.ROLE.eq(ContractPartyRole.PRIMARY_TENANT.name()))
+                .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
+                .and(CONTRACT_PARTIES.DELETED_AT.isNull()))
+        .leftJoin(CONTACTS)
+        .on(
+            CONTACTS
+                .ID
+                .eq(CONTRACT_PARTIES.CONTACT_ID)
+                .and(CONTACTS.TEAM_ID.eq(teamId))
+                .and(CONTACTS.DELETED_AT.isNull()))
+        .where(
+            CONTRACTS
+                .UNIT_ID
+                .in(unitIds)
+                .and(CONTRACTS.TEAM_ID.eq(teamId))
+                .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        // Deterministic order so that, in the schema-permitted case of two active contracts (or
+        // two PRIMARY_TENANT parties) on one unit, the caller's "keep the first" merge picks the
+        // most recently started tenancy rather than whatever order the planner returned.
+        .orderBy(CONTRACTS.START_DATE.desc())
+        .fetch(
+            r ->
+                new UnitActiveTenancy(
+                    r.get(CONTRACTS.UNIT_ID),
+                    r.get(CONTRACTS.RENT_AMOUNT),
+                    r.get(CONTRACTS.RENT_AMOUNT_CURRENCY),
+                    r.get(CONTACTS.DISPLAY_NAME)));
   }
 }

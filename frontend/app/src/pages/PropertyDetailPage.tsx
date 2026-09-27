@@ -20,6 +20,7 @@ import { PropertyLifecycleTimeline } from '@/components/properties/PropertyLifec
 import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
+import type { PropertyIdentifier, UnitIdentifier } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
@@ -32,12 +33,19 @@ import { PropertyExpensesTab } from '@/components/properties/PropertyExpensesTab
 import { PropertyDocumentsTab } from '@/components/properties/PropertyDocumentsTab';
 import { PropertyPhotosTab } from '@/components/properties/PropertyPhotosTab';
 import { PropertyAuditTab } from '@/components/properties/PropertyAuditTab';
+import { UnitCharacteristicsForm } from '@/components/units/UnitCharacteristicsForm';
+import { PropertyUnitsTab } from '@/components/units/PropertyUnitsTab';
+import { BulkCreateUnitsModal } from '@/components/units/BulkCreateUnitsModal';
+import { useUnit, useUpdateUnit } from '@/hooks/useUnitHooks';
+import { unitToUpdateRequest } from '@/utils/unitRequests';
+import type { UpdateUnitRequest } from '@/types/unit';
 import { FeatureGate } from '@/components/FeatureGate';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
+import { describePropertyOccupancy } from '@/utils/propertyOccupancy';
 import { useTeam } from '@/context/TeamContext';
 import {
   exportPropertyBooklet,
@@ -49,9 +57,6 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   Edit,
   Trash2,
-  Bed,
-  Bath,
-  Ruler,
   MapPin,
   History,
   Image,
@@ -62,34 +67,118 @@ import {
   BarChart3,
   Wallet,
   Calculator,
+  LayoutGrid,
   X,
 } from 'lucide-react';
 
-const statusColors: Record<string, string> = {
-  VACANT: 'bg-success-bg text-success-text',
-  OCCUPIED: 'bg-info-bg text-info-text',
-  MAINTENANCE: 'bg-warning-bg text-warning-text',
-  UNAVAILABLE: 'bg-surface-inset text-text-primary',
-  UNDER_RENOVATION: 'bg-warning-bg text-warning-text',
-  FALLOW: 'bg-surface-inset text-text-primary',
-  LISTED: 'bg-info-bg text-info-text',
-  SELF_OCCUPIED: 'bg-info-bg text-info-text',
+export const PROPERTY_TAB_IDS = [
+  'info',
+  'financials',
+  'photos',
+  'documents',
+  'contracts',
+  'expenses',
+  'audit',
+  'dashboard',
+] as const;
+
+export type TabId = (typeof PROPERTY_TAB_IDS)[number] | 'units';
+
+/**
+ * Driven by unitCount, never by the implicit flag: a landlord who split a property into
+ * units and later deleted back down to one must still reach the dwelling fields on the
+ * Info tab, not get stranded behind a Units tab that no longer makes sense.
+ */
+export const visibleTabs = (unitCount: number): readonly TabId[] => {
+  if (unitCount <= 1) {
+    return PROPERTY_TAB_IDS;
+  }
+  const [info, ...rest] = PROPERTY_TAB_IDS;
+  return [info, 'units', ...rest];
 };
 
-const formatEnumValue = (value: string | null): string => {
-  if (!value) {
-    return '';
+/**
+ * Editable dwelling characteristics for a property's sole unit, inlined on the Info tab so
+ * the single-unit landlord never has to think about "units" -- this reads and saves like any
+ * other card on this page. `UnitCharacteristicsForm` itself stays fully controlled; this
+ * wrapper is the parent that owns the fetch, the draft state, and the save.
+ */
+const DwellingCharacteristicsCard = ({
+  propertyIdentifier,
+  unitIdentifier,
+  canEditData,
+  onSplit,
+}: {
+  propertyIdentifier: PropertyIdentifier;
+  unitIdentifier: UnitIdentifier;
+  canEditData: boolean;
+  onSplit: () => void;
+}) => {
+  const { t } = useTranslation(['units', 'common']);
+  const { data: unit } = useUnit(unitIdentifier);
+  const updateUnit = useUpdateUnit(propertyIdentifier, unitIdentifier);
+  // Only the fields the landlord has actually touched -- merged over the saved unit on every
+  // render below. This avoids syncing query data into local state via an effect: the draft is
+  // always derived, never stale, and clearing this back to {} is what "discard"/"saved" mean.
+  const [overrides, setOverrides] = useState<Partial<UpdateUnitRequest>>({});
+
+  const handleChange = useCallback(
+    <K extends keyof UpdateUnitRequest>(
+      field: K,
+      value: UpdateUnitRequest[K]
+    ) => {
+      setOverrides((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
+
+  if (!unit) {
+    return null;
   }
-  return value
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .replace(/\bAc\b/g, 'AC')
-    .replace(/\bCo\b/g, 'CO')
-    .replace(/\bDsl\b/g, 'DSL');
+
+  const savedRequest = unitToUpdateRequest(unit);
+  const draft: UpdateUnitRequest = { ...savedRequest, ...overrides };
+  const isDirty = Object.keys(overrides).length > 0;
+
+  return (
+    <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+      <UnitCharacteristicsForm
+        title={t('units:detail.characteristics')}
+        onSplit={onSplit}
+        value={draft}
+        onChange={handleChange}
+        disabled={!canEditData || updateUnit.isPending}
+      />
+      {canEditData && (
+        <div className="flex justify-end gap-2 mt-4">
+          {isDirty && (
+            <Button
+              variant="ghost"
+              onClick={() => setOverrides({})}
+              disabled={updateUnit.isPending}
+            >
+              {t('common:buttons.discardChanges')}
+            </Button>
+          )}
+          <Button
+            variant="primary"
+            onClick={() =>
+              updateUnit.mutate(draft, {
+                onSuccess: () => setOverrides({}),
+              })
+            }
+            disabled={!isDirty || updateUnit.isPending}
+          >
+            {t('common:buttons.saveChanges')}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export const PropertyDetailPage = () => {
-  const { t } = useTranslation(['properties', 'common']);
+  const { t } = useTranslation(['properties', 'common', 'units']);
   const te = (enumGroup: string, value: string | null): string => {
     if (!value) {
       return '';
@@ -105,20 +194,19 @@ export const PropertyDetailPage = () => {
     });
   };
   const { id = '' } = useParams<{ id: string }>();
-  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
+  const { typeLabel, categoryLabel } = usePropertyLabels();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
-  const [activeTab, setActiveTabRaw] = useTabState('info', [
+
+  // Core property data (moved above useTabState: the tab whitelist depends on unitCount).
+  const { data: property, isLoading, error } = useProperty(id);
+  const propertyIdentifier = property?.identifier;
+
+  const [activeTab, setActiveTabRaw] = useTabState(
     'info',
-    'financials',
-    'photos',
-    'documents',
-    'contracts',
-    'expenses',
-    'audit',
-    'dashboard',
-  ] as const);
+    visibleTabs(property?.unitCount ?? 1)
+  );
 
   // Persist scroll position per tab. Switching tabs saves the current scrollY
   // for the leaving tab and restores it (or 0) for the incoming tab — so
@@ -160,10 +248,9 @@ export const PropertyDetailPage = () => {
   const [deleteOccupancyPeriodId, setDeleteOccupancyPeriodId] = useState<
     string | null
   >(null);
-
-  // Core property data
-  const { data: property, isLoading, error } = useProperty(id);
-  const propertyIdentifier = property?.identifier;
+  // Split transition (BUUR-106): converting the sole implicit unit into several real ones.
+  const [showSplitModal, setShowSplitModal] = useState(false);
+  const [showSplitMovedNotice, setShowSplitMovedNotice] = useState(false);
 
   useEffect(() => {
     if (propertyIdentifier) {
@@ -171,15 +258,24 @@ export const PropertyDetailPage = () => {
     }
   }, [propertyIdentifier]);
 
-  // WWS (NL-only)
-  const isNlProperty = property?.country === 'NL';
+  // WWS (NL-only). WWS points are a per-dwelling figure (BUUR-106): the property-scoped reads
+  // below are honest (backend refuses /latest with 409 once the property has more than one
+  // unit), but calculating/opening the modal needs an actual unit. The Units UI is a later plan,
+  // so for now that only works for a single-unit property -- soleUnitIdentifier is undefined
+  // otherwise, and WwsCalculatorModal's required prop makes the compiler enforce that.
+  const isNlProperty = property?.countryCode === 'NL';
+  const propertyId = id as PropertyIdentifier;
+  const soleUnitIdentifier: UnitIdentifier | undefined =
+    property?.units.length === 1
+      ? (property.units[0].identifier as UnitIdentifier)
+      : undefined;
   const { data: latestWws } = useLatestWwsCalculation(
-    isNlProperty ? id : undefined
+    isNlProperty ? propertyId : undefined
   );
   const { data: wwsHistory = [] } = useWwsCalculations(
-    isNlProperty && showWwsHistory ? id : undefined
+    isNlProperty && showWwsHistory ? propertyId : undefined
   );
-  const deleteWwsMutation = useDeleteWwsCalculation(id);
+  const deleteWwsMutation = useDeleteWwsCalculation(propertyId);
 
   // Info tab data (needed for timeline and self-occupancy card)
   const { data: occupancyPeriods = [] } = useOccupancyPeriods(id);
@@ -272,6 +368,15 @@ export const PropertyDetailPage = () => {
   // All rich text fields are sanitized with DOMPurify before rendering
   const sanitize = DOMPurify.sanitize;
 
+  // A property can hold several independently-let units (BUUR-106), so there is no single
+  // property-level status anymore -- derive a coarse one from unit counts instead.
+  const occupancy = describePropertyOccupancy(
+    t,
+    property.unitCount,
+    property.occupiedUnitCount,
+    property.vacantUnitCount
+  );
+
   return (
     <div className="min-h-full bg-background">
       <div className="px-4 py-8">
@@ -283,9 +388,9 @@ export const PropertyDetailPage = () => {
           backTo="/properties"
           badge={
             <span
-              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status] ?? 'bg-surface-inset text-text-primary'}`}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium ${occupancy.colorClass}`}
             >
-              {statusLabel(property.status)}
+              {occupancy.label}
             </span>
           }
           actions={
@@ -333,6 +438,19 @@ export const PropertyDetailPage = () => {
             >
               {t('detail.tabs.info')}
             </button>
+            {property.unitCount > 1 && (
+              <button
+                onClick={() => setActiveTab('units')}
+                className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                  activeTab === 'units'
+                    ? 'border-primary-500 text-primary-500 font-semibold'
+                    : 'border-transparent text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <LayoutGrid className="h-4 w-4" />
+                {t('units:tab')}
+              </button>
+            )}
             <FeatureGate flag={FeatureFlags.REPORTS}>
               <button
                 onClick={() => setActiveTab('dashboard')}
@@ -497,21 +615,10 @@ export const PropertyDetailPage = () => {
               <div className="flex items-center gap-4 text-sm pb-2 border-b border-border-subtle">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                      {
-                        VACANT: 'bg-success-text',
-                        OCCUPIED: 'bg-info-text',
-                        MAINTENANCE: 'bg-warning-text',
-                        UNAVAILABLE: 'bg-text-disabled',
-                        UNDER_RENOVATION: 'bg-warning-text',
-                        FALLOW: 'bg-text-disabled',
-                        LISTED: 'bg-info-text',
-                        SELF_OCCUPIED: 'bg-info-text',
-                      }[property.status] ?? 'bg-text-disabled'
-                    }`}
+                    className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${occupancy.dotColorClass}`}
                   />
                   <span className="font-semibold text-text-primary">
-                    {statusLabel(property.status)}
+                    {occupancy.label}
                   </span>
                 </div>
                 <span className="text-text-disabled">{'\u00b7'}</span>
@@ -531,49 +638,6 @@ export const PropertyDetailPage = () => {
 
               {/* Specifications Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {property.residentialDetails?.bedrooms != null && (
-                  <div>
-                    <div className="flex items-center gap-2 text-text-secondary mb-1">
-                      <Bed className="h-5 w-5" />
-                      <span className="text-sm font-medium">
-                        {t('detail.specs.bedrooms')}
-                      </span>
-                    </div>
-                    <p className="text-2xl font-semibold text-text-primary">
-                      {property.residentialDetails.bedrooms}
-                    </p>
-                  </div>
-                )}
-
-                {property.residentialDetails?.bathrooms != null && (
-                  <div>
-                    <div className="flex items-center gap-2 text-text-secondary mb-1">
-                      <Bath className="h-5 w-5" />
-                      <span className="text-sm font-medium">
-                        {t('detail.specs.bathrooms')}
-                      </span>
-                    </div>
-                    <p className="text-2xl font-semibold text-text-primary">
-                      {property.residentialDetails.bathrooms}
-                    </p>
-                  </div>
-                )}
-
-                {property.areaValue != null && (
-                  <div>
-                    <div className="flex items-center gap-2 text-text-secondary mb-1">
-                      <Ruler className="h-5 w-5" />
-                      <span className="text-sm font-medium">
-                        {t('detail.specs.area')}
-                      </span>
-                    </div>
-                    <p className="text-2xl font-semibold text-text-primary">
-                      {property.areaValue}
-                      {property.areaUnit === 'sqft' ? 'ft\u00b2' : 'm\u00b2'}
-                    </p>
-                  </div>
-                )}
-
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <PropertyTypeIcon type={property.propertyType} size={20} />
@@ -622,11 +686,11 @@ export const PropertyDetailPage = () => {
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
                     <span className="text-sm font-medium">
-                      {t('detail.specs.country')}
+                      {t('detail.specs.countryCode')}
                     </span>
                   </div>
                   <p className="text-lg text-text-primary">
-                    {property.country}
+                    {property.countryCode}
                   </p>
                 </div>
               </div>
@@ -653,8 +717,6 @@ export const PropertyDetailPage = () => {
               property.foundationType ||
               property.roofType ||
               property.wallConstruction ||
-              property.flooringType ||
-              property.windowType ||
               property.numberOfFloors != null ||
               property.structuralNotes) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
@@ -722,26 +784,6 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.flooringType && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.construction.flooring')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('flooringType', property.flooringType)}
-                      </div>
-                    </div>
-                  )}
-                  {property.windowType && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.construction.windows')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('windowType', property.windowType)}
-                      </div>
-                    </div>
-                  )}
                   {property.numberOfFloors != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
@@ -769,113 +811,39 @@ export const PropertyDetailPage = () => {
               </div>
             )}
 
-            {/* Energy & Climate */}
-            {(property.energyEfficiencyRating ||
-              property.energyCertificateExpiryDate ||
-              property.heatingType ||
-              property.coolingType ||
-              property.hotWaterSystem ||
-              property.insulationNotes) && (
-              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  {t('detail.energy.title')}
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {property.energyEfficiencyRating && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.energyRating')}
-                      </div>
-                      <div className="mt-1">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-white ${
-                            (
-                              {
-                                'A++++': 'bg-emerald-950',
-                                'A+++': 'bg-emerald-900',
-                                'A++': 'bg-green-900',
-                                'A+': 'bg-green-700',
-                                A: 'bg-green-500',
-                                B: 'bg-lime-500',
-                                C: 'bg-yellow-500',
-                                D: 'bg-orange-500',
-                                E: 'bg-orange-600',
-                                F: 'bg-red-500',
-                                G: 'bg-red-800',
-                              } as Record<string, string>
-                            )[property.energyEfficiencyRating] ||
-                            'bg-neutral-500'
-                          }`}
-                        >
-                          {property.energyEfficiencyRating}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  {property.energyCertificateExpiryDate && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.certificateExpiry')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatDate(property.energyCertificateExpiryDate)}
-                      </div>
-                    </div>
-                  )}
-                  {property.heatingType && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.heating')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('heatingType', property.heatingType)}
-                      </div>
-                    </div>
-                  )}
-                  {property.coolingType && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.cooling')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('coolingType', property.coolingType)}
-                      </div>
-                    </div>
-                  )}
-                  {property.hotWaterSystem && (
-                    <div>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        {t('detail.energy.hotWater')}
-                      </div>
-                      <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('hotWaterSystem', property.hotWaterSystem)}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {property.insulationNotes && (
-                  <div className="mt-4">
-                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      {t('detail.energy.insulationNotes')}
-                    </div>
-                    <div
-                      className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: sanitize(property.insulationNotes),
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+            {/* Dwelling characteristics -- sourced from the property's sole unit (BUUR-106).
+                Multi-unit properties reach these fields per-unit via the Units tab instead. */}
+            {soleUnitIdentifier && (
+              <DwellingCharacteristicsCard
+                propertyIdentifier={propertyId}
+                unitIdentifier={soleUnitIdentifier}
+                canEditData={canEditData}
+                onSplit={() => setShowSplitModal(true)}
+              />
+            )}
+
+            {showSplitModal && (
+              <BulkCreateUnitsModal
+                propertyIdentifier={propertyId}
+                street={property.street}
+                open
+                mode="split"
+                onClose={() => setShowSplitModal(false)}
+                onCreated={() => {
+                  setShowSplitModal(false);
+                  setShowSplitMovedNotice(true);
+                  setActiveTab('units');
+                }}
+              />
             )}
 
             {/* Utilities & Connections */}
             {(property.electricityConnectionType ||
-              property.electricityCapacityAmps != null ||
+              property.electricityCapacityValue != null ||
               property.waterConnectionType ||
               property.sewageType ||
               property.internetConnectionType ||
-              property.internetMaxSpeedMbps != null ||
+              property.internetMaxSpeedValue != null ||
               property.internetStatus) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
@@ -895,13 +863,13 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.electricityCapacityAmps != null && (
+                  {property.electricityCapacityValue != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         {t('detail.utilities.capacity')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {property.electricityCapacityAmps} A
+                        {property.electricityCapacityValue} A
                       </div>
                     </div>
                   )}
@@ -951,13 +919,13 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.internetMaxSpeedMbps != null && (
+                  {property.internetMaxSpeedValue != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         {t('detail.utilities.internetSpeed')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {property.internetMaxSpeedMbps} Mbps
+                        {property.internetMaxSpeedValue} Mbps
                       </div>
                     </div>
                   )}
@@ -1031,57 +999,8 @@ export const PropertyDetailPage = () => {
               </div>
             )}
 
-            {/* Amenities */}
-            {property.amenities && property.amenities.length > 0 && (
-              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  {t('detail.amenities.title')}
-                </h3>
-                <div className="space-y-4">
-                  {Object.entries(
-                    property.amenities.reduce<
-                      Record<string, typeof property.amenities>
-                    >((groups, amenity) => {
-                      const cat = amenity.amenityCategory;
-                      if (!groups[cat]) {
-                        groups[cat] = [];
-                      }
-                      groups[cat].push(amenity);
-                      return groups;
-                    }, {})
-                  ).map(([category, items]) => (
-                    <div key={category}>
-                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
-                        {t(`enums.amenities.categories.${category}`, {
-                          defaultValue: formatEnumValue(category),
-                        })}
-                      </div>
-                      <div className="flex flex-wrap gap-x-6 gap-y-2">
-                        {(items ?? []).map((amenity) => (
-                          <span
-                            key={amenity.amenityIdentifier}
-                            className="inline-flex items-center gap-1.5 text-sm text-text-primary"
-                          >
-                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                              {'\u2713'}
-                            </span>
-                            {t(`enums.amenities.items.${amenity.amenityName}`, {
-                              defaultValue: amenity.amenityName,
-                            })}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Safety & Security */}
-            {(property.hasSmokeDetectors ||
-              property.hasCoDetectors ||
-              property.hasFireExtinguisher ||
-              property.hasSprinklerSystem ||
+            {(property.hasSprinklerSystem ||
               property.hasAlarmSystem ||
               property.hasSecurityCameras ||
               property.hasSecureEntry ||
@@ -1091,30 +1010,6 @@ export const PropertyDetailPage = () => {
                   {t('detail.safety.title')}
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
-                  {property.hasSmokeDetectors && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                        {'\u2713'}
-                      </span>
-                      {t('detail.safety.smokeDetectors')}
-                    </span>
-                  )}
-                  {property.hasCoDetectors && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                        {'\u2713'}
-                      </span>
-                      {t('detail.safety.coDetectors')}
-                    </span>
-                  )}
-                  {property.hasFireExtinguisher && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                        {'\u2713'}
-                      </span>
-                      {t('detail.safety.fireExtinguisher')}
-                    </span>
-                  )}
                   {property.hasSprinklerSystem && (
                     <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
@@ -1167,9 +1062,7 @@ export const PropertyDetailPage = () => {
             {/* Accessibility */}
             {(property.isWheelchairAccessible ||
               property.hasElevator ||
-              property.hasStepFreeEntrance ||
-              property.hasAdaptedBathroom ||
-              property.accessibilityNotes) && (
+              property.hasStepFreeEntrance) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   {t('detail.accessibility.title')}
@@ -1199,28 +1092,7 @@ export const PropertyDetailPage = () => {
                       {t('detail.accessibility.stepFreeEntrance')}
                     </span>
                   )}
-                  {property.hasAdaptedBathroom && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
-                        {'\u2713'}
-                      </span>
-                      {t('detail.accessibility.adaptedBathroom')}
-                    </span>
-                  )}
                 </div>
-                {property.accessibilityNotes && (
-                  <div className="mt-4">
-                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      {t('detail.accessibility.accessibilityNotes')}
-                    </div>
-                    <div
-                      className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: sanitize(property.accessibilityNotes),
-                      }}
-                    />
-                  </div>
-                )}
               </div>
             )}
 
@@ -1240,15 +1112,23 @@ export const PropertyDetailPage = () => {
                         {t('common:buttons.delete')}
                       </button>
                     )}
-                    <button
-                      onClick={() => setShowWwsModal(true)}
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
-                    >
-                      <Calculator className="h-3.5 w-3.5" />
-                      {latestWws
-                        ? t('detail.wws.recalculate')
-                        : t('detail.wws.calculate')}
-                    </button>
+                    {soleUnitIdentifier ? (
+                      <button
+                        onClick={() => setShowWwsModal(true)}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
+                      >
+                        <Calculator className="h-3.5 w-3.5" />
+                        {latestWws
+                          ? t('detail.wws.recalculate')
+                          : t('detail.wws.calculate')}
+                      </button>
+                    ) : (
+                      // WWS is per-unit; a multi-unit building has no single dwelling to
+                      // calculate for here until unit selection ships.
+                      <span className="text-xs text-text-secondary italic">
+                        {t('detail.wws.multiUnitUnsupported')}
+                      </span>
+                    )}
                   </div>
                 </div>
                 {latestWws ? (
@@ -1439,6 +1319,27 @@ export const PropertyDetailPage = () => {
           </div>
         )}
 
+        {activeTab === 'units' && property.unitCount > 1 && (
+          <div className="space-y-4">
+            {showSplitMovedNotice && (
+              <div className="flex items-start justify-between gap-3 rounded-md border border-info-border bg-info-bg px-4 py-3 text-sm text-info-text">
+                <p>{t('units:split.movedExplainer')}</p>
+                <button
+                  type="button"
+                  onClick={() => setShowSplitMovedNotice(false)}
+                  className="text-info-text hover:opacity-75"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            <PropertyUnitsTab
+              propertyIdentifier={propertyId}
+              street={property.street}
+            />
+          </div>
+        )}
+
         {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id} />}
 
         {activeTab === 'financials' && (
@@ -1535,9 +1436,10 @@ export const PropertyDetailPage = () => {
           ) : null;
         })()}
 
-      {isNlProperty && (
+      {isNlProperty && soleUnitIdentifier && (
         <WwsCalculatorModal
-          propertyIdentifier={id}
+          propertyIdentifier={propertyId}
+          unitIdentifier={soleUnitIdentifier}
           isOpen={showWwsModal}
           onClose={() => setShowWwsModal(false)}
         />

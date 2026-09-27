@@ -16,6 +16,8 @@ import com.buurman.util.SkipTestCoverage;
 public record ContractResponse(
     Sid identifier,
     Optional<PropertySummary> property,
+    String unitIdentifier,
+    String unitNumber,
     List<ContractPartyResponse> parties,
     Optional<ContactSummary> primaryContact,
     Contract.ContractType contractType,

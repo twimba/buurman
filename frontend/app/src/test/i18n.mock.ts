@@ -4,6 +4,7 @@ import { initReactI18next } from 'react-i18next';
 import commonEn from '../../public/locales/en/common.json';
 import navigationEn from '../../public/locales/en/navigation.json';
 import propertiesEn from '../../public/locales/en/properties.json';
+import unitsEn from '../../public/locales/en/units.json';
 import tenantsEn from '../../public/locales/en/tenants.json';
 import contractsEn from '../../public/locales/en/contracts.json';
 import paymentsEn from '../../public/locales/en/payments.json';
@@ -19,6 +20,7 @@ i18n.use(initReactI18next).init({
     'common',
     'navigation',
     'properties',
+    'units',
     'tenants',
     'contracts',
     'payments',
@@ -33,6 +35,7 @@ i18n.use(initReactI18next).init({
       common: commonEn,
       navigation: navigationEn,
       properties: propertiesEn,
+      units: unitsEn,
       tenants: tenantsEn,
       contracts: contractsEn,
       payments: paymentsEn,

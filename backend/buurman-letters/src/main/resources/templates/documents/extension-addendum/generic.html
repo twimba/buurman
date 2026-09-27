@@ -103,6 +103,13 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
           <div class="cs-value" th:text="${primaryContactName}"></div>
         </td>
       </tr>
+      <tr th:if="${hasMultipleUnits}">
+        <td>
+          <div class="cs-label" th:text="#{addendum.summary.unit}">Unit</div>
+          <div class="cs-value" th:text="${unitDesignation}"></div>
+        </td>
+        <td></td>
+      </tr>
       <tr>
         <td>
           <div class="cs-label" th:text="#{addendum.summary.contract}">Contract</div>

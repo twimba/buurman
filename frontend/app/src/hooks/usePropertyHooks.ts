@@ -24,11 +24,6 @@ import {
   updateOutdoorArea,
   deleteOutdoorArea,
 } from '../generated/api/property-outdoor-areas/property-outdoor-areas';
-import {
-  getPropertyAmenities,
-  addAmenity,
-  removeAmenity,
-} from '../generated/api/property-amenities/property-amenities';
 import { getAllAmenities } from '../generated/api/amenities/amenities';
 import { getDashboard } from '../generated/api/property-dashboard/property-dashboard';
 import type { GetPropertiesParams } from '../generated/models';
@@ -327,39 +322,6 @@ export const useAmenities = (category?: string) => {
   });
 };
 
-export const usePropertyAmenities = (propertyId: string | undefined) => {
-  return useQuery({
-    queryKey: queryKeys.properties.amenities(propertyId),
-    queryFn: () => getPropertyAmenities(propertyId ?? ''),
-    enabled: !!propertyId,
-  });
-};
-
-export const useAddPropertyAmenity = (propertyId: string) => {
-  const queryClient = useQueryClient();
-  return useMutationWithToast({
-    mutationFn: ({
-      amenityIdentifier,
-      notes,
-    }: {
-      amenityIdentifier: string;
-      notes?: string | null;
-    }) =>
-      addAmenity(propertyId, { amenityIdentifier, notes: notes ?? undefined }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.amenities(propertyId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.detail(propertyId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.auditLog(propertyId),
-      });
-    },
-  });
-};
-
 // --- Property Dashboard ---
 
 export const usePropertyDashboard = (
@@ -372,24 +334,5 @@ export const usePropertyDashboard = (
       getDashboard(propertyId ?? '', months != null ? { months } : undefined),
     enabled: !!propertyId,
     staleTime: 60_000,
-  });
-};
-
-export const useRemovePropertyAmenity = (propertyId: string) => {
-  const queryClient = useQueryClient();
-  return useMutationWithToast({
-    mutationFn: (amenityIdentifier: string) =>
-      removeAmenity(propertyId, amenityIdentifier),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.amenities(propertyId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.detail(propertyId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.properties.auditLog(propertyId),
-      });
-    },
   });
 };

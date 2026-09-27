@@ -11,6 +11,7 @@
     "allStatuses": "Todos los Estados",
     "count_one": "{{count}} propiedad",
     "count_other": "{{count}} propiedades",
+    "count_many": "{{count}} propiedades",
     "empty": {
       "title": "No se encontraron propiedades",
       "filtered": "Intente ajustar sus filtros o términos de búsqueda",
@@ -136,7 +137,8 @@
       "history": "Historial",
       "noCalculation": "Sin cálculo aún",
       "noCalculationDescription": "Calcule los puntos WWS para determinar el alquiler máximo regulado para esta propiedad.",
-      "noPreviousCalculations": "Sin cálculos anteriores."
+      "noPreviousCalculations": "Sin cálculos anteriores.",
+      "multiUnitUnsupported": "Este edificio tiene varias unidades. Abra una unidad para calcular sus puntos WWS."
     },
     "metadata": {
       "title": "Metadatos",
@@ -200,13 +202,15 @@
     "selection": {
       "selected": "{{selected}} de {{total}} seleccionados",
       "count_one": "{{count}} documento",
-      "count_other": "{{count}} documentos"
+      "count_other": "{{count}} documentos",
+      "count_many": "{{count}} documentos"
     },
     "preview": "Vista previa",
     "editTitleNotes": "Editar título y notas",
     "upload": {
       "title_one": "Subir Documento",
       "title_other": "Subir Documentos",
+      "title_many": "Subir Documentos",
       "files": "{{count}} archivos",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "ej., Plano del inmueble",
@@ -218,8 +222,10 @@
     "delete": {
       "title_one": "Eliminar documento",
       "title_other": "Eliminar documentos",
+      "title_many": "Eliminar documentos",
       "message_one": "¿Está seguro de que desea eliminar este documento? Esta acción no se puede deshacer.",
       "message_other": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer.",
+      "message_many": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer.",
       "confirmLabel_other": "Eliminar {{count}} documentos"
     },
     "editModal": "Editar Documento",
@@ -232,6 +238,7 @@
     "upload": {
       "title_one": "Subir Foto",
       "title_other": "Subir Fotos",
+      "title_many": "Subir Fotos",
       "files": "{{count}} archivos",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "ej., Salón",
@@ -243,10 +250,13 @@
     "delete": {
       "title_one": "Eliminar foto",
       "title_other": "Eliminar fotos",
+      "title_many": "Eliminar fotos",
       "mainPhotoWarning_one": "Esta es la foto principal. Eliminarla significa que esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
       "mainPhotoWarning_other": "Está a punto de eliminar {{count}} fotos, incluyendo la foto principal. Esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
+      "mainPhotoWarning_many": "Está a punto de eliminar {{count}} fotos, incluyendo la foto principal. Esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
       "message_one": "¿Está seguro de que desea eliminar esta foto? Esta acción no se puede deshacer.",
       "message_other": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer.",
+      "message_many": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer.",
       "confirmLabel_other": "Eliminar {{count}} fotos"
     },
     "editModal": "Editar Foto"
@@ -313,6 +323,13 @@
     },
     "pagination": {
       "showing": "Mostrando {{from}} a {{to}} de {{total}} gastos"
+    },
+    "allocation": {
+      "settingsToggle": "Ajustes de reparto de gastos",
+      "buildingBadge": "Todo el edificio",
+      "viewSplit": "Ver reparto",
+      "hideSplit": "Ocultar reparto",
+      "failedToLoad": "No se pudo cargar el reparto de gastos"
     }
   },
   "audit": {
@@ -360,7 +377,8 @@
       "notesPlaceholder": "Notas adicionales...",
       "reason": "Motivo",
       "reasonPlaceholder": "Seleccione un motivo...",
-      "alreadyTakenPeriods": "Períodos ya ocupados"
+      "alreadyTakenPeriods": "Períodos ya ocupados",
+      "unitRequired": "Elija a qué unidad corresponde este período de ocupación."
     },
     "occupancyTypes": {
       "PERSONAL": "Personal",
@@ -543,7 +561,8 @@
       "paymentDeleted": "Pago eliminado con éxito",
       "paymentDeleteFailed": "Error al eliminar el pago",
       "paymentsCreated_one": "{{count}} pago creado con éxito",
-      "paymentsCreated_other": "{{count}} pagos creados con éxito"
+      "paymentsCreated_other": "{{count}} pagos creados con éxito",
+      "paymentsCreated_many": "{{count}} pagos creados con éxito"
     },
     "months": {
       "jan": "Ene",
@@ -929,7 +948,8 @@
       "occupancyIncomeTrend": "Tendencia de ocupación e ingresos",
       "expenseBreakdown": "Desglose de gastos",
       "sixMonthProjection": "Proyección a 6 meses",
-      "equityOverview": "Resumen de patrimonio"
+      "equityOverview": "Resumen de patrimonio",
+      "unitOccupancy": "Ocupación por unidad"
     },
     "summary": {
       "totalRoi": "ROI total",
@@ -958,7 +978,8 @@
       "contactOccupied": "Ocupado por inquilino",
       "netIncomeTrend": "Tendencia de ingresos netos",
       "netIncome": "Ingreso neto",
-      "noData": "Sin datos de contrato"
+      "noData": "Sin datos de contrato",
+      "buildingVacancyRate": "Tasa de desocupación del edificio"
     },
     "expense": {
       "noData": "Sin datos de gastos"
@@ -1110,5 +1131,12 @@
       "add": "Añadir",
       "addOutdoorArea": "Añadir zona exterior"
     }
+  },
+  "unitOccupancy": {
+    "noUnits": "Sin unidades",
+    "allVacant": "Vacante",
+    "allOccupied": "Alquilado",
+    "allUnavailable": "No disponible",
+    "mixed": "{{occupied}} alquiladas · {{vacant}} vacantes · {{unavailable}} no disponibles"
   }
 }

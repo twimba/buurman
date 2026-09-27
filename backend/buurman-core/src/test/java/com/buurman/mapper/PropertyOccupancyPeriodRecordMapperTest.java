@@ -28,6 +28,7 @@ class PropertyOccupancyPeriodRecordMapperTest {
   private static final UUID ID = UUID.randomUUID();
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID PROPERTY_ID = UUID.randomUUID();
+  private static final UUID UNIT_ID = UUID.randomUUID();
   private static final UUID CREATED_BY = UUID.randomUUID();
   private static final UUID UPDATED_BY = UUID.randomUUID();
   private static final Sid IDENTIFIER = Sid.of("POC01HQJK4B2X5M3N7P8Q9R0S1T2");
@@ -58,6 +59,9 @@ class PropertyOccupancyPeriodRecordMapperTest {
       assertThat(period.getIdentifier()).contains(IDENTIFIER);
       assertThat(period.getTeamId()).isEqualTo(TEAM_ID);
       assertThat(period.getPropertyId()).isEqualTo(PROPERTY_ID);
+      // Distinct from PROPERTY_ID: catches a setUnitId(record.getPropertyId()) copy-paste bug
+      // (BUUR-106 follow-up register, section F, item 8).
+      assertThat(period.getUnitId()).isEqualTo(UNIT_ID);
       assertThat(period.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
       assertThat(period.getEndDate()).contains(LocalDate.of(2025, 12, 31));
       assertThat(period.getType()).isEqualTo(OccupancyType.PERSONAL);
@@ -141,6 +145,7 @@ class PropertyOccupancyPeriodRecordMapperTest {
     record.setIdentifier(IDENTIFIER);
     record.setTeamId(TEAM_ID);
     record.setPropertyId(PROPERTY_ID);
+    record.setUnitId(UNIT_ID);
     record.setStartDate(LocalDate.of(2024, 1, 1));
     record.setEndDate(LocalDate.of(2025, 12, 31));
     record.setType("PERSONAL");

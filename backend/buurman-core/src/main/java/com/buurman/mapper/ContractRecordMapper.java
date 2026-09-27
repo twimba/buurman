@@ -33,6 +33,7 @@ public class ContractRecordMapper {
     contract.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     contract.setTeamId(record.getTeamId());
     contract.setPropertyId(record.getPropertyId());
+    contract.setUnitId(record.getUnitId());
     contract.setContractType(Contract.ContractType.valueOf(record.getContractType()));
     contract.setStartDate(record.getStartDate());
     contract.setEndDate(Optional.ofNullable(record.getEndDate()));

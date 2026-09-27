@@ -228,7 +228,15 @@ class RentRegulationCatalogDiffTest {
   void diff_detectsAddedTenancyRule() {
     CatalogCountry at =
         new CatalogCountry(
-            "AT", "Austria", false, null, null, null, List.of(), null, 14,
+            "AT",
+            "Austria",
+            false,
+            null,
+            null,
+            null,
+            List.of(),
+            null,
+            14,
             List.of(
                 new CatalogTenancyRule(
                     TenancyRuleTopic.TENANCY_DURATION,
@@ -241,8 +249,7 @@ class RentRegulationCatalogDiffTest {
                     null)));
     when(loader.load())
         .thenReturn(new RentRegulationCatalog("2026.6", "2026-09-26", "desc", List.of(at)));
-    when(repository.findAllCountries())
-        .thenReturn(List.of(domainCountry(NL_ID, "AT", "Austria")));
+    when(repository.findAllCountries()).thenReturn(List.of(domainCountry(NL_ID, "AT", "Austria")));
     when(repository.findAllRegions()).thenReturn(List.of());
     when(repository.findAllRules()).thenReturn(List.of());
     when(repository.findAllTenancyRules()).thenReturn(List.of());
@@ -271,8 +278,7 @@ class RentRegulationCatalogDiffTest {
             "AT", "Austria", false, null, null, null, List.of(), null, 14, List.of());
     when(loader.load())
         .thenReturn(new RentRegulationCatalog("2026.6", "2026-09-26", "desc", List.of(at)));
-    when(repository.findAllCountries())
-        .thenReturn(List.of(domainCountry(NL_ID, "AT", "Austria")));
+    when(repository.findAllCountries()).thenReturn(List.of(domainCountry(NL_ID, "AT", "Austria")));
     when(repository.findAllRegions()).thenReturn(List.of());
     when(repository.findAllRules()).thenReturn(List.of());
     when(repository.findAllTenancyRules()).thenReturn(List.of());

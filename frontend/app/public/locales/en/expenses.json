@@ -60,6 +60,10 @@
   },
   "form": {
     "property": "Property",
+    "target": "Applies to",
+    "targetBuilding": "The whole building",
+    "targetUnit": "One unit",
+    "unit": "Unit",
     "category": "Category",
     "contact": "Contact",
     "amount": "Amount",

@@ -1,12 +1,15 @@
 // --- API model types: re-exported from generated (source of truth) ---
 
+// PropertyResponse.status was dropped (BUUR-106): a property can hold several
+// independently-let units, so there is no single well-defined status at the property level
+// anymore. `PropertyStatus` lives on here as an alias of the per-unit `UnitStatus` — same
+// values — for call sites that still display a single derived status for one unit/row.
 export {
   PropertyResponsePropertyCategory as PropertyCategory,
   type PropertyResponsePropertyCategory,
   PropertyResponsePropertyType as PropertyType,
   type PropertyResponsePropertyType,
-  PropertyResponseStatus as PropertyStatus,
-  type PropertyResponseStatus,
+  UnitStatus as PropertyStatus,
 } from '../generated/models';
 
 export type {
@@ -47,7 +50,6 @@ export type {
 import {
   PropertyResponsePropertyCategory,
   PropertyResponsePropertyType,
-  PropertyResponseStatus,
 } from '../generated/models';
 
 // --- Frontend-only types (not in the OpenAPI spec) ---
@@ -165,17 +167,6 @@ export const PROPERTY_TYPE_LABELS: Record<string, string> = {
   OTHER_AGRICULTURAL: 'Other',
   MIXED_USE: 'Mixed-Use',
   COMMERCIAL: 'Commercial',
-};
-
-export const PROPERTY_STATUS_LABELS: Record<PropertyResponseStatus, string> = {
-  [PropertyResponseStatus.VACANT]: 'Vacant',
-  [PropertyResponseStatus.OCCUPIED]: 'Occupied',
-  [PropertyResponseStatus.SELF_OCCUPIED]: 'Self-Occupied',
-  [PropertyResponseStatus.MAINTENANCE]: 'Maintenance',
-  [PropertyResponseStatus.UNAVAILABLE]: 'Unavailable',
-  [PropertyResponseStatus.UNDER_RENOVATION]: 'Under Renovation',
-  [PropertyResponseStatus.FALLOW]: 'Fallow',
-  [PropertyResponseStatus.LISTED]: 'Listed',
 };
 
 // --- Dropdown option constants ---

@@ -26,6 +26,7 @@ import {
   NotificationResponse,
   NotificationFilterParams,
   NotificationChannel,
+  NotificationStatus,
 } from '@/types/notification';
 import { getNotification } from '@/generated/api/notifications/notifications';
 import { NotificationStatusBadge } from '@/components/notifications/NotificationStatusBadge';
@@ -192,7 +193,7 @@ export const AdminNotificationsPage = () => {
                 {t('notifications.stats.total')}
               </div>
               <div className="text-2xl font-bold text-text-primary">
-                {stats.totalCount}
+                {stats.total}
               </div>
             </div>
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
@@ -201,7 +202,7 @@ export const AdminNotificationsPage = () => {
                 {t('notifications.stats.delivered')}
               </div>
               <div className="text-2xl font-bold text-success-text">
-                {stats.deliveredCount}
+                {stats.byStatus[NotificationStatus.DELIVERED] ?? 0}
               </div>
             </div>
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
@@ -210,7 +211,7 @@ export const AdminNotificationsPage = () => {
                 {t('notifications.stats.pending')}
               </div>
               <div className="text-2xl font-bold text-info-text">
-                {stats.pendingCount}
+                {stats.byStatus[NotificationStatus.PENDING] ?? 0}
               </div>
             </div>
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
@@ -219,7 +220,7 @@ export const AdminNotificationsPage = () => {
                 {t('notifications.stats.failed')}
               </div>
               <div className="text-2xl font-bold text-error-text">
-                {stats.failedCount}
+                {stats.byStatus[NotificationStatus.FAILED] ?? 0}
               </div>
             </div>
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
@@ -235,14 +236,14 @@ export const AdminNotificationsPage = () => {
                 ))}
               </div>
             </div>
-            {stats.demoBlockedCount > 0 && (
+            {(stats.byStatus[NotificationStatus.DEMO_BLOCKED] ?? 0) > 0 && (
               <div className="bg-surface-card rounded-lg border border-border-default p-4">
                 <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                   <ShieldOff className="h-4 w-4 text-violet-500" />
                   {t('notifications.stats.demoBlocked')}
                 </div>
                 <div className="text-2xl font-bold text-violet-600 dark:text-violet-400">
-                  {stats.demoBlockedCount}
+                  {stats.byStatus[NotificationStatus.DEMO_BLOCKED] ?? 0}
                 </div>
               </div>
             )}
