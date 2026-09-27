@@ -5,11 +5,13 @@
 -- Nullable: most notification types (welcome, verification, invitations) are
 -- about neither, and historical rows cannot be attributed retroactively.
 ALTER TABLE notifications
-    ADD COLUMN payment_id UUID REFERENCES payments (id),
-    ADD COLUMN contract_id UUID REFERENCES contracts (id);
+ADD COLUMN payment_id UUID REFERENCES payments (id),
+ADD COLUMN contract_id UUID REFERENCES contracts (id);
 
 CREATE INDEX idx_notifications_payment ON notifications (payment_id)
-    WHERE payment_id IS NOT NULL;
+WHERE
+    payment_id IS NOT NULL;
 
 CREATE INDEX idx_notifications_contract ON notifications (contract_id)
-    WHERE contract_id IS NOT NULL;
+WHERE
+    contract_id IS NOT NULL;
