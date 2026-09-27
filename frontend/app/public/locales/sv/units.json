@@ -1,0 +1,117 @@
+{
+  "term": {
+    "one": "Enhet",
+    "other": "Enheter"
+  },
+  "tab": "Enheter",
+  "grid": {
+    "unit": "Enhet",
+    "tenant": "Hyresgäst",
+    "rent": "Hyra",
+    "status": "Status",
+    "vacancyDays": "Ledig sedan",
+    "vacancyDaysValue": "{{count}} dag",
+    "vacancyDaysValue_other": "{{count}} dagar",
+    "noTenant": "—",
+    "empty": "Inga enheter ännu.",
+    "occupancySummary": "{{occupied}} av {{total}} uthyrda",
+    "addUnit": "Lägg till enhet"
+  },
+  "detail": {
+    "title": "Enhet {{number}}",
+    "backToProperty": "Tillbaka till {{street}}",
+    "characteristics": "Egenskaper",
+    "amenities": "Bekvämligheter",
+    "residential": "Rum & inredning"
+  },
+  "fields": {
+    "unitNumber": "Enhetsnummer",
+    "name": "Namn",
+    "floor": "Våning",
+    "unitType": "Typ",
+    "status": "Status",
+    "areaValue": "Yta",
+    "allocationShare": "Kostnadsandel",
+    "wozSharePct": "WOZ-andel",
+    "energyEfficiencyRating": "Energiklassificering",
+    "energyCertificateExpiryDate": "Certifikatets utgång",
+    "heatingType": "Uppvärmning",
+    "coolingType": "Kylning",
+    "hotWaterSystem": "Varmvatten",
+    "insulationNotes": "Isoleringsanteckningar",
+    "flooringType": "Golv",
+    "windowType": "Fönster",
+    "hasSmokeDetectors": "Rökdetektorer",
+    "hasCoDetectors": "CO-detektorer",
+    "hasFireExtinguisher": "Brandsläckare",
+    "hasAdaptedBathroom": "Anpassat badrum",
+    "accessibilityNotes": "Tillgänglighetsanteckningar",
+    "bedrooms": "Sovrum",
+    "bathrooms": "Badrum",
+    "furnished": "Möblerad",
+    "petPolicy": "Husdjurspolicy"
+  },
+  "sections": {
+    "floorArea": "Yta",
+    "finishes": "Golv & fönster",
+    "safety": "Brand- & röksäkerhet",
+    "accessibility": "Tillgänglighet",
+    "accessibilityDetails": "Tillgänglighetsdetaljer"
+  },
+  "type": {
+    "APARTMENT": "Lägenhet",
+    "PARKING": "Parkeringsplats",
+    "STORAGE": "Förråd",
+    "COMMERCIAL": "Affärslokal"
+  },
+  "status": {
+    "VACANT": "Ledig",
+    "OCCUPIED": "Uthyrd",
+    "SELF_OCCUPIED": "Eget boende",
+    "MAINTENANCE": "Underhåll",
+    "UNAVAILABLE": "Otillgänglig",
+    "UNDER_RENOVATION": "Under renovering",
+    "FALLOW": "I träda",
+    "LISTED": "Annonserad"
+  },
+  "split": {
+    "action": "Dela upp i flera enheter",
+    "title": "Dela upp {{street}} i enheter",
+    "count": "Hur många enheter?",
+    "numbering": "Numrering",
+    "numberingPattern": {
+      "NUMERIC": "1, 2, 3 …",
+      "ALPHABETIC": "A, B, C …",
+      "FLOOR_DOT_INDEX": "1.01, 1.02, 1.03 …"
+    },
+    "startFloor": "Startvåning",
+    "unitType": "Enhetstyp",
+    "keepsHistory": "Din befintliga enhet blir enhet nr 1 och behåller sitt kontrakt, foton och historik.",
+    "submit": "Skapa enheter",
+    "movedExplainer": "Bostadsuppgifter finns nu på varje enhet. Öppna fliken Enheter för att redigera dem."
+  },
+  "allocation": {
+    "title": "Kostnadsfördelning",
+    "basis": "Fördela byggnadens kostnader efter",
+    "basisOption": {
+      "AREA": "Yta",
+      "EQUAL": "Lika",
+      "CUSTOM": "Anpassade procentsatser",
+      "MANUAL": "Manuellt per utgift"
+    },
+    "share": "Andel",
+    "noArea": "Ingen yta angiven",
+    "preview": "Varje enhets andel av {{amount}}",
+    "customTotalError": "Anpassade andelar måste summera till 100 %. De summerar för närvarande till {{total}} %."
+  },
+  "delete": {
+    "confirmTitle": "Ta bort enhet {{number}}?",
+    "lastUnitBlocked": "En fastighet måste behålla minst en enhet, så den här kan inte tas bort.",
+    "activeContractBlocked": "Den här enheten har ett aktivt kontrakt. Avsluta kontraktet först."
+  },
+  "picker": {
+    "label": "Enhet",
+    "placeholder": "Välj en enhet",
+    "required": "Välj vilken enhet det här kontraktet gäller för."
+  }
+}

@@ -564,6 +564,7 @@
     "retroactiveTooltip": "Justeringsbetalinger oprettes for allerede afsluttede betalinger paavirket af tilbagevirkende datoaendringer.",
     "exceedsMax": "Overstiger maksimal reguleret stigning paa {{max}}%",
     "belowMin": "Under minimal reguleret stigning paa {{min}}%",
+    "leaseOfTotal": "Kontrakt {{index}} af {{total}} på denne ejendom",
     "tableHeaders": {
       "property": "Ejendom",
       "currentRent": "Aktuel leje",
@@ -800,6 +801,7 @@
       "bruksvardessystemApplicable": "Bruksvärde system gaelder",
       "energyDeclarationRating": "Energideklaration klasse",
       "hyresnamndenEligible": "Berettiget Hyresnämnden",
+      "depositSum": "Depositumbeløb",
       "vuokrasopimustyyppi": "Lejetype (FI)",
       "vakuusAmount": "Depositumbeløb",
       "vakuusMonths": "Depositum i maaneder",

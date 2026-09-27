@@ -1,0 +1,117 @@
+{
+  "term": {
+    "one": "Enhed",
+    "other": "Enheder"
+  },
+  "tab": "Enheder",
+  "grid": {
+    "unit": "Enhed",
+    "tenant": "Lejer",
+    "rent": "Leje",
+    "status": "Status",
+    "vacancyDays": "Ledig siden",
+    "vacancyDaysValue": "{{count}} dag",
+    "vacancyDaysValue_other": "{{count}} dage",
+    "noTenant": "—",
+    "empty": "Endnu ingen enheder.",
+    "occupancySummary": "{{occupied}} af {{total}} udlejet",
+    "addUnit": "Tilføj enhed"
+  },
+  "detail": {
+    "title": "Enhed {{number}}",
+    "backToProperty": "Tilbage til {{street}}",
+    "characteristics": "Karakteristika",
+    "amenities": "Faciliteter",
+    "residential": "Værelser & indretning"
+  },
+  "fields": {
+    "unitNumber": "Enhedsnummer",
+    "name": "Navn",
+    "floor": "Etage",
+    "unitType": "Type",
+    "status": "Status",
+    "areaValue": "Areal",
+    "allocationShare": "Omkostningsandel",
+    "wozSharePct": "WOZ-andel",
+    "energyEfficiencyRating": "Energimærke",
+    "energyCertificateExpiryDate": "Certifikatudløb",
+    "heatingType": "Opvarmning",
+    "coolingType": "Køling",
+    "hotWaterSystem": "Varmt vand",
+    "insulationNotes": "Isoleringsnoter",
+    "flooringType": "Gulvbelægning",
+    "windowType": "Vinduer",
+    "hasSmokeDetectors": "Røgalarmer",
+    "hasCoDetectors": "CO-alarmer",
+    "hasFireExtinguisher": "Brandslukker",
+    "hasAdaptedBathroom": "Tilpasset badeværelse",
+    "accessibilityNotes": "Tilgængelighedsnoter",
+    "bedrooms": "Soveværelser",
+    "bathrooms": "Badeværelser",
+    "furnished": "Møbleret",
+    "petPolicy": "Kæledyrspolitik"
+  },
+  "sections": {
+    "floorArea": "Areal",
+    "finishes": "Gulve & vinduer",
+    "safety": "Røg- & brandsikkerhed",
+    "accessibility": "Tilgængelighed",
+    "accessibilityDetails": "Tilgængelighedsdetaljer"
+  },
+  "type": {
+    "APARTMENT": "Lejlighed",
+    "PARKING": "Parkeringsplads",
+    "STORAGE": "Depotrum",
+    "COMMERCIAL": "Erhvervslokale"
+  },
+  "status": {
+    "VACANT": "Ledig",
+    "OCCUPIED": "Udlejet",
+    "SELF_OCCUPIED": "Selvbeboet",
+    "MAINTENANCE": "Vedligeholdelse",
+    "UNAVAILABLE": "Utilgængelig",
+    "UNDER_RENOVATION": "Under renovering",
+    "FALLOW": "Brak",
+    "LISTED": "Annonceret"
+  },
+  "split": {
+    "action": "Opdel i flere enheder",
+    "title": "Opdel {{street}} i enheder",
+    "count": "Hvor mange enheder?",
+    "numbering": "Nummerering",
+    "numberingPattern": {
+      "NUMERIC": "1, 2, 3 …",
+      "ALPHABETIC": "A, B, C …",
+      "FLOOR_DOT_INDEX": "1.01, 1.02, 1.03 …"
+    },
+    "startFloor": "Startetage",
+    "unitType": "Enhedstype",
+    "keepsHistory": "Din eksisterende enhed bliver til #1 og beholder sin kontrakt, fotos og historik.",
+    "submit": "Opret enheder",
+    "movedExplainer": "Boligoplysninger findes nu på hver enhed. Åbn fanen Enheder for at redigere dem."
+  },
+  "allocation": {
+    "title": "Omkostningsfordeling",
+    "basis": "Fordel ejendommens omkostninger efter",
+    "basisOption": {
+      "AREA": "Areal",
+      "EQUAL": "Ligeligt",
+      "CUSTOM": "Tilpassede procentsatser",
+      "MANUAL": "Manuelt pr. udgift"
+    },
+    "share": "Andel",
+    "noArea": "Intet areal angivet",
+    "preview": "Hver enheds andel af {{amount}}",
+    "customTotalError": "Tilpassede andele skal give 100 % i alt. De giver i øjeblikket {{total}} % i alt."
+  },
+  "delete": {
+    "confirmTitle": "Slet enhed {{number}}?",
+    "lastUnitBlocked": "En ejendom skal beholde mindst én enhed, så denne kan ikke slettes.",
+    "activeContractBlocked": "Denne enhed har en aktiv kontrakt. Afslut kontrakten først."
+  },
+  "picker": {
+    "label": "Enhed",
+    "placeholder": "Vælg en enhed",
+    "required": "Vælg hvilken enhed denne kontrakt gælder for."
+  }
+}

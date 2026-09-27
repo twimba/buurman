@@ -136,7 +136,8 @@
       "history": "Historikk",
       "noCalculation": "Ingen beregning ennå",
       "noCalculationDescription": "Beregn WWS-poengene for å bestemme maksimal regulert leie for denne eiendommen.",
-      "noPreviousCalculations": "Ingen tidligere beregninger."
+      "noPreviousCalculations": "Ingen tidligere beregninger.",
+      "multiUnitUnsupported": "Denne bygningen har flere enheter. Åpne en enhet for å beregne WWS-poengene."
     },
     "metadata": {
       "title": "Metadata",
@@ -419,7 +420,8 @@
       "occupancyIncomeTrend": "Beleggs- og inntektstrend",
       "expenseBreakdown": "Utgiftsfordeling",
       "sixMonthProjection": "6-måneders prognose",
-      "equityOverview": "Egenkapitaloversikt"
+      "equityOverview": "Egenkapitaloversikt",
+      "unitOccupancy": "Belegg per enhet"
     },
     "summary": {
       "totalRoi": "Total ROI",
@@ -448,7 +450,8 @@
       "contactOccupied": "Kontaktbebodd",
       "netIncomeTrend": "Netto inntektstrend",
       "netIncome": "Netto inntekt",
-      "noData": "Ingen kontraktdata"
+      "noData": "Ingen kontraktdata",
+      "buildingVacancyRate": "Bygningens ledighetsprosent"
     },
     "expense": {
       "noData": "Ingen utgiftsdata"
@@ -761,6 +764,13 @@
     },
     "pagination": {
       "showing": "Viser {{from}} til {{to}} av {{total}} utgifter"
+    },
+    "allocation": {
+      "settingsToggle": "Innstillinger for kostnadsfordeling",
+      "buildingBadge": "Hele bygningen",
+      "viewSplit": "Vis fordeling",
+      "hideSplit": "Skjul fordeling",
+      "failedToLoad": "Kunne ikke laste inn kostnadsfordelingen"
     }
   },
   "audit": {
@@ -808,7 +818,8 @@
       "notesPlaceholder": "Tilleggsnotater...",
       "reason": "Årsak",
       "reasonPlaceholder": "Velg en årsak...",
-      "alreadyTakenPeriods": "Allerede registrerte perioder"
+      "alreadyTakenPeriods": "Allerede registrerte perioder",
+      "unitRequired": "Velg hvilken enhet denne botiden gjelder for."
     },
     "occupancyTypes": {
       "PERSONAL": "Personlig",
@@ -840,7 +851,10 @@
       "manual": "Markør plassert manuelt — dra for å justere om nødvendig",
       "approximate": "Vi fant nabolaget, men ikke det eksakte stedet — dra markøren til eiendommen din!",
       "country": "Vi fant i hvert fall landet! Dra markøren til riktig sted."
-    }
+    },
+    "mapView": "Kart",
+    "streetView": "Gatevisning",
+    "noStreetView": "Ingen gatevisning tilgjengelig for dette stedet."
   },
   "timeline": {
     "selfOccupancy": "Egenbeboelse",
@@ -1107,5 +1121,12 @@
   "lifecycle": {
     "openContract": "Åpne kontrakt",
     "clickToEdit": "Klikk for å redigere"
+  },
+  "unitOccupancy": {
+    "noUnits": "Ingen enheter",
+    "allVacant": "Ledig",
+    "allOccupied": "Utleid",
+    "allUnavailable": "Utilgjengelig",
+    "mixed": "{{occupied}} utleid · {{vacant}} ledig · {{unavailable}} utilgjengelig"
   }
 }
