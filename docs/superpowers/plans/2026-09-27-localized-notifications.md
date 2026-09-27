@@ -17,7 +17,7 @@
 - **MANDATORY:** idiomatic `Optional` API (`map`, `orElse`, `orElseThrow`, `ifPresent`, `flatMap`). Never `if (opt != null)` and never `opt.get()` without an `isPresent()` check.
 - Google Java Style (backend), Airbnb (frontend). `mvn package -Pquick` skips formatting; a normal `mvn install` applies it.
 - Conventional commits: `feat:`, `fix:`, `docs:`, `chore:`.
-- Never modify an existing Flyway migration. The next free version is **V070**.
+- Never modify an existing Flyway migration. The next free version is **V073**.
 - Never bypass `team_id` filtering in a repository query.
 - Never expose an internal UUID in an API; expose `identifier` (Sid).
 - An SMS must occupy exactly one segment: 160 septets in GSM-7, 70 UTF-16 code units in UCS-2.
@@ -1754,7 +1754,7 @@ git commit -m "test(i18n): fail the build on locale namespace drift, and close t
 ### Task 8: `preferred_language` on contacts
 
 **Files:**
-- Create: `backend/buurman-jooq/src/main/resources/db/migration/V070__contact_preferred_language.sql`
+- Create: `backend/buurman-jooq/src/main/resources/db/migration/V073__contact_preferred_language.sql`
 - Modify: `backend/buurman-common/src/main/java/com/buurman/domain/Contact.java`
 - Modify: `backend/buurman-common/src/main/java/com/buurman/dto/request/CreateContactRequest.java`
 - Modify: `backend/buurman-common/src/main/java/com/buurman/dto/request/UpdateContactRequest.java`
@@ -1771,7 +1771,7 @@ git commit -m "test(i18n): fail the build on locale namespace drift, and close t
 
 - [ ] **Step 1: Write the migration**
 
-Create `backend/buurman-jooq/src/main/resources/db/migration/V070__contact_preferred_language.sql`:
+Create `backend/buurman-jooq/src/main/resources/db/migration/V073__contact_preferred_language.sql`:
 
 ```sql
 -- The language a contact should be written to in. Resolution order at send time is
@@ -1945,7 +1945,7 @@ Expected: succeeds; the generated `ContactResponse` type carries `preferredLangu
 - [ ] **Step 14: Commit**
 
 ```bash
-git add backend/buurman-jooq/src/main/resources/db/migration/V070__contact_preferred_language.sql \
+git add backend/buurman-jooq/src/main/resources/db/migration/V073__contact_preferred_language.sql \
         backend/buurman-common/src/main/java/com/buurman/domain/Contact.java \
         backend/buurman-common/src/main/java/com/buurman/dto/request/CreateContactRequest.java \
         backend/buurman-common/src/main/java/com/buurman/dto/request/UpdateContactRequest.java \

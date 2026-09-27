@@ -51,7 +51,7 @@ from now on are tracked, or it reads as broken.
 
 ## S1 — Schema
 
-`V071__notification_related_entities.sql`:
+`V074__notification_related_entities.sql`:
 
 ```sql
 ALTER TABLE notifications

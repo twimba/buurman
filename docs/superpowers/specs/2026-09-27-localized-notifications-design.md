@@ -104,7 +104,7 @@ dropping the property name where it does not fit.
 
 ## S3 — Recipient language
 
-`V070__contact_preferred_language.sql`:
+`V073__contact_preferred_language.sql`:
 
 ```sql
 ALTER TABLE contacts ADD COLUMN preferred_language VARCHAR(2);

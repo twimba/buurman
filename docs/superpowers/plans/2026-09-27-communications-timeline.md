@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Next free Flyway version is **V071**. Never modify an existing migration.
+- Next free Flyway version is **V074**. Never modify an existing migration.
 - Never bypass `team_id` filtering in a repository query.
 - Never expose an internal UUID in an API; the public identifier is the `Sid` in the `identifier` column.
 - **MANDATORY:** every `if`, `else`, `for`, `while` body uses curly braces. No brace-less single-statement bodies, ever.
@@ -39,7 +39,7 @@
 ### Task 1: Entity link on the notification record
 
 **Files:**
-- Create: `backend/buurman-jooq/src/main/resources/db/migration/V071__notification_related_entities.sql`
+- Create: `backend/buurman-jooq/src/main/resources/db/migration/V074__notification_related_entities.sql`
 - Modify: `backend/buurman-common/src/main/java/com/buurman/domain/Notification.java`
 - Modify: `backend/buurman-notifications/src/main/java/com/buurman/mapper/NotificationRecordMapper.java`
 - Modify: `backend/buurman-notifications/src/main/java/com/buurman/repository/NotificationRepository.java`
@@ -51,7 +51,7 @@
 
 - [ ] **Step 1: Write the migration**
 
-Create `backend/buurman-jooq/src/main/resources/db/migration/V071__notification_related_entities.sql`:
+Create `backend/buurman-jooq/src/main/resources/db/migration/V074__notification_related_entities.sql`:
 
 ```sql
 -- Which payment or contract a notification is about, so a landlord can see the
@@ -168,7 +168,7 @@ Expected: PASS.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add backend/buurman-jooq/src/main/resources/db/migration/V071__notification_related_entities.sql \
+git add backend/buurman-jooq/src/main/resources/db/migration/V074__notification_related_entities.sql \
         backend/buurman-common/src/main/java/com/buurman/domain/Notification.java \
         backend/buurman-notifications/src/main/java/com/buurman/mapper/NotificationRecordMapper.java \
         backend/buurman-notifications/src/main/java/com/buurman/repository/NotificationRepository.java \
