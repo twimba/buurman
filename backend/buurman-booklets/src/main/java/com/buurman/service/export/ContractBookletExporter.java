@@ -39,6 +39,7 @@ import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Unit;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
@@ -49,6 +50,7 @@ import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
@@ -64,6 +66,7 @@ public class ContractBookletExporter {
 
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
+  private final UnitRepository unitRepository;
   private final ContactRepository contactRepository;
   private final PaymentRepository paymentRepository;
   private final PaymentReceivalRepository paymentReceivalRepository;
@@ -84,6 +87,7 @@ public class ContractBookletExporter {
   public ContractBookletExporter(
       ContractRepository contractRepository,
       PropertyRepository propertyRepository,
+      UnitRepository unitRepository,
       ContactRepository contactRepository,
       PaymentRepository paymentRepository,
       PaymentReceivalRepository paymentReceivalRepository,
@@ -102,6 +106,7 @@ public class ContractBookletExporter {
       @Value("${booklet.app-base-url:https://app.buurman.io}") String appBaseUrl) {
     this.contractRepository = contractRepository;
     this.propertyRepository = propertyRepository;
+    this.unitRepository = unitRepository;
     this.contactRepository = contactRepository;
     this.paymentRepository = paymentRepository;
     this.paymentReceivalRepository = paymentReceivalRepository;
@@ -127,6 +132,7 @@ public class ContractBookletExporter {
   public byte[] generate(ContractIdentifier contractIdentifier, UUID teamId, Locale locale) {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
+    Unit unit = unitRepository.getByIdAndTeamId(contract.getUnitId(), teamId);
 
     // Load parties + contacts
     List<ContractParty> parties =
@@ -184,6 +190,7 @@ public class ContractBookletExporter {
         buildModel(
             contract,
             property,
+            unit,
             parties,
             contactMap,
             payments,
@@ -204,6 +211,7 @@ public class ContractBookletExporter {
   private Map<String, Object> buildModel(
       Contract contract,
       Property property,
+      Unit unit,
       List<ContractParty> parties,
       Map<UUID, Contact> contactMap,
       List<Payment> payments,
@@ -263,9 +271,11 @@ public class ContractBookletExporter {
 
     v.put("propertyTypeLabel", enumLabels.label(property.getPropertyType(), locale));
     v.put("propertyCategoryLabel", enumLabels.label(property.getPropertyCategory(), locale));
-    // TODO(BUUR-106 Task 12): area moved from properties to units in V068; null until derivable
-    // from the property's unit(s).
-    v.put("propertyArea", null);
+    // Area moved from properties to units in V068. A contract always belongs to exactly one unit,
+    // so this is a direct read — no aggregation needed, unlike the property-level exports.
+    v.put(
+        "propertyArea",
+        unit.getAreaValue().map(a -> a + " " + unit.getAreaUnit().orElse("sqm")).orElse(null));
 
     v.put("rentPeriods", buildRentPeriods(rentPeriods, locale));
     v.put(
