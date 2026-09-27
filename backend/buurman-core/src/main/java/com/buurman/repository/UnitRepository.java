@@ -85,12 +85,7 @@ public class UnitRepository {
             .from(UNITS)
             .join(PROPERTIES)
             .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
-            .where(
-                UNITS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(UNITS.DELETED_AT.isNull())
-                    .and(PROPERTIES.DELETED_AT.isNull()))
+            .where(UNITS.TEAM_ID.eq(teamId).and(UnitScope.active()))
             .fetchInto(UNITS)
             .map(mapper::toDomain));
   }
@@ -106,8 +101,7 @@ public class UnitRepository {
                     .PROPERTY_ID
                     .eq(propertyId)
                     .and(UNITS.TEAM_ID.eq(teamId))
-                    .and(UNITS.DELETED_AT.isNull())
-                    .and(PROPERTIES.DELETED_AT.isNull()))
+                    .and(UnitScope.active()))
             .orderBy(UNITS.SORT_ORDER.asc(), UNITS.UNIT_NUMBER.asc())
             .fetchInto(UNITS)
             .map(mapper::toDomain));
@@ -124,8 +118,7 @@ public class UnitRepository {
                     .PROPERTY_ID
                     .eq(propertyId)
                     .and(UNITS.TEAM_ID.eq(teamId))
-                    .and(UNITS.DELETED_AT.isNull())
-                    .and(PROPERTIES.DELETED_AT.isNull()))
+                    .and(UnitScope.active()))
             .fetchOne(0, Integer.class);
     return count == null ? 0 : count;
   }
@@ -136,12 +129,7 @@ public class UnitRepository {
             .from(UNITS)
             .join(PROPERTIES)
             .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
-            .where(
-                UNITS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(UNITS.DELETED_AT.isNull())
-                    .and(PROPERTIES.DELETED_AT.isNull()))
+            .where(UNITS.TEAM_ID.eq(teamId).and(UnitScope.active()))
             .fetchOne(0, Integer.class);
     return count == null ? 0 : count;
   }

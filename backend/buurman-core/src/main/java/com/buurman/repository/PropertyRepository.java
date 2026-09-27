@@ -360,13 +360,7 @@ public class PropertyRepository {
         .from(UNITS)
         .join(PROPERTIES)
         .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
-        .where(
-            PROPERTIES
-                .TEAM_ID
-                .eq(teamId)
-                .and(PROPERTIES.DELETED_AT.isNull())
-                .and(UNITS.TEAM_ID.eq(teamId))
-                .and(UNITS.DELETED_AT.isNull()))
+        .where(PROPERTIES.TEAM_ID.eq(teamId).and(UNITS.TEAM_ID.eq(teamId)).and(UnitScope.active()))
         .groupBy(UNITS.PROPERTY_ID)
         .fetch()
         .forEach(
@@ -403,6 +397,6 @@ public class PropertyRepository {
                     .eq(PROPERTIES.ID)
                     .and(UNITS.TEAM_ID.eq(teamId))
                     .and(UNITS.STATUS.eq(status.name()))
-                    .and(UNITS.DELETED_AT.isNull())));
+                    .and(UnitScope.active())));
   }
 }

@@ -93,12 +93,7 @@ public class DatabaseMetricsRepository {
         .from(UNITS)
         .join(PROPERTIES)
         .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
-        .where(
-            UNITS
-                .DELETED_AT
-                .isNull()
-                .and(PROPERTIES.DELETED_AT.isNull())
-                .and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds)))
+        .where(UnitScope.active().and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds)))
         .groupBy(UNITS.STATUS)
         .fetch()
         .map(r -> new LabelCount(r.value1(), r.value2()));

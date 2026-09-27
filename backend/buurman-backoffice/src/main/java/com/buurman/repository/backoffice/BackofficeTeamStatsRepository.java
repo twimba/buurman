@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
 import com.buurman.repository.UnitRepository;
+import com.buurman.repository.UnitScope;
 import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
@@ -125,12 +126,7 @@ public class BackofficeTeamStatsRepository {
         .from(UNITS)
         .join(PROPERTIES)
         .on(PROPERTIES.ID.eq(UNITS.PROPERTY_ID))
-        .where(
-            UNITS
-                .TEAM_ID
-                .eq(teamId)
-                .and(UNITS.DELETED_AT.isNull())
-                .and(PROPERTIES.DELETED_AT.isNull()))
+        .where(UNITS.TEAM_ID.eq(teamId).and(UnitScope.active()))
         .groupBy(UNITS.STATUS)
         .fetch()
         .forEach(r -> result.put(r.value1(), r.value2().longValue()));
