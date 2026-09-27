@@ -13,7 +13,8 @@ public class EmailSubjectResolver {
 
   private final MessageSource notificationMessageSource;
 
-  public EmailSubjectResolver(@Qualifier("notificationMessageSource") MessageSource notificationMessageSource) {
+  public EmailSubjectResolver(
+      @Qualifier("notificationMessageSource") MessageSource notificationMessageSource) {
     this.notificationMessageSource = notificationMessageSource;
   }
 
@@ -28,8 +29,11 @@ public class EmailSubjectResolver {
             .orElse(FALLBACK_SUBJECT);
     // A tenant reminder reads very differently by tone, so each tone has its own subject line.
     return toneVariantKey(templateName, variables)
-        .flatMap(k -> Optional.ofNullable(notificationMessageSource.getMessage(k, args, null, locale)))
-        .or(() -> Optional.ofNullable(notificationMessageSource.getMessage(key, args, null, locale)))
+        .flatMap(
+            k -> Optional.ofNullable(notificationMessageSource.getMessage(k, args, null, locale)))
+        .or(
+            () ->
+                Optional.ofNullable(notificationMessageSource.getMessage(key, args, null, locale)))
         .orElse(defaultSubject);
   }
 

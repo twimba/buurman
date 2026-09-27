@@ -429,7 +429,6 @@ public class NotificationServiceImpl implements NotificationService {
     };
   }
 
-
   private boolean canSendViaChannel(NotificationChannel channel, SendNotificationRequest request) {
     return switch (channel) {
       case EMAIL -> request.recipientEmail().filter(e -> !e.isBlank()).isPresent();

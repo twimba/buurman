@@ -36,8 +36,8 @@ class EmailRenderMatrixTest {
   private static final Path TEMPLATE_DIR = Paths.get("src/main/resources/templates/email");
 
   /**
-   * A bare message key leaked into the output, e.g. {@code email.welcome.greeting}. Needs two dotted
-   * segments so ordinary prose ("check your email. Then...") cannot trip it.
+   * A bare message key leaked into the output, e.g. {@code email.welcome.greeting}. Needs two
+   * dotted segments so ordinary prose ("check your email. Then...") cannot trip it.
    */
   private static final Pattern MESSAGE_KEY = Pattern.compile("email\\.[a-z0-9-]+\\.[a-zA-Z0-9_-]+");
 
@@ -72,18 +72,70 @@ class EmailRenderMatrixTest {
     Map<String, Object> variables = new HashMap<>();
     List<String> textual =
         List.of(
-            "accountHolderName", "activatedBy", "additionalDetails", "amount", "bankName",
-            "baseUrl", "bicSwift", "category", "contactName", "contractIdentifier", "ctaText",
-            "ctaUrl", "description", "dueDate", "effectiveFrom", "endDate", "expiresAt",
-            "expiresMinutes", "expiryDate", "followUpDate", "iban", "introText", "invitationCode",
-            "inviterName", "inviteUrl", "memberEmail", "memberName", "newEndDate", "newRentAmount",
-            "newRentFormatted", "newStatus", "notes", "noteSubject", "oldRentAmount", "oldStatus",
-            "outstanding", "paymentDate", "paymentReference", "previousEndDate",
-            "previousRentFormatted", "primaryText", "primaryUrl", "propertyAddress",
-            "propertyName", "propertyType", "receivalAmount", "received", "recipientName",
-            "registerUrl", "remainingBalance", "renewalMode", "rentAmount", "rentChangeFormatted",
-            "role", "secondaryText", "secondaryUrl", "senderName", "startDate", "teamName",
-            "triggerType", "typeName", "userName", "verificationCode", "verifyUrl");
+            "accountHolderName",
+            "activatedBy",
+            "additionalDetails",
+            "amount",
+            "bankName",
+            "baseUrl",
+            "bicSwift",
+            "category",
+            "contactName",
+            "contractIdentifier",
+            "ctaText",
+            "ctaUrl",
+            "description",
+            "dueDate",
+            "effectiveFrom",
+            "endDate",
+            "expiresAt",
+            "expiresMinutes",
+            "expiryDate",
+            "followUpDate",
+            "iban",
+            "introText",
+            "invitationCode",
+            "inviterName",
+            "inviteUrl",
+            "memberEmail",
+            "memberName",
+            "newEndDate",
+            "newRentAmount",
+            "newRentFormatted",
+            "newStatus",
+            "notes",
+            "noteSubject",
+            "oldRentAmount",
+            "oldStatus",
+            "outstanding",
+            "paymentDate",
+            "paymentReference",
+            "previousEndDate",
+            "previousRentFormatted",
+            "primaryText",
+            "primaryUrl",
+            "propertyAddress",
+            "propertyName",
+            "propertyType",
+            "receivalAmount",
+            "received",
+            "recipientName",
+            "registerUrl",
+            "remainingBalance",
+            "renewalMode",
+            "rentAmount",
+            "rentChangeFormatted",
+            "role",
+            "secondaryText",
+            "secondaryUrl",
+            "senderName",
+            "startDate",
+            "teamName",
+            "triggerType",
+            "typeName",
+            "userName",
+            "verificationCode",
+            "verifyUrl");
     for (String name : textual) {
       variables.put(name, "Example " + name);
     }
@@ -145,7 +197,8 @@ class EmailRenderMatrixTest {
   @ParameterizedTest(name = "[{0}] {1}")
   @MethodSource("matrix")
   void rendersCleanly(String language, String templateName) {
-    String html = engine().process(templateName, new Context(Locale.forLanguageTag(language), variables()));
+    String html =
+        engine().process(templateName, new Context(Locale.forLanguageTag(language), variables()));
 
     assertThat(html).as("[%s] %s rendered empty", language, templateName).isNotBlank();
     assertThat(html)

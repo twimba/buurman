@@ -42,7 +42,9 @@ class SmsBodyRendererTest {
     String body = renderer.render("payment-reminder", paymentReminderVariables(), Locale.ENGLISH);
 
     assertThat(body)
-        .isEqualTo("Buurman: Payment of EUR 1.250,00 for Keizersgracht 123-B is overdue (due 15/10/2026).");
+        .isEqualTo(
+            "Buurman: Payment of EUR 1.250,00 for Keizersgracht 123-B is overdue (due"
+                + " 15/10/2026).");
   }
 
   @Test
@@ -70,7 +72,8 @@ class SmsBodyRendererTest {
   void nullVariablesAreTolerated() {
     String body = renderer.render("password-changed", null, Locale.ENGLISH);
 
-    assertThat(body).isEqualTo("Buurman: Your password was changed. Contact support if unexpected.");
+    assertThat(body)
+        .isEqualTo("Buurman: Your password was changed. Contact support if unexpected.");
   }
 
   @Test

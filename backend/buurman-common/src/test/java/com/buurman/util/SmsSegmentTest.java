@@ -16,7 +16,8 @@ class SmsSegmentTest {
     @Test
     @DisplayName("leaves characters GSM-7 already covers untouched")
     void keepsNativeGsm7Characters() {
-      assertThat(SmsSegment.fold("Café Müller à Ørsted ñ É ß")).isEqualTo("Café Müller à Ørsted ñ É ß");
+      assertThat(SmsSegment.fold("Café Müller à Ørsted ñ É ß"))
+          .isEqualTo("Café Müller à Ørsted ñ É ß");
     }
 
     @Test
@@ -84,7 +85,8 @@ class SmsSegmentTest {
 
       String result = SmsSegment.fitToOneSegment(body, "Keizersgracht");
 
-      assertThat(result).isEqualTo("Buurman: Pagamento de 1.250,00 EUR para Keizersgracht esta em atraso.");
+      assertThat(result)
+          .isEqualTo("Buurman: Pagamento de 1.250,00 EUR para Keizersgracht esta em atraso.");
       assertThat(SmsSegment.encodingOf(result)).isEqualTo(SmsSegment.Encoding.GSM_7);
       assertThat(SmsSegment.fitsOneSegment(result)).isTrue();
     }
@@ -107,7 +109,8 @@ class SmsSegmentTest {
     @DisplayName("a Greek value in an English body forces UCS-2 and is budgeted at 70")
     void nonLatinValueFlipsTheEncoding() {
       String property = "Παλαιό Φάληρο Λεωφόρος Ποσειδώνος 42";
-      String body = "Buurman: Payment of EUR 1.250,00 for " + property + " is overdue (due 15/10/2026).";
+      String body =
+          "Buurman: Payment of EUR 1.250,00 for " + property + " is overdue (due 15/10/2026).";
 
       // The hazard: the raw interpolation is UCS-2, so its budget is 70, not 160.
       assertThat(SmsSegment.encodingOf(body)).isEqualTo(SmsSegment.Encoding.UCS_2);
@@ -159,7 +162,8 @@ class SmsSegmentTest {
     @Test
     @DisplayName("a body that already fits is returned folded and otherwise untouched")
     void shortBodyUntouched() {
-      assertThat(SmsSegment.fitToOneSegment("Buurman: all good.", "")).isEqualTo("Buurman: all good.");
+      assertThat(SmsSegment.fitToOneSegment("Buurman: all good.", ""))
+          .isEqualTo("Buurman: all good.");
     }
   }
 }

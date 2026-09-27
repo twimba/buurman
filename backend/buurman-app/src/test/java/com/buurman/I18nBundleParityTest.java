@@ -45,10 +45,10 @@ class I18nBundleParityTest {
   /**
    * Families whose copy is under a hard length budget and may therefore drop a token. Only SMS
    * qualifies: Greek cannot fold to GSM-7, so it gets 70 UTF-16 units, and the worst-case property
-   * name and contact name alone spend 50 of them — carrying every token is not physically
-   * possible. The design records this as the deliberate tradeoff ("Greek copy is authored terse
-   * against that budget, dropping the property name where it does not fit"). Every other family is
-   * long-form copy with no budget, where a dropped token is a defect, not a tradeoff.
+   * name and contact name alone spend 50 of them — carrying every token is not physically possible.
+   * The design records this as the deliberate tradeoff ("Greek copy is authored terse against that
+   * budget, dropping the property name where it does not fit"). Every other family is long-form
+   * copy with no budget, where a dropped token is a defect, not a tradeoff.
    */
   private static final Set<String> BUDGETED_FAMILIES = Set.of("sms-bodies");
 
@@ -56,8 +56,7 @@ class I18nBundleParityTest {
 
   private static List<Family> discover() throws IOException {
     Resource[] resources =
-        new PathMatchingResourcePatternResolver()
-            .getResources("classpath*:messages/*.properties");
+        new PathMatchingResourcePatternResolver().getResources("classpath*:messages/*.properties");
 
     Map<String, Map<String, Resource>> families = new LinkedHashMap<>();
     for (Resource resource : resources) {
@@ -88,9 +87,7 @@ class I18nBundleParityTest {
   private static Resource bundleFor(Family family, String language) {
     return Optional.ofNullable(family.byLanguage().get(language))
         .orElseThrow(
-            () ->
-                new AssertionError(
-                    "%s has no %s bundle".formatted(family.name(), language)));
+            () -> new AssertionError("%s has no %s bundle".formatted(family.name(), language)));
   }
 
   private static Properties load(Resource resource) throws IOException {

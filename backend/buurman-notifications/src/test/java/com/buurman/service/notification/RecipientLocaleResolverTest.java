@@ -54,7 +54,9 @@ class RecipientLocaleResolverTest {
   private void teamDefaultIs(String language) {
     TeamPreferences preferences = new TeamPreferences();
     preferences.setDefaultLanguage(language);
-    lenient().when(teamPreferencesRepository.findByTeamId(TEAM_ID)).thenReturn(Optional.of(preferences));
+    lenient()
+        .when(teamPreferencesRepository.findByTeamId(TEAM_ID))
+        .thenReturn(Optional.of(preferences));
   }
 
   @Test
@@ -129,7 +131,8 @@ class RecipientLocaleResolverTest {
     teamDefaultIs("nl");
 
     Locale locale =
-        resolver.resolve(Optional.of(TEAM_ID), Optional.empty(), Optional.empty(), Optional.of("de"));
+        resolver.resolve(
+            Optional.of(TEAM_ID), Optional.empty(), Optional.empty(), Optional.of("de"));
 
     assertThat(locale).isEqualTo(Locale.forLanguageTag("de"));
   }
@@ -140,7 +143,8 @@ class RecipientLocaleResolverTest {
     teamDefaultIs("nl");
 
     Locale locale =
-        resolver.resolve(Optional.of(TEAM_ID), Optional.empty(), Optional.empty(), Optional.of("  "));
+        resolver.resolve(
+            Optional.of(TEAM_ID), Optional.empty(), Optional.empty(), Optional.of("  "));
 
     assertThat(locale).isEqualTo(Locale.forLanguageTag("nl"));
   }
@@ -165,7 +169,8 @@ class RecipientLocaleResolverTest {
     when(teamPreferencesRepository.findByTeamId(any())).thenReturn(Optional.empty());
 
     Locale locale =
-        resolver.resolve(Optional.of(TEAM_ID), Optional.empty(), Optional.empty(), Optional.empty());
+        resolver.resolve(
+            Optional.of(TEAM_ID), Optional.empty(), Optional.empty(), Optional.empty());
 
     assertThat(locale).isEqualTo(Locale.ENGLISH);
   }

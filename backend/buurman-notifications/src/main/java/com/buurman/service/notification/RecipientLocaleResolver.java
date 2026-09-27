@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.buurman.domain.Contact;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.UserPreferences;
 import com.buurman.repository.ContactRepository;
@@ -56,7 +55,10 @@ public class RecipientLocaleResolver {
                 .flatMap(contact -> contactRepository.findByIdAndTeamId(contact, team))
                 // Optional.ofNullable: a Contact built directly (not via the builder) leaves
                 // this null, and Review Focus 4 requires the chain to fall through, never throw.
-                .flatMap(contact -> Optional.ofNullable(contact.getPreferredLanguage()).orElse(Optional.empty()))
+                .flatMap(
+                    contact ->
+                        Optional.ofNullable(contact.getPreferredLanguage())
+                            .orElse(Optional.empty()))
                 .flatMap(language -> supported(Optional.of(language))));
   }
 
