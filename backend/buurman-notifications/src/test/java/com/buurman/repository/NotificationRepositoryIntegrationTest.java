@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -184,6 +185,21 @@ class NotificationRepositoryIntegrationTest extends AbstractRepositoryIntegratio
           .get()
           .extracting("clickCount")
           .isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("the same id cannot be recorded twice for one provider")
+    void duplicateIdWithinAChannelIsRejected() {
+      saveWith(NotificationChannel.EMAIL, SHARED_ID);
+      Notification second = buildNotification(TEAM_A_ID);
+      second.setChannel(NotificationChannel.EMAIL);
+      UUID secondId = repo.save(second).getId();
+
+      // Scoping the lookups by channel stops the two providers colliding, but nothing stopped
+      // one provider's id being recorded twice — and then every matching row was incremented.
+      assertThatThrownBy(
+              () -> repo.updateStatus(secondId, NotificationStatus.SENT, SHARED_ID, "queued", null))
+          .hasMessageContaining("uq_notifications_provider_msg");
     }
 
     @Test
