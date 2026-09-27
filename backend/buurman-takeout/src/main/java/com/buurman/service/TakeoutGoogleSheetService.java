@@ -9,6 +9,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
 import static com.buurman.jooq.generated.Tables.CONTRACT_RENT_PERIODS;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.EXPENSE_ALLOCATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
 import static com.buurman.jooq.generated.Tables.PHOTOS;
@@ -22,6 +23,9 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
+import static com.buurman.jooq.generated.Tables.UNITS;
+import static com.buurman.jooq.generated.Tables.UNIT_AMENITIES;
+import static com.buurman.jooq.generated.Tables.UNIT_RESIDENTIAL_DETAILS;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -81,6 +85,9 @@ public class TakeoutGoogleSheetService {
   private static final List<TakeoutTab> TABS =
       List.of(
           new TakeoutTab("Properties", PROPERTIES),
+          new TakeoutTab("Units", UNITS),
+          new TakeoutTab("Unit Residential Details", UNIT_RESIDENTIAL_DETAILS),
+          new TakeoutTab("Unit Amenities", UNIT_AMENITIES),
           new TakeoutTab("Property Acquisitions", PROPERTY_ACQUISITIONS),
           new TakeoutTab("Property Valuations", PROPERTY_VALUATIONS),
           new TakeoutTab("Property Fees", PROPERTY_FEES),
@@ -99,6 +106,7 @@ public class TakeoutGoogleSheetService {
           new TakeoutTab("Payments", PAYMENTS),
           new TakeoutTab("Payment Receivals", PAYMENT_RECEIVALS),
           new TakeoutTab("Expenses", EXPENSES),
+          new TakeoutTab("Expense Allocations", EXPENSE_ALLOCATIONS),
           new TakeoutTab("Documents (metadata)", DOCUMENTS),
           new TakeoutTab("Photos (metadata)", PHOTOS),
           new TakeoutTab("Team Members", TEAM_MEMBERS));
