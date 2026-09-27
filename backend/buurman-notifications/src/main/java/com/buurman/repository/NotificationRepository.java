@@ -47,6 +47,9 @@ public class NotificationRepository {
   private final ObjectMapper objectMapper;
   private final Clock clock;
 
+  /** Newest N: a timeline is for reading, not for auditing every message ever sent. */
+  private static final int TIMELINE_LIMIT = 100;
+
   public Notification save(Notification notification) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
@@ -130,9 +133,13 @@ public class NotificationRepository {
    * that holds even if a caller reaches this repository by another route.
    */
   private List<Notification> findByEntityAndTeamId(Condition entityMatches, UUID teamId) {
-    return dsl.selectFrom(NOTIFICATIONS)
+    return dsl
+        .selectFrom(NOTIFICATIONS)
         .where(entityMatches.and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
         .orderBy(NOTIFICATIONS.CREATED_AT.desc())
+        // sendToTeam emits one notification per admin/editor per channel, so a long-lived
+        // contract accumulates far more than the handful a single send suggests.
+        .limit(TIMELINE_LIMIT)
         .fetch()
         .stream()
         .map(mapper::toDomain)

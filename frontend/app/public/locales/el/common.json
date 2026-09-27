@@ -693,7 +693,23 @@
       "delivered": "Παραδόθηκε",
       "opened": "Ανοίχτηκε",
       "notDelivered": "Δεν παραδόθηκε",
-      "failed": "Απέτυχε"
+      "failed": "Απέτυχε",
+      "demoBlocked": "Δεν στάλθηκε (demo)"
+    },
+    "loadError": "Δεν ήταν δυνατή η φόρτωση των επικοινωνιών.",
+    "type": {
+      "PAYMENT_REMINDER": "Υπενθύμιση πληρωμής",
+      "PAYMENT_PAID": "Η πληρωμή σημειώθηκε ως εξοφλημένη",
+      "PAYMENT_RECEIVAL": "Η πληρωμή εισπράχθηκε",
+      "CONTRACT_CREATED": "Το συμβόλαιο δημιουργήθηκε",
+      "CONTRACT_EXPIRY": "Το συμβόλαιο λήγει",
+      "CONTRACT_STATUS_CHANGED": "Η κατάσταση του συμβολαίου άλλαξε",
+      "CONTRACT_REOPENED": "Το συμβόλαιο άνοιξε ξανά",
+      "CONTRACT_EXTENDED": "Το συμβόλαιο παρατάθηκε",
+      "CONTRACT_EXTENSION_PENDING": "Η παράταση αναμένει επιβεβαίωση",
+      "CONTRACT_RENEWAL_REMINDER": "Υπενθύμιση ανανέωσης",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Το συμβόλαιο μετατράπηκε",
+      "CONTRACT_RENT_ADJUSTED": "Το μίσθωμα αναπροσαρμόστηκε"
     }
   }
 }

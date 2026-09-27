@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Notification;
 import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.dto.response.CommunicationResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
@@ -31,6 +32,7 @@ public class CommunicationService {
   private final NotificationRepository notificationRepository;
   private final PaymentRepository paymentRepository;
   private final ContractRepository contractRepository;
+  private final NotificationService notificationService;
 
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('TEAM_VIEWER')")
@@ -54,6 +56,16 @@ public class CommunicationService {
             .orElseThrow(() -> new NotFoundException("Contract not found"))
             .getId();
     return toResponses(notificationRepository.findByContractIdAndTeamId(contractId, teamId));
+  }
+
+  /**
+   * Spec S4: resending sends a real message and costs money, so it sits a role above reading. The
+   * notification is resolved team-scoped first, exactly as the read paths are.
+   */
+  @Transactional
+  @PreAuthorize("hasRole('TEAM_EDITOR')")
+  public CommunicationResponse resend(NotificationIdentifier identifier, UUID teamId, UUID userId) {
+    return toResponse(notificationService.resend(teamId, identifier, userId));
   }
 
   private List<CommunicationResponse> toResponses(List<Notification> notifications) {

@@ -4,12 +4,18 @@ import type { CommunicationResponse } from '@/generated/models';
 interface CommunicationsTimelineProps {
   communications: CommunicationResponse[];
   isLoading: boolean;
+  isError?: boolean;
   onResend?: (identifier: string) => void;
 }
 
-/** Collapses the seven-value status enum into what a landlord can act on. */
+/**
+ * Collapses the status enum into what a landlord can act on.
+ *
+ * `opened` is checked before `status` on purpose: Mailgun does not guarantee event order, and an
+ * `opened` webhook that lands before `delivered` updates the open columns without touching status.
+ */
 const statusKey = (communication: CommunicationResponse): string => {
-  if (communication.status === 'DELIVERED' && communication.opened) {
+  if (communication.opened) {
     return 'opened';
   }
   switch (communication.status) {
@@ -23,6 +29,9 @@ const statusKey = (communication: CommunicationResponse): string => {
     case 'BOUNCED':
     case 'REJECTED':
       return 'notDelivered';
+    case 'DEMO_BLOCKED':
+      // Nothing failed: the team has notification delivery switched off.
+      return 'demoBlocked';
     default:
       return 'failed';
   }
@@ -31,12 +40,19 @@ const statusKey = (communication: CommunicationResponse): string => {
 export const CommunicationsTimeline = ({
   communications,
   isLoading,
+  isError = false,
   onResend,
 }: CommunicationsTimelineProps) => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
 
   if (isLoading) {
     return <p className="text-sm text-text-secondary">{t('buttons.loading')}</p>;
+  }
+
+  // Distinct from the empty state: "nothing sent yet" is a confident claim, and a failed
+  // request must not make it — a landlord would send a duplicate reminder.
+  if (isError) {
+    return <p className="text-sm text-text-secondary">{t('communications.loadError')}</p>;
   }
 
   if (communications.length === 0) {
@@ -51,14 +67,30 @@ export const CommunicationsTimeline = ({
   return (
     <ul className="divide-y divide-border-default">
       {communications.map((communication) => (
-        <li key={communication.identifier} className="flex items-center gap-3 py-3">
+        <li key={communication.identifier} className="flex flex-wrap items-center gap-3 py-3">
           <span className="text-sm font-medium text-text-primary">
-            {communication.notificationType}
+            {t(`communications.type.${communication.notificationType}`, {
+              defaultValue: communication.notificationType,
+            })}
           </span>
           <span className="text-sm text-text-secondary">
             {communication.recipientEmail ?? communication.recipientPhone ?? ''}
           </span>
-          <span className="ml-auto text-xs text-text-secondary">
+          <time
+            dateTime={communication.createdAt}
+            className="text-xs text-text-secondary"
+            title={new Date(communication.createdAt).toLocaleString(i18n.language)}
+          >
+            {new Date(communication.createdAt).toLocaleDateString(i18n.language, {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })}
+          </time>
+          <span
+            className="ml-auto text-xs text-text-secondary"
+            title={communication.providerError ?? undefined}
+          >
             {t(`communications.status.${statusKey(communication)}`)}
           </span>
           {onResend && (

@@ -693,7 +693,23 @@
       "delivered": "Consegnato",
       "opened": "Aperto",
       "notDelivered": "Non consegnato",
-      "failed": "Non riuscito"
+      "failed": "Non riuscito",
+      "demoBlocked": "Non inviato (demo)"
+    },
+    "loadError": "Impossibile caricare le comunicazioni.",
+    "type": {
+      "PAYMENT_REMINDER": "Promemoria di pagamento",
+      "PAYMENT_PAID": "Pagamento contrassegnato come pagato",
+      "PAYMENT_RECEIVAL": "Pagamento ricevuto",
+      "CONTRACT_CREATED": "Contratto creato",
+      "CONTRACT_EXPIRY": "Contratto in scadenza",
+      "CONTRACT_STATUS_CHANGED": "Stato del contratto modificato",
+      "CONTRACT_REOPENED": "Contratto riaperto",
+      "CONTRACT_EXTENDED": "Contratto prorogato",
+      "CONTRACT_EXTENSION_PENDING": "Proroga in attesa di conferma",
+      "CONTRACT_RENEWAL_REMINDER": "Promemoria di rinnovo",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Contratto convertito",
+      "CONTRACT_RENT_ADJUSTED": "Canone aggiornato"
     }
   }
 }

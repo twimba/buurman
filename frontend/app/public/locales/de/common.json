@@ -693,7 +693,23 @@
       "delivered": "Zugestellt",
       "opened": "Geöffnet",
       "notDelivered": "Nicht zugestellt",
-      "failed": "Fehlgeschlagen"
+      "failed": "Fehlgeschlagen",
+      "demoBlocked": "Nicht gesendet (Demo)"
+    },
+    "loadError": "Kommunikation konnte nicht geladen werden.",
+    "type": {
+      "PAYMENT_REMINDER": "Zahlungserinnerung",
+      "PAYMENT_PAID": "Zahlung als bezahlt markiert",
+      "PAYMENT_RECEIVAL": "Zahlung erhalten",
+      "CONTRACT_CREATED": "Vertrag angelegt",
+      "CONTRACT_EXPIRY": "Vertrag läuft ab",
+      "CONTRACT_STATUS_CHANGED": "Vertragsstatus geändert",
+      "CONTRACT_REOPENED": "Vertrag wieder geöffnet",
+      "CONTRACT_EXTENDED": "Vertrag verlängert",
+      "CONTRACT_EXTENSION_PENDING": "Verlängerung wartet auf Bestätigung",
+      "CONTRACT_RENEWAL_REMINDER": "Erinnerung zur Verlängerung",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Vertrag umgewandelt",
+      "CONTRACT_RENT_ADJUSTED": "Miete angepasst"
     }
   }
 }

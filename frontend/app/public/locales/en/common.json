@@ -693,7 +693,23 @@
       "delivered": "Delivered",
       "opened": "Opened",
       "notDelivered": "Not delivered",
-      "failed": "Failed"
+      "failed": "Failed",
+      "demoBlocked": "Not sent (demo)"
+    },
+    "loadError": "Communications could not be loaded.",
+    "type": {
+      "PAYMENT_REMINDER": "Payment reminder",
+      "PAYMENT_PAID": "Payment marked paid",
+      "PAYMENT_RECEIVAL": "Payment received",
+      "CONTRACT_CREATED": "Contract created",
+      "CONTRACT_EXPIRY": "Contract expiring",
+      "CONTRACT_STATUS_CHANGED": "Contract status changed",
+      "CONTRACT_REOPENED": "Contract reopened",
+      "CONTRACT_EXTENDED": "Contract extended",
+      "CONTRACT_EXTENSION_PENDING": "Extension awaiting confirmation",
+      "CONTRACT_RENEWAL_REMINDER": "Renewal reminder",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Contract rolled over",
+      "CONTRACT_RENT_ADJUSTED": "Rent adjusted"
     }
   }
 }

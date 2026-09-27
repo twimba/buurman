@@ -175,6 +175,8 @@ paths:
     $ref: 'paths/communications.yaml#/payment-communications'
   /contracts/{identifier}/communications:
     $ref: 'paths/communications.yaml#/contract-communications'
+  /communications/{identifier}/resend:
+    $ref: 'paths/communications.yaml#/communication-resend'
   /payments/{identifier}/receivals/{receivalIdentifier}:
     $ref: 'paths/payments.yaml#/payments-receivals-item'
   /payments/{identifier}/mark-paid:
@@ -714,7 +716,7 @@ components:
           type: string
         status:
           type: string
-          enum: [PENDING, QUEUED, SENT, DELIVERED, FAILED, BOUNCED, REJECTED]
+          enum: [PENDING, QUEUED, SENT, DELIVERED, FAILED, BOUNCED, REJECTED, DEMO_BLOCKED]
         providerError:
           type: string
         opened:

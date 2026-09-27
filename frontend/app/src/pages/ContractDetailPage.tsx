@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CommunicationsTimeline } from '@/components/communications/CommunicationsTimeline';
-import { useContractCommunications } from '@/hooks/useCommunications';
+import { useContractCommunications, useResendCommunication } from '@/hooks/useCommunications';
 import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import {
@@ -44,8 +44,12 @@ import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 export const ContractDetailPage = () => {
   const { t } = useTranslation('contracts');
   const { id = '' } = useParams<{ id: string }>();
-  const { data: communications = [], isLoading: communicationsLoading } =
-    useContractCommunications(id);
+  const {
+    data: communications = [],
+    isLoading: communicationsLoading,
+    isError: communicationsError,
+  } = useContractCommunications(id);
+  const resendCommunicationMutation = useResendCommunication(['contracts', id, 'communications']);
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useTabState('overview', [
@@ -352,6 +356,12 @@ export const ContractDetailPage = () => {
         <CommunicationsTimeline
           communications={communications}
           isLoading={communicationsLoading}
+          isError={communicationsError}
+          onResend={
+            canEditData
+              ? (communicationId) => resendCommunicationMutation.mutate(communicationId)
+              : undefined
+          }
         />
       </section>
 

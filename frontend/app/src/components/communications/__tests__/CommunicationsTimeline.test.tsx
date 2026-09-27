@@ -61,4 +61,52 @@ describe('CommunicationsTimeline', () => {
     expect(screen.getByText('Sent')).toBeInTheDocument();
     expect(screen.queryByText('Not delivered')).not.toBeInTheDocument();
   });
+
+  it('shows when each message was sent', () => {
+    renderWithProviders(
+      <CommunicationsTimeline
+        communications={[row({ createdAt: '2026-10-15T09:00:00Z' })]}
+        isLoading={false}
+      />
+    );
+
+    // Without a date the landlord cannot tell this morning's reminder from March's,
+    // which is the whole reason the panel exists.
+    expect(screen.getByText(/15/)).toBeInTheDocument();
+  });
+
+  it('does not label a demo-blocked message as failed', () => {
+    renderWithProviders(
+      <CommunicationsTimeline
+        communications={[row({ status: 'DEMO_BLOCKED' })]}
+        isLoading={false}
+      />
+    );
+
+    // Every row of every timeline on a demo team would otherwise read "Failed".
+    expect(screen.queryByText('Failed')).not.toBeInTheDocument();
+    expect(screen.getByText('Not sent (demo)')).toBeInTheDocument();
+  });
+
+  it('distinguishes a failed request from an empty timeline', () => {
+    renderWithProviders(
+      <CommunicationsTimeline communications={[]} isLoading={false} isError />
+    );
+
+    // "Nothing sent yet" is a confident claim; a 403 or 500 must not make it.
+    expect(screen.queryByText(/only messages sent from now on/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/could not be loaded/i)).toBeInTheDocument();
+  });
+
+  it('translates the notification type rather than showing the enum', () => {
+    renderWithProviders(
+      <CommunicationsTimeline
+        communications={[row({ notificationType: 'CONTRACT_ROLLED_OVER_TO_INDEFINITE' })]}
+        isLoading={false}
+      />
+    );
+
+    expect(screen.queryByText('CONTRACT_ROLLED_OVER_TO_INDEFINITE')).not.toBeInTheDocument();
+    expect(screen.getByText('Contract rolled over')).toBeInTheDocument();
+  });
 });

@@ -693,7 +693,23 @@
       "delivered": "Toimitettu",
       "opened": "Avattu",
       "notDelivered": "Ei toimitettu",
-      "failed": "Epäonnistui"
+      "failed": "Epäonnistui",
+      "demoBlocked": "Ei lähetetty (demo)"
+    },
+    "loadError": "Viestintää ei voitu ladata.",
+    "type": {
+      "PAYMENT_REMINDER": "Maksumuistutus",
+      "PAYMENT_PAID": "Maksu merkitty maksetuksi",
+      "PAYMENT_RECEIVAL": "Maksu vastaanotettu",
+      "CONTRACT_CREATED": "Sopimus luotu",
+      "CONTRACT_EXPIRY": "Sopimus päättymässä",
+      "CONTRACT_STATUS_CHANGED": "Sopimuksen tila muuttui",
+      "CONTRACT_REOPENED": "Sopimus avattu uudelleen",
+      "CONTRACT_EXTENDED": "Sopimusta jatkettu",
+      "CONTRACT_EXTENSION_PENDING": "Jatko odottaa vahvistusta",
+      "CONTRACT_RENEWAL_REMINDER": "Muistutus uusimisesta",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Sopimus muutettu toistaiseksi voimassa olevaksi",
+      "CONTRACT_RENT_ADJUSTED": "Vuokra tarkistettu"
     }
   }
 }

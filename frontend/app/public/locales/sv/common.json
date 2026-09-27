@@ -693,7 +693,23 @@
       "delivered": "Levererat",
       "opened": "Öppnat",
       "notDelivered": "Ej levererat",
-      "failed": "Misslyckades"
+      "failed": "Misslyckades",
+      "demoBlocked": "Ej skickat (demo)"
+    },
+    "loadError": "Kommunikationen kunde inte laddas.",
+    "type": {
+      "PAYMENT_REMINDER": "Betalningspåminnelse",
+      "PAYMENT_PAID": "Betalning markerad som betald",
+      "PAYMENT_RECEIVAL": "Betalning mottagen",
+      "CONTRACT_CREATED": "Avtal skapat",
+      "CONTRACT_EXPIRY": "Avtal löper ut",
+      "CONTRACT_STATUS_CHANGED": "Avtalsstatus ändrad",
+      "CONTRACT_REOPENED": "Avtal återöppnat",
+      "CONTRACT_EXTENDED": "Avtal förlängt",
+      "CONTRACT_EXTENSION_PENDING": "Förlängning inväntar bekräftelse",
+      "CONTRACT_RENEWAL_REMINDER": "Påminnelse om förnyelse",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Avtal övergått till tillsvidare",
+      "CONTRACT_RENT_ADJUSTED": "Hyra justerad"
     }
   }
 }

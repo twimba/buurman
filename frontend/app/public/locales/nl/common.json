@@ -693,7 +693,23 @@
       "delivered": "Afgeleverd",
       "opened": "Geopend",
       "notDelivered": "Niet afgeleverd",
-      "failed": "Mislukt"
+      "failed": "Mislukt",
+      "demoBlocked": "Niet verstuurd (demo)"
+    },
+    "loadError": "Communicatie kon niet worden geladen.",
+    "type": {
+      "PAYMENT_REMINDER": "Betalingsherinnering",
+      "PAYMENT_PAID": "Betaling gemarkeerd als betaald",
+      "PAYMENT_RECEIVAL": "Betaling ontvangen",
+      "CONTRACT_CREATED": "Contract aangemaakt",
+      "CONTRACT_EXPIRY": "Contract verloopt",
+      "CONTRACT_STATUS_CHANGED": "Contractstatus gewijzigd",
+      "CONTRACT_REOPENED": "Contract heropend",
+      "CONTRACT_EXTENDED": "Contract verlengd",
+      "CONTRACT_EXTENSION_PENDING": "Verlenging wacht op bevestiging",
+      "CONTRACT_RENEWAL_REMINDER": "Herinnering verlenging",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Contract omgezet",
+      "CONTRACT_RENT_ADJUSTED": "Huur aangepast"
     }
   }
 }

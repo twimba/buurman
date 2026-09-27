@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CommunicationsTimeline } from '@/components/communications/CommunicationsTimeline';
-import { usePaymentCommunications } from '@/hooks/useCommunications';
+import { usePaymentCommunications, useResendCommunication } from '@/hooks/useCommunications';
 import { useTabState } from '@/hooks/useTabState';
 import {
   usePayment,
@@ -368,8 +368,12 @@ const ReceivalsTable = ({
 
 export const PaymentDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
-  const { data: communications = [], isLoading: communicationsLoading } =
-    usePaymentCommunications(id);
+  const {
+    data: communications = [],
+    isLoading: communicationsLoading,
+    isError: communicationsError,
+  } = usePaymentCommunications(id);
+  const resendCommunicationMutation = useResendCommunication(['payments', id, 'communications']);
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation('payments');
@@ -1517,6 +1521,12 @@ export const PaymentDetailPage = () => {
         <CommunicationsTimeline
           communications={communications}
           isLoading={communicationsLoading}
+          isError={communicationsError}
+          onResend={
+            canEditData
+              ? (communicationId) => resendCommunicationMutation.mutate(communicationId)
+              : undefined
+          }
         />
       </section>
 

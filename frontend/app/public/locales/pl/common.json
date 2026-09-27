@@ -693,7 +693,23 @@
       "delivered": "Dostarczono",
       "opened": "Otwarto",
       "notDelivered": "Niedostarczono",
-      "failed": "Niepowodzenie"
+      "failed": "Niepowodzenie",
+      "demoBlocked": "Nie wysłano (demo)"
+    },
+    "loadError": "Nie udało się wczytać komunikacji.",
+    "type": {
+      "PAYMENT_REMINDER": "Przypomnienie o płatności",
+      "PAYMENT_PAID": "Płatność oznaczona jako opłacona",
+      "PAYMENT_RECEIVAL": "Płatność otrzymana",
+      "CONTRACT_CREATED": "Umowa utworzona",
+      "CONTRACT_EXPIRY": "Umowa wygasa",
+      "CONTRACT_STATUS_CHANGED": "Status umowy zmieniony",
+      "CONTRACT_REOPENED": "Umowa otwarta ponownie",
+      "CONTRACT_EXTENDED": "Umowa przedłużona",
+      "CONTRACT_EXTENSION_PENDING": "Przedłużenie oczekuje na potwierdzenie",
+      "CONTRACT_RENEWAL_REMINDER": "Przypomnienie o odnowieniu",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Umowa zmieniona na bezterminową",
+      "CONTRACT_RENT_ADJUSTED": "Czynsz zaktualizowany"
     }
   }
 }

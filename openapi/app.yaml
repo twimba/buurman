@@ -3489,6 +3489,29 @@ paths:
                   $ref: '#/components/schemas/CommunicationResponse'
         '404':
           description: Contract not found in this team
+  /communications/{identifier}/resend:
+    post:
+      tags:
+        - Communications
+      summary: Resend a communication
+      description: Requires TEAM_EDITOR or above; sending costs money.
+      operationId: resendCommunication
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Notification identifier (Sid)
+      responses:
+        '200':
+          description: The resent communication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunicationResponse'
+        '404':
+          description: Notification not found in this team
   /payments/{identifier}/receivals/{receivalIdentifier}:
     put:
       tags:
@@ -22032,7 +22055,7 @@ components:
           type: string
         status:
           type: string
-          enum: [PENDING, QUEUED, SENT, DELIVERED, FAILED, BOUNCED, REJECTED]
+          enum: [PENDING, QUEUED, SENT, DELIVERED, FAILED, BOUNCED, REJECTED, DEMO_BLOCKED]
         providerError:
           type: string
         opened:

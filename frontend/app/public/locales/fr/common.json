@@ -693,7 +693,23 @@
       "delivered": "Remis",
       "opened": "Ouvert",
       "notDelivered": "Non remis",
-      "failed": "Échec"
+      "failed": "Échec",
+      "demoBlocked": "Non envoyé (démo)"
+    },
+    "loadError": "Les communications n’ont pas pu être chargées.",
+    "type": {
+      "PAYMENT_REMINDER": "Rappel de paiement",
+      "PAYMENT_PAID": "Paiement marqué payé",
+      "PAYMENT_RECEIVAL": "Paiement reçu",
+      "CONTRACT_CREATED": "Bail créé",
+      "CONTRACT_EXPIRY": "Bail arrivant à échéance",
+      "CONTRACT_STATUS_CHANGED": "Statut du bail modifié",
+      "CONTRACT_REOPENED": "Bail rouvert",
+      "CONTRACT_EXTENDED": "Bail prolongé",
+      "CONTRACT_EXTENSION_PENDING": "Prolongation en attente",
+      "CONTRACT_RENEWAL_REMINDER": "Rappel de renouvellement",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Bail passé en durée indéterminée",
+      "CONTRACT_RENT_ADJUSTED": "Loyer ajusté"
     }
   }
 }

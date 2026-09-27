@@ -36,15 +36,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Notification;
-import com.buurman.domain.identifier.NotificationIdentifier;
-import com.buurman.domain.NotificationStatus;
-import com.buurman.util.SidGenerator;
 import com.buurman.domain.NotificationOutbox;
+import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.User;
 import com.buurman.domain.UserNotificationTypePreference;
 import com.buurman.domain.UserPreferences;
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamMemberRepository;
@@ -52,6 +51,7 @@ import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.util.SidGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
@@ -368,6 +368,54 @@ class NotificationServiceImplTest {
 
       // Viewer should be skipped, admin and editor should each get a send() call
       verify(notificationRepository, times(2)).save(any(Notification.class));
+    }
+
+    @Test
+    @DisplayName("carries the entity link onto every member's notification")
+    void sendToTeamCarriesTheEntityLink() {
+      UUID adminUserId = UUID.randomUUID();
+      TeamMember admin =
+          TeamMember.builder()
+              .userId(adminUserId)
+              .teamId(TEAM_ID)
+              .role(TeamRole.TEAM_ADMIN)
+              .build();
+      when(teamMemberRepository.findByTeamId(TEAM_ID)).thenReturn(List.of(admin));
+      when(userRepository.findById(adminUserId))
+          .thenReturn(
+              Optional.of(
+                  User.builder()
+                      .id(adminUserId)
+                      .email("admin@example.com")
+                      .firstName("Admin")
+                      .lastName("User")
+                      .build()));
+      stubEmailRender();
+      stubNotificationSave();
+      UUID paymentId = UUID.randomUUID();
+      UUID contractId = UUID.randomUUID();
+
+      service.sendToTeam(
+          SendNotificationRequest.builder()
+              .teamId(Optional.of(TEAM_ID))
+              .notificationType(VERIFICATION_CODE)
+              .templateName("verification-code")
+              .templateVariables(Map.of())
+              .createdBy(CREATED_BY)
+              .relatedPaymentId(Optional.of(paymentId))
+              .relatedContractId(Optional.of(contractId))
+              .build());
+
+      // sendToTeam rebuilds a per-member request; anything it forgets to copy is discarded
+      // silently. Ten of the thirteen call sites that set the link reach send() this way.
+      ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+      verify(notificationRepository, atLeastOnce()).save(captor.capture());
+      assertThat(captor.getAllValues())
+          .allSatisfy(
+              saved -> {
+                assertThat(saved.getRelatedPaymentId()).isEqualTo(Optional.of(paymentId));
+                assertThat(saved.getRelatedContractId()).isEqualTo(Optional.of(contractId));
+              });
     }
 
     @Test

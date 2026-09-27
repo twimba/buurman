@@ -37,13 +37,15 @@ class CommunicationServiceTest {
   @Mock private NotificationRepository notificationRepository;
   @Mock private PaymentRepository paymentRepository;
   @Mock private ContractRepository contractRepository;
+  @Mock private NotificationService notificationService;
 
   private CommunicationService service;
 
   @BeforeEach
   void setUp() {
     service =
-        new CommunicationService(notificationRepository, paymentRepository, contractRepository);
+        new CommunicationService(
+            notificationRepository, paymentRepository, contractRepository, notificationService);
   }
 
   @Test

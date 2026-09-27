@@ -216,8 +216,7 @@ class PaymentReminderServiceTest {
   void linksTheReminderToItsEntities() {
     stubHappyPath(payment(PaymentStatus.PENDING, TODAY.minusDays(10)), new BigDecimal("250.00"));
 
-    service.sendReminder(
-        PAYMENT_SID, new SendPaymentReminderRequest(Optional.empty()), principal);
+    service.sendReminder(PAYMENT_SID, new SendPaymentReminderRequest(Optional.empty()), principal);
 
     ArgumentCaptor<SendNotificationRequest> captor =
         ArgumentCaptor.forClass(SendNotificationRequest.class);

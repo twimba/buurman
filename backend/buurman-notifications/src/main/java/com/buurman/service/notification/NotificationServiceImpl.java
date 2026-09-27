@@ -235,6 +235,10 @@ public class NotificationServiceImpl implements NotificationService {
                         .notificationType(request.notificationType())
                         .recipientUserId(Optional.of(user.getId()))
                         .recipientContactId(request.recipientContactId())
+                        // Anything this rebuild forgets is discarded silently: most callers
+                        // that set the entity link reach send() through here.
+                        .relatedPaymentId(request.relatedPaymentId())
+                        .relatedContractId(request.relatedContractId())
                         .recipientEmail(Optional.of(user.getEmail()))
                         .recipientPhone(user.getPhone())
                         .templateName(request.templateName())

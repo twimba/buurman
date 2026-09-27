@@ -693,7 +693,23 @@
       "delivered": "Levert",
       "opened": "Åpnet",
       "notDelivered": "Ikke levert",
-      "failed": "Mislyktes"
+      "failed": "Mislyktes",
+      "demoBlocked": "Ikke sendt (demo)"
+    },
+    "loadError": "Kommunikasjonen kunne ikke lastes.",
+    "type": {
+      "PAYMENT_REMINDER": "Betalingspåminnelse",
+      "PAYMENT_PAID": "Betaling merket som betalt",
+      "PAYMENT_RECEIVAL": "Betaling mottatt",
+      "CONTRACT_CREATED": "Kontrakt opprettet",
+      "CONTRACT_EXPIRY": "Kontrakt utløper",
+      "CONTRACT_STATUS_CHANGED": "Kontraktstatus endret",
+      "CONTRACT_REOPENED": "Kontrakt gjenåpnet",
+      "CONTRACT_EXTENDED": "Kontrakt forlenget",
+      "CONTRACT_EXTENSION_PENDING": "Forlengelse venter på bekreftelse",
+      "CONTRACT_RENEWAL_REMINDER": "Påminnelse om fornyelse",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Kontrakt gått over",
+      "CONTRACT_RENT_ADJUSTED": "Husleie justert"
     }
   }
 }

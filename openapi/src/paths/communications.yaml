@@ -47,3 +47,27 @@ contract-communications:
                 $ref: '#/components/schemas/CommunicationResponse'
       '404':
         description: Contract not found in this team
+
+communication-resend:
+  post:
+    tags:
+      - Communications
+    summary: Resend a communication
+    description: Requires TEAM_EDITOR or above; sending costs money.
+    operationId: resendCommunication
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Notification identifier (Sid)
+    responses:
+      '200':
+        description: The resent communication
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunicationResponse'
+      '404':
+        description: Notification not found in this team
