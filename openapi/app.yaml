@@ -21963,6 +21963,10 @@ paths:
         - bearer-jwt: []
 components:
   schemas:
+    LanguageCode:
+      type: string
+      description: ISO 639-1 code of a language the product is translated into
+      enum: [en, nl, de, fr, pt, es, sv, it, fi, el, pl, da, nb]
     AmenityIdentifier:
       type: string
       description: Amenity identifier
@@ -22700,22 +22704,9 @@ components:
           maxLength: 2
           minLength: 2
         defaultLanguage:
-          type: string
+          allOf:
+            - $ref: "#/components/schemas/LanguageCode"
           description: Default language for the team
-          enum:
-            - en
-            - nl
-            - pt
-            - es
-            - fr
-            - de
-            - it
-            - sv
-            - fi
-            - el
-            - pl
-            - da
-            - nb
     UpdateTeamSettingsRequest:
       type: object
       properties:
@@ -24742,7 +24733,7 @@ components:
         documentLanguages:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
           example: ["en"]
         countryMetadata:
@@ -25164,7 +25155,7 @@ components:
         documentLanguages:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
         effectiveEndDate:
           type: string
@@ -27195,7 +27186,7 @@ components:
         documentLanguages:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
           example: ["en"]
         countryMetadata:
