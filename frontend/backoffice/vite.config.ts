@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import { getBuildDefines } from '../scripts/vite-build-info'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { getBuildDefines } from '../scripts/vite-build-info';
 
-const { defines } = getBuildDefines(process.env.npm_package_version || '0.0.0')
+const { defines } = getBuildDefines(process.env.npm_package_version || '0.0.0');
 
 export default defineConfig({
   plugins: [
@@ -15,7 +15,13 @@ export default defineConfig({
         handler(html) {
           return {
             html: html.replace('<script src="/config.js"></script>', ''),
-            tags: [{ tag: 'script', attrs: { src: '/config.js' }, injectTo: 'body-prepend' }],
+            tags: [
+              {
+                tag: 'script',
+                attrs: { src: '/config.js' },
+                injectTo: 'body-prepend',
+              },
+            ],
           };
         },
       },
@@ -23,11 +29,20 @@ export default defineConfig({
   ],
   define: defines,
   server: {
-    port: parseInt(process.env.VITE_DEV_PORT || '5174', 10),
+    // See the app config for why this reads LOCAL_BACKOFFICE_PORT rather than
+    // the shared VITE_DEV_PORT (w3 -> 5204 / 3443, from .env).
+    port: parseInt(
+      process.env.LOCAL_BACKOFFICE_PORT || process.env.VITE_DEV_PORT || '5174',
+      10
+    ),
+    strictPort: true,
     host: true,
     allowedHosts: true,
     hmr: {
-      clientPort: parseInt(process.env.VITE_HMR_PORT || '443', 10),
+      clientPort: parseInt(
+        process.env.VITE_HMR_PORT || process.env.HTTPS_PORT || '443',
+        10
+      ),
     },
   },
   build: {
@@ -36,16 +51,27 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules/react-dom/') || id.includes('node_modules/react/') || id.includes('node_modules/react-router-dom/')) {
+          if (
+            id.includes('node_modules/react-dom/') ||
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-router-dom/')
+          ) {
             return 'vendor-react';
           }
-          if (id.includes('node_modules/@tanstack/react-query/') || id.includes('node_modules/axios/')) {
+          if (
+            id.includes('node_modules/@tanstack/react-query/') ||
+            id.includes('node_modules/axios/')
+          ) {
             return 'vendor-query';
           }
           if (id.includes('node_modules/posthog-js/')) {
             return 'vendor-analytics';
           }
-          if (id.includes('node_modules/date-fns/') || id.includes('node_modules/keycloak-js/') || id.includes('node_modules/cronstrue/')) {
+          if (
+            id.includes('node_modules/date-fns/') ||
+            id.includes('node_modules/keycloak-js/') ||
+            id.includes('node_modules/cronstrue/')
+          ) {
             return 'vendor-utils';
           }
         },
@@ -57,4 +83,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-})
+});
