@@ -33,11 +33,28 @@
     "allocationShare": "Cost share",
     "wozSharePct": "WOZ share",
     "energyEfficiencyRating": "Energy label",
+    "energyCertificateExpiryDate": "Certificate expiry",
     "heatingType": "Heating",
+    "coolingType": "Cooling",
+    "hotWaterSystem": "Hot water",
+    "insulationNotes": "Insulation notes",
+    "flooringType": "Flooring",
+    "windowType": "Windows",
+    "hasSmokeDetectors": "Smoke detectors",
+    "hasCoDetectors": "CO detectors",
+    "hasFireExtinguisher": "Fire extinguisher",
+    "hasAdaptedBathroom": "Adapted bathroom",
+    "accessibilityNotes": "Accessibility notes",
     "bedrooms": "Bedrooms",
     "bathrooms": "Bathrooms",
     "furnished": "Furnished",
     "petPolicy": "Pet policy"
+  },
+  "sections": {
+    "floorArea": "Floor area",
+    "finishes": "Flooring & windows",
+    "safety": "Smoke & fire safety",
+    "accessibility": "Accessibility"
   },
   "type": {
     "APARTMENT": "Apartment",
