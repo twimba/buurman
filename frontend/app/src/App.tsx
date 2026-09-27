@@ -54,6 +54,11 @@ const PropertyEditPage = lazy(() =>
     default: m.PropertyEditPage,
   }))
 );
+const UnitDetailPage = lazy(() =>
+  import('./pages/UnitDetailPage').then((m) => ({
+    default: m.UnitDetailPage,
+  }))
+);
 const ContactListPage = lazy(() =>
   import('./pages/ContactListPage').then((m) => ({
     default: m.ContactListPage,
@@ -266,6 +271,10 @@ function App() {
                               <Route
                                 path="/properties/:id/edit"
                                 element={<PropertyEditPage />}
+                              />
+                              <Route
+                                path="/properties/:id/units/:unitId"
+                                element={<UnitDetailPage />}
                               />
                               <Route
                                 path="/contacts"

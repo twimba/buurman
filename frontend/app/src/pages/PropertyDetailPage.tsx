@@ -34,6 +34,7 @@ import { PropertyDocumentsTab } from '@/components/properties/PropertyDocumentsT
 import { PropertyPhotosTab } from '@/components/properties/PropertyPhotosTab';
 import { PropertyAuditTab } from '@/components/properties/PropertyAuditTab';
 import { UnitCharacteristicsForm } from '@/components/units/UnitCharacteristicsForm';
+import { PropertyUnitsTab } from '@/components/units/PropertyUnitsTab';
 import { useUnit, useUpdateUnit } from '@/hooks/useUnitHooks';
 import { unitToUpdateRequest } from '@/utils/unitRequests';
 import type { UpdateUnitRequest } from '@/types/unit';
@@ -65,6 +66,7 @@ import {
   BarChart3,
   Wallet,
   Calculator,
+  LayoutGrid,
   X,
 } from 'lucide-react';
 
@@ -174,7 +176,7 @@ const DwellingCharacteristicsCard = ({
 };
 
 export const PropertyDetailPage = () => {
-  const { t } = useTranslation(['properties', 'common']);
+  const { t } = useTranslation(['properties', 'common', 'units']);
   const te = (enumGroup: string, value: string | null): string => {
     if (!value) {
       return '';
@@ -430,6 +432,19 @@ export const PropertyDetailPage = () => {
             >
               {t('detail.tabs.info')}
             </button>
+            {property.unitCount > 1 && (
+              <button
+                onClick={() => setActiveTab('units')}
+                className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                  activeTab === 'units'
+                    ? 'border-primary-500 text-primary-500 font-semibold'
+                    : 'border-transparent text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <LayoutGrid className="h-4 w-4" />
+                {t('units:tab')}
+              </button>
+            )}
             <FeatureGate flag={FeatureFlags.REPORTS}>
               <button
                 onClick={() => setActiveTab('dashboard')}
@@ -1280,6 +1295,10 @@ export const PropertyDetailPage = () => {
               )}
             </div>
           </div>
+        )}
+
+        {activeTab === 'units' && property.unitCount > 1 && (
+          <PropertyUnitsTab propertyIdentifier={propertyId} />
         )}
 
         {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id} />}

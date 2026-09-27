@@ -14,7 +14,8 @@
     "vacancyDaysValue_other": "{{count}} days",
     "noTenant": "—",
     "empty": "No units yet.",
-    "occupancySummary": "{{occupied}} of {{total}} let"
+    "occupancySummary": "{{occupied}} of {{total}} let",
+    "addUnit": "Add unit"
   },
   "detail": {
     "title": "Unit {{number}}",
