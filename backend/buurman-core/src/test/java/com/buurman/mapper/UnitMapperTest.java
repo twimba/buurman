@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import com.buurman.domain.Unit;
 import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
 import com.buurman.dto.request.UpdateUnitRequest;
+import com.buurman.util.MoneyAmount;
 
 /**
  * {@code allocationShare} and {@code wozSharePct} have exactly one writer: {@code PUT
@@ -75,6 +77,104 @@ class UnitMapperTest {
     assertThat(unit.getEnergyEfficiencyRating()).contains("A");
     assertThat(unit.getAllocationShare()).contains(new BigDecimal("40"));
     assertThat(unit.getWozSharePct()).contains(new BigDecimal("35"));
+  }
+
+  /**
+   * The PUT-clears-omitted-fields invariant plan 2 (frontend) is being built against right now
+   * (BUUR-106 follow-up register, section F item 3): every {@link Optional} field on {@link
+   * UpdateUnitRequest} that is omitted (sent as {@code Optional.empty()}) must clear the
+   * corresponding column on {@link Unit}, with exactly two documented exceptions — {@code status}
+   * and {@code wozValue} (paired with {@code wozValueCurrency}) — which retain their existing value
+   * instead, because {@link UnitMapper#updateEntity}'s generated expressions explicitly fall back
+   * to {@code unit.getStatus()} / {@code unit.getWozValue()} rather than assigning the empty
+   * Optional directly.
+   */
+  @Test
+  @DisplayName(
+      "updateEntity with every optional field empty clears all 18 clearable fields but retains"
+          + " status and wozValue")
+  void updateEntityWithAllFieldsEmptyClearsEverythingExceptStatusAndWozValue() {
+    UnitMapper mapper = wireRealUnitMapper();
+
+    Unit unit =
+        Unit.builder()
+            .id(UUID.randomUUID())
+            .teamId(UUID.randomUUID())
+            .propertyId(UUID.randomUUID())
+            .unitNumber("1")
+            .unitType(UnitType.APARTMENT)
+            .status(UnitStatus.OCCUPIED)
+            .name(Optional.of("Attic"))
+            .floor(Optional.of(3))
+            .areaValue(Optional.of(new BigDecimal("55.5")))
+            .areaUnit(Optional.of("sqm"))
+            .wozValue(Optional.of(MoneyAmount.of(new BigDecimal("300000"), "EUR")))
+            .energyEfficiencyRating(Optional.of("B"))
+            .energyCertificateExpiryDate(Optional.of(LocalDate.of(2030, 1, 1)))
+            .heatingType(Optional.of("gas"))
+            .coolingType(Optional.of("none"))
+            .hotWaterSystem(Optional.of("boiler"))
+            .insulationNotes(Optional.of("double glazing"))
+            .flooringType(Optional.of("wood"))
+            .windowType(Optional.of("double"))
+            .hasSmokeDetectors(Optional.of(true))
+            .hasCoDetectors(Optional.of(true))
+            .hasFireExtinguisher(Optional.of(true))
+            .hasAdaptedBathroom(Optional.of(true))
+            .accessibilityNotes(Optional.of("ramp"))
+            .build();
+
+    UpdateUnitRequest request =
+        new UpdateUnitRequest(
+            "1",
+            Optional.empty(),
+            Optional.empty(),
+            UnitType.APARTMENT,
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty());
+
+    mapper.updateEntity(unit, request);
+
+    // Cleared: 17 fields whose UpdateUnitRequest source is a plain Optional<T> assigned directly.
+    assertThat(unit.getName()).isEmpty();
+    assertThat(unit.getFloor()).isEmpty();
+    assertThat(unit.getAreaValue()).isEmpty();
+    assertThat(unit.getAreaUnit()).isEmpty();
+    assertThat(unit.getEnergyEfficiencyRating()).isEmpty();
+    assertThat(unit.getEnergyCertificateExpiryDate()).isEmpty();
+    assertThat(unit.getHeatingType()).isEmpty();
+    assertThat(unit.getCoolingType()).isEmpty();
+    assertThat(unit.getHotWaterSystem()).isEmpty();
+    assertThat(unit.getInsulationNotes()).isEmpty();
+    assertThat(unit.getFlooringType()).isEmpty();
+    assertThat(unit.getWindowType()).isEmpty();
+    assertThat(unit.getHasSmokeDetectors()).isEmpty();
+    assertThat(unit.getHasCoDetectors()).isEmpty();
+    assertThat(unit.getHasFireExtinguisher()).isEmpty();
+    assertThat(unit.getHasAdaptedBathroom()).isEmpty();
+    assertThat(unit.getAccessibilityNotes()).isEmpty();
+
+    // Retained: status and wozValue (request.status()/wozValue()/wozValueCurrency() all empty).
+    assertThat(unit.getStatus()).isEqualTo(UnitStatus.OCCUPIED);
+    assertThat(unit.getWozValue()).isPresent();
+    assertThat(unit.getWozValue().orElseThrow().value()).isEqualByComparingTo("300000");
+    assertThat(unit.getWozValue().orElseThrow().currency()).isEqualTo("EUR");
   }
 
   private static UnitMapper wireRealUnitMapper() {
