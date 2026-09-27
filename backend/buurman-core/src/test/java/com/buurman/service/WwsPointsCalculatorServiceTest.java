@@ -2,11 +2,13 @@ package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
@@ -21,15 +23,19 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Property;
+import com.buurman.domain.Sid;
 import com.buurman.domain.Unit;
 import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
+import com.buurman.domain.WwsCalculation;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.dto.request.WwsCalculationRequest;
 import com.buurman.dto.response.WwsCalculationResponse;
 import com.buurman.dto.response.WwsCategoryBreakdown;
 import com.buurman.dto.response.WwsPreFillResponse;
+import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
@@ -59,6 +65,8 @@ class WwsPointsCalculatorServiceTest {
       Clock.fixed(Instant.parse("2026-01-15T12:00:00Z"), ZoneId.of("UTC"));
   private static final PropertyIdentifier PROP_ID =
       PropertyIdentifier.of("prop_test123456789012345");
+  private static final UnitIdentifier DEFAULT_UNIT_ID =
+      UnitIdentifier.of("unit_testDEFAULT00000000001");
 
   @BeforeEach
   void setUp() {
@@ -83,6 +91,30 @@ class WwsPointsCalculatorServiceTest {
             java.util.UUID.randomUUID(),
             "team_test",
             com.buurman.domain.TeamRole.TEAM_ADMIN);
+
+    // Most tests below drive calculate()/calculateAndSave() with PROP_ID and no explicit
+    // unitIdentifier, relying on the "exactly one unit" resolution path. Stub that path once,
+    // leniently, so tests that don't care about unit identity don't each need their own mocks.
+    UUID teamId = principal.getTeamId().orElseThrow();
+    Property defaultProperty = new Property();
+    defaultProperty.setId(UUID.randomUUID());
+    defaultProperty.setStreet("Test Street 1");
+    Unit defaultUnit =
+        Unit.builder()
+            .id(UUID.randomUUID())
+            .identifier(Optional.of(DEFAULT_UNIT_ID))
+            .teamId(teamId)
+            .propertyId(defaultProperty.getId())
+            .unitNumber("1")
+            .unitType(UnitType.APARTMENT)
+            .status(UnitStatus.VACANT)
+            .build();
+    lenient()
+        .when(propertyRepository.getByIdentifierAndTeamId(PROP_ID, teamId))
+        .thenReturn(defaultProperty);
+    lenient()
+        .when(unitRepository.findAllByPropertyIdAndTeamId(defaultProperty.getId(), teamId))
+        .thenReturn(List.of(defaultUnit));
   }
 
   private WwsCalculationRequest simpleRequest(String version) {
@@ -776,6 +808,165 @@ class WwsPointsCalculatorServiceTest {
       // under the 2025 rules. Surface area (75) + energy label + no-outdoor-space (-5) = total.
       assertThat(responseA.totalPoints()).isEqualByComparingTo("111.00");
       assertThat(responseB.totalPoints()).isEqualByComparingTo("55.00");
+    }
+  }
+
+  @Nested
+  @DisplayName("Unit-scoped reads (a multi-unit building has one ceiling per dwelling)")
+  class UnitScopedReads {
+
+    private static final UnitIdentifier UNIT_A_ID =
+        UnitIdentifier.of("unit_scopedAAAAAAAAAAAAAAAA1");
+    private static final UnitIdentifier UNIT_B_ID =
+        UnitIdentifier.of("unit_scopedBBBBBBBBBBBBBBBB2");
+
+    private Unit unit(UnitIdentifier identifier, UUID propertyId, String unitNumber) {
+      return Unit.builder()
+          .id(UUID.randomUUID())
+          .identifier(Optional.of(identifier))
+          .teamId(principal.getTeamId().orElseThrow())
+          .propertyId(propertyId)
+          .unitNumber(unitNumber)
+          .unitType(UnitType.APARTMENT)
+          .status(UnitStatus.OCCUPIED)
+          .build();
+    }
+
+    private WwsCalculation calculation(UUID unitId, UUID propertyId, UUID teamId, String points) {
+      // Deliberately not valid WwsCalculationRequest JSON: exercising the "input data missing or
+      // unreadable" path is enough here, and toResponse() degrades that to Optional.empty()
+      // (logged, not thrown) rather than failing the read.
+      String inputJson = "{}";
+      return WwsCalculation.builder()
+          .id(UUID.randomUUID())
+          .identifier(Optional.of(Sid.of("wws_" + UUID.randomUUID())))
+          .teamId(teamId)
+          .propertyId(propertyId)
+          .unitId(unitId)
+          .systemVersion("2025")
+          .totalPoints(new BigDecimal(points))
+          .sectorClassification("REGULATED")
+          .categoryBreakdown(List.of())
+          .breakdownJson("[]")
+          .inputDataJson(inputJson)
+          .calculationDate(LocalDate.now(FIXED_CLOCK))
+          .createdBy(UUID.randomUUID())
+          .updatedBy(UUID.randomUUID())
+          .build();
+    }
+
+    @Test
+    @DisplayName("getCalculationHistoryForUnit returns only that unit's calculations")
+    void unitHistoryReturnsOnlyItsOwnCalculations() {
+      UUID teamId = principal.getTeamId().orElseThrow();
+      UUID propertyId = UUID.randomUUID();
+      Unit unitA = unit(UNIT_A_ID, propertyId, "1");
+      WwsCalculation calcA1 = calculation(unitA.getId(), propertyId, teamId, "92");
+      WwsCalculation calcA2 = calculation(unitA.getId(), propertyId, teamId, "95");
+
+      when(unitRepository.getByIdentifierAndTeamId(UNIT_A_ID, teamId)).thenReturn(unitA);
+      when(wwsCalculationRepository.findByUnitIdAndTeamId(unitA.getId(), teamId))
+          .thenReturn(List.of(calcA2, calcA1));
+
+      List<WwsCalculationResponse> history =
+          service.getCalculationHistoryForUnit(UNIT_A_ID, principal);
+
+      assertThat(history).hasSize(2);
+      assertThat(history).allMatch(r -> r.unitIdentifier().equals(UNIT_A_ID));
+      assertThat(history).allMatch(r -> "1".equals(r.unitNumber()));
+    }
+
+    @Test
+    @DisplayName("getLatestCalculationForUnit response carries the unit identifier")
+    void unitLatestCarriesUnitIdentifier() {
+      UUID teamId = principal.getTeamId().orElseThrow();
+      UUID propertyId = UUID.randomUUID();
+      Unit unitB = unit(UNIT_B_ID, propertyId, "2");
+      WwsCalculation calcB = calculation(unitB.getId(), propertyId, teamId, "150");
+
+      when(unitRepository.getByIdentifierAndTeamId(UNIT_B_ID, teamId)).thenReturn(unitB);
+      when(wwsCalculationRepository.findLatestByUnitIdAndTeamId(unitB.getId(), teamId))
+          .thenReturn(Optional.of(calcB));
+
+      WwsCalculationResponse response = service.getLatestCalculationForUnit(UNIT_B_ID, principal);
+
+      assertThat(response.unitIdentifier()).isEqualTo(UNIT_B_ID);
+      assertThat(response.unitNumber()).isEqualTo("2");
+      assertThat(response.totalPoints()).isEqualByComparingTo("150");
+    }
+
+    @Test
+    @DisplayName("getLatestCalculationForUnit throws 404 when the unit has no calculations")
+    void unitLatestThrowsWhenNoneFound() {
+      UUID teamId = principal.getTeamId().orElseThrow();
+      Unit unitA = unit(UNIT_A_ID, UUID.randomUUID(), "1");
+
+      when(unitRepository.getByIdentifierAndTeamId(UNIT_A_ID, teamId)).thenReturn(unitA);
+      when(wwsCalculationRepository.findLatestByUnitIdAndTeamId(unitA.getId(), teamId))
+          .thenReturn(Optional.empty());
+
+      assertThatThrownBy(() -> service.getLatestCalculationForUnit(UNIT_A_ID, principal))
+          .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @DisplayName(
+        "property-scoped /latest refuses with 409 when the building has more than one unit")
+    void propertyLatestRefusesOnMultiUnitBuilding() {
+      UUID teamId = principal.getTeamId().orElseThrow();
+      Property property = new Property();
+      property.setId(UUID.randomUUID());
+      property.setStreet("Prinsengracht 10");
+      Unit unitA = unit(UNIT_A_ID, property.getId(), "1");
+      Unit unitB = unit(UNIT_B_ID, property.getId(), "2");
+
+      when(propertyRepository.getByIdentifierAndTeamId(PROP_ID, teamId)).thenReturn(property);
+      when(unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId))
+          .thenReturn(List.of(unitA, unitB));
+
+      assertThatThrownBy(() -> service.getLatestCalculation(PROP_ID, principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("2 units")
+          .hasMessageContaining("Open a unit");
+    }
+
+    @Test
+    @DisplayName("property-scoped history labels every row with its own unit")
+    void propertyHistoryLabelsEachRowWithItsUnit() {
+      UUID teamId = principal.getTeamId().orElseThrow();
+      Property property = new Property();
+      property.setId(UUID.randomUUID());
+      Unit unitA = unit(UNIT_A_ID, property.getId(), "1");
+      Unit unitB = unit(UNIT_B_ID, property.getId(), "2");
+      WwsCalculation calcA = calculation(unitA.getId(), property.getId(), teamId, "92");
+      WwsCalculation calcB = calculation(unitB.getId(), property.getId(), teamId, "150");
+
+      when(propertyRepository.getByIdentifierAndTeamId(PROP_ID, teamId)).thenReturn(property);
+      when(wwsCalculationRepository.findByPropertyId(property.getId(), teamId))
+          .thenReturn(List.of(calcA, calcB));
+      when(unitRepository.findByIdsAndTeamId(
+              org.mockito.ArgumentMatchers.argThat(
+                  ids -> ids.contains(unitA.getId()) && ids.contains(unitB.getId())),
+              org.mockito.ArgumentMatchers.eq(teamId)))
+          .thenReturn(List.of(unitA, unitB));
+
+      List<WwsCalculationResponse> history = service.getCalculationHistory(PROP_ID, principal);
+
+      assertThat(history).hasSize(2);
+      assertThat(
+              history.stream()
+                  .filter(r -> r.totalPoints().compareTo(new BigDecimal("92")) == 0)
+                  .findFirst()
+                  .orElseThrow()
+                  .unitIdentifier())
+          .isEqualTo(UNIT_A_ID);
+      assertThat(
+              history.stream()
+                  .filter(r -> r.totalPoints().compareTo(new BigDecimal("150")) == 0)
+                  .findFirst()
+                  .orElseThrow()
+                  .unitIdentifier())
+          .isEqualTo(UNIT_B_ID);
     }
   }
 }

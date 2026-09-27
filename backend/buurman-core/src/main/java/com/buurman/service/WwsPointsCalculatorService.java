@@ -378,9 +378,9 @@ public class WwsPointsCalculatorService {
   }
 
   /**
-   * Calculation history across every unit of a property, each row labelled with the unit it
-   * belongs to. Never a single ambiguous figure — a multi-unit building has one legal ceiling per
-   * dwelling, so the caller must be able to tell rows apart.
+   * Calculation history across every unit of a property, each row labelled with the unit it belongs
+   * to. Never a single ambiguous figure — a multi-unit building has one legal ceiling per dwelling,
+   * so the caller must be able to tell rows apart.
    */
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public List<WwsCalculationResponse> getCalculationHistory(
