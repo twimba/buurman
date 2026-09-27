@@ -134,6 +134,8 @@ public class NotificationServiceImpl implements NotificationService {
       notification.setRecipientPhone(request.recipientPhone());
       notification.setRecipientUserId(request.recipientUserId());
       notification.setRecipientContactId(request.recipientContactId());
+      notification.setRelatedPaymentId(request.relatedPaymentId());
+      notification.setRelatedContractId(request.relatedContractId());
       notification.setChannel(channel);
       notification.setContentTemplate(Optional.of(request.templateName()));
       notification.setContentVariables(Optional.of(request.templateVariables()));
@@ -282,6 +284,9 @@ public class NotificationServiceImpl implements NotificationService {
     resent.setRecipientPhone(original.getRecipientPhone());
     resent.setRecipientUserId(original.getRecipientUserId());
     resent.setRecipientContactId(original.getRecipientContactId());
+    // Keeps the resend on the same timeline the landlord is watching.
+    resent.setRelatedPaymentId(original.getRelatedPaymentId());
+    resent.setRelatedContractId(original.getRelatedContractId());
     resent.setChannel(original.getChannel());
     resent.setContentTemplate(original.getContentTemplate());
     resent.setContentVariables(original.getContentVariables());

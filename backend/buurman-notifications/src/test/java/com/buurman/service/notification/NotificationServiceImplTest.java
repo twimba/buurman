@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -35,6 +36,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Notification;
+import com.buurman.domain.identifier.NotificationIdentifier;
+import com.buurman.domain.NotificationStatus;
+import com.buurman.util.SidGenerator;
 import com.buurman.domain.NotificationOutbox;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamRole;
@@ -443,6 +447,73 @@ class NotificationServiceImplTest {
       // No notification saved, no outbox saved (sender was null)
       verify(notificationRepository, never()).save(any());
       verify(outboxRepository, never()).save(any());
+    }
+  }
+
+  @Nested
+  @DisplayName("entity link")
+  class EntityLink {
+
+    @Test
+    @DisplayName("a send persists the payment and contract it is about")
+    void sendPersistsTheLink() {
+      UUID paymentId = UUID.randomUUID();
+      UUID contractId = UUID.randomUUID();
+      stubConfigurableChannelResolution(true, false, true, true);
+      stubEmailRender();
+      stubNotificationSave();
+
+      service.send(
+          baseRequest()
+              .relatedPaymentId(Optional.of(paymentId))
+              .relatedContractId(Optional.of(contractId))
+              .build());
+
+      ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+      verify(notificationRepository, atLeastOnce()).save(captor.capture());
+      assertThat(captor.getAllValues())
+          .anySatisfy(
+              saved -> {
+                assertThat(saved.getRelatedPaymentId()).isEqualTo(Optional.of(paymentId));
+                assertThat(saved.getRelatedContractId()).isEqualTo(Optional.of(contractId));
+              });
+    }
+
+    @Test
+    @DisplayName("a resend stays on the same timeline as the original")
+    void resendCopiesTheLink() {
+      UUID paymentId = UUID.randomUUID();
+      UUID contractId = UUID.randomUUID();
+      NotificationIdentifier identifier = SidGenerator.newNotificationId();
+      Notification original = new Notification();
+      original.setId(UUID.randomUUID());
+      original.setIdentifier(Optional.of(identifier));
+      original.setTeamId(Optional.of(TEAM_ID));
+      original.setNotificationType(PAYMENT_REMINDER);
+      original.setChannel(EMAIL);
+      original.setStatus(NotificationStatus.SENT);
+      original.setRecipientEmail(Optional.of("jan@example.com"));
+      original.setContentTemplate(Optional.of("payment-reminder"));
+      original.setContentVariables(Optional.of(Map.of()));
+      original.setRelatedPaymentId(Optional.of(paymentId));
+      original.setRelatedContractId(Optional.of(contractId));
+      stubEmailRender();
+      stubNotificationSave();
+      when(notificationRepository.getByIdentifierAndTeamId(identifier, TEAM_ID))
+          .thenReturn(original);
+
+      service.resend(TEAM_ID, identifier, USER_ID);
+
+      ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+      verify(notificationRepository, atLeastOnce()).save(captor.capture());
+      // Without this the landlord resends from the timeline and the new message is absent
+      // from the very timeline they are watching.
+      assertThat(captor.getAllValues())
+          .anySatisfy(
+              saved -> {
+                assertThat(saved.getRelatedPaymentId()).isEqualTo(Optional.of(paymentId));
+                assertThat(saved.getRelatedContractId()).isEqualTo(Optional.of(contractId));
+              });
     }
   }
 }
