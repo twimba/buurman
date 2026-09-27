@@ -143,8 +143,7 @@ export const PropertyForm = ({
     hasElevator: property?.hasElevator ?? false,
     hasStepFreeEntrance: property?.hasStepFreeEntrance ?? false,
     // Category-specific details
-    residentialDetails:
-      property?.residentialDetails as CreatePropertyRequest['residentialDetails'],
+    residentialDetails: property?.residentialDetails,
     commercialDetails:
       property?.commercialDetails as CreatePropertyRequest['commercialDetails'],
     industrialDetails:
@@ -269,8 +268,7 @@ export const PropertyForm = ({
       isWheelchairAccessible: property.isWheelchairAccessible ?? false,
       hasElevator: property.hasElevator ?? false,
       hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
-      residentialDetails:
-        property.residentialDetails as CreatePropertyRequest['residentialDetails'],
+      residentialDetails: property.residentialDetails,
       commercialDetails:
         property.commercialDetails as CreatePropertyRequest['commercialDetails'],
       industrialDetails:

@@ -49,7 +49,6 @@ export const queryKeys = {
     auditLog: (propertyId?: string) => k('propertyAuditLog', propertyId),
     photos: (propertyId?: string) => k('propertyPhotos', propertyId),
     outdoorAreas: (propertyId?: string) => k('outdoor-areas', propertyId),
-    amenities: (propertyId?: string) => k('property-amenities', propertyId),
     amenitiesCatalog: (category?: string) => k('amenities', category),
     dashboard: (propertyId?: string, months?: number) =>
       k('propertyDashboard', propertyId, months),
