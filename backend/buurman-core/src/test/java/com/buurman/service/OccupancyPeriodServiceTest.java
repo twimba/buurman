@@ -644,4 +644,79 @@ class OccupancyPeriodServiceTest {
       assertThat(unitCaptor.getValue().getStatus()).isEqualTo(UnitStatus.VACANT);
     }
   }
+
+  @Nested
+  @DisplayName("promote/demote status guard symmetry (BUUR-106)")
+  class StatusGuardSymmetry {
+
+    private static final OccupancyPeriodIdentifier PERIOD_SID =
+        OccupancyPeriodIdentifier.of("occ_01JTEST000000000000000003");
+
+    @Test
+    @DisplayName(
+        "create-then-end on an UNDER_RENOVATION unit is a no-op on status: create() only "
+            + "promotes from VACANT, end() only demotes from SELF_OCCUPIED, so a unit that was "
+            + "never VACANT is never touched by either")
+    void createThenEndOnUnderRenovationUnitIsNoOpOnStatus() {
+      Unit underRenovationUnit =
+          Unit.builder()
+              .id(UNIT_ID)
+              .identifier(Optional.of(UNIT_SID))
+              .teamId(TEAM_ID)
+              .propertyId(PROPERTY_ID)
+              .unitNumber("1")
+              .unitType(UnitType.APARTMENT)
+              .status(UnitStatus.UNDER_RENOVATION)
+              .build();
+
+      // --- create(): "I lived here during the works", starting today ---
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(underRenovationUnit));
+      when(repository.findOverlapping(
+              eq(UNIT_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
+          .thenReturn(List.of());
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID)).thenReturn(List.of());
+      when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(), TEAM_ID))
+          .thenReturn(List.of());
+
+      CreateOccupancyPeriodRequest createRequest =
+          new CreateOccupancyPeriodRequest(
+              LocalDate.of(2026, 3, 1),
+              OccupancyType.PERSONAL,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              null);
+
+      service.create(PROPERTY_SID, createRequest, principal);
+
+      assertThat(underRenovationUnit.getStatus()).isEqualTo(UnitStatus.UNDER_RENOVATION);
+      verify(unitRepository, never()).save(any(Unit.class));
+
+      // --- end(): recording that the (never-flipped) self-occupancy period is over ---
+      PropertyOccupancyPeriod period = new PropertyOccupancyPeriod();
+      period.setId(UUID.randomUUID());
+      period.setIdentifier(Optional.of(PERIOD_SID));
+      period.setTeamId(TEAM_ID);
+      period.setPropertyId(PROPERTY_ID);
+      period.setUnitId(UNIT_ID);
+      period.setStartDate(LocalDate.of(2026, 3, 1));
+      period.setEndDate(Optional.empty());
+      period.setType(OccupancyType.PERSONAL);
+
+      when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(underRenovationUnit);
+
+      EndOccupancyPeriodRequest endRequest =
+          new EndOccupancyPeriodRequest(
+              LocalDate.of(2026, 3, 15), Optional.empty(), Optional.empty());
+
+      service.end(PROPERTY_SID, PERIOD_SID, endRequest, principal);
+
+      assertThat(underRenovationUnit.getStatus()).isEqualTo(UnitStatus.UNDER_RENOVATION);
+      verify(unitRepository, never()).save(any(Unit.class));
+    }
+  }
 }

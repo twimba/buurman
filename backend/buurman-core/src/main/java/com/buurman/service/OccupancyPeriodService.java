@@ -111,16 +111,13 @@ public class OccupancyPeriodService {
     // to the unit: a period that is genuinely CURRENT marks its unit SELF_OCCUPIED. "Current" means
     // started (startDate not in the future) AND not already ended (endDate null or not in the
     // past) — a back-recorded historical period (e.g. "I lived here 2019-2020" for tax purposes)
-    // must never flip a unit's live status. Also, like end()/delete(), never overwrite a status
-    // such as MAINTENANCE that a current self-occupancy record shouldn't clobber.
+    // must never flip a unit's live status.
     LocalDate today = LocalDate.now(clock);
     boolean isCurrent =
         !request.startDate().isAfter(today)
             && (request.endDate().isEmpty() || !request.endDate().get().isBefore(today));
-    if (isCurrent && unit.getStatus() != UnitStatus.MAINTENANCE) {
-      unit.setStatus(UnitStatus.SELF_OCCUPIED);
-      unit.setUpdatedBy(Optional.of(principal.getUserId()));
-      unitRepository.save(unit);
+    if (isCurrent) {
+      promoteToSelfOccupancy(unit, principal.getUserId());
     }
 
     log.info(
@@ -198,11 +195,7 @@ public class OccupancyPeriodService {
     // that is e.g. under maintenance or rented via a separate contract must not be overwritten.
     if (!request.endDate().isAfter(LocalDate.now(clock))) {
       Unit unit = unitRepository.getByIdAndTeamId(period.getUnitId(), teamId);
-      if (unit.getStatus() == UnitStatus.SELF_OCCUPIED) {
-        unit.setStatus(UnitStatus.VACANT);
-        unit.setUpdatedBy(Optional.of(principal.getUserId()));
-        unitRepository.save(unit);
-      }
+      demoteFromSelfOccupancy(unit, principal.getUserId());
     }
 
     log.info("Ended self-occupancy period {}", periodIdentifier);
@@ -234,14 +227,37 @@ public class OccupancyPeriodService {
     // separate contract must not be overwritten.
     if (wasActive) {
       Unit unit = unitRepository.getByIdAndTeamId(period.getUnitId(), teamId);
-      if (unit.getStatus() == UnitStatus.SELF_OCCUPIED) {
-        unit.setStatus(UnitStatus.VACANT);
-        unit.setUpdatedBy(Optional.of(principal.getUserId()));
-        unitRepository.save(unit);
-      }
+      demoteFromSelfOccupancy(unit, principal.getUserId());
     }
 
     log.info("Deleted self-occupancy period {}", periodIdentifier);
+  }
+
+  /**
+   * Promotes a unit to SELF_OCCUPIED, but only from VACANT. A unit that is e.g. UNDER_RENOVATION,
+   * LISTED, or OCCUPIED must not be silently clobbered by a self-occupancy record — its real status
+   * is more informative than "someone lives there now" and must survive the round trip through
+   * {@link #demoteFromSelfOccupancy}. Used by {@code create} — the only promotion site.
+   */
+  private void promoteToSelfOccupancy(Unit unit, UUID actorId) {
+    if (unit.getStatus() == UnitStatus.VACANT) {
+      unit.setStatus(UnitStatus.SELF_OCCUPIED);
+      unit.setUpdatedBy(Optional.of(actorId));
+      unitRepository.save(unit);
+    }
+  }
+
+  /**
+   * Demotes a unit from SELF_OCCUPIED back to VACANT, but only from SELF_OCCUPIED. Any other status
+   * (MAINTENANCE, a separate rental contract, ...) is left untouched. Used by {@code end} and
+   * {@code delete} — the two demotion sites.
+   */
+  private void demoteFromSelfOccupancy(Unit unit, UUID actorId) {
+    if (unit.getStatus() == UnitStatus.SELF_OCCUPIED) {
+      unit.setStatus(UnitStatus.VACANT);
+      unit.setUpdatedBy(Optional.of(actorId));
+      unitRepository.save(unit);
+    }
   }
 
   @Transactional(readOnly = true)
