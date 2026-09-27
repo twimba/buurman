@@ -54,7 +54,8 @@
     "floorArea": "Floor area",
     "finishes": "Flooring & windows",
     "safety": "Smoke & fire safety",
-    "accessibility": "Accessibility"
+    "accessibility": "Accessibility",
+    "accessibilityDetails": "Accessibility details"
   },
   "type": {
     "APARTMENT": "Apartment",

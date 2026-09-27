@@ -33,6 +33,10 @@ import { PropertyExpensesTab } from '@/components/properties/PropertyExpensesTab
 import { PropertyDocumentsTab } from '@/components/properties/PropertyDocumentsTab';
 import { PropertyPhotosTab } from '@/components/properties/PropertyPhotosTab';
 import { PropertyAuditTab } from '@/components/properties/PropertyAuditTab';
+import { UnitCharacteristicsForm } from '@/components/units/UnitCharacteristicsForm';
+import { useUnit, useUpdateUnit } from '@/hooks/useUnitHooks';
+import { unitToUpdateRequest } from '@/utils/unitRequests';
+import type { UpdateUnitRequest } from '@/types/unit';
 import { FeatureGate } from '@/components/FeatureGate';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -64,6 +68,111 @@ import {
   X,
 } from 'lucide-react';
 
+export const PROPERTY_TAB_IDS = [
+  'info',
+  'financials',
+  'photos',
+  'documents',
+  'contracts',
+  'expenses',
+  'audit',
+  'dashboard',
+] as const;
+
+export type TabId = (typeof PROPERTY_TAB_IDS)[number] | 'units';
+
+/**
+ * Driven by unitCount, never by the implicit flag: a landlord who split a property into
+ * units and later deleted back down to one must still reach the dwelling fields on the
+ * Info tab, not get stranded behind a Units tab that no longer makes sense.
+ */
+export const visibleTabs = (unitCount: number): readonly TabId[] => {
+  if (unitCount <= 1) {
+    return PROPERTY_TAB_IDS;
+  }
+  const [info, ...rest] = PROPERTY_TAB_IDS;
+  return [info, 'units', ...rest];
+};
+
+/**
+ * Editable dwelling characteristics for a property's sole unit, inlined on the Info tab so
+ * the single-unit landlord never has to think about "units" -- this reads and saves like any
+ * other card on this page. `UnitCharacteristicsForm` itself stays fully controlled; this
+ * wrapper is the parent that owns the fetch, the draft state, and the save.
+ */
+const DwellingCharacteristicsCard = ({
+  propertyIdentifier,
+  unitIdentifier,
+  canEditData,
+}: {
+  propertyIdentifier: PropertyIdentifier;
+  unitIdentifier: UnitIdentifier;
+  canEditData: boolean;
+}) => {
+  const { t } = useTranslation(['units', 'common']);
+  const { data: unit } = useUnit(unitIdentifier);
+  const updateUnit = useUpdateUnit(propertyIdentifier, unitIdentifier);
+  // Only the fields the landlord has actually touched -- merged over the saved unit on every
+  // render below. This avoids syncing query data into local state via an effect: the draft is
+  // always derived, never stale, and clearing this back to {} is what "discard"/"saved" mean.
+  const [overrides, setOverrides] = useState<Partial<UpdateUnitRequest>>({});
+
+  const handleChange = useCallback(
+    <K extends keyof UpdateUnitRequest>(
+      field: K,
+      value: UpdateUnitRequest[K]
+    ) => {
+      setOverrides((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
+
+  if (!unit) {
+    return null;
+  }
+
+  const savedRequest = unitToUpdateRequest(unit);
+  const draft: UpdateUnitRequest = { ...savedRequest, ...overrides };
+  const isDirty = Object.keys(overrides).length > 0;
+
+  return (
+    <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+      <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
+        {t('units:detail.characteristics')}
+      </h3>
+      <UnitCharacteristicsForm
+        value={draft}
+        onChange={handleChange}
+        disabled={!canEditData || updateUnit.isPending}
+      />
+      {canEditData && (
+        <div className="flex justify-end gap-2 mt-4">
+          {isDirty && (
+            <Button
+              variant="ghost"
+              onClick={() => setOverrides({})}
+              disabled={updateUnit.isPending}
+            >
+              {t('common:buttons.discardChanges')}
+            </Button>
+          )}
+          <Button
+            variant="primary"
+            onClick={() =>
+              updateUnit.mutate(draft, {
+                onSuccess: () => setOverrides({}),
+              })
+            }
+            disabled={!isDirty || updateUnit.isPending}
+          >
+            {t('common:buttons.saveChanges')}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const PropertyDetailPage = () => {
   const { t } = useTranslation(['properties', 'common']);
   const te = (enumGroup: string, value: string | null): string => {
@@ -85,16 +194,15 @@ export const PropertyDetailPage = () => {
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
-  const [activeTab, setActiveTabRaw] = useTabState('info', [
+
+  // Core property data (moved above useTabState: the tab whitelist depends on unitCount).
+  const { data: property, isLoading, error } = useProperty(id);
+  const propertyIdentifier = property?.identifier;
+
+  const [activeTab, setActiveTabRaw] = useTabState(
     'info',
-    'financials',
-    'photos',
-    'documents',
-    'contracts',
-    'expenses',
-    'audit',
-    'dashboard',
-  ] as const);
+    visibleTabs(property?.unitCount ?? 1)
+  );
 
   // Persist scroll position per tab. Switching tabs saves the current scrollY
   // for the leaving tab and restores it (or 0) for the incoming tab — so
@@ -136,10 +244,6 @@ export const PropertyDetailPage = () => {
   const [deleteOccupancyPeriodId, setDeleteOccupancyPeriodId] = useState<
     string | null
   >(null);
-
-  // Core property data
-  const { data: property, isLoading, error } = useProperty(id);
-  const propertyIdentifier = property?.identifier;
 
   useEffect(() => {
     if (propertyIdentifier) {
@@ -684,6 +788,16 @@ export const PropertyDetailPage = () => {
                   </div>
                 )}
               </div>
+            )}
+
+            {/* Dwelling characteristics -- sourced from the property's sole unit (BUUR-106).
+                Multi-unit properties reach these fields per-unit via the Units tab instead. */}
+            {soleUnitIdentifier && (
+              <DwellingCharacteristicsCard
+                propertyIdentifier={propertyId}
+                unitIdentifier={soleUnitIdentifier}
+                canEditData={canEditData}
+              />
             )}
 
             {/* Utilities & Connections */}
