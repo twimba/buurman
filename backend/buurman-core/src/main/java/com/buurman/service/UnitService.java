@@ -36,6 +36,7 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitRepository;
 import com.buurman.repository.WwsCalculationRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.util.FeatureFlags;
 import com.buurman.util.SidGenerator;
 
 import lombok.RequiredArgsConstructor;
@@ -68,11 +69,20 @@ public class UnitService {
   // (BUUR-106 Task 12); listUnits() cannot derive vacancyDays without that work.
   private final Clock clock;
 
+  // Gates createUnit/bulkCreateUnits only (BUUR-106). Several defects — WWS pricing reads,
+  // occupancy reporting and expense-allocation edits — are still property-scoped rather than
+  // unit-scoped, and only manifest once a property has more than one unit. createInitialUnit, the
+  // V068 backfill, reads (getUnit/listUnits) and edits of existing units (updateUnit/deleteUnit)
+  // are deliberately never gated: the never-zero-units invariant and read access must survive a
+  // team being piloted and then switched back off.
+  private final FeatureFlagService featureFlagService;
+
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public UnitResponse createUnit(
       PropertyIdentifier propertyIdentifier, CreateUnitRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
+    requireMultiUnitEnabled(teamId);
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
     promoteImplicitUnit(property.getId(), teamId, principal.getUserId());
@@ -129,6 +139,7 @@ public class UnitService {
       BulkCreateUnitsRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
+    requireMultiUnitEnabled(teamId);
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
     List<Unit> existingUnits =
@@ -347,6 +358,21 @@ public class UnitService {
               implicitUnit.setUpdatedBy(Optional.of(actorId));
               unitRepository.save(implicitUnit);
             });
+  }
+
+  /**
+   * Blast-radius control for the defects that only manifest on a multi-unit property (BUUR-106):
+   * WWS pricing reads, occupancy reporting and expense-allocation edits are still property-scoped.
+   * Refusing here keeps every property's implicit unit and single-unit landlords unaffected, and
+   * confines the exposure to teams a pilot opts in via a per-team {@link FeatureFlags#MULTI_UNIT}
+   * override. Deliberately not applied to {@link #createInitialUnit} or reads/edits of units that
+   * already exist.
+   */
+  private void requireMultiUnitEnabled(UUID teamId) {
+    if (!featureFlagService.isEnabled(FeatureFlags.MULTI_UNIT, teamId)) {
+      throw new BusinessRuleException(
+          "Multiple units per property is not enabled for your team yet.");
+    }
   }
 
   private Unit saveOrTranslateDuplicate(Unit unit, String unitNumber) {

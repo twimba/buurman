@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.exception.IntegrityConstraintViolationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -50,6 +52,7 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitRepository;
 import com.buurman.repository.WwsCalculationRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.util.FeatureFlags;
 import com.buurman.util.MoneyAmount;
 import com.buurman.util.SidGenerator;
 
@@ -64,12 +67,21 @@ class UnitServiceTest {
   @Mock private WwsCalculationRepository wwsCalculationRepository;
   @Mock private ExpenseAllocationRepository expenseAllocationRepository;
   @Mock private UnitMapper unitMapper;
+  @Mock private FeatureFlagService featureFlagService;
 
   private final Clock clock = Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
 
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID USER_ID = UUID.randomUUID();
   private static final UUID PROPERTY_ID = UUID.randomUUID();
+
+  @BeforeEach
+  void setUpFeatureFlagDefault() {
+    // createUnit/bulkCreateUnits check MULTI_UNIT first; default it to enabled so tests that
+    // aren't about the flag itself don't have to stub it. Tests exercising the flag guard
+    // override this with an explicit stub.
+    lenient().when(featureFlagService.isEnabled(FeatureFlags.MULTI_UNIT, TEAM_ID)).thenReturn(true);
+  }
 
   @Nested
   @DisplayName("deleteUnit")
@@ -253,6 +265,59 @@ class UnitServiceTest {
       assertThat(response.unitNumber()).isEqualTo("2");
 
       verify(unitRepository, never()).softDelete(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("refuses to create a second unit when MULTI_UNIT is off for the caller's team")
+    void refusesWhenMultiUnitFlagOff() {
+      when(featureFlagService.isEnabled(FeatureFlags.MULTI_UNIT, TEAM_ID)).thenReturn(false);
+
+      CreateUnitRequest request = createRequest("2");
+
+      assertThatThrownBy(() -> service().createUnit(propertyIdentifier(), request, principal()))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessage("Multiple units per property is not enabled for your team yet.");
+
+      verify(propertyRepository, never()).getByIdentifierAndTeamId(any(), any());
+      verify(unitRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("creates a second unit when MULTI_UNIT is on for the caller's team")
+    void succeedsWhenMultiUnitFlagOn() {
+      when(featureFlagService.isEnabled(FeatureFlags.MULTI_UNIT, TEAM_ID)).thenReturn(true);
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(List.of());
+      when(unitMapper.toEntity(any())).thenAnswer(inv -> unitFromCreateRequest(inv.getArgument(0)));
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      CreateUnitRequest request = createRequest("2");
+
+      UnitResponse response = service().createUnit(propertyIdentifier(), request, principal());
+
+      assertThat(response.unitNumber()).isEqualTo("2");
+    }
+  }
+
+  @Nested
+  @DisplayName("createInitialUnit")
+  class CreateInitialUnit {
+
+    @Test
+    @DisplayName(
+        "creates the implicit unit even when MULTI_UNIT is off — the never-zero-units invariant"
+            + " is not gated")
+    void createsImplicitUnitRegardlessOfFlag() {
+      when(unitMapper.toEntity(any())).thenAnswer(inv -> unitFromCreateRequest(inv.getArgument(0)));
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+      Unit created =
+          service().createInitialUnit(PROPERTY_ID, createRequest("1"), true, principal());
+
+      assertThat(created.getUnitNumber()).isEqualTo("1");
+      verify(featureFlagService, never()).isEnabled(any(), any(UUID.class));
     }
   }
 
@@ -501,6 +566,27 @@ class UnitServiceTest {
 
       assertThat(created).extracting(UnitResponse::sortOrder).containsExactly(0, 1, 2);
     }
+
+    @Test
+    @DisplayName("refuses the whole batch when MULTI_UNIT is off for the caller's team")
+    void refusesWhenMultiUnitFlagOff() {
+      when(featureFlagService.isEnabled(FeatureFlags.MULTI_UNIT, TEAM_ID)).thenReturn(false);
+
+      BulkCreateUnitsRequest request =
+          new BulkCreateUnitsRequest(
+              3,
+              BulkCreateUnitsRequest.NumberingPattern.NUMERIC,
+              UnitType.APARTMENT,
+              Optional.empty());
+
+      assertThatThrownBy(
+              () -> service().bulkCreateUnits(propertyIdentifier(), request, principal()))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessage("Multiple units per property is not enabled for your team yet.");
+
+      verify(propertyRepository, never()).getByIdentifierAndTeamId(any(), any());
+      verify(unitRepository, never()).save(any());
+    }
   }
 
   @Nested
@@ -571,6 +657,22 @@ class UnitServiceTest {
 
       assertThat(response.unitNumber()).isEqualTo("1");
     }
+
+    @Test
+    @DisplayName("still returns the unit when MULTI_UNIT is off — reads are never gated")
+    void returnsUnitEvenWhenMultiUnitFlagOff() {
+      Unit target = unit("1", UnitStatus.VACANT);
+      when(unitRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(target);
+      when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(property());
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      UnitResponse response = service().getUnit(unitIdentifier(), principal());
+
+      assertThat(response.unitNumber()).isEqualTo("1");
+      // getUnit is a read: it must never consult MULTI_UNIT, regardless of its state.
+      verify(featureFlagService, never()).isEnabled(any(), any(UUID.class));
+    }
   }
 
   @Nested
@@ -637,6 +739,22 @@ class UnitServiceTest {
       assertThat(rows.get(0).tenantName()).contains("New Tenant");
       assertThat(rows.get(0).monthlyRent()).contains(new BigDecimal("1500.00"));
     }
+
+    @Test
+    @DisplayName("still lists units when MULTI_UNIT is off — reads are never gated")
+    void listsUnitsEvenWhenMultiUnitFlagOff() {
+      Unit vacant = unit("1", UnitStatus.VACANT);
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(vacant));
+      when(contractRepository.findActiveTenanciesByUnitIds(any(), eqTeam())).thenReturn(List.of());
+
+      List<UnitGridRowResponse> rows = service().listUnits(propertyIdentifier(), principal());
+
+      assertThat(rows).hasSize(1);
+      // listUnits is a read: it must never consult MULTI_UNIT, regardless of its state.
+      verify(featureFlagService, never()).isEnabled(any(), any(UUID.class));
+    }
   }
 
   // --- fixtures ---
@@ -650,7 +768,8 @@ class UnitServiceTest {
         wwsCalculationRepository,
         expenseAllocationRepository,
         unitMapper,
-        clock);
+        clock,
+        featureFlagService);
   }
 
   private Unit unit(String number, UnitStatus status) {
