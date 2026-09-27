@@ -263,7 +263,7 @@ export const PropertyDetailPage = () => {
   // unit), but calculating/opening the modal needs an actual unit. The Units UI is a later plan,
   // so for now that only works for a single-unit property -- soleUnitIdentifier is undefined
   // otherwise, and WwsCalculatorModal's required prop makes the compiler enforce that.
-  const isNlProperty = property?.country === 'NL';
+  const isNlProperty = property?.countryCode === 'NL';
   const propertyId = id as PropertyIdentifier;
   const soleUnitIdentifier: UnitIdentifier | undefined =
     property?.units.length === 1
@@ -686,11 +686,11 @@ export const PropertyDetailPage = () => {
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
                     <span className="text-sm font-medium">
-                      {t('detail.specs.country')}
+                      {t('detail.specs.countryCode')}
                     </span>
                   </div>
                   <p className="text-lg text-text-primary">
-                    {property.country}
+                    {property.countryCode}
                   </p>
                 </div>
               </div>

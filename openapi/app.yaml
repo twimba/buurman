@@ -23772,7 +23772,7 @@ components:
         postalCode:
           type: string
           minLength: 1
-        country:
+        countryCode:
           type: string
           minLength: 1
         regionCode:
@@ -23851,7 +23851,7 @@ components:
           $ref: "#/components/schemas/AgriculturalDetailsRequest"
       required:
         - city
-        - country
+        - countryCode
         - postalCode
         - propertyType
         - street
@@ -24030,7 +24030,7 @@ components:
           type: string
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
         regionCode:
           type: string
@@ -24143,7 +24143,7 @@ components:
       required:
         - allocationBasis
         - city
-        - country
+        - countryCode
         - createdAt
         - identifier
         - occupiedUnitCount
@@ -26289,7 +26289,7 @@ components:
         postalCode:
           type: string
           minLength: 1
-        country:
+        countryCode:
           type: string
           minLength: 1
         regionCode:
@@ -26373,7 +26373,7 @@ components:
             created instead. A property is never created without at least one unit.
       required:
         - city
-        - country
+        - countryCode
         - postalCode
         - propertyCategory
         - propertyType
@@ -26950,12 +26950,12 @@ components:
           minLength: 1
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
           minLength: 1
       required:
         - city
-        - country
+        - countryCode
         - street
     GeocodeResponse:
       type: object

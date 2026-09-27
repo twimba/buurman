@@ -209,7 +209,7 @@ export const ContractForm = ({
   const requiresUnitChoice =
     !isEditing && !!selectedProperty && selectedProperty.units.length > 1;
   const propertyCountryCode =
-    contract?.countryCode || selectedProperty?.country || undefined;
+    contract?.countryCode || selectedProperty?.countryCode || undefined;
   const countryName = useCountryName(propertyCountryCode);
   const { data: regulation } =
     useRentRegulationCountryDetail(propertyCountryCode);
@@ -1196,7 +1196,7 @@ export const ContractForm = ({
                       }`}
                     >
                       {t(`form.lateFeeRegulation.${lateFeePolicy}`, {
-                        country: countryName || propertyCountryCode,
+                        countryCode: countryName || propertyCountryCode,
                         percentage: lateFeeCap ?? '',
                       })}
                       {lateFeeOverCap &&
@@ -1300,7 +1300,7 @@ export const ContractForm = ({
                 <p className="text-xs text-text-muted mt-1">
                   {regulation?.formalNoticeDays != null
                     ? t('form.formalNoticeDaysCountryDefault', {
-                        country: countryName || propertyCountryCode,
+                        countryCode: countryName || propertyCountryCode,
                         count: regulation.formalNoticeDays,
                       })
                     : t('form.formalNoticeDaysHelp', { count: 14 })}
@@ -1375,12 +1375,12 @@ export const ContractForm = ({
             <div>
               <h3 className="text-lg font-semibold text-text-primary mb-2">
                 {countryName
-                  ? t('form.countryRentalDetails', { country: countryName })
+                  ? t('form.countryRentalDetails', { countryCode: countryName })
                   : t('overview.countrySpecificDetails')}
               </h3>
               <p className="text-sm text-text-secondary mb-4">
                 {t('form.countryRegulatoryFields', {
-                  country: countryName || propertyCountryCode,
+                  countryCode: countryName || propertyCountryCode,
                 })}
               </p>
               <CountryMetadataForm
