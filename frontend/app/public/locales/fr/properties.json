@@ -136,7 +136,8 @@
       "history": "Historique",
       "noCalculation": "Pas encore de calcul",
       "noCalculationDescription": "Calculez les points WWS pour déterminer le loyer maximum réglementé pour ce bien.",
-      "noPreviousCalculations": "Pas de calculs précédents."
+      "noPreviousCalculations": "Pas de calculs précédents.",
+      "multiUnitUnsupported": "Cet immeuble comporte plusieurs unités. Ouvrez une unité pour calculer ses points WWS."
     },
     "metadata": {
       "title": "Métadonnées",
@@ -313,6 +314,13 @@
     },
     "pagination": {
       "showing": "Affichage de {{from}} à {{to}} sur {{total}} dépenses"
+    },
+    "allocation": {
+      "settingsToggle": "Paramètres de répartition des charges",
+      "buildingBadge": "Tout le bâtiment",
+      "viewSplit": "Voir la répartition",
+      "hideSplit": "Masquer la répartition",
+      "failedToLoad": "Échec du chargement de la répartition des charges"
     }
   },
   "audit": {
@@ -360,7 +368,8 @@
       "notesPlaceholder": "Notes supplémentaires...",
       "reason": "Motif",
       "reasonPlaceholder": "Sélectionner un motif...",
-      "alreadyTakenPeriods": "Périodes déjà prises"
+      "alreadyTakenPeriods": "Périodes déjà prises",
+      "unitRequired": "Choisissez à quelle unité correspond cette période d'occupation."
     },
     "occupancyTypes": {
       "PERSONAL": "Personnel",
@@ -929,7 +938,8 @@
       "occupancyIncomeTrend": "Tendance d'occupation et de revenus",
       "expenseBreakdown": "Répartition des dépenses",
       "sixMonthProjection": "Projection à 6 mois",
-      "equityOverview": "Aperçu des capitaux propres"
+      "equityOverview": "Aperçu des capitaux propres",
+      "unitOccupancy": "Occupation par unité"
     },
     "summary": {
       "totalRoi": "ROI total",
@@ -958,7 +968,8 @@
       "contactOccupied": "Occupé par locataire",
       "netIncomeTrend": "Tendance du revenu net",
       "netIncome": "Revenu net",
-      "noData": "Aucune donnée de contrat"
+      "noData": "Aucune donnée de contrat",
+      "buildingVacancyRate": "Taux de vacance de l'immeuble"
     },
     "expense": {
       "noData": "Aucune donnée de dépense"
@@ -1110,5 +1121,12 @@
       "add": "Ajouter",
       "addOutdoorArea": "Ajouter un espace extérieur"
     }
+  },
+  "unitOccupancy": {
+    "noUnits": "Aucune unité",
+    "allVacant": "Vacant",
+    "allOccupied": "Loué",
+    "allUnavailable": "Indisponible",
+    "mixed": "{{occupied}} louées · {{vacant}} vacantes · {{unavailable}} indisponibles"
   }
 }

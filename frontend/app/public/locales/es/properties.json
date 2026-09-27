@@ -136,7 +136,8 @@
       "history": "Historial",
       "noCalculation": "Sin cálculo aún",
       "noCalculationDescription": "Calcule los puntos WWS para determinar el alquiler máximo regulado para esta propiedad.",
-      "noPreviousCalculations": "Sin cálculos anteriores."
+      "noPreviousCalculations": "Sin cálculos anteriores.",
+      "multiUnitUnsupported": "Este edificio tiene varias unidades. Abra una unidad para calcular sus puntos WWS."
     },
     "metadata": {
       "title": "Metadatos",
@@ -313,6 +314,13 @@
     },
     "pagination": {
       "showing": "Mostrando {{from}} a {{to}} de {{total}} gastos"
+    },
+    "allocation": {
+      "settingsToggle": "Ajustes de reparto de gastos",
+      "buildingBadge": "Todo el edificio",
+      "viewSplit": "Ver reparto",
+      "hideSplit": "Ocultar reparto",
+      "failedToLoad": "No se pudo cargar el reparto de gastos"
     }
   },
   "audit": {
@@ -360,7 +368,8 @@
       "notesPlaceholder": "Notas adicionales...",
       "reason": "Motivo",
       "reasonPlaceholder": "Seleccione un motivo...",
-      "alreadyTakenPeriods": "Períodos ya ocupados"
+      "alreadyTakenPeriods": "Períodos ya ocupados",
+      "unitRequired": "Elija a qué unidad corresponde este período de ocupación."
     },
     "occupancyTypes": {
       "PERSONAL": "Personal",
@@ -929,7 +938,8 @@
       "occupancyIncomeTrend": "Tendencia de ocupación e ingresos",
       "expenseBreakdown": "Desglose de gastos",
       "sixMonthProjection": "Proyección a 6 meses",
-      "equityOverview": "Resumen de patrimonio"
+      "equityOverview": "Resumen de patrimonio",
+      "unitOccupancy": "Ocupación por unidad"
     },
     "summary": {
       "totalRoi": "ROI total",
@@ -958,7 +968,8 @@
       "contactOccupied": "Ocupado por inquilino",
       "netIncomeTrend": "Tendencia de ingresos netos",
       "netIncome": "Ingreso neto",
-      "noData": "Sin datos de contrato"
+      "noData": "Sin datos de contrato",
+      "buildingVacancyRate": "Tasa de desocupación del edificio"
     },
     "expense": {
       "noData": "Sin datos de gastos"
@@ -1110,5 +1121,12 @@
       "add": "Añadir",
       "addOutdoorArea": "Añadir zona exterior"
     }
+  },
+  "unitOccupancy": {
+    "noUnits": "Sin unidades",
+    "allVacant": "Vacante",
+    "allOccupied": "Alquilado",
+    "allUnavailable": "No disponible",
+    "mixed": "{{occupied}} alquiladas · {{vacant}} vacantes · {{unavailable}} no disponibles"
   }
 }

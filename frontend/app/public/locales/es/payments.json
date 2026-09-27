@@ -218,7 +218,6 @@
   },
   "selection": {
     "selected": "{{count}} seleccionado",
-    "selected_other": "{{count}} seleccionados",
     "selectAll": "Seleccionar todos los impagados de esta página",
     "selectRow": "Seleccionar pago {{id}}",
     "select": "Seleccionar",
