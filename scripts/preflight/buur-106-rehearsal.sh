@@ -28,6 +28,18 @@ if [[ $# -ne 1 ]]; then
 fi
 
 SNAPSHOT_URL="$1"
+
+# psql is not always installed on the host. Override with a containerised client
+# if needed, e.g.:
+#   PSQL_CMD="docker run --rm -i --network host postgres:18-alpine psql" \
+#     ./buur-106-rehearsal.sh "$SNAPSHOT_URL"
+PSQL_CMD="${PSQL_CMD:-psql}"
+
+if ! command -v "${PSQL_CMD%% *}" > /dev/null 2>&1; then
+    echo "FATAL: '${PSQL_CMD%% *}' not found. Install the postgres client, or set PSQL_CMD" >&2
+    echo "       to a containerised psql (see the comment above this check)." >&2
+    exit 69
+fi
 MIGRATION_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../backend/buurman-jooq/src/main/resources/db/migration" && pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
@@ -129,7 +141,7 @@ echo
 
 START=$(date +%s)
 set +e
-psql "$SNAPSHOT_URL" --no-psqlrc -f "$REHEARSAL"
+$PSQL_CMD "$SNAPSHOT_URL" --no-psqlrc -f - < "$REHEARSAL"
 PSQL_EXIT=$?
 set -e
 END=$(date +%s)

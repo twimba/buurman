@@ -19,12 +19,32 @@ Agreed for this release:
 - **Snapshot taken immediately before, stop-the-world.** That snapshot is the rollback plan, which
   is why no forward-recovery migration was written.
 
+## Verified, not just written
+
+Both scripts were exercised end to end against a throwaway `postgres:18-alpine` with migrations
+V001-V067 applied (a genuine pre-V068 schema), seeded with two properties and a duplex holding two
+ACTIVE contracts:
+
+- pre-flight ran clean (exit 0) and abort condition **A4 reported 1**, naming the offending property
+  and both contract identifiers;
+- the rehearsal applied V068 and V069, then **V071 raised**
+  `contracts: 1 unit(s) already carry more than one ACTIVE contract`, and the script exited non-zero
+  with "Do NOT deploy" -- i.e. it catches this before a maintenance window, not during one;
+- after re-statusing the surplus contract, the rehearsal **passed**, its verification block reported
+  `2 properties -> 2 implicit units, no cross-property attachment`, and rolled back;
+- after the rollback the database was byte-equivalent: no `units` table, `property_amenities` still
+  present, `properties.area_value` still present.
+
+So the multiple-active-contract abort is a demonstrated failure mode, not a theoretical one.
+
 ## Order of operations
 
 1. Restore the production snapshot somewhere private.
 2. `psql "$SNAPSHOT_URL" -v ON_ERROR_STOP=1 -f buur-106-preflight.sql`
    Read-only. **GO only if every `abort_*` count is 0.**
 3. `./buur-106-rehearsal.sh "$SNAPSHOT_URL"`
+   Needs a postgres client. If `psql` is not on the host, set `PSQL_CMD`, e.g.
+   `PSQL_CMD="docker run --rm -i --network host postgres:18-alpine psql" ./buur-106-rehearsal.sh "$SNAPSHOT_URL"`.
    Runs the real migrations on the real data inside one transaction, verifies the result, then rolls
    back. Snapshot is left unchanged. This is what sizes the maintenance window.
 4. Deploy for real, during the window, with Quartz paused and the fresh snapshot in hand.
