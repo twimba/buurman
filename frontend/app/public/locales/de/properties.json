@@ -136,7 +136,8 @@
       "history": "Verlauf",
       "noCalculation": "Noch keine Berechnung",
       "noCalculationDescription": "Berechnen Sie die WWS-Punkte, um die maximale regulierte Miete für diese Immobilie zu ermitteln.",
-      "noPreviousCalculations": "Keine früheren Berechnungen."
+      "noPreviousCalculations": "Keine früheren Berechnungen.",
+      "multiUnitUnsupported": "Dieses Gebäude hat mehrere Einheiten. Öffnen Sie eine Einheit, um deren WWS-Punkte zu berechnen."
     },
     "metadata": {
       "title": "Metadaten",
@@ -313,6 +314,13 @@
     },
     "pagination": {
       "showing": "{{from}} bis {{to}} von {{total}} Ausgaben angezeigt"
+    },
+    "allocation": {
+      "settingsToggle": "Einstellungen zur Kostenverteilung",
+      "buildingBadge": "Ganzes Gebäude",
+      "viewSplit": "Aufteilung anzeigen",
+      "hideSplit": "Aufteilung ausblenden",
+      "failedToLoad": "Kostenaufteilung konnte nicht geladen werden"
     }
   },
   "audit": {
@@ -360,7 +368,8 @@
       "notesPlaceholder": "Zusätzliche Anmerkungen...",
       "reason": "Grund",
       "reasonPlaceholder": "Grund auswählen...",
-      "alreadyTakenPeriods": "Bereits belegte Zeiträume"
+      "alreadyTakenPeriods": "Bereits belegte Zeiträume",
+      "unitRequired": "Wählen Sie, für welche Einheit dieser Nutzungszeitraum gilt."
     },
     "occupancyTypes": {
       "PERSONAL": "Persönlich",
@@ -929,7 +938,8 @@
       "occupancyIncomeTrend": "Belegungs- & Einkommenstrend",
       "expenseBreakdown": "Kostenaufschlüsselung",
       "sixMonthProjection": "6-Monats-Prognose",
-      "equityOverview": "Eigenkapitalübersicht"
+      "equityOverview": "Eigenkapitalübersicht",
+      "unitOccupancy": "Belegung nach Einheit"
     },
     "summary": {
       "totalRoi": "Gesamt-ROI",
@@ -958,7 +968,8 @@
       "contactOccupied": "Vermietet",
       "netIncomeTrend": "Nettoeinkommenstrend",
       "netIncome": "Nettoeinkommen",
-      "noData": "Keine Vertragsdaten"
+      "noData": "Keine Vertragsdaten",
+      "buildingVacancyRate": "Leerstandsquote des Gebäudes"
     },
     "expense": {
       "noData": "Keine Kostendaten"
@@ -1110,5 +1121,12 @@
       "add": "Hinzufügen",
       "addOutdoorArea": "Außenbereich hinzufügen"
     }
+  },
+  "unitOccupancy": {
+    "noUnits": "Keine Einheiten",
+    "allVacant": "Leer",
+    "allOccupied": "Vermietet",
+    "allUnavailable": "Nicht verfügbar",
+    "mixed": "{{occupied}} vermietet · {{vacant}} leer · {{unavailable}} nicht verfügbar"
   }
 }

@@ -74,7 +74,11 @@
     "createExpense": "Aanmaken",
     "expenseSuffix": " uitgave",
     "saving": "Opslaan...",
-    "currency": "Valuta"
+    "currency": "Valuta",
+    "target": "Van toepassing op",
+    "targetBuilding": "Het hele gebouw",
+    "targetUnit": "Eén eenheid",
+    "unit": "Eenheid"
   },
   "validation": {
     "propertyRequired": "Pand is verplicht",

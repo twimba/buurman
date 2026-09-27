@@ -74,7 +74,11 @@
     "createExpense": "Erstellen",
     "expenseSuffix": " Ausgabe",
     "saving": "Wird gespeichert...",
-    "currency": "Währung"
+    "currency": "Währung",
+    "target": "Gilt für",
+    "targetBuilding": "Das ganze Gebäude",
+    "targetUnit": "Eine Einheit",
+    "unit": "Einheit"
   },
   "validation": {
     "propertyRequired": "Immobilie ist erforderlich",
