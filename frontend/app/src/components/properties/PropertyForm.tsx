@@ -14,6 +14,9 @@ import {
 import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
+import { UnitCharacteristicsForm } from '../units/UnitCharacteristicsForm';
+import type { CreateUnitRequest, UpdateUnitRequest } from '@/types/unit';
+import { UnitType } from '@/types/unit';
 import { CountrySelector } from '../common/CountrySelector';
 import {
   FormStepGate,
@@ -53,6 +56,21 @@ const selectCls =
 const inputCls = selectCls;
 const labelCls = 'block text-sm font-medium text-text-secondary mb-1';
 
+// Mirrors the backend's own implicit-unit backfill rule (V068): a residential or mixed-use
+// building's sole unit defaults to APARTMENT, everything else to COMMERCIAL. The landlord is
+// never asked to pick a "unit type" when creating a property -- this keeps the create form's
+// (optional) dwelling section consistent with what the backend would default to anyway.
+const defaultUnitTypeForCategory = (category: PropertyCategory): UnitType =>
+  category === PropertyCategory.RESIDENTIAL ||
+  category === PropertyCategory.MIXED_USE
+    ? UnitType.APARTMENT
+    : UnitType.COMMERCIAL;
+
+const defaultUnitDraft = (category: PropertyCategory): CreateUnitRequest => ({
+  unitNumber: '1',
+  unitType: defaultUnitTypeForCategory(category),
+});
+
 export const PropertyForm = ({
   property,
   onSubmit,
@@ -61,7 +79,7 @@ export const PropertyForm = ({
   onCreateOutdoorArea,
   onDeleteOutdoorArea,
 }: PropertyFormProps) => {
-  const { t } = useTranslation('properties');
+  const { t } = useTranslation(['properties', 'units']);
   const navigate = useNavigate();
   const { defaultCountryCode } = useTeamDefaults();
   const { typeLabel, categoryLabel } = usePropertyLabels();
@@ -138,6 +156,22 @@ export const PropertyForm = ({
   const [propertyIdentifier, setPropertyIdentifier] = useState(
     property?.identifier
   );
+
+  // Create-mode only: the property's first unit. A landlord adding a single-family house never
+  // has to think about "units" -- this stays collapsed and defaulted (see defaultUnitDraft) unless
+  // they open it, and edit mode never renders it at all (dwelling fields are edited on the
+  // property's Info tab / the unit's own page once the property exists, per UpdatePropertyRequest
+  // dropping dwelling fields entirely).
+  const [unitDraft, setUnitDraft] = useState<CreateUnitRequest>(() =>
+    defaultUnitDraft(resolveCategory())
+  );
+
+  function handleUnitChange<K extends keyof UpdateUnitRequest>(
+    field: K,
+    value: UpdateUnitRequest[K]
+  ): void {
+    setUnitDraft((prev) => ({ ...prev, [field]: value }));
+  }
 
   // Fetch rent regulation countries to know which ones have regional regulations
   const { data: regulationCountries } = useQuery({
@@ -321,6 +355,10 @@ export const PropertyForm = ({
       industrialDetails: undefined,
       agriculturalDetails: undefined,
     }));
+    setUnitDraft((prev) => ({
+      ...prev,
+      unitType: defaultUnitTypeForCategory(category),
+    }));
   };
 
   const validate = (): boolean => {
@@ -349,7 +387,7 @@ export const PropertyForm = ({
     }
 
     try {
-      await onSubmit(formData);
+      await onSubmit(isEditMode ? formData : { ...formData, unit: unitDraft });
       if (property) {
         navigate(`/properties/${property.identifier}`);
       } else {
@@ -599,6 +637,20 @@ export const PropertyForm = ({
             onCreateOutdoorArea={onCreateOutdoorArea}
             onDeleteOutdoorArea={onDeleteOutdoorArea}
           />
+
+          {/* This home's dwelling attributes (floor area, energy label, heating, safety,
+              accessibility) -- create mode only. Edit mode drops these entirely: once the
+              property exists they are edited on its Info tab (single unit) or the unit's own
+              page (multiple units), never here. */}
+          {!isEditMode && (
+            <div className="mt-6 pt-6 border-t border-border-default">
+              <UnitCharacteristicsForm
+                title={t('units:detail.characteristics')}
+                value={unitDraft}
+                onChange={handleUnitChange}
+              />
+            </div>
+          )}
         </FormStepGate>
 
         {/* Actions — md+ inline save bar (single-scroll desktop UX) */}

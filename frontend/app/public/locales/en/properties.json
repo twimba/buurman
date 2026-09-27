@@ -420,7 +420,8 @@
       "occupancyIncomeTrend": "Occupancy & Income Trend",
       "expenseBreakdown": "Expense Breakdown",
       "sixMonthProjection": "6-Month Projection",
-      "equityOverview": "Equity Overview"
+      "equityOverview": "Equity Overview",
+      "unitOccupancy": "Occupancy by Unit"
     },
     "summary": {
       "totalRoi": "Total ROI",
@@ -449,7 +450,8 @@
       "contactOccupied": "Contact occupied",
       "netIncomeTrend": "Net Income Trend",
       "netIncome": "Net Income",
-      "noData": "No contract data"
+      "noData": "No contract data",
+      "buildingVacancyRate": "Building vacancy rate"
     },
     "expense": {
       "noData": "No expense data"
@@ -816,7 +818,8 @@
       "notesPlaceholder": "Additional notes...",
       "reason": "Reason",
       "reasonPlaceholder": "Select a reason...",
-      "alreadyTakenPeriods": "Already taken periods"
+      "alreadyTakenPeriods": "Already taken periods",
+      "unitRequired": "Choose which unit this occupancy period is for."
     },
     "occupancyTypes": {
       "PERSONAL": "Personal",

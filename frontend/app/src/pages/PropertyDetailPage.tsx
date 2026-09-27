@@ -373,7 +373,8 @@ export const PropertyDetailPage = () => {
   const occupancy = describePropertyOccupancy(
     t,
     property.unitCount,
-    property.occupiedUnitCount
+    property.occupiedUnitCount,
+    property.vacantUnitCount
   );
 
   return (
