@@ -74,6 +74,12 @@ jobs:
         working-directory: frontend
         run: yarn check:locales
 
+      # Prettier. Nothing gated this before, which is how an unformatted file
+      # reached main; `yarn lint` does not check formatting.
+      - name: Check formatting
+        working-directory: frontend
+        run: yarn format:check
+
       - name: Lint
         working-directory: frontend
         run: yarn lint

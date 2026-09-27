@@ -7,31 +7,30 @@ import type { Unit, UpdateUnitRequest } from '@/types/unit';
  * to typecheck until a line is added for it -- `tsc --noEmit` catches the gap
  * before any test runs.
  */
-export const UPDATE_UNIT_REQUEST_KEYS: Record<keyof UpdateUnitRequest, true> =
-  {
-    unitNumber: true,
-    name: true,
-    floor: true,
-    unitType: true,
-    status: true,
-    areaValue: true,
-    areaUnit: true,
-    wozValue: true,
-    wozValueCurrency: true,
-    energyEfficiencyRating: true,
-    energyCertificateExpiryDate: true,
-    heatingType: true,
-    coolingType: true,
-    hotWaterSystem: true,
-    insulationNotes: true,
-    flooringType: true,
-    windowType: true,
-    hasSmokeDetectors: true,
-    hasCoDetectors: true,
-    hasFireExtinguisher: true,
-    hasAdaptedBathroom: true,
-    accessibilityNotes: true,
-  };
+export const UPDATE_UNIT_REQUEST_KEYS: Record<keyof UpdateUnitRequest, true> = {
+  unitNumber: true,
+  name: true,
+  floor: true,
+  unitType: true,
+  status: true,
+  areaValue: true,
+  areaUnit: true,
+  wozValue: true,
+  wozValueCurrency: true,
+  energyEfficiencyRating: true,
+  energyCertificateExpiryDate: true,
+  heatingType: true,
+  coolingType: true,
+  hotWaterSystem: true,
+  insulationNotes: true,
+  flooringType: true,
+  windowType: true,
+  hasSmokeDetectors: true,
+  hasCoDetectors: true,
+  hasFireExtinguisher: true,
+  hasAdaptedBathroom: true,
+  accessibilityNotes: true,
+};
 
 /**
  * The unit PUT endpoint replaces the whole record: any field left out of the

@@ -107,8 +107,7 @@ export const useUnitResidentialDetails = (
 ) =>
   useQuery({
     queryKey: queryKeys.units.residentialDetails(unitIdentifier),
-    queryFn: () =>
-      getUnitResidentialDetails(unitIdentifier as UnitIdentifier),
+    queryFn: () => getUnitResidentialDetails(unitIdentifier as UnitIdentifier),
     enabled: !!unitIdentifier,
   });
 
