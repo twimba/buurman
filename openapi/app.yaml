@@ -29485,6 +29485,10 @@ components:
         totalProperties:
           type: integer
           format: int32
+        totalUnits:
+          type: integer
+          format: int32
+          description: Total units across the team's properties (denominator for both occupancy rates).
         occupiedUnits:
           type: integer
           format: int32
@@ -29525,6 +29529,7 @@ components:
         - rentalOccupancyRate
         - selfOccupiedUnits
         - totalProperties
+        - totalUnits
         - unavailableUnits
         - underRenovationUnits
         - vacantUnits

@@ -100,6 +100,7 @@ public class DashboardService {
 
     return new DashboardStatsResponse(
         totalProperties,
+        totalUnits,
         occupiedUnits,
         selfOccupiedUnits,
         vacantUnits,
