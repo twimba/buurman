@@ -67,6 +67,7 @@ import com.buurman.domain.PropertyAgriculturalDetails;
 import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.Unit;
+import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.DocumentIdentifier;
@@ -107,6 +108,7 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.PropertyRepository.UnitCounts;
 import com.buurman.repository.UnitAmenityRepository;
 import com.buurman.repository.UnitRepository;
+import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -123,6 +125,7 @@ public class PropertyService {
   private final PropertyRepository propertyRepository;
   private final UnitRepository unitRepository;
   private final UnitAmenityRepository unitAmenityRepository;
+  private final UnitResidentialDetailsRepository unitResidentialDetailsRepository;
   private final UnitService unitService;
   private final UnitMapper unitMapper;
   private final PropertyCommercialDetailsRepository commercialDetailsRepository;
@@ -201,12 +204,14 @@ public class PropertyService {
     // moment a property exists.
     CreateUnitRequest unitRequest =
         Optional.ofNullable(request.unit()).orElseGet(() -> implicitUnitRequest(request));
-    unitService.createInitialUnit(
-        savedProperty.getId(), unitRequest, request.unit() == null, principal);
+    Unit initialUnit =
+        unitService.createInitialUnit(
+            savedProperty.getId(), unitRequest, request.unit() == null, principal);
 
     saveDetailsForCategory(
         request.propertyCategory(),
         savedProperty.getId(),
+        initialUnit,
         principal.requireTeamId(),
         principal.getUserId(),
         request.residentialDetails(),
@@ -562,6 +567,7 @@ public class PropertyService {
   private void saveDetailsForCategory(
       PropertyCategory category,
       UUID propertyId,
+      Unit implicitUnit,
       UUID teamId,
       UUID userId,
       Optional<ResidentialDetailsRequest> residential,
@@ -569,10 +575,9 @@ public class PropertyService {
       Optional<IndustrialDetailsRequest> industrial,
       Optional<AgriculturalDetailsRequest> agricultural) {
     switch (category) {
-      case RESIDENTIAL -> {
-        // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
-        // detail storage moves to unit_residential_details at unit level.
-      }
+      case RESIDENTIAL ->
+          residential.ifPresent(
+              r -> saveUnitResidentialDetails(implicitUnit.getId(), teamId, userId, r));
       case COMMERCIAL ->
           commercial.ifPresent(
               c -> {
@@ -664,10 +669,11 @@ public class PropertyService {
       Optional<IndustrialDetailsRequest> industrial,
       Optional<AgriculturalDetailsRequest> agricultural) {
     switch (category) {
-      case RESIDENTIAL -> {
-        // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
-        // detail storage moves to unit_residential_details at unit level.
-      }
+      case RESIDENTIAL ->
+          residential.ifPresent(
+              r ->
+                  saveUnitResidentialDetails(
+                      getSoleUnitIdOrThrow(propertyId, teamId), teamId, userId, r));
       case COMMERCIAL ->
           commercial.ifPresent(
               c -> {
@@ -762,6 +768,53 @@ public class PropertyService {
     }
   }
 
+  /**
+   * Upserts bedroom/bathroom/furnished/pet-policy data onto {@code unitId}. Called only for
+   * RESIDENTIAL properties with exactly one unit, whose implicit unit is always {@code APARTMENT}
+   * (see {@link #defaultUnitType}) — the {@code UnitResidentialDetailsService} APARTMENT gate does
+   * not need to be re-applied here.
+   */
+  private void saveUnitResidentialDetails(
+      UUID unitId, UUID teamId, UUID userId, ResidentialDetailsRequest request) {
+    UnitResidentialDetails details =
+        unitResidentialDetailsRepository
+            .findByUnitIdAndTeamId(unitId, teamId)
+            .orElseGet(
+                () -> {
+                  UnitResidentialDetails created = new UnitResidentialDetails();
+                  created.setUnitId(unitId);
+                  created.setTeamId(teamId);
+                  created.setCreatedBy(Optional.of(userId));
+                  return created;
+                });
+    details.setBedrooms(request.bedrooms());
+    details.setBathrooms(request.bathrooms());
+    details.setFurnished(request.furnished().orElse(false));
+    details.setPetPolicy(request.petPolicy());
+    details.setUpdatedBy(Optional.of(userId));
+    unitResidentialDetailsRepository.save(details);
+  }
+
+  /**
+   * Resolves the single unit that property-level residential details must land on. A property with
+   * more than one unit has no unambiguous target — picking one arbitrarily would silently attribute
+   * another unit's bedroom/bathroom data to it, so that case is rejected with a 400 instead.
+   * Callers on the create path never hit the multi-unit branch: a brand-new property has exactly
+   * one unit.
+   */
+  private UUID getSoleUnitIdOrThrow(UUID propertyId, UUID teamId) {
+    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(propertyId, teamId);
+    if (units.size() > 1) {
+      throw new BadRequestException(
+          "Property has more than one unit. Residential details are ambiguous at the property"
+              + " level once a property is split — set them per unit instead.");
+    }
+    return units.stream()
+        .findFirst()
+        .map(Unit::getId)
+        .orElseThrow(() -> new IllegalStateException("Property " + propertyId + " has no units."));
+  }
+
   private Optional<CommercialDetailsResponse> buildCommercialResponse(
       UUID propertyId, UUID teamId) {
     return commercialDetailsRepository
@@ -834,6 +887,32 @@ public class PropertyService {
                     d.getZoningClassification()));
   }
 
+  private Optional<ResidentialDetailsResponse> buildUnitResidentialResponse(
+      UUID unitId, UUID teamId) {
+    return unitResidentialDetailsRepository
+        .findByUnitIdAndTeamId(unitId, teamId)
+        .map(
+            d ->
+                new ResidentialDetailsResponse(
+                    d.getBedrooms(),
+                    d.getBathrooms(),
+                    Optional.of(d.isFurnished()),
+                    d.getPetPolicy()));
+  }
+
+  private List<PropertyAmenityResponse> buildUnitAmenityResponses(UUID unitId, UUID teamId) {
+    return unitAmenityRepository.findAmenitiesByUnitIdAndTeamId(unitId, teamId).stream()
+        .map(
+            a ->
+                new PropertyAmenityResponse(
+                    a.getIdentifier().orElseThrow(),
+                    a.getName(),
+                    a.getCategory(),
+                    Optional.of(a.getIcon()),
+                    Optional.empty()))
+        .toList();
+  }
+
   private PropertyResponse toResponseWithMainPhoto(
       Property property, UUID teamId, boolean includeNestedCollections) {
     return toResponseWithMainPhoto(property, teamId, includeNestedCollections, null);
@@ -884,22 +963,29 @@ public class PropertyService {
                     .toList())
             : Optional.empty();
 
-    // TODO(BUUR-106 Task 9): property_amenities was dropped in V068; amenity links move to
-    // unit_amenities at unit level. Always empty until the unit-level endpoint is restored.
-    Optional<List<PropertyAmenityResponse>> amenities = Optional.empty();
+    // A property with more than one unit has no single unambiguous unit to answer "the"
+    // residential details / amenities question — the response leaves those empty rather than
+    // pick one unit's data arbitrarily and present it as the whole property's.
+    List<Unit> units =
+        includeNestedCollections
+            ? unitRepository.findAllByPropertyIdAndTeamId(property.getId(), teamId)
+            : List.of();
+    Optional<UUID> soleUnitId =
+        units.size() == 1 ? Optional.of(units.get(0).getId()) : Optional.empty();
+
+    Optional<List<PropertyAmenityResponse>> amenities =
+        soleUnitId.map(unitId -> buildUnitAmenityResponses(unitId, teamId));
 
     // Build category-specific detail responses
-    // TODO(BUUR-106 Task 9): property_residential_details was dropped in V068; residential
-    // details move to unit_residential_details at unit level.
     Optional<ResidentialDetailsResponse> residentialDetails = Optional.empty();
     Optional<CommercialDetailsResponse> commercialDetails = Optional.empty();
     Optional<IndustrialDetailsResponse> industrialDetails = Optional.empty();
     Optional<AgriculturalDetailsResponse> agriculturalDetails = Optional.empty();
 
     switch (property.getPropertyCategory()) {
-      case RESIDENTIAL -> {
-        // No-op: see TODO above.
-      }
+      case RESIDENTIAL ->
+          residentialDetails =
+              soleUnitId.flatMap(unitId -> buildUnitResidentialResponse(unitId, teamId));
       case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
       case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
       case AGRICULTURAL ->
@@ -911,7 +997,7 @@ public class PropertyService {
 
     UnitFacts unitFacts =
         includeNestedCollections
-            ? unitFactsFromFullList(property.getId(), teamId)
+            ? unitFactsFromFullList(units)
             : unitFactsFromCounts(property.getId(), unitCountsByPropertyId);
 
     return new PropertyResponse(
@@ -981,10 +1067,10 @@ public class PropertyService {
 
   /**
    * Exact unit facts for a single property, from its full unit list — cheap here because the caller
-   * already needs that list for the {@code units} field itself.
+   * already needs that list for the {@code units} field itself (and for residential
+   * details/amenities), so it is fetched once and passed in rather than re-queried.
    */
-  private UnitFacts unitFactsFromFullList(UUID propertyId, UUID teamId) {
-    List<Unit> units = unitRepository.findAllByPropertyIdAndTeamId(propertyId, teamId);
+  private UnitFacts unitFactsFromFullList(List<Unit> units) {
     int occupied = (int) units.stream().filter(u -> u.getStatus() == UnitStatus.OCCUPIED).count();
     int vacant = (int) units.stream().filter(u -> u.getStatus() == UnitStatus.VACANT).count();
     List<UnitSummaryResponse> summaries = units.stream().map(unitMapper::toSummary).toList();

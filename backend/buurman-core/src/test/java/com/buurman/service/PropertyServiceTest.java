@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,7 @@ import com.buurman.domain.Property.PropertyType;
 import com.buurman.domain.SortDirection;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.Unit;
+import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.UnitStatus;
 import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -41,11 +43,14 @@ import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.CreateUnitRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.ResidentialDetailsRequest;
 import com.buurman.dto.request.UpdateAllocationRequest;
 import com.buurman.dto.request.UpdateAllocationRequest.UnitShareEntry;
+import com.buurman.dto.request.UpdatePropertyRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.UnitSummaryResponse;
+import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.OptionalMappingConfig;
 import com.buurman.mapper.PropertyMapper;
@@ -59,6 +64,7 @@ import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitAmenityRepository;
 import com.buurman.repository.UnitRepository;
+import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -77,6 +83,7 @@ class PropertyServiceTest {
   @Mock private PropertyRepository propertyRepository;
   @Mock private UnitRepository unitRepository;
   @Mock private UnitAmenityRepository unitAmenityRepository;
+  @Mock private UnitResidentialDetailsRepository unitResidentialDetailsRepository;
   @Mock private UnitService unitService;
   @Mock private UnitMapper unitMapper;
   @Mock private PropertyCommercialDetailsRepository commercialDetailsRepository;
@@ -113,6 +120,7 @@ class PropertyServiceTest {
             propertyRepository,
             unitRepository,
             unitAmenityRepository,
+            unitResidentialDetailsRepository,
             unitService,
             unitMapper,
             commercialDetailsRepository,
@@ -180,6 +188,14 @@ class PropertyServiceTest {
 
   private CreatePropertyRequest request(
       PropertyCategory category, PropertyType type, @Nullable CreateUnitRequest unit) {
+    return request(category, type, unit, Optional.empty());
+  }
+
+  private CreatePropertyRequest request(
+      PropertyCategory category,
+      PropertyType type,
+      @Nullable CreateUnitRequest unit,
+      Optional<ResidentialDetailsRequest> residentialDetails) {
     return new CreatePropertyRequest(
         category,
         type,
@@ -219,7 +235,7 @@ class PropertyServiceTest {
         Optional.empty(),
         Optional.empty(),
         Optional.empty(),
-        Optional.empty(),
+        residentialDetails,
         Optional.empty(),
         Optional.empty(),
         Optional.empty(),
@@ -265,6 +281,52 @@ class PropertyServiceTest {
         .unitType(type)
         .status(status)
         .build();
+  }
+
+  private UpdatePropertyRequest updateRequest(
+      Optional<ResidentialDetailsRequest> residentialDetails) {
+    return new UpdatePropertyRequest(
+        PropertyType.APARTMENT,
+        "Keizersgracht 1",
+        "Amsterdam",
+        "1015CJ",
+        "NL",
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        residentialDetails,
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
   }
 
   @Nested
@@ -341,6 +403,42 @@ class PropertyServiceTest {
           .createInitialUnit(eq(PROPERTY_ID), unitCaptor.capture(), eq(true), eq(principal));
 
       assertThat(unitCaptor.getValue().unitType()).isEqualTo(UnitType.COMMERCIAL);
+    }
+
+    @Test
+    @DisplayName(
+        "with RESIDENTIAL category and residentialDetails persists them onto the newly created"
+            + " implicit unit (BUUR-106)")
+    void persistsResidentialDetailsOntoImplicitUnit() {
+      ResidentialDetailsRequest residential =
+          new ResidentialDetailsRequest(
+              Optional.of(3), Optional.of(2), Optional.of(true), Optional.of("cats-only"));
+      CreatePropertyRequest req =
+          request(
+              PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT, null, Optional.of(residential));
+
+      when(propertyRepository.save(any(Property.class)))
+          .thenReturn(savedProperty(PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT));
+
+      Unit implicitUnit = unit("1", UnitType.APARTMENT, UnitStatus.VACANT);
+      when(unitService.createInitialUnit(eq(PROPERTY_ID), any(), eq(true), eq(principal)))
+          .thenReturn(implicitUnit);
+      when(unitResidentialDetailsRepository.findByUnitIdAndTeamId(implicitUnit.getId(), TEAM_ID))
+          .thenReturn(Optional.empty());
+
+      service.createProperty(req, principal);
+
+      ArgumentCaptor<UnitResidentialDetails> captor =
+          ArgumentCaptor.forClass(UnitResidentialDetails.class);
+      verify(unitResidentialDetailsRepository).save(captor.capture());
+
+      UnitResidentialDetails saved = captor.getValue();
+      assertThat(saved.getUnitId()).isEqualTo(implicitUnit.getId());
+      assertThat(saved.getTeamId()).isEqualTo(TEAM_ID);
+      assertThat(saved.getBedrooms()).contains(3);
+      assertThat(saved.getBathrooms()).contains(2);
+      assertThat(saved.isFurnished()).isTrue();
+      assertThat(saved.getPetPolicy()).contains("cats-only");
     }
   }
 
@@ -528,6 +626,107 @@ class PropertyServiceTest {
           .unitType(UnitType.APARTMENT)
           .status(status)
           .build();
+    }
+  }
+
+  @Nested
+  @DisplayName("updateProperty residentialDetails (BUUR-106)")
+  class UpdatePropertyResidentialDetails {
+
+    @Test
+    @DisplayName(
+        "persists residentialDetails onto the property's sole unit and reflects them back on the"
+            + " very next read")
+    void updatesAndRoundTripsResidentialDetails() {
+      Property property = savedProperty(PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(propertyRepository.save(any(Property.class))).thenReturn(property);
+
+      Unit soleUnit = unit("1", UnitType.APARTMENT, UnitStatus.VACANT);
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(soleUnit));
+      when(unitMapper.toSummary(any(Unit.class)))
+          .thenAnswer(
+              inv -> {
+                Unit u = inv.getArgument(0);
+                return new UnitSummaryResponse(
+                    u.getIdentifier().orElseThrow(),
+                    u.getUnitNumber(),
+                    u.getName(),
+                    u.getUnitType(),
+                    u.getStatus());
+              });
+
+      // A tiny in-memory stand-in for the unit_residential_details row: save() stores what it's
+      // given, findByUnitIdAndTeamId() reads it back — enough to prove the write PropertyService
+      // does actually lands where the read PropertyService does looks, without a real database.
+      AtomicReference<UnitResidentialDetails> stored = new AtomicReference<>();
+      when(unitResidentialDetailsRepository.findByUnitIdAndTeamId(
+              eq(soleUnit.getId()), eq(TEAM_ID)))
+          .thenAnswer(inv -> Optional.ofNullable(stored.get()));
+      when(unitResidentialDetailsRepository.save(any(UnitResidentialDetails.class)))
+          .thenAnswer(
+              inv -> {
+                UnitResidentialDetails d = inv.getArgument(0);
+                stored.set(d);
+                return d;
+              });
+
+      ResidentialDetailsRequest residential =
+          new ResidentialDetailsRequest(
+              Optional.of(2), Optional.of(1), Optional.of(false), Optional.of("no pets"));
+      UpdatePropertyRequest request = updateRequest(Optional.of(residential));
+
+      PropertyResponse response = service.updateProperty(PROPERTY_SID, request, principal);
+
+      ArgumentCaptor<UnitResidentialDetails> captor =
+          ArgumentCaptor.forClass(UnitResidentialDetails.class);
+      verify(unitResidentialDetailsRepository).save(captor.capture());
+      assertThat(captor.getValue().getUnitId()).isEqualTo(soleUnit.getId());
+      assertThat(captor.getValue().getTeamId()).isEqualTo(TEAM_ID);
+
+      assertThat(response.residentialDetails()).isPresent();
+      assertThat(response.residentialDetails().get().bedrooms()).contains(2);
+      assertThat(response.residentialDetails().get().bathrooms()).contains(1);
+      assertThat(response.residentialDetails().get().furnished()).contains(false);
+      assertThat(response.residentialDetails().get().petPolicy()).contains("no pets");
+    }
+
+    @Test
+    @DisplayName("rejects residentialDetails with 400 when the property has more than one unit")
+    void rejectsResidentialDetailsForMultiUnitProperty() {
+      Property property = savedProperty(PropertyCategory.RESIDENTIAL, PropertyType.APARTMENT);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+
+      List<Unit> units =
+          List.of(
+              unit("1", UnitType.APARTMENT, UnitStatus.OCCUPIED),
+              unit("2", UnitType.APARTMENT, UnitStatus.VACANT));
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(units);
+      when(unitMapper.toSummary(any(Unit.class)))
+          .thenAnswer(
+              inv -> {
+                Unit u = inv.getArgument(0);
+                return new UnitSummaryResponse(
+                    u.getIdentifier().orElseThrow(),
+                    u.getUnitNumber(),
+                    u.getName(),
+                    u.getUnitType(),
+                    u.getStatus());
+              });
+
+      ResidentialDetailsRequest residential =
+          new ResidentialDetailsRequest(
+              Optional.of(2), Optional.of(1), Optional.of(false), Optional.empty());
+      UpdatePropertyRequest request = updateRequest(Optional.of(residential));
+
+      assertThatThrownBy(() -> service.updateProperty(PROPERTY_SID, request, principal))
+          .isInstanceOf(BadRequestException.class)
+          .hasMessageContaining("more than one unit");
+
+      // The ambiguity is only in the residential-details write itself (which never happens);
+      // the rest of the property update runs first and is not what this test is about.
+      verify(unitResidentialDetailsRepository, never()).save(any());
     }
   }
 
