@@ -214,10 +214,11 @@ frontend/
 ├── scripts/vite-build-info.ts  Build info plugin
 ├── app/                     Main React app
 │   └── src/
-│       ├── api/             Axios client + 16 API modules
+│       ├── api/             Axios instance + Orval custom instance (client.ts, orval-client.ts)
 │       ├── components/      Feature-organized React components
-│       ├── pages/           31 page components
-│       ├── hooks/           21 custom React Query hooks
+│       ├── pages/           32 page components
+│       ├── hooks/           47 hooks, 30 of which are React Query hooks over generated/
+│       ├── generated/       Orval-generated API functions + types (gitignored — run `yarn generate:api`)
 │       ├── context/         AuthContext, TeamContext
 │       ├── types/           TypeScript type definitions
 │       ├── config/          Keycloak configuration
@@ -240,7 +241,7 @@ frontend/
 
 **Mappers**: Mix of MapStruct interfaces (`componentModel = "spring"`) and manual `@Component` mapper classes. Map between JOOQ Records, domain POJOs, and DTOs.
 
-**Frontend API**: Axios instance with Keycloak token interceptor. React Query hooks per resource with automatic cache invalidation on mutations.
+**Frontend API**: Axios instance (`api/client.ts`) with Keycloak token interceptor, plus an Orval custom instance (`api/orval-client.ts`). All endpoint functions and types are generated into `generated/` by `yarn generate:api` (gitignored — required after clone and after every `make bundle-openapi`); no hand-rolled `axios`/`fetch` calls exist outside those two client files. React Query hooks per resource wrap the generated functions with automatic cache invalidation on mutations.
 
 **Document Storage**: S3 with metadata in `documents` + `photos` tables. AWRust uses direct URLs; production uses presigned URLs.
 
