@@ -107,8 +107,16 @@ public class ContractExtensionAddendumExporter {
             .value());
     vars.put("extensionStatus", extension.getStatus().name());
     vars.put("extensionStatusDisplay", formatEnumValue(extension.getStatus().name()));
-    vars.put("propertyAddress", property.getStreet() + ", " + property.getCity());
-    vars.put("propertyFullAddress", LetterExporterHelper.propertyAddress(property));
+    LetterExporterHelper.PremisesInfo premisesInfo =
+        helper.premisesInfo(contract, property, messageSource, locale);
+    String premisesAddress = LetterExporterHelper.premisesAddress(property, premisesInfo);
+    // Cover page and legal preamble named the building differently (short vs. full address);
+    // both now show the one address that also identifies the specific dwelling.
+    vars.put("propertyAddress", premisesAddress);
+    vars.put("propertyFullAddress", premisesAddress);
+    vars.put("hasMultipleUnits", premisesInfo.hasMultipleUnits());
+    vars.put(
+        "unitDesignation", premisesInfo.hasMultipleUnits() ? premisesInfo.unitDesignation() : null);
 
     // Contacts
     vars.put("primaryContactName", helper.findPrimaryContactName(parties, contactMap));

@@ -90,7 +90,12 @@ public class DepositStatementExporter {
         LetterExporterHelper.headerVariables(contract, LocalDate.now(clock), dateFmt);
     vars.put("depositIdentifier", deposit.getIdentifier().map(Object::toString).orElse(""));
     vars.putAll(addressee.variables());
-    vars.put("propertyAddress", LetterExporterHelper.propertyAddress(property));
+    LetterExporterHelper.PremisesInfo premisesInfo =
+        helper.premisesInfo(contract, property, messageSource, locale);
+    vars.put("propertyAddress", LetterExporterHelper.premisesAddress(property, premisesInfo));
+    vars.put("hasMultipleUnits", premisesInfo.hasMultipleUnits());
+    vars.put(
+        "unitDesignation", premisesInfo.hasMultipleUnits() ? premisesInfo.unitDesignation() : null);
     vars.put("contractStart", contract.getStartDate().format(dateFmt));
     vars.put("contractEnd", contract.getEndDate().map(d -> d.format(dateFmt)).orElse(null));
     vars.put("status", deposit.getStatus().name());
