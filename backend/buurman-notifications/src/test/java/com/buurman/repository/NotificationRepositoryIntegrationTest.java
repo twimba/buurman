@@ -133,4 +133,69 @@ class NotificationRepositoryIntegrationTest extends AbstractRepositoryIntegratio
       assertThat(repo.findByContractIdAndTeamId(contractId, TEAM_A_ID)).hasSize(1);
     }
   }
+
+  @Nested
+  @DisplayName("providerMessageId lookups")
+  class ProviderMessageIdLookups {
+
+    /** Mailgun ids and Twilio SIDs are each unique only within their own provider. */
+    private static final String SHARED_ID = "shared-provider-id";
+
+    /** save() does not persist provider_message_id; the sender sets it afterwards. */
+    private UUID saveWith(NotificationChannel channel, String providerMessageId) {
+      Notification notification = buildNotification(TEAM_A_ID);
+      notification.setChannel(channel);
+      UUID id = repo.save(notification).getId();
+      repo.updateStatus(id, NotificationStatus.SENT, providerMessageId, "queued", null);
+      return id;
+    }
+
+    @Test
+    @DisplayName("an open recorded for one provider does not touch the other's row")
+    void openCountIsScopedToTheChannel() {
+      UUID emailId = saveWith(NotificationChannel.EMAIL, SHARED_ID);
+      UUID smsId = saveWith(NotificationChannel.SMS, SHARED_ID);
+
+      repo.incrementOpenCount(SHARED_ID, NotificationChannel.EMAIL);
+
+      assertThat(repo.findByIdAndTeamId(emailId, TEAM_A_ID))
+          .get()
+          .extracting("openCount")
+          .isEqualTo(1);
+      assertThat(repo.findByIdAndTeamId(smsId, TEAM_A_ID))
+          .get()
+          .extracting("openCount")
+          .isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("a click recorded for one provider does not touch the other's row")
+    void clickCountIsScopedToTheChannel() {
+      UUID emailId = saveWith(NotificationChannel.EMAIL, SHARED_ID);
+      UUID smsId = saveWith(NotificationChannel.SMS, SHARED_ID);
+
+      repo.incrementClickCount(SHARED_ID, NotificationChannel.EMAIL);
+
+      assertThat(repo.findByIdAndTeamId(emailId, TEAM_A_ID))
+          .get()
+          .extracting("clickCount")
+          .isEqualTo(1);
+      assertThat(repo.findByIdAndTeamId(smsId, TEAM_A_ID))
+          .get()
+          .extracting("clickCount")
+          .isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("the lookup returns the row belonging to the provider that asked")
+    void lookupIsScopedToTheChannel() {
+      saveWith(NotificationChannel.EMAIL, SHARED_ID);
+      UUID smsId = saveWith(NotificationChannel.SMS, SHARED_ID);
+
+      assertThat(repo.findByProviderMessageId(SHARED_ID, NotificationChannel.SMS))
+          .get()
+          .extracting(Notification::getId)
+          .isEqualTo(smsId);
+    }
+  }
 }

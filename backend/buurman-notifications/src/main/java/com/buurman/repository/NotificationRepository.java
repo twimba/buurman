@@ -25,6 +25,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
+import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
@@ -174,9 +175,14 @@ public class NotificationRepository {
     return out;
   }
 
-  public Optional<Notification> findByProviderMessageId(String providerMessageId) {
+  public Optional<Notification> findByProviderMessageId(
+      String providerMessageId, NotificationChannel channel) {
     return dsl.selectFrom(NOTIFICATIONS)
-        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .where(
+            NOTIFICATIONS
+                .PROVIDER_MESSAGE_ID
+                .eq(providerMessageId)
+                .and(NOTIFICATIONS.CHANNEL.eq(channel.name())))
         .fetchOptional()
         .flatMap(mapper::toDomain);
   }
@@ -253,6 +259,7 @@ public class NotificationRepository {
 
   public void updateStatusByProviderMessageId(
       String providerMessageId,
+      NotificationChannel channel,
       NotificationStatus status,
       @Nullable String providerStatus,
       @Nullable String providerError) {
@@ -262,7 +269,11 @@ public class NotificationRepository {
         .set(NOTIFICATIONS.PROVIDER_STATUS, providerStatus)
         .set(NOTIFICATIONS.PROVIDER_ERROR, providerError)
         .set(NOTIFICATIONS.STATUS_UPDATED_AT, now)
-        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .where(
+            NOTIFICATIONS
+                .PROVIDER_MESSAGE_ID
+                .eq(providerMessageId)
+                .and(NOTIFICATIONS.CHANNEL.eq(channel.name())))
         .execute();
   }
 
@@ -274,29 +285,44 @@ public class NotificationRepository {
    * it belongs to and then filtering by that, which constrains nothing. The id is opaque and
    * globally unique per provider, so it cannot address another team's row.
    *
+   * <p>It is scoped by {@code channel} instead, which is what makes the lookup unambiguous: a
+   * provider message id is unique only within its own provider, and channel identifies the provider
+   * today (Mailgun sends EMAIL, Twilio sends SMS). {@code channel} is NOT NULL on every row,
+   * including every historical one, so this needs no backfill. A dedicated provider column would be
+   * needed only once two providers share a channel.
+   *
    * <p>The residual risk is the index on {@code provider_message_id} being non-unique: were an id
-   * ever reused, every matching row would be incremented. That has not happened and no provider
-   * documents it as possible, so this is recorded rather than defended against.
+   * reused within one channel, every matching row would be incremented. Making that impossible
+   * needs a unique index, which would fail the migration if production already holds a duplicate,
+   * so it is recorded rather than assumed safe.
    */
-  public void incrementOpenCount(String providerMessageId) {
+  public void incrementOpenCount(String providerMessageId, NotificationChannel channel) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
         .set(NOTIFICATIONS.OPEN_COUNT, NOTIFICATIONS.OPEN_COUNT.plus(1))
         .set(
             NOTIFICATIONS.FIRST_OPENED_AT,
             org.jooq.impl.DSL.coalesce(NOTIFICATIONS.FIRST_OPENED_AT, now))
-        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .where(
+            NOTIFICATIONS
+                .PROVIDER_MESSAGE_ID
+                .eq(providerMessageId)
+                .and(NOTIFICATIONS.CHANNEL.eq(channel.name())))
         .execute();
   }
 
-  public void incrementClickCount(String providerMessageId) {
+  public void incrementClickCount(String providerMessageId, NotificationChannel channel) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
         .set(NOTIFICATIONS.CLICK_COUNT, NOTIFICATIONS.CLICK_COUNT.plus(1))
         .set(
             NOTIFICATIONS.FIRST_CLICKED_AT,
             org.jooq.impl.DSL.coalesce(NOTIFICATIONS.FIRST_CLICKED_AT, now))
-        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .where(
+            NOTIFICATIONS
+                .PROVIDER_MESSAGE_ID
+                .eq(providerMessageId)
+                .and(NOTIFICATIONS.CHANNEL.eq(channel.name())))
         .execute();
   }
 

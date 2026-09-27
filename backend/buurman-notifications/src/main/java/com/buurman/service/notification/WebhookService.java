@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.repository.NotificationRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,12 +53,12 @@ public class WebhookService {
       }
 
       if ("opened".equals(eventType)) {
-        notificationRepository.incrementOpenCount(messageId);
+        notificationRepository.incrementOpenCount(messageId, NotificationChannel.EMAIL);
         log.debug("Mailgun open event for message {}", messageId);
         return;
       }
       if ("clicked".equals(eventType)) {
-        notificationRepository.incrementClickCount(messageId);
+        notificationRepository.incrementClickCount(messageId, NotificationChannel.EMAIL);
         log.debug("Mailgun click event for message {}", messageId);
         return;
       }
@@ -66,9 +67,9 @@ public class WebhookService {
       NotificationStatus status = mapMailgunStatus(eventType, severity);
       String reason = eventData.path("reason").asText(null);
 
-      if (shouldUpdateStatus(messageId, status)) {
+      if (shouldUpdateStatus(messageId, status, NotificationChannel.EMAIL)) {
         notificationRepository.updateStatusByProviderMessageId(
-            messageId, status, eventType, reason);
+            messageId, NotificationChannel.EMAIL, status, eventType, reason);
         log.debug("Mailgun event: {} -> {} for message {}", eventType, status, messageId);
       } else {
         log.debug(
@@ -94,9 +95,9 @@ public class WebhookService {
 
     String providerError = errorCode != null ? errorCode + ": " + errorMessage : null;
 
-    if (shouldUpdateStatus(messageSid, status)) {
+    if (shouldUpdateStatus(messageSid, status, NotificationChannel.SMS)) {
       notificationRepository.updateStatusByProviderMessageId(
-          messageSid, status, messageStatus, providerError);
+          messageSid, NotificationChannel.SMS, status, messageStatus, providerError);
       log.debug("Twilio status: {} -> {} for SID {}", messageStatus, status, messageSid);
     } else {
       log.debug(
@@ -104,9 +105,10 @@ public class WebhookService {
     }
   }
 
-  private boolean shouldUpdateStatus(String providerMessageId, NotificationStatus newStatus) {
+  private boolean shouldUpdateStatus(
+      String providerMessageId, NotificationStatus newStatus, NotificationChannel channel) {
     return notificationRepository
-        .findByProviderMessageId(providerMessageId)
+        .findByProviderMessageId(providerMessageId, channel)
         .map(
             notification -> {
               int currentRank = STATUS_RANK.getOrDefault(notification.getStatus(), 0);
