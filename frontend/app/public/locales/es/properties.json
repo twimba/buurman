@@ -227,6 +227,7 @@
       "message_other": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer.",
       "confirmLabel_one": "Eliminar {{count}} documento",
       "confirmLabel_other": "Eliminar {{count}} documentos",
+      "confirmLabel_many": "Eliminar {{count}} documentos",
       "title_many": "Eliminar documentos",
       "message_many": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer."
     },
@@ -258,6 +259,7 @@
       "message_other": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer.",
       "confirmLabel_one": "Eliminar {{count}} foto",
       "confirmLabel_other": "Eliminar {{count}} fotos",
+      "confirmLabel_many": "Eliminar {{count}} fotos",
       "title_many": "Eliminar fotos",
       "mainPhotoWarning_many": "Está a punto de eliminar {{count}} fotos, incluyendo la foto principal. Esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
       "message_many": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer."

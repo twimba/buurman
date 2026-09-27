@@ -220,6 +220,7 @@
   "selection": {
     "selected_one": "{{count}} selezionato",
     "selected_other": "{{count}} selezionati",
+    "selected_many": "{{count}} selezionati",
     "selectAll": "Seleziona tutti i non pagati di questa pagina",
     "selectRow": "Seleziona pagamento {{id}}",
     "select": "Seleziona",

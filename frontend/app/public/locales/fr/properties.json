@@ -227,6 +227,7 @@
       "message_other": "Vous êtes sur le point de supprimer {{count}} documents. Cette action est irréversible.",
       "confirmLabel_one": "Supprimer {{count}} document",
       "confirmLabel_other": "Supprimer {{count}} documents",
+      "confirmLabel_many": "Supprimer {{count}} documents",
       "title_many": "Supprimer les documents",
       "message_many": "Vous êtes sur le point de supprimer {{count}} documents. Cette action est irréversible."
     },
@@ -258,6 +259,7 @@
       "message_other": "Vous êtes sur le point de supprimer {{count}} photos. Cette action est irréversible.",
       "confirmLabel_one": "Supprimer {{count}} photo",
       "confirmLabel_other": "Supprimer {{count}} photos",
+      "confirmLabel_many": "Supprimer {{count}} photos",
       "title_many": "Supprimer les photos",
       "mainPhotoWarning_many": "Vous êtes sur le point de supprimer {{count}} photos, y compris la photo principale. Ce bien n'aura plus de photo principale. Cette action est irréversible.",
       "message_many": "Vous êtes sur le point de supprimer {{count}} photos. Cette action est irréversible."

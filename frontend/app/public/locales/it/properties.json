@@ -677,6 +677,7 @@
       "message_other": "Sta per eliminare {{count}} documenti. Questa azione non può essere annullata.",
       "confirmLabel_one": "Elimina {{count}} documento",
       "confirmLabel_other": "Elimina {{count}} documenti",
+      "confirmLabel_many": "Elimina {{count}} documenti",
       "title_many": "Elimina documenti",
       "message_many": "Sta per eliminare {{count}} documenti. Questa azione non può essere annullata."
     },
@@ -708,6 +709,7 @@
       "message_other": "Sta per eliminare {{count}} foto. Questa azione non può essere annullata.",
       "confirmLabel_one": "Elimina {{count}} foto",
       "confirmLabel_other": "Elimina {{count}} foto",
+      "confirmLabel_many": "Elimina {{count}} foto",
       "title_many": "Elimina foto",
       "mainPhotoWarning_many": "Sta per eliminare {{count}} foto, inclusa la foto principale. Questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
       "message_many": "Sta per eliminare {{count}} foto. Questa azione non può essere annullata."

@@ -677,6 +677,7 @@
       "message_other": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida.",
       "confirmLabel_one": "Eliminar {{count}} documento",
       "confirmLabel_other": "Eliminar {{count}} documentos",
+      "confirmLabel_many": "Eliminar {{count}} documentos",
       "title_many": "Eliminar documentos",
       "message_many": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida."
     },
@@ -708,6 +709,7 @@
       "message_other": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida.",
       "confirmLabel_one": "Eliminar {{count}} foto",
       "confirmLabel_other": "Eliminar {{count}} fotos",
+      "confirmLabel_many": "Eliminar {{count}} fotos",
       "title_many": "Eliminar fotos",
       "mainPhotoWarning_many": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
       "message_many": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida."
