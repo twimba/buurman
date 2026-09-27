@@ -681,5 +681,19 @@
     "loginRequired": "Log ind for at acceptere denne invitation.",
     "loginToAccept": "Log ind for at acceptere",
     "createAccount": "Opret en konto"
+  },
+  "communications": {
+    "title": "Kommunikation",
+    "empty": "Der er ikke sendt noget endnu.",
+    "emptyHistorical": "Kun beskeder sendt fra nu af vises her.",
+    "resend": "Send igen",
+    "status": {
+      "queued": "I kø",
+      "sent": "Sendt",
+      "delivered": "Leveret",
+      "opened": "Åbnet",
+      "notDelivered": "Ikke leveret",
+      "failed": "Mislykkedes"
+    }
   }
 }

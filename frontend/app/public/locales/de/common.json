@@ -681,5 +681,19 @@
     "loginRequired": "Melden Sie sich an, um diese Einladung anzunehmen.",
     "loginToAccept": "Zum Annehmen anmelden",
     "createAccount": "Konto erstellen"
+  },
+  "communications": {
+    "title": "Kommunikation",
+    "empty": "Noch nichts gesendet.",
+    "emptyHistorical": "Hier erscheinen nur ab jetzt gesendete Nachrichten.",
+    "resend": "Erneut senden",
+    "status": {
+      "queued": "In Warteschlange",
+      "sent": "Gesendet",
+      "delivered": "Zugestellt",
+      "opened": "Geöffnet",
+      "notDelivered": "Nicht zugestellt",
+      "failed": "Fehlgeschlagen"
+    }
   }
 }

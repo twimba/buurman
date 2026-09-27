@@ -681,5 +681,19 @@
     "loginRequired": "Zaloguj się, aby zaakceptować to zaproszenie.",
     "loginToAccept": "Zaloguj się, aby zaakceptować",
     "createAccount": "Utwórz konto"
+  },
+  "communications": {
+    "title": "Komunikacja",
+    "empty": "Nic jeszcze nie wysłano.",
+    "emptyHistorical": "Pojawiają się tu tylko wiadomości wysłane od teraz.",
+    "resend": "Wyślij ponownie",
+    "status": {
+      "queued": "W kolejce",
+      "sent": "Wysłano",
+      "delivered": "Dostarczono",
+      "opened": "Otwarto",
+      "notDelivered": "Niedostarczono",
+      "failed": "Niepowodzenie"
+    }
   }
 }

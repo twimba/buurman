@@ -681,5 +681,19 @@
     "loginRequired": "Logg inn for å akseptere denne invitasjonen.",
     "loginToAccept": "Logg inn for å akseptere",
     "createAccount": "Opprett en konto"
+  },
+  "communications": {
+    "title": "Kommunikasjon",
+    "empty": "Ingenting er sendt ennå.",
+    "emptyHistorical": "Bare meldinger sendt fra nå av vises her.",
+    "resend": "Send på nytt",
+    "status": {
+      "queued": "I kø",
+      "sent": "Sendt",
+      "delivered": "Levert",
+      "opened": "Åpnet",
+      "notDelivered": "Ikke levert",
+      "failed": "Mislyktes"
+    }
   }
 }

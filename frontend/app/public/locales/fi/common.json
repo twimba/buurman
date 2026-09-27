@@ -681,5 +681,19 @@
     "loginRequired": "Kirjaudu sisään hyväksyäksesi tämän kutsun.",
     "loginToAccept": "Kirjaudu hyväksyäksesi",
     "createAccount": "Luo tili"
+  },
+  "communications": {
+    "title": "Viestintä",
+    "empty": "Mitään ei ole vielä lähetetty.",
+    "emptyHistorical": "Tässä näkyvät vain tästä eteenpäin lähetetyt viestit.",
+    "resend": "Lähetä uudelleen",
+    "status": {
+      "queued": "Jonossa",
+      "sent": "Lähetetty",
+      "delivered": "Toimitettu",
+      "opened": "Avattu",
+      "notDelivered": "Ei toimitettu",
+      "failed": "Epäonnistui"
+    }
   }
 }

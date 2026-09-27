@@ -681,5 +681,19 @@
     "loginRequired": "Logga in för att acceptera inbjudan.",
     "loginToAccept": "Logga in för att acceptera",
     "createAccount": "Skapa ett konto"
+  },
+  "communications": {
+    "title": "Kommunikation",
+    "empty": "Inget skickat ännu.",
+    "emptyHistorical": "Endast meddelanden som skickas från och med nu visas här.",
+    "resend": "Skicka igen",
+    "status": {
+      "queued": "I kö",
+      "sent": "Skickat",
+      "delivered": "Levererat",
+      "opened": "Öppnat",
+      "notDelivered": "Ej levererat",
+      "failed": "Misslyckades"
+    }
   }
 }

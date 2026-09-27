@@ -681,5 +681,19 @@
     "loginRequired": "Log in om deze uitnodiging te accepteren.",
     "loginToAccept": "Inloggen om te accepteren",
     "createAccount": "Account aanmaken"
+  },
+  "communications": {
+    "title": "Communicatie",
+    "empty": "Nog niets verstuurd.",
+    "emptyHistorical": "Alleen berichten die vanaf nu worden verstuurd verschijnen hier.",
+    "resend": "Opnieuw versturen",
+    "status": {
+      "queued": "In wachtrij",
+      "sent": "Verstuurd",
+      "delivered": "Afgeleverd",
+      "opened": "Geopend",
+      "notDelivered": "Niet afgeleverd",
+      "failed": "Mislukt"
+    }
   }
 }

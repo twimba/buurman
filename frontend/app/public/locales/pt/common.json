@@ -681,5 +681,19 @@
     "loginRequired": "Inicie sessão para aceitar este convite.",
     "loginToAccept": "Iniciar sessão para aceitar",
     "createAccount": "Criar uma conta"
+  },
+  "communications": {
+    "title": "Comunicações",
+    "empty": "Ainda nada enviado.",
+    "emptyHistorical": "Só aparecem aqui as mensagens enviadas a partir de agora.",
+    "resend": "Reenviar",
+    "status": {
+      "queued": "Em fila",
+      "sent": "Enviado",
+      "delivered": "Entregue",
+      "opened": "Aberto",
+      "notDelivered": "Não entregue",
+      "failed": "Falhou"
+    }
   }
 }

@@ -681,5 +681,19 @@
     "loginRequired": "Connectez-vous pour accepter cette invitation.",
     "loginToAccept": "Se connecter pour accepter",
     "createAccount": "Créer un compte"
+  },
+  "communications": {
+    "title": "Communications",
+    "empty": "Rien envoyé pour le moment.",
+    "emptyHistorical": "Seuls les messages envoyés à partir de maintenant apparaissent ici.",
+    "resend": "Renvoyer",
+    "status": {
+      "queued": "En file d’attente",
+      "sent": "Envoyé",
+      "delivered": "Remis",
+      "opened": "Ouvert",
+      "notDelivered": "Non remis",
+      "failed": "Échec"
+    }
   }
 }

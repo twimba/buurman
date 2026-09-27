@@ -681,5 +681,19 @@
     "loginRequired": "Sign in to accept this invitation.",
     "loginToAccept": "Sign in to accept",
     "createAccount": "Create an account"
+  },
+  "communications": {
+    "title": "Communications",
+    "empty": "Nothing sent yet.",
+    "emptyHistorical": "Only messages sent from now on appear here.",
+    "resend": "Resend",
+    "status": {
+      "queued": "Queued",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "opened": "Opened",
+      "notDelivered": "Not delivered",
+      "failed": "Failed"
+    }
   }
 }

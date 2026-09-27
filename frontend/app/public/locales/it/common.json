@@ -681,5 +681,19 @@
     "loginRequired": "Accedi per accettare questo invito.",
     "loginToAccept": "Accedi per accettare",
     "createAccount": "Crea un account"
+  },
+  "communications": {
+    "title": "Comunicazioni",
+    "empty": "Non è stato ancora inviato nulla.",
+    "emptyHistorical": "Qui compaiono solo i messaggi inviati da ora in poi.",
+    "resend": "Invia di nuovo",
+    "status": {
+      "queued": "In coda",
+      "sent": "Inviato",
+      "delivered": "Consegnato",
+      "opened": "Aperto",
+      "notDelivered": "Non consegnato",
+      "failed": "Non riuscito"
+    }
   }
 }
