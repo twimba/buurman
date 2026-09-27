@@ -11,6 +11,7 @@
     "allStatuses": "Todos os Estados",
     "count_one": "{{count}} imóvel",
     "count_other": "{{count}} imóveis",
+    "count_many": "{{count}} imóveis",
     "empty": {
       "title": "Nenhum imóvel encontrado",
       "filtered": "Tente ajustar os seus filtros ou termos de pesquisa",
@@ -651,13 +652,15 @@
     "selection": {
       "selected": "{{selected}} de {{total}} selecionados",
       "count_one": "{{count}} documento",
-      "count_other": "{{count}} documentos"
+      "count_other": "{{count}} documentos",
+      "count_many": "{{count}} documentos"
     },
     "preview": "Pré-visualização",
     "editTitleNotes": "Editar título e notas",
     "upload": {
       "title_one": "Carregar Documento",
       "title_other": "Carregar Documentos",
+      "title_many": "Carregar Documentos",
       "files": "{{count}} ficheiros",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "p. ex., Planta do Imóvel",
@@ -669,8 +672,10 @@
     "delete": {
       "title_one": "Eliminar documento",
       "title_other": "Eliminar documentos",
+      "title_many": "Eliminar documentos",
       "message_one": "Tem a certeza de que pretende eliminar este documento? Esta ação não pode ser revertida.",
       "message_other": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida.",
+      "message_many": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida.",
       "confirmLabel_other": "Eliminar {{count}} documentos"
     },
     "editModal": "Editar Documento",
@@ -683,6 +688,7 @@
     "upload": {
       "title_one": "Carregar Foto",
       "title_other": "Carregar Fotos",
+      "title_many": "Carregar Fotos",
       "files": "{{count}} ficheiros",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "p. ex., Sala de estar",
@@ -694,10 +700,13 @@
     "delete": {
       "title_one": "Eliminar foto",
       "title_other": "Eliminar fotos",
+      "title_many": "Eliminar fotos",
       "mainPhotoWarning_one": "Esta é a foto principal. Eliminá-la significa que este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
       "mainPhotoWarning_other": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
+      "mainPhotoWarning_many": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
       "message_one": "Tem a certeza de que pretende eliminar esta foto? Esta ação não pode ser revertida.",
       "message_other": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida.",
+      "message_many": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida.",
       "confirmLabel_other": "Eliminar {{count}} fotos"
     },
     "editModal": "Editar Foto"
@@ -1002,7 +1011,8 @@
       "paymentDeleted": "Pagamento eliminado com sucesso",
       "paymentDeleteFailed": "Falha ao eliminar pagamento",
       "paymentsCreated_one": "{{count}} pagamento criado com sucesso",
-      "paymentsCreated_other": "{{count}} pagamentos criados com sucesso"
+      "paymentsCreated_other": "{{count}} pagamentos criados com sucesso",
+      "paymentsCreated_many": "{{count}} pagamentos criados com sucesso"
     },
     "months": {
       "jan": "Jan",

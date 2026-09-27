@@ -20,6 +20,7 @@
     "terminated": "Terminado",
     "count_one": "{{count}} contrato",
     "count_other": "{{count}} contratos",
+    "count_many": "{{count}} contratos",
     "empty": {
       "title": "Ainda sem contratos",
       "description": "Comece por criar o seu primeiro contrato de arrendamento"
@@ -154,6 +155,7 @@
       "renewalTerm": "Prazo de Renovação",
       "month_one": "{{count}} mês",
       "month_other": "{{count}} meses",
+      "month_many": "{{count}} meses",
       "extensions": "Extensões",
       "remaining": "{{remaining}} de {{max}} restantes",
       "max": "{{max}} máx.",
@@ -542,6 +544,7 @@
     "backToAdjust": "Voltar ao Ajuste",
     "contract_one": "{{count}} contrato",
     "contract_other": "{{count}} contratos",
+    "contract_many": "{{count}} contratos",
     "adjustmentStrategy": "Estratégia de Ajuste",
     "strategies": {
       "maximum": "Máximo",
@@ -560,6 +563,7 @@
     "avgChange": "Variação média:",
     "warning_one": "{{count}} aviso",
     "warning_other": "{{count}} avisos",
+    "warning_many": "{{count}} avisos",
     "retroactive": "retroativo",
     "retroactiveTooltip": "Serão criados pagamentos de ajuste para quaisquer pagamentos já liquidados afetados por alterações retroativas.",
     "exceedsMax": "Excede o aumento máximo regulado de {{max}}%",
@@ -583,12 +587,15 @@
     "applying": "A aplicar...",
     "applyAdjustments_one": "Aplicar {{count}} Ajuste",
     "applyAdjustments_other": "Aplicar {{count}} Ajustes",
+    "applyAdjustments_many": "Aplicar {{count}} Ajustes",
     "allSuccess": "Todos os ajustes de renda foram aplicados com sucesso",
     "partialSuccess": "{{success}} de {{total}} ajustes aplicados",
     "increasesFailed_one": "{{count}} aumento falhou",
     "increasesFailed_other": "{{count}} aumentos falharam",
+    "increasesFailed_many": "{{count}} aumentos falharam",
     "adjustmentPayments_one": "{{count}} pagamento de ajuste criado para alterações retroativas",
     "adjustmentPayments_other": "{{count}} pagamentos de ajuste criados para alterações retroativas",
+    "adjustmentPayments_many": "{{count}} pagamentos de ajuste criados para alterações retroativas",
     "status": "Estado"
   },
   "card": {
@@ -614,12 +621,15 @@
     "translation": "Tradução",
     "willGenerate_one": "Irá gerar 1 documento e guardar nos documentos do contrato",
     "willGenerate_other": "Irá gerar {{count}} documentos e guardar nos documentos do contrato",
+    "willGenerate_many": "Irá gerar {{count}} documentos e guardar nos documentos do contrato",
     "regenerating": "A regenerar...",
     "generating": "A gerar...",
     "regenerateButton_one": "Regenerar 1 documento",
     "regenerateButton_other": "Regenerar {{count}} documentos",
+    "regenerateButton_many": "Regenerar {{count}} documentos",
     "generateButton_one": "Gerar 1 documento",
     "generateButton_other": "Gerar {{count}} documentos",
+    "generateButton_many": "Gerar {{count}} documentos",
     "types": {
       "EXTENSION_ADDENDUM": {
         "label": "Adenda de extensão",
@@ -642,12 +652,15 @@
     "translation": "Tradução",
     "willGenerate_one": "Irá gerar 1 documento",
     "willGenerate_other": "Irá gerar {{count}} documentos",
+    "willGenerate_many": "Irá gerar {{count}} documentos",
     "regenerating": "A regenerar...",
     "generating": "A gerar...",
     "regenerateButton_one": "Regenerar 1 documento",
     "regenerateButton_other": "Regenerar {{count}} documentos",
+    "regenerateButton_many": "Regenerar {{count}} documentos",
     "generateButton_one": "Gerar 1 documento",
-    "generateButton_other": "Gerar {{count}} documentos"
+    "generateButton_other": "Gerar {{count}} documentos",
+    "generateButton_many": "Gerar {{count}} documentos"
   },
   "enums": {
     "partyRoles": {
@@ -839,6 +852,7 @@
     "generateDocumentTitle": "Gerar documento de alteração de renda",
     "historyCount_one": "Histórico (1 período)",
     "historyCount_other": "Histórico ({{count}} períodos)",
+    "historyCount_many": "Histórico ({{count}} períodos)",
     "deleteConfirm": "Tem a certeza de que deseja eliminar este período de renda?"
   },
   "rentBreakdown": {
