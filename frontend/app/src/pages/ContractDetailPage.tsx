@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { CommunicationsTimeline } from '@/components/communications/CommunicationsTimeline';
+import { useContractCommunications } from '@/hooks/useCommunications';
 import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import {
@@ -42,6 +44,8 @@ import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 export const ContractDetailPage = () => {
   const { t } = useTranslation('contracts');
   const { id = '' } = useParams<{ id: string }>();
+  const { data: communications = [], isLoading: communicationsLoading } =
+    useContractCommunications(id);
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useTabState('overview', [
@@ -340,6 +344,16 @@ export const ContractDetailPage = () => {
 
         {activeTab === 'history' && <ContractHistoryTab contractId={id} />}
       </div>
+
+      <section className="mt-6">
+        <h2 className="text-lg font-semibold text-text-primary mb-3">
+          {t('common:communications.title')}
+        </h2>
+        <CommunicationsTimeline
+          communications={communications}
+          isLoading={communicationsLoading}
+        />
+      </section>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

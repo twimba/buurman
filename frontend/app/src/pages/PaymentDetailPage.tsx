@@ -6,6 +6,8 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CommunicationsTimeline } from '@/components/communications/CommunicationsTimeline';
+import { usePaymentCommunications } from '@/hooks/useCommunications';
 import { useTabState } from '@/hooks/useTabState';
 import {
   usePayment,
@@ -366,6 +368,8 @@ const ReceivalsTable = ({
 
 export const PaymentDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
+  const { data: communications = [], isLoading: communicationsLoading } =
+    usePaymentCommunications(id);
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation('payments');
@@ -1505,6 +1509,16 @@ export const PaymentDetailPage = () => {
           </div>
         )}
       </div>
+
+      <section className="mt-6">
+        <h2 className="text-lg font-semibold text-text-primary mb-3">
+          {t('common:communications.title')}
+        </h2>
+        <CommunicationsTimeline
+          communications={communications}
+          isLoading={communicationsLoading}
+        />
+      </section>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
