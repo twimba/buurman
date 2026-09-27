@@ -26,10 +26,12 @@ public class DatabaseMetricsService {
   private final AtomicLong paymentsCount = new AtomicLong();
   private final AtomicLong teamsCount = new AtomicLong();
   private final AtomicLong expensesCount = new AtomicLong();
+  private final AtomicLong unitsCount = new AtomicLong();
+  private final AtomicLong allocationsCount = new AtomicLong();
 
   private final MultiGauge contractsByStatus;
   private final MultiGauge paymentsByStatus;
-  private final MultiGauge propertiesByStatus;
+  private final MultiGauge unitsByStatus;
 
   public DatabaseMetricsService(
       DatabaseMetricsRepository metricsRepository, MeterRegistry registry) {
@@ -53,6 +55,13 @@ public class DatabaseMetricsService {
     Gauge.builder(PREFIX + "expenses.count", expensesCount, AtomicLong::doubleValue)
         .description("Total active expenses")
         .register(registry);
+    // BUUR-106 wave3c Important 7: the entity the product now bills on had no metric at all.
+    Gauge.builder(PREFIX + "units.count", unitsCount, AtomicLong::doubleValue)
+        .description("Total active units")
+        .register(registry);
+    Gauge.builder(PREFIX + "allocations.count", allocationsCount, AtomicLong::doubleValue)
+        .description("Total active expense allocations")
+        .register(registry);
 
     contractsByStatus =
         MultiGauge.builder(PREFIX + "contracts.by.status")
@@ -62,9 +71,14 @@ public class DatabaseMetricsService {
         MultiGauge.builder(PREFIX + "payments.by.status")
             .description("Payments grouped by status")
             .register(registry);
-    propertiesByStatus =
-        MultiGauge.builder(PREFIX + "properties.by.status")
-            .description("Properties grouped by status")
+    // Replaces the retired "properties.by.status" gauge (BUUR-106 wave3c Important 7): that series
+    // was grouping by units.status while still being registered/described as a property breakdown,
+    // so sum(by_status) equalled buurman_properties_count before this deploy and silently stopped
+    // matching it after -- a deploy artifact that read as a business event. Named for what it
+    // actually measures.
+    unitsByStatus =
+        MultiGauge.builder(PREFIX + "units.by.status")
+            .description("Units grouped by status")
             .register(registry);
 
     refreshCounts();
@@ -78,10 +92,12 @@ public class DatabaseMetricsService {
       paymentsCount.set(metricsRepository.countPayments());
       teamsCount.set(metricsRepository.countTeams());
       expensesCount.set(metricsRepository.countExpenses());
+      unitsCount.set(metricsRepository.countUnits());
+      allocationsCount.set(metricsRepository.countAllocations());
 
       refreshContractsByStatus();
       refreshPaymentsByStatus();
-      refreshPropertiesByStatus();
+      refreshUnitsByStatus();
     } catch (Exception e) {
       log.warn("Failed to refresh database metrics", e);
     }
@@ -105,12 +121,12 @@ public class DatabaseMetricsService {
     paymentsByStatus.register(rows, true);
   }
 
-  private void refreshPropertiesByStatus() {
+  private void refreshUnitsByStatus() {
     var rows =
-        metricsRepository.countPropertiesByStatus().stream()
+        metricsRepository.countUnitsByStatus().stream()
             .<MultiGauge.Row<?>>map(
                 lc -> MultiGauge.Row.of(Tags.of("status", lc.label()), lc.count()))
             .toList();
-    propertiesByStatus.register(rows, true);
+    unitsByStatus.register(rows, true);
   }
 }
