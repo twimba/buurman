@@ -217,6 +217,13 @@ public class ContractRepository {
         .toList();
   }
 
+  /**
+   * At most one row is expected ({@code uq_contracts_one_active_per_unit}, added in V071), but a
+   * legacy duplicate predating that constraint is still possible. {@code limit(1)} with a
+   * deterministic {@code orderBy} makes that degrade to "pick the oldest" instead of throwing
+   * {@link org.jooq.exception.TooManyRowsException} (which {@code fetchOptional()} does on >1 row
+   * and which was previously an unhandled 500).
+   */
   public Optional<Contract> findActiveByUnitId(UUID unitId, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
         .where(
@@ -226,6 +233,8 @@ public class ContractRepository {
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                 .and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.CREATED_AT.asc(), CONTRACTS.ID.asc())
+        .limit(1)
         .fetchOptional()
         .flatMap(mapper::toDomain);
   }

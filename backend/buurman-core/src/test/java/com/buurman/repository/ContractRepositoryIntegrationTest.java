@@ -192,4 +192,17 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
         .isInstanceOf(org.jooq.exception.DataAccessException.class)
         .hasMessageContaining("fk_contracts_unit_property");
   }
+
+  @Test
+  @DisplayName(
+      "the database itself rejects a second ACTIVE contract on the same unit"
+          + " (uq_contracts_one_active_per_unit, V071) -- a 409, not the 500 TooManyRowsException"
+          + " used to throw once two concurrent activations raced past the application-level guard")
+  void rejectsASecondActiveContractOnTheSameUnit() {
+    repository.save(contractBuilder().build());
+
+    assertThatThrownBy(() -> repository.save(contractBuilder().build()))
+        .isInstanceOf(org.jooq.exception.DataAccessException.class)
+        .hasMessageContaining("uq_contracts_one_active_per_unit");
+  }
 }

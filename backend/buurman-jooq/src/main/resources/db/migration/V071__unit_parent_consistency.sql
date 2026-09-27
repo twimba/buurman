@@ -95,3 +95,34 @@ ADD CONSTRAINT uq_properties_id_team UNIQUE (id, team_id);
 
 ALTER TABLE units
 ADD CONSTRAINT fk_units_property_team FOREIGN KEY (property_id, team_id) REFERENCES properties (id, team_id);
+
+-- =============================================================================
+-- 3. At most one ACTIVE contract per unit. ContractRepository.findActiveByUnitId
+--    used fetchOptional(), which throws TooManyRowsException (-> unhandled 500)
+--    the moment two concurrent activations race past the application-level,
+--    read-then-write guard. This turns the race into a 409 instead.
+-- =============================================================================
+DO $$
+DECLARE
+    dup_count INTEGER;
+BEGIN
+    SELECT count(*) INTO dup_count
+    FROM (
+        SELECT unit_id
+        FROM contracts
+        WHERE status = 'ACTIVE' AND deleted_at IS NULL
+        GROUP BY unit_id
+        HAVING count(*) > 1
+    ) dups;
+
+    IF dup_count > 0 THEN
+        RAISE EXCEPTION
+            'contracts: % unit(s) already carry more than one ACTIVE contract; resolve before adding uq_contracts_one_active_per_unit',
+            dup_count;
+    END IF;
+END $$;
+
+CREATE UNIQUE INDEX uq_contracts_one_active_per_unit ON contracts (unit_id)
+WHERE
+    status = 'ACTIVE'
+    AND deleted_at IS NULL;
