@@ -199,6 +199,14 @@ public class UnitService {
     implicitUnit.setImplicit(false);
     implicitUnit.setUnitNumber(label);
     implicitUnit.setSortOrder(sortOrder);
+    // V068 copies the building's whole area_value onto the implicit unit, and its
+    // allocation_share (if any) likewise describes the whole building, not this one promoted unit
+    // among its new siblings. Left in place, a split into N units would leave the entire
+    // building's floor area on unit 1 — silently charging it every AREA-based expense in full
+    // (BUUR-106 Important 4) and, separately, feeding that unit's WWS legal rent ceiling with the
+    // wrong area. The new siblings created alongside it already start with neither set.
+    implicitUnit.setAreaValue(Optional.empty());
+    implicitUnit.setAllocationShare(Optional.empty());
     implicitUnit.setUpdatedBy(Optional.of(principal.getUserId()));
     return implicitUnit;
   }

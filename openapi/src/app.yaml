@@ -9884,7 +9884,12 @@ components:
       enum: [AREA, EQUAL, CUSTOM, MANUAL]
     ExpenseAllocationResponse:
       type: object
-      description: One unit's stored share of a building-level expense
+      description: >-
+        One unit's stored share of a building-level expense. `basis` is what
+        was actually used; `requestedBasis` is the property's allocation
+        basis at the time of this read. They differ when AREA or CUSTOM
+        silently fell back to EQUAL because a sibling unit was missing its
+        weight, in which case `warnings` names the unit(s) that forced it.
       properties:
         identifier:
           type: string
@@ -9900,6 +9905,12 @@ components:
           type: string
         basis:
           $ref: "#/components/schemas/AllocationBasis"
+        requestedBasis:
+          $ref: "#/components/schemas/AllocationBasis"
+        warnings:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -9908,6 +9919,8 @@ components:
           format: date-time
       required:
         - basis
+        - requestedBasis
+        - warnings
         - createdAt
         - identifier
         - unitIdentifier

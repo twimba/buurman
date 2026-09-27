@@ -417,6 +417,43 @@ class UnitServiceTest {
     }
 
     @Test
+    @DisplayName(
+        "clears the promoted implicit unit's inherited area and allocation share (BUUR-106"
+            + " Important 4) — V068 copies the building's whole area onto the implicit unit, so"
+            + " left in place a 6-way split would leave the entire building's floor area (and its"
+            + " WWS legal rent ceiling) on unit 1 alone")
+    void clearsInheritedAreaAndAllocationShareOnPromotion() {
+      Unit implicitUnit = unit("1", UnitStatus.OCCUPIED);
+      implicitUnit.setImplicit(true);
+      implicitUnit.setAreaValue(Optional.of(new BigDecimal("120")));
+      implicitUnit.setAllocationShare(Optional.of(new BigDecimal("100")));
+
+      when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(implicitUnit));
+      when(unitRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+      when(unitMapper.toResponse(any(), any()))
+          .thenAnswer(inv -> toResponseFixture(inv.getArgument(0), inv.getArgument(1)));
+
+      service()
+          .bulkCreateUnits(
+              propertyIdentifier(),
+              new BulkCreateUnitsRequest(
+                  6,
+                  BulkCreateUnitsRequest.NumberingPattern.NUMERIC,
+                  UnitType.APARTMENT,
+                  Optional.empty()),
+              principal());
+
+      ArgumentCaptor<Unit> savedCaptor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository, times(6)).save(savedCaptor.capture());
+      Unit firstSaved = savedCaptor.getAllValues().get(0);
+
+      assertThat(firstSaved.getAreaValue()).isEmpty();
+      assertThat(firstSaved.getAllocationShare()).isEmpty();
+    }
+
+    @Test
     @DisplayName("numbers units 1..n for NUMERIC")
     void numbersNumerically() {
       when(propertyRepository.getByIdentifierAndTeamId(any(), eqTeam())).thenReturn(property());

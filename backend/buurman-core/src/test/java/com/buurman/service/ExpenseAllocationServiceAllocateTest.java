@@ -2,6 +2,7 @@ package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,10 +58,9 @@ class ExpenseAllocationServiceAllocateTest {
 
   @org.junit.jupiter.api.BeforeEach
   void setUp() {
-    // propertyRepository is deliberately null here: the MANUAL guard must short-circuit before
-    // any property/unit lookup, so a test that reached requirePropertyRepository() would NPE.
     service =
-        new ExpenseAllocationService(expenseAllocationRepository, unitRepository, null, CLOCK);
+        new ExpenseAllocationService(
+            expenseAllocationRepository, unitRepository, propertyRepository, CLOCK);
   }
 
   @Test
@@ -109,6 +109,13 @@ class ExpenseAllocationServiceAllocateTest {
     when(expenseAllocationRepository.findByExpenseIdAndTeamId(expenseId, TEAM_ID))
         .thenReturn(List.of(manualRow));
     when(unitRepository.findByIdsAndTeamId(List.of(unitId), TEAM_ID)).thenReturn(List.of(unit));
+    when(propertyRepository.getByIdAndTeamId(propertyId, TEAM_ID))
+        .thenReturn(
+            Property.builder()
+                .id(propertyId)
+                .teamId(TEAM_ID)
+                .allocationBasis(AllocationBasis.EQUAL)
+                .build());
 
     List<com.buurman.dto.response.ExpenseAllocationResponse> result =
         service.allocate(expense, ACTOR_ID);
@@ -118,7 +125,9 @@ class ExpenseAllocationServiceAllocateTest {
     assertThat(result.get(0).amount()).contains(new BigDecimal("2400.00"));
 
     verify(expenseAllocationRepository, never()).replaceForExpense(any(), any(), any(), any());
-    verify(propertyRepository, never()).getByIdAndTeamId(any(), any());
+    // The MANUAL guard must short-circuit before computeAndPersist's own property/unit lookup —
+    // the only property lookup that happens is getAllocations' (for requestedBasis on the
+    // response), never one driving a fresh split.
     verify(unitRepository, never()).findAllByPropertyIdAndTeamId(any(), any());
   }
 
@@ -198,5 +207,106 @@ class ExpenseAllocationServiceAllocateTest {
 
     verify(expenseAllocationRepository, org.mockito.Mockito.times(1))
         .replaceForExpense(any(), any(), any(), any());
+  }
+
+  @Test
+  @DisplayName(
+      "AREA with one unit missing area falls back to EQUAL and reports requestedBasis=AREA plus a"
+          + " warning naming the unit that forced it (BUUR-106 Important 4)")
+  void surfacesRequestedBasisAndWarningOnPartialAreaFallback() {
+    UUID expenseId = UUID.randomUUID();
+    UUID propertyId = UUID.randomUUID();
+    UUID unit1Id = UUID.randomUUID();
+    UUID unit2Id = UUID.randomUUID();
+
+    Expense expense =
+        Expense.builder()
+            .id(expenseId)
+            .teamId(TEAM_ID)
+            .propertyId(propertyId)
+            .category(Expense.ExpenseCategory.MAINTENANCE)
+            .amount(new MoneyAmount(new BigDecimal("300.00"), "EUR"))
+            .expenseDate(LocalDate.of(2026, 1, 1))
+            .description("Roof repair")
+            .build();
+
+    Unit unit1 =
+        Unit.builder()
+            .id(unit1Id)
+            .teamId(TEAM_ID)
+            .propertyId(propertyId)
+            .identifier(Optional.of(SidGenerator.newUnitId()))
+            .unitNumber("1")
+            .unitType(UnitType.APARTMENT)
+            .status(UnitStatus.OCCUPIED)
+            .areaValue(Optional.of(new BigDecimal("100")))
+            .sortOrder(0)
+            .build();
+    Unit unit2 =
+        Unit.builder()
+            .id(unit2Id)
+            .teamId(TEAM_ID)
+            .propertyId(propertyId)
+            .identifier(Optional.of(SidGenerator.newUnitId()))
+            .unitNumber("2")
+            .unitType(UnitType.APARTMENT)
+            .status(UnitStatus.OCCUPIED)
+            .sortOrder(1)
+            .build();
+
+    ExpenseAllocationService serviceWithProperty =
+        new ExpenseAllocationService(
+            expenseAllocationRepository, unitRepository, propertyRepository, CLOCK);
+
+    Property property =
+        Property.builder()
+            .id(propertyId)
+            .teamId(TEAM_ID)
+            .allocationBasis(AllocationBasis.AREA)
+            .build();
+
+    when(expenseAllocationRepository.findByExpenseIdAndTeamId(expenseId, TEAM_ID))
+        .thenReturn(List.of())
+        .thenReturn(
+            List.of(
+                ExpenseAllocation.builder()
+                    .id(UUID.randomUUID())
+                    .identifier(Optional.of(SidGenerator.newExpenseAllocationId()))
+                    .teamId(TEAM_ID)
+                    .expenseId(expenseId)
+                    .unitId(unit1Id)
+                    .amount(new MoneyAmount(new BigDecimal("150.00"), "EUR"))
+                    .basis(AllocationBasis.EQUAL)
+                    .createdAt(Optional.of(CLOCK.instant()))
+                    .build(),
+                ExpenseAllocation.builder()
+                    .id(UUID.randomUUID())
+                    .identifier(Optional.of(SidGenerator.newExpenseAllocationId()))
+                    .teamId(TEAM_ID)
+                    .expenseId(expenseId)
+                    .unitId(unit2Id)
+                    .amount(new MoneyAmount(new BigDecimal("150.00"), "EUR"))
+                    .basis(AllocationBasis.EQUAL)
+                    .createdAt(Optional.of(CLOCK.instant()))
+                    .build()));
+    when(propertyRepository.getByIdAndTeamId(propertyId, TEAM_ID)).thenReturn(property);
+    when(unitRepository.findAllByPropertyIdAndTeamId(propertyId, TEAM_ID))
+        .thenReturn(List.of(unit1, unit2));
+    when(unitRepository.findByIdsAndTeamId(any(), eq(TEAM_ID))).thenReturn(List.of(unit1, unit2));
+    when(expenseAllocationRepository.replaceForExpense(any(), any(), any(), any()))
+        .thenAnswer(invocation -> invocation.getArgument(2));
+
+    List<com.buurman.dto.response.ExpenseAllocationResponse> result =
+        serviceWithProperty.allocate(expense, ACTOR_ID);
+
+    assertThat(result).hasSize(2);
+    assertThat(result)
+        .allSatisfy(
+            r -> {
+              assertThat(r.basis()).isEqualTo(AllocationBasis.EQUAL);
+              assertThat(r.requestedBasis()).isEqualTo(AllocationBasis.AREA);
+              assertThat(r.warnings())
+                  .containsExactly("Unit 2 has no area set; the split fell back to EQUAL.");
+            });
   }
 }

@@ -86,14 +86,39 @@ class ExpenseAllocationServiceTest {
   }
 
   @Test
-  @DisplayName("treats a unit with no area as a zero share when siblings have areas")
-  void treatsMissingAreaAsZeroShare() {
+  @DisplayName(
+      "falls back to EQUAL when one sibling is missing its area — the default state right after a"
+          + " property is split into units, since bulk-created units get no area (BUUR-106"
+          + " Important 4). Charging the weightless unit 0.00 while AREA stays stamped on the rows"
+          + " would silently give it a free ride on every future AREA-based expense.")
+  void fallsBackToEqualWhenOneSiblingIsMissingArea() {
     List<ExpenseAllocation> allocations =
         service.computeAllocations(
             money("300.00"), AllocationBasis.AREA, units(new BigDecimal("100"), null));
 
+    assertThat(sum(allocations)).isEqualByComparingTo("300.00");
+    assertThat(allocations)
+        .allSatisfy(
+            a -> {
+              assertThat(a.getAmount().value()).isEqualByComparingTo("150.00");
+              assertThat(a.getBasis()).isEqualTo(AllocationBasis.EQUAL);
+            });
+  }
+
+  @Test
+  @DisplayName(
+      "respects an explicit zero area on one unit when its siblings have areas — a landlord's"
+          + " decision, not a missing field, so AREA stands and that unit is charged nothing")
+  void respectsExplicitZeroAreaAmongPresentAreas() {
+    List<Unit> unitList = units(new BigDecimal("100"), new BigDecimal("0"));
+
+    List<ExpenseAllocation> allocations =
+        service.computeAllocations(money("300.00"), AllocationBasis.AREA, unitList);
+
     assertThat(allocations.get(0).getAmount().value()).isEqualByComparingTo("300.00");
     assertThat(allocations.get(1).getAmount().value()).isEqualByComparingTo("0.00");
+    assertThat(allocations)
+        .allSatisfy(a -> assertThat(a.getBasis()).isEqualTo(AllocationBasis.AREA));
     assertThat(sum(allocations)).isEqualByComparingTo("300.00");
   }
 

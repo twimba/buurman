@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Clock;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -258,16 +259,28 @@ public class ExpenseAllocationService {
     return getAllocations(expense);
   }
 
-  /** Team-scoped read of an expense's current active allocation rows. */
+  /**
+   * Team-scoped read of an expense's current active allocation rows. Also resolves the property's
+   * <em>current</em> allocation basis to populate each row's {@code requestedBasis} and any
+   * fallback {@code warnings} — see {@link ExpenseAllocationResponse}.
+   */
   public List<ExpenseAllocationResponse> getAllocations(Expense expense) {
     List<ExpenseAllocation> allocations =
         requireExpenseAllocationRepository()
             .findByExpenseIdAndTeamId(expense.getId(), expense.getTeamId());
-    return toResponses(allocations, expense.getTeamId());
+    if (allocations.isEmpty()) {
+      return List.of();
+    }
+
+    AllocationBasis requestedBasis =
+        requirePropertyRepository()
+            .getByIdAndTeamId(expense.getPropertyId(), expense.getTeamId())
+            .getAllocationBasis();
+    return toResponses(allocations, expense.getTeamId(), requestedBasis);
   }
 
   private List<ExpenseAllocationResponse> toResponses(
-      List<ExpenseAllocation> allocations, UUID teamId) {
+      List<ExpenseAllocation> allocations, UUID teamId, AllocationBasis requestedBasis) {
     if (allocations.isEmpty()) {
       return List.of();
     }
@@ -276,6 +289,8 @@ public class ExpenseAllocationService {
     Map<UUID, Unit> unitsById =
         requireUnitRepository().findByIdsAndTeamId(unitIds, teamId).stream()
             .collect(Collectors.toMap(Unit::getId, unit -> unit));
+
+    List<String> warnings = warningsFor(requestedBasis, unitsById.values());
 
     return allocations.stream()
         .map(
@@ -295,9 +310,35 @@ public class ExpenseAllocationService {
                   Optional.of(allocation.getAmount().value()),
                   Optional.of(allocation.getAmount().currency()),
                   allocation.getBasis(),
+                  requestedBasis,
+                  warnings,
                   allocation.getCreatedAt().orElseThrow(),
                   allocation.getUpdatedAt());
             })
+        .toList();
+  }
+
+  /**
+   * Non-fatal warnings naming which unit(s) are missing the weight that {@code requestedBasis}
+   * needs, i.e. which unit(s) would force (or did force) a silent fallback to EQUAL. Empty for
+   * EQUAL/MANUAL, since neither basis has a "missing weight" concept.
+   */
+  private List<String> warningsFor(AllocationBasis requestedBasis, Collection<Unit> units) {
+    if (requestedBasis != AllocationBasis.AREA && requestedBasis != AllocationBasis.CUSTOM) {
+      return List.of();
+    }
+    String weightName = requestedBasis == AllocationBasis.AREA ? "area" : "allocation share";
+    return units.stream()
+        .filter(unit -> weightIsAbsent(requestedBasis, unit))
+        .map(Unit::getUnitNumber)
+        .sorted()
+        .map(
+            unitNumber ->
+                "Unit "
+                    + unitNumber
+                    + " has no "
+                    + weightName
+                    + " set; the split fell back to EQUAL.")
         .toList();
   }
 
@@ -328,21 +369,51 @@ public class ExpenseAllocationService {
   }
 
   /**
-   * AREA is only meaningful when the units' areas sum to a positive weight, and CUSTOM only when
-   * the units' allocation shares do; otherwise EQUAL is the honest description of what actually
-   * happened, and is what gets recorded on the returned rows. A zero weight total covers both an
-   * absent value (unset area/share) and an explicitly-zero one (e.g. every unit's CUSTOM share is
-   * {@code 0}) — either way, the requested basis would otherwise silently degrade into an equal
-   * split while still being stamped with a basis that overpromises its precision, and would drive
-   * the largest-remainder loop below with a zero weight total for every unit.
+   * AREA is only meaningful when every active unit actually carries an area, and CUSTOM only when
+   * every active unit carries a share; otherwise EQUAL is the honest description of what actually
+   * happened, and is what gets recorded on the returned rows.
+   *
+   * <p>Falls back in two distinct cases:
+   *
+   * <ul>
+   *   <li><b>Any unit is missing the weight entirely</b> (absent, e.g. {@code area_value} was never
+   *       set — the default state right after a property is split into units, since bulk-created
+   *       units get no area). Without this, the weightless units are silently charged exactly
+   *       {@code 0.00} while the others absorb their share, still stamped with the requested basis
+   *       as if every unit's weight had actually been considered.
+   *   <li><b>Every unit's weight is present but sums to zero</b> (e.g. every unit's CUSTOM share is
+   *       explicitly {@code 0}) — a zero weight total would otherwise drive the largest-remainder
+   *       loop below with nothing to distribute by.
+   * </ul>
+   *
+   * An explicit {@code 0} on some (not all) units is a landlord's decision — that unit is charged
+   * nothing and the requested basis stands, splitting the total across the remaining units.
    */
   private AllocationBasis resolveBasis(AllocationBasis requested, List<Unit> units) {
-    if ((requested == AllocationBasis.AREA || requested == AllocationBasis.CUSTOM)
-        && weightsFor(requested, units).stream().reduce(BigDecimal.ZERO, BigDecimal::add).signum()
-            == 0) {
+    if (requested != AllocationBasis.AREA && requested != AllocationBasis.CUSTOM) {
+      return requested;
+    }
+    boolean anyUnitMissingWeight = units.stream().anyMatch(unit -> weightIsAbsent(requested, unit));
+    if (anyUnitMissingWeight) {
+      return AllocationBasis.EQUAL;
+    }
+    BigDecimal weightTotal =
+        weightsFor(requested, units).stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    if (weightTotal.signum() == 0) {
       return AllocationBasis.EQUAL;
     }
     return requested;
+  }
+
+  /**
+   * Whether {@code unit} has no value at all for the weight {@code basis} needs (AREA or CUSTOM).
+   */
+  private boolean weightIsAbsent(AllocationBasis basis, Unit unit) {
+    return switch (basis) {
+      case AREA -> unit.getAreaValue().isEmpty();
+      case CUSTOM -> unit.getAllocationShare().isEmpty();
+      case EQUAL, MANUAL -> false;
+    };
   }
 
   private List<BigDecimal> weightsFor(AllocationBasis basis, List<Unit> units) {
