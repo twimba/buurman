@@ -10194,14 +10194,6 @@ components:
           exclusiveMinimum: 0
         wozValueCurrency:
           type: string
-        allocationShare:
-          type: number
-          minimum: 0
-          maximum: 100
-        wozSharePct:
-          type: number
-          minimum: 0
-          maximum: 100
         energyEfficiencyRating:
           type: string
         energyCertificateExpiryDate:
