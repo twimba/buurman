@@ -207,7 +207,6 @@ workspace-teardown:
 
 ## Open iTerm2 tab with 3 panes: infrastructure (top), backend (middle), frontend (bottom)
 local:
-	colima start
 	@osascript \
 		-e 'tell application "iTerm2"' \
 		-e '  tell current window' \
