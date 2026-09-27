@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,6 +54,7 @@ import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyOccupancyPeriodRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.MoneyAmount;
 
@@ -76,6 +78,7 @@ public class PropertyDashboardService {
   private final PropertyFinancialsService financialsService;
   private final PropertyAcquisitionRepository acquisitionRepository;
   private final PropertyOccupancyPeriodRepository occupancyPeriodRepository;
+  private final UnitRepository unitRepository;
 
   /**
    * Pre-fetched financial data from new normalized tables. Loaded once per dashboard request and
@@ -318,8 +321,16 @@ public class PropertyDashboardService {
     EquityChartData equity = buildEquityChart(financialData);
     ExpenseBreakdownChartData expenseBreakdown =
         buildExpenseBreakdown(expenses, financingPayments, financialData, now, effectiveMonths);
+    // A building's occupancy is the average across its units, not whether any single unit is
+    // let (BUUR-106): 1 of 4 units let all month is 25%, not 100%. Every property has at least
+    // one unit (single-unit properties get an implicit one), but guard the denominator anyway.
+    int unitCount =
+        Math.max(
+            unitRepository.countActiveByPropertyIdAndTeamId(property.getId(), property.getTeamId()),
+            1);
     OccupancyChartData occupancy =
-        buildOccupancyChart(contracts, occupancyPeriods, now, effectiveMonths, effectiveEndDates);
+        buildOccupancyChart(
+            contracts, occupancyPeriods, now, effectiveMonths, effectiveEndDates, unitCount);
     DataCompleteness completeness =
         buildDataCompleteness(financialData, contracts, property.getId(), property.getTeamId());
     FutureTrendData futureTrend =
@@ -600,7 +611,8 @@ public class PropertyDashboardService {
       List<PropertyOccupancyPeriod> occupancyPeriods,
       LocalDate now,
       int months,
-      Map<UUID, Optional<LocalDate>> effectiveEndDates) {
+      Map<UUID, Optional<LocalDate>> effectiveEndDates,
+      int unitCount) {
     // Include ACTIVE, EXPIRED, and TERMINATED — all represent periods of actual occupancy.
     // DRAFT and PENDING_SIGNATURE are excluded since the tenant hasn't moved in yet.
     List<Contract> occupiedContracts =
@@ -612,53 +624,79 @@ public class PropertyDashboardService {
                         || c.getStatus() == ContractStatus.TERMINATED)
             .toList();
 
+    // Occupancy is now a per-unit dwelling attribute (BUUR-106): a building's occupancy is the
+    // AVERAGE across its units, not whether any single unit was let. Grouping by unit and capping
+    // each unit's days at daysInMonth (instead of summing every contract on the property and
+    // capping once) is what makes "1 of 4 units let all month" come out to 25%, not 100%.
+    Map<UUID, List<Contract>> contractsByUnit =
+        occupiedContracts.stream().collect(Collectors.groupingBy(Contract::getUnitId));
+    Map<UUID, List<PropertyOccupancyPeriod>> occupancyPeriodsByUnit =
+        occupancyPeriods.stream()
+            .collect(Collectors.groupingBy(PropertyOccupancyPeriod::getUnitId));
+
     List<OccupancyDataPoint> dataPoints = new ArrayList<>();
     for (int i = months - 1; i >= 0; i--) {
       YearMonth ym = YearMonth.from(now.minusMonths(i));
       LocalDate monthStart = ym.atDay(1);
       LocalDate monthEnd = ym.atEndOfMonth();
       int daysInMonth = ym.lengthOfMonth();
+      long denominatorDays = (long) daysInMonth * unitCount;
 
-      long tenantDays = 0;
-      for (Contract c : occupiedContracts) {
-        if (c.getStartDate() == null) {
-          continue;
+      long totalTenantDays = 0;
+      long totalSelfDays = 0;
+      for (UUID unitId : allUnitIds(contractsByUnit, occupancyPeriodsByUnit)) {
+        long tenantDays = 0;
+        for (Contract c : contractsByUnit.getOrDefault(unitId, List.of())) {
+          if (c.getStartDate() == null) {
+            continue;
+          }
+          LocalDate cStart = c.getStartDate().isBefore(monthStart) ? monthStart : c.getStartDate();
+          LocalDate cEnd =
+              effectiveEndDates
+                  .getOrDefault(c.getId(), c.getEndDate())
+                  .filter(d -> !d.isAfter(monthEnd))
+                  .orElse(monthEnd);
+          if (!cStart.isAfter(cEnd)) {
+            tenantDays += DAYS.between(cStart, cEnd) + 1;
+          }
         }
-        LocalDate cStart = c.getStartDate().isBefore(monthStart) ? monthStart : c.getStartDate();
-        LocalDate cEnd =
-            effectiveEndDates
-                .getOrDefault(c.getId(), c.getEndDate())
-                .filter(d -> !d.isAfter(monthEnd))
-                .orElse(monthEnd);
-        if (!cStart.isAfter(cEnd)) {
-          tenantDays += DAYS.between(cStart, cEnd) + 1;
+        tenantDays = Math.min(tenantDays, daysInMonth);
+
+        long selfDays = 0;
+        for (PropertyOccupancyPeriod p : occupancyPeriodsByUnit.getOrDefault(unitId, List.of())) {
+          LocalDate pStart = p.getStartDate().isBefore(monthStart) ? monthStart : p.getStartDate();
+          LocalDate pEnd = p.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
+          if (!pStart.isAfter(pEnd)) {
+            selfDays += DAYS.between(pStart, pEnd) + 1;
+          }
         }
+        selfDays = Math.min(selfDays, daysInMonth - tenantDays);
+
+        totalTenantDays += tenantDays;
+        totalSelfDays += selfDays;
       }
-
-      long selfDays = 0;
-      for (PropertyOccupancyPeriod p : occupancyPeriods) {
-        LocalDate pStart = p.getStartDate().isBefore(monthStart) ? monthStart : p.getStartDate();
-        LocalDate pEnd = p.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
-        if (!pStart.isAfter(pEnd)) {
-          selfDays += DAYS.between(pStart, pEnd) + 1;
-        }
-      }
-
-      // Cap individually at days in month
-      tenantDays = Math.min(tenantDays, daysInMonth);
-      selfDays = Math.min(selfDays, daysInMonth - tenantDays);
 
       BigDecimal tenantPct =
-          BigDecimal.valueOf(tenantDays)
+          BigDecimal.valueOf(totalTenantDays)
               .multiply(ONE_HUNDRED)
-              .divide(BigDecimal.valueOf(daysInMonth), SCALE, HALF_UP);
+              .divide(BigDecimal.valueOf(denominatorDays), SCALE, HALF_UP);
       BigDecimal selfPct =
-          BigDecimal.valueOf(selfDays)
+          BigDecimal.valueOf(totalSelfDays)
               .multiply(ONE_HUNDRED)
-              .divide(BigDecimal.valueOf(daysInMonth), SCALE, HALF_UP);
+              .divide(BigDecimal.valueOf(denominatorDays), SCALE, HALF_UP);
       dataPoints.add(new OccupancyDataPoint(ym.toString(), tenantPct, selfPct));
     }
     return new OccupancyChartData(dataPoints);
+  }
+
+  /** Every unit that has any contract or self-occupancy history at all, across the property. */
+  private static List<UUID> allUnitIds(
+      Map<UUID, List<Contract>> contractsByUnit,
+      Map<UUID, List<PropertyOccupancyPeriod>> occupancyPeriodsByUnit) {
+    return Stream.concat(
+            contractsByUnit.keySet().stream(), occupancyPeriodsByUnit.keySet().stream())
+        .distinct()
+        .toList();
   }
 
   private FutureTrendData buildFutureTrend(
