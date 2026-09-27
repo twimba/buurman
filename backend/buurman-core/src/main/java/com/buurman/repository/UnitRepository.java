@@ -139,6 +139,8 @@ public class UnitRepository {
     BigDecimal wozValueAmount = unit.getWozValue().map(MoneyAmount::value).orElse(null);
     String wozValueCurrency = unit.getWozValue().map(MoneyAmount::currency).orElse(null);
 
+    assertPropertyBelongsToTeam(unit.getPropertyId(), unit.getTeamId());
+
     if (unit.getId() == null) {
       // INSERT
       UUID newId = UUID.randomUUID();
@@ -250,6 +252,29 @@ public class UnitRepository {
     }
 
     return unit;
+  }
+
+  /**
+   * Defense-in-depth against a unit ending up with a {@code team_id} that disagrees with its {@code
+   * property_id}'s owning team. The composite FK {@code fk_units_property_team} on {@code
+   * (property_id, team_id)} already blocks this at the database level, but it surfaces as a raw
+   * {@link org.jooq.exception.IntegrityConstraintViolationException} with no team-scoping context
+   * -- an unhandled 500, not a clean rejection. Every real caller already resolves {@code
+   * propertyId} via a team-scoped {@code PropertyRepository} lookup before building/saving a {@link
+   * Unit}, so this should never trip in practice, but a caller bug (or a unit whose in-memory
+   * {@code propertyId} was mutated to point at a sibling team's property) is turned into a
+   * deliberate {@link BusinessRuleException} instead of leaking the constraint violation.
+   */
+  private void assertPropertyBelongsToTeam(UUID propertyId, UUID teamId) {
+    boolean belongsToTeam =
+        dsl.fetchExists(
+            dsl.selectOne()
+                .from(PROPERTIES)
+                .where(PROPERTIES.ID.eq(propertyId).and(PROPERTIES.TEAM_ID.eq(teamId))));
+    if (!belongsToTeam) {
+      throw new BusinessRuleException(
+          "Unit's property does not belong to the unit's team; refusing to save.");
+    }
   }
 
   public void softDelete(UUID unitId, UUID teamId, UUID actorId) {

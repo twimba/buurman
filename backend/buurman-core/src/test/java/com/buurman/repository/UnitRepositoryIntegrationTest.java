@@ -287,4 +287,140 @@ class UnitRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
                 .fetchOne(0, LocalDateTime.class))
         .isNull();
   }
+
+  @Test
+  @DisplayName(
+      "save()'s UPDATE branch round-trips every one of its 28 columns against a real PostgreSQL"
+          + " row -- this UPDATE was previously executed zero times against a real database"
+          + " (BUUR-106 follow-up register, section F, item 4)")
+  void updateRoundTripsEveryColumn() {
+    UUID otherPropertyInSameTeam = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+
+    Unit inserted =
+        repository.save(
+            Unit.builder()
+                .identifier(Optional.of(SidGenerator.newUnitId()))
+                .teamId(TEAM_A_ID)
+                .propertyId(teamAPropertyId)
+                .unitNumber("1")
+                .unitType(UnitType.APARTMENT)
+                .status(UnitStatus.VACANT)
+                .createdBy(Optional.of(USER_ID))
+                .updatedBy(Optional.of(USER_ID))
+                .build());
+
+    // Mutate every settable column on the in-memory copy, including moving it to a different
+    // property of the SAME team (property_id is one of the UPDATE's SET columns).
+    inserted.setPropertyId(otherPropertyInSameTeam);
+    inserted.setName(Optional.of("Garden flat"));
+    inserted.setUnitNumber("1B");
+    inserted.setFloor(Optional.of(2));
+    inserted.setSortOrder(5);
+    inserted.setUnitType(UnitType.COMMERCIAL);
+    inserted.setStatus(UnitStatus.MAINTENANCE);
+    inserted.setImplicit(true);
+    inserted.setWozValue(Optional.of(MoneyAmount.of(new BigDecimal("512345.67"), "EUR")));
+    inserted.setWozSharePct(Optional.of(new BigDecimal("42.5")));
+    inserted.setAllocationShare(Optional.of(new BigDecimal("33.3")));
+    inserted.setAreaValue(Optional.of(new BigDecimal("88.25")));
+    inserted.setAreaUnit(Optional.of("sqft"));
+    inserted.setEnergyEfficiencyRating(Optional.of("C"));
+    inserted.setEnergyCertificateExpiryDate(Optional.of(java.time.LocalDate.of(2031, 6, 15)));
+    inserted.setHeatingType(Optional.of("district"));
+    inserted.setCoolingType(Optional.of("split-unit"));
+    inserted.setHotWaterSystem(Optional.of("heat-pump"));
+    inserted.setInsulationNotes(Optional.of("cavity wall"));
+    inserted.setFlooringType(Optional.of("tile"));
+    inserted.setWindowType(Optional.of("triple"));
+    inserted.setHasSmokeDetectors(Optional.of(true));
+    inserted.setHasCoDetectors(Optional.of(false));
+    inserted.setHasFireExtinguisher(Optional.of(true));
+    inserted.setHasAdaptedBathroom(Optional.of(false));
+    inserted.setAccessibilityNotes(Optional.of("step-free entrance"));
+
+    repository.save(inserted);
+
+    // Re-fetch independently -- the save() return value is the same mutated in-memory instance,
+    // so reading it back proves nothing about what actually landed in PostgreSQL.
+    Unit reloaded = repository.getByIdAndTeamId(inserted.getId(), TEAM_A_ID);
+
+    assertThat(reloaded.getPropertyId()).isEqualTo(otherPropertyInSameTeam);
+    assertThat(reloaded.getName()).contains("Garden flat");
+    assertThat(reloaded.getUnitNumber()).isEqualTo("1B");
+    assertThat(reloaded.getFloor()).contains(2);
+    assertThat(reloaded.getSortOrder()).isEqualTo(5);
+    assertThat(reloaded.getUnitType()).isEqualTo(UnitType.COMMERCIAL);
+    assertThat(reloaded.getStatus()).isEqualTo(UnitStatus.MAINTENANCE);
+    assertThat(reloaded.isImplicit()).isTrue();
+    assertThat(reloaded.getWozValue().orElseThrow().value())
+        .isEqualByComparingTo(new BigDecimal("512345.67"));
+    assertThat(reloaded.getWozValue().orElseThrow().currency()).isEqualTo("EUR");
+    assertThat(reloaded.getWozSharePct().orElseThrow())
+        .isEqualByComparingTo(new BigDecimal("42.5"));
+    assertThat(reloaded.getAllocationShare().orElseThrow())
+        .isEqualByComparingTo(new BigDecimal("33.3"));
+    assertThat(reloaded.getAreaValue().orElseThrow()).isEqualByComparingTo(new BigDecimal("88.25"));
+    assertThat(reloaded.getAreaUnit()).contains("sqft");
+    assertThat(reloaded.getEnergyEfficiencyRating()).contains("C");
+    assertThat(reloaded.getEnergyCertificateExpiryDate())
+        .contains(java.time.LocalDate.of(2031, 6, 15));
+    assertThat(reloaded.getHeatingType()).contains("district");
+    assertThat(reloaded.getCoolingType()).contains("split-unit");
+    assertThat(reloaded.getHotWaterSystem()).contains("heat-pump");
+    assertThat(reloaded.getInsulationNotes()).contains("cavity wall");
+    assertThat(reloaded.getFlooringType()).contains("tile");
+    assertThat(reloaded.getWindowType()).contains("triple");
+    assertThat(reloaded.getHasSmokeDetectors()).contains(true);
+    assertThat(reloaded.getHasCoDetectors()).contains(false);
+    assertThat(reloaded.getHasFireExtinguisher()).contains(true);
+    assertThat(reloaded.getHasAdaptedBathroom()).contains(false);
+    assertThat(reloaded.getAccessibilityNotes()).contains("step-free entrance");
+    assertThat(reloaded.getVersion()).isEqualTo(1);
+    assertThat(reloaded.getUpdatedBy()).contains(USER_ID);
+  }
+
+  @Test
+  @DisplayName(
+      "save() refuses to move a unit onto another team's property, on both INSERT and UPDATE"
+          + " (BUUR-106 follow-up register, section F, cross-tenant writes)")
+  void saveRejectsMovingAUnitToAnotherTeamsProperty() {
+    // INSERT: a brand-new team-A unit whose propertyId points at team B's property.
+    assertThatThrownBy(
+            () ->
+                repository.save(
+                    Unit.builder()
+                        .identifier(Optional.of(SidGenerator.newUnitId()))
+                        .teamId(TEAM_A_ID)
+                        .propertyId(teamBPropertyId)
+                        .unitNumber("1")
+                        .unitType(UnitType.APARTMENT)
+                        .status(UnitStatus.VACANT)
+                        .createdBy(Optional.of(USER_ID))
+                        .updatedBy(Optional.of(USER_ID))
+                        .build()))
+        .isInstanceOf(BusinessRuleException.class);
+
+    // UPDATE: an existing, correctly-scoped team-A unit whose propertyId is then mutated to
+    // point at team B's property.
+    Unit saved =
+        repository.save(
+            Unit.builder()
+                .identifier(Optional.of(SidGenerator.newUnitId()))
+                .teamId(TEAM_A_ID)
+                .propertyId(teamAPropertyId)
+                .unitNumber("2")
+                .unitType(UnitType.APARTMENT)
+                .status(UnitStatus.VACANT)
+                .createdBy(Optional.of(USER_ID))
+                .updatedBy(Optional.of(USER_ID))
+                .build());
+
+    saved.setPropertyId(teamBPropertyId);
+
+    assertThatThrownBy(() -> repository.save(saved)).isInstanceOf(BusinessRuleException.class);
+
+    // The unit was not moved: it is still attached to team A's property.
+    Unit reloaded = repository.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
+    assertThat(reloaded.getPropertyId()).isEqualTo(teamAPropertyId);
+  }
 }
