@@ -1,0 +1,75 @@
+name: Frontend Tests
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "openapi/**"
+      - ".github/workflows/test-frontend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - "openapi/**"
+
+jobs:
+  test:
+    name: Typecheck, build, lint, test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn install --immutable
+
+      # Generate API client TypeScript from the OpenAPI spec. The
+      # `frontend/{app,backoffice}/src/generated/` directories are
+      # gitignored and regenerated at build time by orval; without this
+      # step every `@/generated/*` import fails typechecking and the
+      # build below fails with TS2307.
+      - name: Generate API clients
+        working-directory: frontend
+        run: yarn generate:api
+
+      # Typecheck each workspace explicitly. This is the real gate: `yarn test`
+      # (Vitest) and `yarn lint` (ESLint, not type-aware here) both pass on a
+      # codebase that does not compile, so neither one catches a TypeScript
+      # break on its own.
+      - name: Typecheck app
+        working-directory: frontend/app
+        run: npx tsc --noEmit
+
+      - name: Typecheck backoffice
+        working-directory: frontend/backoffice
+        run: npx tsc --noEmit
+
+      - name: Typecheck @buurman/ui
+        working-directory: frontend/packages/ui
+        run: yarn typecheck
+
+      # `tsc && vite build` for both apps. Same gate as above, restated via
+      # the actual production build path (catches anything tsc project
+      # references/config quirks might let slip).
+      - name: Build
+        working-directory: frontend
+        run: yarn build
+
+      - name: Lint
+        working-directory: frontend
+        run: yarn lint
+
+      - name: Test
+        working-directory: frontend
+        run: yarn test

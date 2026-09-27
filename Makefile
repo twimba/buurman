@@ -40,9 +40,14 @@ certs:
 stats:
 	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --avg-wage 100000 --sloccount-format --cocomo-project-type "ai-solo,0.25,1.03,1.0,1.0"
 
-## Run backend unit tests
+## Run backend unit tests (install-then-test: the full reactor must be `install`ed first,
+## otherwise dependency resolution can pick up stale/partial `target/classes` from another
+## module instead of its installed jar, causing non-deterministic NoClassDefFoundError /
+## ClassNotFoundException. This is the single sanctioned entry point — do not run bare
+## `mvn test` and do not pair `-pl` without `-am`.
 test:
-	cd backend && mvn test -pl buurman-common,buurman-core,buurman-notifications,buurman-documents,buurman-booklets,buurman-letters -Pquick -Dmaven.build.cache.enabled=false
+	cd backend && mvn clean install -DskipTests -Dmaven.build.cache.enabled=false
+	cd backend && mvn test -Dmaven.build.cache.enabled=false
 
 ## Run backend unit tests with JaCoCo coverage report (per-module + aggregated)
 test-coverage:

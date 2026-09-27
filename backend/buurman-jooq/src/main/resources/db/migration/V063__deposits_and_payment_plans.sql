@@ -1,5 +1,4 @@
 -- BUUR-101: deposit lifecycle and payment plans.
-
 -- One deposit per contract: what was received, where it is held, deductions on move-out and
 -- what was returned. Amounts in minor units.
 CREATE TABLE deposits (
@@ -26,7 +25,13 @@ CREATE TABLE deposits (
     CONSTRAINT chk_deposits_amount CHECK (amount > 0),
     CONSTRAINT chk_deposits_returned CHECK (returned_amount >= 0),
     CONSTRAINT chk_deposits_status CHECK (
-        status IN ('EXPECTED', 'HELD', 'PARTIALLY_RETURNED', 'RETURNED', 'FORFEITED')
+        status IN (
+            'EXPECTED',
+            'HELD',
+            'PARTIALLY_RETURNED',
+            'RETURNED',
+            'FORFEITED'
+        )
     )
 );
 
@@ -96,17 +101,19 @@ WHERE
     deleted_at IS NULL;
 
 ALTER TABLE payments
-    DROP CONSTRAINT chk_payments_type,
-    ADD CONSTRAINT chk_payments_type CHECK (payment_type IN ('RENT', 'LATE_FEE', 'INSTALMENT')),
-    ADD COLUMN payment_plan_id UUID REFERENCES payment_plans (id);
+DROP CONSTRAINT chk_payments_type,
+ADD CONSTRAINT chk_payments_type CHECK (
+    payment_type IN ('RENT', 'LATE_FEE', 'INSTALMENT')
+),
+ADD COLUMN payment_plan_id UUID REFERENCES payment_plans (id);
 
 CREATE INDEX idx_payments_payment_plan_id ON payments (payment_plan_id)
 WHERE
     payment_plan_id IS NOT NULL;
 
 ALTER TABLE payment_receivals
-    DROP CONSTRAINT chk_receivals_type,
-    ADD CONSTRAINT chk_receivals_type CHECK (
-        receival_type IN ('PAYMENT', 'WRITE_OFF', 'CREDIT', 'PLAN')
-    ),
-    ADD COLUMN payment_plan_id UUID REFERENCES payment_plans (id);
+DROP CONSTRAINT chk_receivals_type,
+ADD CONSTRAINT chk_receivals_type CHECK (
+    receival_type IN ('PAYMENT', 'WRITE_OFF', 'CREDIT', 'PLAN')
+),
+ADD COLUMN payment_plan_id UUID REFERENCES payment_plans (id);
