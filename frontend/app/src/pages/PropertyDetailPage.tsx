@@ -20,6 +20,10 @@ import { PropertyLifecycleTimeline } from '@/components/properties/PropertyLifec
 import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
+import type {
+  PropertyIdentifier,
+  UnitIdentifier,
+} from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { DocumentDownloadMenu } from '@/components/common/DocumentDownloadMenu';
 import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
@@ -171,15 +175,24 @@ export const PropertyDetailPage = () => {
     }
   }, [propertyIdentifier]);
 
-  // WWS (NL-only)
+  // WWS (NL-only). WWS points are a per-dwelling figure (BUUR-106): the property-scoped reads
+  // below are honest (backend refuses /latest with 409 once the property has more than one
+  // unit), but calculating/opening the modal needs an actual unit. The Units UI is a later plan,
+  // so for now that only works for a single-unit property -- soleUnitIdentifier is undefined
+  // otherwise, and WwsCalculatorModal's required prop makes the compiler enforce that.
   const isNlProperty = property?.country === 'NL';
+  const propertyId = id as PropertyIdentifier;
+  const soleUnitIdentifier: UnitIdentifier | undefined =
+    property?.units.length === 1
+      ? (property.units[0].identifier as UnitIdentifier)
+      : undefined;
   const { data: latestWws } = useLatestWwsCalculation(
-    isNlProperty ? id : undefined
+    isNlProperty ? propertyId : undefined
   );
   const { data: wwsHistory = [] } = useWwsCalculations(
-    isNlProperty && showWwsHistory ? id : undefined
+    isNlProperty && showWwsHistory ? propertyId : undefined
   );
-  const deleteWwsMutation = useDeleteWwsCalculation(id);
+  const deleteWwsMutation = useDeleteWwsCalculation(propertyId);
 
   // Info tab data (needed for timeline and self-occupancy card)
   const { data: occupancyPeriods = [] } = useOccupancyPeriods(id);
@@ -1240,15 +1253,23 @@ export const PropertyDetailPage = () => {
                         {t('common:buttons.delete')}
                       </button>
                     )}
-                    <button
-                      onClick={() => setShowWwsModal(true)}
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
-                    >
-                      <Calculator className="h-3.5 w-3.5" />
-                      {latestWws
-                        ? t('detail.wws.recalculate')
-                        : t('detail.wws.calculate')}
-                    </button>
+                    {soleUnitIdentifier ? (
+                      <button
+                        onClick={() => setShowWwsModal(true)}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
+                      >
+                        <Calculator className="h-3.5 w-3.5" />
+                        {latestWws
+                          ? t('detail.wws.recalculate')
+                          : t('detail.wws.calculate')}
+                      </button>
+                    ) : (
+                      // WWS is per-unit; a multi-unit building has no single dwelling to
+                      // calculate for here until unit selection ships.
+                      <span className="text-xs text-text-secondary italic">
+                        {t('detail.wws.multiUnitUnsupported')}
+                      </span>
+                    )}
                   </div>
                 </div>
                 {latestWws ? (
@@ -1535,9 +1556,10 @@ export const PropertyDetailPage = () => {
           ) : null;
         })()}
 
-      {isNlProperty && (
+      {isNlProperty && soleUnitIdentifier && (
         <WwsCalculatorModal
-          propertyIdentifier={id}
+          propertyIdentifier={propertyId}
+          unitIdentifier={soleUnitIdentifier}
           isOpen={showWwsModal}
           onClose={() => setShowWwsModal(false)}
         />

@@ -136,7 +136,8 @@
       "history": "History",
       "noCalculation": "No calculation yet",
       "noCalculationDescription": "Calculate the WWS points to determine the maximum regulated rent for this property.",
-      "noPreviousCalculations": "No previous calculations."
+      "noPreviousCalculations": "No previous calculations.",
+      "multiUnitUnsupported": "This building has multiple units. Open a unit to calculate its WWS points."
     },
     "metadata": {
       "title": "Metadata",

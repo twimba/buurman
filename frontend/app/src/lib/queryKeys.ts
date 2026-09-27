@@ -296,8 +296,7 @@ export const queryKeys = {
 
   // --- WWS ---
   wws: {
-    preFill: (propertyIdentifier?: string) =>
-      k('wwsPreFill', propertyIdentifier),
+    preFill: (unitIdentifier?: string) => k('wwsPreFill', unitIdentifier),
     calculations: (propertyIdentifier?: string) =>
       k('wwsCalculations', propertyIdentifier),
     latest: (propertyIdentifier?: string) => k('wwsLatest', propertyIdentifier),

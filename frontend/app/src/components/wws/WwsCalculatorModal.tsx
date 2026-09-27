@@ -24,9 +24,13 @@ import type {
   WwsCalculationRequest,
   WwsCalculationResponse,
 } from '@/types/wws';
+import type { PropertyIdentifier, UnitIdentifier } from '@/generated/models';
 
 interface WwsCalculatorModalProps {
-  propertyIdentifier: string;
+  propertyIdentifier: PropertyIdentifier;
+  // WWS points are a per-dwelling figure (BUUR-106): required, not optional, so every call site
+  // is forced by the compiler to say which unit it means. There is no property-level fallback.
+  unitIdentifier: UnitIdentifier;
   onClose: () => void;
   isOpen: boolean;
 }
@@ -138,11 +142,15 @@ const SectionHeader = ({
 /** Inner component that remounts on each open via key, resetting all state. */
 const WwsCalculatorModalInner = ({
   propertyIdentifier,
+  unitIdentifier,
   onClose,
 }: Omit<WwsCalculatorModalProps, 'isOpen'>) => {
   const { t } = useTranslation('common');
+  // Pre-fill (area, energy label, ...) is dwelling data: it must come from the unit being priced,
+  // not the building (BUUR-106). The property-scoped "latest calculation" below is still safe
+  // here because the modal is only ever mounted for a single-unit property/unit pair.
   const { data: preFill, isLoading: preFillLoading } =
-    useWwsPreFill(propertyIdentifier);
+    useWwsPreFill(unitIdentifier);
   const { data: latestCalc, isLoading: latestLoading } =
     useLatestWwsCalculation(propertyIdentifier);
 
@@ -206,6 +214,7 @@ const WwsCalculatorModalInner = ({
     const req: WwsCalculationRequest = {
       systemVersion: form.systemVersion,
       propertyIdentifier,
+      unitIdentifier,
     };
     if (form.surfaceAreaSqm) {
       req.surfaceAreaSqm = parseFloat(form.surfaceAreaSqm);
@@ -857,6 +866,7 @@ const WwsCalculatorModalInner = ({
 export const WwsCalculatorModal = ({
   isOpen,
   propertyIdentifier,
+  unitIdentifier,
   onClose,
 }: WwsCalculatorModalProps) => {
   if (!isOpen) {
@@ -864,8 +874,9 @@ export const WwsCalculatorModal = ({
   }
   return (
     <WwsCalculatorModalInner
-      key={propertyIdentifier}
+      key={unitIdentifier}
       propertyIdentifier={propertyIdentifier}
+      unitIdentifier={unitIdentifier}
       onClose={onClose}
     />
   );
