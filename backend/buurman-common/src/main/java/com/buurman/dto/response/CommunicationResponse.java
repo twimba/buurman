@@ -18,6 +18,7 @@ public record CommunicationResponse(
     Sid identifier,
     String notificationType,
     String channel,
+    CommunicationAudience audience,
     Optional<String> subject,
     Optional<String> recipientEmail,
     Optional<String> recipientPhone,

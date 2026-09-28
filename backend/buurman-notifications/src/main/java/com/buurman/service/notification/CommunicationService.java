@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.Notification;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.NotificationIdentifier;
+import com.buurman.dto.response.CommunicationAudience;
 import com.buurman.dto.response.CommunicationResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
@@ -68,6 +69,21 @@ public class CommunicationService {
     return toResponse(notificationService.resend(teamId, identifier, userId));
   }
 
+  /**
+   * A contact is the tenant or another counterparty; a user is someone on the team. Checked in that
+   * order because a notification carrying both is addressed to the contact — the user id is then
+   * the team member who triggered it, not a second recipient.
+   */
+  private static CommunicationAudience audienceOf(Notification notification) {
+    if (notification.getRecipientContactId().isPresent()) {
+      return CommunicationAudience.CONTACT;
+    }
+    if (notification.getRecipientUserId().isPresent()) {
+      return CommunicationAudience.TEAM;
+    }
+    return CommunicationAudience.UNKNOWN;
+  }
+
   private List<CommunicationResponse> toResponses(List<Notification> notifications) {
     return notifications.stream().map(this::toResponse).toList();
   }
@@ -77,6 +93,7 @@ public class CommunicationService {
         notification.getIdentifier().orElseThrow(),
         notification.getNotificationType().name(),
         notification.getChannel().name(),
+        audienceOf(notification),
         notification.getSubject(),
         notification.getRecipientEmail(),
         notification.getRecipientPhone(),

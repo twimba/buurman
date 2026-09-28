@@ -699,7 +699,8 @@ components:
   schemas:
     CommunicationResponse:
       type: object
-      required: [identifier, notificationType, channel, status, opened, resend, createdAt]
+      required:
+        [identifier, notificationType, channel, audience, status, opened, resend, createdAt]
       properties:
         identifier:
           type: string
@@ -708,6 +709,12 @@ components:
         channel:
           type: string
           enum: [EMAIL, SMS]
+        audience:
+          type: string
+          description: >-
+            Who this went to. One send fans out to an internal copy per team member alongside the
+            tenant's, so the timeline groups on this and only offers resend on CONTACT rows.
+          enum: [CONTACT, TEAM, UNKNOWN]
         subject:
           type: string
         recipientEmail:

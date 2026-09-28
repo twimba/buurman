@@ -100,11 +100,7 @@ class DemoDataRegenerationIntegrationTest {
     assertThat(typesInTeam(teamId))
         .as("demo data must cover both the payment-linked and contract-linked kinds")
         .contains(
-            "PAYMENT_REMINDER",
-            "PAYMENT_PAID",
-            "CONTRACT_CREATED",
-            "CONTRACT_EXPIRY",
-            "WELCOME");
+            "PAYMENT_REMINDER", "PAYMENT_PAID", "CONTRACT_CREATED", "CONTRACT_EXPIRY", "WELCOME");
 
     // A payment notification is about the payment AND its contract, mirroring what
     // PaymentService and PaymentReminderService record, so the contract timeline shows it
