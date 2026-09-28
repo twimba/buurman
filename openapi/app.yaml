@@ -29452,25 +29452,42 @@ components:
           type: boolean
         empty:
           type: boolean
+    # Mirrors com.buurman.dto.response.NotificationStatsResponse. The backoffice API has
+    # its own stats response, shaped { total, byStatus, byChannel }; it lives in
+    # openapi/backoffice.yaml and is a different type. Do not merge the two.
     NotificationStatsResponse:
       type: object
       properties:
-        total:
+        totalCount:
           type: integer
           format: int64
-        byStatus:
-          type: object
-          additionalProperties:
-            type: integer
-            format: int64
+        pendingCount:
+          type: integer
+          format: int64
+        sentCount:
+          type: integer
+          format: int64
+        deliveredCount:
+          type: integer
+          format: int64
+        failedCount:
+          type: integer
+          format: int64
+        demoBlockedCount:
+          type: integer
+          format: int64
         byChannel:
           type: object
           additionalProperties:
             type: integer
             format: int64
       required:
-        - total
-        - byStatus
+        - totalCount
+        - pendingCount
+        - sentCount
+        - deliveredCount
+        - failedCount
+        - demoBlockedCount
         - byChannel
     InfoResponse:
       type: object
