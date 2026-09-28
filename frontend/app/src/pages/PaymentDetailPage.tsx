@@ -1524,14 +1524,19 @@ export const PaymentDetailPage = () => {
       {/* Scoped to the details tab: unscoped it rendered under Documents, History and
           Receivals too, which reads as a layout bug. */}
       {activeTab === 'details' && (
-        <section className="mt-6">
-          <h2 className="text-lg font-semibold text-text-primary mb-3">
+        <section className="mt-6 bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+          <h2 className="text-xl font-semibold text-text-primary mb-4">
             {t('common:communications.title')}
           </h2>
           <CommunicationsTimeline
             communications={communications}
             isLoading={communicationsLoading}
             isError={communicationsError}
+            resendingIdentifier={
+              resendCommunicationMutation.isPending
+                ? resendCommunicationMutation.variables
+                : undefined
+            }
             onResend={
               canEditData
                 ? (communicationId) =>

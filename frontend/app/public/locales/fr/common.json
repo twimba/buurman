@@ -710,6 +710,24 @@
       "CONTRACT_RENEWAL_REMINDER": "Rappel de renouvellement",
       "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Bail passé en durée indéterminée",
       "CONTRACT_RENT_ADJUSTED": "Loyer ajusté"
+    },
+    "to": "À {{recipient}}",
+    "resent": "renvoyé",
+    "resending": "Renvoi en cours…",
+    "resendTo": "Renvoyer {{type}} à {{recipient}}",
+    "resendSuccess": "Message renvoyé.",
+    "showAll": "Tout afficher ({{total}})",
+    "alsoCopiedToTeam": "Également copié à votre équipe ({{total}})",
+    "noneToContact": "Rien n'a encore été envoyé à votre locataire.",
+    "internalOnly": "Pour l'instant, uniquement des copies internes à votre équipe ({{total}}).",
+    "truncated": "Affichage des {{total}} messages les plus récents.",
+    "confirmResend": {
+      "title": "Renvoyer ce message ?",
+      "message": "{{type}} sera renvoyé à {{recipient}}. Un message réel sera expédié."
+    },
+    "failureReason": {
+      "notDelivered": "L'adresse ne l'a pas accepté — vérifiez les coordonnées.",
+      "failed": "L'envoi a échoué — vérifiez les coordonnées."
     }
   }
 }

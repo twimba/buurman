@@ -710,6 +710,24 @@
       "CONTRACT_RENEWAL_REMINDER": "Lembrete de renovação",
       "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Contrato convertido",
       "CONTRACT_RENT_ADJUSTED": "Renda atualizada"
+    },
+    "to": "Para {{recipient}}",
+    "resent": "reenviado",
+    "resending": "A reenviar…",
+    "resendTo": "Reenviar {{type}} para {{recipient}}",
+    "resendSuccess": "Mensagem reenviada.",
+    "showAll": "Mostrar tudo ({{total}})",
+    "alsoCopiedToTeam": "Também copiado para a sua equipa ({{total}})",
+    "noneToContact": "Ainda não foi enviado nada ao seu inquilino.",
+    "internalOnly": "Até agora apenas cópias internas para a sua equipa ({{total}}).",
+    "truncated": "A mostrar as {{total}} mensagens mais recentes.",
+    "confirmResend": {
+      "title": "Reenviar esta mensagem?",
+      "message": "{{type}} será reenviado para {{recipient}}. Isto envia uma mensagem real."
+    },
+    "failureReason": {
+      "notDelivered": "O endereço não a aceitou — verifique os dados de contacto.",
+      "failed": "Não foi possível enviar — verifique os dados de contacto."
     }
   }
 }

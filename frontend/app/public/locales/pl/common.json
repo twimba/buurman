@@ -710,6 +710,24 @@
       "CONTRACT_RENEWAL_REMINDER": "Przypomnienie o odnowieniu",
       "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Umowa zmieniona na bezterminową",
       "CONTRACT_RENT_ADJUSTED": "Czynsz zaktualizowany"
+    },
+    "to": "Do {{recipient}}",
+    "resent": "wysłano ponownie",
+    "resending": "Wysyłanie ponownie…",
+    "resendTo": "Wyślij ponownie {{type}} do {{recipient}}",
+    "resendSuccess": "Wiadomość wysłana ponownie.",
+    "showAll": "Pokaż wszystkie ({{total}})",
+    "alsoCopiedToTeam": "Skopiowano także do Twojego zespołu ({{total}})",
+    "noneToContact": "Nic jeszcze nie wysłano do najemcy.",
+    "internalOnly": "Na razie tylko kopie wewnętrzne do Twojego zespołu ({{total}}).",
+    "truncated": "Wyświetlanych jest {{total}} najnowszych wiadomości.",
+    "confirmResend": {
+      "title": "Wysłać tę wiadomość ponownie?",
+      "message": "{{type}} zostanie wysłana ponownie do {{recipient}}. Spowoduje to wysłanie prawdziwej wiadomości."
+    },
+    "failureReason": {
+      "notDelivered": "Adres jej nie przyjął — sprawdź dane kontaktowe.",
+      "failed": "Nie udało się wysłać — sprawdź dane kontaktowe."
     }
   }
 }

@@ -710,6 +710,24 @@
       "CONTRACT_RENEWAL_REMINDER": "Muistutus uusimisesta",
       "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Sopimus muutettu toistaiseksi voimassa olevaksi",
       "CONTRACT_RENT_ADJUSTED": "Vuokra tarkistettu"
+    },
+    "to": "Vastaanottaja {{recipient}}",
+    "resent": "lähetetty uudelleen",
+    "resending": "Lähetetään uudelleen…",
+    "resendTo": "Lähetä {{type}} uudelleen vastaanottajalle {{recipient}}",
+    "resendSuccess": "Viesti lähetettiin uudelleen.",
+    "showAll": "Näytä kaikki ({{total}})",
+    "alsoCopiedToTeam": "Kopioitu myös tiimillesi ({{total}})",
+    "noneToContact": "Vuokralaisellesi ei ole vielä lähetetty mitään.",
+    "internalOnly": "Toistaiseksi vain sisäisiä kopioita tiimillesi ({{total}}).",
+    "truncated": "Näytetään {{total}} uusinta viestiä.",
+    "confirmResend": {
+      "title": "Lähetetäänkö viesti uudelleen?",
+      "message": "{{type}} lähetetään uudelleen vastaanottajalle {{recipient}}. Tämä lähettää oikean viestin."
+    },
+    "failureReason": {
+      "notDelivered": "Osoite ei hyväksynyt sitä — tarkista yhteystiedot.",
+      "failed": "Lähettäminen ei onnistunut — tarkista yhteystiedot."
     }
   }
 }

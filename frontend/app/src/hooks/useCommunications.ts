@@ -1,4 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+
+import { useMutationWithToast } from '@/hooks/useMutationWithToast';
 import {
   getPaymentCommunications,
   getContractCommunications,
@@ -25,7 +28,12 @@ export const useContractCommunications = (identifier: string) =>
  */
 export const useResendCommunication = (invalidateKey: unknown[]) => {
   const queryClient = useQueryClient();
-  return useMutation({
+  const { t } = useTranslation('common');
+  // Resending sends a real message and costs money, so silence is not an acceptable outcome:
+  // a landlord with no feedback clicks again. Every other mutation hook in the app goes through
+  // this wrapper for the same reason.
+  return useMutationWithToast({
+    successMessage: t('communications.resendSuccess'),
     mutationFn: (identifier: string) => resendCommunication(identifier),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: invalidateKey }),
   });

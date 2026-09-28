@@ -710,6 +710,24 @@
       "CONTRACT_RENEWAL_REMINDER": "Påminnelse om förnyelse",
       "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Avtal övergått till tillsvidare",
       "CONTRACT_RENT_ADJUSTED": "Hyra justerad"
+    },
+    "to": "Till {{recipient}}",
+    "resent": "skickat igen",
+    "resending": "Skickar igen…",
+    "resendTo": "Skicka {{type}} igen till {{recipient}}",
+    "resendSuccess": "Meddelandet skickades igen.",
+    "showAll": "Visa alla ({{total}})",
+    "alsoCopiedToTeam": "Även kopierat till ditt team ({{total}})",
+    "noneToContact": "Inget har skickats till din hyresgäst än.",
+    "internalOnly": "Hittills endast interna kopior till ditt team ({{total}}).",
+    "truncated": "Visar de {{total}} senaste meddelandena.",
+    "confirmResend": {
+      "title": "Skicka meddelandet igen?",
+      "message": "{{type}} skickas igen till {{recipient}}. Detta skickar ett riktigt meddelande."
+    },
+    "failureReason": {
+      "notDelivered": "Adressen tog inte emot det — kontrollera kontaktuppgifterna.",
+      "failed": "Det gick inte att skicka — kontrollera kontaktuppgifterna."
     }
   }
 }

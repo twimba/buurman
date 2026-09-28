@@ -710,6 +710,24 @@
       "CONTRACT_RENEWAL_REMINDER": "Påminnelse om fornyelse",
       "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Kontrakt gått over",
       "CONTRACT_RENT_ADJUSTED": "Husleie justert"
+    },
+    "to": "Til {{recipient}}",
+    "resent": "sendt på nytt",
+    "resending": "Sender på nytt…",
+    "resendTo": "Send {{type}} på nytt til {{recipient}}",
+    "resendSuccess": "Meldingen ble sendt på nytt.",
+    "showAll": "Vis alle ({{total}})",
+    "alsoCopiedToTeam": "Også kopiert til teamet ditt ({{total}})",
+    "noneToContact": "Ingenting er sendt til leietakeren din ennå.",
+    "internalOnly": "Så langt bare interne kopier til teamet ditt ({{total}}).",
+    "truncated": "Viser de {{total}} nyeste meldingene.",
+    "confirmResend": {
+      "title": "Sende denne meldingen på nytt?",
+      "message": "{{type}} sendes på nytt til {{recipient}}. Dette sender en ekte melding."
+    },
+    "failureReason": {
+      "notDelivered": "Adressen tok ikke imot den — sjekk kontaktopplysningene.",
+      "failed": "Den kunne ikke sendes — sjekk kontaktopplysningene."
     }
   }
 }

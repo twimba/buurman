@@ -710,6 +710,24 @@
       "CONTRACT_RENEWAL_REMINDER": "Herinnering verlenging",
       "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Contract omgezet",
       "CONTRACT_RENT_ADJUSTED": "Huur aangepast"
+    },
+    "to": "Aan {{recipient}}",
+    "resent": "opnieuw verzonden",
+    "resending": "Bezig met opnieuw verzenden…",
+    "resendTo": "{{type}} opnieuw verzenden naar {{recipient}}",
+    "resendSuccess": "Bericht opnieuw verzonden.",
+    "showAll": "Alles tonen ({{total}})",
+    "alsoCopiedToTeam": "Ook gekopieerd naar je team ({{total}})",
+    "noneToContact": "Nog niets naar je huurder gestuurd.",
+    "internalOnly": "Tot nu toe alleen interne kopieën naar je team ({{total}}).",
+    "truncated": "De {{total}} meest recente berichten worden getoond.",
+    "confirmResend": {
+      "title": "Dit bericht opnieuw verzenden?",
+      "message": "{{type}} wordt opnieuw verzonden naar {{recipient}}. Dit verstuurt een echt bericht."
+    },
+    "failureReason": {
+      "notDelivered": "Het adres heeft het niet geaccepteerd — controleer de contactgegevens.",
+      "failed": "Het kon niet worden verzonden — controleer de contactgegevens."
     }
   }
 }

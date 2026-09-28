@@ -710,6 +710,24 @@
       "CONTRACT_RENEWAL_REMINDER": "Erinnerung zur Verlängerung",
       "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Vertrag umgewandelt",
       "CONTRACT_RENT_ADJUSTED": "Miete angepasst"
+    },
+    "to": "An {{recipient}}",
+    "resent": "erneut gesendet",
+    "resending": "Wird erneut gesendet…",
+    "resendTo": "{{type}} erneut an {{recipient}} senden",
+    "resendSuccess": "Nachricht erneut gesendet.",
+    "showAll": "Alle anzeigen ({{total}})",
+    "alsoCopiedToTeam": "Auch an Ihr Team kopiert ({{total}})",
+    "noneToContact": "Noch nichts an Ihren Mieter gesendet.",
+    "internalOnly": "Bisher nur interne Kopien an Ihr Team ({{total}}).",
+    "truncated": "Es werden die letzten {{total}} Nachrichten angezeigt.",
+    "confirmResend": {
+      "title": "Diese Nachricht erneut senden?",
+      "message": "{{type}} wird erneut an {{recipient}} gesendet. Dabei wird eine echte Nachricht verschickt."
+    },
+    "failureReason": {
+      "notDelivered": "Die Adresse hat die Nachricht nicht angenommen — prüfen Sie die Kontaktdaten.",
+      "failed": "Die Nachricht konnte nicht gesendet werden — prüfen Sie die Kontaktdaten."
     }
   }
 }
