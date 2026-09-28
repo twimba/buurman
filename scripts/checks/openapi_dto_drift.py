@@ -135,24 +135,40 @@ def main():
     raw = SPEC.read_text()
     schemas = {k: {"properties": {p: {} for p in v}} for k, v in spec_schemas(raw).items() if v}
 
-    dtos = {}
+    # A simple class name can occur more than once -- the app and the backoffice each have
+    # their own NotificationStatsResponse. This spec describes the app API, so a DTO under a
+    # `backoffice` package serves the other spec and must not stand in for the app's DTO.
+    # Keying on the simple name alone silently picked one of the two, and because the
+    # backoffice record happened to match this spec, a real mismatch in the app's record
+    # was reported as OK for as long as both existed.
+    candidates = {}
     for root in DTO_ROOTS:
         for path in root.rglob("*.java"):
+            if "backoffice" in path.relative_to(root).parts:
+                continue
             name, comps = parse_record(path.read_text())
             if name and comps:
-                dtos[name] = (comps, path.relative_to(ROOT))
+                candidates.setdefault(name, []).append((comps, path.relative_to(ROOT)))
 
     problems = []
+    ambiguous = []
     compared = 0
     for schema_name, schema in sorted(schemas.items()):
         if schema_name in IGNORE_SCHEMAS or not isinstance(schema, dict):
             continue
-        if schema_name not in dtos:
+        if schema_name not in candidates:
             continue
         props = schema.get("properties")
         if not isinstance(props, dict):
             continue
-        comps, path = dtos[schema_name]
+        # Two DTOs left with the same name and different fields: there is no way to know
+        # which one the spec means, so comparing against either would be a coin toss
+        # reported as a verdict. Say so instead of guessing.
+        found = candidates[schema_name]
+        if len({tuple(c) for c, _ in found}) > 1:
+            ambiguous.append((schema_name, [p for _, p in found]))
+            continue
+        comps, path = found[0]
         compared += 1
         spec_keys, dto_keys = set(props), set(comps)
         only_spec = sorted(spec_keys - dto_keys)
@@ -168,11 +184,17 @@ def main():
             print(f"  in spec, NOT in DTO  -> client sends/reads a key the server ignores: {only_spec}")
         if only_dto:
             print(f"  in DTO, NOT in spec  -> server field the client never learns about: {only_dto}")
-    if problems:
-        print(f"\n{len(problems)} schema(s) drifted.")
+    for schema_name, paths in ambiguous:
+        print(f"\n{schema_name}  -- ambiguous, not verified")
+        print("  several DTOs share this name with different fields; rename one or add a")
+        print("  @Schema/schemaMapping so the spec names exactly one:")
+        for path in paths:
+            print(f"    {path}")
+    if problems or ambiguous:
+        print(f"\n{len(problems)} schema(s) drifted, {len(ambiguous)} ambiguous.")
     elif not quiet:
         print("OK - every compared schema matches its DTO.")
-    return 1 if problems else 0
+    return 1 if problems or ambiguous else 0
 
 
 if __name__ == "__main__":
