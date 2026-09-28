@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.Record;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.config.models.AppProperties;
@@ -156,7 +157,8 @@ public class DemoNotificationGenerator {
             null,
             "DELIVERED",
             "delivered",
-            null);
+            null,
+            RelatedEntity.NONE);
       }
 
       // --- Property created notifications ---
@@ -191,7 +193,8 @@ public class DemoNotificationGenerator {
             null,
             "DELIVERED",
             "delivered",
-            null);
+            null,
+            RelatedEntity.NONE);
       }
 
       // --- Contract created + status change notifications ---
@@ -248,7 +251,8 @@ public class DemoNotificationGenerator {
             null,
             "DELIVERED",
             "delivered",
-            null);
+            null,
+            RelatedEntity.ofContract(contractId));
 
         // Contract status change notification for non-draft, non-active contracts
         if (!"DRAFT".equals(status) && !"ACTIVE".equals(status)) {
@@ -273,7 +277,8 @@ public class DemoNotificationGenerator {
               null,
               "DELIVERED",
               "delivered",
-              null);
+              null,
+              RelatedEntity.ofContract(contractId));
         }
       }
 
@@ -344,7 +349,8 @@ public class DemoNotificationGenerator {
                 primaryContactId,
                 "DELIVERED",
                 "delivered",
-                null);
+                null,
+                RelatedEntity.ofPayment(paymentId, contractId));
 
             // SMS reminder for overdue
             if ("OVERDUE".equals(paymentStatus) && contactPhone != null) {
@@ -361,7 +367,8 @@ public class DemoNotificationGenerator {
                   primaryContactId,
                   "SENT",
                   "sent",
-                  null);
+                  null,
+                  RelatedEntity.ofPayment(paymentId, contractId));
             }
 
             reminderCount++;
@@ -434,7 +441,8 @@ public class DemoNotificationGenerator {
               null,
               "DELIVERED",
               "delivered",
-              null);
+              null,
+              RelatedEntity.ofPayment(paymentId, contractId));
           paidCount++;
         }
       }
@@ -487,12 +495,34 @@ public class DemoNotificationGenerator {
             null,
             "DELIVERED",
             "delivered",
-            null);
+            null,
+            RelatedEntity.ofContract(contractId));
       }
 
       // --- A couple of failed notifications for realism ---
-      if (!contactIds.isEmpty()) {
-        UUID failedContactId = contactIds.get(random.nextInt(contactIds.size()));
+      // A bounced payment reminder is worth seeing ON the payment it failed to deliver, with its
+      // provider error, so pick a contact whose contract has at least one payment to attribute it
+      // to rather than the first contact that comes up.
+      UUID failedContactId = null;
+      UUID failedContractId = null;
+      UUID failedPaymentId = null;
+      for (UUID candidateId : contactIds) {
+        UUID candidateContractId = firstContractByContact.get(candidateId);
+        if (candidateContractId == null) {
+          continue;
+        }
+        List<UUID> candidatePayments =
+            ctx.getPaymentIdsByContract().getOrDefault(candidateContractId, List.of());
+        if (candidatePayments.isEmpty()) {
+          continue;
+        }
+        failedContactId = candidateId;
+        failedContractId = candidateContractId;
+        failedPaymentId = candidatePayments.get(random.nextInt(candidatePayments.size()));
+        break;
+      }
+
+      if (failedContactId != null) {
         Record failedContact = contactsById.get(failedContactId);
         if (failedContact != null) {
           String contactEmail = failedContact.get(CONTACTS.EMAIL);
@@ -501,16 +531,14 @@ public class DemoNotificationGenerator {
 
           // Find a property for this contact via prefetched contract_parties
           String propertyName = "your property";
-          UUID contactContractId = firstContractByContact.get(failedContactId);
-          if (contactContractId != null) {
-            Record contactContract = contractsById.get(contactContractId);
-            if (contactContract != null && teamId.equals(contactContract.get(CONTRACTS.TEAM_ID))) {
-              Record prop = propertiesById.get(contactContract.get(CONTRACTS.PROPERTY_ID));
-              if (prop != null) {
-                propertyName = prop.get(PROPERTIES.STREET) + ", " + prop.get(PROPERTIES.CITY);
-              }
+          Record contactContract = contractsById.get(failedContractId);
+          if (contactContract != null && teamId.equals(contactContract.get(CONTRACTS.TEAM_ID))) {
+            Record prop = propertiesById.get(contactContract.get(CONTRACTS.PROPERTY_ID));
+            if (prop != null) {
+              propertyName = prop.get(PROPERTIES.STREET) + ", " + prop.get(PROPERTIES.CITY);
             }
           }
+          RelatedEntity failedRelated = RelatedEntity.ofPayment(failedPaymentId, failedContractId);
 
           Map<String, Object> vars =
               Map.of(
@@ -534,7 +562,8 @@ public class DemoNotificationGenerator {
               failedContactId,
               "BOUNCED",
               null,
-              "550 5.1.1 The email account does not exist");
+              "550 5.1.1 The email account does not exist",
+              failedRelated);
 
           // Failed SMS
           addSmsNotification(
@@ -550,7 +579,8 @@ public class DemoNotificationGenerator {
               failedContactId,
               "FAILED",
               null,
-              "Invalid phone number");
+              "Invalid phone number",
+              failedRelated);
         }
       }
 
@@ -561,6 +591,27 @@ public class DemoNotificationGenerator {
 
       ctx.incrementNotifications(pending.size());
       log.info("Created {} notifications for team {}", pending.size(), teamKey);
+    }
+  }
+
+  /**
+   * Which payment or contract a demo notification is about, feeding {@code
+   * notifications.payment_id} and {@code notifications.contract_id} — the two columns the
+   * communications timeline on a payment or contract detail page reads.
+   *
+   * <p>Mirrors what the production senders record: a payment notification names the payment AND its
+   * contract, so the contract timeline shows it without joining through payments. A welcome or
+   * property-created email is about neither.
+   */
+  private record RelatedEntity(@Nullable UUID paymentId, @Nullable UUID contractId) {
+    private static final RelatedEntity NONE = new RelatedEntity(null, null);
+
+    private static RelatedEntity ofContract(@Nullable UUID contractId) {
+      return new RelatedEntity(null, contractId);
+    }
+
+    private static RelatedEntity ofPayment(@Nullable UUID paymentId, @Nullable UUID contractId) {
+      return new RelatedEntity(paymentId, contractId);
     }
   }
 
@@ -578,7 +629,8 @@ public class DemoNotificationGenerator {
       UUID recipientContactId,
       String status,
       String providerStatus,
-      String providerError) {
+      String providerError,
+      RelatedEntity related) {
     String subject = deriveSubject(template, templateVars);
     String body = renderSimpleBody(subject);
     String varsJson = toJson(templateVars);
@@ -604,7 +656,9 @@ public class DemoNotificationGenerator {
           providerError,
           statusUpdatedAt,
           createdAt,
-          createdBy
+          createdBy,
+          related.paymentId(),
+          related.contractId()
         });
   }
 
@@ -622,7 +676,8 @@ public class DemoNotificationGenerator {
       UUID recipientContactId,
       String status,
       String providerStatus,
-      String providerError) {
+      String providerError,
+      RelatedEntity related) {
     String smsBody = renderSmsBody(template, templateVars);
     String varsJson = toJson(templateVars);
     LocalDateTime statusUpdatedAt = createdAt.plusMinutes(random.nextInt(1, 30));
@@ -647,7 +702,9 @@ public class DemoNotificationGenerator {
           providerError,
           statusUpdatedAt,
           createdAt,
-          createdBy
+          createdBy,
+          related.paymentId(),
+          related.contractId()
         });
   }
 
@@ -677,7 +734,9 @@ public class DemoNotificationGenerator {
                         .set(NOTIFICATIONS.PROVIDER_ERROR, (String) r[15])
                         .set(NOTIFICATIONS.STATUS_UPDATED_AT, (LocalDateTime) r[16])
                         .set(NOTIFICATIONS.CREATED_AT, (LocalDateTime) r[17])
-                        .set(NOTIFICATIONS.CREATED_BY, (UUID) r[18]))
+                        .set(NOTIFICATIONS.CREATED_BY, (UUID) r[18])
+                        .set(NOTIFICATIONS.PAYMENT_ID, (UUID) r[19])
+                        .set(NOTIFICATIONS.CONTRACT_ID, (UUID) r[20]))
             .toList();
     dsl.batch(queries).execute();
   }

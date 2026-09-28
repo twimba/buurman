@@ -2,6 +2,8 @@ package com.buurman;
 
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.EXPENSE_ALLOCATIONS;
+import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,6 +81,114 @@ class DemoDataRegenerationIntegrationTest {
     // actually ran rather than the counts merely happening to match by coincidence.
     assertThat(unitRepository.countActiveByTeamId(firstDemoTeamId)).isZero();
     assertThat(countByTeam(PROPERTIES.TEAM_ID, firstDemoTeamId)).isZero();
+  }
+
+  /**
+   * The communications timeline on a payment or contract reads {@code notifications.payment_id} and
+   * {@code notifications.contract_id}. The demo generator writes notification rows straight through
+   * JOOQ rather than through {@code NotificationService}, so it does not pick those columns up for
+   * free the way the nine production call sites do — it left both NULL and every demo timeline was
+   * empty, which reads as a broken feature rather than as missing data.
+   *
+   * <p>Asserts per notification type rather than in aggregate: a single linked row would satisfy
+   * "some are linked" while the other kinds silently regressed.
+   */
+  @Test
+  void demoNotificationsLinkToThePaymentOrContractTheyAreAbout() {
+    UUID teamId = resetAndGenerate();
+
+    assertThat(typesInTeam(teamId))
+        .as("demo data must cover both the payment-linked and contract-linked kinds")
+        .contains(
+            "PAYMENT_REMINDER",
+            "PAYMENT_PAID",
+            "CONTRACT_CREATED",
+            "CONTRACT_EXPIRY",
+            "WELCOME");
+
+    // A payment notification is about the payment AND its contract, mirroring what
+    // PaymentService and PaymentReminderService record, so the contract timeline shows it
+    // without having to join through payments.
+    for (String type : List.of("PAYMENT_REMINDER", "PAYMENT_PAID")) {
+      assertThat(countWhere(teamId, type, NOTIFICATIONS.PAYMENT_ID.isNull()))
+          .as("%s notifications with no payment link", type)
+          .isZero();
+      assertThat(countWhere(teamId, type, NOTIFICATIONS.CONTRACT_ID.isNull()))
+          .as("%s notifications with no contract link", type)
+          .isZero();
+    }
+
+    for (String type : List.of("CONTRACT_CREATED", "CONTRACT_STATUS_CHANGED", "CONTRACT_EXPIRY")) {
+      assertThat(countWhere(teamId, type, NOTIFICATIONS.CONTRACT_ID.isNull()))
+          .as("%s notifications with no contract link", type)
+          .isZero();
+      assertThat(countWhere(teamId, type, NOTIFICATIONS.PAYMENT_ID.isNotNull()))
+          .as("%s is not about a payment", type)
+          .isZero();
+    }
+
+    // Neither a welcome email nor a property-created email is about a payment or a contract.
+    for (String type : List.of("WELCOME", "PROPERTY_CREATED")) {
+      assertThat(
+              countWhere(
+                  teamId,
+                  type,
+                  NOTIFICATIONS.PAYMENT_ID.isNotNull().or(NOTIFICATIONS.CONTRACT_ID.isNotNull())))
+          .as("%s must not claim to be about a payment or contract", type)
+          .isZero();
+    }
+
+    // The pair must agree: a notification linked to a payment must name that payment's own
+    // contract, or the same row would appear on two unrelated timelines.
+    Integer mismatched =
+        dsl.selectCount()
+            .from(NOTIFICATIONS)
+            .join(PAYMENTS)
+            .on(PAYMENTS.ID.eq(NOTIFICATIONS.PAYMENT_ID))
+            .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+            .and(NOTIFICATIONS.CONTRACT_ID.ne(PAYMENTS.CONTRACT_ID))
+            .fetchOne(0, Integer.class);
+    assertThat(mismatched).as("payment link and contract link disagree").isZero();
+
+    // Multi-tenancy: a link must never reach out of the team that owns the notification.
+    assertThat(
+            dsl.selectCount()
+                .from(NOTIFICATIONS)
+                .join(PAYMENTS)
+                .on(PAYMENTS.ID.eq(NOTIFICATIONS.PAYMENT_ID))
+                .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+                .and(PAYMENTS.TEAM_ID.ne(NOTIFICATIONS.TEAM_ID))
+                .fetchOne(0, Integer.class))
+        .as("notification linked to another team's payment")
+        .isZero();
+    assertThat(
+            dsl.selectCount()
+                .from(NOTIFICATIONS)
+                .join(CONTRACTS)
+                .on(CONTRACTS.ID.eq(NOTIFICATIONS.CONTRACT_ID))
+                .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+                .and(CONTRACTS.TEAM_ID.ne(NOTIFICATIONS.TEAM_ID))
+                .fetchOne(0, Integer.class))
+        .as("notification linked to another team's contract")
+        .isZero();
+  }
+
+  private List<String> typesInTeam(UUID teamId) {
+    return dsl.selectDistinct(NOTIFICATIONS.NOTIFICATION_TYPE)
+        .from(NOTIFICATIONS)
+        .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+        .fetch(NOTIFICATIONS.NOTIFICATION_TYPE);
+  }
+
+  private int countWhere(UUID teamId, String type, org.jooq.Condition condition) {
+    Integer count =
+        dsl.selectCount()
+            .from(NOTIFICATIONS)
+            .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+            .and(NOTIFICATIONS.NOTIFICATION_TYPE.eq(type))
+            .and(condition)
+            .fetchOne(0, Integer.class);
+    return count == null ? 0 : count;
   }
 
   /** Cleans up any existing demo data, then regenerates it, returning the new "demo-team" id. */
