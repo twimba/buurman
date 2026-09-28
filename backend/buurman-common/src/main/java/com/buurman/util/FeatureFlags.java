@@ -50,7 +50,7 @@ public final class FeatureFlags {
           Map.entry(EXCEL_EXPORT, false),
           Map.entry(GOOGLE_SHEETS_EXPORT, false),
           Map.entry(SWAGGER, true),
-          Map.entry(MULTI_UNIT, false));
+          Map.entry(MULTI_UNIT, true));
 
   /** Returns the compile-time default for a flag key, or false for unknown keys. */
   public static boolean defaultEnabled(String flagKey) {
