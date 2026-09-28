@@ -11,6 +11,8 @@ import {
 import type { CommunicationResponse } from '@/generated/models';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import type { CommunicationEntity } from '@/hooks/useCommunications';
+import { CommunicationMessageSheet } from './CommunicationMessageSheet';
 
 /** Rows shown before the "show all" expander; a long-lived contract accumulates many. */
 const COLLAPSED_ROWS = 5;
@@ -28,6 +30,9 @@ interface CommunicationsTimelineProps {
   isError?: boolean;
   onResend?: (identifier: string) => void;
   resendingIdentifier?: string;
+  /** Which entity's timeline this is — the preview endpoint is scoped by it, not only by team. */
+  entity: CommunicationEntity;
+  entityIdentifier: string;
 }
 
 /**
@@ -89,11 +94,14 @@ export const CommunicationsTimeline = ({
   isError = false,
   onResend,
   resendingIdentifier,
+  entity,
+  entityIdentifier,
 }: CommunicationsTimelineProps) => {
   const { t } = useTranslation('common');
   const { formatDateTime, formatRelative } = useFormatDate();
   const [expanded, setExpanded] = useState(false);
   const [pendingResend, setPendingResend] = useState<CommunicationResponse>();
+  const [previewing, setPreviewing] = useState<CommunicationResponse>();
 
   // One send fans out to an internal copy per team member alongside the tenant's. Only the
   // tenant-facing rows answer "was my tenant told", so they are the timeline; the copies collapse
@@ -224,22 +232,43 @@ export const CommunicationsTimeline = ({
                   </p>
                 )}
 
-                {onResend && (
+                <div className="mt-1 flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => setPendingResend(communication)}
-                    disabled={resendingIdentifier === communication.identifier}
-                    aria-label={t('communications.resendTo', {
-                      type: typeLabel,
-                      recipient: recipient ?? typeLabel,
-                    })}
-                    className="focus-ring hit-44 mt-1 rounded py-1 text-xs font-medium text-primary-600 hover:underline disabled:cursor-not-allowed disabled:opacity-60 dark:text-primary-300"
+                    onClick={() => setPreviewing(communication)}
+                    aria-label={
+                      recipient
+                        ? t('communications.preview.openFor', {
+                            type: typeLabel,
+                            recipient,
+                          })
+                        : t('communications.preview.openUnaddressed', {
+                            type: typeLabel,
+                          })
+                    }
+                    className="focus-ring hit-44 rounded py-1 text-xs font-medium text-primary-600 hover:underline dark:text-primary-300"
                   >
-                    {resendingIdentifier === communication.identifier
-                      ? t('communications.resending')
-                      : t('communications.resend')}
+                    {t('communications.preview.open')}
                   </button>
-                )}
+                  {onResend && (
+                    <button
+                      type="button"
+                      onClick={() => setPendingResend(communication)}
+                      disabled={
+                        resendingIdentifier === communication.identifier
+                      }
+                      aria-label={t('communications.resendTo', {
+                        type: typeLabel,
+                        recipient: recipient ?? typeLabel,
+                      })}
+                      className="focus-ring hit-44 rounded py-1 text-xs font-medium text-primary-600 hover:underline disabled:cursor-not-allowed disabled:opacity-60 dark:text-primary-300"
+                    >
+                      {resendingIdentifier === communication.identifier
+                        ? t('communications.resending')
+                        : t('communications.resend')}
+                    </button>
+                  )}
+                </div>
               </li>
             );
           })}
@@ -266,6 +295,15 @@ export const CommunicationsTimeline = ({
         <p className="mt-2 text-xs text-text-muted">
           {t('communications.truncated', { total: SERVER_LIMIT })}
         </p>
+      )}
+
+      {previewing && (
+        <CommunicationMessageSheet
+          communication={previewing}
+          entity={entity}
+          entityIdentifier={entityIdentifier}
+          onClose={() => setPreviewing(undefined)}
+        />
       )}
 
       {pendingResend && onResend && (

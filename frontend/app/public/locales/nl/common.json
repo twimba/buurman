@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "Het adres heeft het niet geaccepteerd — controleer de contactgegevens.",
       "failed": "Het kon niet worden verzonden — controleer de contactgegevens."
+    },
+    "preview": {
+      "open": "Bericht bekijken",
+      "openFor": "Bekijk de {{type}} die naar {{recipient}} is gestuurd",
+      "openUnaddressed": "Bekijk de verstuurde {{type}}",
+      "sentToOn": "Aan {{recipient}} · {{date}}",
+      "sentOn": "Verstuurd op {{date}}",
+      "subject": "Onderwerp",
+      "frameTitle": "Voorbeeld van het bericht",
+      "smsLabel": "Sms-bericht",
+      "demoBlocked": "Dit is niet verstuurd — bezorging staat uit voor dit team. Dit is wat er verstuurd zou zijn.",
+      "loadError": "Dit bericht kon niet worden geladen.",
+      "retry": "Opnieuw proberen",
+      "noContent": "Er is geen kopie van dit bericht bewaard."
     }
   }
 }

@@ -3489,6 +3489,69 @@ paths:
                   $ref: '#/components/schemas/CommunicationResponse'
         '404':
           description: Contract not found in this team
+  /payments/{identifier}/communications/{communicationIdentifier}/body:
+    get:
+      tags:
+        - Communications
+      summary: The stored message of a communication sent about a payment
+      description: >-
+        The rendered message as the recipient received it. Kept out of the timeline list response:
+        a hundred-row timeline would otherwise pull a hundred rendered emails to draw five lines of
+        metadata each. Scoped by the payment as well as the team, so a communication about another
+        payment cannot be read through this one.
+      operationId: getPaymentCommunicationBody
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Payment identifier (Sid)
+        - name: communicationIdentifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Notification identifier (Sid)
+      responses:
+        '200':
+          description: The stored message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunicationBodyResponse'
+        '404':
+          description: Payment or communication not found in this team
+  /contracts/{identifier}/communications/{communicationIdentifier}/body:
+    get:
+      tags:
+        - Communications
+      summary: The stored message of a communication sent about a contract
+      description: >-
+        See the payment equivalent. Scoped by the contract as well as the team.
+      operationId: getContractCommunicationBody
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Contract identifier (Sid)
+        - name: communicationIdentifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Notification identifier (Sid)
+      responses:
+        '200':
+          description: The stored message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunicationBodyResponse'
+        '404':
+          description: Contract or communication not found in this team
   /communications/{identifier}/resend:
     post:
       tags:
@@ -22075,6 +22138,22 @@ components:
         createdAt:
           type: string
           format: date-time
+    CommunicationBodyResponse:
+      type: object
+      description: >-
+        The stored message of one communication. Fetched on demand when a preview opens, never as
+        part of the timeline list.
+      required: [identifier, channel, body]
+      properties:
+        identifier:
+          type: string
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        subject:
+          type: string
+        body:
+          type: string
     LanguageCode:
       type: string
       description: ISO 639-1 code of a language the product is translated into

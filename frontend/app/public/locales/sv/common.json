@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "Adressen tog inte emot det — kontrollera kontaktuppgifterna.",
       "failed": "Det gick inte att skicka — kontrollera kontaktuppgifterna."
+    },
+    "preview": {
+      "open": "Visa meddelande",
+      "openFor": "Visa {{type}} som skickades till {{recipient}}",
+      "openUnaddressed": "Visa {{type}} som skickades",
+      "sentToOn": "Till {{recipient}} · {{date}}",
+      "sentOn": "Skickat {{date}}",
+      "subject": "Ämne",
+      "frameTitle": "Förhandsvisning av meddelandet",
+      "smsLabel": "SMS",
+      "demoBlocked": "Detta skickades inte — utskick är avstängt för det här teamet. Så här hade meddelandet sett ut.",
+      "loadError": "Meddelandet kunde inte laddas.",
+      "retry": "Försök igen",
+      "noContent": "Ingen kopia av det här meddelandet har sparats."
     }
   }
 }

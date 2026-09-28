@@ -88,10 +88,7 @@
       "first": "erste(r): {{date}}",
       "resentFrom": "Erneut gesendet von",
       "resendReason": "Grund für erneutes Senden",
-      "resend": "Erneut senden",
-      "emailPreview": "E-Mail-Vorschau",
-      "smsMessage": "SMS-Nachricht",
-      "delivered": "Zugestellt"
+      "resend": "Erneut senden"
     },
     "filters": {
       "searchByEmail": "Nach E-Mail suchen...",

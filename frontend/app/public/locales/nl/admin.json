@@ -88,10 +88,7 @@
       "first": "eerste: {{date}}",
       "resentFrom": "Opnieuw verzonden vanuit",
       "resendReason": "Reden voor opnieuw verzenden",
-      "resend": "Opnieuw verzenden",
-      "emailPreview": "E-mail voorbeeld",
-      "smsMessage": "SMS-bericht",
-      "delivered": "Bezorgd"
+      "resend": "Opnieuw verzenden"
     },
     "filters": {
       "searchByEmail": "Zoeken op e-mail...",

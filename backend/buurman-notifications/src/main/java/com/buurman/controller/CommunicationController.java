@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.NotificationIdentifier;
+import com.buurman.dto.response.CommunicationBodyResponse;
 import com.buurman.dto.response.CommunicationResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.generated.api.CommunicationsApi;
@@ -34,6 +35,20 @@ public class CommunicationController implements CommunicationsApi {
   @Override
   public List<CommunicationResponse> getContractCommunications(String identifier) {
     return communicationService.getContractCommunications(Sid.of(identifier), currentTeamId());
+  }
+
+  @Override
+  public CommunicationBodyResponse getPaymentCommunicationBody(
+      String identifier, String communicationIdentifier) {
+    return communicationService.getPaymentCommunicationBody(
+        Sid.of(identifier), NotificationIdentifier.of(communicationIdentifier), currentTeamId());
+  }
+
+  @Override
+  public CommunicationBodyResponse getContractCommunicationBody(
+      String identifier, String communicationIdentifier) {
+    return communicationService.getContractCommunicationBody(
+        Sid.of(identifier), NotificationIdentifier.of(communicationIdentifier), currentTeamId());
   }
 
   @Override

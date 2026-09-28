@@ -88,10 +88,7 @@
       "first": "forsta: {{date}}",
       "resentFrom": "Aterskickad fran",
       "resendReason": "Anledning till aterskickning",
-      "resend": "Skicka igen",
-      "emailPreview": "E-postforhandsvisning",
-      "smsMessage": "SMS-meddelande",
-      "delivered": "Levererad"
+      "resend": "Skicka igen"
     },
     "filters": {
       "searchByEmail": "Sok efter e-post...",

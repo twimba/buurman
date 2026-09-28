@@ -88,10 +88,7 @@
       "first": "første: {{date}}",
       "resentFrom": "Sendt på nytt fra",
       "resendReason": "Årsak til ny sending",
-      "resend": "Send på nytt",
-      "emailPreview": "E-postforhåndsvisning",
-      "smsMessage": "SMS-melding",
-      "delivered": "Levert"
+      "resend": "Send på nytt"
     },
     "filters": {
       "searchByEmail": "Søk etter e-post...",

@@ -1530,6 +1530,8 @@ export const PaymentDetailPage = () => {
           </h2>
           <CommunicationsTimeline
             communications={communications}
+            entity="payment"
+            entityIdentifier={id}
             isLoading={communicationsLoading}
             isError={communicationsError}
             resendingIdentifier={

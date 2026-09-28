@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "Adressen tok ikke imot den — sjekk kontaktopplysningene.",
       "failed": "Den kunne ikke sendes — sjekk kontaktopplysningene."
+    },
+    "preview": {
+      "open": "Se melding",
+      "openFor": "Se {{type}} som ble sendt til {{recipient}}",
+      "openUnaddressed": "Se {{type}} som ble sendt",
+      "sentToOn": "Til {{recipient}} · {{date}}",
+      "sentOn": "Sendt {{date}}",
+      "subject": "Emne",
+      "frameTitle": "Forhåndsvisning av meldingen",
+      "smsLabel": "SMS",
+      "demoBlocked": "Denne ble ikke sendt — utsending er slått av for dette teamet. Slik ville meldingen sett ut.",
+      "loadError": "Meldingen kunne ikke lastes.",
+      "retry": "Prøv igjen",
+      "noContent": "Det er ikke lagret en kopi av denne meldingen."
     }
   }
 }

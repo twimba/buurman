@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "Adressen tog ikke imod den — tjek kontaktoplysningerne.",
       "failed": "Den kunne ikke sendes — tjek kontaktoplysningerne."
+    },
+    "preview": {
+      "open": "Se besked",
+      "openFor": "Se den {{type}}, der blev sendt til {{recipient}}",
+      "openUnaddressed": "Se den sendte {{type}}",
+      "sentToOn": "Til {{recipient}} · {{date}}",
+      "sentOn": "Sendt {{date}}",
+      "subject": "Emne",
+      "frameTitle": "Forhåndsvisning af beskeden",
+      "smsLabel": "Sms",
+      "demoBlocked": "Denne blev ikke sendt — afsendelse er slået fra for dette team. Sådan ville beskeden have set ud.",
+      "loadError": "Beskeden kunne ikke indlæses.",
+      "retry": "Prøv igen",
+      "noContent": "Der er ikke gemt en kopi af denne besked."
     }
   }
 }

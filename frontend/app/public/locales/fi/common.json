@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "Osoite ei hyväksynyt sitä — tarkista yhteystiedot.",
       "failed": "Lähettäminen ei onnistunut — tarkista yhteystiedot."
+    },
+    "preview": {
+      "open": "Näytä viesti",
+      "openFor": "Näytä {{recipient}}-vastaanottajalle lähetetty {{type}}",
+      "openUnaddressed": "Näytä lähetetty {{type}}",
+      "sentToOn": "Vastaanottaja {{recipient}} · {{date}}",
+      "sentOn": "Lähetetty {{date}}",
+      "subject": "Aihe",
+      "frameTitle": "Viestin esikatselu",
+      "smsLabel": "Tekstiviesti",
+      "demoBlocked": "Tätä ei lähetetty — lähetys on poistettu käytöstä tältä tiimiltä. Tällainen viesti olisi lähtenyt.",
+      "loadError": "Viestiä ei voitu ladata.",
+      "retry": "Yritä uudelleen",
+      "noContent": "Tästä viestistä ei ole tallennettua kopiota."
     }
   }
 }

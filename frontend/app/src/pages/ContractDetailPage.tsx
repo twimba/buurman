@@ -345,6 +345,8 @@ export const ContractDetailPage = () => {
               </h2>
               <CommunicationsTimeline
                 communications={communications}
+                entity="contract"
+                entityIdentifier={id}
                 isLoading={communicationsLoading}
                 isError={communicationsError}
                 resendingIdentifier={

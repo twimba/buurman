@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '@/test/test-utils';
 import { CommunicationsTimeline } from '../CommunicationsTimeline';
@@ -7,6 +7,16 @@ import { CommunicationsTimeline } from '../CommunicationsTimeline';
 // Stubbing the hook rather than the output keeps the assertion sharp: the test proves the
 // component routes through the preference-aware formatter instead of calling toLocaleDateString,
 // which would silently use the browser's timezone and disagree with the rest of the page.
+const useCommunicationBody = vi.fn(() => ({
+  data: undefined,
+  isLoading: true,
+  isError: false,
+  refetch: vi.fn(),
+}));
+vi.mock('@/hooks/useCommunications', () => ({
+  useCommunicationBody: (...args: unknown[]) => useCommunicationBody(...args),
+}));
+
 vi.mock('@/hooks/useFormatDate', () => ({
   useFormatDate: () => ({
     formatDate: (value: string) => `date:${value}`,
@@ -30,7 +40,12 @@ const row = (overrides = {}) => ({
 describe('CommunicationsTimeline', () => {
   it('says why it is empty, not merely that it is', () => {
     renderWithProviders(
-      <CommunicationsTimeline communications={[]} isLoading={false} />
+      <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
+        communications={[]}
+        isLoading={false}
+      />
     );
 
     // No backfill exists, so a pre-existing payment shows nothing. Without this line a
@@ -43,6 +58,8 @@ describe('CommunicationsTimeline', () => {
   it('shows Opened when the message was read', () => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[row({ status: 'DELIVERED', opened: true })]}
         isLoading={false}
       />
@@ -62,6 +79,8 @@ describe('CommunicationsTimeline', () => {
   ])('renders %s as %s', (status, label) => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[row({ status })]}
         isLoading={false}
       />
@@ -73,6 +92,8 @@ describe('CommunicationsTimeline', () => {
   it('does not claim an SMS was unopened', () => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[
           row({ channel: 'SMS', status: 'SENT', opened: false }),
         ]}
@@ -89,6 +110,8 @@ describe('CommunicationsTimeline', () => {
   it('shows when each message was sent, in the user’s own date format', () => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[row({ createdAt: '2026-10-15T09:00:00Z' })]}
         isLoading={false}
       />
@@ -106,6 +129,8 @@ describe('CommunicationsTimeline', () => {
   it('does not label a demo-blocked message as failed', () => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[row({ status: 'DEMO_BLOCKED' })]}
         isLoading={false}
       />
@@ -118,7 +143,13 @@ describe('CommunicationsTimeline', () => {
 
   it('distinguishes a failed request from an empty timeline', () => {
     renderWithProviders(
-      <CommunicationsTimeline communications={[]} isLoading={false} isError />
+      <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
+        communications={[]}
+        isLoading={false}
+        isError
+      />
     );
 
     // "Nothing sent yet" is a confident claim; a 403 or 500 must not make it.
@@ -131,6 +162,8 @@ describe('CommunicationsTimeline', () => {
   it('translates the notification type rather than showing the enum', () => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[
           row({ notificationType: 'CONTRACT_ROLLED_OVER_TO_INDEFINITE' }),
         ]}
@@ -147,6 +180,8 @@ describe('CommunicationsTimeline', () => {
   it('shows the subject so a row is identifiable beyond its type', () => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[
           row({ subject: 'Payment overdue for Keizersgracht 123-B' }),
         ]}
@@ -162,6 +197,8 @@ describe('CommunicationsTimeline', () => {
   it('explains a bounce in words, keeping the provider string for whoever needs it', () => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[
           row({
             status: 'BOUNCED',
@@ -184,6 +221,8 @@ describe('CommunicationsTimeline', () => {
     it('shows what went to the tenant, not the internal copies of the same send', () => {
       renderWithProviders(
         <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_01JTEST000000000000000001"
           communications={[
             row({
               identifier: 'ntf_tenant',
@@ -220,6 +259,8 @@ describe('CommunicationsTimeline', () => {
       const onResend = vi.fn();
       renderWithProviders(
         <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_01JTEST000000000000000001"
           communications={[row({ audience: 'TEAM' })]}
           isLoading={false}
           onResend={onResend}
@@ -236,6 +277,8 @@ describe('CommunicationsTimeline', () => {
     it('says so when everything sent so far was internal', () => {
       renderWithProviders(
         <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_01JTEST000000000000000001"
           communications={[row({ audience: 'TEAM' })]}
           isLoading={false}
         />
@@ -249,6 +292,8 @@ describe('CommunicationsTimeline', () => {
     it('never presents a recipient-less system record as tenant contact', () => {
       renderWithProviders(
         <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_01JTEST000000000000000001"
           communications={[row({ audience: 'UNKNOWN' })]}
           isLoading={false}
         />
@@ -266,6 +311,8 @@ describe('CommunicationsTimeline', () => {
       const onResend = vi.fn();
       renderWithProviders(
         <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_01JTEST000000000000000001"
           communications={[row({ recipientEmail: 'tenant@example.com' })]}
           isLoading={false}
           onResend={onResend}
@@ -287,6 +334,8 @@ describe('CommunicationsTimeline', () => {
       const onResend = vi.fn();
       renderWithProviders(
         <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_01JTEST000000000000000001"
           communications={[
             row({ identifier: 'ntf_first' }),
             row({ identifier: 'ntf_second' }),
@@ -308,6 +357,8 @@ describe('CommunicationsTimeline', () => {
     it('gives each row a resend label that names its recipient', () => {
       renderWithProviders(
         <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_01JTEST000000000000000001"
           communications={[
             row({ identifier: 'ntf_a', recipientEmail: 'anna@example.com' }),
             row({ identifier: 'ntf_b', recipientEmail: 'bram@example.com' }),
@@ -329,6 +380,8 @@ describe('CommunicationsTimeline', () => {
     it('disables the row being resent so a second click cannot double-send', () => {
       renderWithProviders(
         <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_01JTEST000000000000000001"
           communications={[row({ identifier: 'ntf_busy' })]}
           isLoading={false}
           onResend={vi.fn()}
@@ -393,11 +446,210 @@ describe('CommunicationsTimeline', () => {
   it('renders a row that has neither an email nor a phone number', () => {
     renderWithProviders(
       <CommunicationsTimeline
+        entity="payment"
+        entityIdentifier="pay_01JTEST000000000000000001"
         communications={[row({ recipientEmail: undefined })]}
         isLoading={false}
       />
     );
 
     expect(screen.getByText('Payment reminder')).toBeInTheDocument();
+  });
+
+  describe('message preview', () => {
+    beforeEach(() => {
+      useCommunicationBody.mockReset();
+      useCommunicationBody.mockReturnValue({
+        data: { channel: 'EMAIL', subject: 'Rent due', body: '<p>hello</p>' },
+        isLoading: false,
+        isError: false,
+        refetch: vi.fn(),
+      });
+    });
+
+    it('fetches no message body until a preview is opened', () => {
+      renderWithProviders(
+        <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_1"
+          communications={[
+            row({ identifier: 'ntf_a' }),
+            row({ identifier: 'ntf_b' }),
+          ]}
+          isLoading={false}
+        />
+      );
+
+      // A hundred-row timeline must not pull a hundred rendered emails to draw its metadata.
+      expect(useCommunicationBody).not.toHaveBeenCalled();
+      expect(document.querySelector('iframe')).toBeNull();
+    });
+
+    it('fetches the row that was opened, scoped to its entity', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(
+        <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_1"
+          communications={[
+            row({ identifier: 'ntf_a' }),
+            row({ identifier: 'ntf_b' }),
+          ]}
+          isLoading={false}
+        />
+      );
+
+      await user.click(screen.getAllByRole('button', { name: /view the/i })[1]);
+
+      expect(useCommunicationBody).toHaveBeenCalledWith(
+        'payment',
+        'pay_1',
+        'ntf_b'
+      );
+    });
+
+    it('renders an email in a fully sandboxed frame', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(
+        <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_1"
+          communications={[row()]}
+          isLoading={false}
+        />
+      );
+
+      await user.click(screen.getByRole('button', { name: /view the/i }));
+
+      // sandbox="" is the whole security posture of this surface. allow-same-origin would give
+      // stored HTML the app's origin, and at least one email template renders a user-supplied
+      // name with th:utext. Any future edit that loosens this fails here.
+      const frame = document.querySelector('iframe');
+      expect(frame).toHaveAttribute('sandbox', '');
+      expect(frame).toHaveAttribute('srcdoc', '<p>hello</p>');
+    });
+
+    it('renders an SMS as text rather than through a frame', async () => {
+      const user = userEvent.setup();
+      useCommunicationBody.mockReturnValue({
+        data: { channel: 'SMS', body: 'Your rent is due on the 1st.' },
+        isLoading: false,
+        isError: false,
+        refetch: vi.fn(),
+      });
+      renderWithProviders(
+        <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_1"
+          communications={[row({ channel: 'SMS' })]}
+          isLoading={false}
+        />
+      );
+
+      await user.click(screen.getByRole('button', { name: /view the/i }));
+
+      expect(document.querySelector('iframe')).toBeNull();
+      expect(
+        screen.getByText('Your rent is due on the 1st.')
+      ).toBeInTheDocument();
+    });
+
+    it('keeps the row identifiable while the body is still loading', async () => {
+      const user = userEvent.setup();
+      useCommunicationBody.mockReturnValue({
+        data: undefined,
+        isLoading: true,
+        isError: false,
+        refetch: vi.fn(),
+      });
+      renderWithProviders(
+        <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_1"
+          communications={[row({ recipientEmail: 'tenant@example.com' })]}
+          isLoading={false}
+        />
+      );
+
+      await user.click(screen.getByRole('button', { name: /view the/i }));
+
+      // The header comes from the row already in hand, so there is no reason to make the
+      // landlord wait for the network to learn what they clicked on. Scoped to the dialog
+      // because the row behind it names the same recipient.
+      const dialog = within(screen.getByRole('dialog'));
+      expect(dialog.getByText(/to tenant@example\.com/i)).toBeInTheDocument();
+    });
+
+    it('offers a retry when the body cannot be loaded', async () => {
+      const user = userEvent.setup();
+      useCommunicationBody.mockReturnValue({
+        data: undefined,
+        isLoading: false,
+        isError: true,
+        refetch: vi.fn(),
+      });
+      renderWithProviders(
+        <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_1"
+          communications={[row()]}
+          isLoading={false}
+        />
+      );
+
+      await user.click(screen.getByRole('button', { name: /view the/i }));
+
+      // React Query caches the error, so without a retry the only way out is close-and-reopen.
+      expect(
+        screen.getByText(/this message could not be loaded/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /try again/i })
+      ).toBeInTheDocument();
+    });
+
+    it('lets a viewer who cannot resend still read the message', () => {
+      renderWithProviders(
+        <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_1"
+          communications={[row()]}
+          isLoading={false}
+        />
+      );
+
+      // Reading is not editing. It would be easy to gate the preview behind onResend for symmetry.
+      expect(
+        screen.getByRole('button', { name: /view the/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /^resend$/i })
+      ).not.toBeInTheDocument();
+    });
+
+    it('names the message each preview button opens', () => {
+      renderWithProviders(
+        <CommunicationsTimeline
+          entity="payment"
+          entityIdentifier="pay_1"
+          communications={[
+            row({ identifier: 'ntf_a', recipientEmail: 'anna@example.com' }),
+            row({ identifier: 'ntf_b', recipientEmail: 'bram@example.com' }),
+          ]}
+          isLoading={false}
+        />
+      );
+
+      expect(
+        screen.getByRole('button', {
+          name: /view the .* sent to anna@example\.com/i,
+        })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', {
+          name: /view the .* sent to bram@example\.com/i,
+        })
+      ).toBeInTheDocument();
+    });
   });
 });

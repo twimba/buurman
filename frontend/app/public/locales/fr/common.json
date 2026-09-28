@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "L'adresse ne l'a pas accepté — vérifiez les coordonnées.",
       "failed": "L'envoi a échoué — vérifiez les coordonnées."
+    },
+    "preview": {
+      "open": "Voir le message",
+      "openFor": "Voir le {{type}} envoyé à {{recipient}}",
+      "openUnaddressed": "Voir le {{type}} qui a été envoyé",
+      "sentToOn": "À {{recipient}} · {{date}}",
+      "sentOn": "Envoyé le {{date}}",
+      "subject": "Objet",
+      "frameTitle": "Aperçu du message",
+      "smsLabel": "SMS",
+      "demoBlocked": "Ceci n'a pas été envoyé — l'envoi est désactivé pour cette équipe. Voici ce qui serait parti.",
+      "loadError": "Ce message n'a pas pu être chargé.",
+      "retry": "Réessayer",
+      "noContent": "Aucune copie de ce message n'a été conservée."
     }
   }
 }

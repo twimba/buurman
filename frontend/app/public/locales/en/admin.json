@@ -88,10 +88,7 @@
       "first": "first: {{date}}",
       "resentFrom": "Resent from",
       "resendReason": "Resend reason",
-      "resend": "Resend",
-      "emailPreview": "Email Preview",
-      "smsMessage": "SMS Message",
-      "delivered": "Delivered"
+      "resend": "Resend"
     },
     "filters": {
       "searchByEmail": "Search by email...",

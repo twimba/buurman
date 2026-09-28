@@ -5,6 +5,8 @@ import { useMutationWithToast } from '@/hooks/useMutationWithToast';
 import {
   getPaymentCommunications,
   getContractCommunications,
+  getPaymentCommunicationBody,
+  getContractCommunicationBody,
   resendCommunication,
 } from '@/generated/api';
 
@@ -38,3 +40,41 @@ export const useResendCommunication = (invalidateKey: unknown[]) => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: invalidateKey }),
   });
 };
+
+export type CommunicationEntity = 'payment' | 'contract';
+
+/**
+ * The stored message of one communication, fetched only when its preview opens.
+ *
+ * The key nests under the timeline's own key on purpose: both pages already pass
+ * ['payments', id, 'communications'] as the resend invalidation key, and React Query invalidates
+ * by prefix, so a resend drops cached bodies with no extra wiring.
+ */
+export const useCommunicationBody = (
+  entity: CommunicationEntity,
+  entityIdentifier: string,
+  communicationIdentifier: string | undefined
+) =>
+  useQuery({
+    queryKey: [
+      entity === 'payment' ? 'payments' : 'contracts',
+      entityIdentifier,
+      'communications',
+      communicationIdentifier,
+      'body',
+    ],
+    queryFn: () =>
+      entity === 'payment'
+        ? getPaymentCommunicationBody(
+            entityIdentifier,
+            communicationIdentifier as string
+          )
+        : getContractCommunicationBody(
+            entityIdentifier,
+            communicationIdentifier as string
+          ),
+    enabled: Boolean(entityIdentifier && communicationIdentifier),
+    // A sent message is immutable. Refetching it on every window focus is pure waste, and
+    // reopening the same preview being instant is a good part of how this surface feels.
+    staleTime: Infinity,
+  });

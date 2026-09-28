@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "L'indirizzo non lo ha accettato — controlla i dati di contatto.",
       "failed": "Non è stato possibile inviarlo — controlla i dati di contatto."
+    },
+    "preview": {
+      "open": "Vedi messaggio",
+      "openFor": "Vedi il {{type}} inviato a {{recipient}}",
+      "openUnaddressed": "Vedi il {{type}} che è stato inviato",
+      "sentToOn": "A {{recipient}} · {{date}}",
+      "sentOn": "Inviato il {{date}}",
+      "subject": "Oggetto",
+      "frameTitle": "Anteprima del messaggio",
+      "smsLabel": "SMS",
+      "demoBlocked": "Non è stato inviato — l'invio è disattivato per questo team. Questo è ciò che sarebbe partito.",
+      "loadError": "Non è stato possibile caricare questo messaggio.",
+      "retry": "Riprova",
+      "noContent": "Non è stata conservata alcuna copia di questo messaggio."
     }
   }
 }

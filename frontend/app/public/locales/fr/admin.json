@@ -88,10 +88,7 @@
       "first": "premier : {{date}}",
       "resentFrom": "Renvoyée depuis",
       "resendReason": "Motif du renvoi",
-      "resend": "Renvoyer",
-      "emailPreview": "Aperçu de l’e-mail",
-      "smsMessage": "Message SMS",
-      "delivered": "Livrée"
+      "resend": "Renvoyer"
     },
     "filters": {
       "searchByEmail": "Rechercher par e-mail…",

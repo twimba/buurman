@@ -88,10 +88,7 @@
       "first": "foerste: {{date}}",
       "resentFrom": "Gensendt fra",
       "resendReason": "Aarsag til gensendelse",
-      "resend": "Gensend",
-      "emailPreview": "E-mail-forhåndsvisning",
-      "smsMessage": "SMS-besked",
-      "delivered": "Leveret"
+      "resend": "Gensend"
     },
     "filters": {
       "searchByEmail": "Soeg efter e-mail...",

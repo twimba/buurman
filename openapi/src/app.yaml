@@ -175,6 +175,10 @@ paths:
     $ref: 'paths/communications.yaml#/payment-communications'
   /contracts/{identifier}/communications:
     $ref: 'paths/communications.yaml#/contract-communications'
+  /payments/{identifier}/communications/{communicationIdentifier}/body:
+    $ref: 'paths/communications.yaml#/payment-communication-body'
+  /contracts/{identifier}/communications/{communicationIdentifier}/body:
+    $ref: 'paths/communications.yaml#/contract-communication-body'
   /communications/{identifier}/resend:
     $ref: 'paths/communications.yaml#/communication-resend'
   /payments/{identifier}/receivals/{receivalIdentifier}:
@@ -736,6 +740,22 @@ components:
         createdAt:
           type: string
           format: date-time
+    CommunicationBodyResponse:
+      type: object
+      description: >-
+        The stored message of one communication. Fetched on demand when a preview opens, never as
+        part of the timeline list.
+      required: [identifier, channel, body]
+      properties:
+        identifier:
+          type: string
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        subject:
+          type: string
+        body:
+          type: string
     LanguageCode:
       type: string
       description: ISO 639-1 code of a language the product is translated into

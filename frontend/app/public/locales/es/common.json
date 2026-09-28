@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "La dirección no lo aceptó — revisa los datos de contacto.",
       "failed": "No se pudo enviar — revisa los datos de contacto."
+    },
+    "preview": {
+      "open": "Ver mensaje",
+      "openFor": "Ver el {{type}} enviado a {{recipient}}",
+      "openUnaddressed": "Ver el {{type}} que se envió",
+      "sentToOn": "Para {{recipient}} · {{date}}",
+      "sentOn": "Enviado el {{date}}",
+      "subject": "Asunto",
+      "frameTitle": "Vista previa del mensaje",
+      "smsLabel": "Mensaje de texto",
+      "demoBlocked": "Esto no se envió — el envío está desactivado para este equipo. Esto es lo que se habría enviado.",
+      "loadError": "No se pudo cargar este mensaje.",
+      "retry": "Intentar de nuevo",
+      "noContent": "No se guardó ninguna copia de este mensaje."
     }
   }
 }

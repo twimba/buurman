@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "The address did not accept it — check the contact details.",
       "failed": "It could not be sent — check the contact details."
+    },
+    "preview": {
+      "open": "View message",
+      "openFor": "View the {{type}} sent to {{recipient}}",
+      "openUnaddressed": "View the {{type}} that was sent",
+      "sentToOn": "To {{recipient}} · {{date}}",
+      "sentOn": "Sent {{date}}",
+      "subject": "Subject",
+      "frameTitle": "Message preview",
+      "smsLabel": "Text message",
+      "demoBlocked": "This was not sent — delivery is switched off for this team. This is what would have gone out.",
+      "loadError": "This message could not be loaded.",
+      "retry": "Try again",
+      "noContent": "There is no saved copy of this message."
     }
   }
 }

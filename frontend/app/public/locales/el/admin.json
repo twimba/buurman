@@ -88,10 +88,7 @@
       "first": "πρώτο: {{date}}",
       "resentFrom": "Επαναποστολή από",
       "resendReason": "Λόγος επαναποστολής",
-      "resend": "Επαναποστολή",
-      "emailPreview": "Προεπισκόπηση Email",
-      "smsMessage": "Μήνυμα SMS",
-      "delivered": "Παραδόθηκε"
+      "resend": "Επαναποστολή"
     },
     "filters": {
       "searchByEmail": "Αναζήτηση με email...",

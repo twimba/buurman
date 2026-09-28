@@ -331,6 +331,7 @@
                             </typeMappings>
                             <schemaMappings>
                                 <schemaMapping>CommunicationResponse=com.buurman.dto.response.CommunicationResponse</schemaMapping>
+                                <schemaMapping>CommunicationBodyResponse=com.buurman.dto.response.CommunicationBodyResponse</schemaMapping>
                                 <schemaMapping>PageResponsePropertyResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseContractResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseExpenseResponse=com.buurman.dto.response.PageResponse</schemaMapping>

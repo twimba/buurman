@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "Adres jej nie przyjął — sprawdź dane kontaktowe.",
       "failed": "Nie udało się wysłać — sprawdź dane kontaktowe."
+    },
+    "preview": {
+      "open": "Zobacz wiadomość",
+      "openFor": "Zobacz {{type}} wysłaną do {{recipient}}",
+      "openUnaddressed": "Zobacz wysłaną {{type}}",
+      "sentToOn": "Do {{recipient}} · {{date}}",
+      "sentOn": "Wysłano {{date}}",
+      "subject": "Temat",
+      "frameTitle": "Podgląd wiadomości",
+      "smsLabel": "Wiadomość SMS",
+      "demoBlocked": "To nie zostało wysłane — wysyłka jest wyłączona dla tego zespołu. Tak wyglądałaby wiadomość.",
+      "loadError": "Nie udało się wczytać tej wiadomości.",
+      "retry": "Spróbuj ponownie",
+      "noContent": "Nie zachowano kopii tej wiadomości."
     }
   }
 }

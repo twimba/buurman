@@ -24,7 +24,9 @@ import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.dto.response.CommunicationAudience;
+import com.buurman.dto.response.CommunicationBodyResponse;
 import com.buurman.dto.response.CommunicationResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
@@ -164,6 +166,122 @@ class CommunicationServiceTest {
         .status(NotificationStatus.DELIVERED)
         .recipientContactId(recipientContactId)
         .recipientUserId(recipientUserId)
+        .createdAt(Instant.now())
+        .build();
+  }
+
+  private static final NotificationIdentifier COMMUNICATION_SID =
+      NotificationIdentifier.of("ntf_01JTEST000000000000000001");
+
+  @Test
+  @DisplayName("a body under a payment from another team is not found, and reads no notification")
+  void paymentBodyFromAnotherTeamIsNotFound() {
+    when(paymentRepository.findByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID))
+        .thenReturn(Optional.empty());
+
+    assertThatThrownBy(
+            () -> service.getPaymentCommunicationBody(PAYMENT_SID, COMMUNICATION_SID, TEAM_ID))
+        .isInstanceOf(NotFoundException.class);
+    verifyNoInteractions(notificationRepository);
+  }
+
+  @Test
+  @DisplayName("a body under a contract from another team is not found either")
+  void contractBodyFromAnotherTeamIsNotFound() {
+    when(contractRepository.findByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+        .thenReturn(Optional.empty());
+
+    assertThatThrownBy(
+            () -> service.getContractCommunicationBody(CONTRACT_SID, COMMUNICATION_SID, TEAM_ID))
+        .isInstanceOf(NotFoundException.class);
+    verifyNoInteractions(notificationRepository);
+  }
+
+  /**
+   * The notification lookup must be the team-scoped one. findByIdentifierUnscoped exists on the
+   * same repository for the webhook path and is one autocomplete away from being used here.
+   */
+  @Test
+  @DisplayName("a body whose notification belongs to another team is not found")
+  void bodyOfANotificationFromAnotherTeamIsNotFound() {
+    Payment payment = new Payment();
+    payment.setId(PAYMENT_ID);
+    when(paymentRepository.findByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID))
+        .thenReturn(Optional.of(payment));
+    when(notificationRepository.findByIdentifierAndTeamId(COMMUNICATION_SID, TEAM_ID))
+        .thenReturn(Optional.empty());
+
+    assertThatThrownBy(
+            () -> service.getPaymentCommunicationBody(PAYMENT_SID, COMMUNICATION_SID, TEAM_ID))
+        .isInstanceOf(NotFoundException.class);
+  }
+
+  /**
+   * The one that matters. Both the payment and the notification are in the caller's team, so the
+   * team check passes — but the notification is about a different payment. Without the entity check
+   * every notification body in the team is readable through any payment the caller can see.
+   */
+  @Test
+  @DisplayName("a body about another payment is not readable through this payment")
+  void bodyOfANotificationAboutAnotherPaymentIsNotFound() {
+    Payment payment = new Payment();
+    payment.setId(PAYMENT_ID);
+    when(paymentRepository.findByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID))
+        .thenReturn(Optional.of(payment));
+    when(notificationRepository.findByIdentifierAndTeamId(COMMUNICATION_SID, TEAM_ID))
+        .thenReturn(
+            Optional.of(bodyNotification(Optional.of(UUID.randomUUID()), Optional.empty())));
+
+    assertThatThrownBy(
+            () -> service.getPaymentCommunicationBody(PAYMENT_SID, COMMUNICATION_SID, TEAM_ID))
+        .isInstanceOf(NotFoundException.class);
+  }
+
+  @Test
+  @DisplayName("a body about another contract is not readable through this contract")
+  void bodyOfANotificationAboutAnotherContractIsNotFound() {
+    Contract contract = new Contract();
+    contract.setId(CONTRACT_ID);
+    when(contractRepository.findByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+        .thenReturn(Optional.of(contract));
+    when(notificationRepository.findByIdentifierAndTeamId(COMMUNICATION_SID, TEAM_ID))
+        .thenReturn(
+            Optional.of(bodyNotification(Optional.empty(), Optional.of(UUID.randomUUID()))));
+
+    assertThatThrownBy(
+            () -> service.getContractCommunicationBody(CONTRACT_SID, COMMUNICATION_SID, TEAM_ID))
+        .isInstanceOf(NotFoundException.class);
+  }
+
+  @Test
+  @DisplayName("returns the stored message for a communication about this payment")
+  void returnsTheStoredMessage() {
+    Payment payment = new Payment();
+    payment.setId(PAYMENT_ID);
+    when(paymentRepository.findByIdentifierAndTeamId(PAYMENT_SID, TEAM_ID))
+        .thenReturn(Optional.of(payment));
+    when(notificationRepository.findByIdentifierAndTeamId(COMMUNICATION_SID, TEAM_ID))
+        .thenReturn(Optional.of(bodyNotification(Optional.of(PAYMENT_ID), Optional.empty())));
+
+    CommunicationBodyResponse response =
+        service.getPaymentCommunicationBody(PAYMENT_SID, COMMUNICATION_SID, TEAM_ID);
+
+    assertThat(response.body()).isEqualTo("<p>Your rent is due.</p>");
+    assertThat(response.subject()).contains("Payment reminder");
+    assertThat(response.channel()).isEqualTo("EMAIL");
+  }
+
+  private static Notification bodyNotification(
+      Optional<UUID> relatedPaymentId, Optional<UUID> relatedContractId) {
+    return Notification.builder()
+        .identifier(Optional.of(COMMUNICATION_SID))
+        .notificationType(NotificationType.PAYMENT_REMINDER)
+        .channel(NotificationChannel.EMAIL)
+        .status(NotificationStatus.DELIVERED)
+        .subject(Optional.of("Payment reminder"))
+        .body("<p>Your rent is due.</p>")
+        .relatedPaymentId(relatedPaymentId)
+        .relatedContractId(relatedContractId)
         .createdAt(Instant.now())
         .build();
   }

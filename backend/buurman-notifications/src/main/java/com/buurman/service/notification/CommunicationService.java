@@ -1,7 +1,9 @@
 package com.buurman.service.notification;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import com.buurman.domain.Notification;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.dto.response.CommunicationAudience;
+import com.buurman.dto.response.CommunicationBodyResponse;
 import com.buurman.dto.response.CommunicationResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
@@ -57,6 +60,74 @@ public class CommunicationService {
             .orElseThrow(() -> new NotFoundException("Contract not found"))
             .getId();
     return toResponses(notificationRepository.findByContractIdAndTeamId(contractId, teamId));
+  }
+
+  /**
+   * The stored message of one communication about this payment, for the preview.
+   *
+   * <p>TEAM_VIEWER, the same as reading the timeline, and deliberately not TEAM_EDITOR: the editor
+   * gate on resend is about a side effect that costs money, not about disclosure. The body is the
+   * prose form of what is already on the page — the tenant, the property, the amount, the due date
+   * — under a subject line the timeline already shows this same viewer.
+   *
+   * <p>NotificationCenterService is TEAM_ADMIN for a different reason: it is the unscoped,
+   * team-wide delivery log covering every entity and every type, including verification codes and
+   * invitations. This endpoint has no such breadth — it reaches only what this payment is about.
+   */
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
+  public CommunicationBodyResponse getPaymentCommunicationBody(
+      Sid paymentIdentifier, NotificationIdentifier communicationIdentifier, UUID teamId) {
+    UUID paymentId =
+        paymentRepository
+            .findByIdentifierAndTeamId(paymentIdentifier, teamId)
+            .orElseThrow(() -> new NotFoundException("Payment not found"))
+            .getId();
+    return toBodyResponse(
+        messageAbout(
+            communicationIdentifier, teamId, Notification::getRelatedPaymentId, paymentId));
+  }
+
+  /** See {@link #getPaymentCommunicationBody}. */
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
+  public CommunicationBodyResponse getContractCommunicationBody(
+      Sid contractIdentifier, NotificationIdentifier communicationIdentifier, UUID teamId) {
+    UUID contractId =
+        contractRepository
+            .findByIdentifierAndTeamId(contractIdentifier, teamId)
+            .orElseThrow(() -> new NotFoundException("Contract not found"))
+            .getId();
+    return toBodyResponse(
+        messageAbout(
+            communicationIdentifier, teamId, Notification::getRelatedContractId, contractId));
+  }
+
+  /**
+   * Two gates, both required. The team-scoped lookup keeps another team's notifications out; the
+   * entity check keeps this team's *other* notifications out. Without the second, any notification
+   * identifier in the team would be readable through any payment the caller can already see, which
+   * the cross-team test would not catch.
+   */
+  private Notification messageAbout(
+      NotificationIdentifier identifier,
+      UUID teamId,
+      Function<Notification, Optional<UUID>> relatedId,
+      UUID expectedEntityId) {
+    return notificationRepository
+        .findByIdentifierAndTeamId(identifier, teamId)
+        .filter(
+            notification ->
+                relatedId.apply(notification).filter(expectedEntityId::equals).isPresent())
+        .orElseThrow(() -> new NotFoundException("Communication not found"));
+  }
+
+  private CommunicationBodyResponse toBodyResponse(Notification notification) {
+    return new CommunicationBodyResponse(
+        notification.getIdentifier().orElseThrow(),
+        notification.getChannel().name(),
+        notification.getSubject(),
+        notification.getBody());
   }
 
   /**

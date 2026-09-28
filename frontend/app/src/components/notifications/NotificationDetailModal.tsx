@@ -1,12 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MessageBodyPreview } from '@/components/communications/MessageBodyPreview';
 import {
   X,
   Mail,
   Phone,
   RotateCcw,
   RefreshCw,
-  Smartphone,
   Loader2,
   Eye,
   MousePointerClick,
@@ -33,71 +33,6 @@ const typeKeys: Record<string, string> = {
   PAYMENT_PAID: 'notifications.types.paymentPaid',
   PAYMENT_RECEIVAL: 'notifications.types.paymentReceival',
   EXPENSE_CREATED: 'notifications.types.expenseCreated',
-};
-
-const EmailBodyPreview = ({ body }: { body: string }) => {
-  const { t } = useTranslation('admin');
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) {
-      return;
-    }
-
-    const handleLoad = () => {
-      const doc = iframe.contentDocument;
-      if (doc?.body) {
-        iframe.style.height = doc.body.scrollHeight + 'px';
-      }
-    };
-
-    iframe.addEventListener('load', handleLoad);
-    return () => iframe.removeEventListener('load', handleLoad);
-  }, [body]);
-
-  return (
-    <div className="rounded-md border border-border-default overflow-hidden">
-      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-page dark:bg-surface-card border-b border-border-default text-[10px] text-text-muted">
-        <Mail className="h-3 w-3" />
-        {t('notifications.details.emailPreview', { ns: 'admin' })}
-      </div>
-      <iframe
-        ref={iframeRef}
-        srcDoc={body}
-        sandbox="allow-same-origin"
-        className="w-full border-0 bg-surface-card min-h-[120px] max-h-[400px]"
-        title="Email content"
-      />
-    </div>
-  );
-};
-
-const SmsBodyPreview = ({ body }: { body: string }) => {
-  const { t } = useTranslation('admin');
-  return (
-    <div className="flex justify-center">
-      <div className="w-[300px] rounded-2xl bg-neutral-900 dark:bg-neutral-950 p-4 shadow-inner">
-        {/* Phone header */}
-        <div className="flex items-center justify-center gap-1.5 mb-3 text-[10px] text-text-secondary">
-          <Smartphone className="h-3 w-3" />
-          {t('notifications.details.smsMessage')}
-        </div>
-        {/* Message bubble */}
-        <div className="flex justify-start">
-          <div className="relative max-w-[240px] bg-neutral-100 dark:bg-neutral-700 rounded-2xl rounded-bl-sm px-3.5 py-2.5">
-            <p className="text-sm text-text-primary whitespace-pre-wrap break-words leading-relaxed">
-              {body}
-            </p>
-          </div>
-        </div>
-        {/* Timestamp */}
-        <div className="text-right mt-1.5 text-[10px] text-text-secondary">
-          {t('notifications.details.delivered')}
-        </div>
-      </div>
-    </div>
-  );
 };
 
 interface NotificationDetailModalProps {
@@ -211,11 +146,10 @@ export const NotificationDetailModal = ({
                     {t('notifications.details.content')}
                   </dt>
                   <dd>
-                    {notification.channel === NotificationChannel.EMAIL ? (
-                      <EmailBodyPreview body={notification.body} />
-                    ) : (
-                      <SmsBodyPreview body={notification.body} />
-                    )}
+                    <MessageBodyPreview
+                      channel={notification.channel}
+                      body={notification.body}
+                    />
                   </dd>
                 </div>
               )}

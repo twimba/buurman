@@ -728,6 +728,20 @@
     "failureReason": {
       "notDelivered": "Die Adresse hat die Nachricht nicht angenommen — prüfen Sie die Kontaktdaten.",
       "failed": "Die Nachricht konnte nicht gesendet werden — prüfen Sie die Kontaktdaten."
+    },
+    "preview": {
+      "open": "Nachricht ansehen",
+      "openFor": "{{type}} ansehen, die an {{recipient}} gesendet wurde",
+      "openUnaddressed": "Gesendete {{type}} ansehen",
+      "sentToOn": "An {{recipient}} · {{date}}",
+      "sentOn": "Gesendet am {{date}}",
+      "subject": "Betreff",
+      "frameTitle": "Nachrichtenvorschau",
+      "smsLabel": "SMS",
+      "demoBlocked": "Dies wurde nicht gesendet — der Versand ist für dieses Team deaktiviert. So hätte die Nachricht ausgesehen.",
+      "loadError": "Diese Nachricht konnte nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "noContent": "Von dieser Nachricht wurde keine Kopie gespeichert."
     }
   }
 }
