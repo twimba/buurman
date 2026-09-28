@@ -632,7 +632,8 @@
       "postalCodeRequired": "Postal code is required",
       "countryRequired": "Country is required",
       "areaPositive": "Area must be greater than 0"
-    }
+    },
+    "characteristics": "Characteristics"
   },
   "collapsible": {
     "filledCount": "{{filled}} of {{total}} filled"
@@ -671,6 +672,7 @@
       "title_other": "Delete documents",
       "message_one": "Are you sure you want to delete this document? This action cannot be undone.",
       "message_other": "You are about to delete {{count}} documents. This action cannot be undone.",
+      "confirmLabel_one": "Delete {{count}} document",
       "confirmLabel_other": "Delete {{count}} documents"
     },
     "editModal": "Edit Document",
@@ -698,6 +700,7 @@
       "mainPhotoWarning_other": "You are about to delete {{count}} photos, including the main photo. This property will no longer have a main photo. This action cannot be undone.",
       "message_one": "Are you sure you want to delete this photo? This action cannot be undone.",
       "message_other": "You are about to delete {{count}} photos. This action cannot be undone.",
+      "confirmLabel_one": "Delete {{count}} photo",
       "confirmLabel_other": "Delete {{count}} photos"
     },
     "editModal": "Edit Photo"

@@ -23,7 +23,11 @@
     "retry": "Opnieuw proberen",
     "continue": "Doorgaan",
     "saveChanges": "Wijzigingen opslaan",
-    "discardChanges": "Wijzigingen verwerpen"
+    "discardChanges": "Wijzigingen verwerpen",
+    "dismiss": "Sluiten",
+    "clear": "Wissen",
+    "deselect": "Deselecteren",
+    "select": "Selecteren"
   },
   "status": {
     "active": "Actief",
@@ -231,7 +235,9 @@
     "select": "Selecteer...",
     "phoneNumber": "Telefoonnummer",
     "searchCountryOrCode": "Zoek land of code...",
-    "noCountriesFound": "Geen landen gevonden"
+    "noCountriesFound": "Geen landen gevonden",
+    "searchCurrencies": "Valuta zoeken",
+    "currencies": "Valuta"
   },
   "impersonation": {
     "active": "Impersonatie actief",
@@ -240,7 +246,12 @@
     "notAvailable": "Niet beschikbaar tijdens impersonatie",
     "timeRemaining": "Resterende tijd",
     "endSession": "Sessie beëindigen",
-    "sessionEnded": "Impersonatiesessie beëindigd. U kunt dit tabblad sluiten."
+    "sessionEnded": "Impersonatiesessie beëindigd. U kunt dit tabblad sluiten.",
+    "missingToken": "Er is geen impersonatietoken opgegeven.",
+    "failedToExchange": "Het impersonatietoken kon niet worden ingewisseld.",
+    "failed": "Impersonatie mislukt",
+    "closeTab": "Je kunt dit tabblad sluiten.",
+    "settingUp": "Sessie voorbereiden..."
   },
   "teamSwitcher": {
     "yourTeams": "Uw teams ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Bezetting",
-      "dataPercent": "Data %"
+      "dataPercent": "Data %",
+      "topByNoi": "Top 5 op NOI",
+      "needsAttention": "Vraagt aandacht"
     },
     "occupancy": {
       "noData": "Geen bezettingsgegevens beschikbaar",
@@ -381,7 +394,14 @@
       "noData": "Geen allocatiegegevens beschikbaar",
       "byCategory": "Per categorie",
       "byCountry": "Per land"
-    }
+    },
+    "overdueCount": "{{count}} achterstallig",
+    "extensionsCount": "{{count}} verlengingen",
+    "monthlyCashFlow": "Maandelijkse kasstroom",
+    "incomeMinusExpenses": "Inkomsten min kosten",
+    "occupancySublabel": "{{occupied}} van {{total}}",
+    "vacantSublabel": "Beschikbaar voor verhuur",
+    "portfolioAnalyticsCta": "Portefeuilleanalyse"
   },
   "wws": {
     "title": "WWS-puntencalculator",
@@ -618,5 +638,110 @@
     "description": "Een overzicht van één pagina. Selecteer een taal.",
     "yourLanguage": "Uw taal",
     "downloadFailed": "Downloaden van samenvatting mislukt"
+  },
+  "pwa": {
+    "installTitle": "Buurman installeren",
+    "installSubtitle": "Sneller, schermvullend, werkt offline",
+    "installAction": "Installeren"
+  },
+  "refresh": "Vernieuwen",
+  "actions": {
+    "cancel": "Annuleren"
+  },
+  "importHistory": {
+    "title": "Importgeschiedenis",
+    "subtitle": "Bekijk eerdere imports en draai er een terug als het misging."
+  },
+  "invitation": {
+    "loading": "Uitnodiging laden...",
+    "invalid": {
+      "title": "Uitnodiging ongeldig",
+      "message": "Deze uitnodigingslink is ongeldig. Vraag een nieuwe aan.",
+      "goToLogin": "Naar inloggen"
+    },
+    "accepted": {
+      "title": "Uitnodiging geaccepteerd",
+      "message": "Je bent nu lid van het team.",
+      "goToLogin": "Naar inloggen"
+    },
+    "expired": {
+      "title": "Uitnodiging verlopen",
+      "message": "Deze uitnodiging is verlopen. Vraag een nieuwe aan.",
+      "goToLogin": "Naar inloggen"
+    },
+    "youreInvited": "Je bent uitgenodigd",
+    "inviterMessage": "{{inviterName}} heeft je uitgenodigd voor {{teamName}}.",
+    "yourRole": "Jouw rol",
+    "invitedEmail": "Uitgenodigd e-mailadres",
+    "expires": "Verloopt",
+    "acceptError": "De uitnodiging kon niet worden geaccepteerd.",
+    "accepting": "Accepteren...",
+    "acceptInvitation": "Uitnodiging accepteren",
+    "joinNote": "Na accepteren wordt dit team aan je account toegevoegd.",
+    "loginRequired": "Log in om deze uitnodiging te accepteren.",
+    "loginToAccept": "Inloggen om te accepteren",
+    "createAccount": "Account aanmaken"
+  },
+  "communications": {
+    "title": "Communicatie",
+    "empty": "Nog niets verstuurd.",
+    "emptyHistorical": "Alleen berichten die vanaf nu worden verstuurd verschijnen hier.",
+    "resend": "Opnieuw versturen",
+    "status": {
+      "queued": "In wachtrij",
+      "sent": "Verstuurd",
+      "delivered": "Afgeleverd",
+      "opened": "Geopend",
+      "notDelivered": "Niet afgeleverd",
+      "failed": "Mislukt",
+      "demoBlocked": "Niet verstuurd (demo)"
+    },
+    "loadError": "Communicatie kon niet worden geladen.",
+    "type": {
+      "PAYMENT_REMINDER": "Betalingsherinnering",
+      "PAYMENT_PAID": "Betaling gemarkeerd als betaald",
+      "PAYMENT_RECEIVAL": "Betaling ontvangen",
+      "CONTRACT_CREATED": "Contract aangemaakt",
+      "CONTRACT_EXPIRY": "Contract verloopt",
+      "CONTRACT_STATUS_CHANGED": "Contractstatus gewijzigd",
+      "CONTRACT_REOPENED": "Contract heropend",
+      "CONTRACT_EXTENDED": "Contract verlengd",
+      "CONTRACT_EXTENSION_PENDING": "Verlenging wacht op bevestiging",
+      "CONTRACT_RENEWAL_REMINDER": "Herinnering verlenging",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Contract omgezet",
+      "CONTRACT_RENT_ADJUSTED": "Huur aangepast"
+    },
+    "to": "Aan {{recipient}}",
+    "resent": "opnieuw verzonden",
+    "resending": "Bezig met opnieuw verzenden…",
+    "resendTo": "{{type}} opnieuw verzenden naar {{recipient}}",
+    "resendSuccess": "Bericht opnieuw verzonden.",
+    "showAll": "Alles tonen ({{total}})",
+    "alsoCopiedToTeam": "Ook gekopieerd naar je team ({{total}})",
+    "noneToContact": "Nog niets naar je huurder gestuurd.",
+    "internalOnly": "Tot nu toe alleen interne kopieën naar je team ({{total}}).",
+    "truncated": "De {{total}} meest recente berichten worden getoond.",
+    "confirmResend": {
+      "title": "Dit bericht opnieuw verzenden?",
+      "message": "{{type}} wordt opnieuw verzonden naar {{recipient}}. Dit verstuurt een echt bericht."
+    },
+    "failureReason": {
+      "notDelivered": "Het adres heeft het niet geaccepteerd — controleer de contactgegevens.",
+      "failed": "Het kon niet worden verzonden — controleer de contactgegevens."
+    },
+    "preview": {
+      "open": "Bericht bekijken",
+      "openFor": "Bekijk de {{type}} die naar {{recipient}} is gestuurd",
+      "openUnaddressed": "Bekijk de verstuurde {{type}}",
+      "sentToOn": "Aan {{recipient}} · {{date}}",
+      "sentOn": "Verstuurd op {{date}}",
+      "subject": "Onderwerp",
+      "frameTitle": "Voorbeeld van het bericht",
+      "smsLabel": "Sms-bericht",
+      "demoBlocked": "Dit is niet verstuurd — bezorging staat uit voor dit team. Dit is wat er verstuurd zou zijn.",
+      "loadError": "Dit bericht kon niet worden geladen.",
+      "retry": "Opnieuw proberen",
+      "noContent": "Er is geen kopie van dit bericht bewaard."
+    }
   }
 }

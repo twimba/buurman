@@ -9,7 +9,8 @@
       "contact": "Contacts",
       "contract": "Contracts",
       "payment": "Payments",
-      "expense": "Expenses"
+      "expense": "Expenses",
+      "label": "Type"
     },
     "table": {
       "document": "Document",
@@ -24,7 +25,8 @@
       "count_other": "{{count}} documents"
     },
     "empty": "No documents found",
-    "editModal": "Edit Document"
+    "editModal": "Edit Document",
+    "titleShort": "Documents"
   },
   "photosPage": {
     "title": "Photo Library",
@@ -36,10 +38,12 @@
       "contact": "Contacts",
       "contract": "Contracts",
       "payment": "Payments",
-      "expense": "Expenses"
+      "expense": "Expenses",
+      "label": "Type"
     },
     "empty": "No photos found",
-    "editModal": "Edit Photo"
+    "editModal": "Edit Photo",
+    "selectedCount": "{{count}} selected"
   },
   "photoGrid": {
     "noPhotos": "No photos yet",

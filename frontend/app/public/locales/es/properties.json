@@ -11,13 +11,13 @@
     "allStatuses": "Todos los Estados",
     "count_one": "{{count}} propiedad",
     "count_other": "{{count}} propiedades",
-    "count_many": "{{count}} propiedades",
     "empty": {
       "title": "No se encontraron propiedades",
       "filtered": "Intente ajustar sus filtros o términos de búsqueda",
       "noData": "Comience añadiendo su primera propiedad"
     },
-    "error": "Error al cargar propiedades"
+    "error": "Error al cargar propiedades",
+    "count_many": "{{count}} propiedades"
   },
   "create": {
     "title": "Añadir Nueva Propiedad",
@@ -183,7 +183,8 @@
       "postalCodeRequired": "El código postal es obligatorio",
       "countryRequired": "El país es obligatorio",
       "areaPositive": "La superficie debe ser mayor que 0"
-    }
+    },
+    "characteristics": "Características"
   },
   "collapsible": {
     "filledCount": "{{filled}} de {{total}} completados"
@@ -210,23 +211,25 @@
     "upload": {
       "title_one": "Subir Documento",
       "title_other": "Subir Documentos",
-      "title_many": "Subir Documentos",
       "files": "{{count}} archivos",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "ej., Plano del inmueble",
       "notesLabel": "Notas (opcional)",
       "notesPlaceholder": "Notas adicionales sobre este documento",
       "uploading": "Subiendo {{current}} de {{total}}...",
-      "uploadCount": "Subir {{count}} Documentos"
+      "uploadCount": "Subir {{count}} Documentos",
+      "title_many": "Subir Documentos"
     },
     "delete": {
       "title_one": "Eliminar documento",
       "title_other": "Eliminar documentos",
-      "title_many": "Eliminar documentos",
       "message_one": "¿Está seguro de que desea eliminar este documento? Esta acción no se puede deshacer.",
       "message_other": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer.",
-      "message_many": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer.",
-      "confirmLabel_other": "Eliminar {{count}} documentos"
+      "confirmLabel_one": "Eliminar {{count}} documento",
+      "confirmLabel_other": "Eliminar {{count}} documentos",
+      "confirmLabel_many": "Eliminar {{count}} documentos",
+      "title_many": "Eliminar documentos",
+      "message_many": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer."
     },
     "editModal": "Editar Documento",
     "downloading": "Descargando..."
@@ -238,26 +241,28 @@
     "upload": {
       "title_one": "Subir Foto",
       "title_other": "Subir Fotos",
-      "title_many": "Subir Fotos",
       "files": "{{count}} archivos",
       "titleLabel": "Título (opcional)",
       "titlePlaceholder": "ej., Salón",
       "notesLabel": "Notas (opcional)",
       "notesPlaceholder": "Notas adicionales sobre esta foto",
       "uploading": "Subiendo {{current}} de {{total}}...",
-      "uploadCount": "Subir {{count}} Fotos"
+      "uploadCount": "Subir {{count}} Fotos",
+      "title_many": "Subir Fotos"
     },
     "delete": {
       "title_one": "Eliminar foto",
       "title_other": "Eliminar fotos",
-      "title_many": "Eliminar fotos",
       "mainPhotoWarning_one": "Esta es la foto principal. Eliminarla significa que esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
       "mainPhotoWarning_other": "Está a punto de eliminar {{count}} fotos, incluyendo la foto principal. Esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
-      "mainPhotoWarning_many": "Está a punto de eliminar {{count}} fotos, incluyendo la foto principal. Esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
       "message_one": "¿Está seguro de que desea eliminar esta foto? Esta acción no se puede deshacer.",
       "message_other": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer.",
-      "message_many": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer.",
-      "confirmLabel_other": "Eliminar {{count}} fotos"
+      "confirmLabel_one": "Eliminar {{count}} foto",
+      "confirmLabel_other": "Eliminar {{count}} fotos",
+      "confirmLabel_many": "Eliminar {{count}} fotos",
+      "title_many": "Eliminar fotos",
+      "mainPhotoWarning_many": "Está a punto de eliminar {{count}} fotos, incluyendo la foto principal. Esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
+      "message_many": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer."
     },
     "editModal": "Editar Foto"
   },

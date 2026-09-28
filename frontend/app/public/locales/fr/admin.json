@@ -88,10 +88,7 @@
       "first": "premier : {{date}}",
       "resentFrom": "Renvoyée depuis",
       "resendReason": "Motif du renvoi",
-      "resend": "Renvoyer",
-      "emailPreview": "Aperçu de l’e-mail",
-      "smsMessage": "Message SMS",
-      "delivered": "Livrée"
+      "resend": "Renvoyer"
     },
     "filters": {
       "searchByEmail": "Rechercher par e-mail…",
@@ -298,7 +295,8 @@
     "income": "Revenus",
     "expenses": "Dépenses",
     "amount": "Montant",
-    "downloadPdf": "Télécharger PDF"
+    "downloadPdf": "Télécharger PDF",
+    "allProperties": "Tous les biens"
   },
   "auditLog": {
     "failedToLoad": "Échec du chargement des journaux d'activité"

@@ -88,10 +88,7 @@
       "first": "primero: {{date}}",
       "resentFrom": "Reenviado de",
       "resendReason": "Motivo del reenvío",
-      "resend": "Reenviar",
-      "emailPreview": "Vista Previa de Email",
-      "smsMessage": "Mensaje SMS",
-      "delivered": "Entregado"
+      "resend": "Reenviar"
     },
     "filters": {
       "searchByEmail": "Buscar por email...",
@@ -298,7 +295,8 @@
     "income": "Ingresos",
     "expenses": "Gastos",
     "amount": "Importe",
-    "downloadPdf": "Descargar PDF"
+    "downloadPdf": "Descargar PDF",
+    "allProperties": "Todos los inmuebles"
   },
   "auditLog": {
     "failedToLoad": "Error al cargar los registros de actividad"

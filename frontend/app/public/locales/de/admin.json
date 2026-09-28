@@ -88,10 +88,7 @@
       "first": "erste(r): {{date}}",
       "resentFrom": "Erneut gesendet von",
       "resendReason": "Grund für erneutes Senden",
-      "resend": "Erneut senden",
-      "emailPreview": "E-Mail-Vorschau",
-      "smsMessage": "SMS-Nachricht",
-      "delivered": "Zugestellt"
+      "resend": "Erneut senden"
     },
     "filters": {
       "searchByEmail": "Nach E-Mail suchen...",
@@ -298,7 +295,8 @@
     "income": "Einnahmen",
     "expenses": "Ausgaben",
     "amount": "Betrag",
-    "downloadPdf": "PDF herunterladen"
+    "downloadPdf": "PDF herunterladen",
+    "allProperties": "Alle Objekte"
   },
   "auditLog": {
     "failedToLoad": "Aktivitätsprotokolle konnten nicht geladen werden"

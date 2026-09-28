@@ -13,7 +13,8 @@
     "waiveLateFee": "Eftergiv gebyr",
     "writeOff": "Afskriv",
     "cancelPayment": "Annullér betaling",
-    "formalNotice": "Betalingspåkrav (PDF)"
+    "formalNotice": "Betalingspåkrav (PDF)",
+    "markPaid": "Markér som betalt"
   },
   "stats": {
     "pendingPayments": "Afventende betalinger",
@@ -217,7 +218,8 @@
     "loadHistoryFailed": "Kunne ikke indlaese historik"
   },
   "selection": {
-    "selected": "{{count}} valgt",
+    "selected_one": "{{count}} valgt",
+    "selected_other": "{{count}} valgt",
     "selectAll": "Vælg alle ubetalte på siden",
     "selectRow": "Vælg betaling {{id}}",
     "select": "Vælg",

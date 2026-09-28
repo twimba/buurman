@@ -9,7 +9,8 @@
       "contact": "Contacten",
       "contract": "Contracten",
       "payment": "Betalingen",
-      "expense": "Uitgaven"
+      "expense": "Uitgaven",
+      "label": "Type"
     },
     "table": {
       "document": "Document",
@@ -24,7 +25,8 @@
       "count_other": "{{count}} documenten"
     },
     "empty": "Geen documenten gevonden",
-    "editModal": "Document bewerken"
+    "editModal": "Document bewerken",
+    "titleShort": "Documenten"
   },
   "photosPage": {
     "title": "Fotobibliotheek",
@@ -36,10 +38,12 @@
       "contact": "Contacten",
       "contract": "Contracten",
       "payment": "Betalingen",
-      "expense": "Uitgaven"
+      "expense": "Uitgaven",
+      "label": "Type"
     },
     "empty": "Geen foto's gevonden",
-    "editModal": "Foto bewerken"
+    "editModal": "Foto bewerken",
+    "selectedCount": "{{count}} geselecteerd"
   },
   "photoGrid": {
     "noPhotos": "Nog geen foto's",

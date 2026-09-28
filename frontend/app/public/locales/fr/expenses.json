@@ -4,7 +4,8 @@
     "subtitle": "Suivi des dépenses et coûts immobiliers"
   },
   "actions": {
-    "addExpense": "Ajouter une dépense"
+    "addExpense": "Ajouter une dépense",
+    "delete": "Supprimer"
   },
   "stats": {
     "totalExpenses": "Total des dépenses",

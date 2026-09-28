@@ -18,8 +18,17 @@ public record SendNotificationRequest(
     Optional<UUID> recipientContactId,
     Optional<String> recipientEmail,
     Optional<String> recipientPhone,
-    /** Explicit locale for rendering (BCP 47 tag). Overrides user/team preference resolution. */
-    Optional<String> languageTag,
+    /** The payment this notification is about, for the communications timeline. */
+    Optional<UUID> relatedPaymentId,
+    /** The contract this notification is about. A payment reminder sets this and the payment. */
+    Optional<UUID> relatedContractId,
+    /**
+     * Context language for rendering (BCP 47 tag) — typically a contract's document language.
+     * Ranked BELOW the recipient's own preference, not an override: the resolution order is the
+     * contact's language, then the recipient user's, then this, then the team default, then
+     * English. See {@code RecipientLocaleResolver}.
+     */
+    Optional<String> contextLanguageTag,
     String templateName,
     Map<String, Object> templateVariables,
     NotificationUrgency urgency,
@@ -35,7 +44,9 @@ public record SendNotificationRequest(
     private Optional<UUID> recipientContactId = Optional.empty();
     private Optional<String> recipientEmail = Optional.empty();
     private Optional<String> recipientPhone = Optional.empty();
-    private Optional<String> languageTag = Optional.empty();
+    private Optional<UUID> relatedPaymentId = Optional.empty();
+    private Optional<UUID> relatedContractId = Optional.empty();
+    private Optional<String> contextLanguageTag = Optional.empty();
     private NotificationUrgency urgency = NotificationUrgency.NORMAL;
     private List<EmailAttachment> attachments = List.of();
   }

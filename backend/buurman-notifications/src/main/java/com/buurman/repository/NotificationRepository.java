@@ -25,6 +25,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
+import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
@@ -46,6 +47,9 @@ public class NotificationRepository {
   private final NotificationRecordMapper mapper;
   private final ObjectMapper objectMapper;
   private final Clock clock;
+
+  /** Newest N: a timeline is for reading, not for auditing every message ever sent. */
+  private static final int TIMELINE_LIMIT = 100;
 
   public Notification save(Notification notification) {
     LocalDateTime now = LocalDateTime.now(clock);
@@ -78,6 +82,8 @@ public class NotificationRepository {
         .set(NOTIFICATIONS.RECIPIENT_PHONE, notification.getRecipientPhone().orElse(null))
         .set(NOTIFICATIONS.RECIPIENT_USER_ID, notification.getRecipientUserId().orElse(null))
         .set(NOTIFICATIONS.RECIPIENT_CONTACT_ID, notification.getRecipientContactId().orElse(null))
+        .set(NOTIFICATIONS.PAYMENT_ID, notification.getRelatedPaymentId().orElse(null))
+        .set(NOTIFICATIONS.CONTRACT_ID, notification.getRelatedContractId().orElse(null))
         .set(NOTIFICATIONS.CHANNEL, notification.getChannel().name())
         .set(NOTIFICATIONS.CONTENT_TEMPLATE, notification.getContentTemplate().orElse(null))
         .set(NOTIFICATIONS.CONTENT_VARIABLES, contentVariablesJson)
@@ -113,6 +119,34 @@ public class NotificationRepository {
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
 
+  /** Newest first: a timeline reads top-down from the most recent message. */
+  public List<Notification> findByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
+    return findByEntityAndTeamId(NOTIFICATIONS.PAYMENT_ID.eq(paymentId), teamId);
+  }
+
+  public List<Notification> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
+    return findByEntityAndTeamId(NOTIFICATIONS.CONTRACT_ID.eq(contractId), teamId);
+  }
+
+  /**
+   * The team_id predicate is not redundant with the caller's entity lookup: it is the guarantee
+   * that holds even if a caller reaches this repository by another route.
+   */
+  private List<Notification> findByEntityAndTeamId(Condition entityMatches, UUID teamId) {
+    return dsl
+        .selectFrom(NOTIFICATIONS)
+        .where(entityMatches.and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
+        .orderBy(NOTIFICATIONS.CREATED_AT.desc())
+        // sendToTeam emits one notification per admin/editor per channel, so a long-lived
+        // contract accumulates far more than the handful a single send suggests.
+        .limit(TIMELINE_LIMIT)
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
   /** See {@link #findByIdentifierAndTeamId} — same null-teamId semantics. */
   public Optional<Notification> findByIdAndTeamId(UUID id, @Nullable UUID teamId) {
     Condition condition = NOTIFICATIONS.ID.eq(id);
@@ -141,9 +175,14 @@ public class NotificationRepository {
     return out;
   }
 
-  public Optional<Notification> findByProviderMessageId(String providerMessageId) {
+  public Optional<Notification> findByProviderMessageId(
+      String providerMessageId, NotificationChannel channel) {
     return dsl.selectFrom(NOTIFICATIONS)
-        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .where(
+            NOTIFICATIONS
+                .PROVIDER_MESSAGE_ID
+                .eq(providerMessageId)
+                .and(NOTIFICATIONS.CHANNEL.eq(channel.name())))
         .fetchOptional()
         .flatMap(mapper::toDomain);
   }
@@ -220,6 +259,7 @@ public class NotificationRepository {
 
   public void updateStatusByProviderMessageId(
       String providerMessageId,
+      NotificationChannel channel,
       NotificationStatus status,
       @Nullable String providerStatus,
       @Nullable String providerError) {
@@ -229,29 +269,60 @@ public class NotificationRepository {
         .set(NOTIFICATIONS.PROVIDER_STATUS, providerStatus)
         .set(NOTIFICATIONS.PROVIDER_ERROR, providerError)
         .set(NOTIFICATIONS.STATUS_UPDATED_AT, now)
-        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .where(
+            NOTIFICATIONS
+                .PROVIDER_MESSAGE_ID
+                .eq(providerMessageId)
+                .and(NOTIFICATIONS.CHANNEL.eq(channel.name())))
         .execute();
   }
 
-  public void incrementOpenCount(String providerMessageId) {
+  /**
+   * Deliberately not team-scoped, unlike every other query here.
+   *
+   * <p>Provider webhooks are unauthenticated and carry no tenant: Mailgun and Twilio send back only
+   * their own message id. Deriving a team would mean reading the notification to learn which team
+   * it belongs to and then filtering by that, which constrains nothing. The id is opaque and
+   * globally unique per provider, so it cannot address another team's row.
+   *
+   * <p>It is scoped by {@code channel} instead, which is what makes the lookup unambiguous: a
+   * provider message id is unique only within its own provider, and channel identifies the provider
+   * today (Mailgun sends EMAIL, Twilio sends SMS). {@code channel} is NOT NULL on every row,
+   * including every historical one, so this needs no backfill. A dedicated provider column would be
+   * needed only once two providers share a channel.
+   *
+   * <p>The residual risk is the index on {@code provider_message_id} being non-unique: were an id
+   * reused within one channel, every matching row would be incremented. Making that impossible
+   * needs a unique index, which would fail the migration if production already holds a duplicate,
+   * so it is recorded rather than assumed safe.
+   */
+  public void incrementOpenCount(String providerMessageId, NotificationChannel channel) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
         .set(NOTIFICATIONS.OPEN_COUNT, NOTIFICATIONS.OPEN_COUNT.plus(1))
         .set(
             NOTIFICATIONS.FIRST_OPENED_AT,
             org.jooq.impl.DSL.coalesce(NOTIFICATIONS.FIRST_OPENED_AT, now))
-        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .where(
+            NOTIFICATIONS
+                .PROVIDER_MESSAGE_ID
+                .eq(providerMessageId)
+                .and(NOTIFICATIONS.CHANNEL.eq(channel.name())))
         .execute();
   }
 
-  public void incrementClickCount(String providerMessageId) {
+  public void incrementClickCount(String providerMessageId, NotificationChannel channel) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
         .set(NOTIFICATIONS.CLICK_COUNT, NOTIFICATIONS.CLICK_COUNT.plus(1))
         .set(
             NOTIFICATIONS.FIRST_CLICKED_AT,
             org.jooq.impl.DSL.coalesce(NOTIFICATIONS.FIRST_CLICKED_AT, now))
-        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .where(
+            NOTIFICATIONS
+                .PROVIDER_MESSAGE_ID
+                .eq(providerMessageId)
+                .and(NOTIFICATIONS.CHANNEL.eq(channel.name())))
         .execute();
   }
 

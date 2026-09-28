@@ -16,7 +16,7 @@ public class EmailTemplateConfig {
 
   @Bean("emailTemplateEngine")
   public TemplateEngine emailTemplateEngine(
-      @Qualifier("emailMessageSource") MessageSource emailMessageSource,
+      @Qualifier("notificationMessageSource") MessageSource notificationMessageSource,
       @Value("${spring.thymeleaf.cache:true}") boolean cacheTemplates) {
     ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
     resolver.setPrefix("templates/email/");
@@ -33,19 +33,22 @@ public class EmailTemplateConfig {
         new SpringTemplateEngine() {
           @Override
           public void setMessageSource(MessageSource messageSource) {
-            super.setMessageSource(emailMessageSource);
+            super.setMessageSource(notificationMessageSource);
           }
         };
     engine.setTemplateResolver(resolver);
-    engine.setMessageSource(emailMessageSource);
+    engine.setMessageSource(notificationMessageSource);
     return engine;
   }
 
-  @Bean("emailMessageSource")
-  public MessageSource emailMessageSource(
+  @Bean("notificationMessageSource")
+  public MessageSource notificationMessageSource(
       @Value("${spring.thymeleaf.cache:true}") boolean cacheTemplates) {
     ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-    source.setBasenames("classpath:messages/email-subjects", "classpath:messages/email-bodies");
+    source.setBasenames(
+        "classpath:messages/email-subjects",
+        "classpath:messages/email-bodies",
+        "classpath:messages/sms-bodies");
     source.setDefaultEncoding("UTF-8");
     source.setFallbackToSystemLocale(false);
     source.setUseCodeAsDefaultMessage(true);

@@ -13,7 +13,8 @@
     "waiveLateFee": "Umorz opłatę",
     "writeOff": "Odpisz",
     "cancelPayment": "Anuluj płatność",
-    "formalNotice": "Wezwanie do zapłaty (PDF)"
+    "formalNotice": "Wezwanie do zapłaty (PDF)",
+    "markPaid": "Oznacz jako opłacone"
   },
   "stats": {
     "pendingPayments": "Oczekujące płatności",
@@ -217,7 +218,10 @@
     "loadHistoryFailed": "Nie udało się załadować historii"
   },
   "selection": {
-    "selected": "Wybrano: {{count}}",
+    "selected_one": "{{count}} zaznaczony",
+    "selected_few": "{{count}} zaznaczone",
+    "selected_many": "{{count}} zaznaczonych",
+    "selected_other": "{{count}} zaznaczonych",
     "selectAll": "Zaznacz wszystkie nieopłacone na tej stronie",
     "selectRow": "Zaznacz płatność {{id}}",
     "select": "Zaznacz",

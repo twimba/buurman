@@ -23,7 +23,11 @@
     "retry": "Yrita uudelleen",
     "continue": "Jatka",
     "saveChanges": "Tallenna muutokset",
-    "discardChanges": "Hylkaa muutokset"
+    "discardChanges": "Hylkaa muutokset",
+    "dismiss": "Sulje",
+    "clear": "Tyhjennä",
+    "deselect": "Poista valinta",
+    "select": "Valitse"
   },
   "status": {
     "active": "Aktiivinen",
@@ -231,7 +235,9 @@
     "select": "Valitse...",
     "phoneNumber": "Puhelinnumero",
     "searchCountryOrCode": "Hae maata tai suuntanumeroa...",
-    "noCountriesFound": "Maita ei loytynyt"
+    "noCountriesFound": "Maita ei loytynyt",
+    "searchCurrencies": "Hae valuuttoja",
+    "currencies": "Valuutat"
   },
   "impersonation": {
     "active": "Toisen kayttajan istunto aktiivinen",
@@ -240,7 +246,12 @@
     "notAvailable": "Ei kaytettavissa toisena kayttajana toimiessa",
     "timeRemaining": "Aikaa jaljella",
     "endSession": "Lopeta istunto",
-    "sessionEnded": "Toisen kayttajan istunto paattyi. Voit sulkea taman valilehden."
+    "sessionEnded": "Toisen kayttajan istunto paattyi. Voit sulkea taman valilehden.",
+    "missingToken": "Toisena käyttäjänä toimimisen tunnusta ei annettu.",
+    "failedToExchange": "Tunnusta ei voitu vaihtaa.",
+    "failed": "Toisena käyttäjänä toimiminen epäonnistui",
+    "closeTab": "Voit sulkea tämän välilehden.",
+    "settingUp": "Valmistellaan istuntoa..."
   },
   "teamSwitcher": {
     "yourTeams": "Tiimisi ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Tuottoprosentti",
       "coc": "CoC",
       "occupancy": "Kayttoaste",
-      "dataPercent": "Data %"
+      "dataPercent": "Data %",
+      "topByNoi": "5 parasta NOI:n mukaan",
+      "needsAttention": "Vaatii huomiota"
     },
     "occupancy": {
       "noData": "Kayttoastetietoja ei ole saatavilla",
@@ -381,7 +394,14 @@
       "noData": "Allokaatiotietoja ei ole saatavilla",
       "byCategory": "Kategorian mukaan",
       "byCountry": "Maan mukaan"
-    }
+    },
+    "overdueCount": "{{count}} myöhässä",
+    "extensionsCount": "{{count}} jatkoa",
+    "monthlyCashFlow": "Kuukausittainen kassavirta",
+    "incomeMinusExpenses": "Tulot miinus menot",
+    "occupancySublabel": "{{occupied}} / {{total}}",
+    "vacantSublabel": "Vuokrattavissa",
+    "portfolioAnalyticsCta": "Salkun analytiikka"
   },
   "wws": {
     "title": "WWS-pisteiden laskuri",
@@ -618,5 +638,110 @@
     "description": "Yhden sivun yhteenveto. Valitse kieli.",
     "yourLanguage": "Kielesi",
     "downloadFailed": "Yhteenvedon lataaminen epäonnistui"
+  },
+  "pwa": {
+    "installTitle": "Asenna Buurman",
+    "installSubtitle": "Nopeampi käyttö, koko näyttö, toimii offline-tilassa",
+    "installAction": "Asenna"
+  },
+  "refresh": "Päivitä",
+  "actions": {
+    "cancel": "Peruuta"
+  },
+  "importHistory": {
+    "title": "Tuontihistoria",
+    "subtitle": "Tarkastele aiempia tuonteja ja peru tuonti, jos se meni väärin."
+  },
+  "invitation": {
+    "loading": "Ladataan kutsua...",
+    "invalid": {
+      "title": "Kutsu ei kelpaa",
+      "message": "Tämä kutsulinkki ei kelpaa. Pyydä uusi.",
+      "goToLogin": "Siirry kirjautumiseen"
+    },
+    "accepted": {
+      "title": "Kutsu hyväksytty",
+      "message": "Olet nyt tiimin jäsen.",
+      "goToLogin": "Siirry kirjautumiseen"
+    },
+    "expired": {
+      "title": "Kutsu vanhentunut",
+      "message": "Tämä kutsu on vanhentunut. Pyydä uusi.",
+      "goToLogin": "Siirry kirjautumiseen"
+    },
+    "youreInvited": "Sinut on kutsuttu",
+    "inviterMessage": "{{inviterName}} kutsui sinut tiimiin {{teamName}}.",
+    "yourRole": "Roolisi",
+    "invitedEmail": "Kutsuttu sähköposti",
+    "expires": "Vanhenee",
+    "acceptError": "Kutsua ei voitu hyväksyä.",
+    "accepting": "Hyväksytään...",
+    "acceptInvitation": "Hyväksy kutsu",
+    "joinNote": "Hyväksyminen lisää tämän tiimin tiliisi.",
+    "loginRequired": "Kirjaudu sisään hyväksyäksesi tämän kutsun.",
+    "loginToAccept": "Kirjaudu hyväksyäksesi",
+    "createAccount": "Luo tili"
+  },
+  "communications": {
+    "title": "Viestintä",
+    "empty": "Mitään ei ole vielä lähetetty.",
+    "emptyHistorical": "Tässä näkyvät vain tästä eteenpäin lähetetyt viestit.",
+    "resend": "Lähetä uudelleen",
+    "status": {
+      "queued": "Jonossa",
+      "sent": "Lähetetty",
+      "delivered": "Toimitettu",
+      "opened": "Avattu",
+      "notDelivered": "Ei toimitettu",
+      "failed": "Epäonnistui",
+      "demoBlocked": "Ei lähetetty (demo)"
+    },
+    "loadError": "Viestintää ei voitu ladata.",
+    "type": {
+      "PAYMENT_REMINDER": "Maksumuistutus",
+      "PAYMENT_PAID": "Maksu merkitty maksetuksi",
+      "PAYMENT_RECEIVAL": "Maksu vastaanotettu",
+      "CONTRACT_CREATED": "Sopimus luotu",
+      "CONTRACT_EXPIRY": "Sopimus päättymässä",
+      "CONTRACT_STATUS_CHANGED": "Sopimuksen tila muuttui",
+      "CONTRACT_REOPENED": "Sopimus avattu uudelleen",
+      "CONTRACT_EXTENDED": "Sopimusta jatkettu",
+      "CONTRACT_EXTENSION_PENDING": "Jatko odottaa vahvistusta",
+      "CONTRACT_RENEWAL_REMINDER": "Muistutus uusimisesta",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Sopimus muutettu toistaiseksi voimassa olevaksi",
+      "CONTRACT_RENT_ADJUSTED": "Vuokra tarkistettu"
+    },
+    "to": "Vastaanottaja {{recipient}}",
+    "resent": "lähetetty uudelleen",
+    "resending": "Lähetetään uudelleen…",
+    "resendTo": "Lähetä {{type}} uudelleen vastaanottajalle {{recipient}}",
+    "resendSuccess": "Viesti lähetettiin uudelleen.",
+    "showAll": "Näytä kaikki ({{total}})",
+    "alsoCopiedToTeam": "Kopioitu myös tiimillesi ({{total}})",
+    "noneToContact": "Vuokralaisellesi ei ole vielä lähetetty mitään.",
+    "internalOnly": "Toistaiseksi vain sisäisiä kopioita tiimillesi ({{total}}).",
+    "truncated": "Näytetään {{total}} uusinta viestiä.",
+    "confirmResend": {
+      "title": "Lähetetäänkö viesti uudelleen?",
+      "message": "{{type}} lähetetään uudelleen vastaanottajalle {{recipient}}. Tämä lähettää oikean viestin."
+    },
+    "failureReason": {
+      "notDelivered": "Osoite ei hyväksynyt sitä — tarkista yhteystiedot.",
+      "failed": "Lähettäminen ei onnistunut — tarkista yhteystiedot."
+    },
+    "preview": {
+      "open": "Näytä viesti",
+      "openFor": "Näytä {{recipient}}-vastaanottajalle lähetetty {{type}}",
+      "openUnaddressed": "Näytä lähetetty {{type}}",
+      "sentToOn": "Vastaanottaja {{recipient}} · {{date}}",
+      "sentOn": "Lähetetty {{date}}",
+      "subject": "Aihe",
+      "frameTitle": "Viestin esikatselu",
+      "smsLabel": "Tekstiviesti",
+      "demoBlocked": "Tätä ei lähetetty — lähetys on poistettu käytöstä tältä tiimiltä. Tällainen viesti olisi lähtenyt.",
+      "loadError": "Viestiä ei voitu ladata.",
+      "retry": "Yritä uudelleen",
+      "noContent": "Tästä viestistä ei ole tallennettua kopiota."
+    }
   }
 }

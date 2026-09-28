@@ -6,6 +6,11 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CommunicationsTimeline } from '@/components/communications/CommunicationsTimeline';
+import {
+  usePaymentCommunications,
+  useResendCommunication,
+} from '@/hooks/useCommunications';
 import { useTabState } from '@/hooks/useTabState';
 import {
   usePayment,
@@ -366,6 +371,16 @@ const ReceivalsTable = ({
 
 export const PaymentDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
+  const {
+    data: communications = [],
+    isLoading: communicationsLoading,
+    isError: communicationsError,
+  } = usePaymentCommunications(id);
+  const resendCommunicationMutation = useResendCommunication([
+    'payments',
+    id,
+    'communications',
+  ]);
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation('payments');
@@ -1505,6 +1520,34 @@ export const PaymentDetailPage = () => {
           </div>
         )}
       </div>
+
+      {/* Scoped to the details tab: unscoped it rendered under Documents, History and
+          Receivals too, which reads as a layout bug. */}
+      {activeTab === 'details' && (
+        <section className="mt-6 bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+          <h2 className="text-xl font-semibold text-text-primary mb-4">
+            {t('common:communications.title')}
+          </h2>
+          <CommunicationsTimeline
+            communications={communications}
+            entity="payment"
+            entityIdentifier={id}
+            isLoading={communicationsLoading}
+            isError={communicationsError}
+            resendingIdentifier={
+              resendCommunicationMutation.isPending
+                ? resendCommunicationMutation.variables
+                : undefined
+            }
+            onResend={
+              canEditData
+                ? (communicationId) =>
+                    resendCommunicationMutation.mutate(communicationId)
+                : undefined
+            }
+          />
+        </section>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

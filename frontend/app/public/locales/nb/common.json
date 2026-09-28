@@ -23,7 +23,11 @@
     "retry": "Prøv igjen",
     "continue": "Fortsett",
     "saveChanges": "Lagre endringer",
-    "discardChanges": "Forkast endringer"
+    "discardChanges": "Forkast endringer",
+    "dismiss": "Lukk",
+    "clear": "Tøm",
+    "deselect": "Fjern merking",
+    "select": "Velg"
   },
   "status": {
     "active": "Aktiv",
@@ -231,7 +235,9 @@
     "select": "Velg...",
     "phoneNumber": "Telefonnummer",
     "searchCountryOrCode": "Søk etter land eller kode...",
-    "noCountriesFound": "Ingen land funnet"
+    "noCountriesFound": "Ingen land funnet",
+    "searchCurrencies": "Søk valutaer",
+    "currencies": "Valutaer"
   },
   "impersonation": {
     "active": "Representasjon aktiv",
@@ -240,7 +246,12 @@
     "notAvailable": "Ikke tilgjengelig under representasjon",
     "timeRemaining": "Tid gjenstår",
     "endSession": "Avslutt økt",
-    "sessionEnded": "Representasjonsøkten er avsluttet. Du kan lukke denne fanen."
+    "sessionEnded": "Representasjonsøkten er avsluttet. Du kan lukke denne fanen.",
+    "missingToken": "Det ble ikke oppgitt noe representasjonstoken.",
+    "failedToExchange": "Representasjonstokenet kunne ikke veksles inn.",
+    "failed": "Representasjon mislyktes",
+    "closeTab": "Du kan lukke denne fanen.",
+    "settingUp": "Forbereder økten..."
   },
   "teamSwitcher": {
     "yourTeams": "Dine team ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Belegg",
-      "dataPercent": "Data %"
+      "dataPercent": "Data %",
+      "topByNoi": "Topp 5 etter NOI",
+      "needsAttention": "Krever oppmerksomhet"
     },
     "occupancy": {
       "noData": "Ingen beleggsdata tilgjengelig",
@@ -381,7 +394,14 @@
       "noData": "Ingen fordelingsdata tilgjengelig",
       "byCategory": "Per kategori",
       "byCountry": "Per land"
-    }
+    },
+    "overdueCount": "{{count}} forfalte",
+    "extensionsCount": "{{count}} forlengelser",
+    "monthlyCashFlow": "Månedlig kontantstrøm",
+    "incomeMinusExpenses": "Inntekter minus utgifter",
+    "occupancySublabel": "{{occupied}} av {{total}}",
+    "vacantSublabel": "Tilgjengelig for utleie",
+    "portfolioAnalyticsCta": "Porteføljeanalyse"
   },
   "wws": {
     "title": "WWS-poengkalkulator",
@@ -618,5 +638,110 @@
     "description": "En oversikt på én side. Velg språk.",
     "yourLanguage": "Ditt språk",
     "downloadFailed": "Kunne ikke laste ned sammendrag"
+  },
+  "pwa": {
+    "installTitle": "Installer Buurman",
+    "installSubtitle": "Raskere tilgang, fullskjerm, fungerer offline",
+    "installAction": "Installer"
+  },
+  "refresh": "Oppdater",
+  "actions": {
+    "cancel": "Avbryt"
+  },
+  "importHistory": {
+    "title": "Importhistorikk",
+    "subtitle": "Se gjennom tidligere importer og angre en hvis noe gikk galt."
+  },
+  "invitation": {
+    "loading": "Laster invitasjonen...",
+    "invalid": {
+      "title": "Ugyldig invitasjon",
+      "message": "Denne invitasjonslenken er ugyldig. Be om en ny.",
+      "goToLogin": "Gå til innlogging"
+    },
+    "accepted": {
+      "title": "Invitasjon akseptert",
+      "message": "Du er nå medlem av teamet.",
+      "goToLogin": "Gå til innlogging"
+    },
+    "expired": {
+      "title": "Invitasjonen er utløpt",
+      "message": "Denne invitasjonen er utløpt. Be om en ny.",
+      "goToLogin": "Gå til innlogging"
+    },
+    "youreInvited": "Du har blitt invitert",
+    "inviterMessage": "{{inviterName}} har invitert deg til {{teamName}}.",
+    "yourRole": "Din rolle",
+    "invitedEmail": "Invitert e-post",
+    "expires": "Utløper",
+    "acceptError": "Invitasjonen kunne ikke aksepteres.",
+    "accepting": "Aksepterer...",
+    "acceptInvitation": "Aksepter invitasjon",
+    "joinNote": "Når du aksepterer, legges teamet til kontoen din.",
+    "loginRequired": "Logg inn for å akseptere denne invitasjonen.",
+    "loginToAccept": "Logg inn for å akseptere",
+    "createAccount": "Opprett en konto"
+  },
+  "communications": {
+    "title": "Kommunikasjon",
+    "empty": "Ingenting er sendt ennå.",
+    "emptyHistorical": "Bare meldinger sendt fra nå av vises her.",
+    "resend": "Send på nytt",
+    "status": {
+      "queued": "I kø",
+      "sent": "Sendt",
+      "delivered": "Levert",
+      "opened": "Åpnet",
+      "notDelivered": "Ikke levert",
+      "failed": "Mislyktes",
+      "demoBlocked": "Ikke sendt (demo)"
+    },
+    "loadError": "Kommunikasjonen kunne ikke lastes.",
+    "type": {
+      "PAYMENT_REMINDER": "Betalingspåminnelse",
+      "PAYMENT_PAID": "Betaling merket som betalt",
+      "PAYMENT_RECEIVAL": "Betaling mottatt",
+      "CONTRACT_CREATED": "Kontrakt opprettet",
+      "CONTRACT_EXPIRY": "Kontrakt utløper",
+      "CONTRACT_STATUS_CHANGED": "Kontraktstatus endret",
+      "CONTRACT_REOPENED": "Kontrakt gjenåpnet",
+      "CONTRACT_EXTENDED": "Kontrakt forlenget",
+      "CONTRACT_EXTENSION_PENDING": "Forlengelse venter på bekreftelse",
+      "CONTRACT_RENEWAL_REMINDER": "Påminnelse om fornyelse",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Kontrakt gått over",
+      "CONTRACT_RENT_ADJUSTED": "Husleie justert"
+    },
+    "to": "Til {{recipient}}",
+    "resent": "sendt på nytt",
+    "resending": "Sender på nytt…",
+    "resendTo": "Send {{type}} på nytt til {{recipient}}",
+    "resendSuccess": "Meldingen ble sendt på nytt.",
+    "showAll": "Vis alle ({{total}})",
+    "alsoCopiedToTeam": "Også kopiert til teamet ditt ({{total}})",
+    "noneToContact": "Ingenting er sendt til leietakeren din ennå.",
+    "internalOnly": "Så langt bare interne kopier til teamet ditt ({{total}}).",
+    "truncated": "Viser de {{total}} nyeste meldingene.",
+    "confirmResend": {
+      "title": "Sende denne meldingen på nytt?",
+      "message": "{{type}} sendes på nytt til {{recipient}}. Dette sender en ekte melding."
+    },
+    "failureReason": {
+      "notDelivered": "Adressen tok ikke imot den — sjekk kontaktopplysningene.",
+      "failed": "Den kunne ikke sendes — sjekk kontaktopplysningene."
+    },
+    "preview": {
+      "open": "Se melding",
+      "openFor": "Se {{type}} som ble sendt til {{recipient}}",
+      "openUnaddressed": "Se {{type}} som ble sendt",
+      "sentToOn": "Til {{recipient}} · {{date}}",
+      "sentOn": "Sendt {{date}}",
+      "subject": "Emne",
+      "frameTitle": "Forhåndsvisning av meldingen",
+      "smsLabel": "SMS",
+      "demoBlocked": "Denne ble ikke sendt — utsending er slått av for dette teamet. Slik ville meldingen sett ut.",
+      "loadError": "Meldingen kunne ikke lastes.",
+      "retry": "Prøv igjen",
+      "noContent": "Det er ikke lagret en kopi av denne meldingen."
+    }
   }
 }

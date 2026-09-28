@@ -88,10 +88,7 @@
       "first": "prima: {{date}}",
       "resentFrom": "Reinviata da",
       "resendReason": "Motivo del reinvio",
-      "resend": "Reinvia",
-      "emailPreview": "Anteprima email",
-      "smsMessage": "Messaggio SMS",
-      "delivered": "Consegnata"
+      "resend": "Reinvia"
     },
     "filters": {
       "searchByEmail": "Cerca per email...",
@@ -298,7 +295,8 @@
       "title": "Andamento dell'occupazione",
       "subtitle": "Percentuale mensile del tasso di occupazione",
       "occupancyRate": "Tasso di occupazione (%)"
-    }
+    },
+    "allProperties": "Tutti gli immobili"
   },
   "auditLog": {
     "failedToLoad": "Impossibile caricare i registri di attività"

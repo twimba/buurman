@@ -13,7 +13,8 @@
     "waiveLateFee": "Perdoar multa",
     "writeOff": "Abater",
     "cancelPayment": "Cancelar pagamento",
-    "formalNotice": "Interpelação (PDF)"
+    "formalNotice": "Interpelação (PDF)",
+    "markPaid": "Marcar como pago"
   },
   "stats": {
     "pendingPayments": "Pagamentos Pendentes",
@@ -217,7 +218,9 @@
     "loadHistoryFailed": "Falha ao carregar histórico"
   },
   "selection": {
-    "selected": "{{count}} selecionado",
+    "selected_one": "{{count}} selecionado",
+    "selected_other": "{{count}} selecionados",
+    "selected_many": "{{count}} selecionados",
     "selectAll": "Selecionar todos os não pagos desta página",
     "selectRow": "Selecionar pagamento {{id}}",
     "select": "Selecionar",

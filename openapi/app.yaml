@@ -12,6 +12,8 @@ servers:
 security:
   - bearer-jwt: []
 tags:
+  - name: Communications
+    description: Delivery trail of notifications sent about a payment or contract
   - name: WWS Calculator
     description: Netherlands WWS (Woningwaarderingsstelsel) points calculator
   - name: Reference
@@ -3439,6 +3441,140 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /payments/{identifier}/communications:
+    get:
+      tags:
+        - Communications
+      summary: Communications sent about a payment
+      operationId: getPaymentCommunications
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Payment identifier (Sid)
+      responses:
+        '200':
+          description: Communications, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommunicationResponse'
+        '404':
+          description: Payment not found in this team
+  /contracts/{identifier}/communications:
+    get:
+      tags:
+        - Communications
+      summary: Communications sent about a contract
+      operationId: getContractCommunications
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Contract identifier (Sid)
+      responses:
+        '200':
+          description: Communications, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommunicationResponse'
+        '404':
+          description: Contract not found in this team
+  /payments/{identifier}/communications/{communicationIdentifier}/body:
+    get:
+      tags:
+        - Communications
+      summary: The stored message of a communication sent about a payment
+      description: >-
+        The rendered message as the recipient received it. Kept out of the timeline list response:
+        a hundred-row timeline would otherwise pull a hundred rendered emails to draw five lines of
+        metadata each. Scoped by the payment as well as the team, so a communication about another
+        payment cannot be read through this one.
+      operationId: getPaymentCommunicationBody
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Payment identifier (Sid)
+        - name: communicationIdentifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Notification identifier (Sid)
+      responses:
+        '200':
+          description: The stored message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunicationBodyResponse'
+        '404':
+          description: Payment or communication not found in this team
+  /contracts/{identifier}/communications/{communicationIdentifier}/body:
+    get:
+      tags:
+        - Communications
+      summary: The stored message of a communication sent about a contract
+      description: >-
+        See the payment equivalent. Scoped by the contract as well as the team.
+      operationId: getContractCommunicationBody
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Contract identifier (Sid)
+        - name: communicationIdentifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Notification identifier (Sid)
+      responses:
+        '200':
+          description: The stored message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunicationBodyResponse'
+        '404':
+          description: Contract or communication not found in this team
+  /communications/{identifier}/resend:
+    post:
+      tags:
+        - Communications
+      summary: Resend a communication
+      description: Requires TEAM_EDITOR or above; sending costs money.
+      operationId: resendCommunication
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Notification identifier (Sid)
+      responses:
+        '200':
+          description: The resent communication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunicationResponse'
+        '404':
+          description: Notification not found in this team
   /payments/{identifier}/receivals/{receivalIdentifier}:
     put:
       tags:
@@ -21963,6 +22099,65 @@ paths:
         - bearer-jwt: []
 components:
   schemas:
+    CommunicationResponse:
+      type: object
+      required:
+        [identifier, notificationType, channel, audience, status, opened, resend, createdAt]
+      properties:
+        identifier:
+          type: string
+        notificationType:
+          type: string
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        audience:
+          type: string
+          description: >-
+            Who this went to. One send fans out to an internal copy per team member alongside the
+            tenant's, so the timeline groups on this and only offers resend on CONTACT rows.
+          enum: [CONTACT, TEAM, UNKNOWN]
+        subject:
+          type: string
+        recipientEmail:
+          type: string
+        recipientPhone:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, QUEUED, SENT, DELIVERED, FAILED, BOUNCED, REJECTED, DEMO_BLOCKED]
+        providerError:
+          type: string
+        opened:
+          type: boolean
+        firstOpenedAt:
+          type: string
+          format: date-time
+        resend:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    CommunicationBodyResponse:
+      type: object
+      description: >-
+        The stored message of one communication. Fetched on demand when a preview opens, never as
+        part of the timeline list.
+      required: [identifier, channel, body]
+      properties:
+        identifier:
+          type: string
+        channel:
+          type: string
+          enum: [EMAIL, SMS]
+        subject:
+          type: string
+        body:
+          type: string
+    LanguageCode:
+      type: string
+      description: ISO 639-1 code of a language the product is translated into
+      enum: [en, nl, de, fr, pt, es, sv, it, fi, el, pl, da, nb]
     AmenityIdentifier:
       type: string
       description: Amenity identifier
@@ -22340,6 +22535,10 @@ components:
         paymentRemindersEnabled:
           type: boolean
           description: Consent to receive tenant-facing payment reminder emails (off by default)
+        preferredLanguage:
+          allOf:
+            - $ref: "#/components/schemas/LanguageCode"
+          description: Language this contact is written to in; unset falls back to the team default
         website:
           type: string
         dateOfBirth:
@@ -22548,7 +22747,10 @@ components:
         paymentRemindersEnabled:
           type: boolean
           description: Consent to receive tenant-facing payment reminder emails (off by default)
-          format: email
+        preferredLanguage:
+          allOf:
+            - $ref: "#/components/schemas/LanguageCode"
+          description: Language this contact is written to in; unset falls back to the team default
         website:
           type: string
         dateOfBirth:
@@ -22700,22 +22902,9 @@ components:
           maxLength: 2
           minLength: 2
         defaultLanguage:
-          type: string
+          allOf:
+            - $ref: "#/components/schemas/LanguageCode"
           description: Default language for the team
-          enum:
-            - en
-            - nl
-            - pt
-            - es
-            - fr
-            - de
-            - it
-            - sv
-            - fi
-            - el
-            - pl
-            - da
-            - nb
     UpdateTeamSettingsRequest:
       type: object
       properties:
@@ -24742,7 +24931,7 @@ components:
         documentLanguages:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
           example: ["en"]
         countryMetadata:
@@ -25164,7 +25353,7 @@ components:
         documentLanguages:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
         effectiveEndDate:
           type: string
@@ -26125,6 +26314,10 @@ components:
         paymentRemindersEnabled:
           type: boolean
           description: Consent to receive tenant-facing payment reminder emails (off by default)
+        preferredLanguage:
+          allOf:
+            - $ref: "#/components/schemas/LanguageCode"
+          description: Language this contact is written to in; unset falls back to the team default
         website:
           type: string
         dateOfBirth:
@@ -27195,7 +27388,7 @@ components:
         documentLanguages:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
           example: ["en"]
         countryMetadata:
@@ -29345,25 +29538,42 @@ components:
           type: boolean
         empty:
           type: boolean
+    # Mirrors com.buurman.dto.response.NotificationStatsResponse. The backoffice API has
+    # its own stats response, shaped { total, byStatus, byChannel }; it lives in
+    # openapi/backoffice.yaml and is a different type. Do not merge the two.
     NotificationStatsResponse:
       type: object
       properties:
-        total:
+        totalCount:
           type: integer
           format: int64
-        byStatus:
-          type: object
-          additionalProperties:
-            type: integer
-            format: int64
+        pendingCount:
+          type: integer
+          format: int64
+        sentCount:
+          type: integer
+          format: int64
+        deliveredCount:
+          type: integer
+          format: int64
+        failedCount:
+          type: integer
+          format: int64
+        demoBlockedCount:
+          type: integer
+          format: int64
         byChannel:
           type: object
           additionalProperties:
             type: integer
             format: int64
       required:
-        - total
-        - byStatus
+        - totalCount
+        - pendingCount
+        - sentCount
+        - deliveredCount
+        - failedCount
+        - demoBlockedCount
         - byChannel
     InfoResponse:
       type: object

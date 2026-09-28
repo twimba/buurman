@@ -201,7 +201,10 @@
       "invalidInvoiceEmail": "Invoice email must be valid"
     },
     "paymentReminders": "Send payment reminders to this contact",
-    "paymentRemindersHelp": "Explicit consent to receive reminder emails about overdue rent. Reminders are only sent for contracts that also have reminders enabled."
+    "paymentRemindersHelp": "Explicit consent to receive reminder emails about overdue rent. Reminders are only sent for contracts that also have reminders enabled.",
+    "preferredLanguage": "Language",
+    "preferredLanguageDefault": "Use the team default",
+    "preferredLanguageHint": "Emails and text messages to this contact are written in this language."
   },
   "addresses": {
     "title": "Addresses",

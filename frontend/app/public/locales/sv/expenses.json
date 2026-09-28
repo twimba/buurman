@@ -4,7 +4,8 @@
     "subtitle": "Spara fastighetskostnader och utgifter"
   },
   "actions": {
-    "addExpense": "Lagg till kostnad"
+    "addExpense": "Lagg till kostnad",
+    "delete": "Ta bort"
   },
   "stats": {
     "totalExpenses": "Totala kostnader",

@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,19 +37,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationOutbox;
+import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.User;
 import com.buurman.domain.UserNotificationTypePreference;
 import com.buurman.domain.UserPreferences;
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamMemberRepository;
-import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.util.SidGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
@@ -58,11 +62,11 @@ class NotificationServiceImplTest {
   @Mock private NotificationRepository notificationRepository;
   @Mock private NotificationOutboxRepository outboxRepository;
   @Mock private TeamMemberRepository teamMemberRepository;
-  @Mock private TeamPreferencesRepository teamPreferencesRepository;
   @Mock private UserPreferencesRepository userPreferencesRepository;
   @Mock private UserRepository userRepository;
   @Mock private UserNotificationTypePreferenceRepository notifTypePrefRepository;
   @Mock private FeatureFlagService featureFlagService;
+  @Mock private RecipientLocaleResolver recipientLocaleResolver;
   @Mock private NotificationChannelSender emailSender;
 
   private NotificationServiceImpl service;
@@ -74,6 +78,11 @@ class NotificationServiceImplTest {
   @BeforeEach
   void setUp() {
     lenient().when(emailSender.getChannel()).thenReturn(EMAIL);
+    // The resolver is exercised by RecipientLocaleResolverTest; here it just needs to yield a
+    // locale, since an unstubbed mock returns null and render() would not match its stub.
+    lenient()
+        .when(recipientLocaleResolver.resolve(any(), any(), any(), any()))
+        .thenReturn(Locale.ENGLISH);
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new Jdk8Module());
     service =
@@ -81,13 +90,13 @@ class NotificationServiceImplTest {
             notificationRepository,
             outboxRepository,
             teamMemberRepository,
-            teamPreferencesRepository,
             userPreferencesRepository,
             userRepository,
             notifTypePrefRepository,
             featureFlagService,
             List.of(emailSender),
-            mapper);
+            mapper,
+            recipientLocaleResolver);
   }
 
   private SendNotificationRequest.SendNotificationRequestBuilder baseRequest() {
@@ -362,6 +371,106 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    @DisplayName("carries the context language and attachments onto every member's notification")
+    void sendToTeamCarriesContextAndAttachments() throws Exception {
+      UUID adminUserId = UUID.randomUUID();
+      when(teamMemberRepository.findByTeamId(TEAM_ID))
+          .thenReturn(
+              List.of(
+                  TeamMember.builder()
+                      .userId(adminUserId)
+                      .teamId(TEAM_ID)
+                      .role(TeamRole.TEAM_ADMIN)
+                      .build()));
+      when(userRepository.findById(adminUserId))
+          .thenReturn(
+              Optional.of(
+                  User.builder()
+                      .id(adminUserId)
+                      .email("admin@example.com")
+                      .firstName("Admin")
+                      .lastName("User")
+                      .build()));
+      stubEmailRender();
+      stubNotificationSave();
+
+      service.sendToTeam(
+          SendNotificationRequest.builder()
+              .teamId(Optional.of(TEAM_ID))
+              .notificationType(VERIFICATION_CODE)
+              .templateName("verification-code")
+              .templateVariables(Map.of())
+              .createdBy(CREATED_BY)
+              .contextLanguageTag(Optional.of("nl"))
+              .attachments(List.of(new EmailAttachment("notice.pdf", "application/pdf", "k/n.pdf")))
+              .build());
+
+      // The per-member rebuild discards silently anything it forgets to copy. No caller sets
+      // these on a sendToTeam path today, so this pins the trap rather than a live bug: the next
+      // person to attach a PDF to a team notification would watch it vanish.
+      ArgumentCaptor<NotificationOutbox> outboxCaptor =
+          ArgumentCaptor.forClass(NotificationOutbox.class);
+      verify(outboxRepository, atLeastOnce()).save(outboxCaptor.capture());
+      assertThat(outboxCaptor.getValue().getPayload()).contains("notice.pdf");
+
+      // The resolver is mocked here, so the rendered locale cannot show whether the context tag
+      // survived; what it receives can. This is the argument sendToTeam was dropping.
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<Optional<String>> contextCaptor = ArgumentCaptor.forClass(Optional.class);
+      verify(recipientLocaleResolver, atLeastOnce())
+          .resolve(any(), any(), any(), contextCaptor.capture());
+      assertThat(contextCaptor.getAllValues()).contains(Optional.of("nl"));
+    }
+
+    @Test
+    @DisplayName("carries the entity link onto every member's notification")
+    void sendToTeamCarriesTheEntityLink() {
+      UUID adminUserId = UUID.randomUUID();
+      TeamMember admin =
+          TeamMember.builder()
+              .userId(adminUserId)
+              .teamId(TEAM_ID)
+              .role(TeamRole.TEAM_ADMIN)
+              .build();
+      when(teamMemberRepository.findByTeamId(TEAM_ID)).thenReturn(List.of(admin));
+      when(userRepository.findById(adminUserId))
+          .thenReturn(
+              Optional.of(
+                  User.builder()
+                      .id(adminUserId)
+                      .email("admin@example.com")
+                      .firstName("Admin")
+                      .lastName("User")
+                      .build()));
+      stubEmailRender();
+      stubNotificationSave();
+      UUID paymentId = UUID.randomUUID();
+      UUID contractId = UUID.randomUUID();
+
+      service.sendToTeam(
+          SendNotificationRequest.builder()
+              .teamId(Optional.of(TEAM_ID))
+              .notificationType(VERIFICATION_CODE)
+              .templateName("verification-code")
+              .templateVariables(Map.of())
+              .createdBy(CREATED_BY)
+              .relatedPaymentId(Optional.of(paymentId))
+              .relatedContractId(Optional.of(contractId))
+              .build());
+
+      // sendToTeam rebuilds a per-member request; anything it forgets to copy is discarded
+      // silently. Ten of the thirteen call sites that set the link reach send() this way.
+      ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+      verify(notificationRepository, atLeastOnce()).save(captor.capture());
+      assertThat(captor.getAllValues())
+          .allSatisfy(
+              saved -> {
+                assertThat(saved.getRelatedPaymentId()).isEqualTo(Optional.of(paymentId));
+                assertThat(saved.getRelatedContractId()).isEqualTo(Optional.of(contractId));
+              });
+    }
+
+    @Test
     @DisplayName("returns immediately when teamId is empty")
     void returnsImmediatelyWhenTeamIdEmpty() {
       SendNotificationRequest request =
@@ -413,13 +522,13 @@ class NotificationServiceImplTest {
               notificationRepository,
               outboxRepository,
               teamMemberRepository,
-              teamPreferencesRepository,
               userPreferencesRepository,
               userRepository,
               notifTypePrefRepository,
               featureFlagService,
               List.of(), // No senders
-              mapper);
+              mapper,
+              recipientLocaleResolver);
 
       // This request should resolve to EMAIL channel (no user = default EMAIL)
       SendNotificationRequest request =
@@ -438,6 +547,73 @@ class NotificationServiceImplTest {
       // No notification saved, no outbox saved (sender was null)
       verify(notificationRepository, never()).save(any());
       verify(outboxRepository, never()).save(any());
+    }
+  }
+
+  @Nested
+  @DisplayName("entity link")
+  class EntityLink {
+
+    @Test
+    @DisplayName("a send persists the payment and contract it is about")
+    void sendPersistsTheLink() {
+      UUID paymentId = UUID.randomUUID();
+      UUID contractId = UUID.randomUUID();
+      stubConfigurableChannelResolution(true, false, true, true);
+      stubEmailRender();
+      stubNotificationSave();
+
+      service.send(
+          baseRequest()
+              .relatedPaymentId(Optional.of(paymentId))
+              .relatedContractId(Optional.of(contractId))
+              .build());
+
+      ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+      verify(notificationRepository, atLeastOnce()).save(captor.capture());
+      assertThat(captor.getAllValues())
+          .anySatisfy(
+              saved -> {
+                assertThat(saved.getRelatedPaymentId()).isEqualTo(Optional.of(paymentId));
+                assertThat(saved.getRelatedContractId()).isEqualTo(Optional.of(contractId));
+              });
+    }
+
+    @Test
+    @DisplayName("a resend stays on the same timeline as the original")
+    void resendCopiesTheLink() {
+      UUID paymentId = UUID.randomUUID();
+      UUID contractId = UUID.randomUUID();
+      NotificationIdentifier identifier = SidGenerator.newNotificationId();
+      Notification original = new Notification();
+      original.setId(UUID.randomUUID());
+      original.setIdentifier(Optional.of(identifier));
+      original.setTeamId(Optional.of(TEAM_ID));
+      original.setNotificationType(PAYMENT_REMINDER);
+      original.setChannel(EMAIL);
+      original.setStatus(NotificationStatus.SENT);
+      original.setRecipientEmail(Optional.of("jan@example.com"));
+      original.setContentTemplate(Optional.of("payment-reminder"));
+      original.setContentVariables(Optional.of(Map.of()));
+      original.setRelatedPaymentId(Optional.of(paymentId));
+      original.setRelatedContractId(Optional.of(contractId));
+      stubEmailRender();
+      stubNotificationSave();
+      when(notificationRepository.getByIdentifierAndTeamId(identifier, TEAM_ID))
+          .thenReturn(original);
+
+      service.resend(TEAM_ID, identifier, USER_ID);
+
+      ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+      verify(notificationRepository, atLeastOnce()).save(captor.capture());
+      // Without this the landlord resends from the timeline and the new message is absent
+      // from the very timeline they are watching.
+      assertThat(captor.getAllValues())
+          .anySatisfy(
+              saved -> {
+                assertThat(saved.getRelatedPaymentId()).isEqualTo(Optional.of(paymentId));
+                assertThat(saved.getRelatedContractId()).isEqualTo(Optional.of(contractId));
+              });
     }
   }
 }

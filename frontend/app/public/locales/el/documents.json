@@ -9,7 +9,8 @@
       "contact": "Επαφές",
       "contract": "Συμβόλαια",
       "payment": "Πληρωμές",
-      "expense": "Έξοδα"
+      "expense": "Έξοδα",
+      "label": "Τύπος"
     },
     "table": {
       "document": "Έγγραφο",
@@ -24,7 +25,8 @@
       "count_other": "{{count}} έγγραφα"
     },
     "empty": "Δεν βρέθηκαν έγγραφα",
-    "editModal": "Επεξεργασία Εγγράφου"
+    "editModal": "Επεξεργασία Εγγράφου",
+    "titleShort": "Έγγραφα"
   },
   "photosPage": {
     "title": "Βιβλιοθήκη Φωτογραφιών",
@@ -36,10 +38,12 @@
       "contact": "Επαφές",
       "contract": "Συμβόλαια",
       "payment": "Πληρωμές",
-      "expense": "Έξοδα"
+      "expense": "Έξοδα",
+      "label": "Τύπος"
     },
     "empty": "Δεν βρέθηκαν φωτογραφίες",
-    "editModal": "Επεξεργασία Φωτογραφίας"
+    "editModal": "Επεξεργασία Φωτογραφίας",
+    "selectedCount": "{{count}} επιλεγμένα"
   },
   "photoGrid": {
     "noPhotos": "Δεν υπάρχουν φωτογραφίες ακόμα",

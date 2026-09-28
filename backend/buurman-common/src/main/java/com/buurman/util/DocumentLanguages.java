@@ -1,6 +1,7 @@
 package com.buurman.util;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -8,8 +9,17 @@ import java.util.Set;
  */
 public final class DocumentLanguages {
 
-  public static final Set<String> SUPPORTED =
-      Set.of("en", "nl", "de", "fr", "pt", "es", "sv", "it", "fi", "el", "pl", "da", "nb");
+  /**
+   * The supported languages in a stable, human-meaningful order. {@code SUPPORTED} is a {@code Set}
+   * whose iteration order is unspecified, which makes parameterized test names and report output
+   * shuffle between runs. Anything that iterates the languages should use this.
+   */
+  public static final List<String> ORDERED =
+      List.of("en", "nl", "de", "fr", "pt", "es", "sv", "it", "fi", "el", "pl", "da", "nb");
+
+  public static final Set<String> SUPPORTED = Set.copyOf(ORDERED);
+
+  public static final List<Locale> LOCALES = ORDERED.stream().map(Locale::forLanguageTag).toList();
 
   public static final String DEFAULT = "en";
 

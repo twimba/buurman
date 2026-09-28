@@ -4,7 +4,8 @@
     "subtitle": "Seguimiento de gastos y costes de propiedades"
   },
   "actions": {
-    "addExpense": "Añadir Gasto"
+    "addExpense": "Añadir Gasto",
+    "delete": "Eliminar"
   },
   "stats": {
     "totalExpenses": "Total de Gastos",

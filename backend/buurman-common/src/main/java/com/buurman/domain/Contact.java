@@ -42,6 +42,9 @@ public class Contact {
   /** Explicit consent to receive tenant-facing payment reminder emails. Off by default. */
   @Builder.Default private Boolean paymentRemindersEnabled = false;
 
+  /** ISO 639-1 code this contact should be written to in. Empty means fall through to the team. */
+  @Builder.Default private Optional<String> preferredLanguage = Optional.empty();
+
   @Builder.Default private List<ContactTag> tags = List.of();
   private Instant createdAt;
   private Instant updatedAt;

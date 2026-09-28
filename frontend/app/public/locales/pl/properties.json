@@ -634,7 +634,8 @@
       "postalCodeRequired": "Kod pocztowy jest wymagany",
       "countryRequired": "Kraj jest wymagany",
       "areaPositive": "Powierzchnia musi być większa od 0"
-    }
+    },
+    "characteristics": "Cechy"
   },
   "collapsible": {
     "filledCount": "{{filled}} z {{total}} wypełnionych"
@@ -681,6 +682,9 @@
       "message_few": "Zamierzasz usunąć {{count}} dokumenty. Tej akcji nie można cofnąć.",
       "message_many": "Zamierzasz usunąć {{count}} dokumentów. Tej akcji nie można cofnąć.",
       "message_other": "Zamierzasz usunąć {{count}} dokumentów. Tej akcji nie można cofnąć.",
+      "confirmLabel_one": "Usuń {{count}} dokument",
+      "confirmLabel_few": "Usuń {{count}} dokumenty",
+      "confirmLabel_many": "Usuń {{count}} dokumentów",
       "confirmLabel_other": "Usuń {{count}} dokumentów"
     },
     "editModal": "Edytuj dokument",
@@ -716,6 +720,9 @@
       "message_few": "Zamierzasz usunąć {{count}} zdjęcia. Tej akcji nie można cofnąć.",
       "message_many": "Zamierzasz usunąć {{count}} zdjęć. Tej akcji nie można cofnąć.",
       "message_other": "Zamierzasz usunąć {{count}} zdjęć. Tej akcji nie można cofnąć.",
+      "confirmLabel_one": "Usuń {{count}} zdjęcie",
+      "confirmLabel_few": "Usuń {{count}} zdjęcia",
+      "confirmLabel_many": "Usuń {{count}} zdjęć",
       "confirmLabel_other": "Usuń {{count}} zdjęć"
     },
     "editModal": "Edytuj zdjęcie"

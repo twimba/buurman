@@ -4,7 +4,8 @@
     "subtitle": "Acompanhar despesas e custos dos imóveis"
   },
   "actions": {
-    "addExpense": "Adicionar Despesa"
+    "addExpense": "Adicionar Despesa",
+    "delete": "Eliminar"
   },
   "stats": {
     "totalExpenses": "Total de Despesas",

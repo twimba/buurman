@@ -4,7 +4,8 @@
     "subtitle": "Spor eiendomsutgifter og kostnader"
   },
   "actions": {
-    "addExpense": "Legg til utgift"
+    "addExpense": "Legg til utgift",
+    "delete": "Slett"
   },
   "stats": {
     "totalExpenses": "Totale utgifter",

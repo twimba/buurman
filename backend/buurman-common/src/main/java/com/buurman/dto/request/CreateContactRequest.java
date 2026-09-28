@@ -36,4 +36,10 @@ public record CreateContactRequest(
     Optional<LocalDate> idExpiryDate,
     Optional<String> notes,
     Optional<List<ContactTag>> tags,
-    Optional<Boolean> paymentRemindersEnabled) {}
+    Optional<Boolean> paymentRemindersEnabled,
+    Optional<
+            @Pattern(
+                regexp = "en|nl|de|fr|pt|es|sv|it|fi|el|pl|da|nb",
+                message = "Unsupported language code")
+            String>
+        preferredLanguage) {}

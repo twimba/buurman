@@ -13,7 +13,8 @@
     "waiveLateFee": "Condonar recargo",
     "writeOff": "Dar de baja",
     "cancelPayment": "Cancelar pago",
-    "formalNotice": "Requerimiento (PDF)"
+    "formalNotice": "Requerimiento (PDF)",
+    "markPaid": "Marcar como pagado"
   },
   "stats": {
     "pendingPayments": "Pagos Pendientes",
@@ -217,7 +218,9 @@
     "loadHistoryFailed": "Error al cargar historial"
   },
   "selection": {
-    "selected": "{{count}} seleccionado",
+    "selected_one": "{{count}} seleccionado",
+    "selected_other": "{{count}} seleccionados",
+    "selected_many": "{{count}} seleccionados",
     "selectAll": "Seleccionar todos los impagados de esta página",
     "selectRow": "Seleccionar pago {{id}}",
     "select": "Seleccionar",

@@ -13,7 +13,8 @@
     "waiveLateFee": "Efterskänk avgift",
     "writeOff": "Skriv av",
     "cancelPayment": "Avbryt betalning",
-    "formalNotice": "Betalningsanmaning (PDF)"
+    "formalNotice": "Betalningsanmaning (PDF)",
+    "markPaid": "Markera som betald"
   },
   "stats": {
     "pendingPayments": "Vantande betalningar",
@@ -217,7 +218,8 @@
     "loadHistoryFailed": "Det gick inte att ladda historik"
   },
   "selection": {
-    "selected": "{{count}} vald",
+    "selected_one": "{{count}} vald",
+    "selected_other": "{{count}} valda",
     "selectAll": "Välj alla obetalda på sidan",
     "selectRow": "Välj betalning {{id}}",
     "select": "Välj",

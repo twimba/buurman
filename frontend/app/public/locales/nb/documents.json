@@ -9,7 +9,8 @@
       "contact": "Kontakter",
       "contract": "Kontrakter",
       "payment": "Betalinger",
-      "expense": "Utgifter"
+      "expense": "Utgifter",
+      "label": "Type"
     },
     "table": {
       "document": "Dokument",
@@ -24,7 +25,8 @@
       "count_other": "{{count}} dokumenter"
     },
     "empty": "Ingen dokumenter funnet",
-    "editModal": "Rediger dokument"
+    "editModal": "Rediger dokument",
+    "titleShort": "Dokumenter"
   },
   "photosPage": {
     "title": "Bildebibliotek",
@@ -36,10 +38,12 @@
       "contact": "Kontakter",
       "contract": "Kontrakter",
       "payment": "Betalinger",
-      "expense": "Utgifter"
+      "expense": "Utgifter",
+      "label": "Type"
     },
     "empty": "Ingen bilder funnet",
-    "editModal": "Rediger bilde"
+    "editModal": "Rediger bilde",
+    "selectedCount": "{{count}} valgt"
   },
   "photoGrid": {
     "noPhotos": "Ingen bilder ennå",

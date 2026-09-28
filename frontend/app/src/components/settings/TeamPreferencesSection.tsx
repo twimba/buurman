@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { CountrySelector } from '../common/CountrySelector';
 import { CurrencyChangeModal } from './CurrencyChangeModal';
 import { useCurrencies, getCurrencySymbol } from '@/hooks/useCurrencies';
-import type { RegionalSettingsDefaultLanguage } from '../../generated/models';
+import type { LanguageCode } from '../../generated/models';
 
 const getLocalizedMonths = (locale: string) =>
   Array.from({ length: 12 }, (_, i) => ({
@@ -83,8 +83,7 @@ export const TeamPreferencesSection = () => {
         regional: {
           defaultCountry: preferences.defaultCountryCode || undefined,
           fiscalYearStartMonth: preferences.fiscalYearStart,
-          defaultLanguage:
-            preferences.defaultLanguage as RegionalSettingsDefaultLanguage,
+          defaultLanguage: preferences.defaultLanguage as LanguageCode,
         },
       });
 

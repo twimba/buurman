@@ -20,13 +20,13 @@
     "terminated": "Risolto",
     "count_one": "{{count}} contratto",
     "count_other": "{{count}} contratti",
-    "count_many": "{{count}} contratti",
     "empty": {
       "title": "Nessun contratto",
       "description": "Inizi creando il Suo primo contratto di locazione"
     },
     "error": "Impossibile caricare i contratti",
-    "exportDeposits": "Esporta depositi"
+    "exportDeposits": "Esporta depositi",
+    "count_many": "{{count}} contratti"
   },
   "create": {
     "title": "Aggiungi nuovo contratto",
@@ -155,7 +155,6 @@
       "renewalTerm": "Durata del rinnovo",
       "month_one": "{{count}} mese",
       "month_other": "{{count}} mesi",
-      "month_many": "{{count}} mesi",
       "extensions": "Proroghe",
       "remaining": "{{remaining}} di {{max}} rimanenti",
       "max": "{{max}} massimo",
@@ -166,7 +165,8 @@
       "contact": "Contatto",
       "days": "{{count}} giorni",
       "contactConfirmation": "Conferma del contatto",
-      "required": "Obbligatoria"
+      "required": "Obbligatoria",
+      "month_many": "{{count}} mesi"
     },
     "additionalTerms": "Condizioni aggiuntive",
     "terminationNotice": "Preavviso di risoluzione",
@@ -559,7 +559,6 @@
     "backToAdjust": "Torna all'adeguamento",
     "contract_one": "{{count}} contratto",
     "contract_other": "{{count}} contratti",
-    "contract_many": "{{count}} contratti",
     "adjustmentStrategy": "Strategia di adeguamento",
     "strategies": {
       "maximum": "Massimo",
@@ -578,12 +577,10 @@
     "avgChange": "Variazione media:",
     "warning_one": "{{count}} avviso",
     "warning_other": "{{count}} avvisi",
-    "warning_many": "{{count}} avvisi",
     "retroactive": "retroattivo",
     "retroactiveTooltip": "Verranno creati pagamenti di conguaglio per i pagamenti già saldati interessati dalle modifiche retroattive della data.",
     "exceedsMax": "Supera l'aumento massimo regolamentato del {{max}}%",
     "belowMin": "Inferiore all'aumento minimo regolamentato del {{min}}%",
-    "leaseOfTotal": "Contratto {{index}} di {{total}} per questo immobile",
     "tableHeaders": {
       "property": "Immobile",
       "currentRent": "Canone attuale",
@@ -602,16 +599,19 @@
     "applying": "Applicazione...",
     "applyAdjustments_one": "Applica {{count}} adeguamento",
     "applyAdjustments_other": "Applica {{count}} adeguamenti",
-    "applyAdjustments_many": "Applica {{count}} adeguamenti",
     "allSuccess": "Tutti gli adeguamenti del canone applicati con successo",
     "partialSuccess": "{{success}} di {{total}} adeguamenti applicati",
     "increasesFailed_one": "{{count}} aumento non riuscito",
     "increasesFailed_other": "{{count}} aumenti non riusciti",
-    "increasesFailed_many": "{{count}} aumenti non riusciti",
     "adjustmentPayments_one": "{{count}} pagamento di conguaglio creato per le modifiche retroattive",
     "adjustmentPayments_other": "{{count}} pagamenti di conguaglio creati per le modifiche retroattive",
-    "adjustmentPayments_many": "{{count}} pagamenti di conguaglio creati per le modifiche retroattive",
-    "status": "Stato"
+    "status": "Stato",
+    "contract_many": "{{count}} contratti",
+    "warning_many": "{{count}} avvisi",
+    "leaseOfTotal": "Contratto {{index}} di {{total}} per questo immobile",
+    "applyAdjustments_many": "Applica {{count}} adeguamenti",
+    "increasesFailed_many": "{{count}} aumenti non riusciti",
+    "adjustmentPayments_many": "{{count}} pagamenti di conguaglio creati per le modifiche retroattive"
   },
   "card": {
     "start": "Inizio",
@@ -636,15 +636,12 @@
     "translation": "Traduzione",
     "willGenerate_one": "Genererà 1 documento e lo salverà nei documenti del contratto",
     "willGenerate_other": "Genererà {{count}} documenti e li salverà nei documenti del contratto",
-    "willGenerate_many": "Genererà {{count}} documenti e li salverà nei documenti del contratto",
     "regenerating": "Rigenerazione in corso...",
     "generating": "Generazione in corso...",
     "regenerateButton_one": "Rigenera 1 documento",
     "regenerateButton_other": "Rigenera {{count}} documenti",
-    "regenerateButton_many": "Rigenera {{count}} documenti",
     "generateButton_one": "Genera 1 documento",
     "generateButton_other": "Genera {{count}} documenti",
-    "generateButton_many": "Genera {{count}} documenti",
     "types": {
       "EXTENSION_ADDENDUM": {
         "label": "Addendum di proroga",
@@ -654,7 +651,10 @@
         "label": "Lettera di aumento affitto",
         "description": "Notifica al conduttore delle modifiche dell'affitto"
       }
-    }
+    },
+    "willGenerate_many": "Genererà {{count}} documenti e li salverà nei documenti del contratto",
+    "regenerateButton_many": "Rigenera {{count}} documenti",
+    "generateButton_many": "Genera {{count}} documenti"
   },
   "generateRentChange": {
     "title": "Genera variazione del canone",
@@ -667,14 +667,14 @@
     "translation": "Traduzione",
     "willGenerate_one": "Genererà 1 documento",
     "willGenerate_other": "Genererà {{count}} documenti",
-    "willGenerate_many": "Genererà {{count}} documenti",
     "regenerating": "Rigenerazione in corso...",
     "generating": "Generazione in corso...",
     "regenerateButton_one": "Rigenera 1 documento",
     "regenerateButton_other": "Rigenera {{count}} documenti",
-    "regenerateButton_many": "Rigenera {{count}} documenti",
     "generateButton_one": "Genera 1 documento",
     "generateButton_other": "Genera {{count}} documenti",
+    "willGenerate_many": "Genererà {{count}} documenti",
+    "regenerateButton_many": "Rigenera {{count}} documenti",
     "generateButton_many": "Genera {{count}} documenti"
   },
   "enums": {
@@ -829,7 +829,7 @@
       "bruksvardessystemApplicable": "Sistema Bruksvärde Applicabile",
       "energyDeclarationRating": "Classe Dichiarazione Energetica",
       "hyresnamndenEligible": "Idoneo Hyresnämnden",
-      "depositSum": "Importo Deposito",
+      "depositSum": "Importo del deposito",
       "vuokrasopimustyyppi": "Tipo Contratto (FI)",
       "vakuusAmount": "Importo Deposito",
       "vakuusMonths": "Deposito in Mesi",
@@ -867,8 +867,8 @@
     "generateDocumentTitle": "Genera documento di modifica dell'affitto",
     "historyCount_one": "Storico (1 periodo)",
     "historyCount_other": "Storico ({{count}} periodi)",
-    "historyCount_many": "Storico ({{count}} periodi)",
-    "deleteConfirm": "Sei sicuro di voler eliminare questo periodo di affitto?"
+    "deleteConfirm": "Sei sicuro di voler eliminare questo periodo di affitto?",
+    "historyCount_many": "Storico ({{count}} periodi)"
   },
   "rentBreakdown": {
     "rentAmount": "Importo affitto",

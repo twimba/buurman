@@ -255,6 +255,22 @@
 
     <build>
         <plugins>
+        <!-- Publishes AbstractRepositoryIntegrationTest and TestDataHelper so modules that
+             depend on core (notifications, backoffice, letters) can write integration tests
+             without duplicating the Testcontainer bootstrap. -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>test-jar</id>
+                    <goals>
+                        <goal>test-jar</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -314,6 +330,8 @@
                                 <typeMapping>DateTime=java.time.Instant</typeMapping>
                             </typeMappings>
                             <schemaMappings>
+                                <schemaMapping>CommunicationResponse=com.buurman.dto.response.CommunicationResponse</schemaMapping>
+                                <schemaMapping>CommunicationBodyResponse=com.buurman.dto.response.CommunicationBodyResponse</schemaMapping>
                                 <schemaMapping>PageResponsePropertyResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseContractResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseExpenseResponse=com.buurman.dto.response.PageResponse</schemaMapping>

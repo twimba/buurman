@@ -13,7 +13,8 @@
     "waiveLateFee": "Frafall gebyr",
     "writeOff": "Avskriv",
     "cancelPayment": "Kanseller betaling",
-    "formalNotice": "Betalingsvarsel (PDF)"
+    "formalNotice": "Betalingsvarsel (PDF)",
+    "markPaid": "Merk som betalt"
   },
   "stats": {
     "pendingPayments": "Ventende betalinger",
@@ -217,7 +218,8 @@
     "loadHistoryFailed": "Kunne ikke laste historikk"
   },
   "selection": {
-    "selected": "{{count}} valgt",
+    "selected_one": "{{count}} valgt",
+    "selected_other": "{{count}} valgt",
     "selectAll": "Velg alle ubetalte på siden",
     "selectRow": "Velg betaling {{id}}",
     "select": "Velg",

@@ -11,10 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailSubjectResolver {
 
-  private final MessageSource emailMessageSource;
+  private final MessageSource notificationMessageSource;
 
-  public EmailSubjectResolver(@Qualifier("emailMessageSource") MessageSource emailMessageSource) {
-    this.emailMessageSource = emailMessageSource;
+  public EmailSubjectResolver(
+      @Qualifier("notificationMessageSource") MessageSource notificationMessageSource) {
+    this.notificationMessageSource = notificationMessageSource;
   }
 
   private static final String FALLBACK_SUBJECT = "Notification from Buurman";
@@ -24,12 +25,15 @@ public class EmailSubjectResolver {
     Object[] args = extractArgs(templateName, variables);
     String defaultSubject =
         Optional.ofNullable(
-                emailMessageSource.getMessage("email.subject.default", null, null, locale))
+                notificationMessageSource.getMessage("email.subject.default", null, null, locale))
             .orElse(FALLBACK_SUBJECT);
     // A tenant reminder reads very differently by tone, so each tone has its own subject line.
     return toneVariantKey(templateName, variables)
-        .flatMap(k -> Optional.ofNullable(emailMessageSource.getMessage(k, args, null, locale)))
-        .or(() -> Optional.ofNullable(emailMessageSource.getMessage(key, args, null, locale)))
+        .flatMap(
+            k -> Optional.ofNullable(notificationMessageSource.getMessage(k, args, null, locale)))
+        .or(
+            () ->
+                Optional.ofNullable(notificationMessageSource.getMessage(key, args, null, locale)))
         .orElse(defaultSubject);
   }
 

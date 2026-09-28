@@ -88,10 +88,7 @@
       "first": "pierwsze: {{date}}",
       "resentFrom": "Ponownie wysłano z",
       "resendReason": "Powód ponownego wysłania",
-      "resend": "Wyślij ponownie",
-      "emailPreview": "Podgląd e-maila",
-      "smsMessage": "Wiadomość SMS",
-      "delivered": "Dostarczono"
+      "resend": "Wyślij ponownie"
     },
     "filters": {
       "searchByEmail": "Szukaj po adresie e-mail...",
@@ -298,7 +295,8 @@
       "title": "Trend obłożenia",
       "subtitle": "Miesięczny wskaźnik obłożenia w procentach",
       "occupancyRate": "Wskaźnik obłożenia (%)"
-    }
+    },
+    "allProperties": "Wszystkie nieruchomości"
   },
   "auditLog": {
     "failedToLoad": "Nie udało się załadować dziennika aktywności"

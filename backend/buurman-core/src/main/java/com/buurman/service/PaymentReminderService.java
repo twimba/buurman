@@ -73,6 +73,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.document.TenantNoticeDocumentService;
 import com.buurman.service.notification.EmailAttachment;
 import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.RecipientLocaleResolver;
 import com.buurman.service.notification.RenderedContent;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.Constants;
@@ -120,6 +121,7 @@ public class PaymentReminderService {
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
   private final ContactRepository contactRepository;
+  private final RecipientLocaleResolver recipientLocaleResolver;
   private final ContractPartyService contractPartyService;
   private final ContractPaymentInstructionRepository cpiRepository;
   private final PaymentInstructionRepository paymentInstructionRepository;
@@ -329,8 +331,18 @@ public class PaymentReminderService {
     int daysOverdue = (int) Math.max(0, ChronoUnit.DAYS.between(payment.getDueDate(), today));
     ReminderTone tone =
         requestedTone.orElse(daysOverdue > 0 ? ReminderTone.FIRM : ReminderTone.FRIENDLY);
-    String languageTag = DocumentLanguages.firstSupportedOrDefault(contract.getDocumentLanguages());
-    Locale locale = Locale.forLanguageTag(languageTag);
+    String contractLanguageTag =
+        DocumentLanguages.firstSupportedOrDefault(contract.getDocumentLanguages());
+    // The body is rendered in the recipient's language, so the money, the dates and the formal
+    // notice PDF must use that same locale — otherwise a Portuguese tenant gets a Portuguese
+    // email quoting a Dutch date and a German PDF.
+    Locale locale =
+        recipientLocaleResolver.resolve(
+            Optional.of(teamId),
+            Optional.of(contact.getId()),
+            Optional.empty(),
+            Optional.of(contractLanguageTag));
+    String languageTag = locale.toLanguageTag();
     String propertyName =
         propertyRepository
             .findByIdAndTeamId(contract.getPropertyId(), teamId)
@@ -428,10 +440,12 @@ public class PaymentReminderService {
                 .teamId(Optional.of(teamId))
                 .notificationType(PAYMENT_REMINDER)
                 .recipientContactId(Optional.of(contact.getId()))
+                .relatedPaymentId(Optional.of(payment.getId()))
+                .relatedContractId(Optional.of(payment.getContractId()))
                 .recipientEmail(Optional.of(email))
                 .templateName(TEMPLATE_NAME)
                 .templateVariables(variables)
-                .languageTag(Optional.of(languageTag))
+                .contextLanguageTag(Optional.of(languageTag))
                 .urgency(
                     tone == ReminderTone.FRIENDLY
                         ? NotificationUrgency.NORMAL

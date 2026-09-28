@@ -252,4 +252,52 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       assertThat(repo.findByIdAndTeamId(saved.getId(), TEAM_A_ID)).isPresent();
     }
   }
+
+  @Nested
+  @DisplayName("preferredLanguage")
+  class PreferredLanguage {
+
+    @Test
+    @DisplayName("preferred language round-trips")
+    void preferredLanguageRoundTrips() {
+      Contact contact = TestDataHelper.buildContact(TEAM_A_ID, USER_ID);
+      contact.setPreferredLanguage(Optional.of("pt"));
+
+      Contact saved = repo.save(contact);
+
+      assertThat(repo.findByIdAndTeamId(saved.getId(), TEAM_A_ID))
+          .get()
+          .extracting(Contact::getPreferredLanguage)
+          .isEqualTo(Optional.of("pt"));
+    }
+
+    @Test
+    @DisplayName("preferred language defaults to empty")
+    void preferredLanguageDefaultsToEmpty() {
+      Contact saved = repo.save(TestDataHelper.buildContact(TEAM_A_ID, USER_ID));
+
+      assertThat(repo.findByIdAndTeamId(saved.getId(), TEAM_A_ID))
+          .get()
+          .extracting(Contact::getPreferredLanguage)
+          .isEqualTo(Optional.empty());
+    }
+
+    @Test
+    @DisplayName("an unsupported language code is rejected by the database")
+    void unsupportedLanguageIsRejected() {
+      Contact contact = TestDataHelper.buildContact(TEAM_A_ID, USER_ID);
+      contact.setPreferredLanguage(Optional.of("xx"));
+
+      assertThatThrownBy(() -> repo.save(contact))
+          .hasMessageContaining("chk_contact_preferred_language");
+    }
+
+    @Test
+    @DisplayName("a contact is invisible to another team")
+    void contactIsScopedToItsTeam() {
+      Contact saved = repo.save(TestDataHelper.buildContact(TEAM_A_ID, USER_ID));
+
+      assertThat(repo.findByIdAndTeamId(saved.getId(), TEAM_B_ID)).isEmpty();
+    }
+  }
 }

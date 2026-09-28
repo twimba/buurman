@@ -88,10 +88,7 @@
       "first": "first: {{date}}",
       "resentFrom": "Resent from",
       "resendReason": "Resend reason",
-      "resend": "Resend",
-      "emailPreview": "Email Preview",
-      "smsMessage": "SMS Message",
-      "delivered": "Delivered"
+      "resend": "Resend"
     },
     "filters": {
       "searchByEmail": "Search by email...",
@@ -298,7 +295,8 @@
       "title": "Occupancy Trend",
       "subtitle": "Monthly occupancy rate percentage",
       "occupancyRate": "Occupancy Rate (%)"
-    }
+    },
+    "allProperties": "All properties"
   },
   "auditLog": {
     "failedToLoad": "Failed to load activity logs"

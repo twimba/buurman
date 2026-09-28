@@ -38,4 +38,5 @@ public record ContactResponse(
     Optional<ContactBalanceSummary> balanceSummary,
     Instant createdAt,
     Optional<Instant> updatedAt,
-    Boolean paymentRemindersEnabled) {}
+    Boolean paymentRemindersEnabled,
+    Optional<String> preferredLanguage) {}

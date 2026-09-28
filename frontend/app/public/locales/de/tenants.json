@@ -201,7 +201,10 @@
       "invalidInvoiceEmail": "Rechnungs-E-Mail muss gültig sein"
     },
     "paymentReminders": "Zahlungserinnerungen an diesen Kontakt senden",
-    "paymentRemindersHelp": "Ausdrückliche Zustimmung zu Erinnerungs-E-Mails bei überfälliger Miete. Erinnerungen werden nur für Verträge gesendet, bei denen sie ebenfalls aktiviert sind."
+    "paymentRemindersHelp": "Ausdrückliche Zustimmung zu Erinnerungs-E-Mails bei überfälliger Miete. Erinnerungen werden nur für Verträge gesendet, bei denen sie ebenfalls aktiviert sind.",
+    "preferredLanguage": "Sprache",
+    "preferredLanguageDefault": "Teamstandard verwenden",
+    "preferredLanguageHint": "E-Mails und SMS an diesen Kontakt werden in dieser Sprache verfasst."
   },
   "addresses": {
     "title": "Adressen",

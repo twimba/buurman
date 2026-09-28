@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { CommunicationsTimeline } from '@/components/communications/CommunicationsTimeline';
+import {
+  useContractCommunications,
+  useResendCommunication,
+} from '@/hooks/useCommunications';
 import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import {
@@ -42,6 +47,16 @@ import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 export const ContractDetailPage = () => {
   const { t } = useTranslation('contracts');
   const { id = '' } = useParams<{ id: string }>();
+  const {
+    data: communications = [],
+    isLoading: communicationsLoading,
+    isError: communicationsError,
+  } = useContractCommunications(id);
+  const resendCommunicationMutation = useResendCommunication([
+    'contracts',
+    id,
+    'communications',
+  ]);
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useTabState('overview', [
@@ -322,7 +337,32 @@ export const ContractDetailPage = () => {
 
         {/* Tab Content */}
         {activeTab === 'overview' && (
-          <ContractOverviewTab contract={contract} contractId={id} />
+          <>
+            <ContractOverviewTab contract={contract} contractId={id} />
+            <section className="mt-6 bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-xl font-semibold text-text-primary mb-4">
+                {t('common:communications.title')}
+              </h2>
+              <CommunicationsTimeline
+                communications={communications}
+                entity="contract"
+                entityIdentifier={id}
+                isLoading={communicationsLoading}
+                isError={communicationsError}
+                resendingIdentifier={
+                  resendCommunicationMutation.isPending
+                    ? resendCommunicationMutation.variables
+                    : undefined
+                }
+                onResend={
+                  canEditData
+                    ? (communicationId) =>
+                        resendCommunicationMutation.mutate(communicationId)
+                    : undefined
+                }
+              />
+            </section>
+          </>
         )}
 
         {activeTab === 'payments' && (

@@ -88,10 +88,7 @@
       "first": "primeiro: {{date}}",
       "resentFrom": "Reenviado de",
       "resendReason": "Motivo do reenvio",
-      "resend": "Reenviar",
-      "emailPreview": "Pré-visualização de Email",
-      "smsMessage": "Mensagem SMS",
-      "delivered": "Entregue"
+      "resend": "Reenviar"
     },
     "filters": {
       "searchByEmail": "Pesquisar por email...",
@@ -298,7 +295,8 @@
     "income": "Receita",
     "expenses": "Despesas",
     "amount": "Montante",
-    "downloadPdf": "Descarregar PDF"
+    "downloadPdf": "Descarregar PDF",
+    "allProperties": "Todos os imóveis"
   },
   "auditLog": {
     "failedToLoad": "Falha ao carregar registos de atividade"

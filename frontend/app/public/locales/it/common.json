@@ -23,7 +23,11 @@
     "retry": "Riprova",
     "continue": "Continua",
     "saveChanges": "Salva modifiche",
-    "discardChanges": "Annulla modifiche"
+    "discardChanges": "Annulla modifiche",
+    "dismiss": "Chiudi",
+    "clear": "Cancella",
+    "deselect": "Deseleziona",
+    "select": "Seleziona"
   },
   "status": {
     "active": "Attivo",
@@ -231,7 +235,9 @@
     "select": "Seleziona...",
     "phoneNumber": "Numero di telefono",
     "searchCountryOrCode": "Cerca paese o prefisso...",
-    "noCountriesFound": "Nessun paese trovato"
+    "noCountriesFound": "Nessun paese trovato",
+    "searchCurrencies": "Cerca valute",
+    "currencies": "Valute"
   },
   "impersonation": {
     "active": "Impersonificazione attiva",
@@ -240,7 +246,12 @@
     "notAvailable": "Non disponibile durante l'impersonificazione",
     "timeRemaining": "Tempo rimanente",
     "endSession": "Termina sessione",
-    "sessionEnded": "Sessione di impersonificazione terminata. Può chiudere questa scheda."
+    "sessionEnded": "Sessione di impersonificazione terminata. Può chiudere questa scheda.",
+    "missingToken": "Non è stato fornito alcun token di impersonificazione.",
+    "failedToExchange": "Non è stato possibile scambiare il token di impersonificazione.",
+    "failed": "Impersonificazione non riuscita",
+    "closeTab": "Puoi chiudere questa scheda.",
+    "settingUp": "Preparazione della sessione..."
   },
   "teamSwitcher": {
     "yourTeams": "I Suoi team ({{count}})",
@@ -330,7 +341,9 @@
       "capRate": "Cap Rate",
       "coc": "CoC",
       "occupancy": "Occupazione",
-      "dataPercent": "Dati %"
+      "dataPercent": "Dati %",
+      "topByNoi": "Top 5 per NOI",
+      "needsAttention": "Richiede attenzione"
     },
     "occupancy": {
       "noData": "Nessun dato sull'occupazione disponibile",
@@ -381,7 +394,14 @@
       "noData": "Nessun dato sull'allocazione disponibile",
       "byCategory": "Per categoria",
       "byCountry": "Per paese"
-    }
+    },
+    "overdueCount": "{{count}} scaduti",
+    "extensionsCount": "{{count}} proroghe",
+    "monthlyCashFlow": "Flusso di cassa mensile",
+    "incomeMinusExpenses": "Entrate meno uscite",
+    "occupancySublabel": "{{occupied}} su {{total}}",
+    "vacantSublabel": "Disponibile per l'affitto",
+    "portfolioAnalyticsCta": "Analisi del portafoglio"
   },
   "wws": {
     "title": "Calcolatore punti WWS",
@@ -618,5 +638,110 @@
     "description": "Una panoramica di una pagina. Seleziona una lingua.",
     "yourLanguage": "La tua lingua",
     "downloadFailed": "Download della scheda riepilogo non riuscito"
+  },
+  "pwa": {
+    "installTitle": "Installa Buurman",
+    "installSubtitle": "Accesso più rapido, schermo intero, funziona offline",
+    "installAction": "Installa"
+  },
+  "refresh": "Aggiorna",
+  "actions": {
+    "cancel": "Annulla"
+  },
+  "importHistory": {
+    "title": "Cronologia delle importazioni",
+    "subtitle": "Controlla le importazioni precedenti e annullane una se è andata storta."
+  },
+  "invitation": {
+    "loading": "Caricamento dell'invito...",
+    "invalid": {
+      "title": "Invito non valido",
+      "message": "Questo link di invito non è valido. Richiedine uno nuovo.",
+      "goToLogin": "Vai al login"
+    },
+    "accepted": {
+      "title": "Invito accettato",
+      "message": "Ora fai parte del team.",
+      "goToLogin": "Vai al login"
+    },
+    "expired": {
+      "title": "Invito scaduto",
+      "message": "Questo invito è scaduto. Richiedine uno nuovo.",
+      "goToLogin": "Vai al login"
+    },
+    "youreInvited": "Sei stato invitato",
+    "inviterMessage": "{{inviterName}} ti ha invitato a unirti a {{teamName}}.",
+    "yourRole": "Il tuo ruolo",
+    "invitedEmail": "Email invitata",
+    "expires": "Scade",
+    "acceptError": "Non è stato possibile accettare l'invito.",
+    "accepting": "Accettazione...",
+    "acceptInvitation": "Accetta l'invito",
+    "joinNote": "Accettando, questo team viene aggiunto al tuo account.",
+    "loginRequired": "Accedi per accettare questo invito.",
+    "loginToAccept": "Accedi per accettare",
+    "createAccount": "Crea un account"
+  },
+  "communications": {
+    "title": "Comunicazioni",
+    "empty": "Non è stato ancora inviato nulla.",
+    "emptyHistorical": "Qui compaiono solo i messaggi inviati da ora in poi.",
+    "resend": "Invia di nuovo",
+    "status": {
+      "queued": "In coda",
+      "sent": "Inviato",
+      "delivered": "Consegnato",
+      "opened": "Aperto",
+      "notDelivered": "Non consegnato",
+      "failed": "Non riuscito",
+      "demoBlocked": "Non inviato (demo)"
+    },
+    "loadError": "Impossibile caricare le comunicazioni.",
+    "type": {
+      "PAYMENT_REMINDER": "Promemoria di pagamento",
+      "PAYMENT_PAID": "Pagamento contrassegnato come pagato",
+      "PAYMENT_RECEIVAL": "Pagamento ricevuto",
+      "CONTRACT_CREATED": "Contratto creato",
+      "CONTRACT_EXPIRY": "Contratto in scadenza",
+      "CONTRACT_STATUS_CHANGED": "Stato del contratto modificato",
+      "CONTRACT_REOPENED": "Contratto riaperto",
+      "CONTRACT_EXTENDED": "Contratto prorogato",
+      "CONTRACT_EXTENSION_PENDING": "Proroga in attesa di conferma",
+      "CONTRACT_RENEWAL_REMINDER": "Promemoria di rinnovo",
+      "CONTRACT_ROLLED_OVER_TO_INDEFINITE": "Contratto convertito",
+      "CONTRACT_RENT_ADJUSTED": "Canone aggiornato"
+    },
+    "to": "A {{recipient}}",
+    "resent": "inviato di nuovo",
+    "resending": "Invio in corso…",
+    "resendTo": "Invia di nuovo {{type}} a {{recipient}}",
+    "resendSuccess": "Messaggio inviato di nuovo.",
+    "showAll": "Mostra tutto ({{total}})",
+    "alsoCopiedToTeam": "Copiato anche al tuo team ({{total}})",
+    "noneToContact": "Non è ancora stato inviato nulla al tuo inquilino.",
+    "internalOnly": "Finora solo copie interne al tuo team ({{total}}).",
+    "truncated": "Sono mostrati i {{total}} messaggi più recenti.",
+    "confirmResend": {
+      "title": "Inviare di nuovo questo messaggio?",
+      "message": "{{type}} sarà inviato di nuovo a {{recipient}}. Questo invia un messaggio reale."
+    },
+    "failureReason": {
+      "notDelivered": "L'indirizzo non lo ha accettato — controlla i dati di contatto.",
+      "failed": "Non è stato possibile inviarlo — controlla i dati di contatto."
+    },
+    "preview": {
+      "open": "Vedi messaggio",
+      "openFor": "Vedi il {{type}} inviato a {{recipient}}",
+      "openUnaddressed": "Vedi il {{type}} che è stato inviato",
+      "sentToOn": "A {{recipient}} · {{date}}",
+      "sentOn": "Inviato il {{date}}",
+      "subject": "Oggetto",
+      "frameTitle": "Anteprima del messaggio",
+      "smsLabel": "SMS",
+      "demoBlocked": "Non è stato inviato — l'invio è disattivato per questo team. Questo è ciò che sarebbe partito.",
+      "loadError": "Non è stato possibile caricare questo messaggio.",
+      "retry": "Riprova",
+      "noContent": "Non è stata conservata alcuna copia di questo messaggio."
+    }
   }
 }

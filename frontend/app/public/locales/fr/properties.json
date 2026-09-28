@@ -11,13 +11,13 @@
     "allStatuses": "Tous les statuts",
     "count_one": "{{count}} bien",
     "count_other": "{{count}} biens",
-    "count_many": "{{count}} biens",
     "empty": {
       "title": "Aucun bien trouvé",
       "filtered": "Essayez d'ajuster vos filtres ou termes de recherche",
       "noData": "Commencez par ajouter votre premier bien"
     },
-    "error": "Échec du chargement des biens"
+    "error": "Échec du chargement des biens",
+    "count_many": "{{count}} biens"
   },
   "create": {
     "title": "Ajouter un nouveau bien",
@@ -183,7 +183,8 @@
       "postalCodeRequired": "Le code postal est obligatoire",
       "countryRequired": "Le pays est obligatoire",
       "areaPositive": "La surface doit être supérieure à 0"
-    }
+    },
+    "characteristics": "Caractéristiques"
   },
   "collapsible": {
     "filledCount": "{{filled}} sur {{total}} remplis"
@@ -210,23 +211,25 @@
     "upload": {
       "title_one": "Téléverser un document",
       "title_other": "Téléverser des documents",
-      "title_many": "Téléverser des documents",
       "files": "{{count}} fichiers",
       "titleLabel": "Titre (optionnel)",
       "titlePlaceholder": "ex., Plan du bien",
       "notesLabel": "Notes (optionnel)",
       "notesPlaceholder": "Notes supplémentaires sur ce document",
       "uploading": "Téléversement {{current}} sur {{total}}...",
-      "uploadCount": "Téléverser {{count}} documents"
+      "uploadCount": "Téléverser {{count}} documents",
+      "title_many": "Téléverser des documents"
     },
     "delete": {
       "title_one": "Supprimer le document",
       "title_other": "Supprimer les documents",
-      "title_many": "Supprimer les documents",
       "message_one": "Êtes-vous sûr de vouloir supprimer ce document ? Cette action est irréversible.",
       "message_other": "Vous êtes sur le point de supprimer {{count}} documents. Cette action est irréversible.",
-      "message_many": "Vous êtes sur le point de supprimer {{count}} documents. Cette action est irréversible.",
-      "confirmLabel_other": "Supprimer {{count}} documents"
+      "confirmLabel_one": "Supprimer {{count}} document",
+      "confirmLabel_other": "Supprimer {{count}} documents",
+      "confirmLabel_many": "Supprimer {{count}} documents",
+      "title_many": "Supprimer les documents",
+      "message_many": "Vous êtes sur le point de supprimer {{count}} documents. Cette action est irréversible."
     },
     "editModal": "Modifier le document",
     "downloading": "Téléchargement..."
@@ -238,26 +241,28 @@
     "upload": {
       "title_one": "Téléverser une photo",
       "title_other": "Téléverser des photos",
-      "title_many": "Téléverser des photos",
       "files": "{{count}} fichiers",
       "titleLabel": "Titre (optionnel)",
       "titlePlaceholder": "ex., Salon",
       "notesLabel": "Notes (optionnel)",
       "notesPlaceholder": "Notes supplémentaires sur cette photo",
       "uploading": "Téléversement {{current}} sur {{total}}...",
-      "uploadCount": "Téléverser {{count}} photos"
+      "uploadCount": "Téléverser {{count}} photos",
+      "title_many": "Téléverser des photos"
     },
     "delete": {
       "title_one": "Supprimer la photo",
       "title_other": "Supprimer les photos",
-      "title_many": "Supprimer les photos",
       "mainPhotoWarning_one": "C'est la photo principale. La supprimer signifie que ce bien n'aura plus de photo principale. Cette action est irréversible.",
       "mainPhotoWarning_other": "Vous êtes sur le point de supprimer {{count}} photos, y compris la photo principale. Ce bien n'aura plus de photo principale. Cette action est irréversible.",
-      "mainPhotoWarning_many": "Vous êtes sur le point de supprimer {{count}} photos, y compris la photo principale. Ce bien n'aura plus de photo principale. Cette action est irréversible.",
       "message_one": "Êtes-vous sûr de vouloir supprimer cette photo ? Cette action est irréversible.",
       "message_other": "Vous êtes sur le point de supprimer {{count}} photos. Cette action est irréversible.",
-      "message_many": "Vous êtes sur le point de supprimer {{count}} photos. Cette action est irréversible.",
-      "confirmLabel_other": "Supprimer {{count}} photos"
+      "confirmLabel_one": "Supprimer {{count}} photo",
+      "confirmLabel_other": "Supprimer {{count}} photos",
+      "confirmLabel_many": "Supprimer {{count}} photos",
+      "title_many": "Supprimer les photos",
+      "mainPhotoWarning_many": "Vous êtes sur le point de supprimer {{count}} photos, y compris la photo principale. Ce bien n'aura plus de photo principale. Cette action est irréversible.",
+      "message_many": "Vous êtes sur le point de supprimer {{count}} photos. Cette action est irréversible."
     },
     "editModal": "Modifier la photo"
   },

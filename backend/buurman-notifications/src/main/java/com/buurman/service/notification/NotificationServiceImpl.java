@@ -40,7 +40,6 @@ import com.buurman.exception.ExternalServiceException;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamMemberRepository;
-import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
@@ -57,34 +56,34 @@ public class NotificationServiceImpl implements NotificationService {
   private final NotificationRepository notificationRepository;
   private final NotificationOutboxRepository outboxRepository;
   private final TeamMemberRepository teamMemberRepository;
-  private final TeamPreferencesRepository teamPreferencesRepository;
   private final UserPreferencesRepository userPreferencesRepository;
   private final UserRepository userRepository;
   private final UserNotificationTypePreferenceRepository notifTypePrefRepository;
   private final FeatureFlagService featureFlagService;
   private final Map<NotificationChannel, NotificationChannelSender> channelSenders;
   private final ObjectMapper objectMapper;
+  private final RecipientLocaleResolver recipientLocaleResolver;
 
   public NotificationServiceImpl(
       NotificationRepository notificationRepository,
       NotificationOutboxRepository outboxRepository,
       TeamMemberRepository teamMemberRepository,
-      TeamPreferencesRepository teamPreferencesRepository,
       UserPreferencesRepository userPreferencesRepository,
       UserRepository userRepository,
       UserNotificationTypePreferenceRepository notifTypePrefRepository,
       FeatureFlagService featureFlagService,
       List<NotificationChannelSender> senders,
-      ObjectMapper objectMapper) {
+      ObjectMapper objectMapper,
+      RecipientLocaleResolver recipientLocaleResolver) {
     this.notificationRepository = notificationRepository;
     this.outboxRepository = outboxRepository;
     this.teamMemberRepository = teamMemberRepository;
-    this.teamPreferencesRepository = teamPreferencesRepository;
     this.userPreferencesRepository = userPreferencesRepository;
     this.userRepository = userRepository;
     this.notifTypePrefRepository = notifTypePrefRepository;
     this.featureFlagService = featureFlagService;
     this.objectMapper = objectMapper;
+    this.recipientLocaleResolver = recipientLocaleResolver;
 
     this.channelSenders = new HashMap<>();
     for (NotificationChannelSender sender : senders) {
@@ -117,7 +116,12 @@ public class NotificationServiceImpl implements NotificationService {
       boolean deliveryBlocked =
           request.teamId().map(teamId -> isDeliveryBlocked(channel, teamId)).orElse(false);
 
-      Locale recipientLocale = resolveRecipientLocale(request);
+      Locale recipientLocale =
+          recipientLocaleResolver.resolve(
+              request.teamId(),
+              request.recipientContactId(),
+              request.recipientUserId(),
+              request.contextLanguageTag());
       RenderedContent content =
           sender.render(request.templateName(), request.templateVariables(), recipientLocale);
 
@@ -130,6 +134,8 @@ public class NotificationServiceImpl implements NotificationService {
       notification.setRecipientPhone(request.recipientPhone());
       notification.setRecipientUserId(request.recipientUserId());
       notification.setRecipientContactId(request.recipientContactId());
+      notification.setRelatedPaymentId(request.relatedPaymentId());
+      notification.setRelatedContractId(request.relatedContractId());
       notification.setChannel(channel);
       notification.setContentTemplate(Optional.of(request.templateName()));
       notification.setContentVariables(Optional.of(request.templateVariables()));
@@ -229,10 +235,16 @@ public class NotificationServiceImpl implements NotificationService {
                         .notificationType(request.notificationType())
                         .recipientUserId(Optional.of(user.getId()))
                         .recipientContactId(request.recipientContactId())
+                        // Anything this rebuild forgets is discarded silently: most callers
+                        // that set the entity link reach send() through here.
+                        .relatedPaymentId(request.relatedPaymentId())
+                        .relatedContractId(request.relatedContractId())
                         .recipientEmail(Optional.of(user.getEmail()))
                         .recipientPhone(user.getPhone())
                         .templateName(request.templateName())
                         .templateVariables(perUserVars)
+                        .contextLanguageTag(request.contextLanguageTag())
+                        .attachments(request.attachments())
                         .urgency(request.urgency())
                         .createdBy(request.createdBy())
                         .build();
@@ -260,21 +272,13 @@ public class NotificationServiceImpl implements NotificationService {
           "Cannot resend notification without content template and variables");
     }
 
-    Optional<String> resentUserLang =
-        original
-            .getRecipientUserId()
-            .flatMap(userPreferencesRepository::findByUserId)
-            .map(UserPreferences::getLanguage);
+    // Same resolver as the send path, so a resend cannot come back in a different language.
     Locale resentLocale =
-        resentUserLang
-            .map(Locale::forLanguageTag)
-            .orElseGet(
-                () ->
-                    original
-                        .getTeamId()
-                        .flatMap(teamPreferencesRepository::findByTeamId)
-                        .map(tp -> Locale.forLanguageTag(tp.getDefaultLanguage()))
-                        .orElse(Locale.ENGLISH));
+        recipientLocaleResolver.resolve(
+            original.getTeamId(),
+            original.getRecipientContactId(),
+            original.getRecipientUserId(),
+            Optional.empty());
     RenderedContent content = sender.render(contentTemplate, contentVariables, resentLocale);
 
     Notification resent = new Notification();
@@ -286,6 +290,9 @@ public class NotificationServiceImpl implements NotificationService {
     resent.setRecipientPhone(original.getRecipientPhone());
     resent.setRecipientUserId(original.getRecipientUserId());
     resent.setRecipientContactId(original.getRecipientContactId());
+    // Keeps the resend on the same timeline the landlord is watching.
+    resent.setRelatedPaymentId(original.getRelatedPaymentId());
+    resent.setRelatedContractId(original.getRelatedContractId());
     resent.setChannel(original.getChannel());
     resent.setContentTemplate(original.getContentTemplate());
     resent.setContentVariables(original.getContentVariables());
@@ -427,29 +434,6 @@ public class NotificationServiceImpl implements NotificationService {
       case EMAIL -> featureFlagService.isEnabled(BLOCK_EMAIL_NOTIFICATIONS, teamId);
       case SMS -> featureFlagService.isEnabled(BLOCK_SMS_NOTIFICATIONS, teamId);
     };
-  }
-
-  private Locale resolveRecipientLocale(SendNotificationRequest request) {
-    // 0. Explicit override from the caller (e.g. a tenant email in the contract's language)
-    Optional<String> explicit = request.languageTag().filter(tag -> !tag.isBlank());
-    if (explicit.isPresent()) {
-      return Locale.forLanguageTag(explicit.get());
-    }
-    // 1. User preference (highest priority)
-    Optional<String> userLang =
-        request
-            .recipientUserId()
-            .flatMap(userPreferencesRepository::findByUserId)
-            .map(UserPreferences::getLanguage);
-    if (userLang.isPresent()) {
-      return Locale.forLanguageTag(userLang.get());
-    }
-    // 2. Team default (fallback)
-    return request
-        .teamId()
-        .flatMap(teamPreferencesRepository::findByTeamId)
-        .map(tp -> Locale.forLanguageTag(tp.getDefaultLanguage()))
-        .orElse(Locale.ENGLISH);
   }
 
   private boolean canSendViaChannel(NotificationChannel channel, SendNotificationRequest request) {

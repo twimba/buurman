@@ -1,0 +1,138 @@
+payment-communications:
+  get:
+    tags:
+      - Communications
+    summary: Communications sent about a payment
+    operationId: getPaymentCommunications
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Payment identifier (Sid)
+    responses:
+      '200':
+        description: Communications, newest first
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CommunicationResponse'
+      '404':
+        description: Payment not found in this team
+
+contract-communications:
+  get:
+    tags:
+      - Communications
+    summary: Communications sent about a contract
+    operationId: getContractCommunications
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Contract identifier (Sid)
+    responses:
+      '200':
+        description: Communications, newest first
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CommunicationResponse'
+      '404':
+        description: Contract not found in this team
+
+communication-resend:
+  post:
+    tags:
+      - Communications
+    summary: Resend a communication
+    description: Requires TEAM_EDITOR or above; sending costs money.
+    operationId: resendCommunication
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Notification identifier (Sid)
+    responses:
+      '200':
+        description: The resent communication
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunicationResponse'
+      '404':
+        description: Notification not found in this team
+
+payment-communication-body:
+  get:
+    tags:
+      - Communications
+    summary: The stored message of a communication sent about a payment
+    description: >-
+      The rendered message as the recipient received it. Kept out of the timeline list response:
+      a hundred-row timeline would otherwise pull a hundred rendered emails to draw five lines of
+      metadata each. Scoped by the payment as well as the team, so a communication about another
+      payment cannot be read through this one.
+    operationId: getPaymentCommunicationBody
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Payment identifier (Sid)
+      - name: communicationIdentifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Notification identifier (Sid)
+    responses:
+      '200':
+        description: The stored message
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunicationBodyResponse'
+      '404':
+        description: Payment or communication not found in this team
+
+contract-communication-body:
+  get:
+    tags:
+      - Communications
+    summary: The stored message of a communication sent about a contract
+    description: >-
+      See the payment equivalent. Scoped by the contract as well as the team.
+    operationId: getContractCommunicationBody
+    parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Contract identifier (Sid)
+      - name: communicationIdentifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Notification identifier (Sid)
+    responses:
+      '200':
+        description: The stored message
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunicationBodyResponse'
+      '404':
+        description: Contract or communication not found in this team

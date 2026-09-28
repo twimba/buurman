@@ -13,7 +13,8 @@
     "waiveLateFee": "Annuler la pénalité",
     "writeOff": "Passer en perte",
     "cancelPayment": "Annuler le paiement",
-    "formalNotice": "Mise en demeure (PDF)"
+    "formalNotice": "Mise en demeure (PDF)",
+    "markPaid": "Marquer comme payé"
   },
   "stats": {
     "pendingPayments": "Paiements en attente",
@@ -217,7 +218,9 @@
     "loadHistoryFailed": "Échec du chargement de l'historique"
   },
   "selection": {
-    "selected": "{{count}} sélectionné",
+    "selected_one": "{{count}} sélectionné",
+    "selected_other": "{{count}} sélectionnés",
+    "selected_many": "{{count}} sélectionnés",
     "selectAll": "Sélectionner tous les impayés de cette page",
     "selectRow": "Sélectionner le paiement {{id}}",
     "select": "Sélectionner",

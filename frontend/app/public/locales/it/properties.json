@@ -11,13 +11,13 @@
     "allStatuses": "Tutti gli stati",
     "count_one": "{{count}} immobile",
     "count_other": "{{count}} immobili",
-    "count_many": "{{count}} immobili",
     "empty": {
       "title": "Nessun immobile trovato",
       "filtered": "Provi a modificare i filtri o i termini di ricerca",
       "noData": "Inizi aggiungendo il Suo primo immobile"
     },
-    "error": "Impossibile caricare gli immobili"
+    "error": "Impossibile caricare gli immobili",
+    "count_many": "{{count}} immobili"
   },
   "create": {
     "title": "Aggiungi nuovo immobile",
@@ -633,7 +633,8 @@
       "postalCodeRequired": "Il CAP è obbligatorio",
       "countryRequired": "Il paese è obbligatorio",
       "areaPositive": "La superficie deve essere maggiore di 0"
-    }
+    },
+    "characteristics": "Caratteristiche"
   },
   "collapsible": {
     "filledCount": "{{filled}} di {{total}} compilati"
@@ -660,23 +661,25 @@
     "upload": {
       "title_one": "Carica documento",
       "title_other": "Carica documenti",
-      "title_many": "Carica documenti",
       "files": "{{count}} file",
       "titleLabel": "Titolo (facoltativo)",
       "titlePlaceholder": "es. Planimetria",
       "notesLabel": "Note (facoltativo)",
       "notesPlaceholder": "Note aggiuntive su questo documento",
       "uploading": "Caricamento {{current}} di {{total}}...",
-      "uploadCount": "Carica {{count}} documenti"
+      "uploadCount": "Carica {{count}} documenti",
+      "title_many": "Carica documenti"
     },
     "delete": {
       "title_one": "Elimina documento",
       "title_other": "Elimina documenti",
-      "title_many": "Elimina documenti",
       "message_one": "Conferma l'eliminazione di questo documento? Questa azione non può essere annullata.",
       "message_other": "Sta per eliminare {{count}} documenti. Questa azione non può essere annullata.",
-      "message_many": "Sta per eliminare {{count}} documenti. Questa azione non può essere annullata.",
-      "confirmLabel_other": "Elimina {{count}} documenti"
+      "confirmLabel_one": "Elimina {{count}} documento",
+      "confirmLabel_other": "Elimina {{count}} documenti",
+      "confirmLabel_many": "Elimina {{count}} documenti",
+      "title_many": "Elimina documenti",
+      "message_many": "Sta per eliminare {{count}} documenti. Questa azione non può essere annullata."
     },
     "editModal": "Modifica documento",
     "downloading": "Download..."
@@ -688,26 +691,28 @@
     "upload": {
       "title_one": "Carica foto",
       "title_other": "Carica foto",
-      "title_many": "Carica foto",
       "files": "{{count}} file",
       "titleLabel": "Titolo (facoltativo)",
       "titlePlaceholder": "es. Soggiorno",
       "notesLabel": "Note (facoltativo)",
       "notesPlaceholder": "Note aggiuntive su questa foto",
       "uploading": "Caricamento {{current}} di {{total}}...",
-      "uploadCount": "Carica {{count}} foto"
+      "uploadCount": "Carica {{count}} foto",
+      "title_many": "Carica foto"
     },
     "delete": {
       "title_one": "Elimina foto",
       "title_other": "Elimina foto",
-      "title_many": "Elimina foto",
       "mainPhotoWarning_one": "Questa è la foto principale. Eliminandola, questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
       "mainPhotoWarning_other": "Sta per eliminare {{count}} foto, inclusa la foto principale. Questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
-      "mainPhotoWarning_many": "Sta per eliminare {{count}} foto, inclusa la foto principale. Questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
       "message_one": "Conferma l'eliminazione di questa foto? Questa azione non può essere annullata.",
       "message_other": "Sta per eliminare {{count}} foto. Questa azione non può essere annullata.",
-      "message_many": "Sta per eliminare {{count}} foto. Questa azione non può essere annullata.",
-      "confirmLabel_other": "Elimina {{count}} foto"
+      "confirmLabel_one": "Elimina {{count}} foto",
+      "confirmLabel_other": "Elimina {{count}} foto",
+      "confirmLabel_many": "Elimina {{count}} foto",
+      "title_many": "Elimina foto",
+      "mainPhotoWarning_many": "Sta per eliminare {{count}} foto, inclusa la foto principale. Questo immobile non avrà più una foto principale. Questa azione non può essere annullata.",
+      "message_many": "Sta per eliminare {{count}} foto. Questa azione non può essere annullata."
     },
     "editModal": "Modifica foto"
   },

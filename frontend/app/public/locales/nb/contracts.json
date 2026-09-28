@@ -579,7 +579,6 @@
     "retroactiveTooltip": "Justeringsbetalinger vil bli opprettet for eventuelle allerede oppgjorte betalinger som påvirkes av tilbakevirkende datoendringer.",
     "exceedsMax": "Overstiger maksimal regulert økning på {{max}}%",
     "belowMin": "Under minimal regulert økning på {{min}}%",
-    "leaseOfTotal": "Kontrakt {{index}} av {{total}} på denne eiendommen",
     "tableHeaders": {
       "property": "Eiendom",
       "currentRent": "Gjeldende leie",
@@ -604,7 +603,8 @@
     "increasesFailed_other": "{{count}} økninger feilet",
     "adjustmentPayments_one": "{{count}} justeringsbetaling opprettet for tilbakevirkende endringer",
     "adjustmentPayments_other": "{{count}} justeringsbetalinger opprettet for tilbakevirkende endringer",
-    "status": "Status"
+    "status": "Status",
+    "leaseOfTotal": "Kontrakt {{index}} av {{total}} på denne eiendommen"
   },
   "card": {
     "start": "Start",
@@ -816,7 +816,7 @@
       "bruksvardessystemApplicable": "Bruksvärde-system gjelder",
       "energyDeclarationRating": "Energideklarasjonsklasse",
       "hyresnamndenEligible": "Berettiget Hyresnämnden",
-      "depositSum": "Depositumbeløp",
+      "depositSum": "Depositumsbeløp",
       "vuokrasopimustyyppi": "Leietype (FI)",
       "vakuusAmount": "Depositumbeløp",
       "vakuusMonths": "Depositum i måneder",

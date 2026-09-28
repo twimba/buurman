@@ -103,7 +103,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `backend/buurman-jooq/src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V072)
+- Convention: `V<version>__<description>.sql` (currently at V075)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -159,11 +159,11 @@ backend/
 │       └── util/                PaginationHelper, S3BucketInitializer
 ├── buurman-notifications/   Notification system (~30 files)
 │   └── com.buurman
-│       ├── config/              SendGridConfig, TwilioConfig, NotificationQuartzConfig
-│       ├── config/models/       SendGridProperties, TwilioProperties, NotificationOutboxProperties
+│       ├── config/              MailgunConfig, TwilioConfig, NotificationQuartzConfig
+│       ├── config/models/       MailgunProperties, TwilioProperties, NotificationOutboxProperties
 │       ├── controller/          NotificationController, WebhookController
 │       ├── service/notification/ NotificationServiceImpl, NotificationCenterService, WebhookService
-│       ├── service/notification/channel/  Email/SMS senders (SendGrid, Twilio, local)
+│       ├── service/notification/channel/  Email/SMS senders (Mailgun, Twilio, local)
 │       ├── repository/          NotificationRepository, NotificationOutboxRepository
 │       ├── mapper/              NotificationRecordMapper, NotificationOutboxRecordMapper
 │       └── job/                 NotificationOutboxJob, ContractExpiryCheckJob, PaymentReminderCheckJob
@@ -286,7 +286,7 @@ frontend/
   that a query scoped to one `team_id` cannot see another team's rows.
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V072)
+1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V075)
 2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl buurman-jooq -am`
 3. Domain POJO in `backend/buurman-common/src/.../domain/`
 4. Request/Response DTOs in `backend/buurman-common/src/.../dto/`

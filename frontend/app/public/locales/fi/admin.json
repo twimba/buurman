@@ -88,10 +88,7 @@
       "first": "ensimmainen: {{date}}",
       "resentFrom": "Uudelleenlahetetty kohteesta",
       "resendReason": "Uudelleenlahetyksen syy",
-      "resend": "Laheta uudelleen",
-      "emailPreview": "Sahkopostin esikatselu",
-      "smsMessage": "Tekstiviesti",
-      "delivered": "Toimitettu"
+      "resend": "Laheta uudelleen"
     },
     "filters": {
       "searchByEmail": "Hae sahkopostilla...",
@@ -298,7 +295,8 @@
       "title": "Kayttoastetrendi",
       "subtitle": "Kuukausittainen kayttoasteprosentti",
       "occupancyRate": "Kayttoaste (%)"
-    }
+    },
+    "allProperties": "Kaikki kohteet"
   },
   "auditLog": {
     "failedToLoad": "Toimintolokien lataus epaonnistui"

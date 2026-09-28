@@ -13,7 +13,8 @@
     "waiveLateFee": "Condona penale",
     "writeOff": "Stralcia",
     "cancelPayment": "Annulla pagamento",
-    "formalNotice": "Costituzione in mora (PDF)"
+    "formalNotice": "Costituzione in mora (PDF)",
+    "markPaid": "Segna come pagato"
   },
   "stats": {
     "pendingPayments": "Pagamenti in attesa",
@@ -217,7 +218,9 @@
     "loadHistoryFailed": "Impossibile caricare la cronologia"
   },
   "selection": {
-    "selected": "{{count}} selezionato",
+    "selected_one": "{{count}} selezionato",
+    "selected_other": "{{count}} selezionati",
+    "selected_many": "{{count}} selezionati",
     "selectAll": "Seleziona tutti i non pagati di questa pagina",
     "selectRow": "Seleziona pagamento {{id}}",
     "select": "Seleziona",

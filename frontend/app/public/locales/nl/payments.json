@@ -13,7 +13,8 @@
     "waiveLateFee": "Boete kwijtschelden",
     "writeOff": "Afboeken",
     "cancelPayment": "Betaling annuleren",
-    "formalNotice": "Ingebrekestelling (PDF)"
+    "formalNotice": "Ingebrekestelling (PDF)",
+    "markPaid": "Markeer als betaald"
   },
   "stats": {
     "pendingPayments": "Openstaande betalingen",
@@ -217,7 +218,8 @@
     "loadHistoryFailed": "Kan geschiedenis niet laden"
   },
   "selection": {
-    "selected": "{{count}} geselecteerd",
+    "selected_one": "{{count}} geselecteerd",
+    "selected_other": "{{count}} geselecteerd",
     "selectAll": "Alle onbetaalde op deze pagina selecteren",
     "selectRow": "Betaling {{id}} selecteren",
     "select": "Selecteren",

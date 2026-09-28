@@ -13,7 +13,8 @@
     "waiveLateFee": "Gebühr erlassen",
     "writeOff": "Abschreiben",
     "cancelPayment": "Zahlung stornieren",
-    "formalNotice": "Mahnschreiben (PDF)"
+    "formalNotice": "Mahnschreiben (PDF)",
+    "markPaid": "Als bezahlt markieren"
   },
   "stats": {
     "pendingPayments": "Ausstehende Zahlungen",
@@ -217,7 +218,8 @@
     "loadHistoryFailed": "Verlauf konnte nicht geladen werden"
   },
   "selection": {
-    "selected": "{{count}} ausgewählt",
+    "selected_one": "{{count}} ausgewählt",
+    "selected_other": "{{count}} ausgewählt",
     "selectAll": "Alle offenen auf dieser Seite auswählen",
     "selectRow": "Zahlung {{id}} auswählen",
     "select": "Auswählen",

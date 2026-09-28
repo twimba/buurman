@@ -4,7 +4,8 @@
     "subtitle": "Registri le spese e i costi degli immobili"
   },
   "actions": {
-    "addExpense": "Aggiungi spesa"
+    "addExpense": "Aggiungi spesa",
+    "delete": "Elimina"
   },
   "stats": {
     "totalExpenses": "Spese totali",

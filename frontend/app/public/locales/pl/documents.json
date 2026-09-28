@@ -9,7 +9,8 @@
       "contact": "Kontakty",
       "contract": "Umowy",
       "payment": "Płatności",
-      "expense": "Wydatki"
+      "expense": "Wydatki",
+      "label": "Typ"
     },
     "table": {
       "document": "Dokument",
@@ -24,7 +25,8 @@
       "count_other": "{{count}} dokumentów"
     },
     "empty": "Nie znaleziono dokumentów",
-    "editModal": "Edytuj dokument"
+    "editModal": "Edytuj dokument",
+    "titleShort": "Dokumenty"
   },
   "photosPage": {
     "title": "Biblioteka zdjęć",
@@ -36,10 +38,12 @@
       "contact": "Kontakty",
       "contract": "Umowy",
       "payment": "Płatności",
-      "expense": "Wydatki"
+      "expense": "Wydatki",
+      "label": "Typ"
     },
     "empty": "Nie znaleziono zdjęć",
-    "editModal": "Edytuj zdjęcie"
+    "editModal": "Edytuj zdjęcie",
+    "selectedCount": "{{count}} zaznaczonych"
   },
   "photoGrid": {
     "noPhotos": "Brak zdjęć",

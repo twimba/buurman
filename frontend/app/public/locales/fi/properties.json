@@ -632,7 +632,8 @@
       "postalCodeRequired": "Postinumero on pakollinen",
       "countryRequired": "Maa on pakollinen",
       "areaPositive": "Pinta-alan on oltava suurempi kuin 0"
-    }
+    },
+    "characteristics": "Ominaisuudet"
   },
   "collapsible": {
     "filledCount": "{{filled}} / {{total}} taytetty"
@@ -671,6 +672,7 @@
       "title_other": "Poista asiakirjat",
       "message_one": "Haluatko varmasti poistaa taman asiakirjan? Tata toimintoa ei voi kumota.",
       "message_other": "Olet poistamassa {{count}} asiakirjaa. Tata toimintoa ei voi kumota.",
+      "confirmLabel_one": "Poista {{count}} asiakirja",
       "confirmLabel_other": "Poista {{count}} asiakirjaa"
     },
     "editModal": "Muokkaa asiakirjaa",
@@ -698,6 +700,7 @@
       "mainPhotoWarning_other": "Olet poistamassa {{count}} valokuvaa, mukaan lukien paavalokuvan. Kohteella ei ole enaa paavalokuvaa. Tata toimintoa ei voi kumota.",
       "message_one": "Haluatko varmasti poistaa taman valokuvan? Tata toimintoa ei voi kumota.",
       "message_other": "Olet poistamassa {{count}} valokuvaa. Tata toimintoa ei voi kumota.",
+      "confirmLabel_one": "Poista {{count}} valokuva",
       "confirmLabel_other": "Poista {{count}} valokuvaa"
     },
     "editModal": "Muokkaa valokuvaa"

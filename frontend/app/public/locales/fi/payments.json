@@ -13,7 +13,8 @@
     "waiveLateFee": "Peru maksu",
     "writeOff": "Kirjaa luottotappioksi",
     "cancelPayment": "Peruuta maksu",
-    "formalNotice": "Maksuvaatimus (PDF)"
+    "formalNotice": "Maksuvaatimus (PDF)",
+    "markPaid": "Merkitse maksetuksi"
   },
   "stats": {
     "pendingPayments": "Odottavat maksut",
@@ -217,7 +218,8 @@
     "loadHistoryFailed": "Historian lataus epaonnistui"
   },
   "selection": {
-    "selected": "{{count}} valittu",
+    "selected_one": "{{count}} valittu",
+    "selected_other": "{{count}} valittua",
     "selectAll": "Valitse kaikki sivun maksamattomat",
     "selectRow": "Valitse maksu {{id}}",
     "select": "Valitse",

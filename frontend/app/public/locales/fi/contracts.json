@@ -579,7 +579,6 @@
     "retroactiveTooltip": "Tarkistusmaksut luodaan jo suoritetuille maksuille, joihin takautuvat paivamaaran muutokset vaikuttavat.",
     "exceedsMax": "Ylittaa enimmaiskorotuksen {{max}} %",
     "belowMin": "Alle vahimmaiskorotuksen {{min}} %",
-    "leaseOfTotal": "Sopimus {{index}}/{{total}} tässä kohteessa",
     "tableHeaders": {
       "property": "Kohde",
       "currentRent": "Nykyinen vuokra",
@@ -604,7 +603,8 @@
     "increasesFailed_other": "{{count}} korotusta epaonnistui",
     "adjustmentPayments_one": "{{count}} tarkistusmaksu luotu takautuville muutoksille",
     "adjustmentPayments_other": "{{count}} tarkistusmaksua luotu takautuville muutoksille",
-    "status": "Tila"
+    "status": "Tila",
+    "leaseOfTotal": "Sopimus {{index}}/{{total}} tässä kohteessa"
   },
   "card": {
     "start": "Alku",
@@ -816,7 +816,7 @@
       "bruksvardessystemApplicable": "Bruksvarde-jarjestelma sovellettava",
       "energyDeclarationRating": "Energiailmoituksen luokka",
       "hyresnamndenEligible": "Oikeutettu Hyresnämnden",
-      "depositSum": "Vakuusmäärä",
+      "depositSum": "Vakuuden määrä",
       "vuokrasopimustyyppi": "Vuokrasopimustyyppi",
       "vakuusAmount": "Vakuusmaara",
       "vakuusMonths": "Vakuus kuukausina",

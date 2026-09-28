@@ -632,7 +632,8 @@
       "postalCodeRequired": "Postnummer ar obligatoriskt",
       "countryRequired": "Land ar obligatoriskt",
       "areaPositive": "Ytan maste vara storre an 0"
-    }
+    },
+    "characteristics": "Egenskaper"
   },
   "collapsible": {
     "filledCount": "{{filled}} av {{total}} ifyllda"
@@ -671,6 +672,7 @@
       "title_other": "Ta bort dokument",
       "message_one": "Ar du saker pa att du vill ta bort detta dokument? Denna atgard kan inte angras.",
       "message_other": "Du haller pa att ta bort {{count}} dokument. Denna atgard kan inte angras.",
+      "confirmLabel_one": "Ta bort {{count}} dokument",
       "confirmLabel_other": "Ta bort {{count}} dokument"
     },
     "editModal": "Redigera dokument",
@@ -698,6 +700,7 @@
       "mainPhotoWarning_other": "Du haller pa att ta bort {{count}} foton, inklusive huvudfotot. Denna fastighet kommer inte langre att ha ett huvudfoto. Denna atgard kan inte angras.",
       "message_one": "Ar du saker pa att du vill ta bort detta foto? Denna atgard kan inte angras.",
       "message_other": "Du haller pa att ta bort {{count}} foton. Denna atgard kan inte angras.",
+      "confirmLabel_one": "Ta bort {{count}} foto",
       "confirmLabel_other": "Ta bort {{count}} foton"
     },
     "editModal": "Redigera foto"
