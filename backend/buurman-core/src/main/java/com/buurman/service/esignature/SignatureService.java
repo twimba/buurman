@@ -73,8 +73,8 @@ public class SignatureService {
    * exact opposite of the intent. Without the annotation each jOOQ statement auto-commits as it
    * happens, which is what the control flow above assumes.
    *
-   * <p>Same reasoning (and the same "no transaction across a blocking third-party round-trip"
-   * rule) as {@code CostService.snapshotNow}, {@code FxRateService.backfill}, {@code
+   * <p>Same reasoning (and the same "no transaction across a blocking third-party round-trip" rule)
+   * as {@code CostService.snapshotNow}, {@code FxRateService.backfill}, {@code
    * TakeoutService.processTakeout} and {@code NotificationOutboxJob.processEntry}.
    */
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")

@@ -361,13 +361,17 @@ class SignatureServiceTest {
             principal);
 
     assertThat(responses)
-        .extracting(r -> r.identifier().value(), com.buurman.dto.response.SignatureRequestResponse::status)
+        .extracting(
+            r -> r.identifier().value(), com.buurman.dto.response.SignatureRequestResponse::status)
         .containsExactly(
             org.assertj.core.api.Assertions.tuple(
                 "SGR00000000000000000000007", SignatureRequestStatus.PENDING),
             org.assertj.core.api.Assertions.tuple(
                 "SGR00000000000000000000006", SignatureRequestStatus.DECLINED));
-    assertThat(responses).allSatisfy(r -> assertThat(r.documentIdentifier().value()).isEqualTo("DOC00000000000000000000001"));
+    assertThat(responses)
+        .allSatisfy(
+            r ->
+                assertThat(r.documentIdentifier().value()).isEqualTo("DOC00000000000000000000001"));
   }
 
   @Test

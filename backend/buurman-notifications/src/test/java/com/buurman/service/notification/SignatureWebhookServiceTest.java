@@ -182,7 +182,8 @@ class SignatureWebhookServiceTest {
   }
 
   @Test
-  @DisplayName("a decline notifies the landlord's team exactly once, naming the document and signer")
+  @DisplayName(
+      "a decline notifies the landlord's team exactly once, naming the document and signer")
   void declineNotifiesTheTeamOnce() {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
@@ -285,8 +286,7 @@ class SignatureWebhookServiceTest {
     org.mockito.ArgumentCaptor<String> uploadedNames =
         org.mockito.ArgumentCaptor.forClass(String.class);
     verify(s3StorageService, org.mockito.Mockito.times(2))
-        .uploadFile(
-            uploadedBytes.capture(), any(), any(), any(), any(), uploadedNames.capture());
+        .uploadFile(uploadedBytes.capture(), any(), any(), any(), any(), uploadedNames.capture());
     org.assertj.core.api.Assertions.assertThat(uploadedNames.getAllValues())
         .containsExactly("signed-addendum.pdf", "certificate-addendum.pdf");
     org.assertj.core.api.Assertions.assertThat(uploadedBytes.getAllValues())
