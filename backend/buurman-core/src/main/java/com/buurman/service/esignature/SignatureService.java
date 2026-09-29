@@ -3,7 +3,9 @@ package com.buurman.service.esignature;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -72,8 +74,12 @@ public class SignatureService {
     Document document = documentRepository.getByIdentifierAndTeamId(documentIdentifier, teamId);
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
-    List<SignerRequest> signerRequests = new ArrayList<>();
-    signerRequests.add(
+    // Keyed by lower-cased email to dedupe: a contract party resolving to the same address as
+    // another party, or as the landlord's own email, must never produce two signer entries for
+    // the same person (Documenso may error, or double-send, on a duplicate signer email).
+    Map<String, SignerRequest> signerRequestsByEmail = new LinkedHashMap<>();
+    signerRequestsByEmail.put(
+        principal.getEmail().toLowerCase(Locale.ROOT),
         new SignerRequest(principal.getEmail(), principal.getName(), SignatureSignerRole.LANDLORD));
 
     List<ContractParty> parties =
@@ -85,8 +91,11 @@ public class SignatureService {
           .flatMap(Contact::getEmail)
           .ifPresent(
               email ->
-                  signerRequests.add(new SignerRequest(email, email, SignatureSignerRole.TENANT)));
+                  signerRequestsByEmail.putIfAbsent(
+                      email.toLowerCase(Locale.ROOT),
+                      new SignerRequest(email, email, SignatureSignerRole.TENANT)));
     }
+    List<SignerRequest> signerRequests = new ArrayList<>(signerRequestsByEmail.values());
 
     SignatureRequest request =
         signatureRequestRepository.save(
@@ -154,14 +163,25 @@ public class SignatureService {
       SignatureRequestIdentifier signatureRequestIdentifier,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
-    // contractIdentifier/documentIdentifier are validated implicitly: the request is looked up by
-    // its own team-scoped identifier, so a mismatched contract/document in the URL simply can't
-    // resolve to a different team's request — team scoping is what matters, not path consistency.
+    // contractIdentifier/documentIdentifier are path parameters used only for team-scoped
+    // routing — they are NOT trusted as data. The request is looked up by its own team-scoped
+    // identifier, and the response's documentIdentifier is always resolved fresh from the
+    // request's own persisted documentId below, never from these caller-supplied values (a
+    // stale link or copy-pasted URL must never be able to make the response lie about which
+    // document a signature request is actually for).
     SignatureRequest request =
         signatureRequestRepository.getByIdentifierAndTeamId(signatureRequestIdentifier, teamId);
     List<SignatureSigner> signers =
         signatureSignerRepository.findBySignatureRequestId(request.getId());
-    return toResponse(request, documentIdentifier, signers);
+    Sid resolvedDocumentIdentifier = resolveDocumentIdentifier(request.getDocumentId(), teamId);
+    return toResponse(request, resolvedDocumentIdentifier, signers);
+  }
+
+  private Sid resolveDocumentIdentifier(UUID documentId, UUID teamId) {
+    return documentRepository
+        .findByIdAndTeamId(documentId, teamId)
+        .flatMap(Document::getIdentifier)
+        .orElseThrow();
   }
 
   private SignatureRequestResponse toResponse(

@@ -26,6 +26,7 @@ import com.buurman.domain.SignatureRequestStatus;
 import com.buurman.domain.SignatureSigner;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.SignatureRequestIdentifier;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.ExternalServiceException;
 import com.buurman.exception.NotFoundException;
@@ -221,5 +222,115 @@ class SignatureServiceTest {
     org.mockito.Mockito.verify(signatureRequestRepository, org.mockito.Mockito.times(2))
         .save(any());
     org.mockito.Mockito.verify(signatureSignerRepository, org.mockito.Mockito.never()).save(any());
+  }
+
+  @Test
+  @DisplayName(
+      "getSignatureRequest resolves the documentIdentifier fresh from the request's own"
+          + " documentId, ignoring the (untrusted) path parameter")
+  void getSignatureRequestIgnoresPathDocumentIdentifier() {
+    UUID requestId = UUID.randomUUID();
+    com.buurman.domain.SignatureRequest existingRequest =
+        com.buurman.domain.SignatureRequest.builder()
+            .id(requestId)
+            .identifier(Optional.of(Sid.of("SGR00000000000000000000003")))
+            .teamId(TEAM_ID)
+            .documentId(DOCUMENT_ID)
+            .provider("documenso")
+            .providerSubmissionId("envelope_9")
+            .status(SignatureRequestStatus.PENDING)
+            .build();
+    when(signatureRequestRepository.getByIdentifierAndTeamId(
+            any(SignatureRequestIdentifier.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(existingRequest);
+    when(signatureSignerRepository.findBySignatureRequestId(requestId)).thenReturn(List.of());
+
+    // The document actually linked to the request (looked up by its real documentId) has an
+    // identifier that is deliberately different from whatever the URL's documentIdentifier path
+    // parameter says below.
+    Document realDocument =
+        Document.builder()
+            .id(DOCUMENT_ID)
+            .teamId(TEAM_ID)
+            .identifier(Optional.of(Sid.of("DOC00000000000000000000099")))
+            .fileKey("k")
+            .fileName("addendum.pdf")
+            .build();
+    when(documentRepository.findByIdAndTeamId(DOCUMENT_ID, TEAM_ID))
+        .thenReturn(Optional.of(realDocument));
+
+    var response =
+        service.getSignatureRequest(
+            ContractIdentifier.of("CON00000000000000000000001"),
+            // A "wrong"/stale documentIdentifier in the URL — must be ignored entirely.
+            DocumentIdentifier.of("DOC00000000000000000000001"),
+            SignatureRequestIdentifier.of("SGR00000000000000000000003"),
+            principal);
+
+    assertThat(response.status()).isEqualTo(SignatureRequestStatus.PENDING);
+    assertThat(response.documentIdentifier().value()).isEqualTo("DOC00000000000000000000099");
+  }
+
+  @Test
+  @DisplayName(
+      "dedupes signer emails when two contract parties resolve to the same email"
+          + " (case-insensitive)")
+  void dedupesDuplicateSignerEmails() {
+    UUID otherContactId = UUID.randomUUID();
+    ContractParty firstTenantParty =
+        ContractParty.builder()
+            .contractId(CONTRACT_ID)
+            .contactId(Optional.of(CONTACT_ID))
+            .role(ContractPartyRole.PRIMARY_TENANT)
+            .build();
+    ContractParty secondTenantParty =
+        ContractParty.builder()
+            .contractId(CONTRACT_ID)
+            .contactId(Optional.of(otherContactId))
+            .role(ContractPartyRole.GUARANTOR)
+            .build();
+    when(contractPartyRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(List.of(firstTenantParty, secondTenantParty));
+
+    // Same email as the CONTACT_ID contact stubbed in setUp(), just a different case.
+    Contact sameEmailDifferentCase =
+        Contact.builder().id(otherContactId).email(Optional.of("TENANT@example.com")).build();
+    when(contactRepository.findByIdAndTeamId(otherContactId, TEAM_ID))
+        .thenReturn(Optional.of(sameEmailDifferentCase));
+
+    when(providerClient.createSubmission(any(byte[].class), any(String.class), anyList()))
+        .thenReturn(
+            new SignatureSubmission(
+                "envelope_2",
+                List.of(
+                    new ProviderSigner("1", "landlord@example.com"),
+                    new ProviderSigner("2", "tenant@example.com"))));
+    when(signatureRequestRepository.save(any()))
+        .thenAnswer(
+            invocation -> {
+              var request = (com.buurman.domain.SignatureRequest) invocation.getArgument(0);
+              request.setId(UUID.randomUUID());
+              request.setIdentifier(Optional.of(Sid.of("SGR00000000000000000000004")));
+              return request;
+            });
+    when(signatureSignerRepository.save(any()))
+        .thenAnswer(
+            invocation -> {
+              var signer = (SignatureSigner) invocation.getArgument(0);
+              signer.setId(UUID.randomUUID());
+              return signer;
+            });
+
+    service.createSignatureRequest(
+        ContractIdentifier.of("CON00000000000000000000001"),
+        DocumentIdentifier.of("DOC00000000000000000000001"),
+        principal);
+
+    org.mockito.Mockito.verify(providerClient)
+        .createSubmission(
+            any(byte[].class),
+            any(String.class),
+            org.mockito.ArgumentMatchers.argThat(signers -> signers.size() == 2));
+    org.mockito.Mockito.verify(signatureSignerRepository, org.mockito.Mockito.times(2)).save(any());
   }
 }

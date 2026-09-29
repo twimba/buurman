@@ -70,6 +70,9 @@ class TakeoutMetaModelCoverageTest {
           "PROPERTY_CONTACT_HISTORY",
           "PROPERTY_INDUSTRIAL_DETAILS",
           "RENT_REGULATION_COUNTRY_REQUESTS",
+          // signature_requests (BUUR-105 e-signature integration) — takeout export for signature
+          // data is out of scope for that plan.
+          "SIGNATURE_REQUESTS",
           "TEAM_INVITATIONS",
           "TEAM_PREFERENCES",
           "USERS",
