@@ -5387,6 +5387,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  /webhooks/documenso/events:
+    post:
+      tags:
+        - Webhooks
+      summary: Documenso event webhook
+      description: Receives signing lifecycle events from the self-hosted Documenso e-signature sidecar
+      operationId: handleDocumensoEvents
+      parameters:
+        - name: X-Documenso-Secret
+          in: header
+          description: Shared secret configured on the Documenso webhook
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Raw JSON event payload
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   /users/teams/{teamIdentifier}/leave:
     post:
       tags:

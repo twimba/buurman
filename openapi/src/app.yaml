@@ -215,6 +215,8 @@ paths:
     $ref: 'paths/reference.yaml#/webhooks-twilio-status'
   /webhooks/mailgun/events:
     $ref: 'paths/reference.yaml#/webhooks-mailgun-events'
+  /webhooks/documenso/events:
+    $ref: 'paths/reference.yaml#/webhooks-documenso-events'
   /users/teams/{teamIdentifier}/leave:
     $ref: 'paths/users.yaml#/users-teams-leave'
   /users/switch-team:
