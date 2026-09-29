@@ -4,6 +4,9 @@ import {
   useDeleteContractDocument,
 } from '@/hooks/useContractHooks';
 import { DocumentList } from '@/components/properties/DocumentList';
+import { SignatureRequestPanel } from '@/components/documents/SignatureRequestPanel';
+import { FeatureGate } from '@/components/FeatureGate';
+import { FeatureFlags } from '@/constants/featureFlags';
 import { useTeam } from '@/context/TeamContext';
 
 interface ContractDocumentsTabProps {
@@ -46,6 +49,18 @@ export const ContractDocumentsTab = ({
         isUploading={uploadDocumentMutation.isPending}
         isDeleting={deleteDocumentMutation.isPending}
         readOnly={!canEditData}
+        renderRowAction={
+          canEditData
+            ? (doc) => (
+                <FeatureGate flag={FeatureFlags.ESIGNATURE_ENABLED}>
+                  <SignatureRequestPanel
+                    contractId={contractId}
+                    documentId={doc.identifier}
+                  />
+                </FeatureGate>
+              )
+            : undefined
+        }
       />
     </div>
   );

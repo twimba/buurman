@@ -105,6 +105,15 @@ export const queryKeys = {
       k('contractPaymentPlans', contractId),
   },
 
+  // --- Signature Requests ---
+  signatureRequests: {
+    detail: (
+      contractId?: string,
+      documentId?: string,
+      signatureRequestId?: string
+    ) => k('signatureRequest', contractId, documentId, signatureRequestId),
+  },
+
   // --- Contract Extensions ---
   contractExtensions: {
     all: (contractId?: string, page?: number, size?: number) =>

@@ -12,6 +12,7 @@ export const FeatureFlags = {
   BLOCK_SMS_NOTIFICATIONS: 'block_sms_notifications',
   SWAGGER: 'swagger',
   MULTI_UNIT: 'multi_unit',
+  ESIGNATURE_ENABLED: 'esignature_enabled',
 } as const;
 
 export type FeatureFlagKey = (typeof FeatureFlags)[keyof typeof FeatureFlags];

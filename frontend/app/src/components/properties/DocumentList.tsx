@@ -40,6 +40,7 @@ interface DocumentListProps {
   isUploading: boolean;
   isDeleting: boolean;
   readOnly?: boolean;
+  renderRowAction?: (doc: DocumentResponse) => React.ReactNode;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -70,6 +71,7 @@ export const DocumentList = ({
   isUploading,
   isDeleting,
   readOnly = false,
+  renderRowAction,
 }: DocumentListProps) => {
   const { t } = useTranslation('properties');
   const { formatDate } = useFormatDate();
@@ -468,6 +470,7 @@ export const DocumentList = ({
                               <Trash2 className="h-4 w-4" />
                             </button>
                           )}
+                          {renderRowAction?.(doc)}
                         </div>
                       </td>
                     </tr>
