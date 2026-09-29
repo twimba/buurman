@@ -4929,6 +4929,130 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests:
+    post:
+      tags:
+        - Signatures
+      summary: Send a document for e-signature
+      description: Sends the given document to the landlord and every tenant contract party with an email, in parallel, via the configured e-signature provider
+      operationId: createSignatureRequest
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: documentIdentifier
+          in: path
+          description: Document identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DocumentIdentifier'
+      responses:
+        "200":
+          description: Signature request created and sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureRequestResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}:
+    get:
+      tags:
+        - Signatures
+      summary: Get a signature request's status
+      description: Returns the current status of a signature request and every signer's status, for polling
+      operationId: getSignatureRequest
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: documentIdentifier
+          in: path
+          description: Document identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DocumentIdentifier'
+        - name: signatureRequestIdentifier
+          in: path
+          description: Signature request identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/SignatureRequestIdentifier'
+      responses:
+        "200":
+          description: Signature request status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureRequestResponse'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     put:
       tags:
@@ -22185,6 +22309,9 @@ components:
     DocumentIdentifier:
       type: string
       description: Document identifier
+    SignatureRequestIdentifier:
+      type: string
+      description: Signature request identifier
     ExpenseIdentifier:
       type: string
       description: Expense identifier
@@ -24481,6 +24608,56 @@ components:
         - fileName
         - identifier
         - uploadedAt
+    SignatureSignerResponse:
+      type: object
+      description: A single signer's status within a signature request
+      properties:
+        email:
+          type: string
+        role:
+          type: string
+          enum: [LANDLORD, TENANT]
+        status:
+          type: string
+          enum: [PENDING, VIEWED, SIGNED, DECLINED]
+        signedAt:
+          type: string
+          format: date-time
+      required:
+        - email
+        - role
+        - status
+    SignatureRequestResponse:
+      type: object
+      description: An e-signature request for a document, with per-signer status
+      properties:
+        identifier:
+          type: string
+          example: SGR01HZQX7V8B3K5M2N4P6R9T0W
+        documentIdentifier:
+          type: string
+        signedDocumentIdentifier:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, PARTIALLY_SIGNED, COMPLETED, DECLINED, CANCELLED, FAILED]
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SignatureSignerResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - documentIdentifier
+        - status
+        - signers
+        - createdAt
+        - updatedAt
     PaymentReceivalResponse:
       type: object
       properties:

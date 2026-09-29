@@ -203,6 +203,10 @@ paths:
     $ref: 'paths/contracts.yaml#/rent-periods-document'
   /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/generate-documents:
     $ref: 'paths/contracts.yaml#/rent-periods-generate-documents'
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests:
+    $ref: 'paths/contracts.yaml#/signature-requests'
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}:
+    $ref: 'paths/contracts.yaml#/signature-requests-item'
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     $ref: 'paths/contracts.yaml#/payment-instructions-item'
   /auth/me:
@@ -787,6 +791,9 @@ components:
     DocumentIdentifier:
       type: string
       description: Document identifier
+    SignatureRequestIdentifier:
+      type: string
+      description: Signature request identifier
     ExpenseIdentifier:
       type: string
       description: Expense identifier
@@ -3083,6 +3090,56 @@ components:
         - fileName
         - identifier
         - uploadedAt
+    SignatureSignerResponse:
+      type: object
+      description: A single signer's status within a signature request
+      properties:
+        email:
+          type: string
+        role:
+          type: string
+          enum: [LANDLORD, TENANT]
+        status:
+          type: string
+          enum: [PENDING, VIEWED, SIGNED, DECLINED]
+        signedAt:
+          type: string
+          format: date-time
+      required:
+        - email
+        - role
+        - status
+    SignatureRequestResponse:
+      type: object
+      description: An e-signature request for a document, with per-signer status
+      properties:
+        identifier:
+          type: string
+          example: SGR01HZQX7V8B3K5M2N4P6R9T0W
+        documentIdentifier:
+          type: string
+        signedDocumentIdentifier:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, PARTIALLY_SIGNED, COMPLETED, DECLINED, CANCELLED, FAILED]
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SignatureSignerResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - documentIdentifier
+        - status
+        - signers
+        - createdAt
+        - updatedAt
     PaymentReceivalResponse:
       type: object
       properties:

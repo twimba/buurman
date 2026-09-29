@@ -2481,3 +2481,129 @@ payment-plans-cancel:
               $ref: '#/components/schemas/ProblemDetail'
     security:
       - bearer-jwt: []
+
+signature-requests:
+  post:
+    tags:
+      - Signatures
+    summary: Send a document for e-signature
+    description: Sends the given document to the landlord and every tenant contract party with an email, in parallel, via the configured e-signature provider
+    operationId: createSignatureRequest
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+    responses:
+      "200":
+        description: Signature request created and sent
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequestResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+signature-requests-item:
+  get:
+    tags:
+      - Signatures
+    summary: Get a signature request's status
+    description: Returns the current status of a signature request and every signer's status, for polling
+    operationId: getSignatureRequest
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+      - name: signatureRequestIdentifier
+        in: path
+        description: Signature request identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/SignatureRequestIdentifier'
+    responses:
+      "200":
+        description: Signature request status
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequestResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
