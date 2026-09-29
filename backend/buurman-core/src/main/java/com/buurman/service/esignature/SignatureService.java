@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +62,7 @@ public class SignatureService {
   private final SignatureSignerRepository signatureSignerRepository;
 
   @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public SignatureRequestResponse createSignatureRequest(
       ContractIdentifier contractIdentifier,
       DocumentIdentifier documentIdentifier,
@@ -157,6 +159,7 @@ public class SignatureService {
     return toResponse(request, documentIdentifier, savedSigners);
   }
 
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public SignatureRequestResponse getSignatureRequest(
       ContractIdentifier contractIdentifier,
       DocumentIdentifier documentIdentifier,
