@@ -81,6 +81,8 @@ abstract class AbstractRepositoryIntegrationTest {
     dsl.deleteFrom(DSL.table("property_insurances")).execute();
     dsl.deleteFrom(DSL.table("property_financings")).execute();
     dsl.deleteFrom(DSL.table("property_acquisitions")).execute();
+    dsl.deleteFrom(DSL.table("signature_signers")).execute();
+    dsl.deleteFrom(DSL.table("signature_requests")).execute();
     dsl.deleteFrom(DSL.table("documents")).execute();
     dsl.deleteFrom(DSL.table("photos")).execute();
     dsl.deleteFrom(DSL.table("expense_allocations")).execute();

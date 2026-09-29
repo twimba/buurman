@@ -222,6 +222,24 @@ final class TestDataHelper {
     return id;
   }
 
+  static UUID insertDocument(DSLContext dsl, UUID teamId, UUID entityId, UUID uploadedBy) {
+    UUID id = UUID.randomUUID();
+    dsl.insertInto(DSL.table("documents"))
+        .set(DSL.field("id", UUID.class), id)
+        .set(DSL.field("identifier", String.class), SidGenerator.newDocumentId().value())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("entity_type", String.class), "CONTRACT")
+        .set(DSL.field("entity_id", UUID.class), entityId)
+        .set(DSL.field("file_key", String.class), "test/" + id + ".pdf")
+        .set(DSL.field("file_name", String.class), "test.pdf")
+        .set(DSL.field("file_size", Long.class), 1024L)
+        .set(DSL.field("mime_type", String.class), "application/pdf")
+        .set(DSL.field("uploaded_by", UUID.class), uploadedBy)
+        .set(DSL.field("uploaded_at", LocalDateTime.class), LocalDateTime.now())
+        .execute();
+    return id;
+  }
+
   static UUID insertPayment(DSLContext dsl, UUID teamId, UUID contractId, UUID createdBy) {
     UUID id = UUID.randomUUID();
     dsl.insertInto(DSL.table("payments"))
