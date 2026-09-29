@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
@@ -61,7 +60,23 @@ public class SignatureService {
   private final SignatureRequestRepository signatureRequestRepository;
   private final SignatureSignerRepository signatureSignerRepository;
 
-  @Transactional
+  /**
+   * Sends a document for e-signature.
+   *
+   * <p>Deliberately NOT {@code @Transactional}, and it must not be made so. This method's own
+   * try/catch is written to guarantee that a provider outage leaves a {@code FAILED} row behind
+   * rather than nothing: it inserts the request {@code PENDING}, calls S3 and Documenso, then
+   * either flips the row to {@code FAILED} and rethrows, or records the envelope id and its
+   * signers. Under a single transaction the rethrow would trigger Spring's rollback advice and
+   * discard <em>every</em> write in the invocation — the {@code FAILED} update and the {@code
+   * PENDING} insert alike — so a provider outage would leave no trace of the attempt at all, the
+   * exact opposite of the intent. Without the annotation each jOOQ statement auto-commits as it
+   * happens, which is what the control flow above assumes.
+   *
+   * <p>Same reasoning (and the same "no transaction across a blocking third-party round-trip"
+   * rule) as {@code CostService.snapshotNow}, {@code FxRateService.backfill}, {@code
+   * TakeoutService.processTakeout} and {@code NotificationOutboxJob.processEntry}.
+   */
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public SignatureRequestResponse createSignatureRequest(
       ContractIdentifier contractIdentifier,
