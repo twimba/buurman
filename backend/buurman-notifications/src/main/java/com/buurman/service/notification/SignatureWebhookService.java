@@ -141,10 +141,14 @@ public class SignatureWebhookService {
     }
   }
 
+  private boolean isTerminal(SignatureRequestStatus status) {
+    return status == SignatureRequestStatus.COMPLETED
+        || status == SignatureRequestStatus.DECLINED
+        || status == SignatureRequestStatus.CANCELLED;
+  }
+
   private void finalizeRequestStatus(SignatureRequest request, SignatureRequestStatus status) {
-    if (request.getStatus() == SignatureRequestStatus.COMPLETED
-        || request.getStatus() == SignatureRequestStatus.DECLINED
-        || request.getStatus() == SignatureRequestStatus.CANCELLED) {
+    if (isTerminal(request.getStatus())) {
       return; // already terminal — never regress a terminal outcome
     }
     request.setStatus(status);
@@ -152,8 +156,10 @@ public class SignatureWebhookService {
   }
 
   private void completeRequest(SignatureRequest request, String envelopeId) {
-    if (request.getStatus() == SignatureRequestStatus.COMPLETED) {
-      return; // duplicate DOCUMENT_COMPLETED delivery — do not re-download/re-upload
+    if (isTerminal(request.getStatus())) {
+      // Duplicate DOCUMENT_COMPLETED, or a late/out-of-order delivery arriving after the request
+      // was already DECLINED/CANCELLED — do not re-download/re-upload or overwrite the outcome.
+      return;
     }
 
     SignedDocument signed = providerClient.downloadCompleted(envelopeId);

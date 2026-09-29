@@ -203,6 +203,26 @@ class SignatureWebhookServiceTest {
                 r -> r.getStatus() == SignatureRequestStatus.COMPLETED));
   }
 
+  @Test
+  @DisplayName(
+      "a stale DOCUMENT_COMPLETED arriving after DECLINED does not re-download or overwrite the"
+          + " decline")
+  void staleCompletedDoesNotRegressDeclinedRequest() {
+    when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
+            "documenso", "envelope_abc123"))
+        .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.DECLINED)));
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+        .thenReturn(List.of(existingSigner(SignatureSignerStatus.DECLINED)));
+
+    service.processDocumensoEvent(completedEventPayload(), "secret");
+
+    verify(providerClient, never()).downloadCompleted(any());
+    verify(signatureRequestRepository, never())
+        .save(
+            org.mockito.ArgumentMatchers.argThat(
+                r -> r.getStatus() == SignatureRequestStatus.COMPLETED));
+  }
+
   private void assertThatThrownByProcessing(String payload, String secret) {
     org.assertj.core.api.Assertions.assertThatThrownBy(
             () -> service.processDocumensoEvent(payload, secret))
