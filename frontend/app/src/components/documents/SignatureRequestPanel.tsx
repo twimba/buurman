@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { PenLine } from 'lucide-react';
 import { SignatureStatusBadge } from './SignatureStatusBadge';
 import {
@@ -29,7 +29,7 @@ export const SignatureRequestPanel = ({
   contractId,
   documentId,
 }: SignatureRequestPanelProps) => {
-  const [signatureRequestId, setSignatureRequestId] = useState<string>();
+  const [createdRequestId, setCreatedRequestId] = useState<string>();
   const createMutation = useCreateSignatureRequest(contractId);
 
   // Without this the panel only ever knew about a request it created itself in this page's
@@ -39,29 +39,27 @@ export const SignatureRequestPanel = ({
   const { data: existingRequests, isLoading: isLoadingExisting } =
     useSignatureRequests(contractId, documentId);
 
-  const { data: request, isLoading } = useSignatureRequest(
+  // The list is ordered newest-first by the API. Derived, not copied into state, so there is no
+  // setState-in-an-effect and no render where a known request is briefly forgotten.
+  const mostRecent = existingRequests?.[0];
+  const resumable =
+    mostRecent && RESUMABLE_STATUSES.includes(mostRecent.status)
+      ? mostRecent
+      : undefined;
+  const activeRequestId = createdRequestId ?? resumable?.identifier;
+
+  const { data: polled, isLoading } = useSignatureRequest(
     contractId,
     documentId,
-    signatureRequestId
+    activeRequestId
   );
-
-  useEffect(() => {
-    if (signatureRequestId || !existingRequests?.length) {
-      return;
-    }
-    // The list is ordered newest-first by the API.
-    const mostRecent = existingRequests[0];
-    if (RESUMABLE_STATUSES.includes(mostRecent.status)) {
-      setSignatureRequestId(mostRecent.identifier);
-    }
-  }, [existingRequests, signatureRequestId]);
 
   const handleSend = async () => {
     const created = await createMutation.mutateAsync(documentId);
-    setSignatureRequestId(created.identifier);
+    setCreatedRequestId(created.identifier);
   };
 
-  if (!signatureRequestId) {
+  if (!activeRequestId) {
     if (isLoadingExisting) {
       return <LoadingSpinner className="p-0" />;
     }
@@ -78,8 +76,11 @@ export const SignatureRequestPanel = ({
     );
   }
 
+  // Fall back to the list's copy while the per-request poll is still in flight, so a rehydrated
+  // panel renders its status immediately rather than flashing a spinner.
   const shown =
-    request ?? existingRequests?.find((r) => r.identifier === signatureRequestId);
+    polled ??
+    existingRequests?.find((r) => r.identifier === activeRequestId);
 
   if (!shown) {
     return isLoading ? <LoadingSpinner className="p-0" /> : null;
