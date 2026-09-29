@@ -27,7 +27,10 @@ public enum NotificationType {
   CONTRACT_EXTENDED("Contract Extended", true, true),
   CONTRACT_EXTENSION_PENDING("Contract Extension Pending", true, true),
   CONTRACT_ROLLED_OVER_TO_INDEFINITE("Contract Rolled Over to Indefinite", true, true),
-  CONTACT_FOLLOW_UP("Contact Follow-Up Reminder", true, true);
+  CONTACT_FOLLOW_UP("Contact Follow-Up Reminder", true, true),
+  // Not consolidatable: a declined signature needs the landlord to act now, so it must never be
+  // held back and rolled into a digest.
+  SIGNATURE_REQUEST_DECLINED("Signature Declined", true, false);
 
   private final String displayName;
   private final boolean configurable;

@@ -106,6 +106,7 @@ class EmailRenderMatrixTest {
             "ctaText",
             "ctaUrl",
             "description",
+            "documentName",
             "dueDate",
             "effectiveFrom",
             "endDate",
@@ -150,6 +151,7 @@ class EmailRenderMatrixTest {
             "secondaryText",
             "secondaryUrl",
             "senderName",
+            "signerEmail",
             "startDate",
             "teamName",
             "triggerType",
@@ -205,7 +207,7 @@ class EmailRenderMatrixTest {
     List<String> names = templateNames();
     // Pinned exactly: a floor lets a discovery regression drop a template silently. Adding a
     // template is a deliberate act, so updating this number with it is the right friction.
-    assertThat(names).hasSize(24);
+    assertThat(names).hasSize(25);
 
     List<Arguments> cases = new ArrayList<>();
     for (String language : DocumentLanguages.ORDERED) {

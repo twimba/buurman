@@ -15,7 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Document;
+import com.buurman.domain.NotificationType;
 import com.buurman.domain.SignatureRequest;
 import com.buurman.domain.SignatureRequestStatus;
 import com.buurman.domain.SignatureSigner;
@@ -40,6 +42,17 @@ class SignatureWebhookServiceTest {
   private final S3StorageService s3StorageService = mock(S3StorageService.class);
   private final com.buurman.repository.TeamRepository teamRepository =
       mock(com.buurman.repository.TeamRepository.class);
+  private final com.buurman.repository.ContractRepository contractRepository =
+      mock(com.buurman.repository.ContractRepository.class);
+  private final NotificationService notificationService = mock(NotificationService.class);
+  private final AppProperties appProperties =
+      new AppProperties(
+          "test",
+          "https://app.test",
+          new AppProperties.Email("no-reply@test", "Buurman", "https://app.test"),
+          new AppProperties.Api("https://api.test"),
+          new AppProperties.Cors(List.of(), List.of()),
+          new AppProperties.Documents(1024L, List.of("application/pdf")));
 
   private SignatureWebhookService service;
 
@@ -47,6 +60,7 @@ class SignatureWebhookServiceTest {
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID DOCUMENT_ID = UUID.randomUUID();
   private static final UUID SIGNER_ID = UUID.randomUUID();
+  private static final UUID UPDATED_BY = UUID.randomUUID();
 
   @BeforeEach
   void setUp() {
@@ -58,6 +72,9 @@ class SignatureWebhookServiceTest {
             documentRepository,
             s3StorageService,
             teamRepository,
+            contractRepository,
+            notificationService,
+            appProperties,
             new ObjectMapper());
     when(providerClient.isValidWebhookSecret(any())).thenReturn(true);
     when(teamRepository.findById(TEAM_ID))
@@ -78,6 +95,7 @@ class SignatureWebhookServiceTest {
         .provider("documenso")
         .providerSubmissionId("envelope_abc123")
         .status(status)
+        .updatedBy(UPDATED_BY)
         .build();
   }
 
@@ -161,6 +179,64 @@ class SignatureWebhookServiceTest {
         .save(
             org.mockito.ArgumentMatchers.argThat(
                 r -> r.getStatus() == SignatureRequestStatus.DECLINED));
+  }
+
+  @Test
+  @DisplayName("a decline notifies the landlord's team exactly once, naming the document and signer")
+  void declineNotifiesTheTeamOnce() {
+    when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
+            "documenso", "envelope_abc123"))
+        .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PENDING)));
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+        .thenReturn(List.of(existingSigner(SignatureSignerStatus.PENDING)));
+    UUID contractId = UUID.randomUUID();
+    when(documentRepository.findByIdAndTeamId(DOCUMENT_ID, TEAM_ID))
+        .thenReturn(
+            Optional.of(
+                Document.builder()
+                    .id(DOCUMENT_ID)
+                    .teamId(TEAM_ID)
+                    .entityType("CONTRACT")
+                    .entityId(contractId)
+                    .fileName("addendum.pdf")
+                    .build()));
+    when(contractRepository.findByIdAndTeamId(contractId, TEAM_ID))
+        .thenReturn(
+            Optional.of(
+                com.buurman.domain.Contract.builder()
+                    .id(contractId)
+                    .identifier(
+                        Optional.of(com.buurman.domain.Sid.of("CON00000000000000000000001")))
+                    .build()));
+
+    service.processDocumensoEvent(rejectedEventPayload(), "secret");
+
+    verify(notificationService)
+        .sendToTeam(
+            org.mockito.ArgumentMatchers.argThat(
+                sent ->
+                    sent.notificationType() == NotificationType.SIGNATURE_REQUEST_DECLINED
+                        && sent.teamId().equals(Optional.of(TEAM_ID))
+                        && "signature-declined".equals(sent.templateName())
+                        && "addendum.pdf".equals(sent.templateVariables().get("documentName"))
+                        && "tenant@example.com"
+                            .equals(sent.templateVariables().get("signerEmail"))));
+    verify(notificationService, org.mockito.Mockito.times(1)).sendToTeam(any());
+  }
+
+  @Test
+  @DisplayName("a repeat DOCUMENT_REJECTED for an already-DECLINED request does not re-notify")
+  void repeatDeclineDoesNotReNotify() {
+    when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
+            "documenso", "envelope_abc123"))
+        .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.DECLINED)));
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+        .thenReturn(List.of(existingSigner(SignatureSignerStatus.DECLINED)));
+
+    service.processDocumensoEvent(rejectedEventPayload(), "secret");
+
+    verify(notificationService, never()).sendToTeam(any());
+    verify(signatureRequestRepository, never()).save(any());
   }
 
   @Test
