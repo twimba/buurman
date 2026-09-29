@@ -272,6 +272,49 @@ class SignatureServiceTest {
   }
 
   @Test
+  @DisplayName(
+      "persists the tenant signer's contactId, and leaves it empty for the landlord (a TeamMember,"
+          + " not a Contact)")
+  void persistsTenantContactId() {
+    when(providerClient.createSubmission(any(byte[].class), any(String.class), anyList()))
+        .thenReturn(
+            new SignatureSubmission(
+                "envelope_3",
+                List.of(
+                    new ProviderSigner("1", "landlord@example.com"),
+                    new ProviderSigner("2", "tenant@example.com"))));
+    when(signatureRequestRepository.save(any()))
+        .thenAnswer(
+            invocation -> {
+              var request = (com.buurman.domain.SignatureRequest) invocation.getArgument(0);
+              request.setId(UUID.randomUUID());
+              request.setIdentifier(Optional.of(Sid.of("SGR00000000000000000000005")));
+              return request;
+            });
+    when(signatureSignerRepository.save(any()))
+        .thenAnswer(
+            invocation -> {
+              var signer = (SignatureSigner) invocation.getArgument(0);
+              signer.setId(UUID.randomUUID());
+              return signer;
+            });
+
+    service.createSignatureRequest(
+        ContractIdentifier.of("CON00000000000000000000001"),
+        DocumentIdentifier.of("DOC00000000000000000000001"),
+        principal);
+
+    var saved = org.mockito.ArgumentCaptor.forClass(SignatureSigner.class);
+    org.mockito.Mockito.verify(signatureSignerRepository, org.mockito.Mockito.times(2))
+        .save(saved.capture());
+    assertThat(saved.getAllValues())
+        .extracting(SignatureSigner::getEmail, SignatureSigner::getContactId)
+        .containsExactly(
+            org.assertj.core.api.Assertions.tuple("landlord@example.com", Optional.empty()),
+            org.assertj.core.api.Assertions.tuple("tenant@example.com", Optional.of(CONTACT_ID)));
+  }
+
+  @Test
   @DisplayName("listSignatureRequests returns every request for the document, newest first")
   void listSignatureRequestsReturnsAllForDocument() {
     Document document =

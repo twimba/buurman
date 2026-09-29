@@ -51,14 +51,17 @@ export const ContractDocumentsTab = ({
         readOnly={!canEditData}
         renderRowAction={
           canEditData
-            ? (doc) => (
-                <FeatureGate flag={FeatureFlags.ESIGNATURE_ENABLED}>
-                  <SignatureRequestPanel
-                    contractId={contractId}
-                    documentId={doc.identifier}
-                  />
-                </FeatureGate>
-              )
+            ? (doc) =>
+                // The signing provider only accepts PDFs, so offering "Send for signature" on an
+                // image or spreadsheet row would only ever produce a provider-side failure.
+                doc.mimeType === 'application/pdf' ? (
+                  <FeatureGate flag={FeatureFlags.ESIGNATURE_ENABLED}>
+                    <SignatureRequestPanel
+                      contractId={contractId}
+                      documentId={doc.identifier}
+                    />
+                  </FeatureGate>
+                ) : null
             : undefined
         }
       />

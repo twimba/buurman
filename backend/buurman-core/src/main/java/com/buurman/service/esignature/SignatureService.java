@@ -99,18 +99,29 @@ public class SignatureService {
         principal.getEmail().toLowerCase(Locale.ROOT),
         new SignerRequest(principal.getEmail(), principal.getName(), SignatureSignerRole.LANDLORD));
 
+    // SignerRequest is the provider's wire shape (email/name/role only) and must stay that way —
+    // DocumensoClient depends on it. The Buurman-side contact a tenant signer came from is kept
+    // here, keyed by the same lower-cased email, so the persisted SignatureSigner can carry it.
+    Map<String, UUID> contactIdByEmail = new LinkedHashMap<>();
+
     List<ContractParty> parties =
         contractPartyRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     for (ContractParty party : parties) {
-      party
-          .getContactId()
+      Optional<UUID> partyContactId = party.getContactId();
+      partyContactId
           .flatMap(contactId -> contactRepository.findByIdAndTeamId(contactId, teamId))
           .flatMap(Contact::getEmail)
           .ifPresent(
-              email ->
-                  signerRequestsByEmail.putIfAbsent(
-                      email.toLowerCase(Locale.ROOT),
-                      new SignerRequest(email, email, SignatureSignerRole.TENANT)));
+              email -> {
+                String emailKey = email.toLowerCase(Locale.ROOT);
+                SignerRequest previous =
+                    signerRequestsByEmail.putIfAbsent(
+                        emailKey, new SignerRequest(email, email, SignatureSignerRole.TENANT));
+                if (previous == null) {
+                  // Only the party that actually won the dedupe contributes its contact id.
+                  partyContactId.ifPresent(contactId -> contactIdByEmail.put(emailKey, contactId));
+                }
+              });
     }
     List<SignerRequest> signerRequests = new ArrayList<>(signerRequestsByEmail.values());
 
@@ -148,16 +159,30 @@ public class SignatureService {
                     ProviderSigner::providerSignerId, ProviderSigner::email));
     List<SignatureSigner> savedSigners = new ArrayList<>();
     for (SignerRequest signerRequest : signerRequests) {
-      String providerSignerId =
+      Optional<String> matchedProviderSignerId =
           emailByProviderSignerId.entrySet().stream()
               .filter(e -> e.getValue().equalsIgnoreCase(signerRequest.email()))
               .map(Map.Entry::getKey)
-              .findFirst()
-              .orElse(signerRequest.email());
+              .findFirst();
+      if (matchedProviderSignerId.isEmpty()) {
+        // Without a provider id, this signer's webhook events can never be matched back to this
+        // row (the webhook keys recipients by provider id), so their status stays PENDING forever.
+        // Loud on purpose: silently degrading to the email hides a provider contract change.
+        log.warn(
+            "Documenso returned no recipient matching signer {} on envelope {} — falling back to"
+                + " the email as providerSignerId; webhook status updates for this signer will"
+                + " not match",
+            signerRequest.email(),
+            submission.providerSubmissionId());
+      }
+      String providerSignerId = matchedProviderSignerId.orElse(signerRequest.email());
       savedSigners.add(
           signatureSignerRepository.save(
               SignatureSigner.builder()
                   .signatureRequestId(request.getId())
+                  .contactId(
+                      Optional.ofNullable(
+                          contactIdByEmail.get(signerRequest.email().toLowerCase(Locale.ROOT))))
                   .email(signerRequest.email())
                   .role(signerRequest.role())
                   .providerSignerId(providerSignerId)

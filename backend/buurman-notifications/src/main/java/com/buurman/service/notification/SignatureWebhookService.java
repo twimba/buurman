@@ -84,10 +84,14 @@ public class SignatureWebhookService {
 
       List<SignatureSigner> signers =
           signatureSignerRepository.findBySignatureRequestId(request.getId());
+      // Merge function on purpose: a duplicate provider_signer_id should not happen, but without
+      // it Collectors.toMap throws IllegalStateException, which the outer catch would swallow —
+      // silently dropping the whole event's processing rather than just the duplicate row.
       Map<String, SignatureSigner> byProviderSignerId =
           signers.stream()
               .collect(
-                  java.util.stream.Collectors.toMap(SignatureSigner::getProviderSignerId, s -> s));
+                  java.util.stream.Collectors.toMap(
+                      SignatureSigner::getProviderSignerId, s -> s, (first, duplicate) -> first));
 
       for (JsonNode recipient : payload.path("recipients")) {
         String recipientId = recipient.path("id").asText();

@@ -189,6 +189,11 @@ services:
     depends_on:
       documenso-postgres:
         condition: service_healthy
+    # Documenso POSTs its webhooks at host.docker.internal:8081 in the `local` profile (backend on
+    # the host). Docker Desktop resolves that name implicitly; Linux Docker Engine does not — same
+    # reason `prometheus` below carries this line.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - PORT=3000
       - NEXTAUTH_SECRET=${DOCUMENSO_NEXTAUTH_SECRET:-dev-nextauth-secret-not-for-production}

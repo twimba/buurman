@@ -68,13 +68,20 @@ DOCUMENSO_CERT_PATH="$DOCUMENSO_CERT_DIR/cert.p12"
 if [ ! -f "$DOCUMENSO_CERT_PATH" ]; then
   mkdir -p "$DOCUMENSO_CERT_DIR"
   echo "Generating Documenso local signing certificate..."
-  openssl genrsa -out /tmp/documenso-private.key 2048
-  openssl req -new -x509 -key /tmp/documenso-private.key -out /tmp/documenso-cert.crt -days 365 \
+  # A private key must never land on a predictable path: a fixed /tmp name is pre-creatable and
+  # readable by any local user. mktemp -d gives a 0700 directory with an unguessable name, and the
+  # trap removes it on any exit path (including the set -e failure of an openssl step).
+  DOCUMENSO_TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/documenso-signing-XXXXXX")"
+  trap 'rm -rf "$DOCUMENSO_TMP_DIR"' EXIT
+  openssl genrsa -out "$DOCUMENSO_TMP_DIR/private.key" 2048
+  openssl req -new -x509 -key "$DOCUMENSO_TMP_DIR/private.key" \
+    -out "$DOCUMENSO_TMP_DIR/cert.crt" -days 365 \
     -subj "/C=NL/ST=NH/L=Amsterdam/O=Buurman Dev/OU=Engineering/CN=Buurman Dev Signing CA"
   openssl pkcs12 -export -out "$DOCUMENSO_CERT_PATH" \
-    -inkey /tmp/documenso-private.key -in /tmp/documenso-cert.crt \
+    -inkey "$DOCUMENSO_TMP_DIR/private.key" -in "$DOCUMENSO_TMP_DIR/cert.crt" \
     -passout pass:buurman-dev
-  rm /tmp/documenso-private.key /tmp/documenso-cert.crt
+  rm -rf "$DOCUMENSO_TMP_DIR"
+  trap - EXIT
   echo "Documenso certificate written to $DOCUMENSO_CERT_PATH (passphrase: buurman-dev, local dev only)"
 else
   echo "Documenso certificate already exists at $DOCUMENSO_CERT_PATH"
