@@ -52,6 +52,7 @@ import com.buurman.domain.identifier.RentComponentIdentifier;
 import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
+import com.buurman.domain.identifier.SignatureRequestIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
@@ -149,7 +150,9 @@ class SidGeneratorTest {
               ImpersonationSessionIdentifier.class),
           Arguments.of(
               "CEX", SidGenerator.newContractExtensionId(), ContractExtensionIdentifier.class),
-          Arguments.of("RCO", SidGenerator.newRentComponentId(), RentComponentIdentifier.class));
+          Arguments.of("RCO", SidGenerator.newRentComponentId(), RentComponentIdentifier.class),
+          Arguments.of(
+              "SGR", SidGenerator.newSignatureRequestId(), SignatureRequestIdentifier.class));
     }
 
     @ParameterizedTest(name = "{0} → {2}")
