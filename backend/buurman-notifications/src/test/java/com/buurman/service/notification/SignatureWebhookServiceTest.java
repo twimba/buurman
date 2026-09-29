@@ -277,6 +277,37 @@ class SignatureWebhookServiceTest {
         .save(
             org.mockito.ArgumentMatchers.argThat(
                 r -> r.getStatus() == SignatureRequestStatus.COMPLETED));
+
+    // Both the signed PDF and the provider's audit certificate are persisted as Documents on the
+    // same entity, so the certificate is discoverable in the contract's normal Documents list.
+    org.mockito.ArgumentCaptor<byte[]> uploadedBytes =
+        org.mockito.ArgumentCaptor.forClass(byte[].class);
+    org.mockito.ArgumentCaptor<String> uploadedNames =
+        org.mockito.ArgumentCaptor.forClass(String.class);
+    verify(s3StorageService, org.mockito.Mockito.times(2))
+        .uploadFile(
+            uploadedBytes.capture(), any(), any(), any(), any(), uploadedNames.capture());
+    org.assertj.core.api.Assertions.assertThat(uploadedNames.getAllValues())
+        .containsExactly("signed-addendum.pdf", "certificate-addendum.pdf");
+    org.assertj.core.api.Assertions.assertThat(uploadedBytes.getAllValues())
+        .containsExactly("%PDF-signed".getBytes(), "%PDF-cert".getBytes());
+
+    org.mockito.ArgumentCaptor<Document> savedDocuments =
+        org.mockito.ArgumentCaptor.forClass(Document.class);
+    verify(documentRepository, org.mockito.Mockito.times(2)).save(savedDocuments.capture());
+    org.assertj.core.api.Assertions.assertThat(savedDocuments.getAllValues())
+        .extracting(Document::getFileName, d -> d.getTitle().orElse(""))
+        .containsExactly(
+            org.assertj.core.api.Assertions.tuple("signed-addendum.pdf", "Signed: addendum.pdf"),
+            org.assertj.core.api.Assertions.tuple(
+                "certificate-addendum.pdf", "Signing certificate: addendum.pdf"));
+    org.assertj.core.api.Assertions.assertThat(savedDocuments.getAllValues())
+        .allSatisfy(
+            d -> {
+              org.assertj.core.api.Assertions.assertThat(d.getEntityType()).isEqualTo("CONTRACT");
+              org.assertj.core.api.Assertions.assertThat(d.getEntityId())
+                  .isEqualTo(originalDocument.getEntityId());
+            });
   }
 
   @Test

@@ -264,13 +264,52 @@ public class SignatureWebhookService {
             .build();
     Document savedSignedDocument = documentRepository.save(signedDocument);
 
+    // The provider's audit certificate is the evidence of who signed what and when, so it is
+    // persisted as its own Document on the same entity as the signed PDF — it shows up in the
+    // contract's Documents list beside it. It deliberately does not go in
+    // signature_requests.signed_document_id: that column points at the signed PDF only.
+    Document savedCertificateDocument =
+        persistCertificate(request, original, teamIdentifier, documentIdentifier, signed);
+
     request.setSignedDocumentId(Optional.of(savedSignedDocument.getId()));
     request.setStatus(SignatureRequestStatus.COMPLETED);
     signatureRequestRepository.save(request);
 
     log.info(
-        "Signature request {} completed; signed document {} stored",
+        "Signature request {} completed; signed document {} and certificate {} stored",
         envelopeId,
-        savedSignedDocument.getId());
+        savedSignedDocument.getId(),
+        savedCertificateDocument.getId());
+  }
+
+  private Document persistCertificate(
+      SignatureRequest request,
+      Document original,
+      Sid teamIdentifier,
+      Sid documentIdentifier,
+      SignedDocument signed) {
+    String certificateFileName = "certificate-" + original.getFileName();
+    String certificateFileKey =
+        s3StorageService.uploadFile(
+            signed.certificatePdfBytes(),
+            MediaType.APPLICATION_PDF_VALUE,
+            teamIdentifier,
+            original.getEntityType(),
+            documentIdentifier,
+            certificateFileName);
+
+    return documentRepository.save(
+        Document.builder()
+            .teamId(request.getTeamId())
+            .entityType(original.getEntityType())
+            .entityId(original.getEntityId())
+            .fileKey(certificateFileKey)
+            .fileName(certificateFileName)
+            .fileSize((long) signed.certificatePdfBytes().length)
+            .mimeType(MediaType.APPLICATION_PDF_VALUE)
+            .title(Optional.of("Signing certificate: " + original.getFileName()))
+            .notes(Optional.empty())
+            .uploadedBy(request.getUpdatedBy())
+            .build());
   }
 }
