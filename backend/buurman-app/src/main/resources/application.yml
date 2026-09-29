@@ -148,6 +148,12 @@ twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SERVICE_SID:}
   status-callback-url: ${TWILIO_STATUS_CALLBACK_URL:}
 
+# Documenso Configuration (self-hosted e-signature sidecar; see docker-compose.yml)
+documenso:
+  base-url: ${DOCUMENSO_BASE_URL:http://localhost:3001}
+  api-key: ${DOCUMENSO_API_KEY:}
+  webhook-secret: ${DOCUMENSO_WEBHOOK_SECRET:}
+
 # Notification Configuration
 notification:
   outbox:
