@@ -71,6 +71,7 @@ All services are routed through Traefik with HTTPS (`*.local.buurman.io`). HTTP 
 | awrust | https://awrust.local.buurman.io | S3 storage (dev) |
 | mailpit | https://mailpit.local.buurman.io (SMTP: port 1025) | Email UI / SMTP (dev) |
 | gotenberg | http://localhost:3000 (internal, no Traefik route) | Headless-Chromium PDF renderer for booklets |
+| documenso | http://localhost:3001 (no Traefik route — internal signing sidecar) | Self-hosted e-signature (Documenso) |
 | backend | https://api.local.buurman.io | Spring Boot API |
 | app | https://app.local.buurman.io | React app |
 | prometheus | https://prometheus.local.buurman.io | Metrics collection |
@@ -381,3 +382,4 @@ sibling of `app.local.buurman.io`, not a deeper level.
 - **CORS errors**: Verify SecurityConfig allowed origin includes `https://app.local.buurman.io`
 - **Flyway failure**: Check syntax; rollback may need manual intervention
 - **S3/images**: AWRust uses direct URLs via `https://awrust.local.buurman.io`, production uses presigned URLs
+- **Documenso webhook unreachable from `make dev`**: the Documenso container needs Docker Desktop's `host.docker.internal` DNS to reach a host-run backend (webhook target `http://host.docker.internal:8081/webhooks/documenso/events`) — this only works with Docker Desktop, not plain Linux Docker Engine without the `--add-host=host.docker.internal:host-gateway` flag

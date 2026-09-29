@@ -168,6 +168,53 @@ services:
     networks:
       - buurman-network
 
+  documenso-postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=documenso
+      - POSTGRES_PASSWORD=documenso
+      - POSTGRES_DB=documenso
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U documenso -d documenso"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - documenso-postgres-data:/var/lib/postgresql/data
+    networks:
+      - buurman-network
+
+  documenso:
+    image: documenso/documenso:latest
+    depends_on:
+      documenso-postgres:
+        condition: service_healthy
+    environment:
+      - PORT=3000
+      - NEXTAUTH_SECRET=${DOCUMENSO_NEXTAUTH_SECRET:-dev-nextauth-secret-not-for-production}
+      - NEXT_PRIVATE_ENCRYPTION_KEY=${DOCUMENSO_ENCRYPTION_KEY:-dev-encryption-key-32-chars-long}
+      - NEXT_PRIVATE_ENCRYPTION_SECONDARY_KEY=${DOCUMENSO_ENCRYPTION_SECONDARY_KEY:-dev-secondary-key-32-chars-long}
+      - NEXT_PUBLIC_WEBAPP_URL=${DOCUMENSO_WEBAPP_URL:-http://localhost:3001}
+      - NEXT_PRIVATE_DATABASE_URL=postgres://documenso:documenso@documenso-postgres:5432/documenso
+      - NEXT_PRIVATE_SMTP_TRANSPORT=smtp-auth
+      - NEXT_PRIVATE_SMTP_HOST=mailpit
+      - NEXT_PRIVATE_SMTP_PORT=1025
+      - NEXT_PRIVATE_SMTP_FROM_NAME=Buurman Signing (Dev)
+      - NEXT_PRIVATE_SMTP_FROM_ADDRESS=signing@local.buurman.io
+      - NEXT_PRIVATE_SIGNING_TRANSPORT=local
+      - NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH=/opt/documenso/cert.p12
+      - NEXT_PRIVATE_SIGNING_PASSPHRASE=buurman-dev
+    ports:
+      # Host port so a host-run backend (`make dev`) can reach it at http://localhost:3001.
+      # Containerised backend (`make up`) reaches it as http://documenso:3000.
+      - "${DOCUMENSO_HOST_PORT:-3001}:3000"
+    volumes:
+      - ./docker/documenso/cert.p12:/opt/documenso/cert.p12:ro
+    labels:
+      - "buurman.workspace=${COMPOSE_PROJECT_NAME:-buurman}"
+    networks:
+      - buurman-network
+
   prometheus:
     build:
       context: ./prometheus
@@ -414,6 +461,7 @@ volumes:
   awrust-data:
   prometheus_data:
   grafana_data:
+  documenso-postgres-data:
 
 networks:
   buurman-network:

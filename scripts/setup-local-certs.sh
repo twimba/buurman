@@ -57,3 +57,25 @@ echo "  Certificate: $CERT_FILE"
 echo "  Key:         $KEY_FILE"
 echo ""
 echo "Start the environment with: docker compose up -d"
+
+# =============================================================================
+# Documenso e-signature sidecar: self-signed PKCS#12 signing certificate.
+# Grounded against https://docs.documenso.com self-hosting docs — Documenso refuses to
+# sign documents without a certificate present at startup.
+# =============================================================================
+DOCUMENSO_CERT_DIR="$SCRIPT_DIR/../docker/documenso"
+DOCUMENSO_CERT_PATH="$DOCUMENSO_CERT_DIR/cert.p12"
+if [ ! -f "$DOCUMENSO_CERT_PATH" ]; then
+  mkdir -p "$DOCUMENSO_CERT_DIR"
+  echo "Generating Documenso local signing certificate..."
+  openssl genrsa -out /tmp/documenso-private.key 2048
+  openssl req -new -x509 -key /tmp/documenso-private.key -out /tmp/documenso-cert.crt -days 365 \
+    -subj "/C=NL/ST=NH/L=Amsterdam/O=Buurman Dev/OU=Engineering/CN=Buurman Dev Signing CA"
+  openssl pkcs12 -export -out "$DOCUMENSO_CERT_PATH" \
+    -inkey /tmp/documenso-private.key -in /tmp/documenso-cert.crt \
+    -passout pass:buurman-dev
+  rm /tmp/documenso-private.key /tmp/documenso-cert.crt
+  echo "Documenso certificate written to $DOCUMENSO_CERT_PATH (passphrase: buurman-dev, local dev only)"
+else
+  echo "Documenso certificate already exists at $DOCUMENSO_CERT_PATH"
+fi
