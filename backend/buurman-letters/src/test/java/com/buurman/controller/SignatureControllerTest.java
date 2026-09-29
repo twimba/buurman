@@ -67,4 +67,55 @@ class SignatureControllerTest {
       SecurityContextHolder.clearContext();
     }
   }
+
+  @Test
+  void listSignatureRequestsDelegatesToService() {
+    SignatureService signatureService = mock(SignatureService.class);
+    SignatureController controller = new SignatureController(signatureService);
+    ContractIdentifier contractId = ContractIdentifier.of("CON00000000000000000000001");
+    DocumentIdentifier documentId = DocumentIdentifier.of("DOC00000000000000000000001");
+    SignatureRequestResponse newest =
+        new SignatureRequestResponse(
+            Sid.of("SGR00000000000000000000002"),
+            Sid.of(documentId.value()),
+            Optional.empty(),
+            SignatureRequestStatus.PENDING,
+            List.of(),
+            Instant.now(),
+            Instant.now());
+    SignatureRequestResponse older =
+        new SignatureRequestResponse(
+            Sid.of("SGR00000000000000000000001"),
+            Sid.of(documentId.value()),
+            Optional.empty(),
+            SignatureRequestStatus.DECLINED,
+            List.of(),
+            Instant.now().minusSeconds(3600),
+            Instant.now().minusSeconds(3600));
+    when(signatureService.listSignatureRequests(
+            ArgumentMatchers.eq(contractId),
+            ArgumentMatchers.eq(documentId),
+            ArgumentMatchers.any()))
+        .thenReturn(List.of(newest, older));
+
+    var authentication =
+        new TestingAuthenticationToken(
+            new UserPrincipal(
+                UUID.randomUUID(),
+                "USR1",
+                "kc-1",
+                "l@example.com",
+                "L",
+                UUID.randomUUID(),
+                "TEA1",
+                null),
+            null);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    try {
+      assertThat(controller.listSignatureRequests(contractId, documentId))
+          .containsExactly(newest, older);
+    } finally {
+      SecurityContextHolder.clearContext();
+    }
+  }
 }

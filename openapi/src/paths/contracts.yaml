@@ -2483,6 +2483,61 @@ payment-plans-cancel:
       - bearer-jwt: []
 
 signature-requests:
+  get:
+    tags:
+      - Signatures
+    summary: List a document's signature requests
+    description: Returns every signature request ever raised for the given document, newest first, so a client can rehydrate the state of an in-flight request instead of offering to send a duplicate
+    operationId: listSignatureRequests
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+    responses:
+      "200":
+        description: The document's signature requests, newest first
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SignatureRequestResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
   post:
     tags:
       - Signatures

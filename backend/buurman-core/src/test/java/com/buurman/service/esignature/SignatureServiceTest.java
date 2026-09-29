@@ -272,6 +272,80 @@ class SignatureServiceTest {
   }
 
   @Test
+  @DisplayName("listSignatureRequests returns every request for the document, newest first")
+  void listSignatureRequestsReturnsAllForDocument() {
+    Document document =
+        Document.builder()
+            .id(DOCUMENT_ID)
+            .teamId(TEAM_ID)
+            .identifier(Optional.of(Sid.of("DOC00000000000000000000001")))
+            .fileKey("k")
+            .fileName("addendum.pdf")
+            .build();
+    when(documentRepository.getByIdentifierAndTeamId(
+            any(Sid.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(document);
+
+    UUID newerId = UUID.randomUUID();
+    UUID olderId = UUID.randomUUID();
+    when(signatureRequestRepository.findByDocumentIdAndTeamId(DOCUMENT_ID, TEAM_ID))
+        .thenReturn(
+            List.of(
+                com.buurman.domain.SignatureRequest.builder()
+                    .id(newerId)
+                    .identifier(Optional.of(Sid.of("SGR00000000000000000000007")))
+                    .teamId(TEAM_ID)
+                    .documentId(DOCUMENT_ID)
+                    .provider("documenso")
+                    .providerSubmissionId("envelope_new")
+                    .status(SignatureRequestStatus.PENDING)
+                    .build(),
+                com.buurman.domain.SignatureRequest.builder()
+                    .id(olderId)
+                    .identifier(Optional.of(Sid.of("SGR00000000000000000000006")))
+                    .teamId(TEAM_ID)
+                    .documentId(DOCUMENT_ID)
+                    .provider("documenso")
+                    .providerSubmissionId("envelope_old")
+                    .status(SignatureRequestStatus.DECLINED)
+                    .build()));
+    when(signatureSignerRepository.findBySignatureRequestId(any())).thenReturn(List.of());
+
+    var responses =
+        service.listSignatureRequests(
+            ContractIdentifier.of("CON00000000000000000000001"),
+            DocumentIdentifier.of("DOC00000000000000000000001"),
+            principal);
+
+    assertThat(responses)
+        .extracting(r -> r.identifier().value(), com.buurman.dto.response.SignatureRequestResponse::status)
+        .containsExactly(
+            org.assertj.core.api.Assertions.tuple(
+                "SGR00000000000000000000007", SignatureRequestStatus.PENDING),
+            org.assertj.core.api.Assertions.tuple(
+                "SGR00000000000000000000006", SignatureRequestStatus.DECLINED));
+    assertThat(responses).allSatisfy(r -> assertThat(r.documentIdentifier().value()).isEqualTo("DOC00000000000000000000001"));
+  }
+
+  @Test
+  @DisplayName("listSignatureRequests on another team's document is not found — no cross-team leak")
+  void listSignatureRequestsCrossTeamDocumentIsNotFound() {
+    when(documentRepository.getByIdentifierAndTeamId(
+            any(Sid.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenThrow(new NotFoundException("Document not found"));
+
+    assertThatThrownBy(
+            () ->
+                service.listSignatureRequests(
+                    ContractIdentifier.of("CON00000000000000000000001"),
+                    DocumentIdentifier.of("DOC00000000000000000000001"),
+                    principal))
+        .isInstanceOf(NotFoundException.class);
+
+    verifyNoInteractions(signatureRequestRepository);
+  }
+
+  @Test
   @DisplayName(
       "dedupes signer emails when two contract parties resolve to the same email"
           + " (case-insensitive)")

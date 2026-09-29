@@ -107,6 +107,8 @@ export const queryKeys = {
 
   // --- Signature Requests ---
   signatureRequests: {
+    all: (contractId?: string, documentId?: string) =>
+      k('signatureRequests', contractId, documentId),
     detail: (
       contractId?: string,
       documentId?: string,

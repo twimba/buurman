@@ -3,6 +3,7 @@ import { useMutationWithToast } from './useMutationWithToast';
 import {
   createSignatureRequest,
   getSignatureRequest,
+  listSignatureRequests,
 } from '../generated/api/signatures/signatures';
 import type { SignatureRequestResponse } from '../generated/models';
 import { queryKeys } from '../lib/queryKeys';
@@ -13,6 +14,21 @@ const TERMINAL_STATUSES: SignatureRequestResponse['status'][] = [
   'CANCELLED',
   'FAILED',
 ];
+
+/**
+ * Every signature request ever raised for a document, newest first. Used on mount so a page
+ * reload cannot make the UI forget an in-flight request and offer to send a duplicate.
+ */
+export const useSignatureRequests = (
+  contractId: string | undefined,
+  documentId: string | undefined
+) => {
+  return useQuery({
+    queryKey: queryKeys.signatureRequests.all(contractId, documentId),
+    queryFn: () => listSignatureRequests(contractId ?? '', documentId ?? ''),
+    enabled: !!contractId && !!documentId,
+  });
+};
 
 export const useSignatureRequest = (
   contractId: string | undefined,
@@ -45,9 +61,12 @@ export const useCreateSignatureRequest = (contractId: string) => {
     successMessage: 'Sent for signature',
     mutationFn: (documentId: string) =>
       createSignatureRequest(contractId, documentId),
-    onSuccess: () => {
+    onSuccess: (_data, documentId) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.documents(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.signatureRequests.all(contractId, documentId),
       });
     },
   });

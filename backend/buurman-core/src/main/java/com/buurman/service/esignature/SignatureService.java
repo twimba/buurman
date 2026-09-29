@@ -195,6 +195,33 @@ public class SignatureService {
     return toResponse(request, resolvedDocumentIdentifier, signers);
   }
 
+  /**
+   * Every signature request ever raised for a document, newest first. The frontend calls this on
+   * mount so a page reload cannot make it forget an in-flight request and offer "Send for
+   * signature" a second time on a document that is already out for signing.
+   */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public List<SignatureRequestResponse> listSignatureRequests(
+      ContractIdentifier contractIdentifier,
+      DocumentIdentifier documentIdentifier,
+      UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    // Team-scoped via the document and contract lookups, same as createSignatureRequest: an
+    // identifier belonging to another team is a 404 before any signature row is touched.
+    Document document = documentRepository.getByIdentifierAndTeamId(documentIdentifier, teamId);
+    contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
+    Sid resolvedDocumentIdentifier = document.getIdentifier().orElseThrow();
+
+    return signatureRequestRepository.findByDocumentIdAndTeamId(document.getId(), teamId).stream()
+        .map(
+            request ->
+                toResponse(
+                    request,
+                    resolvedDocumentIdentifier,
+                    signatureSignerRepository.findBySignatureRequestId(request.getId())))
+        .toList();
+  }
+
   private Sid resolveDocumentIdentifier(UUID documentId, UUID teamId) {
     return documentRepository
         .findByIdAndTeamId(documentId, teamId)

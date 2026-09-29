@@ -1,5 +1,7 @@
 package com.buurman.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -25,6 +27,14 @@ public class SignatureController implements SignaturesApi {
       ContractIdentifier contractIdentifier, DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return signatureService.createSignatureRequest(
+        contractIdentifier, documentIdentifier, principal);
+  }
+
+  @Override
+  public List<SignatureRequestResponse> listSignatureRequests(
+      ContractIdentifier contractIdentifier, DocumentIdentifier documentIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return signatureService.listSignatureRequests(
         contractIdentifier, documentIdentifier, principal);
   }
 
