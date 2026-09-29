@@ -1,6 +1,6 @@
 CREATE TABLE signature_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    identifier VARCHAR(26) NOT NULL,
+    identifier VARCHAR(29) NOT NULL,
     team_id UUID NOT NULL REFERENCES teams (id),
     document_id UUID NOT NULL REFERENCES documents (id),
     signed_document_id UUID REFERENCES documents (id),
