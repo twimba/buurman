@@ -38,7 +38,8 @@ public class Contract {
     ACTIVE,
     EXPIRED,
     TERMINATED,
-    PENDING_SIGNATURE
+    PENDING_SIGNATURE,
+    NOTICE_GIVEN
   }
 
   public enum RenewalMode {

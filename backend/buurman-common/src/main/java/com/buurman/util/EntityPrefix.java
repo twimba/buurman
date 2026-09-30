@@ -57,7 +57,8 @@ public enum EntityPrefix {
   RCO("RCO", "Rent Components"),
   SGR("SGR", "Signature Requests"),
   SGS("SGS", "Signature Signers"),
-  SCF("SCF", "Saved Contract Filters");
+  SCF("SCF", "Saved Contract Filters"),
+  CTM("CTM", "Contract Terminations");
 
   private final String code;
   private final String entityName;

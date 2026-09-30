@@ -14,6 +14,7 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
+import com.buurman.domain.identifier.ContractTerminationIdentifier;
 import com.buurman.domain.identifier.CountryRequestIdentifier;
 import com.buurman.domain.identifier.DataImportIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
@@ -280,5 +281,9 @@ public class SidGenerator {
 
   public static SavedContractFilterIdentifier newSavedContractFilterId() {
     return SavedContractFilterIdentifier.of(generateRaw(EntityPrefix.SCF));
+  }
+
+  public static ContractTerminationIdentifier newContractTerminationId() {
+    return ContractTerminationIdentifier.of(generateRaw(EntityPrefix.CTM));
   }
 }
