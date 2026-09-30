@@ -19,6 +19,7 @@ import {
   Flag,
   Layers,
   BookOpen,
+  FileSignature,
   Ticket,
   Timer,
   Database,
@@ -82,6 +83,11 @@ const navigation: NavItem[] = [
   },
   { name: 'Broadcasts', href: '/broadcasts', icon: Radio },
   { name: 'Rent Regulations', href: '/rent-regulations', icon: BookOpen },
+  {
+    name: 'Lease Clause Templates',
+    href: '/lease-clause-templates',
+    icon: FileSignature,
+  },
   { name: 'Feature Flags', href: '/feature-flags', icon: Flag },
   { name: 'Segments', href: '/segments', icon: Layers, indent: true },
 ];

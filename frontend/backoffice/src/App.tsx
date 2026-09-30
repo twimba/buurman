@@ -86,6 +86,11 @@ const RentRegulationCountryDetailPage = lazy(() =>
     default: m.RentRegulationCountryDetailPage,
   }))
 );
+const LeaseClauseTemplatesPage = lazy(() =>
+  import('./pages/LeaseClauseTemplatesPage').then((m) => ({
+    default: m.LeaseClauseTemplatesPage,
+  }))
+);
 const SegmentsPage = lazy(() =>
   import('./pages/SegmentsPage').then((m) => ({
     default: m.SegmentsPage,
@@ -165,6 +170,10 @@ function App() {
                   <Route
                     path="/rent-regulations/:code"
                     element={<RentRegulationCountryDetailPage />}
+                  />
+                  <Route
+                    path="/lease-clause-templates"
+                    element={<LeaseClauseTemplatesPage />}
                   />
                   <Route path="/feature-flags" element={<FeatureFlagsPage />} />
                   <Route path="/segments" element={<SegmentsPage />} />

@@ -71,6 +71,7 @@
       "payments": "Betalinger",
       "extensions": "Forlengelser",
       "documents": "Dokumenter",
+      "leaseAgreement": "Leiekontrakt",
       "history": "Tidslinje"
     },
     "deleteTitle": "Slett kontrakt",
@@ -1068,5 +1069,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Utløper om {{days}} dager"
+  "expiringSoon": "Utløper om {{days}} dager",
+  "leaseAgreement": {
+    "title": "Leiekontrakt",
+    "description": "Velg hvilke klausuler som skal inkluderes, og generer deretter leiekontrakt-PDF-en for denne kontrakten.",
+    "loadError": "Kunne ikke laste leieklausuler",
+    "empty": "Det er ennå ikke konfigurert klausuler for landet til denne kontrakten.",
+    "required": "Obligatorisk",
+    "saveSelection": "Lagre valg",
+    "generate": "Generer leiekontrakt"
+  }
 }

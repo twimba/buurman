@@ -72,6 +72,7 @@
       "payments": "Pagos",
       "extensions": "Extensiones",
       "documents": "Documentos",
+      "leaseAgreement": "Contrato de Arrendamiento",
       "history": "Cronología"
     },
     "deleteTitle": "Eliminar Contrato",
@@ -1082,5 +1083,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Finaliza en {{days}} días"
+  "expiringSoon": "Finaliza en {{days}} días",
+  "leaseAgreement": {
+    "title": "Contrato de Arrendamiento",
+    "description": "Elige qué cláusulas incluir y luego genera el PDF del contrato de arrendamiento para este contrato.",
+    "loadError": "No se pudieron cargar las cláusulas del contrato",
+    "empty": "Todavía no hay cláusulas configuradas para el país de este contrato.",
+    "required": "Obligatoria",
+    "saveSelection": "Guardar selección",
+    "generate": "Generar contrato de arrendamiento"
+  }
 }

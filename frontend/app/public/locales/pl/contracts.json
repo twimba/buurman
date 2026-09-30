@@ -73,6 +73,7 @@
       "payments": "Płatności",
       "extensions": "Przedłużenia",
       "documents": "Dokumenty",
+      "leaseAgreement": "Umowa Najmu",
       "history": "Oś czasu"
     },
     "deleteTitle": "Usuń umowę",
@@ -1096,5 +1097,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Kończy się za {{days}} dni"
+  "expiringSoon": "Kończy się za {{days}} dni",
+  "leaseAgreement": {
+    "title": "Umowa Najmu",
+    "description": "Wybierz, które klauzule mają zostać uwzględnione, a następnie wygeneruj plik PDF umowy najmu dla tej umowy.",
+    "loadError": "Nie udało się wczytać klauzul umowy najmu",
+    "empty": "Dla kraju tej umowy nie skonfigurowano jeszcze żadnych klauzul.",
+    "required": "Wymagana",
+    "saveSelection": "Zapisz wybór",
+    "generate": "Wygeneruj umowę najmu"
+  }
 }

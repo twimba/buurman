@@ -72,6 +72,7 @@
       "payments": "Paiements",
       "extensions": "Prolongations",
       "documents": "Documents",
+      "leaseAgreement": "Bail",
       "history": "Chronologie"
     },
     "deleteTitle": "Supprimer le contrat",
@@ -1082,5 +1083,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Se termine dans {{days}} jours"
+  "expiringSoon": "Se termine dans {{days}} jours",
+  "leaseAgreement": {
+    "title": "Contrat de Bail",
+    "description": "Choisissez les clauses à inclure, puis générez le PDF du bail pour ce contrat.",
+    "loadError": "Impossible de charger les clauses du bail",
+    "empty": "Aucune clause n'est encore configurée pour le pays de ce contrat.",
+    "required": "Obligatoire",
+    "saveSelection": "Enregistrer la sélection",
+    "generate": "Générer le bail"
+  }
 }

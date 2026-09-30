@@ -109,6 +109,8 @@ export const queryKeys = {
       givenBy?: string,
       noticeDate?: string
     ) => k('contractTerminationPreview', contractId, givenBy, noticeDate),
+    leaseClauses: (contractId?: string) =>
+      k('contractLeaseClauses', contractId),
   },
 
   // --- Signature Requests ---

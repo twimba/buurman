@@ -72,6 +72,7 @@
       "payments": "Pagamenti",
       "extensions": "Proroghe",
       "documents": "Documenti",
+      "leaseAgreement": "Contratto di Locazione",
       "history": "Sequenza cronologica"
     },
     "deleteTitle": "Elimina contratto",
@@ -1082,5 +1083,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Termina in {{days}} giorni"
+  "expiringSoon": "Termina in {{days}} giorni",
+  "leaseAgreement": {
+    "title": "Contratto di Locazione",
+    "description": "Scegli quali clausole includere, quindi genera il PDF del contratto di locazione per questo contratto.",
+    "loadError": "Impossibile caricare le clausole del contratto",
+    "empty": "Non sono ancora state configurate clausole per il paese di questo contratto.",
+    "required": "Obbligatoria",
+    "saveSelection": "Salva selezione",
+    "generate": "Genera contratto di locazione"
+  }
 }

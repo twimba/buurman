@@ -71,6 +71,7 @@
       "payments": "Betalningar",
       "extensions": "Forlangningar",
       "documents": "Dokument",
+      "leaseAgreement": "Hyresavtal",
       "history": "Tidslinje"
     },
     "deleteTitle": "Ta bort kontrakt",
@@ -1068,5 +1069,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Löper ut om {{days}} dagar"
+  "expiringSoon": "Löper ut om {{days}} dagar",
+  "leaseAgreement": {
+    "title": "Hyresavtal",
+    "description": "Välj vilka klausuler som ska ingå och generera sedan hyresavtalets PDF för detta kontrakt.",
+    "loadError": "Det gick inte att läsa in hyresklausuler",
+    "empty": "Inga klausuler har konfigurerats för detta kontrakts land ännu.",
+    "required": "Obligatorisk",
+    "saveSelection": "Spara urval",
+    "generate": "Generera hyresavtal"
+  }
 }

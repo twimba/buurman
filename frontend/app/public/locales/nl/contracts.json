@@ -71,6 +71,7 @@
       "payments": "Betalingen",
       "extensions": "Verlengingen",
       "documents": "Documenten",
+      "leaseAgreement": "Huurovereenkomst",
       "history": "Tijdlijn"
     },
     "deleteTitle": "Contract verwijderen",
@@ -1068,5 +1069,14 @@
       "cancelled": "Betalingsregeling geannuleerd"
     }
   },
-  "expiringSoon": "Verloopt over {{days}} dagen"
+  "expiringSoon": "Verloopt over {{days}} dagen",
+  "leaseAgreement": {
+    "title": "Huurovereenkomst",
+    "description": "Kies welke clausules moeten worden opgenomen en genereer vervolgens de huurovereenkomst-PDF voor dit contract.",
+    "loadError": "Kan huurclausules niet laden",
+    "empty": "Er zijn nog geen clausules geconfigureerd voor het land van dit contract.",
+    "required": "Verplicht",
+    "saveSelection": "Selectie opslaan",
+    "generate": "Huurovereenkomst genereren"
+  }
 }

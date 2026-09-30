@@ -71,6 +71,7 @@
       "payments": "Payments",
       "extensions": "Extensions",
       "documents": "Documents",
+      "leaseAgreement": "Lease Agreement",
       "history": "Timeline"
     },
     "deleteTitle": "Delete Contract",
@@ -1068,5 +1069,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Ending in {{days}} days"
+  "expiringSoon": "Ending in {{days}} days",
+  "leaseAgreement": {
+    "title": "Lease Agreement",
+    "description": "Choose which clauses to include, then generate the lease agreement PDF for this contract.",
+    "loadError": "Failed to load lease clauses",
+    "empty": "No clauses are configured for this contract's country yet.",
+    "required": "Required",
+    "saveSelection": "Save selection",
+    "generate": "Generate lease agreement"
+  }
 }

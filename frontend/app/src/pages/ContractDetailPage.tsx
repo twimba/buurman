@@ -28,6 +28,7 @@ import { ContractOverviewTab } from '@/components/contracts/ContractOverviewTab'
 import { ContractPaymentsTab } from '@/components/contracts/ContractPaymentsTab';
 import { ContractExtensionsTab } from '@/components/contracts/ContractExtensionsTab';
 import { ContractDocumentsTab } from '@/components/contracts/ContractDocumentsTab';
+import { ContractLeaseAgreementTab } from '@/components/contracts/ContractLeaseAgreementTab';
 import { ContractTimeline } from '@/components/contracts/ContractTimeline';
 import { useContractTimeline } from '@/hooks/useContractTimeline';
 import { useTeam } from '@/context/TeamContext';
@@ -43,6 +44,7 @@ import {
   Copy,
   Repeat,
   FileWarning,
+  FileSignature,
 } from 'lucide-react';
 import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 
@@ -66,6 +68,7 @@ export const ContractDetailPage = () => {
     'payments',
     'extensions',
     'documents',
+    'leaseAgreement',
     'history',
   ] as const);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -342,6 +345,17 @@ export const ContractDetailPage = () => {
               {t('detail.tabs.documents')}
             </button>
             <button
+              onClick={() => setActiveTab('leaseAgreement')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'leaseAgreement'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <FileSignature className="h-4 w-4" />
+              {t('detail.tabs.leaseAgreement')}
+            </button>
+            <button
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'history'
@@ -396,6 +410,10 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'documents' && <ContractDocumentsTab contractId={id} />}
+
+        {activeTab === 'leaseAgreement' && (
+          <ContractLeaseAgreementTab contractId={id} />
+        )}
 
         {activeTab === 'history' && (
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">

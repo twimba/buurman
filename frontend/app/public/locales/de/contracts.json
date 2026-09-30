@@ -71,6 +71,7 @@
       "payments": "Zahlungen",
       "extensions": "Verlängerungen",
       "documents": "Dokumente",
+      "leaseAgreement": "Mietvertrag",
       "history": "Zeitstrahl"
     },
     "deleteTitle": "Vertrag löschen",
@@ -1068,5 +1069,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Endet in {{days}} Tagen"
+  "expiringSoon": "Endet in {{days}} Tagen",
+  "leaseAgreement": {
+    "title": "Mietvertrag",
+    "description": "Wählen Sie die einzuschließenden Klauseln aus und erstellen Sie anschließend das Mietvertrags-PDF für diesen Vertrag.",
+    "loadError": "Mietklauseln konnten nicht geladen werden",
+    "empty": "Für das Land dieses Vertrags sind noch keine Klauseln konfiguriert.",
+    "required": "Erforderlich",
+    "saveSelection": "Auswahl speichern",
+    "generate": "Mietvertrag erstellen"
+  }
 }

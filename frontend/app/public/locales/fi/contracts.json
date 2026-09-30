@@ -71,6 +71,7 @@
       "payments": "Maksut",
       "extensions": "Jatkot",
       "documents": "Asiakirjat",
+      "leaseAgreement": "Vuokrasopimus",
       "history": "Aikajana"
     },
     "deleteTitle": "Poista sopimus",
@@ -1068,5 +1069,14 @@
       "cancelled": "Payment plan cancelled"
     }
   },
-  "expiringSoon": "Päättyy {{days}} päivän kuluttua"
+  "expiringSoon": "Päättyy {{days}} päivän kuluttua",
+  "leaseAgreement": {
+    "title": "Vuokrasopimus",
+    "description": "Valitse mukaan otettavat lausekkeet ja luo tämän sopimuksen vuokrasopimus-PDF.",
+    "loadError": "Vuokralausekkeiden lataaminen epäonnistui",
+    "empty": "Tämän sopimuksen maalle ei ole vielä määritetty lausekkeita.",
+    "required": "Pakollinen",
+    "saveSelection": "Tallenna valinta",
+    "generate": "Luo vuokrasopimus"
+  }
 }
