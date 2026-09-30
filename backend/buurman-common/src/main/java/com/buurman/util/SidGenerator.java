@@ -26,6 +26,7 @@ import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
 import com.buurman.domain.identifier.GeneratedReportIdentifier;
 import com.buurman.domain.identifier.ImpersonationSessionIdentifier;
+import com.buurman.domain.identifier.LeaseClauseTemplateIdentifier;
 import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
@@ -285,5 +286,9 @@ public class SidGenerator {
 
   public static ContractTerminationIdentifier newContractTerminationId() {
     return ContractTerminationIdentifier.of(generateRaw(EntityPrefix.CTM));
+  }
+
+  public static LeaseClauseTemplateIdentifier newLeaseClauseTemplateId() {
+    return LeaseClauseTemplateIdentifier.of(generateRaw(EntityPrefix.LCT));
   }
 }

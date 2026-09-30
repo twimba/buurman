@@ -58,7 +58,8 @@ public enum EntityPrefix {
   SGR("SGR", "Signature Requests"),
   SGS("SGS", "Signature Signers"),
   SCF("SCF", "Saved Contract Filters"),
-  CTM("CTM", "Contract Terminations");
+  CTM("CTM", "Contract Terminations"),
+  LCT("LCT", "Lease Clause Templates");
 
   private final String code;
   private final String entityName;
