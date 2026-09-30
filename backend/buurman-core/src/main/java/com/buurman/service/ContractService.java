@@ -3,6 +3,7 @@ package com.buurman.service;
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Contract.ContractStatus.DRAFT;
 import static com.buurman.domain.Contract.ContractStatus.EXPIRED;
+import static com.buurman.domain.Contract.ContractStatus.NOTICE_GIVEN;
 import static com.buurman.domain.Contract.ContractStatus.PENDING_SIGNATURE;
 import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
 import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
@@ -1065,7 +1066,8 @@ public class ContractService {
         switch (from) {
           case DRAFT -> to == PENDING_SIGNATURE || to == ACTIVE;
           case PENDING_SIGNATURE -> to == DRAFT || to == ACTIVE;
-          case ACTIVE -> to == TERMINATED || to == EXPIRED;
+          case ACTIVE -> to == TERMINATED || to == EXPIRED || to == NOTICE_GIVEN;
+          case NOTICE_GIVEN -> to == TERMINATED;
           case EXPIRED, TERMINATED -> false;
         };
 

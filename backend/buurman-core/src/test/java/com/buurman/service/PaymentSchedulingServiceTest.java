@@ -3,6 +3,7 @@ package com.buurman.service;
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Contract.ContractStatus.DRAFT;
 import static com.buurman.domain.Contract.ContractStatus.EXPIRED;
+import static com.buurman.domain.Contract.ContractStatus.NOTICE_GIVEN;
 import static com.buurman.domain.Contract.PaymentFrequency.ANNUALLY;
 import static com.buurman.domain.Contract.PaymentFrequency.MONTHLY;
 import static com.buurman.domain.Contract.PaymentFrequency.QUARTERLY;
@@ -357,6 +358,15 @@ class PaymentSchedulingServiceTest {
       verify(paymentRepository).findFuturePendingByContractId(CONTRACT_ID, TEAM_ID);
       verify(paymentRepository).softDeleteByIdAndTeamId(futurePayment1.getId(), TEAM_ID);
       verify(paymentRepository).softDeleteByIdAndTeamId(futurePayment2.getId(), TEAM_ID);
+    }
+
+    @Test
+    @DisplayName("NOTICE_GIVEN does not cancel future payments")
+    void noticeGivenDoesNotCancelPayments() {
+      service.handleContractStatusChange(CONTRACT_ID, NOTICE_GIVEN, TEAM_ID, USER_ID);
+
+      verify(paymentRepository, never()).findFuturePendingByContractId(any(), any());
+      verify(paymentRepository, never()).softDeleteByIdAndTeamId(any(), any());
     }
   }
 }

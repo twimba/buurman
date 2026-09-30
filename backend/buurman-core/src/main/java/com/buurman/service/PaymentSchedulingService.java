@@ -361,6 +361,11 @@ public class PaymentSchedulingService {
       }
       case PENDING_SIGNATURE ->
           log.debug("Contract {} moved to PENDING_SIGNATURE, no payment action needed", contractId);
+      case NOTICE_GIVEN ->
+          log.debug(
+              "Contract {} moved to NOTICE_GIVEN, no payment action needed (payments already stop"
+                  + " based on effective end date, not status)",
+              contractId);
     }
   }
 }

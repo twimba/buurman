@@ -138,6 +138,30 @@ class ContractServiceTest {
   }
 
   @Nested
+  @DisplayName("NOTICE_GIVEN transitions")
+  class NoticeGivenTransitions {
+
+    @Test
+    @DisplayName(
+        "ACTIVE contract can transition to NOTICE_GIVEN, and NOTICE_GIVEN can transition to"
+            + " TERMINATED")
+    void activeToNoticeGivenToTerminatedIsValid() {
+      assertThatCode(() -> invokeValidation(ContractStatus.ACTIVE, ContractStatus.NOTICE_GIVEN))
+          .doesNotThrowAnyException();
+      assertThatCode(() -> invokeValidation(ContractStatus.NOTICE_GIVEN, ContractStatus.TERMINATED))
+          .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("NOTICE_GIVEN cannot transition back to ACTIVE (no withdrawal in this feature)")
+    void noticeGivenCannotRevertToActive() {
+      assertThatThrownBy(() -> invokeValidation(ContractStatus.NOTICE_GIVEN, ContractStatus.ACTIVE))
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("Invalid status transition");
+    }
+  }
+
+  @Nested
   @DisplayName("terminal states")
   class TerminalStates {
 
