@@ -22,9 +22,9 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 /**
  * i18n gate for the landlord-initiated letters (rent-increase, extension addendum, rent-change):
- * renders each in every supported document language and asserts no raw message key leaks into
- * the output. Also proves the per-country-addenda feature's two named cases (DE's two-section
- * §558 clause, NL's one-section legal-basis clause) render with the right structure and order.
+ * renders each in every supported document language and asserts no raw message key leaks into the
+ * output. Also proves the per-country-addenda feature's two named cases (DE's two-section §558
+ * clause, NL's one-section legal-basis clause) render with the right structure and order.
  */
 @DisplayName("landlord letter multi-locale render gate")
 class LandlordLetterLocaleRenderTest {
@@ -60,7 +60,8 @@ class LandlordLetterLocaleRenderTest {
 
   static Stream<Arguments> templatesAndLocales() {
     List<String> templates =
-        List.of("rent-increase-letter/generic", "extension-addendum/generic", "rent-change/generic");
+        List.of(
+            "rent-increase-letter/generic", "extension-addendum/generic", "rent-change/generic");
     return templates.stream().flatMap(t -> LOCALES.stream().map(l -> Arguments.of(t, l)));
   }
 
@@ -72,7 +73,9 @@ class LandlordLetterLocaleRenderTest {
     ctx.setVariables(allVars(List.of()));
     String html = engine.process(template, ctx);
 
-    assertThat(html).as("%s [%s] must not leak raw i18n keys", template, locale).doesNotContain("letter.");
+    assertThat(html)
+        .as("%s [%s] must not leak raw i18n keys", template, locale)
+        .doesNotContain("letter.");
   }
 
   @Test
@@ -92,7 +95,9 @@ class LandlordLetterLocaleRenderTest {
   }
 
   @Test
-  @DisplayName("a single title-less clause (the legacy fallback shape) renders the body with no empty heading")
+  @DisplayName(
+      "a single title-less clause (the legacy fallback shape) renders the body with no empty"
+          + " heading")
   void singleTitlelessClauseRendersBodyOnly() {
     List<Map<String, String>> clauses = List.of(Map.of("body", "Legacy clause text"));
     Context ctx = new Context(Locale.ENGLISH);
