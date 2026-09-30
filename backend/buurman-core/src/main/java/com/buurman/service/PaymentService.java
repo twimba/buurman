@@ -1,6 +1,5 @@
 package com.buurman.service;
 
-import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.NotificationType.PAYMENT_PAID;
 import static com.buurman.domain.NotificationType.PAYMENT_RECEIVAL;
 import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
@@ -140,6 +139,7 @@ public class PaymentService {
   private final Clock clock;
   private final PlatformTransactionManager transactionManager;
   private final Validator validator;
+  private final PaymentSchedulingService paymentSchedulingService;
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
@@ -186,7 +186,7 @@ public class PaymentService {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(request.contractIdentifier(), teamId);
 
-    if (contract.getStatus() != ACTIVE) {
+    if (!contract.getStatus().isInForce()) {
       throw new BusinessRuleException(
           "Payments can only be created for active contracts. Current status: "
               + contract.getStatus());
@@ -385,7 +385,7 @@ public class PaymentService {
 
     // Validate contract is still active
     Contract contract = contractRepository.getByIdAndTeamId(payment.getContractId(), teamId);
-    if (contract.getStatus() != ACTIVE) {
+    if (!contract.getStatus().isInForce()) {
       throw new BusinessRuleException(
           "Payments can only be edited for active contracts. Current status: "
               + contract.getStatus());
@@ -1170,7 +1170,9 @@ public class PaymentService {
     UUID teamId = principal.requireTeamId();
     YearMonth month = YearMonth.parse(request.forMonth());
 
-    List<Contract> activeContracts = contractRepository.findByStatus(ACTIVE, teamId);
+    // In force = ACTIVE or NOTICE_GIVEN: a tenant under notice still owes rent until the
+    // effective end date, past which no payment is generated (see the billingEndDate check below).
+    List<Contract> activeContracts = contractRepository.findInForceByTeamId(teamId);
 
     if (activeContracts.isEmpty()) {
       log.warn("No active contracts found for team {} to generate payments", teamId);
@@ -1181,6 +1183,17 @@ public class PaymentService {
 
     for (Contract contract : activeContracts) {
       LocalDate dueDate = calculateDueDate(month, contract);
+
+      Optional<LocalDate> billingEndDate =
+          paymentSchedulingService.billingEndDate(contract, teamId);
+      if (billingEndDate.isPresent() && dueDate.isAfter(billingEndDate.get())) {
+        log.debug(
+            "Due date {} is after contract {}'s end date {}, skipping",
+            dueDate,
+            contract.getIdentifier().orElseThrow(),
+            billingEndDate.get());
+        continue;
+      }
 
       List<Payment> existingPayments = paymentRepository.findByContractId(contract.getId(), teamId);
       boolean paymentExists =

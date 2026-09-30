@@ -3,6 +3,7 @@ package com.buurman.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Contract;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Payment.PaymentStatus;
 import com.buurman.domain.PaymentReceival;
@@ -87,6 +89,7 @@ class PaymentServiceTest {
   @Mock private AppProperties appProperties;
   @Mock private PlatformTransactionManager transactionManager;
   @Mock private Validator validator;
+  @Mock private PaymentSchedulingService paymentSchedulingService;
 
   private final Clock clock = Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
 
@@ -127,7 +130,8 @@ class PaymentServiceTest {
             appProperties,
             clock,
             transactionManager,
-            validator);
+            validator,
+            paymentSchedulingService);
 
     principal =
         new UserPrincipal(
@@ -710,6 +714,39 @@ class PaymentServiceTest {
                       principal))
           .isInstanceOf(com.buurman.exception.BusinessRuleException.class)
           .hasMessageContaining("delete it and register");
+    }
+  }
+
+  @Nested
+  @DisplayName("bulkGeneratePayments")
+  class BulkGeneratePayments {
+
+    @Test
+    @DisplayName(
+        "draws on in-force (ACTIVE + NOTICE_GIVEN) contracts and skips a month past the contract's"
+            + " billing end date")
+    void usesInForceContractsAndStopsAtBillingEndDate() {
+      Contract underNotice =
+          Contract.builder()
+              .id(UUID.randomUUID())
+              .identifier(Optional.of(Sid.of("con_01JTEST000000000000000001")))
+              .teamId(TEAM_ID)
+              .status(Contract.ContractStatus.NOTICE_GIVEN)
+              .rentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
+              .paymentDueDay(Optional.of(1))
+              .build();
+      when(contractRepository.findInForceByTeamId(TEAM_ID)).thenReturn(List.of(underNotice));
+      // Notice ends the tenancy on 2026-04-15, so May's rent must not be generated.
+      when(paymentSchedulingService.billingEndDate(underNotice, TEAM_ID))
+          .thenReturn(Optional.of(LocalDate.of(2026, 4, 15)));
+
+      List<com.buurman.dto.response.PaymentResponse> result =
+          service.bulkGeneratePayments(
+              new com.buurman.dto.request.BulkGeneratePaymentsRequest("2026-05"), principal);
+
+      assertThat(result).isEmpty();
+      verify(paymentRepository, never()).save(any());
+      verify(contractRepository, never()).findByStatus(any(), any());
     }
   }
 }

@@ -299,10 +299,12 @@ public class ContractService {
   }
 
   /**
-   * Guards against two ACTIVE contracts on the same unit. Scoped by <em>unit</em>, not property —
-   * BUUR-106 made it valid for two different units of the same property to each have their own
-   * active contract, so this must never widen back out to property scope (that was Critical 1 of
-   * the final review: the old property-scoped guard made a second unit of an already-let building
+   * Guards against two in-force contracts ({@code ACTIVE} or {@code NOTICE_GIVEN}, via {@link
+   * ContractRepository#findActiveByUnitId}) on the same unit: a tenant under notice still occupies
+   * it until the termination's effective end date. Scoped by <em>unit</em>, not property — BUUR-106
+   * made it valid for two different units of the same property to each have their own active
+   * contract, so this must never widen back out to property scope (that was Critical 1 of the final
+   * review: the old property-scoped guard made a second unit of an already-let building
    * un-lettable, and its {@code fetchOptional()} would 500 once two units really could both be
    * active). {@code excludeContractId} lets {@link #changeContractStatus} re-activate a contract
    * that is itself the one found "active" (e.g. a no-op transition) without rejecting itself;
@@ -383,10 +385,16 @@ public class ContractService {
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    // Prevent updates to ACTIVE, TERMINATED, or EXPIRED contracts (except via status change)
+    // Prevent updates to ACTIVE, NOTICE_GIVEN, TERMINATED, or EXPIRED contracts (except via status
+    // change). NOTICE_GIVEN is locked like ACTIVE: its termination record and notice letter were
+    // computed from the contract's current terms.
     if (contract.getStatus() == ACTIVE) {
       throw new IllegalArgumentException(
           "Cannot update ACTIVE contracts. Please change status first.");
+    }
+    if (contract.getStatus() == NOTICE_GIVEN) {
+      throw new IllegalArgumentException(
+          "Cannot update NOTICE_GIVEN contracts. Notice has already been given on this contract.");
     }
     if (contract.getStatus() == TERMINATED) {
       throw new IllegalArgumentException("Cannot update TERMINATED contracts.");
@@ -631,6 +639,12 @@ public class ContractService {
       throw new IllegalArgumentException(
           "Cannot delete ACTIVE contracts. Please terminate the contract first.");
     }
+    // A contract under notice has a contract_terminations row the daily sweep will still process;
+    // deleting the contract would orphan it.
+    if (contract.getStatus() == NOTICE_GIVEN) {
+      throw new IllegalArgumentException(
+          "Cannot delete NOTICE_GIVEN contracts. Notice has already been given on this contract.");
+    }
 
     contractPartyService.softDeletePartiesForContract(contract.getId(), teamId);
     rentComponentRepository.softDeleteByContractIdAndTeamId(contract.getId(), teamId);
@@ -646,6 +660,14 @@ public class ContractService {
   public ContractResponse changeContractStatus(
       ContractIdentifier identifier, ChangeContractStatusRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
+
+    // Giving notice is not a bare status flip: it needs a termination record (notice period,
+    // grounds, effective end date), a notice letter and a deposit deadline, all created by
+    // ContractTerminationService.terminate(), which calls transitionStatus directly.
+    if (request.status() == NOTICE_GIVEN) {
+      throw new BadRequestException(
+          "Use POST /contracts/{identifier}/terminate to give notice on a contract");
+    }
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -666,7 +688,9 @@ public class ContractService {
    *
    * <p>Package-private and unguarded: this method performs no authorization check of its own.
    * Callers outside this package must go through the role-gated {@link #changeContractStatus}
-   * instead of calling this directly.
+   * instead of calling this directly. The one exception to that is {@code NOTICE_GIVEN}, which
+   * {@link #changeContractStatus} refuses: {@code ContractTerminationService.terminate()} (itself
+   * role-gated) is the only path to it and calls this method directly.
    */
   Contract transitionStatus(
       Contract contract,
@@ -1466,10 +1490,12 @@ public class ContractService {
    *
    * <ul>
    *   <li>{@code newStatus == ACTIVE && oldStatus != ACTIVE}: the unit becomes {@code OCCUPIED}.
-   *   <li>{@code oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)}: the
-   *       unit becomes {@code VACANT}, but ONLY when no OTHER active contract still references it.
-   *       A unit can carry two overlapping tenancies (e.g. mid-transition between tenants), and
-   *       must stay {@code OCCUPIED} while any of them is still {@code ACTIVE}.
+   *   <li>{@code oldStatus} in force ({@code ACTIVE} or {@code NOTICE_GIVEN}) {@code && (newStatus
+   *       == EXPIRED || newStatus == TERMINATED)}: the unit becomes {@code VACANT}, but ONLY when
+   *       no OTHER in-force contract still references it. The termination sweep moves a contract
+   *       {@code NOTICE_GIVEN -> TERMINATED}, so {@code NOTICE_GIVEN} must count here. A unit can
+   *       carry two overlapping tenancies (legacy data predating the V072 index), and must stay
+   *       {@code OCCUPIED} while any of them is still in force.
    * </ul>
    *
    * <p>By the time this runs, the caller has already persisted {@code newStatus} on {@code
@@ -1491,7 +1517,7 @@ public class ContractService {
       setUnitStatus(unitId, teamId, UnitStatus.OCCUPIED, actingUserId);
       return;
     }
-    if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
+    if (oldStatus.isInForce() && (newStatus == EXPIRED || newStatus == TERMINATED)) {
       if (contractRepository.countActiveByUnitId(unitId, teamId) == 0) {
         setUnitStatus(unitId, teamId, UnitStatus.VACANT, actingUserId);
       }

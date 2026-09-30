@@ -8,6 +8,7 @@ import static com.buurman.domain.Contract.PaymentFrequency.ANNUALLY;
 import static com.buurman.domain.Contract.PaymentFrequency.MONTHLY;
 import static com.buurman.domain.Contract.PaymentFrequency.QUARTERLY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -34,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Sid;
 import com.buurman.domain.TeamPreferences;
@@ -41,6 +43,7 @@ import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.TeamPreferencesRepository;
@@ -60,6 +63,7 @@ class PaymentSchedulingServiceTest {
   @Mock private TeamRepository teamRepository;
   @Mock private TeamPreferencesRepository teamPreferencesRepository;
   @Mock private AuditService auditService;
+  @Mock private ContractTerminationRepository terminationRepository;
 
   private PaymentSchedulingService service;
 
@@ -82,7 +86,8 @@ class PaymentSchedulingServiceTest {
             teamRepository,
             teamPreferencesRepository,
             auditService,
-            FIXED_CLOCK);
+            FIXED_CLOCK,
+            terminationRepository);
   }
 
   private Contract activeContract() {
@@ -289,6 +294,128 @@ class PaymentSchedulingServiceTest {
       int count = service.generateFuturePaymentsForContract(CONTRACT_ID, TEAM_ID, USER_ID);
 
       assertThat(count).isEqualTo(2);
+    }
+  }
+
+  private void stubPaymentSaves() {
+    when(paymentRepository.existsByContractIdAndDueDate(eq(CONTRACT_ID), any(LocalDate.class)))
+        .thenReturn(false);
+    when(paymentRepository.save(any(Payment.class)))
+        .thenAnswer(
+            inv -> {
+              Payment p = inv.getArgument(0);
+              p.setId(UUID.randomUUID());
+              return p;
+            });
+  }
+
+  private List<LocalDate> savedDueDates() {
+    ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
+    verify(paymentRepository, atLeastOnce()).save(captor.capture());
+    return captor.getAllValues().stream().map(Payment::getDueDate).toList();
+  }
+
+  /**
+   * A contract under notice is still in force: the tenant lives there and owes rent until the
+   * termination's effective end date. Generation must continue exactly as for ACTIVE, stopping only
+   * at that date.
+   */
+  @Nested
+  @DisplayName("NOTICE_GIVEN contracts keep generating rent")
+  class NoticeGivenGeneration {
+
+    private Contract noticeGivenContract() {
+      Contract contract = activeContract();
+      contract.setStatus(NOTICE_GIVEN);
+      return contract;
+    }
+
+    @Test
+    @DisplayName("scheduled generation creates future payments for a NOTICE_GIVEN contract")
+    void noticeGivenContractGetsFuturePayments() {
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(noticeGivenContract());
+      when(teamPreferencesRepository.getByTeamId(TEAM_ID)).thenReturn(defaultPrefs());
+      when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+      stubPaymentSaves();
+
+      int count = service.generateFuturePaymentsForContract(CONTRACT_ID, TEAM_ID, USER_ID);
+
+      assertThat(count).isEqualTo(3);
+      assertThat(savedDueDates())
+          .containsExactly(
+              LocalDate.of(2026, 4, 1), LocalDate.of(2026, 5, 1), LocalDate.of(2026, 6, 1));
+    }
+
+    @Test
+    @DisplayName("generation stops at the termination's effective end date, not the contract's")
+    void generationStopsAtTerminationEffectiveEndDate() {
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(noticeGivenContract());
+      when(teamPreferencesRepository.getByTeamId(TEAM_ID)).thenReturn(defaultPrefs());
+      when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+      // Contract itself runs to 2027-01-01, but notice ends the tenancy on 2026-05-15.
+      when(terminationRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(
+              Optional.of(
+                  ContractTermination.builder()
+                      .contractId(CONTRACT_ID)
+                      .effectiveEndDate(LocalDate.of(2026, 5, 15))
+                      .build()));
+      stubPaymentSaves();
+
+      int count = service.generateFuturePaymentsForContract(CONTRACT_ID, TEAM_ID, USER_ID);
+
+      assertThat(count).isEqualTo(2);
+      assertThat(savedDueDates())
+          .containsExactly(LocalDate.of(2026, 4, 1), LocalDate.of(2026, 5, 1));
+    }
+
+    @Test
+    @DisplayName("the hourly team sweep picks up NOTICE_GIVEN contracts via findInForceByTeamId")
+    void teamSweepIncludesNoticeGivenContracts() {
+      when(contractRepository.findInForceByTeamId(TEAM_ID))
+          .thenReturn(List.of(noticeGivenContract()));
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(noticeGivenContract());
+      when(teamPreferencesRepository.getByTeamId(TEAM_ID)).thenReturn(defaultPrefs());
+      when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+      stubPaymentSaves();
+
+      int count = service.generateFuturePaymentsForTeam(TEAM_ID, USER_ID);
+
+      assertThat(count).isEqualTo(3);
+      verify(contractRepository, never()).findActiveByTeamId(any());
+    }
+
+    @Test
+    @DisplayName("manual generation is allowed for a NOTICE_GIVEN contract")
+    void manualGenerationAllowedForNoticeGiven() {
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(noticeGivenContract());
+      when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+      stubPaymentSaves();
+
+      int count = service.generatePaymentsManually(CONTRACT_ID, TEAM_ID, USER_ID, 2, false, null);
+
+      assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("manual generation is still refused for a contract that is not in force")
+    void manualGenerationRefusedForTerminated() {
+      Contract terminated = activeContract();
+      terminated.setStatus(Contract.ContractStatus.TERMINATED);
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(terminated);
+
+      assertThatThrownBy(
+              () -> service.generatePaymentsManually(CONTRACT_ID, TEAM_ID, USER_ID, 2, false, null))
+          .isInstanceOf(com.buurman.exception.BusinessRuleException.class);
+      verify(paymentRepository, never()).save(any());
     }
   }
 

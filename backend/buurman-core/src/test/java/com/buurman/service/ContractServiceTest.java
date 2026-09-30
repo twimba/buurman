@@ -540,6 +540,80 @@ class ContractServiceTest {
 
         verify(contractRepository, never()).save(any());
       }
+
+      @Test
+      @DisplayName(
+          "refuses NOTICE_GIVEN as a target: giving notice must go through"
+              + " ContractTerminationService.terminate(), never a bare status flip")
+      void rejectsNoticeGivenAsTargetStatus() {
+        ContractIdentifier identifier = (ContractIdentifier) SidGenerator.newContractId();
+        ChangeContractStatusRequest request =
+            new ChangeContractStatusRequest(ContractStatus.NOTICE_GIVEN, Optional.empty());
+
+        assertThatThrownBy(
+                () ->
+                    contractServiceInstance.changeContractStatus(identifier, request, principal()))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessageContaining("/terminate");
+
+        verify(contractRepository, never()).save(any());
+      }
+    }
+
+    /**
+     * Once notice is given, the contract's terms back a termination record and notice letter, and
+     * the daily sweep will still process its {@code contract_terminations} row — so the generic
+     * edit/delete endpoints must refuse it exactly as they refuse an ACTIVE contract.
+     */
+    @Nested
+    @DisplayName("updateContract / deleteContract lock")
+    class EditDeleteLock {
+
+      private ContractIdentifier stubContractWithStatus(ContractStatus status) {
+        Contract contract =
+            Contract.builder()
+                .id(UUID.randomUUID())
+                .identifier(Optional.of(SidGenerator.newContractId()))
+                .teamId(TEAM_ID)
+                .unitId(UNIT_ID)
+                .status(status)
+                .build();
+        ContractIdentifier identifier = (ContractIdentifier) contract.getIdentifier().orElseThrow();
+        when(contractRepository.getByIdentifierAndTeamId(identifier, TEAM_ID)).thenReturn(contract);
+        return identifier;
+      }
+
+      @ParameterizedTest(name = "{0}")
+      @CsvSource({"ACTIVE", "NOTICE_GIVEN"})
+      @DisplayName("updateContract rejects an in-force contract and never saves")
+      @SuppressWarnings("NullAway") // the status lock fires before the request is read
+      void updateRejectsInForceContract(ContractStatus status) {
+        ContractIdentifier identifier = stubContractWithStatus(status);
+
+        assertThatThrownBy(
+                () -> contractServiceInstance.updateContract(identifier, null, principal()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage(
+                status == ContractStatus.ACTIVE
+                    ? "Cannot update ACTIVE contracts. Please change status first."
+                    : "Cannot update NOTICE_GIVEN contracts. Notice has already been given on"
+                        + " this contract.");
+
+        verify(contractRepository, never()).save(any());
+      }
+
+      @ParameterizedTest(name = "{0}")
+      @CsvSource({"ACTIVE", "NOTICE_GIVEN"})
+      @DisplayName("deleteContract rejects an in-force contract and never soft-deletes it")
+      void deleteRejectsInForceContract(ContractStatus status) {
+        ContractIdentifier identifier = stubContractWithStatus(status);
+
+        assertThatThrownBy(() -> contractServiceInstance.deleteContract(identifier, principal()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageStartingWith("Cannot delete " + status.name() + " contracts.");
+
+        verify(contractRepository, never()).softDeleteByIdAndTeamId(any(), any());
+      }
     }
   }
 
@@ -652,6 +726,30 @@ class ContractServiceTest {
 
       verify(unitRepository, never()).save(any(Unit.class));
       verify(unitRepository, never()).getByIdAndTeamId(any(), any());
+    }
+
+    @Test
+    @DisplayName(
+        "the termination sweep's NOTICE_GIVEN -> TERMINATED vacates the unit when no other"
+            + " in-force contract references it")
+    void terminatingNoticeGivenContractVacatesUnit() throws Throwable {
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(unit(UnitStatus.OCCUPIED));
+      when(contractRepository.countActiveByUnitId(UNIT_ID, TEAM_ID)).thenReturn(0);
+
+      invoke(ContractStatus.TERMINATED, ContractStatus.NOTICE_GIVEN);
+
+      ArgumentCaptor<Unit> captor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository).save(captor.capture());
+      assertThat(captor.getValue().getStatus()).isEqualTo(UnitStatus.VACANT);
+    }
+
+    @Test
+    @DisplayName("giving notice (ACTIVE -> NOTICE_GIVEN) leaves the unit occupied")
+    void givingNoticeLeavesUnitOccupied() throws Throwable {
+      invoke(ContractStatus.NOTICE_GIVEN, ContractStatus.ACTIVE);
+
+      verify(unitRepository, never()).save(any(Unit.class));
+      verify(contractRepository, never()).countActiveByUnitId(any(), any());
     }
 
     @Test

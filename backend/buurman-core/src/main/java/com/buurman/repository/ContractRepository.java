@@ -50,6 +50,10 @@ public class ContractRepository {
   private final CountryMetadataSerializer countryMetadataSerializer;
   private final Clock clock;
 
+  /** Status names of {@link Contract.ContractStatus#IN_FORCE}, for {@code STATUS.in(...)}. */
+  private static final List<String> IN_FORCE_STATUS_NAMES =
+      Contract.ContractStatus.IN_FORCE.stream().map(Enum::name).sorted().toList();
+
   // Fields for columns added in V012 (not yet in JOOQ generated code)
   private static final Field<String> COUNTRY_CODE =
       org.jooq.impl.DSL.field("country_code", String.class);
@@ -221,11 +225,14 @@ public class ContractRepository {
   }
 
   /**
-   * At most one row is expected ({@code uq_contracts_one_active_per_unit}, added in V072), but a
-   * legacy duplicate predating that constraint is still possible. {@code limit(1)} with a
-   * deterministic {@code orderBy} makes that degrade to "pick the oldest" instead of throwing
-   * {@link org.jooq.exception.TooManyRowsException} (which {@code fetchOptional()} does on >1 row
-   * and which was previously an unhandled 500).
+   * The contract currently in force on the unit — {@code ACTIVE} or {@code NOTICE_GIVEN} (a tenant
+   * under notice still occupies the unit until the effective end date). At most one row is expected
+   * ({@code uq_contracts_one_active_per_unit}, added in V072, plus the in-force guard in {@code
+   * ContractService} that refuses to activate a second contract), but a legacy duplicate predating
+   * that constraint is still possible. {@code limit(1)} with a deterministic {@code orderBy} makes
+   * that degrade to "pick the oldest" instead of throwing {@link
+   * org.jooq.exception.TooManyRowsException} (which {@code fetchOptional()} does on >1 row and
+   * which was previously an unhandled 500).
    */
   public Optional<Contract> findActiveByUnitId(UUID unitId, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
@@ -234,7 +241,7 @@ public class ContractRepository {
                 .UNIT_ID
                 .eq(unitId)
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
-                .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .orderBy(CONTRACTS.CREATED_AT.asc(), CONTRACTS.ID.asc())
         .limit(1)
@@ -538,6 +545,28 @@ public class ContractRepository {
         .toList();
   }
 
+  /**
+   * Contracts still in force ({@code ACTIVE} or {@code NOTICE_GIVEN}): the ones that must keep
+   * generating rent up to their effective end date. Unlike {@link #findActiveByTeamId}, a contract
+   * under notice is included.
+   */
+  public List<Contract> findInForceByTeamId(UUID teamId) {
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.START_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
   public List<ContractIncomeEntry> findActiveContractIncomeByTeamId(UUID teamId) {
     return dsl.select(
             CONTRACTS.RENT_AMOUNT, CONTRACTS.RENT_AMOUNT_CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
@@ -604,7 +633,10 @@ public class ContractRepository {
             .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull())));
   }
 
-  /** Active, as used throughout this codebase: {@code status = ACTIVE} and not soft-deleted. */
+  /**
+   * Contracts occupying the unit: in force ({@code ACTIVE} or {@code NOTICE_GIVEN}, see {@link
+   * Contract.ContractStatus#IN_FORCE}) and not soft-deleted.
+   */
   public int countActiveByUnitId(UUID unitId, UUID teamId) {
     return dsl.fetchCount(
         dsl.selectFrom(CONTRACTS)
@@ -613,14 +645,15 @@ public class ContractRepository {
                     .UNIT_ID
                     .eq(unitId)
                     .and(CONTRACTS.TEAM_ID.eq(teamId))
-                    .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                    .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
                     .and(CONTRACTS.DELETED_AT.isNull())));
   }
 
   /**
-   * Active contracts for the given units, paired with the rent charged and the primary tenant's
-   * display name (via {@code contract_parties}/{@code contacts}), for assembling the units grid
-   * view. {@code tenantName} is {@code null} when no primary-tenant party is recorded.
+   * In-force ({@code ACTIVE} or {@code NOTICE_GIVEN}) contracts for the given units, paired with
+   * the rent charged and the primary tenant's display name (via {@code contract_parties}/{@code
+   * contacts}), for assembling the units grid view. {@code tenantName} is {@code null} when no
+   * primary-tenant party is recorded.
    */
   public List<UnitActiveTenancy> findActiveTenanciesByUnitIds(
       Collection<UUID> unitIds, UUID teamId) {
@@ -653,7 +686,7 @@ public class ContractRepository {
                 .UNIT_ID
                 .in(unitIds)
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
-                .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         // Deterministic order so that, in the schema-permitted case of two active contracts (or
         // two PRIMARY_TENANT parties) on one unit, the caller's "keep the first" merge picks the

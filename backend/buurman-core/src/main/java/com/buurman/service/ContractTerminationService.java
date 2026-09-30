@@ -18,7 +18,6 @@ import com.buurman.domain.Document;
 import com.buurman.domain.Sid;
 import com.buurman.domain.TerminationGivenBy;
 import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.TerminateContractRequest;
 import com.buurman.dto.response.ContractTerminationResponse;
 import com.buurman.exception.BadRequestException;
@@ -73,7 +72,22 @@ public class ContractTerminationService {
     LocalDate computedEndDate = request.noticeDate().plusDays(computation.noticeDays());
     LocalDate effectiveEndDate = request.effectiveEndDate().orElse(computedEndDate);
 
-    if (effectiveEndDate.isBefore(computedEndDate) && request.overrideReason().isEmpty()) {
+    Optional<String> groundCode = request.groundCode().map(String::strip).filter(s -> !s.isEmpty());
+    if (computation.groundsRequired()) {
+      if (groundCode.isEmpty()) {
+        throw new BadRequestException("A groundCode is required to terminate this contract");
+      }
+      if (!computation.groundsCodes().isEmpty()
+          && !computation.groundsCodes().contains(groundCode.get())) {
+        throw new BadRequestException(
+            "groundCode must be one of " + String.join(", ", computation.groundsCodes()));
+      }
+    }
+
+    // A blank reason is no reason: Optional.of("   ") must not satisfy the override requirement.
+    boolean hasOverrideReason =
+        request.overrideReason().map(String::strip).filter(s -> !s.isEmpty()).isPresent();
+    if (effectiveEndDate.isBefore(computedEndDate) && !hasOverrideReason) {
       throw new BadRequestException(
           "An effective end date earlier than the computed date requires an overrideReason");
     }
@@ -85,7 +99,7 @@ public class ContractTerminationService {
                 .contractId(contract.getId())
                 .givenBy(request.givenBy())
                 .noticeDate(request.noticeDate())
-                .groundCode(request.groundCode())
+                .groundCode(groundCode)
                 .computedEndDate(computedEndDate)
                 .effectiveEndDate(effectiveEndDate)
                 .overrideReason(request.overrideReason())
@@ -95,10 +109,11 @@ public class ContractTerminationService {
                 .updatedBy(principal.getUserId())
                 .build());
 
-    contractService.changeContractStatus(
-        identifier,
-        new ChangeContractStatusRequest(Contract.ContractStatus.NOTICE_GIVEN, Optional.empty()),
-        principal);
+    // Directly via the package-private transitionStatus: changeContractStatus deliberately refuses
+    // NOTICE_GIVEN so the generic status endpoint cannot bypass this workflow. This method's own
+    // @PreAuthorize is the authorization gate.
+    contractService.transitionStatus(
+        contract, Contract.ContractStatus.NOTICE_GIVEN, principal.getUserId(), Optional.empty());
 
     Document savedLetter =
         generateAndFileNoticeLetter(contract, termination, identifier, teamId, principal);

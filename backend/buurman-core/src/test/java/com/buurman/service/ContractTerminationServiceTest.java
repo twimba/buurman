@@ -188,12 +188,121 @@ class ContractTerminationServiceTest {
 
     service.terminate(IDENTIFIER, request, principal);
 
+    // Goes straight to the package-private transitionStatus: the public changeContractStatus
+    // refuses NOTICE_GIVEN so the generic status endpoint cannot bypass this workflow.
     verify(contractService)
-        .changeContractStatus(
-            org.mockito.ArgumentMatchers.eq(IDENTIFIER),
-            org.mockito.ArgumentMatchers.argThat(
-                r -> r.status() == Contract.ContractStatus.NOTICE_GIVEN),
-            org.mockito.ArgumentMatchers.eq(principal));
+        .transitionStatus(
+            org.mockito.ArgumentMatchers.eq(contract),
+            org.mockito.ArgumentMatchers.eq(Contract.ContractStatus.NOTICE_GIVEN),
+            org.mockito.ArgumentMatchers.eq(USER_ID),
+            org.mockito.ArgumentMatchers.eq(Optional.empty()));
+    verify(contractService, org.mockito.Mockito.never()).changeContractStatus(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("a whitespace-only overrideReason is rejected the same as a missing one")
+  void blankOverrideReasonRejected() {
+    var request =
+        new TerminateContractRequest(
+            TerminationGivenBy.LANDLORD,
+            LocalDate.now(),
+            Optional.empty(),
+            Optional.of(LocalDate.now().plusDays(10)),
+            Optional.of("   "),
+            Optional.empty());
+
+    assertThatThrownBy(() -> service.terminate(IDENTIFIER, request, principal))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("overrideReason");
+    verifyNoInteractions(contractService);
+  }
+
+  @Test
+  @DisplayName("an earlier effective end date with a real overrideReason is accepted")
+  void overrideWithReasonAccepted() {
+    LocalDate earlier = LocalDate.now().plusDays(10);
+    var request =
+        new TerminateContractRequest(
+            TerminationGivenBy.LANDLORD,
+            LocalDate.now(),
+            Optional.empty(),
+            Optional.of(earlier),
+            Optional.of("Tenant agreed to leave early"),
+            Optional.empty());
+
+    var response = service.terminate(IDENTIFIER, request, principal);
+
+    assertThat(response.effectiveEndDate()).isEqualTo(earlier);
+  }
+
+  private void stubGroundsRequired(List<String> codes) {
+    when(ruleResolver.resolve(any(), any(), any()))
+        .thenReturn(
+            new TerminationRuleResolver.TerminationComputation(
+                90, true, codes, TerminationRuleResolver.Source.CATALOG_RULE));
+  }
+
+  private TerminateContractRequest requestWithGround(Optional<String> groundCode) {
+    return new TerminateContractRequest(
+        TerminationGivenBy.LANDLORD,
+        LocalDate.now(),
+        groundCode,
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty());
+  }
+
+  @Test
+  @DisplayName("when the rule requires grounds, a missing or blank groundCode is rejected")
+  void groundsRequiredButMissingRejected() {
+    stubGroundsRequired(List.of("NON_PAYMENT", "OWN_USE"));
+
+    assertThatThrownBy(
+            () -> service.terminate(IDENTIFIER, requestWithGround(Optional.empty()), principal))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("groundCode");
+    assertThatThrownBy(
+            () -> service.terminate(IDENTIFIER, requestWithGround(Optional.of("  ")), principal))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("groundCode");
+    verifyNoInteractions(contractService);
+    org.mockito.Mockito.verify(terminationRepository, org.mockito.Mockito.never()).save(any());
+  }
+
+  @Test
+  @DisplayName("when the rule requires grounds, a groundCode outside the allowed set is rejected")
+  void groundsRequiredWithUnknownCodeRejected() {
+    stubGroundsRequired(List.of("NON_PAYMENT", "OWN_USE"));
+
+    assertThatThrownBy(
+            () ->
+                service.terminate(
+                    IDENTIFIER, requestWithGround(Optional.of("I_FEEL_LIKE_IT")), principal))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("NON_PAYMENT");
+    verifyNoInteractions(contractService);
+  }
+
+  @Test
+  @DisplayName("when the rule requires grounds, an allowed groundCode is accepted and recorded")
+  void groundsRequiredWithAllowedCodeAccepted() {
+    stubGroundsRequired(List.of("NON_PAYMENT", "OWN_USE"));
+
+    var response =
+        service.terminate(IDENTIFIER, requestWithGround(Optional.of("OWN_USE")), principal);
+
+    assertThat(response.groundCode()).contains("OWN_USE");
+  }
+
+  @Test
+  @DisplayName("when grounds are required but the rule lists no codes, any non-blank code passes")
+  void groundsRequiredWithNoCatalogAcceptsAnyCode() {
+    stubGroundsRequired(List.of());
+
+    var response =
+        service.terminate(IDENTIFIER, requestWithGround(Optional.of("CUSTOM")), principal);
+
+    assertThat(response.groundCode()).contains("CUSTOM");
   }
 
   @Test

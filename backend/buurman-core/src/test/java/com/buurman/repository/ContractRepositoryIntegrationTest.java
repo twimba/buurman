@@ -150,6 +150,35 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   }
 
   @Test
+  @DisplayName(
+      "a NOTICE_GIVEN contract still occupies its unit: findActiveByUnitId finds it and"
+          + " countActiveByUnitId counts it, while a TERMINATED one is neither found nor counted")
+  void noticeGivenContractStillOccupiesItsUnit() {
+    Contract underNotice =
+        repository.save(contractBuilder().status(Contract.ContractStatus.NOTICE_GIVEN).build());
+
+    assertThat(repository.findActiveByUnitId(unitId, TEAM_A_ID))
+        .isPresent()
+        .get()
+        .extracting(Contract::getId)
+        .isEqualTo(underNotice.getId());
+    assertThat(repository.countActiveByUnitId(unitId, TEAM_A_ID)).isEqualTo(1);
+    assertThat(repository.findInForceByTeamId(TEAM_A_ID))
+        .extracting(Contract::getId)
+        .containsExactly(underNotice.getId());
+    // Team scoping still holds for the widened queries.
+    assertThat(repository.countActiveByUnitId(unitId, TEAM_B_ID)).isZero();
+    assertThat(repository.findInForceByTeamId(TEAM_B_ID)).isEmpty();
+
+    underNotice.setStatus(Contract.ContractStatus.TERMINATED);
+    repository.save(underNotice);
+
+    assertThat(repository.findActiveByUnitId(unitId, TEAM_A_ID)).isEmpty();
+    assertThat(repository.countActiveByUnitId(unitId, TEAM_A_ID)).isZero();
+    assertThat(repository.findInForceByTeamId(TEAM_A_ID)).isEmpty();
+  }
+
+  @Test
   @DisplayName("a team-B-scoped read cannot see team A's contract")
   void isolatesByTeam() {
     Contract saved = repository.save(contractBuilder().build());
