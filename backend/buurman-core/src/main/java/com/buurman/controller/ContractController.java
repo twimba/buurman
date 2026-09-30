@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.buurman.domain.TerminationGivenBy;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
@@ -26,22 +28,26 @@ import com.buurman.dto.request.ForfeitDepositRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.ReturnDepositRequest;
+import com.buurman.dto.request.TerminateContractRequest;
 import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.request.UpsertDepositRequest;
 import com.buurman.dto.response.ContractPartyResponse;
 import com.buurman.dto.response.ContractResponse;
+import com.buurman.dto.response.ContractTerminationResponse;
 import com.buurman.dto.response.CountryMetadataSchemaResponse;
 import com.buurman.dto.response.DepositResponse;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PaymentPlanResponse;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.dto.response.TerminationPreviewResponse;
 import com.buurman.dto.response.TimelineEventResponse;
 import com.buurman.generated.api.ContractsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.ContractService;
+import com.buurman.service.ContractTerminationService;
 import com.buurman.service.ContractTimelineService;
 import com.buurman.service.CountryMetadataSchemaService;
 import com.buurman.service.DepositService;
@@ -61,6 +67,7 @@ public class ContractController implements ContractsApi {
   private final DepositService depositService;
   private final PaymentPlanService paymentPlanService;
   private final ContractTimelineService contractTimelineService;
+  private final ContractTerminationService contractTerminationService;
 
   @Override
   public ContractResponse createContract(CreateContractRequest createContractRequest) {
@@ -294,5 +301,29 @@ public class ContractController implements ContractsApi {
       ContractIdentifier identifier, GeneratePaymentsRequest generatePaymentsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contractService.generatePayments(identifier, generatePaymentsRequest, principal);
+  }
+
+  // --- Termination ---
+
+  @Override
+  public TerminationPreviewResponse previewContractTermination(
+      ContractIdentifier identifier, String givenBy, LocalDate noticeDate) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    ContractTerminationService.TerminationPreview preview =
+        contractTerminationService.previewTermination(
+            identifier, TerminationGivenBy.valueOf(givenBy), noticeDate, principal);
+    return new TerminationPreviewResponse(
+        preview.computedEndDate(),
+        preview.noticeDays(),
+        preview.groundsRequired(),
+        preview.groundsCodes(),
+        preview.source().name());
+  }
+
+  @Override
+  public ContractTerminationResponse terminateContract(
+      ContractIdentifier identifier, TerminateContractRequest terminateContractRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contractTerminationService.terminate(identifier, terminateContractRequest, principal);
   }
 }

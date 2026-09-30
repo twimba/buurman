@@ -476,6 +476,11 @@
                                 <schemaMapping>SavedContractFilterIdentifier=com.buurman.domain.identifier.SavedContractFilterIdentifier</schemaMapping>
                                 <schemaMapping>CreateSavedContractFilterRequest=com.buurman.dto.request.CreateSavedContractFilterRequest</schemaMapping>
                                 <schemaMapping>SavedContractFilterResponse=com.buurman.dto.response.SavedContractFilterResponse</schemaMapping>
+                                <!-- Contract termination schema mappings -->
+                                <schemaMapping>ContractTerminationIdentifier=com.buurman.domain.identifier.ContractTerminationIdentifier</schemaMapping>
+                                <schemaMapping>TerminateContractRequest=com.buurman.dto.request.TerminateContractRequest</schemaMapping>
+                                <schemaMapping>ContractTerminationResponse=com.buurman.dto.response.ContractTerminationResponse</schemaMapping>
+                                <schemaMapping>TerminationPreviewResponse=com.buurman.dto.response.TerminationPreviewResponse</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>

@@ -1,0 +1,237 @@
+package com.buurman.service;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
+import com.buurman.domain.Contract;
+import com.buurman.domain.ContractTermination;
+import com.buurman.domain.Document;
+import com.buurman.domain.Sid;
+import com.buurman.domain.TerminationGivenBy;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.dto.request.TerminateContractRequest;
+import com.buurman.exception.BadRequestException;
+import com.buurman.exception.BusinessRuleException;
+import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
+import com.buurman.repository.DocumentRepository;
+import com.buurman.security.UserPrincipal;
+import com.buurman.service.regulation.TerminationRuleResolver;
+import com.buurman.util.MoneyAmount;
+
+class ContractTerminationServiceTest {
+
+  private final ContractRepository contractRepository = mock(ContractRepository.class);
+  private final ContractTerminationRepository terminationRepository =
+      mock(ContractTerminationRepository.class);
+  private final TerminationRuleResolver ruleResolver = mock(TerminationRuleResolver.class);
+  private final ContractService contractService = mock(ContractService.class);
+  private final ContractTerminationLetterGenerator letterExporter =
+      mock(ContractTerminationLetterGenerator.class);
+  private final DepositService depositService = mock(DepositService.class);
+  private final DocumentRepository documentRepository = mock(DocumentRepository.class);
+  private final S3StorageService s3StorageService = mock(S3StorageService.class);
+
+  private ContractTerminationService service;
+
+  private static final UUID TEAM_ID = UUID.randomUUID();
+  private static final UUID CONTRACT_ID = UUID.randomUUID();
+  private static final UUID USER_ID = UUID.randomUUID();
+  private static final ContractIdentifier IDENTIFIER =
+      ContractIdentifier.of("CON00000000000000000000001");
+
+  private final UserPrincipal principal =
+      new UserPrincipal(
+          USER_ID, "USR1", "kc-1", "landlord@example.com", "Landlord", TEAM_ID, "TEA1", null);
+
+  private Contract contract;
+
+  @BeforeEach
+  void setUp() {
+    service =
+        new ContractTerminationService(
+            contractRepository,
+            terminationRepository,
+            ruleResolver,
+            contractService,
+            letterExporter,
+            depositService,
+            documentRepository,
+            s3StorageService);
+
+    contract =
+        Contract.builder()
+            .id(CONTRACT_ID)
+            .identifier(Optional.<Sid>of(IDENTIFIER))
+            .teamId(TEAM_ID)
+            .status(Contract.ContractStatus.ACTIVE)
+            .startDate(LocalDate.now().minusYears(2))
+            .landlordNoticeDays(30)
+            .rentAmount(MoneyAmount.of(new java.math.BigDecimal("1000.00"), "EUR"))
+            .build();
+    when(contractRepository.getByIdentifierAndTeamId(
+            any(Sid.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(contract);
+    when(terminationRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(Optional.empty());
+    when(terminationRepository.save(any()))
+        .thenAnswer(
+            inv -> {
+              ContractTermination t = inv.getArgument(0);
+              if (t.getId() == null) {
+                t.setId(UUID.randomUUID());
+                t.setIdentifier(Optional.of(Sid.of("CTM00000000000000000000001")));
+              }
+              return t;
+            });
+    when(ruleResolver.resolve(any(), any(), any()))
+        .thenReturn(
+            new TerminationRuleResolver.TerminationComputation(
+                90, false, java.util.List.of(), TerminationRuleResolver.Source.CATALOG_RULE));
+    when(letterExporter.generate(any(), any(), any())).thenReturn(new byte[] {1, 2, 3});
+    when(s3StorageService.uploadFile(any(), any(), any(), any(), any(), any()))
+        .thenReturn("s3/key.pdf");
+    when(documentRepository.save(any()))
+        .thenAnswer(
+            inv -> {
+              Document d = inv.getArgument(0);
+              d.setId(UUID.randomUUID());
+              d.setIdentifier(Optional.of(Sid.of("DOC00000000000000000000001")));
+              return d;
+            });
+  }
+
+  @Test
+  @DisplayName("override earlier than computed without a reason is rejected")
+  void overrideWithoutReasonRejected() {
+    var request =
+        new TerminateContractRequest(
+            TerminationGivenBy.LANDLORD,
+            LocalDate.now(),
+            Optional.empty(),
+            Optional.of(LocalDate.now().plusDays(10)),
+            Optional.empty(),
+            Optional.empty());
+
+    assertThatThrownBy(() -> service.terminate(IDENTIFIER, request, principal))
+        .isInstanceOf(BadRequestException.class);
+  }
+
+  @Test
+  @DisplayName(
+      "a contract already having a termination record is rejected with a business rule error")
+  void alreadyTerminatedRejected() {
+    when(terminationRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(Optional.of(ContractTermination.builder().id(UUID.randomUUID()).build()));
+
+    var request =
+        new TerminateContractRequest(
+            TerminationGivenBy.LANDLORD,
+            LocalDate.now(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty());
+
+    assertThatThrownBy(() -> service.terminate(IDENTIFIER, request, principal))
+        .isInstanceOf(BusinessRuleException.class);
+  }
+
+  @Test
+  @DisplayName(
+      "a valid termination transitions the contract to NOTICE_GIVEN and persists the computed date")
+  void validTerminationSucceeds() {
+    var request =
+        new TerminateContractRequest(
+            TerminationGivenBy.LANDLORD,
+            LocalDate.now(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty());
+
+    service.terminate(IDENTIFIER, request, principal);
+
+    verify(contractService)
+        .changeContractStatus(
+            org.mockito.ArgumentMatchers.eq(IDENTIFIER),
+            org.mockito.ArgumentMatchers.argThat(
+                r -> r.status() == Contract.ContractStatus.NOTICE_GIVEN),
+            org.mockito.ArgumentMatchers.eq(principal));
+  }
+
+  @Test
+  @DisplayName("the generated notice letter is persisted as a Document linked to the contract")
+  void noticeLetterIsPersistedAsDocument() {
+    var request =
+        new TerminateContractRequest(
+            TerminationGivenBy.LANDLORD,
+            LocalDate.now(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty());
+
+    service.terminate(IDENTIFIER, request, principal);
+
+    ArgumentCaptor<Document> captor = ArgumentCaptor.forClass(Document.class);
+    verify(documentRepository).save(captor.capture());
+    Document saved = captor.getValue();
+    assertThat(saved.getEntityType()).isEqualTo("CONTRACT");
+    assertThat(saved.getEntityId()).isEqualTo(contract.getId());
+  }
+
+  @Test
+  @DisplayName("the deposit's return-due deadline is pushed to effective end date plus 30 days")
+  void depositReturnDueDateIsSetThirtyDaysAfterEffectiveEndDate() {
+    LocalDate noticeDate = LocalDate.now();
+    var request =
+        new TerminateContractRequest(
+            TerminationGivenBy.LANDLORD,
+            noticeDate,
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty());
+
+    service.terminate(IDENTIFIER, request, principal);
+
+    LocalDate expectedEffectiveEndDate = noticeDate.plusDays(90);
+    verify(depositService)
+        .updateReturnDueDate(IDENTIFIER, expectedEffectiveEndDate.plusDays(30), principal);
+  }
+
+  @Test
+  @DisplayName("previewTermination returns the resolver's computation without persisting anything")
+  void previewTerminationHasNoSideEffects() {
+    LocalDate noticeDate = LocalDate.now();
+    clearInvocations(
+        terminationRepository, contractService, letterExporter, depositService, documentRepository);
+
+    ContractTerminationService.TerminationPreview preview =
+        service.previewTermination(IDENTIFIER, TerminationGivenBy.LANDLORD, noticeDate, principal);
+
+    assertThat(preview.computedEndDate()).isEqualTo(noticeDate.plusDays(90));
+    assertThat(preview.noticeDays()).isEqualTo(90);
+    assertThat(preview.groundsRequired()).isFalse();
+    assertThat(preview.source()).isEqualTo(TerminationRuleResolver.Source.CATALOG_RULE);
+
+    verifyNoInteractions(
+        terminationRepository, contractService, letterExporter, depositService, documentRepository);
+  }
+}

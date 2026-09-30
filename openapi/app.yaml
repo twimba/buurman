@@ -11358,6 +11358,130 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /contracts/{identifier}/termination-preview:
+    get:
+      tags:
+        - Contracts
+      summary: Preview a contract termination's computed notice period
+      description: Pure computation, no persistence — resolves the notice period the same way `terminate` would, for the wizard's review step
+      operationId: previewContractTermination
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: givenBy
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [LANDLORD, TENANT]
+        - name: noticeDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TerminationPreviewResponse'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{identifier}/terminate:
+    post:
+      tags:
+        - Contracts
+      summary: Terminate contract
+      description: Give notice on an ACTIVE contract, computing the legally-required notice period and transitioning to NOTICE_GIVEN
+      operationId: terminateContract
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TerminateContractRequest'
+      responses:
+        "200":
+          description: Termination recorded, contract moved to NOTICE_GIVEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractTerminationResponse'
+        "400":
+          description: Bad request - validation error or malformed input (e.g. override without overrideReason)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - contract already has a termination on record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contracts/{identifier}/parties:
     post:
       tags:
@@ -22567,6 +22691,9 @@ components:
     ContractIdentifier:
       type: string
       description: Contract identifier
+    ContractTerminationIdentifier:
+      type: string
+      description: Contract termination identifier
     ContractExtensionIdentifier:
       type: string
       description: Contract extension identifier
@@ -24844,6 +24971,7 @@ components:
             - EXPIRED
             - TERMINATED
             - PENDING_SIGNATURE
+            - NOTICE_GIVEN
       required:
         - identifier
         - property
@@ -25735,6 +25863,7 @@ components:
             - EXPIRED
             - TERMINATED
             - PENDING_SIGNATURE
+            - NOTICE_GIVEN
         termsAndConditions:
           type: string
         notes:
@@ -25872,6 +26001,101 @@ components:
         - status
         - tenantNoticeDays
         - terminationNoticeDays
+    TerminateContractRequest:
+      type: object
+      properties:
+        givenBy:
+          type: string
+          enum: [LANDLORD, TENANT]
+        noticeDate:
+          type: string
+          format: date
+        groundCode:
+          type: string
+        effectiveEndDate:
+          type: string
+          format: date
+          description: Omit to accept the computed date; providing one earlier than computed requires overrideReason
+        overrideReason:
+          type: string
+        inspectionDate:
+          type: string
+          format: date
+      required:
+        - givenBy
+        - noticeDate
+    ContractTerminationResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: CTM01HZQX7V8B3K5M2N4P6R9T0W
+        contractIdentifier:
+          type: string
+        givenBy:
+          type: string
+          enum: [LANDLORD, TENANT]
+        noticeDate:
+          type: string
+          format: date
+        groundCode:
+          type: string
+        computedEndDate:
+          type: string
+          format: date
+        effectiveEndDate:
+          type: string
+          format: date
+        overrideReason:
+          type: string
+        inspectionDate:
+          type: string
+          format: date
+        noticeLetterDocumentIdentifier:
+          type: string
+        status:
+          type: string
+          enum: [NOTICE_GIVEN, TERMINATED]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - contractIdentifier
+        - givenBy
+        - noticeDate
+        - computedEndDate
+        - effectiveEndDate
+        - status
+        - createdAt
+        - updatedAt
+    TerminationPreviewResponse:
+      type: object
+      description: A pure computation, no persistence — used by the wizard's review step before commit
+      properties:
+        computedEndDate:
+          type: string
+          format: date
+        noticeDays:
+          type: integer
+        groundsRequired:
+          type: boolean
+        groundsCodes:
+          type: array
+          items:
+            type: string
+        source:
+          type: string
+          enum: [CATALOG_RULE, CONTRACT_FALLBACK, HARDCODED_DEFAULT]
+          description: Where the notice-day figure came from, so the landlord can judge how much to trust it
+      required:
+        - computedEndDate
+        - noticeDays
+        - groundsRequired
+        - source
     CyContractMetadata:
       allOf:
         - $ref: "#/components/schemas/ContractCountryMetadata"
@@ -27936,6 +28160,7 @@ components:
             - EXPIRED
             - TERMINATED
             - PENDING_SIGNATURE
+            - NOTICE_GIVEN
         reason:
           type: string
       required:

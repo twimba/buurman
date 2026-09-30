@@ -2737,3 +2737,130 @@ timeline:
               $ref: '#/components/schemas/ProblemDetail'
     security:
       - bearer-jwt: []
+
+
+termination-preview:
+  get:
+    tags:
+      - Contracts
+    summary: Preview a contract termination's computed notice period
+    description: Pure computation, no persistence — resolves the notice period the same way `terminate` would, for the wizard's review step
+    operationId: previewContractTermination
+    parameters:
+      - name: identifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: givenBy
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [LANDLORD, TENANT]
+      - name: noticeDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TerminationPreviewResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+terminate:
+  post:
+    tags:
+      - Contracts
+    summary: Terminate contract
+    description: Give notice on an ACTIVE contract, computing the legally-required notice period and transitioning to NOTICE_GIVEN
+    operationId: terminateContract
+    parameters:
+      - name: identifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TerminateContractRequest'
+    responses:
+      "200":
+        description: Termination recorded, contract moved to NOTICE_GIVEN
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractTerminationResponse'
+      "400":
+        description: Bad request - validation error or malformed input (e.g. override without overrideReason)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - contract already has a termination on record
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

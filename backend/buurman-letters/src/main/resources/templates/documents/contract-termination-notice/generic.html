@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<style th:replace="~{_letter-styles :: letter-css}">/* replaced by shared fragment */</style>
+</head>
+<body>
+
+<div class="letter">
+  <!-- Header -->
+  <div class="letter-header">
+    <div class="letter-date" th:text="${generatedDate}"></div>
+    <div class="letter-ref" th:text="'Ref: ' + ${contractIdentifier}"></div>
+  </div>
+
+  <!-- Addressee -->
+  <div class="letter-addressee">
+    <div th:if="${primaryContactName != null}">
+      <div class="addressee-name" th:text="${primaryContactName}"></div>
+      <div th:if="${contactAddress != null}">
+        <div th:text="${contactAddress.street}"></div>
+        <div th:text="${contactAddress.postalCode} + ' ' + ${contactAddress.city}"></div>
+        <div th:text="${contactAddress.countryCode}"></div>
+      </div>
+    </div>
+    <div th:unless="${primaryContactName != null}">
+      <div class="addressee-name">Dear Resident,</div>
+    </div>
+  </div>
+
+  <!-- Subject -->
+  <div class="letter-subject">Re: Notice of Contract Termination</div>
+
+  <!-- Body -->
+  <div class="letter-body">
+    <!-- Salutation -->
+    <p th:if="${primaryContactName != null}" th:text="'Dear ' + ${primaryContactName} + ','"></p>
+    <p th:unless="${primaryContactName != null}">Dear Resident,</p>
+
+    <!-- Paragraph 1: Notice given -->
+    <p th:text="'This letter serves as formal notice, given by the ' + ${givenByLabel} + ' on ' + ${noticeDate} + ', to terminate the tenancy at ' + ${propertyAddress} + '.'"></p>
+
+    <!-- Paragraph 2: Ground (if present) -->
+    <p th:if="${groundLabel != null}" th:text="'Ground for termination: ' + ${groundLabel} + '.'"></p>
+
+    <!-- Paragraph 3: Effective end date -->
+    <p th:text="'The tenancy will end on ' + ${effectiveEndDate} + '.'"></p>
+
+    <!-- Paragraph 4: Override reason (if present) -->
+    <p th:if="${overrideReason != null}" th:text="'Note on the effective end date: ' + ${overrideReason}"></p>
+
+    <!-- Country-specific legal clause -->
+    <div th:if="${legalClauses != null}" th:each="clause : ${legalClauses}" class="legal-clause">
+      <div th:if="${clause.get('title') != null}" class="legal-clause-title" th:text="${clause.get('title')}"></div>
+      <div th:text="${clause.body}"></div>
+    </div>
+
+    <!-- Summary table -->
+    <table class="summary-table">
+      <tr>
+        <td class="st-label">Contract Reference</td>
+        <td class="st-value" th:text="${contractIdentifier}"></td>
+      </tr>
+      <tr>
+        <td class="st-label">Property</td>
+        <td class="st-value" th:text="${propertyAddress}"></td>
+      </tr>
+      <tr th:if="${hasMultipleUnits}">
+        <td class="st-label">Unit</td>
+        <td class="st-value" th:text="${unitDesignation}"></td>
+      </tr>
+      <tr>
+        <td class="st-label">Given By</td>
+        <td class="st-value" th:text="${givenByLabel}"></td>
+      </tr>
+      <tr>
+        <td class="st-label">Notice Date</td>
+        <td class="st-value" th:text="${noticeDate}"></td>
+      </tr>
+      <tr th:if="${groundLabel != null}">
+        <td class="st-label">Ground</td>
+        <td class="st-value" th:text="${groundLabel}"></td>
+      </tr>
+      <tr>
+        <td class="st-label">Effective End Date</td>
+        <td class="st-value"><strong th:text="${effectiveEndDate}"></strong></td>
+      </tr>
+    </table>
+
+    <!-- Closing -->
+    <p>Should you have any questions regarding this notice, please do not hesitate to contact us.</p>
+    <p>Sincerely,</p>
+  </div>
+
+  <!-- Signature -->
+  <div class="letter-signature">
+    <div class="sig-line"></div>
+    <div class="sig-label">Landlord / Property Manager</div>
+    <div class="sig-date">Date: <span class="sig-date-line"></span></div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="letter-disclaimer">This document is informational and does not constitute legal advice. Termination is subject to the terms of the existing lease agreement and applicable local regulations.</div>
+
+  <!-- Footer -->
+  <div class="letter-footer">
+    <span th:text="'Generated on ' + ${generatedDate}"></span>
+    <span> &mdash; </span>
+    <span>Buurman Property Management</span>
+  </div>
+</div>
+
+</body>
+</html>
