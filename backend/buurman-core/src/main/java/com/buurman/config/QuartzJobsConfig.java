@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.buurman.job.AutoExtensionJob;
+import com.buurman.job.ContractTerminationSweepJob;
 import com.buurman.job.DatabaseMetricsRefreshJob;
 import com.buurman.job.ExecutionHistoryCleanupJob;
 import com.buurman.job.ImpersonationSessionCleanupJob;
@@ -202,6 +203,27 @@ public class QuartzJobsConfig {
     return TriggerBuilder.newTrigger()
         .forJob(autoExtensionJobDetail)
         .withIdentity("autoExtensionTrigger", "scheduling")
+        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+        .build();
+  }
+
+  // ── Contract Termination Sweep ──────────────────────────────────────────
+
+  @Bean
+  public JobDetail contractTerminationSweepJobDetail() {
+    return JobBuilder.newJob(ContractTerminationSweepJob.class)
+        .withIdentity("contractTerminationSweepJob", "scheduling")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger contractTerminationSweepTrigger(
+      JobDetail contractTerminationSweepJobDetail,
+      @Value("${scheduling.contract-termination-sweep.cron:0 30 1 * * ?}") String cron) {
+    return TriggerBuilder.newTrigger()
+        .forJob(contractTerminationSweepJobDetail)
+        .withIdentity("contractTerminationSweepTrigger", "scheduling")
         .withSchedule(CronScheduleBuilder.cronSchedule(cron))
         .build();
   }

@@ -649,9 +649,34 @@ public class ContractService {
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
+    Contract updatedContract =
+        transitionStatus(contract, request.status(), principal.getUserId(), request.reason());
+
+    return toResponse(updatedContract, teamId);
+  }
+
+  /**
+   * The actual status-transition logic behind {@link #changeContractStatus}: validation,
+   * persistence, extension auto-cancel, metrics, payment scheduling, unit-status sync, audit log,
+   * and the status-changed notification. Extracted so the system-triggered contract termination
+   * sweep ({@code ContractTerminationService.sweepDueTerminations()}) can drive the same transition
+   * — it runs with no authenticated {@link UserPrincipal} (see {@code
+   * ContractTerminationRepository#findDueForTransition}'s javadoc), so it cannot satisfy {@link
+   * #changeContractStatus}'s {@code @PreAuthorize} gate or its {@code UserPrincipal} parameter.
+   *
+   * <p>Package-private and unguarded: this method performs no authorization check of its own.
+   * Callers outside this package must go through the role-gated {@link #changeContractStatus}
+   * instead of calling this directly.
+   */
+  Contract transitionStatus(
+      Contract contract,
+      Contract.ContractStatus newStatus,
+      UUID actingUserId,
+      Optional<String> reason) {
+    UUID teamId = contract.getTeamId();
     UUID contractId = contract.getId();
     Contract.ContractStatus oldStatus = contract.getStatus();
-    Contract.ContractStatus newStatus = request.status();
+    Sid contractIdentifier = contract.getIdentifier().orElseThrow();
 
     // Validate status transitions
     validateStatusTransition(oldStatus, newStatus);
@@ -708,7 +733,7 @@ public class ContractService {
             .build();
 
     contract.setStatus(newStatus);
-    contract.setUpdatedBy(principal.getUserId());
+    contract.setUpdatedBy(actingUserId);
     contract.setUpdatedAt(clock.instant());
 
     Contract updatedContract = contractRepository.save(contract);
@@ -719,8 +744,7 @@ public class ContractService {
           .findDraftByContractId(contract.getId(), teamId)
           .ifPresent(
               draft -> {
-                extensionRepository.cancelByIdAndTeamId(
-                    draft.getId(), teamId, principal.getUserId());
+                extensionRepository.cancelByIdAndTeamId(draft.getId(), teamId, actingUserId);
               });
     }
 
@@ -733,28 +757,29 @@ public class ContractService {
 
     log.info(
         "Contract status changed: {} from {} to {} in team {}",
-        identifier,
+        contractIdentifier,
         oldStatus,
         newStatus,
         teamId);
 
     // Trigger payment scheduling on status change
     paymentSchedulingService.handleContractStatusChange(
-        contractId, newStatus, teamId, principal.getUserId());
+        contractId, newStatus, teamId, actingUserId);
 
     // Update the unit's status based on the contract's status
-    updateUnitStatusBasedOnContract(contract.getUnitId(), newStatus, oldStatus, principal);
+    updateUnitStatusBasedOnContract(
+        contract.getUnitId(), teamId, newStatus, oldStatus, actingUserId);
 
     // Log to audit trail
     Map<String, Object> changedFields = new HashMap<>();
     changedFields.put("status", newStatus);
-    request.reason().ifPresent(r -> changedFields.put("statusChangeReason", r));
+    reason.ifPresent(r -> changedFields.put("statusChangeReason", r));
 
     auditService.logUpdate(
         teamId,
         "CONTRACT",
         updatedContract.getId(),
-        principal.getUserId(),
+        actingUserId,
         oldContract,
         updatedContract,
         changedFields);
@@ -766,7 +791,7 @@ public class ContractService {
     String scPropertyName =
         statusChangeProperty != null
             ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
-            : identifier.value();
+            : contractIdentifier.value();
     String scContactName = primaryContact.getDisplayName();
     String scBase = appProperties.email().baseUrl();
     String scPropertySid =
@@ -792,13 +817,13 @@ public class ContractService {
                     "baseUrl",
                     scBase,
                     "primaryUrl",
-                    scBase + "/contracts/" + identifier.value(),
+                    scBase + "/contracts/" + contractIdentifier.value(),
                     "secondaryUrl",
                     scBase + "/properties/" + scPropertySid))
-            .createdBy(principal.getUserId())
+            .createdBy(actingUserId)
             .build());
 
-    return toResponse(updatedContract, teamId);
+    return updatedContract;
   }
 
   @Transactional
@@ -1448,31 +1473,35 @@ public class ContractService {
    * </ul>
    *
    * <p>By the time this runs, the caller has already persisted {@code newStatus} on {@code
-   * contract} ({@link #changeContractStatus}), so {@link ContractRepository#countActiveByUnitId}
+   * contract} ({@link #transitionStatus}), so {@link ContractRepository#countActiveByUnitId}
    * naturally excludes the contract that just expired or was terminated — no explicit
    * self-exclusion is needed.
+   *
+   * <p>Takes a team id and an acting user id rather than a {@link UserPrincipal} because {@link
+   * #transitionStatus} — whose callers include the system-triggered contract termination sweep,
+   * which has no authenticated {@link UserPrincipal} — is the sole caller.
    */
   private void updateUnitStatusBasedOnContract(
       UUID unitId,
+      UUID teamId,
       Contract.ContractStatus newStatus,
       Contract.ContractStatus oldStatus,
-      UserPrincipal principal) {
-    UUID teamId = principal.requireTeamId();
+      UUID actingUserId) {
     if (newStatus == ACTIVE && oldStatus != ACTIVE) {
-      setUnitStatus(unitId, teamId, UnitStatus.OCCUPIED, principal);
+      setUnitStatus(unitId, teamId, UnitStatus.OCCUPIED, actingUserId);
       return;
     }
     if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
       if (contractRepository.countActiveByUnitId(unitId, teamId) == 0) {
-        setUnitStatus(unitId, teamId, UnitStatus.VACANT, principal);
+        setUnitStatus(unitId, teamId, UnitStatus.VACANT, actingUserId);
       }
     }
   }
 
-  private void setUnitStatus(UUID unitId, UUID teamId, UnitStatus status, UserPrincipal principal) {
+  private void setUnitStatus(UUID unitId, UUID teamId, UnitStatus status, UUID actingUserId) {
     Unit unit = unitRepository.getByIdAndTeamId(unitId, teamId);
     unit.setStatus(status);
-    unit.setUpdatedBy(Optional.of(principal.getUserId()));
+    unit.setUpdatedBy(Optional.of(actingUserId));
     unitRepository.save(unit);
   }
 }

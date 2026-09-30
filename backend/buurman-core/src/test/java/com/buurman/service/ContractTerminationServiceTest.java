@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractTermination;
+import com.buurman.domain.ContractTerminationStatus;
 import com.buurman.domain.Document;
 import com.buurman.domain.Sid;
 import com.buurman.domain.TerminationGivenBy;
@@ -32,6 +34,7 @@ import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.regulation.TerminationRuleResolver;
+import com.buurman.util.Constants;
 import com.buurman.util.MoneyAmount;
 
 class ContractTerminationServiceTest {
@@ -214,6 +217,47 @@ class ContractTerminationServiceTest {
     LocalDate expectedEffectiveEndDate = noticeDate.plusDays(90);
     verify(depositService)
         .updateReturnDueDate(IDENTIFIER, expectedEffectiveEndDate.plusDays(30), principal);
+  }
+
+  @Test
+  @DisplayName(
+      "sweepDueTerminations transitions a NOTICE_GIVEN termination past its effective end date to"
+          + " TERMINATED, and transitions the underlying contract too")
+  void sweepTransitionsDueTermination() {
+    ContractTermination due =
+        ContractTermination.builder()
+            .id(UUID.randomUUID())
+            .teamId(TEAM_ID)
+            .contractId(CONTRACT_ID)
+            .status(com.buurman.domain.ContractTerminationStatus.NOTICE_GIVEN)
+            .effectiveEndDate(LocalDate.now().minusDays(1))
+            .build();
+    when(terminationRepository.findDueForTransition(any())).thenReturn(List.of(due));
+    when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(contract);
+
+    service.sweepDueTerminations();
+
+    verify(terminationRepository)
+        .save(
+            org.mockito.ArgumentMatchers.argThat(
+                t -> t.getStatus() == ContractTerminationStatus.TERMINATED));
+    verify(contractService)
+        .transitionStatus(
+            org.mockito.ArgumentMatchers.eq(contract),
+            org.mockito.ArgumentMatchers.eq(Contract.ContractStatus.TERMINATED),
+            org.mockito.ArgumentMatchers.eq(Constants.SYSTEM_USER_ID),
+            org.mockito.ArgumentMatchers.any());
+  }
+
+  @Test
+  @DisplayName("sweepDueTerminations does nothing when no terminations are due")
+  void sweepNoOpWhenNoneDue() {
+    when(terminationRepository.findDueForTransition(any())).thenReturn(List.of());
+
+    service.sweepDueTerminations(); // must not throw
+
+    org.mockito.Mockito.verify(terminationRepository, org.mockito.Mockito.never()).save(any());
+    org.mockito.Mockito.verifyNoInteractions(contractService);
   }
 
   @Test

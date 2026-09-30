@@ -27,6 +27,7 @@ import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.regulation.TerminationRuleResolver;
+import com.buurman.util.Constants;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -112,6 +113,51 @@ public class ContractTerminationService {
         effectiveEndDate);
 
     return toResponse(termination, identifier, savedLetter.getIdentifier());
+  }
+
+  /**
+   * Daily sweep: transitions every {@code NOTICE_GIVEN} termination whose effective end date has
+   * passed to {@code TERMINATED}, along with its underlying contract. {@link
+   * ContractTerminationRepository#findDueForTransition} only returns {@code NOTICE_GIVEN} rows, so
+   * an already-{@code TERMINATED} termination is never picked up twice.
+   *
+   * <p>Runs with no authenticated team context (invoked from {@code ContractTerminationSweepJob}, a
+   * Quartz job with no {@link UserPrincipal}), so the contract transition goes through {@link
+   * ContractService#transitionStatus}, not the human-facing, {@code @PreAuthorize}-gated {@link
+   * ContractService#changeContractStatus}. A failure on one termination is logged and does not stop
+   * the rest of the sweep; the failed row stays {@code NOTICE_GIVEN} and is picked up again on the
+   * next run.
+   */
+  @Transactional
+  public void sweepDueTerminations() {
+    List<ContractTermination> due = terminationRepository.findDueForTransition(LocalDate.now());
+    for (ContractTermination termination : due) {
+      try {
+        Contract contract =
+            contractRepository.getByIdAndTeamId(
+                termination.getContractId(), termination.getTeamId());
+
+        termination.setStatus(ContractTerminationStatus.TERMINATED);
+        terminationRepository.save(termination);
+
+        contractService.transitionStatus(
+            contract,
+            Contract.ContractStatus.TERMINATED,
+            Constants.SYSTEM_USER_ID,
+            Optional.empty());
+
+        log.info(
+            "Termination for contract {} swept to TERMINATED (effective end date {})",
+            termination.getContractId(),
+            termination.getEffectiveEndDate());
+      } catch (Exception e) {
+        log.error(
+            "Failed to sweep termination {} for contract {} to TERMINATED",
+            termination.getId(),
+            termination.getContractId(),
+            e);
+      }
+    }
   }
 
   /** A pure computation of the notice period — no persistence, safe for any team member to run. */

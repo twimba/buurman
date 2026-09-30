@@ -187,6 +187,8 @@ scheduling:
     metrics-push-cron: "0 */15 * * * ?"
   thumbnail-backfill:
     cron: "0 */5 * * * ?"
+  contract-termination-sweep:
+    cron: "0 30 1 * * ?"
   cost:
     snapshot-cron: "0 0 6 * * ?"
 

@@ -579,9 +579,10 @@ class ContractServiceTest {
           ContractService.class.getDeclaredMethod(
               "updateUnitStatusBasedOnContract",
               UUID.class,
+              UUID.class,
               ContractStatus.class,
               ContractStatus.class,
-              UserPrincipal.class);
+              UUID.class);
       updateUnitStatusBasedOnContract.setAccessible(true);
     }
 
@@ -594,7 +595,7 @@ class ContractServiceTest {
     private void invoke(ContractStatus newStatus, ContractStatus oldStatus) throws Throwable {
       try {
         updateUnitStatusBasedOnContract.invoke(
-            contractServiceInstance, UNIT_ID, newStatus, oldStatus, principal(TEAM_ID));
+            contractServiceInstance, UNIT_ID, TEAM_ID, newStatus, oldStatus, USER_ID);
       } catch (InvocationTargetException e) {
         throw e.getCause();
       }
@@ -610,18 +611,6 @@ class ContractServiceTest {
           .unitType(UnitType.APARTMENT)
           .status(status)
           .build();
-    }
-
-    private UserPrincipal principal(UUID teamId) {
-      return new UserPrincipal(
-          USER_ID,
-          "usr_test",
-          "kc-123",
-          "test@example.com",
-          "Test User",
-          teamId,
-          "team_test",
-          com.buurman.domain.TeamRole.TEAM_ADMIN);
     }
 
     @Test
