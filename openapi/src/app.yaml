@@ -120,7 +120,13 @@ tags:
     description: Units within a property (dwellings, parking, storage, commercial space)
   - name: Expense Allocations
     description: Per-unit allocation of building-level expenses
+  - name: SavedContractFilters
+    description: Personal saved contract filter presets
 paths:
+  /saved-contract-filters:
+    $ref: 'paths/saved-contract-filters.yaml#/collection'
+  /saved-contract-filters/{identifier}:
+    $ref: 'paths/saved-contract-filters.yaml#/item'
   /users/preferences/notifications:
     $ref: 'paths/users.yaml#/users-preferences-notifications'
   /users/me:
@@ -795,6 +801,9 @@ components:
     DocumentIdentifier:
       type: string
       description: Document identifier
+    SavedContractFilterIdentifier:
+      type: string
+      description: Saved contract filter identifier
     SignatureRequestIdentifier:
       type: string
       description: Signature request identifier
@@ -3094,6 +3103,29 @@ components:
         - fileName
         - identifier
         - uploadedAt
+    CreateSavedContractFilterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        criteria:
+          type: object
+          additionalProperties: true
+      required: [name, criteria]
+    SavedContractFilterResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        criteria:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [identifier, name, criteria, createdAt]
     SignatureSignerResponse:
       type: object
       description: A single signer's status within a signature request

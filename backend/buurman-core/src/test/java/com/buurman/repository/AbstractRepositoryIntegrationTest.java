@@ -92,6 +92,7 @@ abstract class AbstractRepositoryIntegrationTest {
     dsl.deleteFrom(DSL.table("wws_calculations")).execute();
     dsl.deleteFrom(DSL.table("units")).execute();
     dsl.deleteFrom(DSL.table("properties")).execute();
+    dsl.deleteFrom(DSL.table("saved_contract_filters")).execute();
     dsl.deleteFrom(DSL.table("team_preferences")).execute();
     dsl.deleteFrom(DSL.table("team_members")).execute();
     dsl.deleteFrom(DSL.table("teams"))

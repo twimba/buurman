@@ -472,6 +472,10 @@
                                 <schemaMapping>UnitType=com.buurman.domain.UnitType</schemaMapping>
                                 <schemaMapping>UnitStatus=com.buurman.domain.UnitStatus</schemaMapping>
                                 <schemaMapping>AllocationBasis=com.buurman.domain.AllocationBasis</schemaMapping>
+                                <!-- BUUR-105: Saved contract filters schema mappings -->
+                                <schemaMapping>SavedContractFilterIdentifier=com.buurman.domain.identifier.SavedContractFilterIdentifier</schemaMapping>
+                                <schemaMapping>CreateSavedContractFilterRequest=com.buurman.dto.request.CreateSavedContractFilterRequest</schemaMapping>
+                                <schemaMapping>SavedContractFilterResponse=com.buurman.dto.response.SavedContractFilterResponse</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>

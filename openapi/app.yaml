@@ -120,7 +120,72 @@ tags:
     description: Units within a property (dwellings, parking, storage, commercial space)
   - name: Expense Allocations
     description: Per-unit allocation of building-level expenses
+  - name: SavedContractFilters
+    description: Personal saved contract filter presets
 paths:
+  /saved-contract-filters:
+    get:
+      tags:
+        - SavedContractFilters
+      summary: List the current user's saved contract filters
+      operationId: getSavedContractFilters
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SavedContractFilterResponse'
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - SavedContractFilters
+      summary: Save a new contract filter
+      operationId: createSavedContractFilter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSavedContractFilterRequest'
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedContractFilterResponse'
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
+  /saved-contract-filters/{identifier}:
+    delete:
+      tags:
+        - SavedContractFilters
+      summary: Delete a saved contract filter
+      operationId: deleteSavedContractFilter
+      parameters:
+        - name: identifier
+          in: path
+          description: Saved contract filter identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/SavedContractFilterIdentifier'
+      responses:
+        "204": { description: Deleted }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "403": { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+        "500": { description: Internal server error, content: { application/json: { schema: { $ref: '#/components/schemas/ProblemDetail' } } } }
+      security:
+        - bearer-jwt: []
   /users/preferences/notifications:
     get:
       tags:
@@ -22520,6 +22585,9 @@ components:
     DocumentIdentifier:
       type: string
       description: Document identifier
+    SavedContractFilterIdentifier:
+      type: string
+      description: Saved contract filter identifier
     SignatureRequestIdentifier:
       type: string
       description: Signature request identifier
@@ -24819,6 +24887,29 @@ components:
         - fileName
         - identifier
         - uploadedAt
+    CreateSavedContractFilterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        criteria:
+          type: object
+          additionalProperties: true
+      required: [name, criteria]
+    SavedContractFilterResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        criteria:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [identifier, name, criteria, createdAt]
     SignatureSignerResponse:
       type: object
       description: A single signer's status within a signature request
