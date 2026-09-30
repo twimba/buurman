@@ -4,7 +4,8 @@
     "pending": "In afwachting",
     "active": "Actief",
     "expired": "Verlopen",
-    "terminated": "Beëindigd"
+    "terminated": "Beëindigd",
+    "noticeGiven": "Opzegging gegeven"
   },
   "list": {
     "title": "Contracten",
@@ -61,6 +62,8 @@
     "reopenTitle": "Dit contract heropenen naar conceptstatus",
     "duplicate": "Dupliceren",
     "duplicateTitle": "Een kopie van dit contract aanmaken in conceptstatus",
+    "terminate": "Contract Beëindigen",
+    "terminateTitle": "Zeg deze actieve overeenkomst op",
     "edit": "Bewerken",
     "delete": "Verwijderen",
     "tabs": {
@@ -442,7 +445,8 @@
       "PENDING_SIGNATURE": "Wacht op ondertekening",
       "ACTIVE": "Actief",
       "EXPIRED": "Verlopen",
-      "TERMINATED": "Beëindigd"
+      "TERMINATED": "Beëindigd",
+      "NOTICE_GIVEN": "Opzegging gegeven"
     }
   },
   "adjustRent": {
@@ -621,6 +625,80 @@
     "adjustmentPayments_other": "{{count}} aanpassingsbetalingen aangemaakt voor retroactieve wijzigingen",
     "status": "Status",
     "leaseOfTotal": "Contract {{index}} van {{total}} voor dit pand"
+  },
+  "termination": {
+    "title": "Contract Beëindigen",
+    "subtitle": "Zeg op om dit contract te beëindigen",
+    "steps": {
+      "whoGivesNotice": "Wie Zegt Op",
+      "noticeDateGround": "Opzegdatum & Reden",
+      "review": "Controleren",
+      "letterPreview": "Voorbeeld van de Brief",
+      "confirmation": "Bevestiging"
+    },
+    "givenByValues": {
+      "LANDLORD": "Verhuurder",
+      "TENANT": "Huurder"
+    },
+    "whoGivesNotice": {
+      "question": "Wie zegt dit contract op?",
+      "landlordDescription": "U beëindigt het contract als verhuurder.",
+      "tenantDescription": "De huurder heeft het contract opgezegd.",
+      "next": "Volgende: Opzegdatum & Reden"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Opzegdatum",
+      "noticeDateHelp": "De datum waarop de opzegging is, of zal worden, gedaan.",
+      "groundCodeLabel": "Opzeggingsgrond of -code (optioneel)",
+      "groundCodeHelp": "Alleen vereist voor bepaalde opzeggingsgronden. U kunt dit in de volgende stap bevestigen.",
+      "next": "Volgende: Controleren"
+    },
+    "review": {
+      "computedEndDateLabel": "Berekende einddatum",
+      "noticeDaysLabel": "Opzegtermijn",
+      "noticeDaysValue": "{{count}} dagen",
+      "sourceLabel": "Hoe dit is berekend",
+      "source": {
+        "CATALOG_RULE": "Gebaseerd op de opzegtermijnregels van uw land.",
+        "CONTRACT_FALLBACK": "Gebaseerd op de eigen opzeginstelling van dit contract.",
+        "HARDCODED_DEFAULT": "Er wordt een standaard van 30 dagen gebruikt."
+      },
+      "groundRequiredWarning": "Deze opzeggingsgrond vereist een redencode.",
+      "groundCodeLabel": "Opzeggingsgrond of -code",
+      "selectGround": "Selecteer een grond",
+      "overrideToggle": "Gebruik een eerdere einddatum",
+      "overrideHelp": "Laat leeg om de hierboven berekende einddatum te accepteren.",
+      "effectiveEndDateLabel": "Eerdere einddatum",
+      "overrideReasonLabel": "Reden voor de eerdere einddatum",
+      "overrideReasonPlaceholder": "Leg uit waarom dit contract eerder eindigt dan berekend...",
+      "overrideReasonRequired": "Een reden is vereist wanneer de einddatum eerder is dan de berekende datum.",
+      "loading": "Opzegtermijn wordt berekend...",
+      "error": "De opzegtermijn kon niet worden berekend. Controleer de opzegdatum en probeer het opnieuw.",
+      "next": "Volgende: Voorbeeld van de Brief"
+    },
+    "letterPreview": {
+      "title": "Voorbeeld van de Opzeggingsbrief",
+      "description": "Er wordt een formele opzeggingsbrief gegenereerd en opgeslagen als document bij dit contract.",
+      "givenByLabel": "Opgezegd door",
+      "noticeDateLabel": "Opzegdatum",
+      "groundCodeLabel": "Reden",
+      "computedEndDateLabel": "Berekende einddatum",
+      "effectiveEndDateLabel": "Feitelijke einddatum",
+      "overrideReasonLabel": "Reden voor de wijziging",
+      "inspectionDateLabel": "Datum eindinspectie (optioneel)",
+      "notProvided": "Niet opgegeven",
+      "confirm": "Bevestigen & Opzeggen",
+      "submitting": "Wordt opgezegd..."
+    },
+    "confirmation": {
+      "title": "Opzegging Gegeven",
+      "description": "Dit contract heeft de status Opzegging Gegeven bereikt.",
+      "effectiveEndDateLabel": "Feitelijke einddatum",
+      "noticeLetterLabel": "Opzeggingsbrief",
+      "viewDocument": "Document bekijken",
+      "depositNote": "De uiterste datum voor teruggave van de borg is bijgewerkt naar de feitelijke einddatum.",
+      "backToContract": "Terug naar contract"
+    }
   },
   "card": {
     "start": "Start",

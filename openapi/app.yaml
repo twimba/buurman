@@ -11135,6 +11135,7 @@ paths:
               - EXPIRED
               - TERMINATED
               - PENDING_SIGNATURE
+              - NOTICE_GIVEN
         - name: propertyIdentifier
           in: query
           description: Property identifier

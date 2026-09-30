@@ -104,6 +104,11 @@ export const queryKeys = {
     paymentPlans: (contractId?: string) =>
       k('contractPaymentPlans', contractId),
     timeline: (contractId?: string) => k('contractTimeline', contractId),
+    terminationPreview: (
+      contractId?: string,
+      givenBy?: string,
+      noticeDate?: string
+    ) => k('contractTerminationPreview', contractId, givenBy, noticeDate),
   },
 
   // --- Signature Requests ---

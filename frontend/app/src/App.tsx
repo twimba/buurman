@@ -160,6 +160,11 @@ const RentIncreaseWizardPage = lazy(() =>
     default: m.RentIncreaseWizardPage,
   }))
 );
+const TerminationWizardPage = lazy(() =>
+  import('./pages/TerminationWizardPage').then((m) => ({
+    default: m.TerminationWizardPage,
+  }))
+);
 const ImpersonatePage = lazy(() =>
   import('./pages/ImpersonatePage').then((m) => ({
     default: m.ImpersonatePage,
@@ -311,6 +316,10 @@ function App() {
                               <Route
                                 path="/contracts/:id/edit"
                                 element={<ContractEditPage />}
+                              />
+                              <Route
+                                path="/contracts/:id/terminate"
+                                element={<TerminationWizardPage />}
                               />
                               <Route
                                 path="/rent-regulations"

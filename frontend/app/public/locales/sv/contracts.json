@@ -4,7 +4,8 @@
     "pending": "Vantande",
     "active": "Aktiv",
     "expired": "Utgangen",
-    "terminated": "Uppsagd"
+    "terminated": "Uppsagd",
+    "noticeGiven": "Uppsägning lämnad"
   },
   "list": {
     "title": "Kontrakt",
@@ -61,6 +62,8 @@
     "reopenTitle": "Aterooppna detta kontrakt till utkaststatus",
     "duplicate": "Duplicera",
     "duplicateTitle": "Skapa en kopia av detta kontrakt i utkaststatus",
+    "terminate": "Säg upp kontrakt",
+    "terminateTitle": "Säg upp detta aktiva kontrakt",
     "edit": "Redigera",
     "delete": "Ta bort",
     "tabs": {
@@ -442,7 +445,8 @@
       "PENDING_SIGNATURE": "Vantar pa signering",
       "ACTIVE": "Aktiv",
       "EXPIRED": "Utgangen",
-      "TERMINATED": "Uppsagd"
+      "TERMINATED": "Uppsagd",
+      "NOTICE_GIVEN": "Uppsägning lämnad"
     }
   },
   "adjustRent": {
@@ -621,6 +625,80 @@
     "adjustmentPayments_one": "{{count}} justeringsbetalning skapad for retroaktiva andringar",
     "adjustmentPayments_other": "{{count}} justeringsbetalningar skapade for retroaktiva andringar",
     "status": "Status"
+  },
+  "termination": {
+    "title": "Säg Upp Kontrakt",
+    "subtitle": "Säg upp för att avsluta detta kontrakt",
+    "steps": {
+      "whoGivesNotice": "Vem Säger Upp",
+      "noticeDateGround": "Uppsägningsdatum & Grund",
+      "review": "Granska",
+      "letterPreview": "Förhandsgranskning av Brev",
+      "confirmation": "Bekräftelse"
+    },
+    "givenByValues": {
+      "LANDLORD": "Hyresvärd",
+      "TENANT": "Hyresgäst"
+    },
+    "whoGivesNotice": {
+      "question": "Vem säger upp detta kontrakt?",
+      "landlordDescription": "Du avslutar kontraktet som hyresvärd.",
+      "tenantDescription": "Hyresgästen har sagt upp kontraktet.",
+      "next": "Nästa: Uppsägningsdatum & Grund"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Uppsägningsdatum",
+      "noticeDateHelp": "Datumet då uppsägningen gjordes, eller kommer att göras.",
+      "groundCodeLabel": "Uppsägningsgrund eller -kod (valfritt)",
+      "groundCodeHelp": "Krävs endast för vissa uppsägningsgrunder. Du kan bekräfta detta i nästa steg.",
+      "next": "Nästa: Granska"
+    },
+    "review": {
+      "computedEndDateLabel": "Beräknat slutdatum",
+      "noticeDaysLabel": "Uppsägningstid",
+      "noticeDaysValue": "{{count}} dagar",
+      "sourceLabel": "Hur detta beräknades",
+      "source": {
+        "CATALOG_RULE": "Baserat på ditt lands regler för uppsägningstid.",
+        "CONTRACT_FALLBACK": "Baserat på kontraktets egen uppsägningsinställning.",
+        "HARDCODED_DEFAULT": "Använder ett standardvärde på 30 dagar."
+      },
+      "groundRequiredWarning": "Denna uppsägningsgrund kräver en grundkod.",
+      "groundCodeLabel": "Uppsägningsgrund eller -kod",
+      "selectGround": "Välj en grund",
+      "overrideToggle": "Använd ett tidigare slutdatum",
+      "overrideHelp": "Lämna tomt för att acceptera det beräknade slutdatumet ovan.",
+      "effectiveEndDateLabel": "Tidigare slutdatum",
+      "overrideReasonLabel": "Anledning till det tidigare slutdatumet",
+      "overrideReasonPlaceholder": "Förklara varför detta kontrakt avslutas tidigare än beräknat...",
+      "overrideReasonRequired": "En anledning krävs när slutdatumet är tidigare än det beräknade datumet.",
+      "loading": "Beräknar uppsägningstid...",
+      "error": "Kunde inte beräkna uppsägningstiden. Kontrollera uppsägningsdatumet och försök igen.",
+      "next": "Nästa: Förhandsgranskning av Brev"
+    },
+    "letterPreview": {
+      "title": "Förhandsgranskning av Uppsägningsbrev",
+      "description": "Ett formellt uppsägningsbrev kommer att skapas och sparas som ett dokument på detta kontrakt.",
+      "givenByLabel": "Uppsagt av",
+      "noticeDateLabel": "Uppsägningsdatum",
+      "groundCodeLabel": "Grund",
+      "computedEndDateLabel": "Beräknat slutdatum",
+      "effectiveEndDateLabel": "Faktiskt slutdatum",
+      "overrideReasonLabel": "Anledning till ändringen",
+      "inspectionDateLabel": "Datum för avflyttningsbesiktning (valfritt)",
+      "notProvided": "Ej angivet",
+      "confirm": "Bekräfta & Säg Upp",
+      "submitting": "Säger upp..."
+    },
+    "confirmation": {
+      "title": "Uppsägning Lämnad",
+      "description": "Detta kontrakt har övergått till status Uppsägning Lämnad.",
+      "effectiveEndDateLabel": "Faktiskt slutdatum",
+      "noticeLetterLabel": "Uppsägningsbrev",
+      "viewDocument": "Visa dokument",
+      "depositNote": "Deponeringens återbetalningsdatum har uppdaterats för att matcha det faktiska slutdatumet.",
+      "backToContract": "Tillbaka till kontraktet"
+    }
   },
   "card": {
     "start": "Start",

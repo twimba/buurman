@@ -19,6 +19,7 @@ const statusColors: Record<ContractStatus, string> = {
   [ContractStatus.ACTIVE]: 'bg-success-text',
   [ContractStatus.EXPIRED]: 'bg-warning-text',
   [ContractStatus.TERMINATED]: 'bg-error-text',
+  [ContractStatus.NOTICE_GIVEN]: 'bg-warning-text',
 };
 
 const statusLabelKeys: Record<ContractStatus, string> = {
@@ -27,6 +28,7 @@ const statusLabelKeys: Record<ContractStatus, string> = {
   [ContractStatus.ACTIVE]: 'statuses.active',
   [ContractStatus.EXPIRED]: 'statuses.expired',
   [ContractStatus.TERMINATED]: 'statuses.terminated',
+  [ContractStatus.NOTICE_GIVEN]: 'statuses.noticeGiven',
 };
 
 export const ContractCell = ({

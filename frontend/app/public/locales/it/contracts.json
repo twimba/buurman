@@ -4,7 +4,8 @@
     "pending": "In attesa",
     "active": "Attivo",
     "expired": "Scaduto",
-    "terminated": "Risolto"
+    "terminated": "Risolto",
+    "noticeGiven": "Preavviso dato"
   },
   "list": {
     "title": "Contratti",
@@ -62,6 +63,8 @@
     "reopenTitle": "Riapri questo contratto in stato bozza",
     "duplicate": "Duplica",
     "duplicateTitle": "Crei una copia di questo contratto in stato bozza",
+    "terminate": "Risolvi Contratto",
+    "terminateTitle": "Dai disdetta per terminare questo contratto attivo",
     "edit": "Modifica",
     "delete": "Elimina",
     "tabs": {
@@ -444,7 +447,8 @@
       "PENDING_SIGNATURE": "In attesa di firma",
       "ACTIVE": "Attivo",
       "EXPIRED": "Scaduto",
-      "TERMINATED": "Risolto"
+      "TERMINATED": "Risolto",
+      "NOTICE_GIVEN": "Preavviso Dato"
     }
   },
   "adjustRent": {
@@ -628,6 +632,80 @@
     "applyAdjustments_many": "Applica {{count}} adeguamenti",
     "increasesFailed_many": "{{count}} aumenti non riusciti",
     "adjustmentPayments_many": "{{count}} pagamenti di conguaglio creati per le modifiche retroattive"
+  },
+  "termination": {
+    "title": "Risolvi Contratto",
+    "subtitle": "Dai disdetta per terminare questo contratto",
+    "steps": {
+      "whoGivesNotice": "Chi Dà Disdetta",
+      "noticeDateGround": "Data & Motivo della Disdetta",
+      "review": "Revisione",
+      "letterPreview": "Anteprima della Lettera",
+      "confirmation": "Conferma"
+    },
+    "givenByValues": {
+      "LANDLORD": "Locatore",
+      "TENANT": "Inquilino"
+    },
+    "whoGivesNotice": {
+      "question": "Chi dà disdetta per terminare questo contratto?",
+      "landlordDescription": "Stai terminando il contratto come locatore.",
+      "tenantDescription": "L'inquilino ha dato disdetta per terminare il contratto.",
+      "next": "Avanti: Data & Motivo della Disdetta"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Data della disdetta",
+      "noticeDateHelp": "La data in cui la disdetta è stata, o sarà, data.",
+      "groundCodeLabel": "Motivo o codice del motivo (opzionale)",
+      "groundCodeHelp": "Richiesto solo per alcuni motivi di disdetta. Puoi confermarlo al passaggio successivo.",
+      "next": "Avanti: Revisione"
+    },
+    "review": {
+      "computedEndDateLabel": "Data di fine calcolata",
+      "noticeDaysLabel": "Periodo di preavviso",
+      "noticeDaysValue": "{{count}} giorni",
+      "sourceLabel": "Come è stato calcolato",
+      "source": {
+        "CATALOG_RULE": "Basato sulle regole di preavviso del tuo paese.",
+        "CONTRACT_FALLBACK": "Basato sull'impostazione di preavviso propria di questo contratto.",
+        "HARDCODED_DEFAULT": "Viene usato un valore predefinito di 30 giorni."
+      },
+      "groundRequiredWarning": "Questo motivo di disdetta richiede un codice motivo.",
+      "groundCodeLabel": "Motivo o codice del motivo",
+      "selectGround": "Seleziona un motivo",
+      "overrideToggle": "Usa una data di fine anticipata",
+      "overrideHelp": "Lascia vuoto per accettare la data di fine calcolata sopra.",
+      "effectiveEndDateLabel": "Data di fine anticipata",
+      "overrideReasonLabel": "Motivo della data di fine anticipata",
+      "overrideReasonPlaceholder": "Spiega perché questo contratto termina prima di quanto calcolato...",
+      "overrideReasonRequired": "È richiesto un motivo quando la data di fine è anticipata rispetto alla data calcolata.",
+      "loading": "Calcolo del periodo di preavviso...",
+      "error": "Impossibile calcolare il periodo di preavviso. Controlla la data della disdetta e riprova.",
+      "next": "Avanti: Anteprima della Lettera"
+    },
+    "letterPreview": {
+      "title": "Anteprima della Lettera di Disdetta",
+      "description": "Verrà generata una lettera di disdetta formale che sarà salvata come documento su questo contratto.",
+      "givenByLabel": "Disdetta data da",
+      "noticeDateLabel": "Data della disdetta",
+      "groundCodeLabel": "Motivo",
+      "computedEndDateLabel": "Data di fine calcolata",
+      "effectiveEndDateLabel": "Data di fine effettiva",
+      "overrideReasonLabel": "Motivo della modifica",
+      "inspectionDateLabel": "Data del sopralluogo di riconsegna (opzionale)",
+      "notProvided": "Non fornito",
+      "confirm": "Conferma & Risolvi",
+      "submitting": "Risoluzione in corso..."
+    },
+    "confirmation": {
+      "title": "Disdetta Data",
+      "description": "Questo contratto è passato allo stato Disdetta Data.",
+      "effectiveEndDateLabel": "Data di fine effettiva",
+      "noticeLetterLabel": "Lettera di disdetta",
+      "viewDocument": "Visualizza documento",
+      "depositNote": "La data di scadenza per la restituzione del deposito è stata aggiornata per corrispondere alla data di fine effettiva.",
+      "backToContract": "Torna al contratto"
+    }
   },
   "card": {
     "start": "Inizio",

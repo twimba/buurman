@@ -45,6 +45,7 @@ export const ChangeContractStatusModal = ({
       ACTIVE: t('statusChange.statuses.ACTIVE'),
       EXPIRED: t('statusChange.statuses.EXPIRED'),
       TERMINATED: t('statusChange.statuses.TERMINATED'),
+      NOTICE_GIVEN: t('statusChange.statuses.NOTICE_GIVEN'),
     }),
     [t]
   );

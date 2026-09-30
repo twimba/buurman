@@ -42,6 +42,7 @@ import {
   RotateCcw,
   Copy,
   Repeat,
+  FileWarning,
 } from 'lucide-react';
 import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 
@@ -224,6 +225,17 @@ export const ContractDetailPage = () => {
                 onDownloadBooklet={handleDownloadBooklet}
                 onDownloadSummary={handleDownloadSummary}
               />
+              {contract.status === ContractStatus.ACTIVE && (
+                <Button
+                  variant="secondary"
+                  leftIcon={<FileWarning />}
+                  onClick={() => navigate(`/contracts/${id}/terminate`)}
+                  title={t('detail.terminateTitle')}
+                  disabled={!canEditData}
+                >
+                  {t('detail.terminate')}
+                </Button>
+              )}
               {!canReopen && (
                 <Button
                   variant="primary"

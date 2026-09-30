@@ -4,7 +4,8 @@
     "pending": "Oczekujący",
     "active": "Aktywny",
     "expired": "Wygasły",
-    "terminated": "Rozwiązany"
+    "terminated": "Rozwiązany",
+    "noticeGiven": "Wypowiedzenie złożone"
   },
   "list": {
     "title": "Umowy",
@@ -63,6 +64,8 @@
     "reopenTitle": "Otwórz ponownie tę umowę ze statusem szkicu",
     "duplicate": "Duplikuj",
     "duplicateTitle": "Utwórz kopię tej umowy ze statusem szkicu",
+    "terminate": "Rozwiąż umowę",
+    "terminateTitle": "Wypowiedz tę aktywną umowę",
     "edit": "Edytuj",
     "delete": "Usuń",
     "tabs": {
@@ -446,7 +449,8 @@
       "PENDING_SIGNATURE": "Oczekuje na podpis",
       "ACTIVE": "Aktywna",
       "EXPIRED": "Wygasła",
-      "TERMINATED": "Rozwiązana"
+      "TERMINATED": "Rozwiązana",
+      "NOTICE_GIVEN": "Wypowiedzenie złożone"
     }
   },
   "adjustRent": {
@@ -635,6 +639,80 @@
     "adjustmentPayments_other": "{{count}} płatności korygujących utworzonych dla zmian wstecznych",
     "status": "Status",
     "leaseOfTotal": "Umowa {{index}} z {{total}} dla tej nieruchomości"
+  },
+  "termination": {
+    "title": "Rozwiąż Umowę",
+    "subtitle": "Złóż wypowiedzenie, aby zakończyć tę umowę",
+    "steps": {
+      "whoGivesNotice": "Kto Wypowiada",
+      "noticeDateGround": "Data & Przyczyna Wypowiedzenia",
+      "review": "Przegląd",
+      "letterPreview": "Podgląd Listu",
+      "confirmation": "Potwierdzenie"
+    },
+    "givenByValues": {
+      "LANDLORD": "Wynajmujący",
+      "TENANT": "Najemca"
+    },
+    "whoGivesNotice": {
+      "question": "Kto wypowiada tę umowę?",
+      "landlordDescription": "Kończysz umowę jako wynajmujący.",
+      "tenantDescription": "Najemca złożył wypowiedzenie umowy.",
+      "next": "Dalej: Data & Przyczyna Wypowiedzenia"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Data wypowiedzenia",
+      "noticeDateHelp": "Data, w której wypowiedzenie zostało, lub zostanie, złożone.",
+      "groundCodeLabel": "Przyczyna lub kod przyczyny (opcjonalnie)",
+      "groundCodeHelp": "Wymagane tylko dla niektórych przyczyn wypowiedzenia. Możesz to potwierdzić w następnym kroku.",
+      "next": "Dalej: Przegląd"
+    },
+    "review": {
+      "computedEndDateLabel": "Obliczona data zakończenia",
+      "noticeDaysLabel": "Okres wypowiedzenia",
+      "noticeDaysValue": "{{count}} dni",
+      "sourceLabel": "Jak to zostało obliczone",
+      "source": {
+        "CATALOG_RULE": "Na podstawie przepisów o okresie wypowiedzenia w Twoim kraju.",
+        "CONTRACT_FALLBACK": "Na podstawie własnego ustawienia okresu wypowiedzenia tej umowy.",
+        "HARDCODED_DEFAULT": "Używana jest domyślna wartość 30 dni."
+      },
+      "groundRequiredWarning": "Ta przyczyna wypowiedzenia wymaga kodu przyczyny.",
+      "groundCodeLabel": "Przyczyna lub kod przyczyny",
+      "selectGround": "Wybierz przyczynę",
+      "overrideToggle": "Użyj wcześniejszej daty zakończenia",
+      "overrideHelp": "Pozostaw puste, aby zaakceptować obliczoną powyżej datę zakończenia.",
+      "effectiveEndDateLabel": "Wcześniejsza data zakończenia",
+      "overrideReasonLabel": "Przyczyna wcześniejszej daty zakończenia",
+      "overrideReasonPlaceholder": "Wyjaśnij, dlaczego ta umowa kończy się wcześniej niż obliczono...",
+      "overrideReasonRequired": "Przyczyna jest wymagana, gdy data zakończenia jest wcześniejsza niż obliczona data.",
+      "loading": "Obliczanie okresu wypowiedzenia...",
+      "error": "Nie można obliczyć okresu wypowiedzenia. Sprawdź datę wypowiedzenia i spróbuj ponownie.",
+      "next": "Dalej: Podgląd Listu"
+    },
+    "letterPreview": {
+      "title": "Podgląd Listu Wypowiadającego",
+      "description": "Zostanie wygenerowany formalny list wypowiadający, zapisany jako dokument w tej umowie.",
+      "givenByLabel": "Wypowiedziane przez",
+      "noticeDateLabel": "Data wypowiedzenia",
+      "groundCodeLabel": "Przyczyna",
+      "computedEndDateLabel": "Obliczona data zakończenia",
+      "effectiveEndDateLabel": "Faktyczna data zakończenia",
+      "overrideReasonLabel": "Przyczyna zmiany",
+      "inspectionDateLabel": "Data przeglądu przy wyprowadzce (opcjonalnie)",
+      "notProvided": "Nie podano",
+      "confirm": "Potwierdź & Rozwiąż",
+      "submitting": "Rozwiązywanie..."
+    },
+    "confirmation": {
+      "title": "Wypowiedzenie Złożone",
+      "description": "Ta umowa przeszła w status Wypowiedzenie Złożone.",
+      "effectiveEndDateLabel": "Faktyczna data zakończenia",
+      "noticeLetterLabel": "List wypowiadający",
+      "viewDocument": "Zobacz dokument",
+      "depositNote": "Termin zwrotu kaucji został zaktualizowany, aby odpowiadał faktycznej dacie zakończenia.",
+      "backToContract": "Powrót do umowy"
+    }
   },
   "card": {
     "start": "Początek",

@@ -4,7 +4,8 @@
     "pending": "Pending",
     "active": "Active",
     "expired": "Expired",
-    "terminated": "Terminated"
+    "terminated": "Terminated",
+    "noticeGiven": "Notice Given"
   },
   "list": {
     "title": "Contracts",
@@ -61,6 +62,8 @@
     "reopenTitle": "Reopen this contract to draft status",
     "duplicate": "Duplicate",
     "duplicateTitle": "Create a copy of this contract in draft status",
+    "terminate": "Terminate Contract",
+    "terminateTitle": "Give notice to end this active contract",
     "edit": "Edit",
     "delete": "Delete",
     "tabs": {
@@ -442,7 +445,8 @@
       "PENDING_SIGNATURE": "Pending Signature",
       "ACTIVE": "Active",
       "EXPIRED": "Expired",
-      "TERMINATED": "Terminated"
+      "TERMINATED": "Terminated",
+      "NOTICE_GIVEN": "Notice Given"
     }
   },
   "adjustRent": {
@@ -621,6 +625,80 @@
     "adjustmentPayments_one": "{{count}} adjustment payment created for retroactive changes",
     "adjustmentPayments_other": "{{count}} adjustment payments created for retroactive changes",
     "status": "Status"
+  },
+  "termination": {
+    "title": "Terminate Contract",
+    "subtitle": "Give notice to end this contract",
+    "steps": {
+      "whoGivesNotice": "Who Gives Notice",
+      "noticeDateGround": "Notice Date & Ground",
+      "review": "Review",
+      "letterPreview": "Letter Preview",
+      "confirmation": "Confirmation"
+    },
+    "givenByValues": {
+      "LANDLORD": "Landlord",
+      "TENANT": "Tenant"
+    },
+    "whoGivesNotice": {
+      "question": "Who is giving notice to end this contract?",
+      "landlordDescription": "You are ending the contract as the landlord.",
+      "tenantDescription": "The tenant has given notice to end the contract.",
+      "next": "Next: Notice Date & Ground"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Notice date",
+      "noticeDateHelp": "The date notice was, or will be, given.",
+      "groundCodeLabel": "Ground or reason code (optional)",
+      "groundCodeHelp": "Only required for some termination grounds. You can confirm this on the next step.",
+      "next": "Next: Review"
+    },
+    "review": {
+      "computedEndDateLabel": "Computed end date",
+      "noticeDaysLabel": "Notice period",
+      "noticeDaysValue": "{{count}} days",
+      "sourceLabel": "How this was calculated",
+      "source": {
+        "CATALOG_RULE": "Based on your country's notice-period rules.",
+        "CONTRACT_FALLBACK": "Based on this contract's own notice setting.",
+        "HARDCODED_DEFAULT": "Using a 30-day default."
+      },
+      "groundRequiredWarning": "This termination ground requires a reason code.",
+      "groundCodeLabel": "Ground or reason code",
+      "selectGround": "Select a ground",
+      "overrideToggle": "Use an earlier end date",
+      "overrideHelp": "Leave empty to accept the computed end date above.",
+      "effectiveEndDateLabel": "Earlier end date",
+      "overrideReasonLabel": "Reason for the earlier end date",
+      "overrideReasonPlaceholder": "Explain why this contract ends earlier than computed...",
+      "overrideReasonRequired": "A reason is required when the end date is earlier than the computed date.",
+      "loading": "Calculating notice period...",
+      "error": "Could not calculate the notice period. Check the notice date and try again.",
+      "next": "Next: Letter Preview"
+    },
+    "letterPreview": {
+      "title": "Notice Letter Preview",
+      "description": "A formal notice letter will be generated and stored as a document on this contract.",
+      "givenByLabel": "Given by",
+      "noticeDateLabel": "Notice date",
+      "groundCodeLabel": "Ground",
+      "computedEndDateLabel": "Computed end date",
+      "effectiveEndDateLabel": "Effective end date",
+      "overrideReasonLabel": "Override reason",
+      "inspectionDateLabel": "Move-out inspection date (optional)",
+      "notProvided": "Not provided",
+      "confirm": "Confirm & Terminate",
+      "submitting": "Terminating..."
+    },
+    "confirmation": {
+      "title": "Notice Given",
+      "description": "This contract has moved to Notice Given status.",
+      "effectiveEndDateLabel": "Effective end date",
+      "noticeLetterLabel": "Notice letter",
+      "viewDocument": "View document",
+      "depositNote": "The deposit return due date has been updated to match the effective end date.",
+      "backToContract": "Back to Contract"
+    }
   },
   "card": {
     "start": "Start",

@@ -4,7 +4,8 @@
     "pending": "Pendente",
     "active": "Ativo",
     "expired": "Expirado",
-    "terminated": "Terminado"
+    "terminated": "Terminado",
+    "noticeGiven": "Pré-aviso dado"
   },
   "list": {
     "title": "Contratos",
@@ -62,6 +63,8 @@
     "reopenTitle": "Reabrir este contrato para estado de rascunho",
     "duplicate": "Duplicar",
     "duplicateTitle": "Criar uma cópia deste contrato em estado de rascunho",
+    "terminate": "Rescindir Contrato",
+    "terminateTitle": "Dar pré-aviso para terminar este contrato ativo",
     "edit": "Editar",
     "delete": "Eliminar",
     "tabs": {
@@ -444,7 +447,8 @@
       "PENDING_SIGNATURE": "Aguarda Assinatura",
       "ACTIVE": "Ativo",
       "EXPIRED": "Expirado",
-      "TERMINATED": "Terminado"
+      "TERMINATED": "Terminado",
+      "NOTICE_GIVEN": "Pré-aviso Dado"
     }
   },
   "adjustRent": {
@@ -628,6 +632,80 @@
     "applyAdjustments_many": "Aplicar {{count}} Ajustes",
     "increasesFailed_many": "{{count}} aumentos falharam",
     "adjustmentPayments_many": "{{count}} pagamentos de ajuste criados para alterações retroativas"
+  },
+  "termination": {
+    "title": "Rescindir Contrato",
+    "subtitle": "Dar pré-aviso para terminar este contrato",
+    "steps": {
+      "whoGivesNotice": "Quem Notifica",
+      "noticeDateGround": "Data e Motivo do Pré-aviso",
+      "review": "Revisão",
+      "letterPreview": "Pré-visualização da Carta",
+      "confirmation": "Confirmação"
+    },
+    "givenByValues": {
+      "LANDLORD": "Senhorio",
+      "TENANT": "Inquilino"
+    },
+    "whoGivesNotice": {
+      "question": "Quem dá o pré-aviso para terminar este contrato?",
+      "landlordDescription": "Está a terminar o contrato como senhorio.",
+      "tenantDescription": "O inquilino deu o pré-aviso para terminar o contrato.",
+      "next": "Seguinte: Data e Motivo do Pré-aviso"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Data do pré-aviso",
+      "noticeDateHelp": "A data em que o pré-aviso foi, ou será, dado.",
+      "groundCodeLabel": "Motivo ou código do motivo (opcional)",
+      "groundCodeHelp": "Apenas necessário para alguns motivos de rescisão. Pode confirmar isto no passo seguinte.",
+      "next": "Seguinte: Revisão"
+    },
+    "review": {
+      "computedEndDateLabel": "Data de término calculada",
+      "noticeDaysLabel": "Prazo de pré-aviso",
+      "noticeDaysValue": "{{count}} dias",
+      "sourceLabel": "Como isto foi calculado",
+      "source": {
+        "CATALOG_RULE": "Com base nas regras de pré-aviso do seu país.",
+        "CONTRACT_FALLBACK": "Com base na própria definição de pré-aviso deste contrato.",
+        "HARDCODED_DEFAULT": "A usar um valor padrão de 30 dias."
+      },
+      "groundRequiredWarning": "Este motivo de rescisão requer um código de motivo.",
+      "groundCodeLabel": "Motivo ou código do motivo",
+      "selectGround": "Selecione um motivo",
+      "overrideToggle": "Usar uma data de término mais próxima",
+      "overrideHelp": "Deixe em branco para aceitar a data de término calculada acima.",
+      "effectiveEndDateLabel": "Data de término anterior",
+      "overrideReasonLabel": "Motivo da data de término anterior",
+      "overrideReasonPlaceholder": "Explique porque este contrato termina antes do calculado...",
+      "overrideReasonRequired": "É necessário um motivo quando a data de término é anterior à data calculada.",
+      "loading": "A calcular o prazo de pré-aviso...",
+      "error": "Não foi possível calcular o prazo de pré-aviso. Verifique a data do pré-aviso e tente novamente.",
+      "next": "Seguinte: Pré-visualização da Carta"
+    },
+    "letterPreview": {
+      "title": "Pré-visualização da Carta de Pré-aviso",
+      "description": "Será gerada uma carta de pré-aviso formal, guardada como documento neste contrato.",
+      "givenByLabel": "Pré-aviso dado por",
+      "noticeDateLabel": "Data do pré-aviso",
+      "groundCodeLabel": "Motivo",
+      "computedEndDateLabel": "Data de término calculada",
+      "effectiveEndDateLabel": "Data de término efetiva",
+      "overrideReasonLabel": "Motivo da alteração",
+      "inspectionDateLabel": "Data da vistoria de saída (opcional)",
+      "notProvided": "Não fornecido",
+      "confirm": "Confirmar e Rescindir",
+      "submitting": "A rescindir..."
+    },
+    "confirmation": {
+      "title": "Pré-aviso Dado",
+      "description": "Este contrato passou para o estado Pré-aviso Dado.",
+      "effectiveEndDateLabel": "Data de término efetiva",
+      "noticeLetterLabel": "Carta de pré-aviso",
+      "viewDocument": "Ver documento",
+      "depositNote": "A data limite de devolução do depósito foi atualizada para corresponder à data de término efetiva.",
+      "backToContract": "Voltar ao contrato"
+    }
   },
   "card": {
     "start": "Início",

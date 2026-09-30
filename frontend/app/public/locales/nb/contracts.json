@@ -4,7 +4,8 @@
     "pending": "Ventende",
     "active": "Aktiv",
     "expired": "Utløpt",
-    "terminated": "Avsluttet"
+    "terminated": "Avsluttet",
+    "noticeGiven": "Oppsigelse gitt"
   },
   "list": {
     "title": "Kontrakter",
@@ -61,6 +62,8 @@
     "reopenTitle": "Gjenåpne denne kontrakten til utkastsstatus",
     "duplicate": "Dupliser",
     "duplicateTitle": "Opprett en kopi av denne kontrakten som utkast",
+    "terminate": "Si opp kontrakt",
+    "terminateTitle": "Si opp denne aktive kontrakten",
     "edit": "Rediger",
     "delete": "Slett",
     "tabs": {
@@ -442,7 +445,8 @@
       "PENDING_SIGNATURE": "Venter på signatur",
       "ACTIVE": "Aktiv",
       "EXPIRED": "Utløpt",
-      "TERMINATED": "Avsluttet"
+      "TERMINATED": "Avsluttet",
+      "NOTICE_GIVEN": "Oppsigelse gitt"
     }
   },
   "adjustRent": {
@@ -621,6 +625,80 @@
     "adjustmentPayments_other": "{{count}} justeringsbetalinger opprettet for tilbakevirkende endringer",
     "status": "Status",
     "leaseOfTotal": "Kontrakt {{index}} av {{total}} på denne eiendommen"
+  },
+  "termination": {
+    "title": "Si Opp Kontrakt",
+    "subtitle": "Gi oppsigelse for å avslutte denne kontrakten",
+    "steps": {
+      "whoGivesNotice": "Hvem Sier Opp",
+      "noticeDateGround": "Oppsigelsesdato & Grunn",
+      "review": "Gjennomgang",
+      "letterPreview": "Forhåndsvisning av Brev",
+      "confirmation": "Bekreftelse"
+    },
+    "givenByValues": {
+      "LANDLORD": "Utleier",
+      "TENANT": "Leietaker"
+    },
+    "whoGivesNotice": {
+      "question": "Hvem sier opp denne kontrakten?",
+      "landlordDescription": "Du avslutter kontrakten som utleier.",
+      "tenantDescription": "Leietakeren har sagt opp kontrakten.",
+      "next": "Neste: Oppsigelsesdato & Grunn"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Oppsigelsesdato",
+      "noticeDateHelp": "Datoen oppsigelsen ble, eller vil bli, gitt.",
+      "groundCodeLabel": "Oppsigelsesgrunn eller -kode (valgfritt)",
+      "groundCodeHelp": "Kun nødvendig for enkelte oppsigelsesgrunner. Du kan bekrefte dette i neste steg.",
+      "next": "Neste: Gjennomgang"
+    },
+    "review": {
+      "computedEndDateLabel": "Beregnet sluttdato",
+      "noticeDaysLabel": "Oppsigelsestid",
+      "noticeDaysValue": "{{count}} dager",
+      "sourceLabel": "Hvordan dette ble beregnet",
+      "source": {
+        "CATALOG_RULE": "Basert på landets regler for oppsigelsestid.",
+        "CONTRACT_FALLBACK": "Basert på kontraktens egen oppsigelsesinnstilling.",
+        "HARDCODED_DEFAULT": "Bruker en standard på 30 dager."
+      },
+      "groundRequiredWarning": "Denne oppsigelsesgrunnen krever en grunnkode.",
+      "groundCodeLabel": "Oppsigelsesgrunn eller -kode",
+      "selectGround": "Velg en grunn",
+      "overrideToggle": "Bruk en tidligere sluttdato",
+      "overrideHelp": "La stå tom for å akseptere den beregnede sluttdatoen ovenfor.",
+      "effectiveEndDateLabel": "Tidligere sluttdato",
+      "overrideReasonLabel": "Grunn for den tidligere sluttdatoen",
+      "overrideReasonPlaceholder": "Forklar hvorfor denne kontrakten avsluttes tidligere enn beregnet...",
+      "overrideReasonRequired": "En grunn er nødvendig når sluttdatoen er tidligere enn den beregnede datoen.",
+      "loading": "Beregner oppsigelsestid...",
+      "error": "Kunne ikke beregne oppsigelsestiden. Kontroller oppsigelsesdatoen og prøv igjen.",
+      "next": "Neste: Forhåndsvisning av Brev"
+    },
+    "letterPreview": {
+      "title": "Forhåndsvisning av Oppsigelsesbrev",
+      "description": "Et formelt oppsigelsesbrev vil bli generert og lagret som et dokument på denne kontrakten.",
+      "givenByLabel": "Sagt opp av",
+      "noticeDateLabel": "Oppsigelsesdato",
+      "groundCodeLabel": "Grunn",
+      "computedEndDateLabel": "Beregnet sluttdato",
+      "effectiveEndDateLabel": "Faktisk sluttdato",
+      "overrideReasonLabel": "Grunn for endringen",
+      "inspectionDateLabel": "Dato for utflyttingssyn (valgfritt)",
+      "notProvided": "Ikke angitt",
+      "confirm": "Bekreft & Si Opp",
+      "submitting": "Sier opp..."
+    },
+    "confirmation": {
+      "title": "Oppsigelse Gitt",
+      "description": "Denne kontrakten har gått over til status Oppsigelse Gitt.",
+      "effectiveEndDateLabel": "Faktisk sluttdato",
+      "noticeLetterLabel": "Oppsigelsesbrev",
+      "viewDocument": "Vis dokument",
+      "depositNote": "Fristen for tilbakebetaling av depositum er oppdatert til å samsvare med den faktiske sluttdatoen.",
+      "backToContract": "Tilbake til kontrakten"
+    }
   },
   "card": {
     "start": "Start",
