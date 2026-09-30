@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractTermination;
@@ -54,6 +55,7 @@ public class ContractTerminationService {
   private final DepositService depositService;
   private final DocumentRepository documentRepository;
   private final S3StorageService s3StorageService;
+  private final TransactionTemplate transactionTemplate;
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   @Transactional
@@ -124,32 +126,27 @@ public class ContractTerminationService {
    * <p>Runs with no authenticated team context (invoked from {@code ContractTerminationSweepJob}, a
    * Quartz job with no {@link UserPrincipal}), so the contract transition goes through {@link
    * ContractService#transitionStatus}, not the human-facing, {@code @PreAuthorize}-gated {@link
-   * ContractService#changeContractStatus}. A failure on one termination is logged and does not stop
-   * the rest of the sweep; the failed row stays {@code NOTICE_GIVEN} and is picked up again on the
-   * next run.
+   * ContractService#changeContractStatus}.
+   *
+   * <p>Each termination is processed in its own {@link #transactionTemplate}-managed transaction —
+   * deliberately NOT one {@code @Transactional} spanning the whole sweep — mirroring {@link
+   * ContractExtensionService#processAutoExtensionsForTeam}. {@link
+   * ContractService#transitionStatus} calls other {@code @Transactional} (REQUIRED-propagation)
+   * services (payment scheduling, notifications); if one of those throws, it marks whatever ambient
+   * transaction it joined {@code rollbackOnly}. A single method-level {@code @Transactional} here
+   * would make that one ambient transaction span every termination in the run, so one failure would
+   * roll back every termination already-processed earlier in the same sweep on commit (via {@code
+   * UnexpectedRollbackException}) — even though the {@code catch} below appears to isolate it.
+   * Giving each termination its own {@code transactionTemplate.executeWithoutResult} call gives
+   * each one its own transaction, so a failure on one is caught, logged, and leaves every other
+   * termination's already-committed work intact; the failed row stays {@code NOTICE_GIVEN} and is
+   * picked up again on the next run.
    */
-  @Transactional
   public void sweepDueTerminations() {
     List<ContractTermination> due = terminationRepository.findDueForTransition(LocalDate.now());
     for (ContractTermination termination : due) {
       try {
-        Contract contract =
-            contractRepository.getByIdAndTeamId(
-                termination.getContractId(), termination.getTeamId());
-
-        termination.setStatus(ContractTerminationStatus.TERMINATED);
-        terminationRepository.save(termination);
-
-        contractService.transitionStatus(
-            contract,
-            Contract.ContractStatus.TERMINATED,
-            Constants.SYSTEM_USER_ID,
-            Optional.empty());
-
-        log.info(
-            "Termination for contract {} swept to TERMINATED (effective end date {})",
-            termination.getContractId(),
-            termination.getEffectiveEndDate());
+        transactionTemplate.executeWithoutResult(status -> sweepOneTermination(termination));
       } catch (Exception e) {
         log.error(
             "Failed to sweep termination {} for contract {} to TERMINATED",
@@ -158,6 +155,22 @@ public class ContractTerminationService {
             e);
       }
     }
+  }
+
+  private void sweepOneTermination(ContractTermination termination) {
+    Contract contract =
+        contractRepository.getByIdAndTeamId(termination.getContractId(), termination.getTeamId());
+
+    termination.setStatus(ContractTerminationStatus.TERMINATED);
+    terminationRepository.save(termination);
+
+    contractService.transitionStatus(
+        contract, Contract.ContractStatus.TERMINATED, Constants.SYSTEM_USER_ID, Optional.empty());
+
+    log.info(
+        "Termination for contract {} swept to TERMINATED (effective end date {})",
+        termination.getContractId(),
+        termination.getEffectiveEndDate());
   }
 
   /** A pure computation of the notice period — no persistence, safe for any team member to run. */

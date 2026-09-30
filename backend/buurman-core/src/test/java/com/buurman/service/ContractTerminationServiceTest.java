@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -13,11 +14,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractTermination;
@@ -49,6 +53,7 @@ class ContractTerminationServiceTest {
   private final DepositService depositService = mock(DepositService.class);
   private final DocumentRepository documentRepository = mock(DocumentRepository.class);
   private final S3StorageService s3StorageService = mock(S3StorageService.class);
+  private final TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
 
   private ContractTerminationService service;
 
@@ -75,7 +80,20 @@ class ContractTerminationServiceTest {
             letterExporter,
             depositService,
             documentRepository,
-            s3StorageService);
+            s3StorageService,
+            transactionTemplate);
+
+    // sweepDueTerminations runs each termination through transactionTemplate rather than a
+    // method-level @Transactional (see its javadoc) — the mock must actually invoke the callback
+    // for the sweep tests below to observe any effect.
+    doAnswer(
+            inv -> {
+              Consumer<TransactionStatus> callback = inv.getArgument(0);
+              callback.accept(null);
+              return null;
+            })
+        .when(transactionTemplate)
+        .executeWithoutResult(any());
 
     contract =
         Contract.builder()
@@ -258,6 +276,59 @@ class ContractTerminationServiceTest {
 
     org.mockito.Mockito.verify(terminationRepository, org.mockito.Mockito.never()).save(any());
     org.mockito.Mockito.verifyNoInteractions(contractService);
+  }
+
+  @Test
+  @DisplayName(
+      "a termination that fails to sweep does not prevent a later termination in the same sweep"
+          + " run from being fully processed — each runs in its own transactionTemplate call, not"
+          + " one @Transactional spanning the whole sweep")
+  void sweepIsolatesFailuresPerTermination() {
+    UUID otherContractId = UUID.randomUUID();
+    ContractTermination failing =
+        ContractTermination.builder()
+            .id(UUID.randomUUID())
+            .teamId(TEAM_ID)
+            .contractId(CONTRACT_ID)
+            .status(ContractTerminationStatus.NOTICE_GIVEN)
+            .effectiveEndDate(LocalDate.now().minusDays(1))
+            .build();
+    ContractTermination succeeding =
+        ContractTermination.builder()
+            .id(UUID.randomUUID())
+            .teamId(TEAM_ID)
+            .contractId(otherContractId)
+            .status(ContractTerminationStatus.NOTICE_GIVEN)
+            .effectiveEndDate(LocalDate.now().minusDays(1))
+            .build();
+    Contract otherContract = Contract.builder().id(otherContractId).teamId(TEAM_ID).build();
+    when(terminationRepository.findDueForTransition(any()))
+        .thenReturn(List.of(failing, succeeding));
+    // Simulates transitionStatus (or any other @Transactional collaborator it calls) throwing —
+    // the exact failure mode that marks an ambient transaction rollbackOnly in production.
+    when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenThrow(new RuntimeException("boom"));
+    when(contractRepository.getByIdAndTeamId(otherContractId, TEAM_ID)).thenReturn(otherContract);
+
+    service.sweepDueTerminations(); // must not throw despite the first termination failing
+
+    verify(terminationRepository, org.mockito.Mockito.never())
+        .save(org.mockito.ArgumentMatchers.argThat(t -> t.getContractId().equals(CONTRACT_ID)));
+    verify(terminationRepository)
+        .save(
+            org.mockito.ArgumentMatchers.argThat(
+                t ->
+                    t.getContractId().equals(otherContractId)
+                        && t.getStatus() == ContractTerminationStatus.TERMINATED));
+    verify(contractService)
+        .transitionStatus(
+            org.mockito.ArgumentMatchers.eq(otherContract),
+            org.mockito.ArgumentMatchers.eq(Contract.ContractStatus.TERMINATED),
+            org.mockito.ArgumentMatchers.eq(Constants.SYSTEM_USER_ID),
+            org.mockito.ArgumentMatchers.any());
+    // Each termination went through its own transactionTemplate.executeWithoutResult call
+    // (rather than a single ambient transaction), which is what makes this isolation possible.
+    verify(transactionTemplate, org.mockito.Mockito.times(2)).executeWithoutResult(any());
   }
 
   @Test
