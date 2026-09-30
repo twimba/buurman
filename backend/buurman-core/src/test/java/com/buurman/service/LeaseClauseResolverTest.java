@@ -93,6 +93,27 @@ class LeaseClauseResolverTest {
   }
 
   @Test
+  void requiredTemplateIsAlwaysIncludedEvenWithAnExclusionOverride() {
+    // Simulates a template that was made required after an override excluding it was already
+    // stored (e.g. back when it was still optional) — the resolver must force it back in.
+    LeaseClauseTemplate parties = template("parties", true, false, 1);
+    when(templateRepository.findByCountryCode("NL")).thenReturn(List.of(parties));
+    when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(
+            List.of(
+                ContractLeaseClause.builder()
+                    .clauseTemplateId(parties.getId())
+                    .included(false)
+                    .sortOrder(1)
+                    .build()));
+    when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("resolved text");
+
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH);
+
+    assertThat(resolved.get(0).included()).isTrue();
+  }
+
+  @Test
   void countryWithNoTemplatesRejectsWithBusinessRuleException() {
     when(templateRepository.findByCountryCode("GB")).thenReturn(List.of());
 

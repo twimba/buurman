@@ -19,6 +19,7 @@ import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.LeaseClauseTemplateIdentifier;
 import com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest;
 import com.buurman.dto.response.LeaseClauseTemplateResponse;
+import com.buurman.exception.BadRequestException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.LeaseClauseTemplateRepository;
 
@@ -64,6 +65,41 @@ class BackofficeLeaseClauseTemplateServiceTest {
     assertThat(response.optional()).isFalse();
     assertThat(response.sortOrder()).isEqualTo(10);
     assertThat(response.version()).isEqualTo(1);
+  }
+
+  @Test
+  @DisplayName("create rejects a required clause that defaults to excluded")
+  void createRejectsRequiredButExcludedByDefault() {
+    UpsertLeaseClauseTemplateRequest request =
+        new UpsertLeaseClauseTemplateRequest(
+            "NL",
+            "governing_law",
+            "clause.governingLaw.title",
+            "clause.governingLaw.body",
+            false,
+            false,
+            10);
+
+    assertThatThrownBy(() -> service.create(request, ACTOR_ID))
+        .isInstanceOf(BadRequestException.class);
+  }
+
+  @Test
+  @DisplayName("update rejects a required clause that defaults to excluded")
+  void updateRejectsRequiredButExcludedByDefault() {
+    Sid identifier = LeaseClauseTemplateIdentifier.of("LCT01");
+    UpsertLeaseClauseTemplateRequest request =
+        new UpsertLeaseClauseTemplateRequest(
+            "NL",
+            "governing_law",
+            "clause.governingLaw.title",
+            "clause.governingLaw.body",
+            false,
+            false,
+            10);
+
+    assertThatThrownBy(() -> service.update(identifier, request, ACTOR_ID))
+        .isInstanceOf(BadRequestException.class);
   }
 
   @Test

@@ -62,6 +62,11 @@ public class LeaseClauseResolver {
             t -> {
               ContractLeaseClause override = overridesByTemplateId.get(t.getId());
               boolean included = override != null ? override.isIncluded() : t.isDefaultIncluded();
+              // Required clauses are always included, regardless of a stored override or the
+              // template's default — this is the single source of truth enforcing that a
+              // non-optional clause can never be excluded from the generated document, even if
+              // a template was changed from optional to required after overrides already existed.
+              included = included || !t.isOptional();
               int sortOrder = override != null ? override.getSortOrder() : t.getSortOrder();
               String title = messageSource.getMessage(t.getTitleI18nKey(), null, locale);
               String body = messageSource.getMessage(t.getBodyI18nKey(), null, locale);
