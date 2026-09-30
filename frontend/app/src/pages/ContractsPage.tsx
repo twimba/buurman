@@ -29,6 +29,7 @@ import {
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
+import { SavedFiltersDropdown } from '@/components/contracts/SavedFiltersDropdown';
 import {
   exportContractsCsv,
   exportContractsXlsx,
@@ -103,6 +104,30 @@ export const ContractsPage = () => {
     direction: sortDirection,
   });
   const contracts = contractsData?.content;
+
+  const validStatuses: string[] = Object.values(ContractStatus);
+  const validSortFields = ['endDate', 'startDate', 'rentAmount'] as const;
+
+  const handleApplySavedFilter = (criteria: Record<string, unknown>) => {
+    const { status, search, endingWithinDays: days, sort, direction } =
+      criteria;
+
+    setStatusFilter(
+      typeof status === 'string' && validStatuses.includes(status)
+        ? (status as ContractStatus)
+        : undefined
+    );
+    setSearchInput(typeof search === 'string' ? search : '');
+    setEndingWithinDays(typeof days === 'number' ? days : undefined);
+    setSortField(
+      typeof sort === 'string' &&
+        (validSortFields as readonly string[]).includes(sort)
+        ? (sort as (typeof validSortFields)[number])
+        : 'endDate'
+    );
+    setSortDirection(direction === 'DESC' ? 'DESC' : 'ASC');
+    resetPage();
+  };
 
   if (isLoading) {
     return (
@@ -316,6 +341,17 @@ export const ContractsPage = () => {
               )}
             </button>
           </div>
+
+          <SavedFiltersDropdown
+            currentCriteria={{
+              status: statusFilter,
+              search: debouncedSearch,
+              endingWithinDays,
+              sort: sortField,
+              direction: sortDirection,
+            }}
+            onApply={handleApplySavedFilter}
+          />
         </div>
 
         {/* Active filter chips */}

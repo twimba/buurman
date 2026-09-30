@@ -36,6 +36,12 @@
       "endDate": "Data di fine",
       "startDate": "Data di inizio",
       "rentAmount": "Importo del canone"
+    },
+    "savedFilters": {
+      "button": "Filtri salvati",
+      "namePlaceholder": "Nome filtro",
+      "save": "Salva",
+      "delete": "Elimina {{name}}"
     }
   },
   "create": {

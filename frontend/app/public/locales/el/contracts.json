@@ -35,6 +35,12 @@
       "endDate": "Ημερομηνία λήξης",
       "startDate": "Ημερομηνία έναρξης",
       "rentAmount": "Ποσό ενοικίου"
+    },
+    "savedFilters": {
+      "button": "Αποθηκευμένα φίλτρα",
+      "namePlaceholder": "Όνομα φίλτρου",
+      "save": "Αποθήκευση",
+      "delete": "Διαγραφή {{name}}"
     }
   },
   "create": {

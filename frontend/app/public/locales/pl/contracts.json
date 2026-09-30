@@ -37,6 +37,12 @@
       "endDate": "Data zakończenia",
       "startDate": "Data rozpoczęcia",
       "rentAmount": "Kwota czynszu"
+    },
+    "savedFilters": {
+      "button": "Zapisane filtry",
+      "namePlaceholder": "Nazwa filtra",
+      "save": "Zapisz",
+      "delete": "Usuń {{name}}"
     }
   },
   "create": {

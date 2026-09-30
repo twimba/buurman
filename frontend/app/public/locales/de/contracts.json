@@ -35,6 +35,12 @@
       "endDate": "Enddatum",
       "startDate": "Startdatum",
       "rentAmount": "Mietbetrag"
+    },
+    "savedFilters": {
+      "button": "Gespeicherte Filter",
+      "namePlaceholder": "Filtername",
+      "save": "Speichern",
+      "delete": "{{name}} löschen"
     }
   },
   "create": {

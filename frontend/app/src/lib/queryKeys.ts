@@ -140,6 +140,11 @@ export const queryKeys = {
       ),
   },
 
+  // --- Saved Contract Filters ---
+  savedContractFilters: {
+    all: () => k('savedContractFilters'),
+  },
+
   // --- Payments ---
   payments: {
     all: (params?: unknown) => k('payments', params),

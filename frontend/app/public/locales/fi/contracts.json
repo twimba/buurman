@@ -35,6 +35,12 @@
       "endDate": "Päättymispäivä",
       "startDate": "Alkamispäivä",
       "rentAmount": "Vuokran määrä"
+    },
+    "savedFilters": {
+      "button": "Tallennetut suodattimet",
+      "namePlaceholder": "Suodattimen nimi",
+      "save": "Tallenna",
+      "delete": "Poista {{name}}"
     }
   },
   "create": {

@@ -35,6 +35,12 @@
       "endDate": "Slutdato",
       "startDate": "Startdato",
       "rentAmount": "Lejebeløb"
+    },
+    "savedFilters": {
+      "button": "Gemte filtre",
+      "namePlaceholder": "Filternavn",
+      "save": "Gem",
+      "delete": "Slet {{name}}"
     }
   },
   "create": {

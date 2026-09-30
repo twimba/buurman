@@ -35,6 +35,12 @@
       "endDate": "Sluttdato",
       "startDate": "Startdato",
       "rentAmount": "Leiebeløp"
+    },
+    "savedFilters": {
+      "button": "Lagrede filtre",
+      "namePlaceholder": "Filternavn",
+      "save": "Lagre",
+      "delete": "Slett {{name}}"
     }
   },
   "create": {

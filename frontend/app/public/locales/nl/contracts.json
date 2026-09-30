@@ -35,6 +35,12 @@
       "endDate": "Einddatum",
       "startDate": "Startdatum",
       "rentAmount": "Huurbedrag"
+    },
+    "savedFilters": {
+      "button": "Opgeslagen filters",
+      "namePlaceholder": "Filternaam",
+      "save": "Opslaan",
+      "delete": "{{name}} verwijderen"
     }
   },
   "create": {

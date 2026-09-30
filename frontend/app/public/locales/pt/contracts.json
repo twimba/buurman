@@ -36,6 +36,12 @@
       "endDate": "Data de fim",
       "startDate": "Data de início",
       "rentAmount": "Valor da renda"
+    },
+    "savedFilters": {
+      "button": "Filtros guardados",
+      "namePlaceholder": "Nome do filtro",
+      "save": "Guardar",
+      "delete": "Eliminar {{name}}"
     }
   },
   "create": {

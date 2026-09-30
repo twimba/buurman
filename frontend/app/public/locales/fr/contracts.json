@@ -36,6 +36,12 @@
       "endDate": "Date de fin",
       "startDate": "Date de début",
       "rentAmount": "Montant du loyer"
+    },
+    "savedFilters": {
+      "button": "Filtres enregistrés",
+      "namePlaceholder": "Nom du filtre",
+      "save": "Enregistrer",
+      "delete": "Supprimer {{name}}"
     }
   },
   "create": {

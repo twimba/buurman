@@ -36,6 +36,12 @@
       "endDate": "Fecha de fin",
       "startDate": "Fecha de inicio",
       "rentAmount": "Importe del alquiler"
+    },
+    "savedFilters": {
+      "button": "Filtros guardados",
+      "namePlaceholder": "Nombre del filtro",
+      "save": "Guardar",
+      "delete": "Eliminar {{name}}"
     }
   },
   "create": {

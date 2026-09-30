@@ -35,6 +35,12 @@
       "endDate": "Slutdatum",
       "startDate": "Startdatum",
       "rentAmount": "Hyresbelopp"
+    },
+    "savedFilters": {
+      "button": "Sparade filter",
+      "namePlaceholder": "Filternamn",
+      "save": "Spara",
+      "delete": "Ta bort {{name}}"
     }
   },
   "create": {
