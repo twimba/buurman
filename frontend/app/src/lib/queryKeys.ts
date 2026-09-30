@@ -103,6 +103,7 @@ export const queryKeys = {
     deposit: (contractId?: string) => k('contractDeposit', contractId),
     paymentPlans: (contractId?: string) =>
       k('contractPaymentPlans', contractId),
+    timeline: (contractId?: string) => k('contractTimeline', contractId),
   },
 
   // --- Signature Requests ---
