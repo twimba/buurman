@@ -269,6 +269,43 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
 
   @Test
   @DisplayName(
+      "search does not match a contract whose property has been soft-deleted, even though its"
+          + " street/city would otherwise match")
+  void searchExcludesSoftDeletedProperty() {
+    UUID propertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID); // "Main Street 1"
+    UUID contractId = TestDataHelper.insertContract(dsl, TEAM_A_ID, propertyId, USER_ID);
+
+    // Sanity check: before the soft-delete, the search term does match.
+    var beforeDelete =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID,
+            null,
+            null,
+            null,
+            "main street",
+            null,
+            PageRequest.of(0, 25, null, (SortDirection) null));
+    assertThat(beforeDelete.items()).extracting(Contract::getId).contains(contractId);
+
+    dsl.update(DSL.table("properties"))
+        .set(DSL.field("deleted_at", LocalDateTime.class), LocalDateTime.of(2026, 3, 1, 12, 0))
+        .where(DSL.field("id", UUID.class).eq(propertyId))
+        .execute();
+
+    var afterDelete =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID,
+            null,
+            null,
+            null,
+            "main street",
+            null,
+            PageRequest.of(0, 25, null, (SortDirection) null));
+    assertThat(afterDelete.items()).extracting(Contract::getId).doesNotContain(contractId);
+  }
+
+  @Test
+  @DisplayName(
       "endingWithinDays includes a contract ending inside the window and excludes one outside it,"
           + " using the unaliased WHERE-safe expression")
   void endingWithinDaysWindow() {

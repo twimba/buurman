@@ -454,6 +454,7 @@ public class ContractRepository {
                                       .ID
                                       .eq(CONTRACTS.PROPERTY_ID)
                                       .and(PROPERTIES.TEAM_ID.eq(teamId))
+                                      .and(PROPERTIES.DELETED_AT.isNull())
                                       .and(
                                           lower(PROPERTIES.STREET)
                                               .like(pattern)
