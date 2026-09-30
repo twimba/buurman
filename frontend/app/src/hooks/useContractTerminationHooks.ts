@@ -60,6 +60,20 @@ export const useTerminateContract = (contractId: string) => {
         queryKey: queryKeys.contracts.detail(contractId),
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
+      // The notice letter is filed as a contract document, the deposit's return-due date moves
+      // to the new effective end date, and the status change lands on the timeline/audit log.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.documents(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.deposit(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.timeline(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
     },
   });
 };

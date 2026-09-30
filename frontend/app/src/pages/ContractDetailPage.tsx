@@ -203,8 +203,10 @@ export const ContractDetailPage = () => {
     );
   }
 
+  // NOTICE_GIVEN is locked like ACTIVE: the backend refuses edits/deletes once notice is given.
   const isLocked =
     contract.status === ContractStatus.ACTIVE ||
+    contract.status === ContractStatus.NOTICE_GIVEN ||
     contract.status === ContractStatus.TERMINATED ||
     contract.status === ContractStatus.EXPIRED;
   const canDelete = !isLocked;
