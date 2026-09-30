@@ -46,6 +46,8 @@ tags:
     description: Segment management for feature flag targeting
   - name: Backoffice - Rate Limits
     description: Rate limit bucket inspection and management
+  - name: Backoffice - Lease Clause Templates
+    description: Lease clause template library management
 paths:
   /backoffice/teams/{identifier}:
     get:
@@ -4930,6 +4932,201 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/lease-clause-templates:
+    get:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: List lease clause templates
+      description: List lease clause templates for a given country
+      operationId: listLeaseClauseTemplates
+      parameters:
+        - name: countryCode
+          in: query
+          description: Country code to filter templates by
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaseClauseTemplateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: Create lease clause template
+      description: Add a new lease clause template
+      operationId: createLeaseClauseTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertLeaseClauseTemplateRequest"
+        required: true
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaseClauseTemplateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/lease-clause-templates/{identifier}:
+    put:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: Update lease clause template
+      description: Update an existing lease clause template
+      operationId: updateLeaseClauseTemplate
+      parameters:
+        - name: identifier
+          in: path
+          description: Lease clause template identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/LeaseClauseTemplateIdentifier"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertLeaseClauseTemplateRequest"
+        required: true
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaseClauseTemplateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: Delete lease clause template
+      description: Soft delete a lease clause template
+      operationId: deleteLeaseClauseTemplate
+      parameters:
+        - name: identifier
+          in: path
+          description: Lease clause template identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/LeaseClauseTemplateIdentifier"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /backoffice/broadcasts:
     get:
       tags:
@@ -8084,6 +8281,65 @@ components:
     RentRegulationRuleIdentifier:
       type: string
       description: Rent regulation rule identifier
+    LeaseClauseTemplateIdentifier:
+      type: string
+      description: Lease clause template identifier
+    LeaseClauseTemplateResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        countryCode:
+          type: string
+        clauseKey:
+          type: string
+        titleI18nKey:
+          type: string
+        bodyI18nKey:
+          type: string
+        defaultIncluded:
+          type: boolean
+        optional:
+          type: boolean
+        sortOrder:
+          type: integer
+        version:
+          type: integer
+      required:
+        - identifier
+        - countryCode
+        - clauseKey
+        - titleI18nKey
+        - bodyI18nKey
+        - defaultIncluded
+        - optional
+        - sortOrder
+        - version
+    UpsertLeaseClauseTemplateRequest:
+      type: object
+      properties:
+        countryCode:
+          type: string
+        clauseKey:
+          type: string
+        titleI18nKey:
+          type: string
+        bodyI18nKey:
+          type: string
+        defaultIncluded:
+          type: boolean
+        optional:
+          type: boolean
+        sortOrder:
+          type: integer
+      required:
+        - countryCode
+        - clauseKey
+        - titleI18nKey
+        - bodyI18nKey
+        - defaultIncluded
+        - optional
+        - sortOrder
     RentRegulationCatalogInfo:
       type: object
       properties:

@@ -126,6 +126,7 @@
                                 <schemaMapping>RentRegulationRuleIdentifier=com.buurman.domain.identifier.RentRegulationRuleIdentifier</schemaMapping>
                                 <schemaMapping>BroadcastMessageIdentifier=com.buurman.domain.identifier.BroadcastMessageIdentifier</schemaMapping>
                                 <schemaMapping>ImpersonationSessionIdentifier=com.buurman.domain.identifier.ImpersonationSessionIdentifier</schemaMapping>
+                                <schemaMapping>LeaseClauseTemplateIdentifier=com.buurman.domain.identifier.LeaseClauseTemplateIdentifier</schemaMapping>
                                 <schemaMapping>PageResponseImpersonationSessionResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                             </schemaMappings>
                             <importMappings>
@@ -247,6 +248,8 @@
                                 <importMapping>RateLimitConfigSummary=com.buurman.dto.response.backoffice.RateLimitConfigSummary</importMapping>
                                 <importMapping>RateLimitBucketSummaryResponse=com.buurman.dto.response.backoffice.RateLimitBucketSummaryResponse</importMapping>
                                 <importMapping>RateLimitBucketDeleteResponse=com.buurman.dto.response.backoffice.RateLimitBucketDeleteResponse</importMapping>
+                                <importMapping>LeaseClauseTemplateResponse=com.buurman.dto.response.LeaseClauseTemplateResponse</importMapping>
+                                <importMapping>UpsertLeaseClauseTemplateRequest=com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>
