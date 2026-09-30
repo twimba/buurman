@@ -507,6 +507,14 @@ public class RentRegulationRepository {
    * then countries) in foreign-key-safe order. Intended to be called within a transaction
    * immediately before re-seeding from the bundled catalog. Does not touch team-scoped country
    * requests.
+   *
+   * <p>Termination rules have no representation in the bundled catalog (they are only ever seeded
+   * by a one-off Flyway migration), so they cannot be re-inserted the way the other tables are.
+   * They still MUST be deleted here — countries are always re-inserted with fresh ids, and
+   * termination rules FK-reference countries without {@code ON DELETE CASCADE}, so leaving them in
+   * place would make the country delete below fail. Callers that need this data to survive (i.e.
+   * {@code RentRegulationCatalogService.reload}) must snapshot it before calling this method and
+   * reinsert it afterwards against the newly-generated country/region ids.
    */
   public void deleteAllReferenceData() {
     dsl.deleteFrom(TENANCY_RULES).execute();

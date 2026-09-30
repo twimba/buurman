@@ -33,6 +33,7 @@ import com.buurman.dto.response.RentRegulationCatalogDiff;
 import com.buurman.dto.response.RentRegulationCountryDiff;
 import com.buurman.dto.response.RentRegulationDiffEntry;
 import com.buurman.repository.RentRegulationRepository;
+import com.buurman.repository.TerminationNoticeRuleRepository;
 
 @DisplayName("RentRegulationCatalogService.diff")
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +41,7 @@ import com.buurman.repository.RentRegulationRepository;
 class RentRegulationCatalogDiffTest {
 
   @Mock private RentRegulationRepository repository;
+  @Mock private TerminationNoticeRuleRepository terminationRuleRepository;
   @Mock private RentRegulationCatalogLoader loader;
 
   private RentRegulationCatalogService service;
@@ -51,7 +53,10 @@ class RentRegulationCatalogDiffTest {
   void setUp() {
     service =
         new RentRegulationCatalogService(
-            repository, loader, Clock.fixed(Instant.parse("2026-06-20T00:00:00Z"), ZoneOffset.UTC));
+            repository,
+            terminationRuleRepository,
+            loader,
+            Clock.fixed(Instant.parse("2026-06-20T00:00:00Z"), ZoneOffset.UTC));
   }
 
   @Test

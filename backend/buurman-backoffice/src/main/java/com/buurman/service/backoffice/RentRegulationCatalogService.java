@@ -27,12 +27,14 @@ import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
 import com.buurman.domain.RentRegulationTenancyRule;
+import com.buurman.domain.TerminationGivenBy;
 import com.buurman.domain.regulation.CatalogCountry;
 import com.buurman.domain.regulation.CatalogLateFee;
 import com.buurman.domain.regulation.CatalogRegion;
 import com.buurman.domain.regulation.CatalogRule;
 import com.buurman.domain.regulation.CatalogTenancyRule;
 import com.buurman.domain.regulation.RentRegulationCatalog;
+import com.buurman.domain.regulation.TerminationNoticeRule;
 import com.buurman.dto.response.RentRegulationCatalogDiff;
 import com.buurman.dto.response.RentRegulationCatalogInfo;
 import com.buurman.dto.response.RentRegulationCountryDiff;
@@ -41,6 +43,7 @@ import com.buurman.dto.response.RentRegulationDiffEntry;
 import com.buurman.dto.response.RentRegulationDiffField;
 import com.buurman.dto.response.RentRegulationReloadResult;
 import com.buurman.repository.RentRegulationRepository;
+import com.buurman.repository.TerminationNoticeRuleRepository;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.util.SidGenerator;
 
@@ -61,6 +64,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RentRegulationCatalogService {
 
   private final RentRegulationRepository repository;
+  private final TerminationNoticeRuleRepository terminationRuleRepository;
   private final RentRegulationCatalogLoader loader;
   private final Clock clock;
 
@@ -82,6 +86,12 @@ public class RentRegulationCatalogService {
     RentRegulationCatalog catalog = loader.load();
     String actor = principal.getEmail().orElseGet(principal::getName);
 
+    // rent_regulation_termination_rules has no representation in the bundled catalog (it is only
+    // ever seeded by a one-off Flyway migration), so it must be snapshotted here — before the
+    // wipe below — and reinserted afterwards, or a reload permanently deletes every
+    // country's termination-notice rules.
+    List<TerminationRuleSeed> terminationSeeds = captureTerminationRuleSeeds();
+
     repository.deleteAllReferenceData();
 
     int countries = 0;
@@ -89,8 +99,12 @@ public class RentRegulationCatalogService {
     int rules = 0;
     int tenancyRules = 0;
 
+    Map<String, UUID> countryIdsByCode = new HashMap<>();
+    Map<String, Map<String, UUID>> regionIdsByCountryCode = new HashMap<>();
+
     for (CatalogCountry country : safe(catalog.countries())) {
       UUID countryId = insertCountry(country, actor);
+      countryIdsByCode.put(country.countryCode(), countryId);
       countries++;
 
       Map<String, UUID> regionIds = new HashMap<>();
@@ -99,6 +113,7 @@ public class RentRegulationCatalogService {
         regionIds.put(region.regionCode(), regionId);
         regions++;
       }
+      regionIdsByCountryCode.put(country.countryCode(), regionIds);
 
       for (CatalogRule rule : safe(country.rules())) {
         insertRule(rule, countryId, regionIds, actor);
@@ -111,18 +126,102 @@ public class RentRegulationCatalogService {
       }
     }
 
+    int terminationRules =
+        reinsertTerminationRules(terminationSeeds, countryIdsByCode, regionIdsByCountryCode);
+
     log.warn(
         "Backoffice user {} reloaded rent-regulation catalog v{} ({} countries, {} regions, {}"
-            + " rules, {} tenancy rules) — previous reference data discarded",
+            + " rules, {} tenancy rules, {} termination rules) — previous reference data"
+            + " discarded",
         actor,
         catalog.version(),
         countries,
         regions,
         rules,
-        tenancyRules);
+        tenancyRules,
+        terminationRules);
 
     return new RentRegulationReloadResult(
         catalog.version(), catalog.generatedAt(), countries, regions, rules, tenancyRules);
+  }
+
+  /**
+   * A termination rule snapshotted by country/region CODE rather than internal UUID, since
+   * countries and regions are deleted and re-inserted with fresh random ids on every reload.
+   */
+  private record TerminationRuleSeed(
+      @org.jspecify.annotations.Nullable String countryCode,
+      @org.jspecify.annotations.Nullable String regionCode,
+      TerminationGivenBy partyType,
+      @org.jspecify.annotations.Nullable Integer minTenancyMonths,
+      int noticeDays,
+      boolean groundsRequired,
+      List<String> groundsCodes,
+      @org.jspecify.annotations.Nullable String sourceUrl,
+      @org.jspecify.annotations.Nullable String notes) {}
+
+  private List<TerminationRuleSeed> captureTerminationRuleSeeds() {
+    Map<UUID, String> countryCodeById =
+        repository.findAllCountries().stream()
+            .collect(
+                Collectors.toMap(
+                    RentRegulationCountry::getId, RentRegulationCountry::getCountryCode));
+    Map<UUID, String> regionCodeById =
+        repository.findAllRegions().stream()
+            .collect(
+                Collectors.toMap(RentRegulationRegion::getId, RentRegulationRegion::getRegionCode));
+
+    return terminationRuleRepository.findAll().stream()
+        .map(
+            rule ->
+                new TerminationRuleSeed(
+                    countryCodeById.get(rule.getCountryId()),
+                    rule.getRegionId().map(regionCodeById::get).orElse(null),
+                    rule.getPartyType(),
+                    rule.getMinTenancyMonths().orElse(null),
+                    rule.getNoticeDays(),
+                    rule.isGroundsRequired(),
+                    rule.getGroundsCodes(),
+                    rule.getSourceUrl().orElse(null),
+                    rule.getNotes().orElse(null)))
+        .filter(seed -> seed.countryCode() != null)
+        .toList();
+  }
+
+  private int reinsertTerminationRules(
+      List<TerminationRuleSeed> seeds,
+      Map<String, UUID> countryIdsByCode,
+      Map<String, Map<String, UUID>> regionIdsByCountryCode) {
+    int count = 0;
+    for (TerminationRuleSeed seed : seeds) {
+      UUID countryId = countryIdsByCode.get(seed.countryCode());
+      if (countryId == null) {
+        log.warn(
+            "Dropping termination rule for country '{}' — no longer present in reloaded catalog",
+            seed.countryCode());
+        continue;
+      }
+      Optional<UUID> regionId =
+          Optional.ofNullable(seed.regionCode())
+              .map(
+                  code ->
+                      regionIdsByCountryCode.getOrDefault(seed.countryCode(), Map.of()).get(code));
+
+      terminationRuleRepository.save(
+          TerminationNoticeRule.builder()
+              .countryId(countryId)
+              .regionId(regionId)
+              .partyType(seed.partyType())
+              .minTenancyMonths(Optional.ofNullable(seed.minTenancyMonths()))
+              .noticeDays(seed.noticeDays())
+              .groundsRequired(seed.groundsRequired())
+              .groundsCodes(seed.groundsCodes())
+              .sourceUrl(Optional.ofNullable(seed.sourceUrl()))
+              .notes(Optional.ofNullable(seed.notes()))
+              .build());
+      count++;
+    }
+    return count;
   }
 
   /**
