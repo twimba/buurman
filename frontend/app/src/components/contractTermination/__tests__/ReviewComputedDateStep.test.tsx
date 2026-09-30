@@ -193,6 +193,69 @@ describe('ReviewComputedDateStep', () => {
     expect(screen.getByRole('button', { name: /next/i })).toBeEnabled();
   });
 
+  it('clears a stale override reason once the date is no longer earlier than computed', () => {
+    mockedUseTerminationPreview.mockReturnValue({
+      data: {
+        computedEndDate: '2026-03-01',
+        noticeDays: 30,
+        groundsRequired: false,
+        source: 'CATALOG_RULE',
+      },
+      isLoading: false,
+      isError: false,
+    });
+    const onOverrideReasonChange = vi.fn();
+
+    const { rerender } = render(
+      <ReviewComputedDateStep
+        {...baseProps}
+        effectiveEndDate="2026-02-15"
+        overrideReason="Tenant requested an earlier move-out"
+        onOverrideReasonChange={onOverrideReasonChange}
+      />
+    );
+    expect(onOverrideReasonChange).not.toHaveBeenCalled();
+
+    // Landlord edits the date back to on/after the computed date — the reason is now stale.
+    rerender(
+      <ReviewComputedDateStep
+        {...baseProps}
+        effectiveEndDate="2026-03-01"
+        overrideReason="Tenant requested an earlier move-out"
+        onOverrideReasonChange={onOverrideReasonChange}
+      />
+    );
+
+    expect(onOverrideReasonChange).toHaveBeenCalledWith('');
+  });
+
+  it('never carries a non-empty override reason while the field is hidden', () => {
+    mockedUseTerminationPreview.mockReturnValue({
+      data: {
+        computedEndDate: '2026-03-01',
+        noticeDays: 30,
+        groundsRequired: false,
+        source: 'CATALOG_RULE',
+      },
+      isLoading: false,
+      isError: false,
+    });
+    const onOverrideReasonChange = vi.fn();
+
+    // Simulates state that is already stale by the time this component mounts (e.g. a remount
+    // with leftover parent state) — the invariant must hold regardless of how it got here.
+    render(
+      <ReviewComputedDateStep
+        {...baseProps}
+        effectiveEndDate=""
+        overrideReason="stale text"
+        onOverrideReasonChange={onOverrideReasonChange}
+      />
+    );
+
+    expect(onOverrideReasonChange).toHaveBeenCalledWith('');
+  });
+
   it('calls onBack when Back is clicked', () => {
     mockedUseTerminationPreview.mockReturnValue({
       data: {

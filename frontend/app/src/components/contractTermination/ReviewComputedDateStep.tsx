@@ -63,6 +63,17 @@ export const ReviewComputedDateStep = ({
     preview?.computedEndDate
   );
 
+  useEffect(() => {
+    // The reason field is only shown while overrideIsEarlier is true. Once the landlord edits
+    // the date back to on/after the computed date (or clears it), any previously-typed reason
+    // is stale — clear it proactively so it can never silently ride along in the submitted
+    // request, and so the field is genuinely empty if the landlord re-reveals it later.
+    if (!overrideIsEarlier && overrideReason) {
+      onOverrideReasonChange('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [overrideIsEarlier]);
+
   const groundMissing =
     !!preview?.groundsRequired && groundCode.trim().length === 0;
   const overrideReasonMissing = overrideIsEarlier && !overrideReason.trim();

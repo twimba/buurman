@@ -73,13 +73,25 @@ export const TerminationWizardPage = () => {
     if (!givenBy) {
       return;
     }
+    // Belt-and-suspenders: ReviewComputedDateStep already clears overrideReason as soon as
+    // the date stops being earlier than computed, but re-checking the live condition here
+    // means a stale reason can never ride along in the submitted request even if that clear
+    // were ever bypassed (e.g. the date field's value came from somewhere other than the
+    // review step's own input in a future change).
+    const effectiveEndDateIsEarlier =
+      !!effectiveEndDate &&
+      !!computedEndDate &&
+      effectiveEndDate < computedEndDate;
+
     terminateMutation.mutate(
       {
         givenBy,
         noticeDate,
         groundCode: groundCode || undefined,
         effectiveEndDate: effectiveEndDate || undefined,
-        overrideReason: overrideReason || undefined,
+        overrideReason: effectiveEndDateIsEarlier
+          ? overrideReason || undefined
+          : undefined,
         inspectionDate: inspectionDate || undefined,
       },
       {

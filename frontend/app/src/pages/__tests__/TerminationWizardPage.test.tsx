@@ -122,6 +122,46 @@ describe('TerminationWizardPage — override reason reveal', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('does not submit a stale override reason after the date is edited back to non-earlier', () => {
+    renderWithProviders(<TerminationWizardPage />);
+
+    advanceToReviewStep();
+
+    const endDateInput = screen.getByLabelText(/use an earlier end date/i);
+
+    // Type an earlier date, then a reason.
+    fireEvent.change(endDateInput, { target: { value: '2026-02-01' } });
+    fireEvent.change(
+      screen.getByLabelText(/reason for the earlier end date/i),
+      { target: { value: 'Tenant requested an earlier move-out' } }
+    );
+
+    // Edit the date back to the computed date — the reason field hides, and its value is
+    // cleared even though the landlord never touched the textarea directly.
+    fireEvent.change(endDateInput, { target: { value: '2026-03-01' } });
+    expect(
+      screen.queryByLabelText(/reason for the earlier end date/i)
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+
+    // Letter preview must not show the stale reason.
+    expect(
+      screen.queryByText('Tenant requested an earlier move-out')
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /confirm & terminate/i })
+    );
+
+    const [submittedRequest] = mutate.mock.calls[0];
+    expect(submittedRequest.overrideReason).toBeUndefined();
+    expect(submittedRequest).not.toHaveProperty(
+      'overrideReason',
+      'Tenant requested an earlier move-out'
+    );
+  });
+
   it('carries the override through to the letter preview and confirmation steps', () => {
     renderWithProviders(<TerminationWizardPage />);
 
