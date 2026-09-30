@@ -51,6 +51,9 @@ class TakeoutMetaModelCoverageTest {
           "CONTACT_TAGS",
           "CONTRACT_EXTENSIONS",
           "CONTRACT_RENT_COMPONENTS",
+          // contract_terminations (contract-termination-workflow) — takeout export for
+          // termination records is out of scope for that plan.
+          "CONTRACT_TERMINATIONS",
           "CURRENCY_CHANGE_LOG",
           "DATA_IMPORTS",
           "DATA_TAKEOUTS",
