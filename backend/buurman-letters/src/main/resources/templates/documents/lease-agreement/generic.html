@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<style th:replace="~{_letter-styles :: letter-css}">/* replaced by shared fragment */</style>
+<style>
+.clause { margin: 18px 0; }
+.clause-title { font-size: 14px; font-weight: 700; color: #0c4a6e; margin-bottom: 6px; }
+.clause-body { font-size: 13px; color: #292524; line-height: 1.6; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+
+<div class="letter">
+  <!-- Header -->
+  <div class="letter-header">
+    <div class="letter-date" th:text="${generatedDate}"></div>
+    <div class="letter-ref" th:text="#{lease.ref(${contractIdentifier})}"></div>
+  </div>
+
+  <!-- Addressee -->
+  <div class="letter-addressee">
+    <div th:if="${primaryContactName != null}">
+      <div class="addressee-name" th:text="${primaryContactName}"></div>
+      <div th:if="${contactAddress != null}">
+        <div th:text="${contactAddress.street}"></div>
+        <div th:text="${contactAddress.postalCode} + ' ' + ${contactAddress.city}"></div>
+        <div th:text="${contactAddress.countryCode}"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <div class="letter-subject" th:text="#{lease.title}">Lease Agreement</div>
+
+  <div class="letter-body">
+    <!-- Premises -->
+    <p th:text="#{lease.premises(${propertyAddress})}"></p>
+
+    <!-- Rent components -->
+    <table th:if="${rentComponents != null and not #lists.isEmpty(rentComponents)}" class="summary-table">
+      <tr th:each="component : ${rentComponents}">
+        <td class="st-label" th:text="${component.type}"></td>
+        <td class="st-value" th:text="${component.amount}"></td>
+      </tr>
+    </table>
+
+    <!--
+      Clause body: "clauses" is already filtered to the included subset by the exporter (per
+      LeaseClauseResolver's resolution). This template never inspects clause.included — deciding
+      what counts as included is the resolver's job, done once, not the template's job done again.
+    -->
+    <div th:each="clause : ${clauses}" class="clause">
+      <div class="clause-title" th:text="${clause.title}"></div>
+      <div class="clause-body" th:text="${clause.body}"></div>
+    </div>
+  </div>
+
+  <!-- Signature -->
+  <div class="letter-signature">
+    <div class="sig-line"></div>
+    <div class="sig-label" th:text="#{letter.signature}">Landlord / Property Manager</div>
+    <div class="sig-date"><span th:text="#{letter.signature.date}">Date:</span> <span class="sig-date-line"></span></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="letter-footer">
+    <span th:text="#{letter.generated(${generatedDate})}"></span>
+    <span> &mdash; </span>
+    <span th:text="#{letter.footer}"></span>
+  </div>
+</div>
+
+</body>
+</html>
