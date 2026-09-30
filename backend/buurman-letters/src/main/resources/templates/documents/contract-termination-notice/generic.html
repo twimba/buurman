@@ -10,7 +10,7 @@
   <!-- Header -->
   <div class="letter-header">
     <div class="letter-date" th:text="${generatedDate}"></div>
-    <div class="letter-ref" th:text="'Ref: ' + ${contractIdentifier}"></div>
+    <div class="letter-ref" th:text="#{termination.ref(${contractIdentifier})}"></div>
   </div>
 
   <!-- Addressee -->
@@ -24,30 +24,30 @@
       </div>
     </div>
     <div th:unless="${primaryContactName != null}">
-      <div class="addressee-name">Dear Resident,</div>
+      <div class="addressee-name" th:text="#{termination.salutation.default}">Dear Resident,</div>
     </div>
   </div>
 
   <!-- Subject -->
-  <div class="letter-subject">Re: Notice of Contract Termination</div>
+  <div class="letter-subject" th:text="'Re: ' + #{termination.title}"></div>
 
   <!-- Body -->
   <div class="letter-body">
     <!-- Salutation -->
-    <p th:if="${primaryContactName != null}" th:text="'Dear ' + ${primaryContactName} + ','"></p>
-    <p th:unless="${primaryContactName != null}">Dear Resident,</p>
+    <p th:if="${primaryContactName != null}" th:text="#{termination.salutation(${primaryContactName})}"></p>
+    <p th:unless="${primaryContactName != null}" th:text="#{termination.salutation.default}"></p>
 
     <!-- Paragraph 1: Notice given -->
-    <p th:text="'This letter serves as formal notice, given by the ' + ${givenByLabel} + ' on ' + ${noticeDate} + ', to terminate the tenancy at ' + ${propertyAddress} + '.'"></p>
+    <p th:text="#{termination.body.notice(${givenByLabel}, ${noticeDate}, ${propertyAddress})}"></p>
 
     <!-- Paragraph 2: Ground (if present) -->
-    <p th:if="${groundLabel != null}" th:text="'Ground for termination: ' + ${groundLabel} + '.'"></p>
+    <p th:if="${groundLabel != null}" th:text="#{termination.body.ground(${groundLabel})}"></p>
 
     <!-- Paragraph 3: Effective end date -->
-    <p th:text="'The tenancy will end on ' + ${effectiveEndDate} + '.'"></p>
+    <p th:text="#{termination.body.effectiveEndDate(${effectiveEndDate})}"></p>
 
     <!-- Paragraph 4: Override reason (if present) -->
-    <p th:if="${overrideReason != null}" th:text="'Note on the effective end date: ' + ${overrideReason}"></p>
+    <p th:if="${overrideReason != null}" th:text="#{termination.body.overrideReason(${overrideReason})}"></p>
 
     <!-- Country-specific legal clause -->
     <div th:if="${legalClauses != null}" th:each="clause : ${legalClauses}" class="legal-clause">
@@ -58,55 +58,55 @@
     <!-- Summary table -->
     <table class="summary-table">
       <tr>
-        <td class="st-label">Contract Reference</td>
+        <td class="st-label" th:text="#{termination.summary.contractRef}">Contract Reference</td>
         <td class="st-value" th:text="${contractIdentifier}"></td>
       </tr>
       <tr>
-        <td class="st-label">Property</td>
+        <td class="st-label" th:text="#{termination.summary.property}">Property</td>
         <td class="st-value" th:text="${propertyAddress}"></td>
       </tr>
       <tr th:if="${hasMultipleUnits}">
-        <td class="st-label">Unit</td>
+        <td class="st-label" th:text="#{termination.summary.unit}">Unit</td>
         <td class="st-value" th:text="${unitDesignation}"></td>
       </tr>
       <tr>
-        <td class="st-label">Given By</td>
+        <td class="st-label" th:text="#{termination.summary.givenBy}">Given By</td>
         <td class="st-value" th:text="${givenByLabel}"></td>
       </tr>
       <tr>
-        <td class="st-label">Notice Date</td>
+        <td class="st-label" th:text="#{termination.summary.noticeDate}">Notice Date</td>
         <td class="st-value" th:text="${noticeDate}"></td>
       </tr>
       <tr th:if="${groundLabel != null}">
-        <td class="st-label">Ground</td>
+        <td class="st-label" th:text="#{termination.summary.ground}">Ground</td>
         <td class="st-value" th:text="${groundLabel}"></td>
       </tr>
       <tr>
-        <td class="st-label">Effective End Date</td>
+        <td class="st-label" th:text="#{termination.summary.effectiveEndDate}">Effective End Date</td>
         <td class="st-value"><strong th:text="${effectiveEndDate}"></strong></td>
       </tr>
     </table>
 
     <!-- Closing -->
-    <p>Should you have any questions regarding this notice, please do not hesitate to contact us.</p>
-    <p>Sincerely,</p>
+    <p th:text="#{termination.closing}"></p>
+    <p th:text="#{letter.regards}"></p>
   </div>
 
   <!-- Signature -->
   <div class="letter-signature">
     <div class="sig-line"></div>
-    <div class="sig-label">Landlord / Property Manager</div>
-    <div class="sig-date">Date: <span class="sig-date-line"></span></div>
+    <div class="sig-label" th:text="#{letter.signature}">Landlord / Property Manager</div>
+    <div class="sig-date"><span th:text="#{letter.signature.date}">Date:</span> <span class="sig-date-line"></span></div>
   </div>
 
   <!-- Disclaimer -->
-  <div class="letter-disclaimer">This document is informational and does not constitute legal advice. Termination is subject to the terms of the existing lease agreement and applicable local regulations.</div>
+  <div class="letter-disclaimer" th:text="#{termination.disclaimer}"></div>
 
   <!-- Footer -->
   <div class="letter-footer">
-    <span th:text="'Generated on ' + ${generatedDate}"></span>
+    <span th:text="#{letter.generated(${generatedDate})}"></span>
     <span> &mdash; </span>
-    <span>Buurman Property Management</span>
+    <span th:text="#{letter.footer}"></span>
   </div>
 </div>
 

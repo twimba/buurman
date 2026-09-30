@@ -10,15 +10,19 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 /**
- * Renders {@code contract-termination-notice/generic.html} directly (bypassing the exporter, same
- * technique as {@code LetterTemplateServiceTest}) to catch template syntax errors or unresolved
- * variables that a mocked-exporter unit test can't.
+ * i18n gate for {@code contract-termination-notice/generic.html}: renders it in every supported
+ * document language and asserts no raw {@code termination.*}/{@code letter.*} message key leaks
+ * into the output. Same technique as {@code LandlordLetterLocaleRenderTest} / {@code
+ * TenantLetterLocaleRenderTest}.
  */
 @DisplayName("contract-termination-notice template render")
 class ContractTerminationTemplateRenderTest {
@@ -34,24 +38,35 @@ class ContractTerminationTemplateRenderTest {
     resolver.setCharacterEncoding("UTF-8");
     resolver.setCacheable(false);
 
+    ReloadableResourceBundleMessageSource messages = new ReloadableResourceBundleMessageSource();
+    messages.setBasenames(
+        "classpath:messages/document-letter-chrome",
+        "classpath:messages/document-contract-termination");
+    messages.setDefaultEncoding("UTF-8");
+    messages.setFallbackToSystemLocale(false);
+    messages.setUseCodeAsDefaultMessage(true);
+
     engine = new SpringTemplateEngine();
     engine.setTemplateResolver(resolver);
+    engine.setMessageSource(messages);
   }
 
-  @Test
-  @DisplayName("renders the core notice fields when there is no country legal clause")
-  void rendersWithoutLegalClause() {
+  @ParameterizedTest(name = "[{0}]")
+  @ValueSource(
+      strings = {"en", "nl", "de", "fr", "pt", "es", "sv", "it", "fi", "el", "pl", "da", "nb"})
+  @DisplayName("renders with no raw message-key leakage, legalClauses empty")
+  void noRawKeysWithoutClauses(String locale) {
     Map<String, Object> vars = baseVariables();
     vars.put("legalClauses", List.of());
     vars.put("overrideReason", null);
     vars.put("groundLabel", null);
 
-    String html = render(vars);
+    String html = render(vars, locale);
 
-    assertThat(html).contains("LANDLORD");
-    assertThat(html).contains("2026-01-15");
-    assertThat(html).contains("2026-04-15");
-    assertThat(html).doesNotContain("legal-clause-title");
+    assertThat(html).as("[%s] must not leak raw i18n keys", locale).doesNotContain("termination.");
+    assertThat(html)
+        .as("[%s] must not leak raw letter-chrome keys", locale)
+        .doesNotContain("letter.");
   }
 
   @Test
@@ -62,16 +77,32 @@ class ContractTerminationTemplateRenderTest {
     vars.put("overrideReason", "Tenant requested an earlier move-out date");
     vars.put("groundLabel", "OWNER_OCCUPATION");
 
-    String html = render(vars);
+    String html = render(vars, "en");
 
     assertThat(html).contains("OWNER_OCCUPATION");
     assertThat(html).contains("Tenant requested an earlier move-out date");
     assertThat(html).contains("Legal Basis");
     assertThat(html).contains("Some legal text");
+    assertThat(html).doesNotContain("termination.").doesNotContain("letter.");
   }
 
-  private String render(Map<String, Object> vars) {
-    Context context = new Context(Locale.ENGLISH);
+  @Test
+  @DisplayName("English chrome text is the expected wording (spot check)")
+  void englishChromeIsExpectedWording() {
+    Map<String, Object> vars = baseVariables();
+    vars.put("legalClauses", List.of());
+    vars.put("overrideReason", null);
+    vars.put("groundLabel", null);
+
+    String html = render(vars, "en");
+
+    assertThat(html).contains("Landlord");
+    assertThat(html).contains("Notice of Contract Termination");
+    assertThat(html).contains("Landlord / Property Manager");
+  }
+
+  private String render(Map<String, Object> vars, String locale) {
+    Context context = new Context(Locale.forLanguageTag(locale));
     context.setVariables(vars);
     return engine.process("contract-termination-notice/generic", context);
   }
@@ -85,7 +116,7 @@ class ContractTerminationTemplateRenderTest {
     vars.put("propertyAddress", "Dorpsstraat 5, 1234 AB Amsterdam");
     vars.put("hasMultipleUnits", false);
     vars.put("unitDesignation", null);
-    vars.put("givenByLabel", "LANDLORD");
+    vars.put("givenByLabel", "Landlord");
     vars.put("noticeDate", "2026-01-15");
     vars.put("effectiveEndDate", "2026-04-15");
     return vars;

@@ -1,7 +1,5 @@
 package com.buurman.service.letters;
 
-import static com.buurman.document.DocumentFormatting.formatEnumValue;
-
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -81,7 +79,10 @@ public class ContractTerminationLetterExporter implements ContractTerminationLet
     vars.put(
         "unitDesignation", premisesInfo.hasMultipleUnits() ? premisesInfo.unitDesignation() : null);
 
-    vars.put("givenByLabel", formatEnumValue(termination.getGivenBy().name()));
+    vars.put(
+        "givenByLabel",
+        messageSource.getMessage(
+            "termination.givenBy." + termination.getGivenBy().name(), null, locale));
     vars.put("noticeDate", DocumentFormatting.formatDate(termination.getNoticeDate(), dateFmt));
     vars.put("groundLabel", termination.getGroundCode().orElse(null));
     vars.put(
@@ -89,9 +90,12 @@ public class ContractTerminationLetterExporter implements ContractTerminationLet
         DocumentFormatting.formatDate(termination.getEffectiveEndDate(), dateFmt));
     vars.put("overrideReason", termination.getOverrideReason().orElse(null));
 
+    // "termination.legal." is disjoint from the bare "legal." prefix rent-increase-letter and
+    // the extension addendum use — without this, a country match there (e.g. legal.NL) would
+    // leak into this unrelated letter type via the shared merged MessageSource.
     vars.putAll(
         helper.legalVariables(
-            messageSource, "legal.", "contract-termination-notice", contract, locale));
+            messageSource, "termination.legal.", "contract-termination-notice", contract, locale));
 
     return vars;
   }

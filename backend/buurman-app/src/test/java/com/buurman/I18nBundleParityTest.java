@@ -121,6 +121,7 @@ class I18nBundleParityTest {
             "api-errors",
             "document-contact-booklet",
             "document-contract-booklet",
+            "document-contract-termination",
             "document-deposit-statement",
             "document-enum-labels",
             "document-extension",
