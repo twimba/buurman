@@ -328,10 +328,14 @@ public class ContractService {
   }
 
   public PageResponse<ContractResponse> getContractsPaginated(
-      UserPrincipal principal, @Nullable String status, PageRequest pageRequest) {
+      UserPrincipal principal,
+      @Nullable String status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays,
+      PageRequest pageRequest) {
     PaginatedResult<Contract> result =
         contractRepository.findAllByTeamIdPaginated(
-            principal.requireTeamId(), status, null, null, pageRequest);
+            principal.requireTeamId(), status, null, null, search, endingWithinDays, pageRequest);
     List<ContractResponse> responses = toResponses(result.items(), principal.requireTeamId());
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());

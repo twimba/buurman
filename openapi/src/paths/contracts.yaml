@@ -610,6 +610,19 @@ collection:
         required: false
         schema:
           type: string
+      - name: search
+        in: query
+        description: Free-text search across contact name, property address/city, and contract identifier
+        required: false
+        schema:
+          type: string
+      - name: endingWithinDays
+        in: query
+        description: Only contracts whose effective end date falls within this many days from today
+        required: false
+        schema:
+          type: integer
+          format: int32
       - name: page
         in: query
         description: Page number (0-based)

@@ -74,6 +74,8 @@ public class ContractController implements ContractsApi {
       Optional<String> status,
       Optional<String> propertyIdentifier,
       Optional<String> tenantIdentifier,
+      Optional<String> search,
+      Optional<Integer> endingWithinDays,
       Optional<Integer> page,
       Optional<Integer> size,
       Optional<String> sort,
@@ -99,7 +101,12 @@ public class ContractController implements ContractsApi {
     PageRequest pageRequest =
         PageRequest.of(
             page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
-    return contractService.getContractsPaginated(principal, status.orElse(null), pageRequest);
+    return contractService.getContractsPaginated(
+        principal,
+        status.orElse(null),
+        search.orElse(null),
+        endingWithinDays.orElse(null),
+        pageRequest);
   }
 
   @Override

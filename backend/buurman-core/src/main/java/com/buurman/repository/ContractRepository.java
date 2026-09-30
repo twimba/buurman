@@ -4,7 +4,9 @@ import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static java.time.ZoneOffset.UTC;
+import static org.jooq.impl.DSL.lower;
 import static org.jooq.impl.DSL.min;
 
 import java.time.Clock;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -390,6 +393,8 @@ public class ContractRepository {
       @Nullable String status,
       @Nullable UUID propertyId,
       @Nullable UUID contactId,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays,
       PageRequest pageRequest) {
     Condition condition = CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
@@ -415,6 +420,55 @@ public class ContractRepository {
                               .and(CP_CONTACT_ID.eq(contactId))
                               .and(CP_TEAM_ID.eq(teamId))
                               .and(CP_DELETED_AT.isNull()))));
+    }
+    if (search != null && !search.trim().isEmpty()) {
+      String pattern = "%" + search.trim().toLowerCase(Locale.ROOT) + "%";
+      condition =
+          condition.and(
+              org.jooq
+                  .impl
+                  .DSL
+                  .exists(
+                      dsl.selectOne()
+                          .from(CONTRACT_PARTIES)
+                          .join(CONTACTS)
+                          .on(
+                              CONTACTS
+                                  .ID
+                                  .eq(CONTRACT_PARTIES.CONTACT_ID)
+                                  .and(CONTACTS.TEAM_ID.eq(teamId))
+                                  .and(CONTACTS.DELETED_AT.isNull()))
+                          .where(
+                              CONTRACT_PARTIES
+                                  .CONTRACT_ID
+                                  .eq(CONTRACTS.ID)
+                                  .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
+                                  .and(CONTRACT_PARTIES.DELETED_AT.isNull())
+                                  .and(lower(CONTACTS.DISPLAY_NAME).like(pattern))))
+                  .or(
+                      org.jooq.impl.DSL.exists(
+                          dsl.selectOne()
+                              .from(PROPERTIES)
+                              .where(
+                                  PROPERTIES
+                                      .ID
+                                      .eq(CONTRACTS.PROPERTY_ID)
+                                      .and(PROPERTIES.TEAM_ID.eq(teamId))
+                                      .and(
+                                          lower(PROPERTIES.STREET)
+                                              .like(pattern)
+                                              .or(lower(PROPERTIES.CITY).like(pattern))))))
+                  .or(lower(CONTRACTS.IDENTIFIER.cast(String.class)).like(pattern)));
+    }
+    if (endingWithinDays != null) {
+      LocalDate today = LocalDate.now(clock);
+      Field<LocalDate> effectiveEndDateExpr =
+          com.buurman.service.EffectiveEndDateHelper.effectiveEndDateExpr();
+      condition =
+          condition.and(
+              effectiveEndDateExpr
+                  .isNotNull()
+                  .and(effectiveEndDateExpr.between(today, today.plusDays(endingWithinDays))));
     }
     Field<LocalDate> effectiveEndDate =
         com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();

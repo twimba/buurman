@@ -15,7 +15,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.SortDirection;
 import com.buurman.domain.metadata.CountryMetadataSerializer;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.ContractRecordMapper;
 import com.buurman.util.MoneyAmount;
 import com.buurman.util.SidGenerator;
@@ -204,5 +206,122 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
     assertThatThrownBy(() -> repository.save(contractBuilder().build()))
         .isInstanceOf(org.jooq.exception.DataAccessException.class)
         .hasMessageContaining("uq_contracts_one_active_per_unit");
+  }
+
+  @Test
+  @DisplayName(
+      "search matches contact display name, property street/city, and contract identifier; excludes"
+          + " non-matches; never crosses teams")
+  void searchAcrossFieldsAndTeams() {
+    UUID teamAPropertyId =
+        TestDataHelper.insertProperty(
+            dsl, TEAM_A_ID, USER_ID); // street "Main Street 1", city "Amsterdam"
+    UUID teamAContractId = TestDataHelper.insertContract(dsl, TEAM_A_ID, teamAPropertyId, USER_ID);
+    UUID teamAContactId =
+        TestDataHelper.insertContact(dsl, TEAM_A_ID, USER_ID); // display_name "Jan de Vries"
+    insertContractParty(teamAContractId, teamAContactId, TEAM_A_ID, USER_ID, "PRIMARY_TENANT");
+
+    UUID teamBPropertyId = TestDataHelper.insertProperty(dsl, TEAM_B_ID, USER_ID);
+    TestDataHelper.insertContract(dsl, TEAM_B_ID, teamBPropertyId, USER_ID);
+
+    var byContactName =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID,
+            null,
+            null,
+            null,
+            "de vries",
+            null,
+            PageRequest.of(0, 25, null, (SortDirection) null));
+    assertThat(byContactName.items()).extracting(Contract::getId).containsExactly(teamAContractId);
+
+    var byPropertyCity =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID,
+            null,
+            null,
+            null,
+            "amsterdam",
+            null,
+            PageRequest.of(0, 25, null, (SortDirection) null));
+    assertThat(byPropertyCity.items()).extracting(Contract::getId).contains(teamAContractId);
+
+    // Every TEAM_B fixture has identical street/city/display_name values (the helper hardcodes
+    // them), so this proves the search join is team-scoped: TEAM_A's query for TEAM_A-only data
+    // (its own contract identifier) never returns TEAM_B's otherwise-identical-looking contract.
+    var byContractIdentifier =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID,
+            null,
+            null,
+            null,
+            repository
+                .getByIdAndTeamId(teamAContractId, TEAM_A_ID)
+                .getIdentifier()
+                .orElseThrow()
+                .value(),
+            null,
+            PageRequest.of(0, 25, null, (SortDirection) null));
+    assertThat(byContractIdentifier.items())
+        .extracting(Contract::getId)
+        .containsExactly(teamAContractId);
+  }
+
+  @Test
+  @DisplayName(
+      "endingWithinDays includes a contract ending inside the window and excludes one outside it,"
+          + " using the unaliased WHERE-safe expression")
+  void endingWithinDaysWindow() {
+    // TestDataHelper.insertContract always creates its implicit unit with unit_number "1"; two
+    // contracts on the SAME property would collide on uq_units_property_number (V072), so each
+    // contract here gets its own property.
+    UUID soonPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    UUID farPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    UUID soonContractId = TestDataHelper.insertContract(dsl, TEAM_A_ID, soonPropertyId, USER_ID);
+    UUID farContractId = TestDataHelper.insertContract(dsl, TEAM_A_ID, farPropertyId, USER_ID);
+    LocalDate today = LocalDate.now(CLOCK);
+    dsl.update(DSL.table("contracts"))
+        .set(DSL.field("end_date", LocalDate.class), today.plusDays(30))
+        .where(DSL.field("id", UUID.class).eq(soonContractId))
+        .execute();
+    dsl.update(DSL.table("contracts"))
+        .set(DSL.field("end_date", LocalDate.class), today.plusDays(200))
+        .where(DSL.field("id", UUID.class).eq(farContractId))
+        .execute();
+
+    var result =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID,
+            null,
+            null,
+            null,
+            null,
+            90,
+            PageRequest.of(0, 25, null, (SortDirection) null));
+
+    assertThat(result.items()).extracting(Contract::getId).contains(soonContractId);
+    assertThat(result.items()).extracting(Contract::getId).doesNotContain(farContractId);
+  }
+
+  /**
+   * Inserts a {@code contract_parties} row linking a contact to a contract, matching the exact
+   * column set {@link ContractPartyRepository#save} uses (there is no existing {@code
+   * TestDataHelper} fixture for this join table).
+   */
+  private void insertContractParty(
+      UUID contractId, UUID contactId, UUID teamId, UUID createdBy, String role) {
+    LocalDateTime now = LocalDateTime.of(2026, 3, 1, 12, 0, 0);
+    dsl.insertInto(DSL.table("contract_parties"))
+        .set(DSL.field("id", UUID.class), UUID.randomUUID())
+        .set(DSL.field("identifier", String.class), SidGenerator.newContractPartyId().value())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("contract_id", UUID.class), contractId)
+        .set(DSL.field("contact_id", UUID.class), contactId)
+        .set(DSL.field("role", String.class), role)
+        .set(DSL.field("created_at", LocalDateTime.class), now)
+        .set(DSL.field("updated_at", LocalDateTime.class), now)
+        .set(DSL.field("created_by", UUID.class), createdBy)
+        .set(DSL.field("updated_by", UUID.class), createdBy)
+        .execute();
   }
 }
