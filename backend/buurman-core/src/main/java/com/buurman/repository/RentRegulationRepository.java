@@ -139,6 +139,10 @@ public class RentRegulationRepository {
   private static final Field<String> RL_CREATED_BY = field("created_by", String.class);
   private static final Field<String> RL_UPDATED_BY = field("updated_by", String.class);
 
+  // --- Termination rules table (only referenced here for deleteAllReferenceData's FK cleanup;
+  // TerminationNoticeRuleRepository owns CRUD against this table via the generated JOOQ Tables) ---
+  private static final Table<?> TERMINATION_RULES = table("rent_regulation_termination_rules");
+
   // ==================== Country operations ====================
 
   public List<RentRegulationCountry> findAllCountries() {
@@ -499,13 +503,15 @@ public class RentRegulationRepository {
   // ==================== Catalog reload (destructive) ====================
 
   /**
-   * Deletes all rent-regulation reference data (tenancy rules, rules, regions, then countries) in
-   * foreign-key-safe order. Intended to be called within a transaction immediately before
-   * re-seeding from the bundled catalog. Does not touch team-scoped country requests.
+   * Deletes all rent-regulation reference data (tenancy rules, rules, termination rules, regions,
+   * then countries) in foreign-key-safe order. Intended to be called within a transaction
+   * immediately before re-seeding from the bundled catalog. Does not touch team-scoped country
+   * requests.
    */
   public void deleteAllReferenceData() {
     dsl.deleteFrom(TENANCY_RULES).execute();
     dsl.deleteFrom(RULES).execute();
+    dsl.deleteFrom(TERMINATION_RULES).execute();
     dsl.deleteFrom(REGIONS).execute();
     dsl.deleteFrom(COUNTRIES).execute();
   }
