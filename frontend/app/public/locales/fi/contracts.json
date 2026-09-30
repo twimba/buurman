@@ -25,7 +25,17 @@
       "description": "Aloita luomalla ensimmainen vuokrasopimuksesi"
     },
     "error": "Sopimusten lataus epaonnistui",
-    "exportDeposits": "Vie vakuudet"
+    "exportDeposits": "Vie vakuudet",
+    "searchPlaceholder": "Hae yhteyshenkilön, kiinteistön tai sopimusnumeron mukaan...",
+    "endingWithinDays": "Päättyy (päivän) kuluessa",
+    "sortLabel": "Lajittele sopimukset",
+    "sortAsc": "Järjestä nousevasti",
+    "sortDesc": "Järjestä laskevasti",
+    "sort": {
+      "endDate": "Päättymispäivä",
+      "startDate": "Alkamispäivä",
+      "rentAmount": "Vuokran määrä"
+    }
   },
   "create": {
     "title": "Lisaa uusi sopimus",
@@ -973,5 +983,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Päättyy {{days}} päivän kuluttua"
 }

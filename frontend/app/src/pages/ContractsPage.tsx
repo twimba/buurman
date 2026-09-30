@@ -3,9 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ContractStatus } from '@/types/contract';
 import { useContracts } from '@/hooks/useContractHooks';
+import { useDebounce } from '@/hooks/useDebounce';
 import { ContractCard } from '@/components/contracts/ContractCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Plus, FileText, RefreshCw, CircleDot, X } from 'lucide-react';
+import {
+  Plus,
+  FileText,
+  RefreshCw,
+  CircleDot,
+  X,
+  Search,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import {
@@ -50,6 +60,25 @@ export const ContractsPage = () => {
   const [statusFilter, setStatusFilter] = useState<ContractStatus | undefined>(
     undefined
   );
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebounce(searchInput, 300);
+  const [endingWithinDays, setEndingWithinDays] = useState<
+    number | undefined
+  >();
+  const [sortField, setSortField] = useState<
+    'endDate' | 'startDate' | 'rentAmount'
+  >('endDate');
+  const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>('ASC');
+
+  const sortOptions = useMemo(
+    () =>
+      [
+        { value: 'endDate' as const, label: t('list.sort.endDate') },
+        { value: 'startDate' as const, label: t('list.sort.startDate') },
+        { value: 'rentAmount' as const, label: t('list.sort.rentAmount') },
+      ] as const,
+    [t]
+  );
   const {
     pageParams,
     page,
@@ -65,9 +94,14 @@ export const ContractsPage = () => {
     isFetching,
     refetch,
     error,
-  } = useContracts(
-    statusFilter ? { status: statusFilter, ...pageParams } : { ...pageParams }
-  );
+  } = useContracts({
+    ...(statusFilter ? { status: statusFilter } : {}),
+    ...pageParams,
+    search: debouncedSearch || undefined,
+    endingWithinDays,
+    sort: sortField,
+    direction: sortDirection,
+  });
   const contracts = contractsData?.content;
 
   if (isLoading) {
@@ -132,8 +166,20 @@ export const ContractsPage = () => {
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <EntityExportControls
             filenameStem="contracts"
-            csv={() => exportContractsCsv()}
-            xlsx={() => exportContractsXlsx()}
+            csv={() =>
+              exportContractsCsv({
+                status: statusFilter,
+                search: debouncedSearch || undefined,
+                endingWithinDays,
+              })
+            }
+            xlsx={() =>
+              exportContractsXlsx({
+                status: statusFilter,
+                search: debouncedSearch || undefined,
+                endingWithinDays,
+              })
+            }
             googleSheet={(accessToken) =>
               exportContractsGoogleSheet(
                 { accessToken },
@@ -175,8 +221,35 @@ export const ContractsPage = () => {
           }}
         />
 
-        {/* Toolbar — status filter dropdown */}
+        {/* Toolbar — search, status filter, ending-within-days, sort */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value);
+                resetPage();
+              }}
+              placeholder={t('list.searchPlaceholder')}
+              aria-label={t('list.searchPlaceholder')}
+              className="w-full h-10 pl-10 pr-9 border border-border-strong rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
+            />
+            {searchInput && (
+              <button
+                onClick={() => {
+                  setSearchInput('');
+                  resetPage();
+                }}
+                aria-label={t('common:buttons.clear', 'Clear')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-text-muted hover:text-text-secondary focus-ring"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
           <FilterSelectPopover
             icon={CircleDot}
             label={t('list.status')}
@@ -188,24 +261,111 @@ export const ContractsPage = () => {
             }}
             allLabel={t('list.allStatuses')}
           />
+
+          <input
+            type="number"
+            min={0}
+            value={endingWithinDays ?? ''}
+            onChange={(e) => {
+              const raw = e.target.value;
+              setEndingWithinDays(raw === '' ? undefined : Number(raw));
+              resetPage();
+            }}
+            placeholder={t('list.endingWithinDays')}
+            aria-label={t('list.endingWithinDays')}
+            className="h-10 w-40 px-3 border border-border-strong rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
+          />
+
+          {/* Sort — grouped control pinned to the same 40px baseline */}
+          <div className="inline-flex items-center h-10 rounded-lg border border-border-strong bg-surface-card">
+            <select
+              value={sortField}
+              onChange={(e) => {
+                setSortField(
+                  e.target.value as 'endDate' | 'startDate' | 'rentAmount'
+                );
+                resetPage();
+              }}
+              aria-label={t('list.sortLabel')}
+              className="h-full bg-transparent pl-3 pr-2 text-sm font-medium text-text-secondary rounded-l-lg focus-ring"
+            >
+              {sortOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <span aria-hidden className="w-px h-5 bg-border-default" />
+            <button
+              onClick={() => {
+                setSortDirection((d) => (d === 'ASC' ? 'DESC' : 'ASC'));
+                resetPage();
+              }}
+              className="h-10 w-10 inline-flex items-center justify-center rounded-r-lg text-text-secondary hover:text-primary-600 hover:bg-surface-inset transition-colors focus-ring"
+              title={
+                sortDirection === 'ASC' ? t('list.sortAsc') : t('list.sortDesc')
+              }
+              aria-label={
+                sortDirection === 'ASC' ? t('list.sortAsc') : t('list.sortDesc')
+              }
+            >
+              {sortDirection === 'ASC' ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Active filter chip */}
-        {statusFilter && (
+        {/* Active filter chips */}
+        {(statusFilter || debouncedSearch || endingWithinDays !== undefined) && (
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
-              {statusOptions.find((o) => o.value === statusFilter)?.label}
-              <button
-                onClick={() => {
-                  setStatusFilter(undefined);
-                  resetPage();
-                }}
-                aria-label={t('common:buttons.clear', 'Clear')}
-                className="rounded-full hover:text-primary-900 focus-ring"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
+            {statusFilter && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
+                {statusOptions.find((o) => o.value === statusFilter)?.label}
+                <button
+                  onClick={() => {
+                    setStatusFilter(undefined);
+                    resetPage();
+                  }}
+                  aria-label={t('common:buttons.clear', 'Clear')}
+                  className="rounded-full hover:text-primary-900 focus-ring"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
+            {debouncedSearch && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
+                {debouncedSearch}
+                <button
+                  onClick={() => {
+                    setSearchInput('');
+                    resetPage();
+                  }}
+                  aria-label={t('common:buttons.clear', 'Clear')}
+                  className="rounded-full hover:text-text-primary focus-ring"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
+            {endingWithinDays !== undefined && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
+                {t('list.endingWithinDays')}: {endingWithinDays}
+                <button
+                  onClick={() => {
+                    setEndingWithinDays(undefined);
+                    resetPage();
+                  }}
+                  aria-label={t('common:buttons.clear', 'Clear')}
+                  className="rounded-full hover:text-text-primary focus-ring"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
           </div>
         )}
 

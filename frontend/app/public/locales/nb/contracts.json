@@ -25,7 +25,17 @@
       "description": "Kom i gang ved å opprette din første leieavtale"
     },
     "error": "Kunne ikke laste kontrakter",
-    "exportDeposits": "Eksporter depositum"
+    "exportDeposits": "Eksporter depositum",
+    "searchPlaceholder": "Søk etter kontakt, eiendom eller kontraktnummer...",
+    "endingWithinDays": "Utløper innen (dager)",
+    "sortLabel": "Sorter kontrakter etter",
+    "sortAsc": "Sorter stigende",
+    "sortDesc": "Sorter synkende",
+    "sort": {
+      "endDate": "Sluttdato",
+      "startDate": "Startdato",
+      "rentAmount": "Leiebeløp"
+    }
   },
   "create": {
     "title": "Legg til ny kontrakt",
@@ -973,5 +983,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Utløper om {{days}} dager"
 }

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { ContractResponse } from '@/types/contract';
 import { ContractStatusBadge } from './ContractStatusBadge';
+import { ExpiringSoonBadge } from './ExpiringSoonBadge';
 import { Home, User, Calendar, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -30,8 +31,12 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
               #{contract.identifier}
             </p>
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex flex-col items-end gap-1">
             <ContractStatusBadge status={contract.status} />
+            <ExpiringSoonBadge
+              effectiveEndDate={contract.effectiveEndDate ?? contract.endDate}
+              status={contract.status}
+            />
           </div>
         </div>
 

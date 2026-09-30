@@ -26,7 +26,17 @@
     },
     "error": "Impossibile caricare i contratti",
     "exportDeposits": "Esporta depositi",
-    "count_many": "{{count}} contratti"
+    "count_many": "{{count}} contratti",
+    "searchPlaceholder": "Cerca per contatto, immobile o numero di contratto...",
+    "endingWithinDays": "Termina entro (giorni)",
+    "sortLabel": "Ordina contratti per",
+    "sortAsc": "Ordine crescente",
+    "sortDesc": "Ordine decrescente",
+    "sort": {
+      "endDate": "Data di fine",
+      "startDate": "Data di inizio",
+      "rentAmount": "Importo del canone"
+    }
   },
   "create": {
     "title": "Aggiungi nuovo contratto",
@@ -987,5 +997,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Termina in {{days}} giorni"
 }

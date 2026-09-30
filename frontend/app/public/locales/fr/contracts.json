@@ -26,7 +26,17 @@
     },
     "error": "Échec du chargement des contrats",
     "exportDeposits": "Exporter les dépôts",
-    "count_many": "{{count}} contrats"
+    "count_many": "{{count}} contrats",
+    "searchPlaceholder": "Rechercher par contact, bien ou numéro de contrat...",
+    "endingWithinDays": "Se termine dans (jours)",
+    "sortLabel": "Trier les contrats par",
+    "sortAsc": "Ordre croissant",
+    "sortDesc": "Ordre décroissant",
+    "sort": {
+      "endDate": "Date de fin",
+      "startDate": "Date de début",
+      "rentAmount": "Montant du loyer"
+    }
   },
   "create": {
     "title": "Ajouter un nouveau contrat",
@@ -987,5 +997,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Se termine dans {{days}} jours"
 }

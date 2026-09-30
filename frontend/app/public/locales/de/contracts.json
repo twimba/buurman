@@ -25,7 +25,17 @@
       "description": "Beginnen Sie mit der Erstellung Ihres ersten Mietvertrags"
     },
     "error": "Verträge konnten nicht geladen werden",
-    "exportDeposits": "Kautionen exportieren"
+    "exportDeposits": "Kautionen exportieren",
+    "searchPlaceholder": "Suche nach Kontakt, Immobilie oder Vertragsnr...",
+    "endingWithinDays": "Endet innerhalb von (Tagen)",
+    "sortLabel": "Verträge sortieren nach",
+    "sortAsc": "Aufsteigend sortieren",
+    "sortDesc": "Absteigend sortieren",
+    "sort": {
+      "endDate": "Enddatum",
+      "startDate": "Startdatum",
+      "rentAmount": "Mietbetrag"
+    }
   },
   "create": {
     "title": "Neuen Vertrag hinzufügen",
@@ -973,5 +983,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Endet in {{days}} Tagen"
 }

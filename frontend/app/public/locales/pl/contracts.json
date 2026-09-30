@@ -27,7 +27,17 @@
       "description": "Zacznij od utworzenia pierwszej umowy najmu"
     },
     "error": "Nie udało się załadować umów",
-    "exportDeposits": "Eksportuj kaucje"
+    "exportDeposits": "Eksportuj kaucje",
+    "searchPlaceholder": "Szukaj według kontaktu, nieruchomości lub numeru umowy...",
+    "endingWithinDays": "Kończy się w ciągu (dni)",
+    "sortLabel": "Sortuj umowy według",
+    "sortAsc": "Sortuj rosnąco",
+    "sortDesc": "Sortuj malejąco",
+    "sort": {
+      "endDate": "Data zakończenia",
+      "startDate": "Data rozpoczęcia",
+      "rentAmount": "Kwota czynszu"
+    }
   },
   "create": {
     "title": "Dodaj nową umowę",
@@ -1001,5 +1011,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Kończy się za {{days}} dni"
 }

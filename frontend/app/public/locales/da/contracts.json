@@ -25,7 +25,17 @@
       "description": "Kom i gang ved at oprette din foerste lejeaftale"
     },
     "error": "Kunne ikke indlaese kontrakter",
-    "exportDeposits": "Eksportér depositum"
+    "exportDeposits": "Eksportér depositum",
+    "searchPlaceholder": "Søg efter kontakt, ejendom eller kontraktnr...",
+    "endingWithinDays": "Udløber inden for (dage)",
+    "sortLabel": "Sortér kontrakter efter",
+    "sortAsc": "Sortér stigende",
+    "sortDesc": "Sortér faldende",
+    "sort": {
+      "endDate": "Slutdato",
+      "startDate": "Startdato",
+      "rentAmount": "Lejebeløb"
+    }
   },
   "create": {
     "title": "Tilfoej ny kontrakt",
@@ -973,5 +983,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Udløber om {{days}} dage"
 }

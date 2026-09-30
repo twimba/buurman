@@ -26,7 +26,17 @@
     },
     "error": "Error al cargar contratos",
     "exportDeposits": "Exportar fianzas",
-    "count_many": "{{count}} contratos"
+    "count_many": "{{count}} contratos",
+    "searchPlaceholder": "Buscar por contacto, propiedad o número de contrato...",
+    "endingWithinDays": "Finaliza dentro de (días)",
+    "sortLabel": "Ordenar contratos por",
+    "sortAsc": "Orden ascendente",
+    "sortDesc": "Orden descendente",
+    "sort": {
+      "endDate": "Fecha de fin",
+      "startDate": "Fecha de inicio",
+      "rentAmount": "Importe del alquiler"
+    }
   },
   "create": {
     "title": "Añadir Nuevo Contrato",
@@ -987,5 +997,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Finaliza en {{days}} días"
 }

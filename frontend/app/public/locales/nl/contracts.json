@@ -25,7 +25,17 @@
       "description": "Begin door uw eerste huurovereenkomst aan te maken"
     },
     "error": "Kan contracten niet laden",
-    "exportDeposits": "Borg exporteren"
+    "exportDeposits": "Borg exporteren",
+    "searchPlaceholder": "Zoeken op contact, pand of contractnummer...",
+    "endingWithinDays": "Verloopt binnen (dagen)",
+    "sortLabel": "Contracten sorteren op",
+    "sortAsc": "Oplopend sorteren",
+    "sortDesc": "Aflopend sorteren",
+    "sort": {
+      "endDate": "Einddatum",
+      "startDate": "Startdatum",
+      "rentAmount": "Huurbedrag"
+    }
   },
   "create": {
     "title": "Nieuw contract toevoegen",
@@ -973,5 +983,6 @@
     "toasts": {
       "cancelled": "Betalingsregeling geannuleerd"
     }
-  }
+  },
+  "expiringSoon": "Verloopt over {{days}} dagen"
 }

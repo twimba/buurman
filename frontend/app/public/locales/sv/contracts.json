@@ -25,7 +25,17 @@
       "description": "Kom igang genom att skapa ditt forsta hyresavtal"
     },
     "error": "Det gick inte att ladda kontrakt",
-    "exportDeposits": "Exportera depositioner"
+    "exportDeposits": "Exportera depositioner",
+    "searchPlaceholder": "Sök efter kontakt, fastighet eller kontraktsnummer...",
+    "endingWithinDays": "Löper ut inom (dagar)",
+    "sortLabel": "Sortera kontrakt efter",
+    "sortAsc": "Sortera stigande",
+    "sortDesc": "Sortera fallande",
+    "sort": {
+      "endDate": "Slutdatum",
+      "startDate": "Startdatum",
+      "rentAmount": "Hyresbelopp"
+    }
   },
   "create": {
     "title": "Lagg till nytt kontrakt",
@@ -973,5 +983,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Löper ut om {{days}} dagar"
 }

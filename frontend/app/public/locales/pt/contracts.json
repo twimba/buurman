@@ -26,7 +26,17 @@
     },
     "error": "Falha ao carregar contratos",
     "exportDeposits": "Exportar cauções",
-    "count_many": "{{count}} contratos"
+    "count_many": "{{count}} contratos",
+    "searchPlaceholder": "Pesquisar por contacto, imóvel ou número de contrato...",
+    "endingWithinDays": "Termina dentro de (dias)",
+    "sortLabel": "Ordenar contratos por",
+    "sortAsc": "Ordem ascendente",
+    "sortDesc": "Ordem descendente",
+    "sort": {
+      "endDate": "Data de fim",
+      "startDate": "Data de início",
+      "rentAmount": "Valor da renda"
+    }
   },
   "create": {
     "title": "Adicionar Novo Contrato",
@@ -987,5 +997,6 @@
     "toasts": {
       "cancelled": "Plano de pagamento cancelado"
     }
-  }
+  },
+  "expiringSoon": "Termina em {{days}} dias"
 }

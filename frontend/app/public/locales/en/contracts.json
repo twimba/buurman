@@ -25,7 +25,17 @@
       "description": "Get started by creating your first rental agreement"
     },
     "error": "Failed to load contracts",
-    "exportDeposits": "Export deposits"
+    "exportDeposits": "Export deposits",
+    "searchPlaceholder": "Search by contact, property, or contract #...",
+    "endingWithinDays": "Ending within (days)",
+    "sortLabel": "Sort contracts by",
+    "sortAsc": "Sort ascending",
+    "sortDesc": "Sort descending",
+    "sort": {
+      "endDate": "End Date",
+      "startDate": "Start Date",
+      "rentAmount": "Rent Amount"
+    }
   },
   "create": {
     "title": "Add New Contract",
@@ -973,5 +983,6 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
-  }
+  },
+  "expiringSoon": "Ending in {{days}} days"
 }
