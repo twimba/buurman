@@ -47,6 +47,7 @@ import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.RentRegulationTenancyRuleIdentifier;
+import com.buurman.domain.identifier.SavedContractFilterIdentifier;
 import com.buurman.domain.identifier.SignatureRequestIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UnitIdentifier;
@@ -275,5 +276,9 @@ public class SidGenerator {
 
   public static SignatureRequestIdentifier newSignatureRequestId() {
     return SignatureRequestIdentifier.of(generateRaw(EntityPrefix.SGR));
+  }
+
+  public static SavedContractFilterIdentifier newSavedContractFilterId() {
+    return SavedContractFilterIdentifier.of(generateRaw(EntityPrefix.SCF));
   }
 }

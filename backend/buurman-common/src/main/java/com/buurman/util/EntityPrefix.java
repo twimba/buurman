@@ -56,7 +56,8 @@ public enum EntityPrefix {
   CEX("CEX", "Contract Extensions"),
   RCO("RCO", "Rent Components"),
   SGR("SGR", "Signature Requests"),
-  SGS("SGS", "Signature Signers");
+  SGS("SGS", "Signature Signers"),
+  SCF("SCF", "Saved Contract Filters");
 
   private final String code;
   private final String entityName;
