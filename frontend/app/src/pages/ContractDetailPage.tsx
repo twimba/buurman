@@ -28,7 +28,8 @@ import { ContractOverviewTab } from '@/components/contracts/ContractOverviewTab'
 import { ContractPaymentsTab } from '@/components/contracts/ContractPaymentsTab';
 import { ContractExtensionsTab } from '@/components/contracts/ContractExtensionsTab';
 import { ContractDocumentsTab } from '@/components/contracts/ContractDocumentsTab';
-import { ContractHistoryTab } from '@/components/contracts/ContractHistoryTab';
+import { ContractTimeline } from '@/components/contracts/ContractTimeline';
+import { useContractTimeline } from '@/hooks/useContractTimeline';
 import { useTeam } from '@/context/TeamContext';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
@@ -68,6 +69,12 @@ export const ContractDetailPage = () => {
   ] as const);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
+
+  const {
+    data: timelineEvents = [],
+    isLoading: timelineLoading,
+    isError: timelineError,
+  } = useContractTimeline(id);
 
   const { data: contract, isLoading, error } = useContract(id);
   const contractIdentifier = contract?.identifier;
@@ -378,7 +385,18 @@ export const ContractDetailPage = () => {
 
         {activeTab === 'documents' && <ContractDocumentsTab contractId={id} />}
 
-        {activeTab === 'history' && <ContractHistoryTab contractId={id} />}
+        {activeTab === 'history' && (
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
+              {t('history.title')}
+            </h2>
+            <ContractTimeline
+              events={timelineEvents}
+              isLoading={timelineLoading}
+              isError={timelineError}
+            />
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}

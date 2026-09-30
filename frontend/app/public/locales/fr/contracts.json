@@ -53,7 +53,7 @@
       "payments": "Paiements",
       "extensions": "Prolongations",
       "documents": "Documents",
-      "history": "Historique"
+      "history": "Chronologie"
     },
     "deleteTitle": "Supprimer le contrat",
     "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce contrat ? Cette action est irréversible.",

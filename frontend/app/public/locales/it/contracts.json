@@ -53,7 +53,7 @@
       "payments": "Pagamenti",
       "extensions": "Proroghe",
       "documents": "Documenti",
-      "history": "Cronologia"
+      "history": "Sequenza cronologica"
     },
     "deleteTitle": "Elimina contratto",
     "deleteMessage": "Conferma l'eliminazione di questo contratto? Questa azione non può essere annullata.",

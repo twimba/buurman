@@ -52,7 +52,7 @@
       "payments": "Zahlungen",
       "extensions": "Verlängerungen",
       "documents": "Dokumente",
-      "history": "Verlauf"
+      "history": "Zeitstrahl"
     },
     "deleteTitle": "Vertrag löschen",
     "deleteMessage": "Sind Sie sicher, dass Sie diesen Vertrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",

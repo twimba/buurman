@@ -52,7 +52,7 @@
       "payments": "Betalinger",
       "extensions": "Forlengelser",
       "documents": "Dokumenter",
-      "history": "Historikk"
+      "history": "Tidslinje"
     },
     "deleteTitle": "Slett kontrakt",
     "deleteMessage": "Er du sikker på at du vil slette denne kontrakten? Denne handlingen kan ikke angres.",

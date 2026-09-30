@@ -54,7 +54,7 @@
       "payments": "Płatności",
       "extensions": "Przedłużenia",
       "documents": "Dokumenty",
-      "history": "Historia"
+      "history": "Oś czasu"
     },
     "deleteTitle": "Usuń umowę",
     "deleteMessage": "Czy na pewno chcesz usunąć tę umowę? Tej akcji nie można cofnąć.",

@@ -52,7 +52,7 @@
       "payments": "Betalingen",
       "extensions": "Verlengingen",
       "documents": "Documenten",
-      "history": "Geschiedenis"
+      "history": "Tijdlijn"
     },
     "deleteTitle": "Contract verwijderen",
     "deleteMessage": "Weet u zeker dat u dit contract wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",

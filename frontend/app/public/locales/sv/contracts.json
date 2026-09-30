@@ -52,7 +52,7 @@
       "payments": "Betalningar",
       "extensions": "Forlangningar",
       "documents": "Dokument",
-      "history": "Historik"
+      "history": "Tidslinje"
     },
     "deleteTitle": "Ta bort kontrakt",
     "deleteMessage": "Ar du saker pa att du vill ta bort detta kontrakt? Denna atgard kan inte angras.",

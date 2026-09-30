@@ -52,7 +52,7 @@
       "payments": "Maksut",
       "extensions": "Jatkot",
       "documents": "Asiakirjat",
-      "history": "Historia"
+      "history": "Aikajana"
     },
     "deleteTitle": "Poista sopimus",
     "deleteMessage": "Haluatko varmasti poistaa taman sopimuksen? Tata toimintoa ei voi kumota.",

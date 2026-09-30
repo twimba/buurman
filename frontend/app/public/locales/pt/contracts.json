@@ -53,7 +53,7 @@
       "payments": "Pagamentos",
       "extensions": "Extensões",
       "documents": "Documentos",
-      "history": "Histórico"
+      "history": "Cronologia"
     },
     "deleteTitle": "Eliminar Contrato",
     "deleteMessage": "Tem a certeza de que pretende eliminar este contrato? Esta ação não pode ser revertida.",
