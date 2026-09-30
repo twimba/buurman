@@ -156,7 +156,9 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
     vars.put("deadline", today.plusDays(deadlineDays).format(dateFmt));
     vars.put("deadlineDays", deadlineDays);
     vars.putAll(paymentInstructionVariables(data.contract().getId(), teamId));
-    vars.putAll(helper.legalVariables(messageSource, "notice.legal.", data.contract(), locale));
+    vars.putAll(
+        helper.legalVariables(
+            messageSource, "notice.legal.", DOCUMENT_TYPE, data.contract(), locale));
     return documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, vars);
   }
 

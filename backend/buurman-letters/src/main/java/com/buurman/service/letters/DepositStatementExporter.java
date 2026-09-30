@@ -129,7 +129,8 @@ public class DepositStatementExporter {
         deposit.getStatus() == Deposit.DepositStatus.RETURNED
             || deposit.getStatus() == Deposit.DepositStatus.FORFEITED);
     vars.put("notes", deposit.getNotes().orElse(null));
-    vars.putAll(helper.legalVariables(messageSource, "deposit.legal.", contract, locale));
+    vars.putAll(
+        helper.legalVariables(messageSource, "deposit.legal.", DOCUMENT_TYPE, contract, locale));
     return documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, vars);
   }
 }

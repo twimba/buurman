@@ -11,9 +11,12 @@ import org.junit.jupiter.api.Test;
 class CountryLetterClauseCatalogTest {
 
   @Test
-  @DisplayName("DE/rent-increase-letter resolves the §558 section before the comparison-method section, in order")
+  @DisplayName(
+      "DE/rent-increase-letter resolves the §558 section before the comparison-method section, in"
+          + " order")
   void deRentIncreaseLetterResolvesTwoOrderedClauses() {
-    List<LetterClauseKey> clauses = CountryLetterClauseCatalog.resolve("rent-increase-letter", "DE");
+    List<LetterClauseKey> clauses =
+        CountryLetterClauseCatalog.resolve("rent-increase-letter", "DE");
 
     assertThat(clauses)
         .containsExactly(
@@ -25,7 +28,8 @@ class CountryLetterClauseCatalogTest {
   @Test
   @DisplayName("NL/rent-increase-letter resolves exactly one clause")
   void nlRentIncreaseLetterResolvesOneClause() {
-    List<LetterClauseKey> clauses = CountryLetterClauseCatalog.resolve("rent-increase-letter", "NL");
+    List<LetterClauseKey> clauses =
+        CountryLetterClauseCatalog.resolve("rent-increase-letter", "NL");
 
     assertThat(clauses)
         .containsExactly(new LetterClauseKey("legal.NL.basis.title", "legal.NL.basis.body"));

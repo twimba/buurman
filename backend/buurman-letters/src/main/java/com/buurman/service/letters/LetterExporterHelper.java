@@ -133,16 +133,57 @@ class LetterExporterHelper {
     return vars;
   }
 
-  /** Country code plus the country-specific legal clause under the given key prefix. */
+  /** Country code plus the country-specific legal clauses under the given key prefix. */
   Map<String, Object> legalVariables(
-      MessageSource messageSource, String keyPrefix, Contract contract, Locale locale) {
+      MessageSource messageSource,
+      String keyPrefix,
+      String documentType,
+      Contract contract,
+      Locale locale) {
     Map<String, Object> vars = new HashMap<>();
     Optional<String> countryCode = contract.getCountryCode();
     vars.put("countryCode", countryCode.orElse(null));
     vars.put(
-        "legalClause",
-        resolveLegalClause(messageSource, keyPrefix, countryCode, locale).orElse(null));
+        "legalClauses",
+        resolveLegalClauses(messageSource, keyPrefix, documentType, countryCode, locale));
     return vars;
+  }
+
+  /**
+   * Resolves the ordered legal clauses for a letter: a {@link CountryLetterClauseCatalog} entry for
+   * {@code documentType}/country if one exists (each clause pre-resolved to {@code {title, body}}
+   * string maps, {@code title} omitted when the catalog gives no title key), else the single legacy
+   * {@code keyPrefix + COUNTRY} clause wrapped as a one-item list, else empty.
+   */
+  List<Map<String, String>> resolveLegalClauses(
+      MessageSource messageSource,
+      String keyPrefix,
+      String documentType,
+      Optional<String> countryCode,
+      Locale locale) {
+    return countryCode
+        .map(
+            code -> {
+              List<LetterClauseKey> catalogClauses =
+                  CountryLetterClauseCatalog.resolve(documentType, code);
+              if (!catalogClauses.isEmpty()) {
+                return catalogClauses.stream()
+                    .map(
+                        clause -> {
+                          Map<String, String> resolved = new HashMap<>();
+                          resolved.put(
+                              "title", messageSource.getMessage(clause.titleKey(), null, locale));
+                          resolved.put(
+                              "body", messageSource.getMessage(clause.bodyKey(), null, locale));
+                          return resolved;
+                        })
+                    .toList();
+              }
+              return resolveLegalClause(messageSource, keyPrefix, Optional.of(code), locale)
+                  .map(body -> List.of(Map.of("body", body)))
+                  .orElse(List.<Map<String, String>>of());
+            })
+        .orElse(List.of());
   }
 
   /** The tenant a letter is addressed to, with their mailing address when known. */

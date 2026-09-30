@@ -221,7 +221,8 @@ public class RentChangeDocumentExporter {
           vars.put("extensionNewEndDate", null);
         });
 
-    vars.putAll(helper.legalVariables(messageSource, "rentchange.legal.", contract, locale));
+    vars.putAll(
+        helper.legalVariables(messageSource, "rentchange.legal.", "rent-change", contract, locale));
 
     // Regulation data
     regulationRule.ifPresentOrElse(

@@ -173,7 +173,8 @@ public class ContractExtensionAddendumExporter {
     // Notes
     vars.put("notes", extension.getNotes().filter(n -> !n.isBlank()).orElse(null));
 
-    vars.putAll(helper.legalVariables(messageSource, "legal.", contract, locale));
+    vars.putAll(
+        helper.legalVariables(messageSource, "legal.", "extension-addendum", contract, locale));
 
     return vars;
   }

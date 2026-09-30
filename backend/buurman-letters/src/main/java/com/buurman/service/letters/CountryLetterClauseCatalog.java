@@ -5,14 +5,14 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Structural country/document-type variation for letter legal clauses. A combination with no
- * entry here falls back to the single legacy {@code legal.{COUNTRY}}-style clause resolution in
- * {@link LetterExporterHelper#resolveLegalClause}, so adding a country/document-type here is
- * purely additive — nothing existing changes shape unless explicitly listed.
+ * Structural country/document-type variation for letter legal clauses. A combination with no entry
+ * here falls back to the single legacy {@code legal.{COUNTRY}}-style clause resolution in {@link
+ * LetterExporterHelper#resolveLegalClause}, so adding a country/document-type here is purely
+ * additive — nothing existing changes shape unless explicitly listed.
  *
- * <p>A static config class, not a database table: this changes with template structure (the
- * {@code th:each} loop in {@code generic.html} already requires a deploy to change), so letting
- * it be edited without a deploy would let content and structure drift out of sync.
+ * <p>A static config class, not a database table: this changes with template structure (the {@code
+ * th:each} loop in {@code generic.html} already requires a deploy to change), so letting it be
+ * edited without a deploy would let content and structure drift out of sync.
  */
 final class CountryLetterClauseCatalog {
 

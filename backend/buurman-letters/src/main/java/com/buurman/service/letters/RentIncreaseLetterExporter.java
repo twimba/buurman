@@ -139,7 +139,8 @@ public class RentIncreaseLetterExporter {
         "newEndDate",
         extension.getNewEndDate().map(d -> DocumentFormatting.formatDate(d, dateFmt)).orElse(null));
 
-    vars.putAll(helper.legalVariables(messageSource, "legal.", contract, locale));
+    vars.putAll(
+        helper.legalVariables(messageSource, "legal.", "rent-increase-letter", contract, locale));
 
     return vars;
   }
