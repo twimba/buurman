@@ -50,6 +50,9 @@ class TakeoutMetaModelCoverageTest {
           "CONTACT_RELATIONSHIPS",
           "CONTACT_TAGS",
           "CONTRACT_EXTENSIONS",
+          // contract_lease_clauses (BUUR-105 lease agreement generation) — per-contract clause
+          // include/exclude overrides, not exported.
+          "CONTRACT_LEASE_CLAUSES",
           "CONTRACT_RENT_COMPONENTS",
           // contract_terminations (contract-termination-workflow) — takeout export for
           // termination records is out of scope for that plan.

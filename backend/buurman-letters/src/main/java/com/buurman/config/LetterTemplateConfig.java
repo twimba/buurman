@@ -27,7 +27,8 @@ public class LetterTemplateConfig {
         "classpath:messages/document-rent-change",
         "classpath:messages/document-payment-notice",
         "classpath:messages/document-deposit-statement",
-        "classpath:messages/document-contract-termination");
+        "classpath:messages/document-contract-termination",
+        "classpath:messages/document-lease-agreement");
   }
 
   @Bean("letterTemplateEngine")

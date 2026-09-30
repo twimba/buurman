@@ -125,6 +125,7 @@ class I18nBundleParityTest {
             "document-deposit-statement",
             "document-enum-labels",
             "document-extension",
+            "document-lease-agreement",
             "document-letter-chrome",
             "document-payment-notice",
             "document-property-booklet",
