@@ -114,7 +114,7 @@ class TenantLetterLocaleRenderTest {
     v.put("accountHolderName", "Landlord BV");
     v.put("paymentReference", "ctr_01TEST");
     v.put("countryCode", "NL");
-    v.put("legalClause", "Clause text");
+    v.put("legalClauses", List.of(Map.of("body", "Clause text")));
     v.put("contractStart", "1 Jan 2025");
     v.put("contractEnd", "31 Dec 2026");
     v.put("status", "HELD");

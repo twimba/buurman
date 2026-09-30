@@ -84,7 +84,10 @@
     <p th:if="${!isClosed and returnDueDate != null}" th:text="#{deposit.body.returnBy(${refundable}, ${returnDueDate})}"></p>
     <p th:if="${isClosed}" th:text="#{deposit.body.closed}"></p>
 
-    <div th:if="${legalClause != null}" class="legal-clause" th:text="${legalClause}"></div>
+    <div th:each="clause : ${legalClauses}" class="legal-clause">
+      <div th:if="${clause.get('title') != null}" class="legal-clause-title" th:text="${clause.get('title')}"></div>
+      <div th:text="${clause.body}"></div>
+    </div>
 
     <p th:if="${notes != null}" th:text="${notes}"></p>
 

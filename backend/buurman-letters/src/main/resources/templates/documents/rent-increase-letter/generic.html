@@ -48,7 +48,10 @@
     <p th:unless="${newEndDate != null}" th:text="#{letter.body.extension.indefinite(${extensionNumber})}"></p>
 
     <!-- Country-specific legal clause -->
-    <div th:if="${legalClause != null}" class="legal-clause" th:text="${legalClause}"></div>
+    <div th:each="clause : ${legalClauses}" class="legal-clause">
+      <div th:if="${clause.get('title') != null}" class="legal-clause-title" th:text="${clause.get('title')}"></div>
+      <div th:text="${clause.body}"></div>
+    </div>
 
     <!-- Summary table -->
     <table class="summary-table">

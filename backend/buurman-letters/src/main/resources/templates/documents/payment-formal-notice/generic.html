@@ -39,7 +39,10 @@
 
     <p th:text="#{notice.body.consequences}"></p>
 
-    <div th:if="${legalClause != null}" class="legal-clause" th:text="${legalClause}"></div>
+    <div th:each="clause : ${legalClauses}" class="legal-clause">
+      <div th:if="${clause.get('title') != null}" class="legal-clause-title" th:text="${clause.get('title')}"></div>
+      <div th:text="${clause.body}"></div>
+    </div>
 
     <table class="summary-table">
       <tr><td class="st-label" th:text="#{notice.summary.contractRef}"></td><td class="st-value" th:text="${contractIdentifier}"></td></tr>
