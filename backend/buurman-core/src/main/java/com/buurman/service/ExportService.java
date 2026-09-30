@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -81,7 +83,15 @@ public interface ExportService {
   byte[] generateExpensesExcel(UUID teamId);
 
   // Contracts
-  byte[] generateContractsCSV(UUID teamId);
+  byte[] generateContractsCSV(
+      UUID teamId,
+      @Nullable String status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays);
 
-  byte[] generateContractsExcel(UUID teamId);
+  byte[] generateContractsExcel(
+      UUID teamId,
+      @Nullable String status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays);
 }

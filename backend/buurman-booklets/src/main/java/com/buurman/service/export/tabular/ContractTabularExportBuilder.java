@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
@@ -22,8 +23,18 @@ public class ContractTabularExportBuilder {
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
 
+  /** Unfiltered export — used by the Google Sheets adapter, which is out of scope for filters. */
   public TabularExport build(UUID teamId) {
-    List<Contract> contracts = contractRepository.findAllByTeamId(teamId);
+    return build(teamId, null, null, null);
+  }
+
+  public TabularExport build(
+      UUID teamId,
+      @Nullable String status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays) {
+    List<Contract> contracts =
+        contractRepository.findAllByTeamId(teamId, status, search, endingWithinDays);
 
     Map<UUID, String> propertyById = new HashMap<>();
     Map<UUID, String> propertyAddressById = new HashMap<>();

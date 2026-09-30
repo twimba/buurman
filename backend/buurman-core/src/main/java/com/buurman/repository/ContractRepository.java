@@ -396,6 +396,54 @@ public class ContractRepository {
       @Nullable String search,
       @Nullable Integer endingWithinDays,
       PageRequest pageRequest) {
+    Condition condition =
+        buildListCondition(teamId, status, propertyId, contactId, search, endingWithinDays);
+    Field<LocalDate> effectiveEndDate =
+        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
+    Map<String, Field<?>> sortableFields =
+        Map.of(
+            "createdAt", CONTRACTS.CREATED_AT,
+            "startDate", CONTRACTS.START_DATE,
+            "endDate", effectiveEndDate,
+            "rentAmount", CONTRACTS.RENT_AMOUNT,
+            "status", CONTRACTS.STATUS);
+    return PaginationHelper.paginate(
+        dsl,
+        CONTRACTS,
+        condition,
+        sortableFields,
+        CONTRACTS.CREATED_AT,
+        pageRequest,
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map contract record")));
+  }
+
+  public List<Contract> findAllByTeamId(
+      UUID teamId,
+      @Nullable String status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays) {
+    Condition condition = buildListCondition(teamId, status, null, null, search, endingWithinDays);
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(condition)
+        .orderBy(CONTRACTS.CREATED_AT.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  private Condition buildListCondition(
+      UUID teamId,
+      @Nullable String status,
+      @Nullable UUID propertyId,
+      @Nullable UUID contactId,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays) {
     Condition condition = CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       condition = condition.and(CONTRACTS.STATUS.eq(status));
@@ -471,26 +519,7 @@ public class ContractRepository {
                   .isNotNull()
                   .and(effectiveEndDateExpr.between(today, today.plusDays(endingWithinDays))));
     }
-    Field<LocalDate> effectiveEndDate =
-        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
-    Map<String, Field<?>> sortableFields =
-        Map.of(
-            "createdAt", CONTRACTS.CREATED_AT,
-            "startDate", CONTRACTS.START_DATE,
-            "endDate", effectiveEndDate,
-            "rentAmount", CONTRACTS.RENT_AMOUNT,
-            "status", CONTRACTS.STATUS);
-    return PaginationHelper.paginate(
-        dsl,
-        CONTRACTS,
-        condition,
-        sortableFields,
-        CONTRACTS.CREATED_AT,
-        pageRequest,
-        r ->
-            mapper
-                .toDomain(r)
-                .orElseThrow(() -> new IllegalStateException("Failed to map contract record")));
+    return condition;
   }
 
   public List<Contract> findActiveByTeamId(UUID teamId) {

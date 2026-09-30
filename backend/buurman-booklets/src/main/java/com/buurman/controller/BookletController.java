@@ -211,21 +211,29 @@ public class BookletController implements BookletsApi {
 
   // ── Contracts ───────────────────────────────────────────────────────────
   @Override
-  public Resource exportContractsCsv() {
+  public Resource exportContractsCsv(
+      Optional<String> status, Optional<String> search, Optional<Integer> endingWithinDays) {
     return downloadCsv(
         "contracts.csv",
         () ->
             exportService.generateContractsCSV(
-                SecurityUtils.getCurrentPrincipal().requireTeamId()));
+                SecurityUtils.getCurrentPrincipal().requireTeamId(),
+                status.orElse(null),
+                search.orElse(null),
+                endingWithinDays.orElse(null)));
   }
 
   @Override
-  public Resource exportContractsXlsx() {
+  public Resource exportContractsXlsx(
+      Optional<String> status, Optional<String> search, Optional<Integer> endingWithinDays) {
     return downloadXlsx(
         "contracts.xlsx",
         () ->
             exportService.generateContractsExcel(
-                SecurityUtils.getCurrentPrincipal().requireTeamId()));
+                SecurityUtils.getCurrentPrincipal().requireTeamId(),
+                status.orElse(null),
+                search.orElse(null),
+                endingWithinDays.orElse(null)));
   }
 
   @Override

@@ -19017,6 +19017,23 @@ paths:
         - Booklets
       summary: Export contracts list to CSV
       operationId: exportContractsCsv
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: endingWithinDays
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: OK
@@ -19036,6 +19053,23 @@ paths:
         - Booklets
       summary: Export contracts list to Excel
       operationId: exportContractsXlsx
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: endingWithinDays
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: OK
