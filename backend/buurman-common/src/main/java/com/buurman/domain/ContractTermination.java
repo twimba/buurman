@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @SuppressWarnings("NullAway.Init")
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContractTermination {

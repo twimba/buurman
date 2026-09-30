@@ -66,6 +66,7 @@ abstract class AbstractRepositoryIntegrationTest {
     dsl.deleteFrom(DSL.table("contract_payment_instructions")).execute();
     dsl.deleteFrom(DSL.table("contract_parties")).execute();
     dsl.deleteFrom(DSL.table("contract_extensions")).execute();
+    dsl.deleteFrom(DSL.table("contract_terminations")).execute();
     dsl.deleteFrom(DSL.table("contracts")).execute();
     dsl.deleteFrom(DSL.table("contact_tags")).execute();
     dsl.deleteFrom(DSL.table("contact_relationships")).execute();
