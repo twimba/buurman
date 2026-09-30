@@ -18212,6 +18212,67 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /contracts/{identifier}/timeline:
+    get:
+      tags:
+        - Contracts
+      summary: Get unified timeline
+      description: Get a merged, chronological feed of everything that happened to a contract — audit events, rent changes, extensions, documents, and signature requests
+      operationId: getContractTimeline
+      parameters:
+        - name: identifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimelineEventResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contracts/{contractIdentifier}/payment-instructions/current:
     get:
       tags:
@@ -28331,6 +28392,38 @@ components:
         - newValues
         - oldValues
         - timestamp
+    TimelineEventResponse:
+      type: object
+      description: One event in a contract's unified timeline
+      properties:
+        type:
+          type: string
+          enum:
+            - CONTRACT_CREATED
+            - CONTRACT_STATUS_CHANGED
+            - RENT_CHANGED
+            - EXTENSION_CREATED
+            - EXTENSION_ACTIVATED
+            - EXTENSION_DECLINED
+            - DOCUMENT_UPLOADED
+            - DOCUMENT_GENERATED
+            - SIGNATURE_SENT
+            - SIGNATURE_COMPLETED
+            - SIGNATURE_DECLINED
+            - AUDIT_OTHER
+        timestamp:
+          type: string
+          format: date-time
+        title:
+          type: string
+        description:
+          type: string
+        relatedIdentifier:
+          type: string
+      required:
+        - type
+        - timestamp
+        - title
     CategoryExpenseSummary:
       type: object
       properties:

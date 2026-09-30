@@ -551,6 +551,8 @@ paths:
     $ref: 'paths/imports.yaml#/error-report'
   /contracts/{identifier}/audit-log:
     $ref: 'paths/contracts.yaml#/audit-log'
+  /contracts/{identifier}/timeline:
+    $ref: 'paths/contracts.yaml#/timeline'
   /contracts/{contractIdentifier}/payment-instructions/current:
     $ref: 'paths/contracts.yaml#/payment-instructions-current'
   /contracts/metadata-schema/{countryCode}:
@@ -6712,6 +6714,38 @@ components:
         - newValues
         - oldValues
         - timestamp
+    TimelineEventResponse:
+      type: object
+      description: One event in a contract's unified timeline
+      properties:
+        type:
+          type: string
+          enum:
+            - CONTRACT_CREATED
+            - CONTRACT_STATUS_CHANGED
+            - RENT_CHANGED
+            - EXTENSION_CREATED
+            - EXTENSION_ACTIVATED
+            - EXTENSION_DECLINED
+            - DOCUMENT_UPLOADED
+            - DOCUMENT_GENERATED
+            - SIGNATURE_SENT
+            - SIGNATURE_COMPLETED
+            - SIGNATURE_DECLINED
+            - AUDIT_OTHER
+        timestamp:
+          type: string
+          format: date-time
+        title:
+          type: string
+        description:
+          type: string
+        relatedIdentifier:
+          type: string
+      required:
+        - type
+        - timestamp
+        - title
     CategoryExpenseSummary:
       type: object
       properties:

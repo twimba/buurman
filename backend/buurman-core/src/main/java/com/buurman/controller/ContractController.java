@@ -36,11 +36,13 @@ import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PaymentPlanResponse;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.dto.response.TimelineEventResponse;
 import com.buurman.generated.api.ContractsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.ContractService;
+import com.buurman.service.ContractTimelineService;
 import com.buurman.service.CountryMetadataSchemaService;
 import com.buurman.service.DepositService;
 import com.buurman.service.PaymentPlanService;
@@ -58,6 +60,7 @@ public class ContractController implements ContractsApi {
   private final PaymentSchedulingService paymentSchedulingService;
   private final DepositService depositService;
   private final PaymentPlanService paymentPlanService;
+  private final ContractTimelineService contractTimelineService;
 
   @Override
   public ContractResponse createContract(CreateContractRequest createContractRequest) {
@@ -271,6 +274,12 @@ public class ContractController implements ContractsApi {
   public List<RecentActivityResponse> getContractAuditLog(ContractIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contractService.getAuditLog(identifier, principal);
+  }
+
+  @Override
+  public List<TimelineEventResponse> getContractTimeline(ContractIdentifier identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contractTimelineService.getTimeline(identifier, principal);
   }
 
   @Override
