@@ -72,6 +72,8 @@ tags:
     description: Recurring property fees (HOA, management, etc.)
   - name: User Preferences
     description: User preferences and notification channel settings
+  - name: Lease Agreement
+    description: Lease clause resolution, per-contract clause selection, and full lease agreement generation
   - name: Health
     description: Health and info endpoints
   - name: Geocoding
@@ -5266,6 +5268,193 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{contractIdentifier}/lease-clauses:
+    get:
+      tags:
+        - Lease Agreement
+      summary: Get resolved lease clauses
+      description: Returns every lease clause that applies to the contract's country, combined with any per-contract overrides, in sort order with each clause's current inclusion state
+      operationId: getLeaseClauses
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      responses:
+        "200":
+          description: Resolved clause list with inclusion state
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+
+    put:
+      tags:
+        - Lease Agreement
+      summary: Update per-contract lease clause selection
+      description: Replaces the contract's lease clause overrides with the given selection and sort order. A non-optional clause cannot be excluded — the server rejects that with 400 regardless of what the client sends
+      operationId: updateLeaseClauses
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContractLeaseClausesRequest'
+      responses:
+        "200":
+          description: Updated clause list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+        "400":
+          description: Bad request - validation error or malformed input, including an attempt to exclude a non-optional clause
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{contractIdentifier}/lease-agreement:
+    post:
+      tags:
+        - Lease Agreement
+      summary: Generate and persist the lease agreement document
+      description: Renders the full lease agreement PDF from the contract's currently included clauses, uploads it to S3, and persists it as a contract document
+      operationId: generateLeaseAgreement
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+      responses:
+        "200":
+          description: Generated document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -25089,6 +25278,52 @@ components:
         - signers
         - createdAt
         - updatedAt
+    ResolvedLeaseClauseResponse:
+      type: object
+      description: A lease clause template resolved against a contract, with per-contract inclusion state
+      properties:
+        templateIdentifier:
+          type: string
+        clauseKey:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        included:
+          type: boolean
+        optional:
+          type: boolean
+        sortOrder:
+          type: integer
+      required:
+        - templateIdentifier
+        - clauseKey
+        - title
+        - body
+        - included
+        - optional
+        - sortOrder
+    UpdateContractLeaseClausesRequest:
+      type: object
+      properties:
+        clauses:
+          type: array
+          items:
+            type: object
+            properties:
+              templateIdentifier:
+                type: string
+              included:
+                type: boolean
+              sortOrder:
+                type: integer
+            required:
+              - templateIdentifier
+              - included
+              - sortOrder
+      required:
+        - clauses
     PaymentReceivalResponse:
       type: object
       properties:

@@ -72,6 +72,8 @@ tags:
     description: Recurring property fees (HOA, management, etc.)
   - name: User Preferences
     description: User preferences and notification channel settings
+  - name: Lease Agreement
+    description: Lease clause resolution, per-contract clause selection, and full lease agreement generation
   - name: Health
     description: Health and info endpoints
   - name: Geocoding
@@ -215,6 +217,10 @@ paths:
     $ref: 'paths/contracts.yaml#/signature-requests-item'
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     $ref: 'paths/contracts.yaml#/payment-instructions-item'
+  /contracts/{contractIdentifier}/lease-clauses:
+    $ref: 'paths/contracts.yaml#/lease-clauses'
+  /contracts/{contractIdentifier}/lease-agreement:
+    $ref: 'paths/contracts.yaml#/lease-agreement'
   /auth/me:
     $ref: 'paths/users.yaml#/auth-me'
   /webhooks/twilio/status:
@@ -3184,6 +3190,52 @@ components:
         - signers
         - createdAt
         - updatedAt
+    ResolvedLeaseClauseResponse:
+      type: object
+      description: A lease clause template resolved against a contract, with per-contract inclusion state
+      properties:
+        templateIdentifier:
+          type: string
+        clauseKey:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        included:
+          type: boolean
+        optional:
+          type: boolean
+        sortOrder:
+          type: integer
+      required:
+        - templateIdentifier
+        - clauseKey
+        - title
+        - body
+        - included
+        - optional
+        - sortOrder
+    UpdateContractLeaseClausesRequest:
+      type: object
+      properties:
+        clauses:
+          type: array
+          items:
+            type: object
+            properties:
+              templateIdentifier:
+                type: string
+              included:
+                type: boolean
+              sortOrder:
+                type: integer
+            required:
+              - templateIdentifier
+              - included
+              - sortOrder
+      required:
+        - clauses
     PaymentReceivalResponse:
       type: object
       properties:

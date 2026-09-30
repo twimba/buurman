@@ -741,6 +741,9 @@
                                 <importMapping>UpdateAllocationRequest=com.buurman.dto.request.UpdateAllocationRequest</importMapping>
                                 <!-- BUUR-105: Contract timeline import mapping -->
                                 <importMapping>TimelineEventResponse=com.buurman.dto.response.TimelineEventResponse</importMapping>
+                                <!-- Lease agreement import mappings -->
+                                <importMapping>ResolvedLeaseClauseResponse=com.buurman.dto.response.ResolvedLeaseClauseResponse</importMapping>
+                                <importMapping>UpdateContractLeaseClausesRequest=com.buurman.dto.request.UpdateContractLeaseClausesRequest</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>
