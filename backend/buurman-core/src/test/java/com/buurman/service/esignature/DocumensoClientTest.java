@@ -34,6 +34,8 @@ class DocumensoClientTest {
   private volatile String distributeResponse =
       "{\"success\":true,\"id\":\"envelope_abc123\",\"recipients\":"
           + "[{\"id\":1,\"email\":\"tenant@example.com\"}]}";
+  private volatile String envelopeResponse =
+      "{\"status\":\"COMPLETED\",\"envelopeItems\":[{\"id\":\"envelope_item_1\"}]}";
 
   @BeforeEach
   void startServer() throws IOException {
@@ -61,8 +63,7 @@ class DocumensoClientTest {
     server.createContext(
         "/api/v2/envelope/envelope_abc123",
         exchange -> {
-          String body = "{\"envelopeItems\":[{\"id\":\"envelope_item_1\"}]}";
-          byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+          byte[] bytes = envelopeResponse.getBytes(StandardCharsets.UTF_8);
           exchange.getResponseHeaders().set("Content-Type", "application/json");
           exchange.sendResponseHeaders(200, bytes.length);
           exchange.getResponseBody().write(bytes);
@@ -177,10 +178,22 @@ class DocumensoClientTest {
   }
 
   @Test
-  @DisplayName("isValidWebhookSecret: no secret configured accepts anything (local dev)")
-  void noSecretConfiguredAcceptsAnything() {
+  @DisplayName("isValidWebhookSecret: no secret configured rejects every webhook (fail closed)")
+  void noSecretConfiguredRejectsEverything() {
     DocumensoClient c = client("");
-    assertThat(c.isValidWebhookSecret(null)).isTrue();
-    assertThat(c.isValidWebhookSecret("anything")).isTrue();
+    assertThat(c.isValidWebhookSecret(null)).isFalse();
+    assertThat(c.isValidWebhookSecret("anything")).isFalse();
+    assertThat(c.isValidWebhookSecret("")).isFalse();
+  }
+
+  @Test
+  @DisplayName(
+      "downloadCompleted refuses to download when the real envelope status is not COMPLETED")
+  void downloadCompletedRejectsNonCompletedEnvelope() {
+    envelopeResponse = "{\"status\":\"PENDING\",\"envelopeItems\":[{\"id\":\"envelope_item_1\"}]}";
+
+    assertThatThrownBy(() -> client("secret").downloadCompleted("envelope_abc123"))
+        .isInstanceOf(ExternalServiceException.class)
+        .hasMessageContaining("not COMPLETED");
   }
 }

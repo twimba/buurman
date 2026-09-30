@@ -131,6 +131,20 @@ public class DocumensoClient implements SignatureProviderClient {
         throw new ExternalServiceException("Documenso envelope not found: " + providerSubmissionId);
       }
 
+      // The webhook payload's claimed event ("DOCUMENT_COMPLETED") is untrusted input — a forged
+      // webhook could claim completion for an envelope that was never actually signed. Before
+      // downloading and persisting a PDF as "signed", re-verify the envelope's real status
+      // directly from Documenso.
+      String envelopeStatus = envelope.path("status").asText(null);
+      if (!"COMPLETED".equals(envelopeStatus)) {
+        throw new ExternalServiceException(
+            "Documenso envelope "
+                + providerSubmissionId
+                + " is not COMPLETED (status="
+                + envelopeStatus
+                + "); refusing to download as signed");
+      }
+
       String envelopeItemId = envelope.path("envelopeItems").path(0).path("id").asText(null);
       if (envelopeItemId == null) {
         throw new ExternalServiceException(
@@ -170,8 +184,12 @@ public class DocumensoClient implements SignatureProviderClient {
   @Override
   public boolean isValidWebhookSecret(@Nullable String providedSecret) {
     if (webhookSecret == null || webhookSecret.isBlank()) {
-      return true; // no secret configured (e.g. local dev) — matches Mailgun/Twilio's unconfigured
-      // behavior
+      // Fail closed. Unlike Mailgun/Twilio (delivery-status-only webhooks), a forged Documenso
+      // webhook can mark a signature request DECLINED/CANCELLED/COMPLETED and, on COMPLETED,
+      // cause a PDF to be stored as "signed" — so an unconfigured secret must reject every
+      // webhook rather than accept them unauthenticated. Configure DOCUMENSO_WEBHOOK_SECRET
+      // (on both this app and the Documenso sidecar) to enable the webhook.
+      return false;
     }
     if (providedSecret == null) {
       return false;
