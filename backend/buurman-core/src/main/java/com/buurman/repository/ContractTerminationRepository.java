@@ -7,9 +7,13 @@ import static java.time.ZoneOffset.UTC;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
@@ -107,6 +111,28 @@ public class ContractTerminationRepository {
                 .and(CONTRACT_TERMINATIONS.TEAM_ID.eq(teamId)))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  /**
+   * Batch lookup of the (at most one) termination per contract, keyed by contract ID. Contracts
+   * without a termination are absent from the map.
+   */
+  public Map<UUID, ContractTermination> findByContractIdsAndTeamId(
+      Collection<UUID> contractIds, UUID teamId) {
+    if (contractIds.isEmpty()) {
+      return Map.of();
+    }
+    return dsl
+        .selectFrom(CONTRACT_TERMINATIONS)
+        .where(
+            CONTRACT_TERMINATIONS
+                .CONTRACT_ID
+                .in(contractIds)
+                .and(CONTRACT_TERMINATIONS.TEAM_ID.eq(teamId)))
+        .fetch()
+        .map(mapper::toDomain)
+        .stream()
+        .collect(Collectors.toMap(ContractTermination::getContractId, Function.identity()));
   }
 
   /** Team-agnostic: used only by the daily sweep job, which has no authenticated team context. */

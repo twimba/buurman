@@ -24,6 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.Contract.ContractStatus;
+import com.buurman.domain.ContractTermination;
+import com.buurman.domain.ContractTerminationStatus;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.dto.response.PropertyDashboardResponse;
@@ -31,6 +33,7 @@ import com.buurman.dto.response.PropertyDashboardResponse.FutureMonthDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.OccupancyDataPoint;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.FinancingPaymentRepository;
 import com.buurman.repository.PaymentRepository;
@@ -47,6 +50,7 @@ class PropertyDashboardServiceTest {
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
+  @Mock private ContractTerminationRepository contractTerminationRepository;
   @Mock private PaymentRepository paymentRepository;
   @Mock private ExpenseRepository expenseRepository;
   @Mock private FinancingPaymentRepository financingPaymentRepository;
@@ -70,6 +74,7 @@ class PropertyDashboardServiceTest {
             propertyRepository,
             contractRepository,
             contractExtensionRepository,
+            contractTerminationRepository,
             paymentRepository,
             expenseRepository,
             financingPaymentRepository,
@@ -240,18 +245,27 @@ class PropertyDashboardServiceTest {
 
   @Test
   @DisplayName(
-      "a NOTICE_GIVEN contract is still in force: it counts toward occupancy and expected future"
-          + " income until its end date")
+      "NOTICE_GIVEN contract counts toward occupancy, and expected income stops at the "
+          + "termination's effective end date, not the contract's own end date")
   void noticeGivenContractCountsTowardOccupancyAndExpectedIncome() {
     UUID propertyId = UUID.randomUUID();
     UUID unitA = UUID.randomUUID();
     when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_IDENTIFIER, TEAM_ID))
         .thenReturn(property(propertyId));
+    // The contract's own end_date is never rewritten when notice is given: it still says December.
     Contract underNotice =
-        activeContract(propertyId, unitA, LocalDate.of(2025, 1, 1), LocalDate.of(2026, 6, 30));
+        activeContract(propertyId, unitA, LocalDate.of(2025, 1, 1), LocalDate.of(2026, 12, 31));
     underNotice.setStatus(ContractStatus.NOTICE_GIVEN);
     underNotice.setRentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"));
     when(contractRepository.findByPropertyId(propertyId, TEAM_ID)).thenReturn(List.of(underNotice));
+    when(contractTerminationRepository.findByContractIdsAndTeamId(any(), any()))
+        .thenReturn(
+            Map.of(
+                underNotice.getId(),
+                termination(
+                    underNotice,
+                    LocalDate.of(2026, 5, 31),
+                    ContractTerminationStatus.NOTICE_GIVEN)));
     when(occupancyPeriodRepository.findByPropertyIdAndTeamId(propertyId, TEAM_ID))
         .thenReturn(List.of());
     when(unitRepository.countActiveByPropertyIdAndTeamId(propertyId, TEAM_ID)).thenReturn(4);
@@ -268,13 +282,63 @@ class PropertyDashboardServiceTest {
         .isEqualByComparingTo("25.00");
     assertThat(response.summary().occupancyRatePercent())
         .hasValueSatisfying(rate -> assertThat(rate).isPositive());
-    // Rent is expected through June (the notice's end date), and not after.
+    // Rent is expected through May (the termination's effective end date), not through December.
     assertThat(response.futureTrend().months())
         .extracting(FutureMonthDataPoint::month, FutureMonthDataPoint::expectedIncome)
-        .startsWith(
+        .containsExactly(
             org.assertj.core.groups.Tuple.tuple("2026-04", new BigDecimal("1000.00")),
             org.assertj.core.groups.Tuple.tuple("2026-05", new BigDecimal("1000.00")),
-            org.assertj.core.groups.Tuple.tuple("2026-06", new BigDecimal("1000.00")))
-        .contains(org.assertj.core.groups.Tuple.tuple("2026-07", BigDecimal.ZERO));
+            org.assertj.core.groups.Tuple.tuple("2026-06", BigDecimal.ZERO),
+            org.assertj.core.groups.Tuple.tuple("2026-07", BigDecimal.ZERO),
+            org.assertj.core.groups.Tuple.tuple("2026-08", BigDecimal.ZERO),
+            org.assertj.core.groups.Tuple.tuple("2026-09", BigDecimal.ZERO));
+  }
+
+  @Test
+  @DisplayName(
+      "TERMINATED contract stops counting as occupied at the termination's effective end date, "
+          + "even when its own end date is later")
+  void terminatedContractOccupancyStopsAtTerminationEffectiveEndDate() {
+    UUID propertyId = UUID.randomUUID();
+    UUID unitA = UUID.randomUUID();
+    when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_IDENTIFIER, TEAM_ID))
+        .thenReturn(property(propertyId));
+    Contract terminated =
+        activeContract(propertyId, unitA, LocalDate.of(2025, 1, 1), LocalDate.of(2026, 12, 31));
+    terminated.setStatus(ContractStatus.TERMINATED);
+    when(contractRepository.findByPropertyId(propertyId, TEAM_ID)).thenReturn(List.of(terminated));
+    when(contractTerminationRepository.findByContractIdsAndTeamId(any(), any()))
+        .thenReturn(
+            Map.of(
+                terminated.getId(),
+                termination(
+                    terminated, LocalDate.of(2026, 3, 15), ContractTerminationStatus.TERMINATED)));
+    when(occupancyPeriodRepository.findByPropertyIdAndTeamId(propertyId, TEAM_ID))
+        .thenReturn(List.of());
+    when(unitRepository.countActiveByPropertyIdAndTeamId(propertyId, TEAM_ID)).thenReturn(1);
+
+    PropertyDashboardResponse response =
+        service.getDashboardData(
+            PROPERTY_IDENTIFIER,
+            1,
+            TEAM_ID,
+            Optional.of(LocalDate.of(2026, 3, 1)),
+            Optional.of(LocalDate.of(2026, 3, 31)));
+
+    // 15 of March's 31 days, on a single-unit property.
+    assertThat(response.occupancy().months().get(0).tenantOccupancyPercent())
+        .isEqualByComparingTo("48.39");
+  }
+
+  private static ContractTermination termination(
+      Contract contract, LocalDate effectiveEndDate, ContractTerminationStatus status) {
+    return ContractTermination.builder()
+        .id(UUID.randomUUID())
+        .teamId(TEAM_ID)
+        .contractId(contract.getId())
+        .computedEndDate(effectiveEndDate)
+        .effectiveEndDate(effectiveEndDate)
+        .status(status)
+        .build();
   }
 }

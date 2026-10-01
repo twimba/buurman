@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
-import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Team;
@@ -269,15 +268,10 @@ public class PaymentSchedulingService {
   public Optional<LocalDate> billingEndDate(Contract contract, UUID teamId) {
     List<ContractExtension> extensions =
         contractExtensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
-    Optional<LocalDate> contractEnd =
-        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
-    Optional<LocalDate> terminationEnd =
-        terminationRepository
-            .findByContractIdAndTeamId(contract.getId(), teamId)
-            .map(ContractTermination::getEffectiveEndDate);
-    return terminationEnd
-        .map(t -> contractEnd.filter(c -> c.isBefore(t)).orElse(t))
-        .or(() -> contractEnd);
+    return EffectiveEndDateHelper.computeEffectiveEndDate(
+        contract.getEndDate(),
+        extensions,
+        terminationRepository.findByContractIdAndTeamId(contract.getId(), teamId));
   }
 
   private LocalDate calculateNextDueDate(LocalDate startDate, int periodIndex, Contract contract) {

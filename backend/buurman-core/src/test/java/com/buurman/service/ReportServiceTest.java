@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +23,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractTermination;
+import com.buurman.domain.ContractTerminationStatus;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.TeamRole;
@@ -31,6 +34,7 @@ import com.buurman.dto.response.PropertyFinancialSummary;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -50,6 +54,7 @@ class ReportServiceTest {
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
+  @Mock private ContractTerminationRepository contractTerminationRepository;
   @Mock private PropertyMapper propertyMapper;
   @Mock private TeamService teamService;
 
@@ -67,6 +72,7 @@ class ReportServiceTest {
             propertyRepository,
             contractRepository,
             contractExtensionRepository,
+            contractTerminationRepository,
             propertyMapper,
             teamService,
             CLOCK);
@@ -151,5 +157,69 @@ class ReportServiceTest {
         .singleElement()
         .extracting(PropertyFinancialSummary::occupancyDays)
         .isEqualTo(31);
+  }
+
+  @Test
+  @DisplayName(
+      "financial overview stops a NOTICE_GIVEN contract's occupancy days at the termination's "
+          + "effective end date, not the contract's own end date")
+  void financialOverviewCapsNoticeGivenOccupancyDaysAtTerminationEnd() {
+    givenTermination(LocalDate.of(2026, 4, 15));
+    LocalDate start = LocalDate.of(2026, 4, 1);
+    LocalDate end = LocalDate.of(2026, 6, 30);
+    Property property = new Property();
+    property.setId(propertyId);
+    when(paymentRepository.findByDateRange(start, end, TEAM_ID))
+        .thenReturn(
+            List.of(
+                Payment.builder()
+                    .id(UUID.randomUUID())
+                    .contractId(underNotice.getId())
+                    .amount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
+                    .status(Payment.PaymentStatus.PAID)
+                    .build()));
+    when(expenseRepository.findByDateRange(start, end, TEAM_ID)).thenReturn(List.of());
+    when(propertyRepository.findByIdsAndTeamId(any(), eq(TEAM_ID))).thenReturn(List.of(property));
+
+    FinancialOverviewResponse overview =
+        service.getFinancialOverview(start, end, null, "EUR", principal);
+
+    // April 1-15, not April 1 - June 30 (the contract's own end date).
+    assertThat(overview.income().byProperty())
+        .singleElement()
+        .extracting(PropertyFinancialSummary::occupancyDays)
+        .isEqualTo(15);
+  }
+
+  @Test
+  @DisplayName(
+      "date-range occupancy trend stops counting a NOTICE_GIVEN contract after the termination's "
+          + "effective end date")
+  void occupancyTrendByDateRangeStopsAtTerminationEnd() {
+    givenTermination(LocalDate.of(2026, 4, 30));
+    when(propertyRepository.findAllByTeamId(TEAM_ID)).thenReturn(List.of(new Property()));
+
+    OccupancyTrendResponse trend =
+        service.getOccupancyTrendByDateRange(
+            LocalDate.of(2026, 4, 1), LocalDate.of(2026, 6, 30), principal);
+
+    assertThat(trend.dataPoints())
+        .extracting(OccupancyTrendResponse.DataPoint::occupiedUnits)
+        .containsExactly(1, 0, 0);
+  }
+
+  private void givenTermination(LocalDate effectiveEndDate) {
+    when(contractTerminationRepository.findByContractIdsAndTeamId(any(), eq(TEAM_ID)))
+        .thenReturn(
+            Map.of(
+                underNotice.getId(),
+                ContractTermination.builder()
+                    .id(UUID.randomUUID())
+                    .teamId(TEAM_ID)
+                    .contractId(underNotice.getId())
+                    .computedEndDate(effectiveEndDate)
+                    .effectiveEndDate(effectiveEndDate)
+                    .status(ContractTerminationStatus.NOTICE_GIVEN)
+                    .build()));
   }
 }

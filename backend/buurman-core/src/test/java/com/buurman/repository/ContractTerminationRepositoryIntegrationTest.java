@@ -88,4 +88,21 @@ class ContractTerminationRepositoryIntegrationTest extends AbstractRepositoryInt
     assertThat(repository.findByContractIdAndTeamId(teamAContractId, TEAM_A_ID)).isPresent();
     assertThat(repository.findByContractIdAndTeamId(teamAContractId, TEAM_B_ID)).isEmpty();
   }
+
+  @Test
+  @DisplayName("findByContractIdsAndTeamId batch-loads by contract ID and is team-scoped")
+  void batchFindByContractIdsIsTeamScoped() {
+    repository.save(newTermination(TEAM_A_ID, teamAContractId));
+    repository.save(newTermination(TEAM_B_ID, teamBContractId));
+    var contractIds = java.util.List.of(teamAContractId, teamBContractId);
+
+    var teamA = repository.findByContractIdsAndTeamId(contractIds, TEAM_A_ID);
+
+    assertThat(teamA).containsOnlyKeys(teamAContractId);
+    assertThat(teamA)
+        .extractingByKey(teamAContractId)
+        .extracting(ContractTermination::getEffectiveEndDate)
+        .isEqualTo(LocalDate.of(2026, 4, 1));
+    assertThat(repository.findByContractIdsAndTeamId(java.util.List.of(), TEAM_A_ID)).isEmpty();
+  }
 }

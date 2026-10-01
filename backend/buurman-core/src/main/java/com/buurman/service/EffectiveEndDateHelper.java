@@ -3,20 +3,29 @@ package com.buurman.service;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jooq.Field;
 import org.jooq.impl.DSL;
 
+import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractTermination;
 
 /**
  * Shared helper for computing effective end date from contract extensions. Provides both a JOOQ
  * {@link Field} for SQL queries and a Java method for in-memory computation.
  *
  * <p>The effective end date is the new_end_date from the latest ACTIVE extension, falling back to
- * the contract's original end_date.
+ * the contract's original end_date. When a termination is on record (notice given or already
+ * terminated), the result is further capped by the termination's effective end date, since the
+ * contract's own end_date is never rewritten when notice is given.
  */
 public final class EffectiveEndDateHelper {
 
@@ -91,5 +100,53 @@ public final class EffectiveEndDateHelper {
         .max(java.util.Comparator.comparingInt(ContractExtension::getExtensionNumber))
         .flatMap(ContractExtension::getNewEndDate)
         .or(() -> contractEndDate);
+  }
+
+  /**
+   * Termination-aware variant: the extension-aware effective end date, capped by the effective end
+   * date of the contract's termination when one is on record.
+   *
+   * @return the earlier of the two dates; empty only if open-ended and no termination exists
+   */
+  public static Optional<LocalDate> computeEffectiveEndDate(
+      Optional<LocalDate> contractEndDate,
+      List<ContractExtension> extensions,
+      Optional<ContractTermination> termination) {
+    return capByTermination(
+        computeEffectiveEndDate(contractEndDate, extensions),
+        termination.map(ContractTermination::getEffectiveEndDate));
+  }
+
+  /**
+   * Caps {@code effectiveEnd} by {@code terminationEnd}: the earlier of the two when both exist,
+   * the termination date when the contract is otherwise open-ended.
+   */
+  public static Optional<LocalDate> capByTermination(
+      Optional<LocalDate> effectiveEnd, Optional<LocalDate> terminationEnd) {
+    return terminationEnd
+        .map(t -> effectiveEnd.filter(c -> c.isBefore(t)).orElse(t))
+        .or(() -> effectiveEnd);
+  }
+
+  /**
+   * Batch variant over already-loaded extensions and terminations: maps every contract ID to its
+   * termination-aware effective end date (empty means open-ended).
+   */
+  public static Map<UUID, Optional<LocalDate>> computeEffectiveEndDates(
+      Collection<Contract> contracts,
+      Collection<ContractExtension> extensions,
+      Map<UUID, ContractTermination> terminationsByContractId) {
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        extensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+    Map<UUID, Optional<LocalDate>> result = new HashMap<>();
+    for (Contract c : contracts) {
+      result.put(
+          c.getId(),
+          computeEffectiveEndDate(
+              c.getEndDate(),
+              extensionsByContract.getOrDefault(c.getId(), List.of()),
+              Optional.ofNullable(terminationsByContractId.get(c.getId()))));
+    }
+    return result;
   }
 }
