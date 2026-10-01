@@ -19,6 +19,7 @@
     "pendingSignature": "En attente de signature",
     "expired": "Expiré",
     "terminated": "Résilié",
+    "noticeGiven": "Préavis donné",
     "count_one": "{{count}} contrat",
     "count_other": "{{count}} contrats",
     "empty": {

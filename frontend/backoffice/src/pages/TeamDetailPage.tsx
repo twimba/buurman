@@ -613,12 +613,13 @@ const propertyCategoryColors: Record<string, string> = {
   MIXED_USE: 'bg-slate-100 text-slate-600',
 };
 
-const contractStatusColors: Record<string, string> = {
+export const contractStatusColors: Record<string, string> = {
   ACTIVE: 'bg-emerald-100 text-emerald-700',
   DRAFT: 'bg-slate-100 text-slate-600',
   PENDING_SIGNATURE: 'bg-amber-100 text-amber-700',
   EXPIRED: 'bg-orange-100 text-orange-700',
   TERMINATED: 'bg-red-100 text-red-700',
+  NOTICE_GIVEN: 'bg-amber-100 text-amber-700',
 };
 
 const paymentStatusColors: Record<string, string> = {

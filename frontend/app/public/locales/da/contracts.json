@@ -19,6 +19,7 @@
     "pendingSignature": "Afventer underskrift",
     "expired": "Udloebet",
     "terminated": "Opsagt",
+    "noticeGiven": "Opsigelse givet",
     "count_one": "{{count}} kontrakt",
     "count_other": "{{count}} kontrakter",
     "empty": {

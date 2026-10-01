@@ -19,6 +19,7 @@
     "pendingSignature": "Warten auf Unterschrift",
     "expired": "Abgelaufen",
     "terminated": "Gekündigt",
+    "noticeGiven": "Kündigung eingereicht",
     "count_one": "{{count}} Vertrag",
     "count_other": "{{count}} Verträge",
     "empty": {

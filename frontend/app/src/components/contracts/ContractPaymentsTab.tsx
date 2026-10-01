@@ -147,7 +147,8 @@ export const ContractPaymentsTab = ({
             {t('payments.title')} ({filteredAndSortedPayments.length})
           </h2>
           <div className="flex items-center gap-2">
-            {contractStatus === ContractStatus.ACTIVE && (
+            {(contractStatus === ContractStatus.ACTIVE ||
+              contractStatus === ContractStatus.NOTICE_GIVEN) && (
               <Button
                 variant="success"
                 leftIcon={<RefreshCw />}

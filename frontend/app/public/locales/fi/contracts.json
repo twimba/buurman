@@ -19,6 +19,7 @@
     "pendingSignature": "Odottaa allekirjoitusta",
     "expired": "Vanhentunut",
     "terminated": "Paattynyt",
+    "noticeGiven": "Irtisanomisilmoitus annettu",
     "count_one": "{{count}} sopimus",
     "count_other": "{{count}} sopimusta",
     "empty": {

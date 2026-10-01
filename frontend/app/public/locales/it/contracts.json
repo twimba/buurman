@@ -19,6 +19,7 @@
     "pendingSignature": "In attesa di firma",
     "expired": "Scaduto",
     "terminated": "Risolto",
+    "noticeGiven": "Preavviso dato",
     "count_one": "{{count}} contratto",
     "count_other": "{{count}} contratti",
     "empty": {

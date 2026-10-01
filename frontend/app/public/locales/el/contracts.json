@@ -19,6 +19,7 @@
     "pendingSignature": "Σε Αναμονή Υπογραφής",
     "expired": "Ληγμένο",
     "terminated": "Τερματισμένο",
+    "noticeGiven": "Δόθηκε καταγγελία",
     "count_one": "{{count}} συμβόλαιο",
     "count_other": "{{count}} συμβόλαια",
     "empty": {

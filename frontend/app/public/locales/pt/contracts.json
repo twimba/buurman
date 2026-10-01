@@ -19,6 +19,7 @@
     "pendingSignature": "Aguarda Assinatura",
     "expired": "Expirado",
     "terminated": "Terminado",
+    "noticeGiven": "Pré-aviso dado",
     "count_one": "{{count}} contrato",
     "count_other": "{{count}} contratos",
     "empty": {

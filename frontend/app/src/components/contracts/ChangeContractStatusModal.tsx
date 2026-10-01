@@ -21,6 +21,11 @@ const getValidTransitions = (
       return [ContractStatus.DRAFT, ContractStatus.ACTIVE];
     case ContractStatus.ACTIVE:
       return [ContractStatus.TERMINATED, ContractStatus.EXPIRED];
+    case ContractStatus.NOTICE_GIVEN:
+      // Entering NOTICE_GIVEN only happens via the dedicated termination wizard (the backend's
+      // generic changeContractStatus endpoint rejects it as a target), but leaving it for
+      // TERMINATED through this modal is still valid and allowed server-side.
+      return [ContractStatus.TERMINATED];
     case ContractStatus.EXPIRED:
     case ContractStatus.TERMINATED:
       return []; // Terminal states

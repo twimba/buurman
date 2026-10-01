@@ -19,6 +19,7 @@
     "pendingSignature": "Oczekujące na podpis",
     "expired": "Wygasłe",
     "terminated": "Rozwiązane",
+    "noticeGiven": "Wypowiedzenie złożone",
     "count_one": "{{count}} umowa",
     "count_few": "{{count}} umowy",
     "count_many": "{{count}} umów",

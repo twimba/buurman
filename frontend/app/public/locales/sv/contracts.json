@@ -19,6 +19,7 @@
     "pendingSignature": "Vantar pa signering",
     "expired": "Utgangen",
     "terminated": "Uppsagd",
+    "noticeGiven": "Uppsägning lämnad",
     "count_one": "{{count}} kontrakt",
     "count_other": "{{count}} kontrakt",
     "empty": {

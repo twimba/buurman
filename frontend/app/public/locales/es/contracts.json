@@ -19,6 +19,7 @@
     "pendingSignature": "Pendiente de Firma",
     "expired": "Vencido",
     "terminated": "Terminado",
+    "noticeGiven": "Preaviso dado",
     "count_one": "{{count}} contrato",
     "count_other": "{{count}} contratos",
     "empty": {

@@ -19,6 +19,7 @@
     "pendingSignature": "Venter på signatur",
     "expired": "Utløpt",
     "terminated": "Avsluttet",
+    "noticeGiven": "Oppsigelse gitt",
     "count_one": "{{count}} kontrakt",
     "count_other": "{{count}} kontrakter",
     "empty": {

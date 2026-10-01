@@ -19,6 +19,7 @@
     "pendingSignature": "Pending Signature",
     "expired": "Expired",
     "terminated": "Terminated",
+    "noticeGiven": "Notice Given",
     "count_one": "{{count}} contract",
     "count_other": "{{count}} contracts",
     "empty": {

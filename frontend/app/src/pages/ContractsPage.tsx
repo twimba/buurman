@@ -55,6 +55,7 @@ export const ContractsPage = () => {
       },
       { value: ContractStatus.EXPIRED, label: t('list.expired') },
       { value: ContractStatus.TERMINATED, label: t('list.terminated') },
+      { value: ContractStatus.NOTICE_GIVEN, label: t('list.noticeGiven') },
     ],
     [t]
   );
