@@ -87,7 +87,7 @@ class DashboardServiceTest {
                 unit(UnitStatus.VACANT),
                 unit(UnitStatus.VACANT),
                 unit(UnitStatus.VACANT)));
-    when(contractRepository.findActiveContractIncomeByTeamId(TEAM_ID)).thenReturn(List.of());
+    when(contractRepository.findInForceContractIncomeByTeamId(TEAM_ID)).thenReturn(List.of());
     when(teamService.getDefaultCurrency(TEAM_ID)).thenReturn("EUR");
 
     DashboardStatsResponse response = service.getDashboardStats(TEAM_ID);
@@ -104,7 +104,7 @@ class DashboardServiceTest {
   void totalUnitsIsZeroWhenNoUnits() {
     when(propertyRepository.countByTeamId(TEAM_ID)).thenReturn(0);
     when(unitRepository.findAllByTeamId(TEAM_ID)).thenReturn(List.of());
-    when(contractRepository.findActiveContractIncomeByTeamId(TEAM_ID)).thenReturn(List.of());
+    when(contractRepository.findInForceContractIncomeByTeamId(TEAM_ID)).thenReturn(List.of());
     when(teamService.getDefaultCurrency(TEAM_ID)).thenReturn("EUR");
 
     DashboardStatsResponse response = service.getDashboardStats(TEAM_ID);

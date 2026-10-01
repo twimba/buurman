@@ -1,6 +1,5 @@
 package com.buurman.service;
 
-import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_UP;
@@ -481,7 +480,7 @@ public class ReportService {
     // Fetch all active contracts once, outside the loop
     List<Contract> allActiveContracts =
         contractRepository.findAllByTeamId(teamId).stream()
-            .filter(c -> c.getStatus() == ACTIVE)
+            .filter(c -> c.getStatus().isInForce())
             .toList();
 
     // Batch-load extensions for effective end date computation
@@ -531,7 +530,7 @@ public class ReportService {
 
     List<Contract> allActiveContracts =
         contractRepository.findAllByTeamId(teamId).stream()
-            .filter(c -> c.getStatus() == ACTIVE)
+            .filter(c -> c.getStatus().isInForce())
             .toList();
 
     // Batch-load extensions for effective end date computation
@@ -782,7 +781,7 @@ public class ReportService {
       Map<UUID, Optional<LocalDate>> effectiveEndDates) {
     long totalDays = 0;
     for (Contract contract : contracts) {
-      if (contract.getStatus() != ACTIVE) {
+      if (!contract.getStatus().isInForce()) {
         continue;
       }
 

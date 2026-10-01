@@ -52,6 +52,10 @@ public class Contract {
     public static final Set<ContractStatus> IN_FORCE =
         Collections.unmodifiableSet(EnumSet.of(ACTIVE, NOTICE_GIVEN));
 
+    /** Names of {@link #IN_FORCE}, for SQL filters such as jOOQ {@code STATUS.in(...)}. */
+    public static final List<String> IN_FORCE_NAMES =
+        IN_FORCE.stream().map(Enum::name).sorted().toList();
+
     public boolean isInForce() {
       return IN_FORCE.contains(this);
     }

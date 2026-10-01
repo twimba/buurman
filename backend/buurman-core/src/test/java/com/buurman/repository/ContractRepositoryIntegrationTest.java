@@ -179,6 +179,31 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   }
 
   @Test
+  @DisplayName(
+      "dashboard monthly income counts a NOTICE_GIVEN contract's rent (still in force), not a"
+          + " TERMINATED one's, and stays team-scoped")
+  void inForceContractIncomeIncludesNoticeGiven() {
+    repository.save(
+        contractBuilder()
+            .status(Contract.ContractStatus.NOTICE_GIVEN)
+            .rentAmount(MoneyAmount.of(new BigDecimal("1200.00"), "EUR"))
+            .build());
+    UUID unit2Id = UUID.randomUUID();
+    TestDataHelper.insertUnit(dsl, unit2Id, propertyId, TEAM_A_ID, "2", "VACANT");
+    repository.save(
+        contractBuilder().unitId(unit2Id).status(Contract.ContractStatus.TERMINATED).build());
+
+    assertThat(repository.findInForceContractIncomeByTeamId(TEAM_A_ID))
+        .singleElement()
+        .satisfies(
+            e -> {
+              assertThat(e.rentAmount()).isEqualByComparingTo("1200.00");
+              assertThat(e.rentAmountCurrency()).isEqualTo("EUR");
+            });
+    assertThat(repository.findInForceContractIncomeByTeamId(TEAM_B_ID)).isEmpty();
+  }
+
+  @Test
   @DisplayName("a team-B-scoped read cannot see team A's contract")
   void isolatesByTeam() {
     Contract saved = repository.save(contractBuilder().build());

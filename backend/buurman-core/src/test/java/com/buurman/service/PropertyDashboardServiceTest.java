@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ import com.buurman.domain.Contract.ContractStatus;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.dto.response.PropertyDashboardResponse;
+import com.buurman.dto.response.PropertyDashboardResponse.FutureMonthDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.OccupancyDataPoint;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
@@ -36,6 +38,7 @@ import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyOccupancyPeriodRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitRepository;
+import com.buurman.util.MoneyAmount;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PropertyDashboardService")
@@ -233,5 +236,45 @@ class PropertyDashboardServiceTest {
     OccupancyDataPoint march = response.occupancy().months().get(0);
     assertThat(march.tenantOccupancyPercent()).isEqualByComparingTo("0.00");
     assertThat(march.selfOccupancyPercent()).isEqualByComparingTo("0.00");
+  }
+
+  @Test
+  @DisplayName(
+      "a NOTICE_GIVEN contract is still in force: it counts toward occupancy and expected future"
+          + " income until its end date")
+  void noticeGivenContractCountsTowardOccupancyAndExpectedIncome() {
+    UUID propertyId = UUID.randomUUID();
+    UUID unitA = UUID.randomUUID();
+    when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_IDENTIFIER, TEAM_ID))
+        .thenReturn(property(propertyId));
+    Contract underNotice =
+        activeContract(propertyId, unitA, LocalDate.of(2025, 1, 1), LocalDate.of(2026, 6, 30));
+    underNotice.setStatus(ContractStatus.NOTICE_GIVEN);
+    underNotice.setRentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"));
+    when(contractRepository.findByPropertyId(propertyId, TEAM_ID)).thenReturn(List.of(underNotice));
+    when(occupancyPeriodRepository.findByPropertyIdAndTeamId(propertyId, TEAM_ID))
+        .thenReturn(List.of());
+    when(unitRepository.countActiveByPropertyIdAndTeamId(propertyId, TEAM_ID)).thenReturn(4);
+
+    PropertyDashboardResponse response =
+        service.getDashboardData(
+            PROPERTY_IDENTIFIER,
+            1,
+            TEAM_ID,
+            Optional.of(LocalDate.of(2026, 3, 1)),
+            Optional.of(LocalDate.of(2026, 3, 31)));
+
+    assertThat(response.occupancy().months().get(0).tenantOccupancyPercent())
+        .isEqualByComparingTo("25.00");
+    assertThat(response.summary().occupancyRatePercent())
+        .hasValueSatisfying(rate -> assertThat(rate).isPositive());
+    // Rent is expected through June (the notice's end date), and not after.
+    assertThat(response.futureTrend().months())
+        .extracting(FutureMonthDataPoint::month, FutureMonthDataPoint::expectedIncome)
+        .startsWith(
+            org.assertj.core.groups.Tuple.tuple("2026-04", new BigDecimal("1000.00")),
+            org.assertj.core.groups.Tuple.tuple("2026-05", new BigDecimal("1000.00")),
+            org.assertj.core.groups.Tuple.tuple("2026-06", new BigDecimal("1000.00")))
+        .contains(org.assertj.core.groups.Tuple.tuple("2026-07", BigDecimal.ZERO));
   }
 }

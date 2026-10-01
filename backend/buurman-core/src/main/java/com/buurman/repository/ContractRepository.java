@@ -51,8 +51,7 @@ public class ContractRepository {
   private final Clock clock;
 
   /** Status names of {@link Contract.ContractStatus#IN_FORCE}, for {@code STATUS.in(...)}. */
-  private static final List<String> IN_FORCE_STATUS_NAMES =
-      Contract.ContractStatus.IN_FORCE.stream().map(Enum::name).sorted().toList();
+  private static final List<String> IN_FORCE_STATUS_NAMES = Contract.ContractStatus.IN_FORCE_NAMES;
 
   // Fields for columns added in V012 (not yet in JOOQ generated code)
   private static final Field<String> COUNTRY_CODE =
@@ -568,7 +567,11 @@ public class ContractRepository {
         .toList();
   }
 
-  public List<ContractIncomeEntry> findActiveContractIncomeByTeamId(UUID teamId) {
+  /**
+   * Rent terms of every in-force contract ({@code ACTIVE} or {@code NOTICE_GIVEN}): a contract
+   * under notice still generates rent until its effective end date, so it counts toward income.
+   */
+  public List<ContractIncomeEntry> findInForceContractIncomeByTeamId(UUID teamId) {
     return dsl.select(
             CONTRACTS.RENT_AMOUNT, CONTRACTS.RENT_AMOUNT_CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
         .from(CONTRACTS)
@@ -576,7 +579,7 @@ public class ContractRepository {
             CONTRACTS
                 .TEAM_ID
                 .eq(teamId)
-                .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetch()
         .map(

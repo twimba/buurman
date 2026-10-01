@@ -19,6 +19,7 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.Contract;
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
 import com.buurman.repository.UnitRepository;
 import com.buurman.repository.UnitScope;
@@ -76,8 +77,9 @@ public class BackofficeTeamStatsRepository {
   }
 
   /**
-   * Sums active rent grouped by currency. Returns the total for the most-used currency along with
-   * that currency code. Returns (ZERO, null) when no active contracts exist.
+   * Sums the rent of in-force contracts ({@code ACTIVE} or {@code NOTICE_GIVEN}) grouped by
+   * currency. Returns the total for the most-used currency along with that currency code. Returns
+   * (ZERO, null) when no in-force contracts exist.
    */
   public Map.Entry<BigDecimal, String> sumActiveRentForTeam(UUID teamId) {
     var rows =
@@ -87,7 +89,7 @@ public class BackofficeTeamStatsRepository {
                 CONTRACTS
                     .TEAM_ID
                     .eq(teamId)
-                    .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                    .and(CONTRACTS.STATUS.in(Contract.ContractStatus.IN_FORCE_NAMES))
                     .and(CONTRACTS.DELETED_AT.isNull())
                     .and(CONTRACTS.RENT_AMOUNT_CURRENCY.isNotNull()))
             .groupBy(CONTRACTS.RENT_AMOUNT_CURRENCY)

@@ -779,7 +779,7 @@ public class ContactService {
 
     List<Contract> activeContracts =
         contractRepository.findByContactIdViaParties(contact.getId(), teamId).stream()
-            .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
+            .filter(c -> c.getStatus().isInForce())
             .toList();
 
     // Batch-load all properties and contract parties for active contracts (avoid N+1)

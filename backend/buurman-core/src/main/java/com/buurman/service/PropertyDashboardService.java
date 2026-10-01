@@ -613,16 +613,10 @@ public class PropertyDashboardService {
       int months,
       Map<UUID, Optional<LocalDate>> effectiveEndDates,
       int unitCount) {
-    // Include ACTIVE, EXPIRED, and TERMINATED — all represent periods of actual occupancy.
-    // DRAFT and PENDING_SIGNATURE are excluded since the tenant hasn't moved in yet.
+    // Include in-force (ACTIVE, NOTICE_GIVEN), EXPIRED, and TERMINATED — all represent periods of
+    // actual occupancy. DRAFT and PENDING_SIGNATURE are excluded since the tenant hasn't moved in.
     List<Contract> occupiedContracts =
-        contracts.stream()
-            .filter(
-                c ->
-                    c.getStatus() == ContractStatus.ACTIVE
-                        || c.getStatus() == ContractStatus.EXPIRED
-                        || c.getStatus() == ContractStatus.TERMINATED)
-            .toList();
+        contracts.stream().filter(PropertyDashboardService::hasOccupied).toList();
 
     // Occupancy is now a per-unit dwelling attribute (BUUR-106): a building's occupancy is the
     // AVERAGE across its units, not whether any single unit was let. Grouping by unit and capping
@@ -722,7 +716,7 @@ public class PropertyDashboardService {
                   c -> {
                     Optional<LocalDate> effEnd =
                         effectiveEndDates.getOrDefault(c.getId(), c.getEndDate());
-                    return c.getStatus() == ContractStatus.ACTIVE
+                    return c.getStatus().isInForce()
                         && !c.getStartDate().isAfter(monthEnd)
                         && (effEnd.isEmpty() || !effEnd.get().isBefore(monthStart));
                   })
@@ -788,6 +782,14 @@ public class PropertyDashboardService {
         percent);
   }
 
+  /** Whether the contract's tenant has actually occupied the unit (now or in the past). */
+  private static boolean hasOccupied(Contract c) {
+    ContractStatus status = c.getStatus();
+    return status.isInForce()
+        || status == ContractStatus.EXPIRED
+        || status == ContractStatus.TERMINATED;
+  }
+
   private Optional<BigDecimal> calculateOccupancyRate(
       List<Contract> contracts,
       LocalDate now,
@@ -804,9 +806,7 @@ public class PropertyDashboardService {
       if (c.getStartDate() == null) {
         continue;
       }
-      if (c.getStatus() != ContractStatus.ACTIVE
-          && c.getStatus() != ContractStatus.EXPIRED
-          && c.getStatus() != ContractStatus.TERMINATED) {
+      if (!hasOccupied(c)) {
         continue;
       }
 

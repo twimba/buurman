@@ -217,7 +217,9 @@ public class ContactBookletExporter {
             .map(p -> p.getAmount().value())
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     long activeContracts =
-        contracts.stream().filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE).count();
+        contracts.stream()
+            .filter(c -> Contract.ContractStatus.IN_FORCE.contains(c.getStatus()))
+            .count();
     String currentProperty = resolveCurrentProperty(contracts, propertyMap);
 
     Map<String, Object> v = new HashMap<>();
@@ -407,7 +409,7 @@ public class ContactBookletExporter {
   private static String resolveCurrentProperty(
       List<Contract> contracts, Map<UUID, Property> propertyMap) {
     return contracts.stream()
-        .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
+        .filter(c -> Contract.ContractStatus.IN_FORCE.contains(c.getStatus()))
         .findFirst()
         .map(c -> propertyMap.get(c.getPropertyId()))
         .map(p -> p.getStreet() + ", " + p.getCity())

@@ -73,7 +73,9 @@ public class ContactSummaryAssembler {
         contractRepository.findByContactIdViaParties(contact.getId(), teamId);
 
     long activeCount =
-        contracts.stream().filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE).count();
+        contracts.stream()
+            .filter(c -> Contract.ContractStatus.IN_FORCE.contains(c.getStatus()))
+            .count();
     long propertiesCount = contracts.stream().map(Contract::getPropertyId).distinct().count();
 
     // Sum paid amounts per currency (never across currencies). Single query for all of the
@@ -134,7 +136,7 @@ public class ContactSummaryAssembler {
   private String role(Contact contact, List<Contract> contracts, UUID teamId, Locale locale) {
     Optional<Contract> primary =
         contracts.stream()
-            .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
+            .filter(c -> Contract.ContractStatus.IN_FORCE.contains(c.getStatus()))
             .findFirst()
             .or(() -> contracts.stream().findFirst());
     return primary

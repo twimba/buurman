@@ -120,7 +120,7 @@ public class DashboardService {
 
   private DashboardStatsResponse.MonthlyIncome calculateMonthlyIncome(UUID teamId) {
     List<ContractIncomeEntry> activeContracts =
-        contractRepository.findActiveContractIncomeByTeamId(teamId);
+        contractRepository.findInForceContractIncomeByTeamId(teamId);
 
     if (activeContracts.isEmpty()) {
       return new DashboardStatsResponse.MonthlyIncome(ZERO, teamService.getDefaultCurrency(teamId));

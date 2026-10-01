@@ -170,6 +170,47 @@ class ContactSummaryAssemblerTest {
     assertThat((String) v.get("lifetimePaid")).contains("5,000").doesNotContain("7,000");
   }
 
+  @Test
+  @DisplayName(
+      "a NOTICE_GIVEN contract is still in force: counted as active and used for the role label")
+  void noticeGivenContractCountsAsActive() {
+    UUID contactId = UUID.randomUUID();
+    Contact contact =
+        Contact.builder()
+            .id(contactId)
+            .contactType(ContactType.INDIVIDUAL)
+            .displayName("X")
+            .build();
+    Contract expired =
+        Contract.builder()
+            .id(UUID.randomUUID())
+            .propertyId(UUID.randomUUID())
+            .status(Contract.ContractStatus.EXPIRED)
+            .build();
+    Contract underNotice =
+        Contract.builder()
+            .id(UUID.randomUUID())
+            .propertyId(UUID.randomUUID())
+            .status(Contract.ContractStatus.NOTICE_GIVEN)
+            .build();
+    when(contactRepository.getByIdentifierAndTeamId(ID, TEAM)).thenReturn(contact);
+    when(contractRepository.findByContactIdViaParties(contactId, TEAM))
+        .thenReturn(List.of(expired, underNotice));
+    when(paymentRepository.findByContactIdAndTeamId(contactId, TEAM)).thenReturn(List.of());
+    when(contractPartyService.getPartiesForContract(underNotice.getId(), TEAM))
+        .thenReturn(
+            List.of(
+                ContractParty.builder()
+                    .contactId(Optional.of(contactId))
+                    .role(ContractPartyRole.PRIMARY_TENANT)
+                    .build()));
+
+    Map<String, Object> v = assembler.assemble(ID, TEAM, Locale.ENGLISH);
+
+    assertThat(v.get("activeContracts")).isEqualTo("1");
+    assertThat(v.get("roleLabel")).isEqualTo("Primary Tenant");
+  }
+
   private static Payment paid(BigDecimal amount, String currency) {
     return Payment.builder()
         .id(UUID.randomUUID())
