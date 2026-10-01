@@ -227,14 +227,51 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   @Test
   @DisplayName(
       "the database itself rejects a second ACTIVE contract on the same unit"
-          + " (uq_contracts_one_active_per_unit, V072) -- a 409, not the 500 TooManyRowsException"
-          + " used to throw once two concurrent activations raced past the application-level guard")
+          + " (uq_contracts_one_in_force_per_unit, V072/V085) -- a 409, not the 500"
+          + " TooManyRowsException used to throw once two concurrent activations raced past the"
+          + " application-level guard")
   void rejectsASecondActiveContractOnTheSameUnit() {
     repository.save(contractBuilder().build());
 
     assertThatThrownBy(() -> repository.save(contractBuilder().build()))
         .isInstanceOf(org.jooq.exception.DataAccessException.class)
-        .hasMessageContaining("uq_contracts_one_active_per_unit");
+        .hasMessageContaining("uq_contracts_one_in_force_per_unit");
+  }
+
+  @Test
+  @DisplayName(
+      "the database itself rejects a NOTICE_GIVEN contract on a unit that already has an ACTIVE"
+          + " one, and vice versa, and two NOTICE_GIVEN contracts on the same unit"
+          + " (uq_contracts_one_in_force_per_unit, V085) -- proving the DB backstop itself, not"
+          + " just ContractService#assertUnitHasNoActiveContract")
+  void rejectsAnyTwoInForceContractsOnTheSameUnit() {
+    repository.save(contractBuilder().status(Contract.ContractStatus.ACTIVE).build());
+
+    // ACTIVE + NOTICE_GIVEN on the same unit must collide at the DB level, even though
+    // ContractService's own guard (findActiveByUnitId) would normally reject this first --
+    // inserting directly through the repository bypasses that application-level check.
+    assertThatThrownBy(
+            () ->
+                repository.save(
+                    contractBuilder().status(Contract.ContractStatus.NOTICE_GIVEN).build()))
+        .isInstanceOf(org.jooq.exception.DataAccessException.class)
+        .hasMessageContaining("uq_contracts_one_in_force_per_unit");
+
+    // A fresh unit: two NOTICE_GIVEN contracts (no ACTIVE one involved at all) must also collide.
+    UUID otherUnitId = UUID.randomUUID();
+    TestDataHelper.insertUnit(dsl, otherUnitId, propertyId, TEAM_A_ID, "2", "VACANT");
+    repository.save(
+        contractBuilder().unitId(otherUnitId).status(Contract.ContractStatus.NOTICE_GIVEN).build());
+
+    assertThatThrownBy(
+            () ->
+                repository.save(
+                    contractBuilder()
+                        .unitId(otherUnitId)
+                        .status(Contract.ContractStatus.NOTICE_GIVEN)
+                        .build()))
+        .isInstanceOf(org.jooq.exception.DataAccessException.class)
+        .hasMessageContaining("uq_contracts_one_in_force_per_unit");
   }
 
   @Test

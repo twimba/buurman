@@ -227,12 +227,13 @@ public class ContractRepository {
   /**
    * The contract currently in force on the unit — {@code ACTIVE} or {@code NOTICE_GIVEN} (a tenant
    * under notice still occupies the unit until the effective end date). At most one row is expected
-   * ({@code uq_contracts_one_active_per_unit}, added in V072, plus the in-force guard in {@code
-   * ContractService} that refuses to activate a second contract), but a legacy duplicate predating
-   * that constraint is still possible. {@code limit(1)} with a deterministic {@code orderBy} makes
-   * that degrade to "pick the oldest" instead of throwing {@link
-   * org.jooq.exception.TooManyRowsException} (which {@code fetchOptional()} does on >1 row and
-   * which was previously an unhandled 500).
+   * ({@code uq_contracts_one_in_force_per_unit}, added in V072 as {@code
+   * uq_contracts_one_active_per_unit} and widened to cover {@code NOTICE_GIVEN} in V085, plus the
+   * in-force guard in {@code ContractService} that refuses to activate a second contract), but a
+   * legacy duplicate predating that constraint is still possible. {@code limit(1)} with a
+   * deterministic {@code orderBy} makes that degrade to "pick the oldest" instead of throwing
+   * {@link org.jooq.exception.TooManyRowsException} (which {@code fetchOptional()} does on >1 row
+   * and which was previously an unhandled 500).
    */
   public Optional<Contract> findActiveByUnitId(UUID unitId, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
