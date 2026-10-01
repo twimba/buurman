@@ -47,6 +47,7 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.buurman.util.SidGenerator;
 
 /**
@@ -759,6 +760,94 @@ class ContractServiceTest {
 
       verify(unitRepository, never()).save(any(Unit.class));
       verify(contractRepository, never()).countActiveByUnitId(any(), any());
+    }
+  }
+
+  /**
+   * {@code endingWithinDays} feeds {@code LocalDate.plusDays(...)} in the repository's filter
+   * condition: a sufficiently large value throws an unhandled {@code DateTimeException} there
+   * instead of a clean 400. The bound is enforced in the service, before the repository is ever
+   * called.
+   */
+  @Nested
+  @DisplayName("getContractsPaginated — endingWithinDays bounds")
+  class EndingWithinDaysValidation {
+
+    private static final UUID TEAM_ID = UUID.randomUUID();
+    private static final UUID USER_ID = UUID.randomUUID();
+
+    private ContractRepository contractRepository;
+    private ContractService contractServiceInstance;
+
+    @BeforeEach
+    void setUp() throws Exception {
+      contractRepository = Mockito.mock(ContractRepository.class);
+
+      contractServiceInstance =
+          Mockito.mock(
+              ContractService.class,
+              Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
+
+      Field field = ContractService.class.getDeclaredField("contractRepository");
+      field.setAccessible(true);
+      field.set(contractServiceInstance, contractRepository);
+    }
+
+    private UserPrincipal principal() {
+      return new UserPrincipal(
+          USER_ID,
+          "usr_test",
+          "kc-123",
+          "test@example.com",
+          "Test User",
+          TEAM_ID,
+          "team_test",
+          com.buurman.domain.TeamRole.TEAM_ADMIN);
+    }
+
+    private com.buurman.dto.request.PageRequest pageRequest() {
+      return com.buurman.dto.request.PageRequest.of(null, null, null, (String) null);
+    }
+
+    @Test
+    @DisplayName("rejects a negative value and never queries the repository")
+    void rejectsNegativeValue() {
+      assertThatThrownBy(
+              () ->
+                  contractServiceInstance.getContractsPaginated(
+                      principal(), null, null, -1, pageRequest()))
+          .isInstanceOf(BadRequestException.class);
+
+      verify(contractRepository, never())
+          .findAllByTeamIdPaginated(any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName(
+        "rejects a value large enough to risk LocalDate overflow and never queries the"
+            + " repository")
+    void rejectsExcessivelyLargeValue() {
+      assertThatThrownBy(
+              () ->
+                  contractServiceInstance.getContractsPaginated(
+                      principal(), null, null, Integer.MAX_VALUE, pageRequest()))
+          .isInstanceOf(BadRequestException.class);
+
+      verify(contractRepository, never())
+          .findAllByTeamIdPaginated(any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("accepts a value within bounds and reaches the repository")
+    void acceptsValueWithinBounds() {
+      when(contractRepository.findAllByTeamIdPaginated(
+              any(), any(), any(), any(), any(), any(), any()))
+          .thenReturn(new PaginatedResult<>(List.of(), 0));
+
+      contractServiceInstance.getContractsPaginated(principal(), null, null, 3650, pageRequest());
+
+      verify(contractRepository)
+          .findAllByTeamIdPaginated(eq(TEAM_ID), any(), any(), any(), any(), eq(3650), any());
     }
   }
 }

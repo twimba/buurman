@@ -330,12 +330,20 @@ public class ContractService {
     return toResponses(contracts, principal.requireTeamId());
   }
 
+  /** Beyond this, any realistic lease filter is already covered; larger values risk overflow. */
+  private static final int MAX_ENDING_WITHIN_DAYS = 3650;
+
   public PageResponse<ContractResponse> getContractsPaginated(
       UserPrincipal principal,
       @Nullable String status,
       @Nullable String search,
       @Nullable Integer endingWithinDays,
       PageRequest pageRequest) {
+    if (endingWithinDays != null
+        && (endingWithinDays < 0 || endingWithinDays > MAX_ENDING_WITHIN_DAYS)) {
+      throw new BadRequestException(
+          "endingWithinDays must be between 0 and " + MAX_ENDING_WITHIN_DAYS);
+    }
     PaginatedResult<Contract> result =
         contractRepository.findAllByTeamIdPaginated(
             principal.requireTeamId(), status, null, null, search, endingWithinDays, pageRequest);
