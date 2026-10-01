@@ -104,7 +104,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `backend/buurman-jooq/src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V078)
+- Convention: `V<version>__<description>.sql` (currently at V084)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -143,7 +143,7 @@ backend/
 │       ├── util/                SidGenerator, EntityPrefix, MoneyAmount, DateUtils
 │       └── config/jooq/         SidJooqConverter, MoneyMinorUnitConverter
 ├── buurman-jooq/            JOOQ codegen + Flyway migrations (0 hand-written Java)
-│   ├── src/main/resources/db/migration/  (78 SQL migrations)
+│   ├── src/main/resources/db/migration/  (84 SQL migrations)
 │   └── target/generated-sources/jooq/   (generated JOOQ records)
 ├── buurman-core/            Core module (~259 files, buurman-core)
 │   └── com.buurman
@@ -260,7 +260,7 @@ frontend/
 ## Testing
 
 ### Backend — JUnit 5 + Mockito + Testcontainers
-- 93 test classes across the modules; the suite runs 1,255 tests (all green).
+- 166 test classes across the modules; the suite runs 1,572 tests (all green).
 - Integration tests (`*IntegrationTest`, 6 classes) extend `AbstractRepositoryIntegrationTest`,
   which starts a `postgres:18-alpine` Testcontainer, applies all Flyway migrations once, and
   truncates between tests. **Docker must be running.**
@@ -274,7 +274,7 @@ frontend/
 - Integration only: `mvn test -pl buurman-core -am -Dtest='*RepositoryIntegrationTest'`
 
 ### Frontend — Vitest
-- 14 test files, 105 tests. `frontend/app` runs under jsdom, `frontend/backoffice` under node.
+- 55 test files, 477 tests. `frontend/app` runs under jsdom, `frontend/backoffice` under node.
 - Run all: `cd frontend && yarn test` (delegates to both workspaces)
 - Config: `frontend/app/vitest.config.ts` — uses `import.meta.dirname`, not `__dirname`
   (vitest 5 / Vite native config loader).
@@ -287,7 +287,7 @@ frontend/
   that a query scoped to one `team_id` cannot see another team's rows.
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V078)
+1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V084)
 2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl buurman-jooq -am`
 3. Domain POJO in `backend/buurman-common/src/.../domain/`
 4. Request/Response DTOs in `backend/buurman-common/src/.../dto/`
