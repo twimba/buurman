@@ -108,6 +108,28 @@ class LeaseClauseServiceTest {
   }
 
   @Test
+  void duplicateTemplateIdentifierThrowsBeforeAnyWrite() {
+    Sid templateIdentifier = Sid.of("LCT0000000000000000000000001");
+
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contract());
+
+    UpdateContractLeaseClausesRequest request =
+        new UpdateContractLeaseClausesRequest(
+            List.of(
+                new ClauseSelection(templateIdentifier.value(), true, 1),
+                new ClauseSelection(templateIdentifier.value(), false, 2)));
+
+    assertThatThrownBy(() -> service.updateClauses(CONTRACT_IDENTIFIER, request, principal))
+        .isInstanceOf(BadRequestException.class);
+
+    // The review-focus assertion: the rejection must happen before any write, not merely before
+    // the method returns — and before the template lookup that would otherwise follow.
+    verify(templateRepository, never()).findByCountryCode(any());
+    verify(overrideRepository, never()).replaceForContract(any(), any(), any(), any());
+  }
+
+  @Test
   void unknownTemplateIdentifierThrowsBadRequest() {
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(contract());

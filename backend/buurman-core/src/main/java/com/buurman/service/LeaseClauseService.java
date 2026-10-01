@@ -1,7 +1,9 @@
 package com.buurman.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -55,6 +57,17 @@ public class LeaseClauseService {
         contract
             .getCountryCode()
             .orElseThrow(() -> new BadRequestException("Contract has no country code"));
+
+    // A duplicate templateIdentifier would otherwise reach the repository and hit
+    // uq_contract_lease_clauses_contract_template as a raw constraint-violation 500. Checked
+    // before any write, before templates are even resolved.
+    Set<String> seenTemplateIdentifiers = new HashSet<>();
+    for (UpdateContractLeaseClausesRequest.ClauseSelection selection : request.clauses()) {
+      if (!seenTemplateIdentifiers.add(selection.templateIdentifier())) {
+        throw new BadRequestException(
+            "Duplicate clause template in request: " + selection.templateIdentifier());
+      }
+    }
 
     List<LeaseClauseTemplate> templates = templateRepository.findByCountryCode(countryCode);
 
