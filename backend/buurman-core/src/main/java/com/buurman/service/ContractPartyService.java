@@ -2,6 +2,7 @@ package com.buurman.service;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Contract.ContractStatus.EXPIRED;
+import static com.buurman.domain.Contract.ContractStatus.NOTICE_GIVEN;
 import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
 import static com.buurman.util.SidGenerator.newContractPartyId;
 
@@ -467,6 +468,11 @@ public class ContractPartyService {
   private void validateContractEditable(Contract contract) {
     if (contract.getStatus() == ACTIVE) {
       throw new IllegalArgumentException("Cannot modify parties on ACTIVE contracts.");
+    }
+    if (contract.getStatus() == NOTICE_GIVEN) {
+      throw new IllegalArgumentException(
+          "Cannot modify parties on NOTICE_GIVEN contracts. Notice has already been given on"
+              + " this contract.");
     }
     if (contract.getStatus() == TERMINATED) {
       throw new IllegalArgumentException("Cannot modify parties on TERMINATED contracts.");
