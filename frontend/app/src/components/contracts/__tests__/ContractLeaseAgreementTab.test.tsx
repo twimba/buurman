@@ -94,9 +94,7 @@ describe('ContractLeaseAgreementTab', () => {
     await userEvent.click(generateButton);
 
     await waitFor(() => {
-      expect(generateSpy).toHaveBeenCalledWith(
-        'CON00000000000000000000001'
-      );
+      expect(generateSpy).toHaveBeenCalledWith('CON00000000000000000000001');
     });
     expect(
       await screen.findByText(/find it in the documents tab/i)

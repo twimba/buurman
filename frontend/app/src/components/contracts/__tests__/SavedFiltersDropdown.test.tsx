@@ -23,7 +23,9 @@ describe('SavedFiltersDropdown', () => {
       </ToastProvider>
     );
 
-    await userEvent.click(screen.getByRole('button', { name: /saved filters/i }));
+    await userEvent.click(
+      screen.getByRole('button', { name: /saved filters/i })
+    );
     await waitFor(() => screen.getByText('Ending soon'));
     await userEvent.click(screen.getByText('Ending soon'));
 

@@ -15,7 +15,9 @@ vi.mock('@/hooks/useFormatDate', () => ({
   }),
 }));
 
-const event = (overrides: Partial<TimelineEventResponse> = {}): TimelineEventResponse => ({
+const event = (
+  overrides: Partial<TimelineEventResponse> = {}
+): TimelineEventResponse => ({
   type: 'CONTRACT_CREATED',
   timestamp: '2026-01-01T00:00:00Z',
   title: 'Contract created',
@@ -30,7 +32,9 @@ describe('ContractTimeline', () => {
   });
 
   it('distinguishes a failed request from an empty timeline', () => {
-    renderWithProviders(<ContractTimeline events={[]} isLoading={false} isError />);
+    renderWithProviders(
+      <ContractTimeline events={[]} isLoading={false} isError />
+    );
 
     expect(screen.getByText('Failed to load history')).toBeInTheDocument();
     expect(screen.queryByText('No history available')).not.toBeInTheDocument();
@@ -103,7 +107,11 @@ describe('ContractTimeline', () => {
       'AUDIT_OTHER',
     ];
     const events = types.map((type, index) =>
-      event({ type, title: `Event ${index}`, timestamp: `2026-01-0${(index % 9) + 1}T00:00:00Z` })
+      event({
+        type,
+        title: `Event ${index}`,
+        timestamp: `2026-01-0${(index % 9) + 1}T00:00:00Z`,
+      })
     );
 
     // A type missing from ICON_BY_TYPE/TINT_BY_TYPE would render `undefined` as the icon

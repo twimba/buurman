@@ -36,7 +36,9 @@ interface TemplateForm {
   defaultIncluded: boolean;
 }
 
-const emptyForm = (countryCode: string): TemplateForm & { countryCode: string } => ({
+const emptyForm = (
+  countryCode: string
+): TemplateForm & { countryCode: string } => ({
   countryCode,
   clauseKey: '',
   titleI18nKey: '',
@@ -137,9 +139,8 @@ export const LeaseClauseTemplatesPage = () => {
         <AlertTriangle className="h-5 w-5 flex-shrink-0 text-warning-text mt-0.5" />
         <p className="text-sm text-warning-text">
           Clause bodies reference placeholder i18n keys with example
-          legal-boilerplate text. This is not vetted legal content — review
-          with qualified counsel before relying on generated leases in
-          production.
+          legal-boilerplate text. This is not vetted legal content — review with
+          qualified counsel before relying on generated leases in production.
         </p>
       </div>
 
@@ -150,8 +151,8 @@ export const LeaseClauseTemplatesPage = () => {
           </h1>
           <p className="text-sm text-text-secondary mt-1">
             Manage the lease clause library by country. Bodies are i18n key
-            references — edit the actual translated text in the
-            .properties bundles.
+            references — edit the actual translated text in the .properties
+            bundles.
           </p>
         </div>
         <Button
@@ -271,7 +272,9 @@ export const LeaseClauseTemplatesPage = () => {
           <div className="relative bg-surface-card rounded-lg border border-border-default shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
               <h2 className="text-lg font-semibold text-text-primary">
-                {editingTemplate ? 'Edit Clause Template' : 'Add Clause Template'}
+                {editingTemplate
+                  ? 'Edit Clause Template'
+                  : 'Add Clause Template'}
               </h2>
               <button
                 onClick={closeForm}

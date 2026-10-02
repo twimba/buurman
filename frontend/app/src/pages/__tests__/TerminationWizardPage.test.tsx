@@ -18,12 +18,10 @@ vi.mock('@/hooks/useContractHooks', () => ({
   useContractDeposit: vi.fn(),
 }));
 
-const mockedUseTerminationPreview = useTerminationPreview as unknown as ReturnType<
-  typeof vi.fn
->;
-const mockedUseTerminateContract = useTerminateContract as unknown as ReturnType<
-  typeof vi.fn
->;
+const mockedUseTerminationPreview =
+  useTerminationPreview as unknown as ReturnType<typeof vi.fn>;
+const mockedUseTerminateContract =
+  useTerminateContract as unknown as ReturnType<typeof vi.fn>;
 const mockedUseContract = useContract as unknown as ReturnType<typeof vi.fn>;
 const mockedUseContractDeposit = useContractDeposit as unknown as ReturnType<
   typeof vi.fn

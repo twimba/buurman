@@ -6,9 +6,8 @@ vi.mock('@/hooks/useContractTerminationHooks', () => ({
   useTerminationPreview: vi.fn(),
 }));
 
-const mockedUseTerminationPreview = useTerminationPreview as unknown as ReturnType<
-  typeof vi.fn
->;
+const mockedUseTerminationPreview =
+  useTerminationPreview as unknown as ReturnType<typeof vi.fn>;
 
 const baseProps = {
   contractId: 'CTR1',
@@ -39,9 +38,7 @@ describe('ReviewComputedDateStep', () => {
 
     render(<ReviewComputedDateStep {...baseProps} />);
 
-    expect(
-      screen.getByText(/calculating notice period/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/calculating notice period/i)).toBeInTheDocument();
   });
 
   it('displays the computed end date, notice days and plain-language source', () => {

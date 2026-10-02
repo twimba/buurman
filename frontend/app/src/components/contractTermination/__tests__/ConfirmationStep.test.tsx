@@ -37,9 +37,7 @@ describe('ConfirmationStep', () => {
   it('navigates back to the contract when clicked', () => {
     renderWithProviders(<ConfirmationStep response={response} />);
 
-    fireEvent.click(
-      screen.getByRole('button', { name: /back to contract/i })
-    );
+    fireEvent.click(screen.getByRole('button', { name: /back to contract/i }));
     // No error thrown means navigation was attempted without crashing.
   });
 });

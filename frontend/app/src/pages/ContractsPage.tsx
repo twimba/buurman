@@ -110,8 +110,13 @@ export const ContractsPage = () => {
   const validSortFields = ['endDate', 'startDate', 'rentAmount'] as const;
 
   const handleApplySavedFilter = (criteria: Record<string, unknown>) => {
-    const { status, search, endingWithinDays: days, sort, direction } =
-      criteria;
+    const {
+      status,
+      search,
+      endingWithinDays: days,
+      sort,
+      direction,
+    } = criteria;
 
     setStatusFilter(
       typeof status === 'string' && validStatuses.includes(status)
@@ -356,7 +361,9 @@ export const ContractsPage = () => {
         </div>
 
         {/* Active filter chips */}
-        {(statusFilter || debouncedSearch || endingWithinDays !== undefined) && (
+        {(statusFilter ||
+          debouncedSearch ||
+          endingWithinDays !== undefined) && (
           <div className="flex flex-wrap items-center gap-2 mb-4">
             {statusFilter && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">

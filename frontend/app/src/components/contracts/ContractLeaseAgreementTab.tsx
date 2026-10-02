@@ -50,7 +50,7 @@ export const ContractLeaseAgreementTab = ({
       clauses.map((clause) => ({
         templateIdentifier: clause.templateIdentifier,
         included: clause.optional
-          ? overrides[clause.templateIdentifier] ?? clause.included
+          ? (overrides[clause.templateIdentifier] ?? clause.included)
           : true,
         sortOrder: clause.sortOrder,
       })),
@@ -94,7 +94,7 @@ export const ContractLeaseAgreementTab = ({
         <ul className="space-y-3">
           {sortedClauses.map((clause) => {
             const checked = clause.optional
-              ? overrides[clause.templateIdentifier] ?? clause.included
+              ? (overrides[clause.templateIdentifier] ?? clause.included)
               : true;
             return (
               <li

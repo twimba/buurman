@@ -13,7 +13,10 @@ vi.mock('@/hooks/usePaymentHooks', () => ({
   useDeletePayment: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 vi.mock('@/hooks/useContractHooks', () => ({
-  useGenerateContractPayments: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useGenerateContractPayments: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
 }));
 vi.mock('@/context/TeamContext', () => ({
   useTeam: () => ({ canEditData: true }),

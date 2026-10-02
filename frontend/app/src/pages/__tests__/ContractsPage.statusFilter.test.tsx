@@ -16,8 +16,14 @@ vi.mock('@/hooks/useContractHooks', () => ({
 }));
 vi.mock('@/hooks/useSavedContractFilterHooks', () => ({
   useSavedContractFilters: () => ({ data: [] }),
-  useCreateSavedContractFilter: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useDeleteSavedContractFilter: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useCreateSavedContractFilter: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
+  useDeleteSavedContractFilter: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
 }));
 vi.mock('@/context/TeamContext', () => ({
   useTeam: () => ({ canEditData: true }),

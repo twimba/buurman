@@ -79,8 +79,7 @@ export const SignatureRequestPanel = ({
   // Fall back to the list's copy while the per-request poll is still in flight, so a rehydrated
   // panel renders its status immediately rather than flashing a spinner.
   const shown =
-    polled ??
-    existingRequests?.find((r) => r.identifier === activeRequestId);
+    polled ?? existingRequests?.find((r) => r.identifier === activeRequestId);
 
   if (!shown) {
     return isLoading ? <LoadingSpinner className="p-0" /> : null;

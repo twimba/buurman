@@ -26,7 +26,8 @@ interface ReviewComputedDateStepProps {
 const isOverrideEarlier = (
   effectiveEndDate: string,
   computedEndDate: string | undefined
-) => !!effectiveEndDate && !!computedEndDate && effectiveEndDate < computedEndDate;
+) =>
+  !!effectiveEndDate && !!computedEndDate && effectiveEndDate < computedEndDate;
 
 export const ReviewComputedDateStep = ({
   contractId,

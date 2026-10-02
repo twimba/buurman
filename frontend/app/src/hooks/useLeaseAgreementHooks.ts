@@ -27,7 +27,10 @@ export const useUpdateLeaseClauses = (contractId: string) => {
     mutationFn: (clauses: UpdateContractLeaseClausesRequestClausesItem[]) =>
       updateLeaseClauses(contractId, { clauses }),
     onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.contracts.leaseClauses(contractId), data);
+      queryClient.setQueryData(
+        queryKeys.contracts.leaseClauses(contractId),
+        data
+      );
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.leaseClauses(contractId),
       });
