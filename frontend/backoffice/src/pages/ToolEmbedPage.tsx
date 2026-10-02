@@ -23,6 +23,9 @@ const getToolsConfig = (): Record<string, ToolConfig> => {
     ...(local
       ? {
           mailpit: { name: 'Mailpit', subdomain: 'mailpit' },
+          // Documenso has no Traefik route (CLAUDE.md: "internal signing sidecar") — it's only
+          // reachable via its docker-compose host port mapping, not a *.local.buurman.io subdomain.
+          documenso: { name: 'Documenso', url: 'http://localhost:3001' },
         }
       : {
           twilio: { name: 'Twilio', url: 'https://console.twilio.com' },

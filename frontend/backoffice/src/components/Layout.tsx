@@ -46,6 +46,7 @@ import {
   PostHogIcon,
   HetznerIcon,
   BetterStackIcon,
+  DocumensoIcon,
 } from './ToolIcons';
 import { useGrafanaDashboards } from '../hooks/useGrafanaDashboards';
 
@@ -126,7 +127,10 @@ const getTools = (): ToolItem[] => {
       ? [{ name: 'Traefik', href: '/tools/traefik', icon: TraefikIcon }]
       : []),
     ...(local
-      ? [{ name: 'Mailpit', href: '/tools/mailpit', icon: MailpitIcon }]
+      ? [
+          { name: 'Mailpit', href: '/tools/mailpit', icon: MailpitIcon },
+          { name: 'Documenso', href: '/tools/documenso', icon: DocumensoIcon },
+        ]
       : [
           { name: 'Twilio', href: '/tools/twilio', icon: TwilioIcon },
           {

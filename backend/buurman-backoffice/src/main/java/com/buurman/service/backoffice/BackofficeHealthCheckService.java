@@ -15,8 +15,10 @@ import org.quartz.Scheduler;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import com.buurman.config.models.AwsS3Properties;
+import com.buurman.config.models.DocumensoProperties;
 import com.buurman.config.models.KeycloakProperties;
 import com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse.ServiceHealth;
 import com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse.ServiceHealth.Status;
@@ -42,6 +44,7 @@ public class BackofficeHealthCheckService {
   private final KeycloakProperties keycloakProperties;
   private final ObjectProvider<MailgunMessagesApi> mailgunProvider;
   private final ObjectProvider<JavaMailSender> mailSenderProvider;
+  private final DocumensoProperties documensoProperties;
 
   public BackofficeHealthCheckService(
       DSLContext dsl,
@@ -52,7 +55,8 @@ public class BackofficeHealthCheckService {
       Keycloak keycloak,
       KeycloakProperties keycloakProperties,
       ObjectProvider<MailgunMessagesApi> mailgunProvider,
-      ObjectProvider<JavaMailSender> mailSenderProvider) {
+      ObjectProvider<JavaMailSender> mailSenderProvider,
+      DocumensoProperties documensoProperties) {
     this.dsl = dsl;
     this.dataSource = dataSource;
     this.scheduler = scheduler;
@@ -62,6 +66,7 @@ public class BackofficeHealthCheckService {
     this.keycloakProperties = keycloakProperties;
     this.mailgunProvider = mailgunProvider;
     this.mailSenderProvider = mailSenderProvider;
+    this.documensoProperties = documensoProperties;
   }
 
   @PreDestroy
@@ -79,6 +84,7 @@ public class BackofficeHealthCheckService {
 
     futures.add(checkAsync("Mailgun", this::checkMailgun));
     futures.add(checkAsync("SMTP", this::checkSmtp));
+    futures.add(checkAsync("Documenso", this::checkDocumenso));
 
     CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
 
@@ -215,5 +221,23 @@ public class BackofficeHealthCheckService {
           Optional.empty(),
           Optional.ofNullable(e.getMessage()));
     }
+  }
+
+  private ServiceHealth checkDocumenso() {
+    if (documensoProperties.apiKey().isBlank()) {
+      return new ServiceHealth(
+          "Documenso",
+          Status.DISABLED,
+          Optional.empty(),
+          Optional.of("Not configured in this profile"),
+          Optional.empty());
+    }
+    // A plain reachability check against the sidecar's web root — not an authenticated API call —
+    // since this service only needs to prove the container is up, not exercise its signing API.
+    long start = System.currentTimeMillis();
+    RestClient.create(documensoProperties.baseUrl()).get().retrieve().toBodilessEntity();
+    long latency = System.currentTimeMillis() - start;
+    return new ServiceHealth(
+        "Documenso", Status.UP, Optional.of(latency), Optional.empty(), Optional.empty());
   }
 }
