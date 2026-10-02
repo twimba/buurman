@@ -405,8 +405,12 @@ public class ContractRepository {
       PageRequest pageRequest) {
     Condition condition =
         buildListCondition(teamId, status, propertyId, contactId, search, endingWithinDays);
+    // PaginationHelper.paginate() builds the query via selectFrom(table)+orderBy(field) without
+    // also adding this field to the SELECT list, so the ORDER BY needs the raw, unaliased
+    // expression — effectiveEndDate()'s "effective_end_date" alias would only resolve if the
+    // query's SELECT list also projected it (see EffectiveEndDateHelper's javadoc).
     Field<LocalDate> effectiveEndDate =
-        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
+        com.buurman.service.EffectiveEndDateHelper.effectiveEndDateExpr();
     Map<String, Field<?>> sortableFields =
         Map.of(
             "createdAt", CONTRACTS.CREATED_AT,

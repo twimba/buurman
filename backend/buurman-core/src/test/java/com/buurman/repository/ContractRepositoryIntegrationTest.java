@@ -431,6 +431,38 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
     assertThat(result.items()).extracting(Contract::getId).doesNotContain(farContractId);
   }
 
+  @Test
+  @DisplayName(
+      "sort=endDate against a real database — PaginationHelper selects via selectFrom() without"
+          + " projecting EffectiveEndDateHelper's aliased field, so ordering by it must use the"
+          + " unaliased expression or Postgres rejects the query with \"column"
+          + " \\\"effective_end_date\\\" does not exist\" (every other test in this class passes"
+          + " sort=null, which falls back to CREATED_AT and never exercises this path)")
+  void sortsByEndDateAgainstRealDatabase() {
+    UUID soonerPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    UUID laterPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    UUID soonerId = TestDataHelper.insertContract(dsl, TEAM_A_ID, soonerPropertyId, USER_ID);
+    UUID laterId = TestDataHelper.insertContract(dsl, TEAM_A_ID, laterPropertyId, USER_ID);
+    dsl.update(DSL.table("contracts"))
+        .set(DSL.field("end_date", LocalDate.class), LocalDate.of(2026, 6, 30))
+        .where(DSL.field("id", UUID.class).eq(soonerId))
+        .execute();
+    dsl.update(DSL.table("contracts"))
+        .set(DSL.field("end_date", LocalDate.class), LocalDate.of(2026, 12, 31))
+        .where(DSL.field("id", UUID.class).eq(laterId))
+        .execute();
+
+    var ascending =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID, null, null, null, null, null, PageRequest.of(0, 25, "endDate", "ASC"));
+    assertThat(ascending.items()).extracting(Contract::getId).containsExactly(soonerId, laterId);
+
+    var descending =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID, null, null, null, null, null, PageRequest.of(0, 25, "endDate", "DESC"));
+    assertThat(descending.items()).extracting(Contract::getId).containsExactly(laterId, soonerId);
+  }
+
   /**
    * Inserts a {@code contract_parties} row linking a contact to a contract, matching the exact
    * column set {@link ContractPartyRepository#save} uses (there is no existing {@code
