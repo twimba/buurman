@@ -12,8 +12,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +33,7 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Team;
 import com.buurman.domain.Unit;
 import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -39,9 +42,11 @@ import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.service.LeaseClauseResolver;
 import com.buurman.service.LeaseKindResolver;
+import com.buurman.util.MoneyAmount;
 
 /**
  * Mockito unit test (no Spring context, mirrors {@code SignatureServiceTest}'s style). Proves the
@@ -60,6 +65,8 @@ class LeaseAgreementExporterTest {
   private final UnitResidentialDetailsRepository unitDetailsRepository =
       mock(UnitResidentialDetailsRepository.class);
   private final LeaseKindResolver leaseKindResolver = new LeaseKindResolver(unitDetailsRepository);
+  private final LeaseDocumentLocator documentLocator = mock(LeaseDocumentLocator.class);
+  private final TeamRepository teamRepository = mock(TeamRepository.class);
   private final LetterExporterHelper helper = mock(LetterExporterHelper.class);
   private final LetterTemplateService documentTemplateService = mock(LetterTemplateService.class);
   private final MessageSource messageSource = mock(MessageSource.class);
@@ -85,6 +92,8 @@ class LeaseAgreementExporterTest {
             rentComponentRepository,
             clauseResolver,
             leaseKindResolver,
+            documentLocator,
+            teamRepository,
             helper,
             documentTemplateService,
             messageSource,
@@ -96,6 +105,11 @@ class LeaseAgreementExporterTest {
             .teamId(TEAM_ID)
             .propertyId(PROPERTY_ID)
             .identifier(Optional.of(Sid.of(CONTRACT_IDENTIFIER.value())))
+            .countryCode(Optional.of("NL"))
+            .contractType(Contract.ContractType.FIXED_TERM)
+            .startDate(LocalDate.of(2026, 2, 1))
+            .rentAmount(new MoneyAmount(new BigDecimal("1000.00"), "EUR"))
+            .paymentFrequency(Contract.PaymentFrequency.MONTHLY)
             .build();
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(contract);
@@ -118,6 +132,14 @@ class LeaseAgreementExporterTest {
     LetterExporterHelper.Addressee addressee =
         new LetterExporterHelper.Addressee(Optional.empty(), Optional.empty());
     when(helper.addressee(CONTRACT_ID, TEAM_ID)).thenReturn(addressee);
+
+    when(teamRepository.getById(TEAM_ID)).thenReturn(Team.builder().name("Landlord BV").build());
+    when(helper.loadPartyData(CONTRACT_ID, TEAM_ID))
+        .thenReturn(new LetterExporterHelper.PartyData(List.of(), Map.of()));
+    when(helper.buildContactNamesList(any(), any())).thenReturn("Tenant One");
+    when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn("label");
+    when(documentLocator.locate(anyString(), any(LeaseKind.class), anyString()))
+        .thenReturn(Optional.empty());
 
     when(rentComponentRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
         .thenReturn(List.of());
@@ -261,5 +283,57 @@ class LeaseAgreementExporterTest {
         .isInstanceOf(BusinessRuleException.class);
 
     verifyNoInteractions(documentTemplateService);
+  }
+
+  @Test
+  @DisplayName(
+      "renders the shell with typed values, refs and language flags when a document exists")
+  void shellPathUsedWhenDocumentExists() {
+    when(documentLocator.locate("NL", LeaseKind.RESIDENTIAL, "en"))
+        .thenReturn(
+            Optional.of(
+                new LeaseDocumentLocator.LeaseDocument(
+                    "lease-agreement/NL/residential/nl", "nl", true)));
+    when(documentTemplateService.renderToPdfTemplate(anyString(), any(Locale.class), anyMap()))
+        .thenReturn("%PDF".getBytes(UTF_8));
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(
+            List.of(
+                clause("term", "Term", "Body", true),
+                clause("pets", "Pets", "Body", false),
+                clause("rent", "Rent", "Body", true)));
+
+    exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
+
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+    verify(documentTemplateService)
+        .renderToPdfTemplate(eq("lease-agreement/_shell"), any(Locale.class), captor.capture());
+    verify(documentTemplateService, org.mockito.Mockito.never())
+        .renderToPdf(anyString(), any(Locale.class), anyMap());
+    Map<String, Object> vars = captor.getValue();
+    assertThat(vars)
+        .containsEntry("clauseSource", "lease-agreement/NL/residential/nl")
+        .containsEntry("languageUsed", "nl")
+        .containsEntry("requestedLang", "en")
+        .containsEntry("fallbackUsed", true)
+        .containsEntry("authoritative", true)
+        .containsEntry("landlordName", "Landlord BV")
+        .containsEntry("tenantNames", "Tenant One")
+        .containsEntry("landlordNoticeDays", 30)
+        .containsKey("startDate");
+    assertThat((Map<String, Integer>) vars.get("refs")).containsOnlyKeys("term", "rent");
+    assertThat((List<?>) vars.get("clauses")).hasSize(2);
+  }
+
+  @Test
+  @DisplayName("all clauses excluded throws before the locator or any rendering")
+  void allExcludedThrowsOnShellPathToo() {
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(clause("pets", "Pets", "Body", false)));
+
+    assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
+        .isInstanceOf(BusinessRuleException.class);
+    verifyNoInteractions(documentTemplateService, documentLocator);
   }
 }

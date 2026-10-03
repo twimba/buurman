@@ -48,8 +48,9 @@ public class LeaseAgreementGenerationService {
     String lang = DocumentLanguages.firstSupportedOrDefault(contract.getDocumentLanguages());
     byte[] pdf = leaseAgreementExporter.generate(contractIdentifier, teamId, lang);
 
-    String filename = "lease-agreement-" + contractIdentifier.value() + "-" + lang + ".pdf";
-    String title = "Lease Agreement (" + lang + ")";
+    String languageUsed = leaseAgreementExporter.languageUsed(contractIdentifier, teamId, lang);
+    String filename = "lease-agreement-" + contractIdentifier.value() + "-" + languageUsed + ".pdf";
+    String title = "Lease Agreement (" + languageUsed + ")";
 
     Sid contractSid = contract.getIdentifier().orElseThrow();
     String fileKey =
