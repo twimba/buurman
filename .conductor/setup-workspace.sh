@@ -84,19 +84,19 @@ rep() { local i s=""; for ((i=0; i<$2; i++)); do s+="$1"; done; printf '%s' "$s"
 # Table dimensions — all tables are 77 display columns wide
 #   Header:      ║ + 75 + ║ = 77
 #   Services:    │16│58│ = 77   (text areas: 14, 56)
-#   Credentials: │18│39│16│ = 77   (text: 16, 37, 14)
+#   Credentials: │18│31│24│ = 77   (text: 16, 29, 22)
 #   Demo Users:  │32│42│ = 77   (text: 30, 40)
 #   Quick Start: │26│48│ = 77   (text: 24, 46)
 # ---------------------------------------------------------------------------
 HW=75
 SLT=14; SRT=56
-C1T=16; C2T=37; C3T=14
+C1T=16; C2T=29; C3T=22
 DLT=30; DRT=40
 QLT=24; QRT=46
 
 H_EQ=$(rep '═' $HW); H_SP=$(rep ' ' $HW)
 SL_D=$(rep '─' 16);  SR_D=$(rep '─' 58)
-C1_D=$(rep '─' 18);  C2_D=$(rep '─' 39);  C3_D=$(rep '─' 16)
+C1_D=$(rep '─' 18);  C2_D=$(rep '─' 31);  C3_D=$(rep '─' 24)
 DL_D=$(rep '─' 32);  DR_D=$(rep '─' 42)
 QL_D=$(rep '─' 26);  QR_D=$(rep '─' 48)
 DIV=$(rep '─' $HW)
@@ -143,6 +143,7 @@ svc "⚡" "API"        "https://${HP}api.local.buurman.io:${HTTPS_PORT}"
 svc "🔑" "Keycloak"   "https://${HP}keycloak.local.buurman.io:${HTTPS_PORT}"
 svc "🔀" "Traefik"    "https://${HP}traefik.local.buurman.io:${HTTPS_PORT}"
 svc "📬" "Mailpit"    "https://${HP}mailpit.local.buurman.io:${HTTPS_PORT}" "  (SMTP: ${SMTP_HOST_PORT})"
+svc "📝" "Documenso"  "https://${HP}documenso.local.buurman.io:${HTTPS_PORT}"
 svc "📦" "AWRust"     "https://${HP}awrust.local.buurman.io:${HTTPS_PORT}"
 svc "📈" "Prometheus" "https://${HP}prometheus.local.buurman.io:${HTTPS_PORT}"
 svc "📊" "Grafana"    "https://${HP}grafana.local.buurman.io:${HTTPS_PORT}"
@@ -159,6 +160,7 @@ printf "  ${DIM}│${RESET} ${BOLD}%-${C1T}s${RESET} ${DIM}│${RESET} ${BOLD}%-
 printf "  ${DIM}├%s┼%s┼%s┤${RESET}\n" "$C1_D" "$C2_D" "$C3_D"
 printf "  ${DIM}│${RESET} %-${C1T}s ${DIM}│${RESET} %-${C2T}s ${DIM}│${RESET} %-${C3T}s ${DIM}│${RESET}\n" "Keycloak Admin" "admin" "admin"
 printf "  ${DIM}│${RESET} %-${C1T}s ${DIM}│${RESET} %-${C2T}s ${DIM}│${RESET} %-${C3T}s ${DIM}│${RESET}\n" "PostgreSQL" "admin" "admin"
+printf "  ${DIM}│${RESET} %-${C1T}s ${DIM}│${RESET} %-${C2T}s ${DIM}│${RESET} %-${C3T}s ${DIM}│${RESET}\n" "Documenso" "buurmy@buurman.io" "buurmy"
 printf "  ${DIM}└%s┴%s┴%s┘${RESET}\n" "$C1_D" "$C2_D" "$C3_D"
 echo ""
 

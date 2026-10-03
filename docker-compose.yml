@@ -168,26 +168,10 @@ services:
     networks:
       - buurman-network
 
-  documenso-postgres:
-    image: postgres:15
-    environment:
-      - POSTGRES_USER=documenso
-      - POSTGRES_PASSWORD=documenso
-      - POSTGRES_DB=documenso
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U documenso -d documenso"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    volumes:
-      - documenso-postgres-data:/var/lib/postgresql/data
-    networks:
-      - buurman-network
-
   documenso:
-    image: documenso/documenso:latest
+    image: documenso/documenso:v2.19.0
     depends_on:
-      documenso-postgres:
+      postgres:
         condition: service_healthy
     # Documenso POSTs its webhooks at host.docker.internal:8081 in the `local` profile (backend on
     # the host). Docker Desktop resolves that name implicitly; Linux Docker Engine does not — same
@@ -199,8 +183,27 @@ services:
       - NEXTAUTH_SECRET=${DOCUMENSO_NEXTAUTH_SECRET:-dev-nextauth-secret-not-for-production}
       - NEXT_PRIVATE_ENCRYPTION_KEY=${DOCUMENSO_ENCRYPTION_KEY:-dev-encryption-key-32-chars-long}
       - NEXT_PRIVATE_ENCRYPTION_SECONDARY_KEY=${DOCUMENSO_ENCRYPTION_SECONDARY_KEY:-dev-secondary-key-32-chars-long}
-      - NEXT_PUBLIC_WEBAPP_URL=${DOCUMENSO_WEBAPP_URL:-http://localhost:3001}
-      - NEXT_PRIVATE_DATABASE_URL=postgres://documenso:documenso@documenso-postgres:5432/documenso
+      - NEXT_PUBLIC_WEBAPP_URL=${DOCUMENSO_WEBAPP_URL:-https://documenso.local.buurman.io}
+      # Documenso's background-job system POSTs to itself (NEXT_PRIVATE_INTERNAL_WEBAPP_URL,
+      # defaulting to NEXT_PUBLIC_WEBAPP_URL) to actually run a job — including sending every
+      # signing-request/reminder email. The *.local.buurman.io hostnames only resolve via the
+      # host's dnsmasq, not from inside this container, so left at the default the self-call
+      # fails outright (silently — see jobs/client/local.js's submitJobToEndpoint, which has no
+      # error handling) and these emails are never sent. Loop back to the container's own port
+      # instead; the public URL above is unaffected (still used for links inside the ones that
+      # do send, and the browser-facing app).
+      - NEXT_PRIVATE_INTERNAL_WEBAPP_URL=http://localhost:3000
+      # Documenso's own outgoing-webhook delivery refuses any URL that resolves to a private/
+      # loopback address (SSRF guard — see server-only/webhooks/assert-webhook-url.js), and
+      # host.docker.internal resolves to a Docker-internal private IP, so our own webhook
+      # (seeded pointing at the host-run backend, see docker/documenso/seed.sql) would otherwise
+      # be silently rejected before the request is even sent. "backend" covers the containerized
+      # backend under `make up`.
+      - NEXT_PRIVATE_WEBHOOK_SSRF_BYPASS_HOSTS=host.docker.internal,backend
+      - NEXT_PRIVATE_DATABASE_URL=postgres://${DB_DOCUMENSO_USERNAME:-documenso}:${DB_DOCUMENSO_PASSWORD:-documenso}@postgres:5432/documenso
+      # Prisma's schema requires a separate "direct" (non-pooled) connection for migrations; we
+      # have no pooler in front of Postgres here, so it's the same URL as NEXT_PRIVATE_DATABASE_URL.
+      - NEXT_PRIVATE_DIRECT_DATABASE_URL=postgres://${DB_DOCUMENSO_USERNAME:-documenso}:${DB_DOCUMENSO_PASSWORD:-documenso}@postgres:5432/documenso
       - NEXT_PRIVATE_SMTP_TRANSPORT=smtp-auth
       - NEXT_PRIVATE_SMTP_HOST=mailpit
       - NEXT_PRIVATE_SMTP_PORT=1025
@@ -209,12 +212,56 @@ services:
       - NEXT_PRIVATE_SIGNING_TRANSPORT=local
       - NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH=/opt/documenso/cert.p12
       - NEXT_PRIVATE_SIGNING_PASSPHRASE=buurman-dev
-    ports:
-      # Host port so a host-run backend (`make dev`) can reach it at http://localhost:3001.
-      # Containerised backend (`make up`) reaches it as http://documenso:3000.
-      - "${DOCUMENSO_HOST_PORT:-3001}:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
     volumes:
       - ./docker/documenso/cert.p12:/opt/documenso/cert.p12:ro
+    labels:
+      - "traefik.enable=true"
+      - "buurman.workspace=${COMPOSE_PROJECT_NAME:-buurman}"
+      - "traefik.http.routers.${HOSTNAME_PREFIX:-}documenso.rule=Host(`${HOSTNAME_PREFIX:-}documenso.local.buurman.io`)"
+      - "traefik.http.routers.${HOSTNAME_PREFIX:-}documenso.entrypoints=websecure"
+      - "traefik.http.routers.${HOSTNAME_PREFIX:-}documenso.tls=true"
+      - "traefik.http.services.${HOSTNAME_PREFIX:-}documenso.loadbalancer.server.port=3000"
+    networks:
+      - buurman-network
+
+  # One-shot: seeds a fixed dev user/org/team/API-token into Documenso's schema once its own
+  # `prisma migrate deploy` (run by the documenso service itself) has created the tables — see
+  # docker/documenso/seed.sql. Exits after running; `make up`/`make dev` end up with a working
+  # DOCUMENSO_API_KEY with no interactive signup step.
+  documenso-seed:
+    image: postgres:18.6-alpine3.23
+    depends_on:
+      documenso:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${DB_DOCUMENSO_PASSWORD:-documenso}
+    volumes:
+      - ./docker/documenso/seed.sql:/seed.sql:ro
+    entrypoint:
+      - psql
+      - -v
+      - ON_ERROR_STOP=1
+      # The webhook seed.sql registers targets the host-run backend (the `local`/`make dev`
+      # profile) at its workspace-specific port — see scripts/setup-workspace.sh, which writes
+      # BACKEND_HOST_PORT into the generated .env this reads.
+      - -v
+      - backend_webhook_port=${BACKEND_HOST_PORT:-8081}
+      - -v
+      - webhook_secret=${DOCUMENSO_WEBHOOK_SECRET:-buurman-dev-webhook-secret-insecure}
+      - -h
+      - postgres
+      - -U
+      - ${DB_DOCUMENSO_USERNAME:-documenso}
+      - -d
+      - documenso
+      - -f
+      - /seed.sql
     labels:
       - "buurman.workspace=${COMPOSE_PROJECT_NAME:-buurman}"
     networks:
@@ -466,7 +513,6 @@ volumes:
   awrust-data:
   prometheus_data:
   grafana_data:
-  documenso-postgres-data:
 
 networks:
   buurman-network:

@@ -26,6 +26,7 @@ SERVICES = [
     {"key": "backoffice", "label": "Backoffice", "container": "backoffice", "category": "app"},
     {"key": "keycloak",   "label": "Keycloak",   "container": "keycloak",   "category": "auth"},
     {"key": "mailpit",    "label": "Mailpit",    "container": "mailpit",    "category": "devtools"},
+    {"key": "documenso",  "label": "Documenso",  "container": "documenso",  "category": "devtools"},
     {"key": "prometheus", "label": "Prometheus", "container": "prometheus", "category": "monitoring"},
     {"key": "grafana",    "label": "Grafana",    "container": "grafana",    "category": "monitoring"},
 ]

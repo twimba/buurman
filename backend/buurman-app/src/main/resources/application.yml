@@ -150,9 +150,13 @@ twilio:
 
 # Documenso Configuration (self-hosted e-signature sidecar; see docker-compose.yml)
 documenso:
-  base-url: ${DOCUMENSO_BASE_URL:http://localhost:3001}
-  api-key: ${DOCUMENSO_API_KEY:}
-  webhook-secret: ${DOCUMENSO_WEBHOOK_SECRET:}
+  base-url: ${DOCUMENSO_BASE_URL:https://documenso.local.buurman.io}
+  # Matches the fixed dev token docker/documenso/seed.sql creates — zero-config for local dev.
+  # Never a real credential: override DOCUMENSO_API_KEY in any environment with real documents.
+  api-key: ${DOCUMENSO_API_KEY:api_buurman_dev_seed_token_insecure}
+  # Matches the webhook docker/documenso/seed.sql registers — zero-config for local dev. Never a
+  # real credential: override DOCUMENSO_WEBHOOK_SECRET in any environment with real documents.
+  webhook-secret: ${DOCUMENSO_WEBHOOK_SECRET:buurman-dev-webhook-secret-insecure}
 
 # Notification Configuration
 notification:

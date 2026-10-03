@@ -35,28 +35,27 @@ if ! mkcert -CAROOT &>/dev/null || [ ! -f "$(mkcert -CAROOT)/rootCA.pem" ]; then
   mkcert -install
 fi
 
-# Skip if certs already exist
+# Skip if certs already exist — but NOT via an early `exit`: this script also generates the
+# unrelated Documenso signing certificate below, and an early exit here would (did) skip that
+# block entirely for anyone who already had the TLS certs from a previous run.
 if [ -f "$CERT_FILE" ] && [ -f "$KEY_FILE" ]; then
-  echo "Certificates already exist at $CERTS_DIR"
+  echo "TLS certificates already exist at $CERTS_DIR"
   echo "  To regenerate, delete them and re-run this script."
-  exit 0
+else
+  # Generate wildcard certificate
+  mkdir -p "$CERTS_DIR"
+  echo "Generating TLS certificates for *.local.buurman.io..."
+  mkcert \
+    -cert-file "$CERT_FILE" \
+    -key-file "$KEY_FILE" \
+    "*.local.buurman.io" \
+    "local.buurman.io"
+
+  echo ""
+  echo "Done! TLS certificates generated:"
+  echo "  Certificate: $CERT_FILE"
+  echo "  Key:         $KEY_FILE"
 fi
-
-# Generate wildcard certificate
-mkdir -p "$CERTS_DIR"
-echo "Generating TLS certificates for *.local.buurman.io..."
-mkcert \
-  -cert-file "$CERT_FILE" \
-  -key-file "$KEY_FILE" \
-  "*.local.buurman.io" \
-  "local.buurman.io"
-
-echo ""
-echo "Done! Certificates generated:"
-echo "  Certificate: $CERT_FILE"
-echo "  Key:         $KEY_FILE"
-echo ""
-echo "Start the environment with: docker compose up -d"
 
 # =============================================================================
 # Documenso e-signature sidecar: self-signed PKCS#12 signing certificate.
@@ -65,6 +64,14 @@ echo "Start the environment with: docker compose up -d"
 # =============================================================================
 DOCUMENSO_CERT_DIR="$SCRIPT_DIR/../docker/documenso"
 DOCUMENSO_CERT_PATH="$DOCUMENSO_CERT_DIR/cert.p12"
+# docker-compose silently creates an empty directory at a bind-mount source path that doesn't
+# exist yet — if `documenso` ever starts before this script runs, that's exactly what happens
+# here. An empty directory isn't a file, so the check below would try to generate into it and
+# openssl would fail (can't write a file where a directory already exists) — clear it first.
+if [ -d "$DOCUMENSO_CERT_PATH" ]; then
+  echo "Removing empty placeholder directory at $DOCUMENSO_CERT_PATH (docker-compose artifact, not a real certificate)"
+  rmdir "$DOCUMENSO_CERT_PATH"
+fi
 if [ ! -f "$DOCUMENSO_CERT_PATH" ]; then
   mkdir -p "$DOCUMENSO_CERT_DIR"
   echo "Generating Documenso local signing certificate..."

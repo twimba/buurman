@@ -46,6 +46,10 @@ booklet:
   gotenberg:
     url: http://gotenberg:3000
 
+# Documenso runs as a sibling container; reach it over the internal network.
+documenso:
+  base-url: http://documenso:3000
+
 app:
   public-url: https://app.local.buurman.io
   api:
