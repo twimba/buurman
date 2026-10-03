@@ -69,6 +69,10 @@ class LeaseAgreementRenderTest {
     assertThat(html).doesNotContain("null").doesNotContain("${").doesNotContain("#{");
     assertThat(html).doesNotContain("[[");
     assertThat(html).doesNotContain("??");
+    assertThat(html)
+        .as("raw bundle key rendered")
+        .doesNotContainPattern(NlResidentialLeaseRenderTest.RAW_KEY);
+    assertThat(html).contains("Ref.: CON1");
   }
 
   @Test

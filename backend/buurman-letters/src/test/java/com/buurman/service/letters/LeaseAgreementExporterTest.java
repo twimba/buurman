@@ -321,9 +321,33 @@ class LeaseAgreementExporterTest {
         .containsEntry("landlordName", "Landlord BV")
         .containsEntry("tenantNames", "Tenant One")
         .containsEntry("landlordNoticeDays", 30)
+        .containsEntry("fixedTerm", true)
         .containsKey("startDate");
     assertThat((Map<String, Integer>) vars.get("refs")).containsOnlyKeys("term", "rent");
     assertThat((List<?>) vars.get("clauses")).hasSize(2);
+  }
+
+  @Test
+  @DisplayName("fixedTerm follows the contract type, not the presence of an end date")
+  void fixedTermFollowsContractType() {
+    contract.setContractType(Contract.ContractType.INDEFINITE);
+    when(documentLocator.locate("NL", LeaseKind.RESIDENTIAL, "nl"))
+        .thenReturn(
+            Optional.of(
+                new LeaseDocumentLocator.LeaseDocument(
+                    "lease-agreement/NL/residential/nl", "nl", true)));
+    when(documentTemplateService.renderToPdfTemplate(anyString(), any(Locale.class), anyMap()))
+        .thenReturn("%PDF".getBytes(UTF_8));
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(clause("term", "Term", "Body", true)));
+
+    exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "nl");
+
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+    verify(documentTemplateService)
+        .renderToPdfTemplate(eq("lease-agreement/_shell"), any(Locale.class), captor.capture());
+    assertThat(captor.getValue()).containsEntry("fixedTerm", false);
   }
 
   @Test

@@ -7,7 +7,9 @@
                Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
                Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
                AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
-               Verified 2026-10-03. Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
                7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
   reviewed-by: none
   translation: authoritative
@@ -22,7 +24,10 @@
 <div th:fragment="clause-parties" data-clause="parties">
   <p>Ondergetekenden:</p>
   <p><strong th:text="${landlordName}">verhuurder</strong>, hierna te noemen &ldquo;de verhuurder&rdquo;, en</p>
-  <p><strong th:text="${tenantNames}">huurder</strong>, hierna (gezamenlijk) te noemen &ldquo;de huurder&rdquo;,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">huurder</strong>, hierna
+    (gezamenlijk) te noemen &ldquo;de huurder&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">de hieronder ondertekende huurder(s), hierna (gezamenlijk) te
+    noemen &ldquo;de huurder&rdquo;,</p>
   <p>verklaren te zijn overeengekomen zoals in deze huurovereenkomst is bepaald. Noemt deze overeenkomst
     meer dan &eacute;&eacute;n huurder, dan is ieder van hen hoofdelijk aansprakelijk voor de nakoming van alle
     verplichtingen van de huurder uit deze overeenkomst.</p>
@@ -40,11 +45,13 @@
 
 <div th:fragment="clause-term" data-clause="term">
   <p>Deze overeenkomst gaat in op <strong th:text="${startDate}">ingangsdatum</strong>.</p>
-  <p th:if="${endDate == null}">De overeenkomst is aangegaan voor onbepaalde tijd.</p>
-  <th:block th:if="${endDate != null}">
-    <p>Partijen zijn een huurtermijn overeengekomen tot en met <strong th:text="${endDate}">einddatum</strong>.
-      Een voor bepaalde tijd aangegane huur van woonruimte eindigt niet door het enkele verloop van de
-      huurtijd (artikel 7:271 lid 1 BW).</p>
+  <p th:if="${!fixedTerm}">De overeenkomst is aangegaan voor onbepaalde tijd.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>De overeenkomst is aangegaan voor bepaalde tijd<span th:if="${endDate != null}">, tot en met
+      <strong th:text="${endDate}">einddatum</strong></span>. Een voor bepaalde tijd aangegane huur van
+      woonruimte eindigt niet door het enkele verloop van de huurtijd. Elk van beide partijen kan de huur
+      opzeggen tegen een voor de betaling van de huurprijs overeengekomen dag, maar niet eerder dan tegen het
+      einde van de bepaalde tijd (artikel 7:271 lid 1 BW).</p>
     <p>Dit is alleen anders bij een huur voor ten hoogste twee jaar aan een huurder die behoort tot een bij
       algemene maatregel van bestuur aangewezen categorie (artikel 7:271 lid 2 BW). In dat geval informeert de
       verhuurder de huurder niet eerder dan drie maanden en uiterlijk een maand v&oacute;&oacute;r het verstrijken
@@ -111,9 +118,10 @@
 <div th:fragment="clause-payment" data-clause="payment">
   <p>De huurder betaalt de huurprijs<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (zie artikel <span th:text="${refs['rent']}"></span>)</span><span
     th:if="${refs['service-costs']}"> en de voorschotten op de servicekosten</span>
-    <span th:text="${paymentFrequency}">per maand</span> bij vooruitbetaling,
+    <span th:text="${paymentFrequency}">per maand</span><span th:if="${paymentDueDay == 1}"> bij
+    vooruitbetaling</span>,
     <span th:if="${paymentDueDay != null}">uiterlijk op de <strong th:text="${paymentDueDay}">1</strong>e dag van
-      iedere betalingstermijn</span><span th:if="${paymentDueDay == null}">uiterlijk op de tussen partijen
+      de maand waarin de betalingstermijn aanvangt</span><span th:if="${paymentDueDay == null}">uiterlijk op de tussen partijen
       overeengekomen betaaldag</span>, door overmaking naar de rekening die de verhuurder daarvoor schriftelijk
     heeft opgegeven.</p>
   <p>Betaalt de huurder niet tijdig, dan is hij over het achterstallige bedrag de wettelijke rente
@@ -178,12 +186,16 @@
 
 <div th:fragment="clause-termination" data-clause="termination">
   <p>Opzegging van deze overeenkomst geschiedt bij deurwaardersexploot of bij aangetekende brief, tegen een
-    voor de betaling van de huurprijs overeengekomen dag (artikel 7:271 leden 3 en 4 BW). Is de huur voor
-    bepaalde tijd aangegaan, dan geldt daarnaast wat de wet bepaalt over opzegging v&oacute;&oacute;r het
-    verstrijken van die tijd (artikel 7:271 leden 1 en 2 BW).</p>
+    voor de betaling van de huurprijs overeengekomen dag (artikel 7:271 leden 3 en 4 BW).</p>
   <p>De huurder neemt een opzegtermijn in acht die gelijk is aan de tijd tussen twee opeenvolgende
     betaaldagen, maar niet korter dan een maand en niet langer dan drie maanden (artikel 7:271 lid 6 onder a
     BW).</p>
+  <p th:if="${fixedTerm}">Is de huur voor bepaalde tijd aangegaan, dan kan in afwijking hiervan geen van beide
+    partijen opzeggen tegen een dag die valt v&oacute;&oacute;r het einde van de bepaalde tijd<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (zie artikel <span th:text="${refs['term']}"></span>)</span>;
+    de opzegtermijnen van dit artikel gelden dan voor opzegging tegen dat einde of een latere betaaldag
+    (artikel 7:271 lid 1 BW). Alleen bij een tijdelijke huur als bedoeld in artikel 7:271 lid 2 BW kan de
+    huurder ook eerder opzeggen.</p>
   <p>De verhuurder kan slechts opzeggen op een van de gronden die de wet daarvoor noemt (artikel 7:274 lid 1
     BW) en vermeldt die gronden in de opzegging; een opzegging op andere gronden is nietig. De opzegtermijn voor
     de verhuurder is ten minste drie maanden, verlengd met een maand voor elk jaar dat de huurder het gehuurde

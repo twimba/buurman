@@ -226,6 +226,8 @@ public class LeaseAgreementExporter {
         "tenantNames", helper.buildContactNamesList(partyData.parties(), partyData.contactMap()));
     vars.put("startDate", contract.getStartDate().format(dateFmt));
     vars.put("endDate", contract.getEndDate().map(d -> d.format(dateFmt)).orElse(null));
+    // The lease regime follows the contract type; an end date alone does not make it fixed-term.
+    vars.put("fixedTerm", contract.getContractType() == Contract.ContractType.FIXED_TERM);
     vars.put(
         "contractTypeLabel",
         messageSource.getMessage(

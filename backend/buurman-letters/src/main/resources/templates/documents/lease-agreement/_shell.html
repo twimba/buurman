@@ -36,8 +36,6 @@
   <div th:if="${fallbackUsed}" class="lease-notice" th:text="#{lease.notice.fallback(${requestedLang})}"></div>
 
   <div class="letter-body">
-    <p th:text="#{lease.premises(${propertyAddress})}"></p>
-
     <table th:if="${rentComponents != null and not #lists.isEmpty(rentComponents)}" class="summary-table">
       <tr th:each="component : ${rentComponents}">
         <td class="st-label" th:text="${component.type}"></td>
