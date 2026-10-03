@@ -17,12 +17,14 @@ import org.springframework.stereotype.Component;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Team;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
@@ -41,6 +43,7 @@ public class ContractSummaryAssembler {
   private final PropertyRepository propertyRepository;
   private final PaymentRepository paymentRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final ContractPartyService contractPartyService;
   private final TeamRepository teamRepository;
   private final BookletFormatter formatter;
@@ -54,6 +57,7 @@ public class ContractSummaryAssembler {
       PropertyRepository propertyRepository,
       PaymentRepository paymentRepository,
       ContractExtensionRepository contractExtensionRepository,
+      ContractTerminationRepository contractTerminationRepository,
       ContractPartyService contractPartyService,
       TeamRepository teamRepository,
       BookletFormatter formatter,
@@ -65,6 +69,7 @@ public class ContractSummaryAssembler {
     this.propertyRepository = propertyRepository;
     this.paymentRepository = paymentRepository;
     this.contractExtensionRepository = contractExtensionRepository;
+    this.contractTerminationRepository = contractTerminationRepository;
     this.contractPartyService = contractPartyService;
     this.teamRepository = teamRepository;
     this.formatter = formatter;
@@ -110,8 +115,11 @@ public class ContractSummaryAssembler {
 
     List<ContractExtension> extensions =
         contractExtensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+    Optional<ContractTermination> termination =
+        contractTerminationRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     Optional<LocalDate> effectiveEnd =
-        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+        EffectiveEndDateHelper.computeEffectiveEndDate(
+            contract.getEndDate(), extensions, termination);
 
     Map<String, Object> v = new HashMap<>();
     v.put("lang", locale.getLanguage());

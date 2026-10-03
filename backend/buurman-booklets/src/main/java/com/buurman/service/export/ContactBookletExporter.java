@@ -36,6 +36,7 @@ import com.buurman.domain.ContactType;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
@@ -46,6 +47,7 @@ import com.buurman.repository.ContactRelationshipRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UserRepository;
@@ -68,6 +70,7 @@ public class ContactBookletExporter {
   private final UserRepository userRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final PaymentRepository paymentRepository;
   private final PropertyRepository propertyRepository;
   private final ContractPartyService contractPartyService;
@@ -88,6 +91,7 @@ public class ContactBookletExporter {
       UserRepository userRepository,
       ContractRepository contractRepository,
       ContractExtensionRepository contractExtensionRepository,
+      ContractTerminationRepository contractTerminationRepository,
       PaymentRepository paymentRepository,
       PropertyRepository propertyRepository,
       ContractPartyService contractPartyService,
@@ -106,6 +110,7 @@ public class ContactBookletExporter {
     this.userRepository = userRepository;
     this.contractRepository = contractRepository;
     this.contractExtensionRepository = contractExtensionRepository;
+    this.contractTerminationRepository = contractTerminationRepository;
     this.paymentRepository = paymentRepository;
     this.propertyRepository = propertyRepository;
     this.contractPartyService = contractPartyService;
@@ -158,6 +163,8 @@ public class ContactBookletExporter {
         contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
     Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+    Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId);
 
     List<ContactNote> notes =
         contactNoteRepository.findByContactIdAndTeamId(contact.getId(), teamId).stream()
@@ -177,6 +184,7 @@ public class ContactBookletExporter {
             propertyMap,
             contractRoles,
             extensionsByContract,
+            terminationsByContract,
             notes,
             relationships,
             teamId,
@@ -197,6 +205,7 @@ public class ContactBookletExporter {
       Map<UUID, Property> propertyMap,
       Map<UUID, ContractPartyRole> contractRoles,
       Map<UUID, List<ContractExtension>> extensionsByContract,
+      Map<UUID, ContractTermination> terminationsByContract,
       List<ContactNote> notes,
       List<ContactRelationship> relationships,
       UUID teamId,
@@ -257,7 +266,13 @@ public class ContactBookletExporter {
     v.put("addresses", buildAddresses(addresses, locale));
     v.put(
         "rentals",
-        buildRentals(contracts, propertyMap, contractRoles, extensionsByContract, locale));
+        buildRentals(
+            contracts,
+            propertyMap,
+            contractRoles,
+            extensionsByContract,
+            terminationsByContract,
+            locale));
     v.put("payments", buildPayments(allPayments, locale));
     v.put("notes", buildNotes(notes, locale));
     v.put("relationships", buildRelationships(relationships, contact, teamId, locale));
@@ -291,6 +306,7 @@ public class ContactBookletExporter {
       Map<UUID, Property> propertyMap,
       Map<UUID, ContractPartyRole> contractRoles,
       Map<UUID, List<ContractExtension>> extensionsByContract,
+      Map<UUID, ContractTermination> terminationsByContract,
       Locale locale) {
     List<Map<String, Object>> out = new ArrayList<>();
     for (Contract c : contracts) {
@@ -298,7 +314,9 @@ public class ContactBookletExporter {
       ContractPartyRole role = contractRoles.get(c.getId());
       Optional<LocalDate> effEnd =
           EffectiveEndDateHelper.computeEffectiveEndDate(
-              c.getEndDate(), extensionsByContract.getOrDefault(c.getId(), List.of()));
+              c.getEndDate(),
+              extensionsByContract.getOrDefault(c.getId(), List.of()),
+              Optional.ofNullable(terminationsByContract.get(c.getId())));
       Map<String, Object> m = new HashMap<>();
       m.put("role", role != null ? enumLabels.label(role, locale) : "—");
       m.put("status", c.getStatus() != null ? enumLabels.label(c.getStatus(), locale) : "—");

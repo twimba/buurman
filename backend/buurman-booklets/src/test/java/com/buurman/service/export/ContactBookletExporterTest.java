@@ -42,6 +42,7 @@ import com.buurman.repository.ContactRelationshipRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UserRepository;
@@ -66,6 +67,7 @@ class ContactBookletExporterTest {
   @Mock private UserRepository userRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
+  @Mock private ContractTerminationRepository contractTerminationRepository;
   @Mock private PaymentRepository paymentRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContractPartyService contractPartyService;
@@ -90,6 +92,7 @@ class ContactBookletExporterTest {
             userRepository,
             contractRepository,
             contractExtensionRepository,
+            contractTerminationRepository,
             paymentRepository,
             propertyRepository,
             contractPartyService,
