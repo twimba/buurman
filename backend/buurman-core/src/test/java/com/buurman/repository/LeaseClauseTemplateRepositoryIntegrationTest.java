@@ -158,12 +158,13 @@ class LeaseClauseTemplateRepositoryIntegrationTest extends AbstractRepositoryInt
           new LeaseClauseTemplateRepository(
               seedDsl, new LeaseClauseTemplateRecordMapperImpl(), CLOCK);
 
-      List<LeaseClauseTemplate> nlTemplates = seedRepository.findByCountryCode("NL");
+      // V092 adds the NL RESIDENTIAL set alongside the relabelled V083 rows; this test pins the
+      // V083 (LEGACY) set, LeaseDocumentCatalogDatabaseIntegrationTest (buurman-app) pins V092.
+      assertThat(seedRepository.findByCountryCode("NL")).hasSize(7 + 16);
+      assertThat(seedRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL)).hasSize(16);
+      List<LeaseClauseTemplate> nlTemplates =
+          seedRepository.findByCountryAndKind("NL", LeaseKind.LEGACY);
       assertThat(nlTemplates).hasSize(7);
-      assertThat(nlTemplates)
-          .extracting(LeaseClauseTemplate::getLeaseKind)
-          .containsOnly(LeaseKind.LEGACY);
-      assertThat(seedRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL)).isEmpty();
 
       assertThat(nlTemplates)
           .filteredOn(template -> !template.isOptional())
