@@ -1090,8 +1090,8 @@
     },
     "noCountry": {
       "title": "Choose a country first",
-      "description": "The lease agreement depends on the country, so add one to this contract first.",
-      "action": "Edit contract"
+      "description": "The lease agreement depends on the country of the property. Add a country to the property first.",
+      "action": "Edit property"
     },
     "error": {
       "title": "We couldn't load the clauses",

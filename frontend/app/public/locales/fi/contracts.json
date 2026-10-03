@@ -1086,15 +1086,15 @@
     "unavailable": {
       "title": "Ei vielä saatavilla",
       "description": "Tälle maalle ei ole vielä vuokrasopimusta. Voit silti hallita tätä sopimusta ja ladata jo allekirjoitetun vuokrasopimuksen.",
-      "action": "Asiakirjoihin"
+      "action": "Siirry asiakirjoihin"
     },
     "noCountry": {
       "title": "Valitse ensin maa",
-      "description": "Vuokrasopimus riippuu maasta. Lisää ensin maa tähän sopimukseen.",
-      "action": "Muokkaa sopimusta"
+      "description": "Vuokrasopimus riippuu kohteen maasta. Lisää ensin maa kohteelle.",
+      "action": "Muokkaa kohdetta"
     },
     "error": {
-      "title": "Lataus epäonnistui",
+      "title": "Lausekkeita ei ladattu",
       "description": "Meidän päässämme tapahtui virhe. Yritä hetken kuluttua uudelleen.",
       "retry": "Yritä uudelleen"
     },

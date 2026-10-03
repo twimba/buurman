@@ -1104,17 +1104,17 @@
     },
     "noCountry": {
       "title": "Elige primero un país",
-      "description": "El contrato de arrendamiento depende del país. Añade primero un país a este contrato.",
-      "action": "Editar contrato"
+      "description": "El contrato de arrendamiento depende del país de la propiedad. Añade primero un país a la propiedad.",
+      "action": "Editar propiedad"
     },
     "error": {
-      "title": "No se pudo cargar",
+      "title": "Cláusulas no cargadas",
       "description": "Algo salió mal por nuestra parte. Inténtalo de nuevo en un momento.",
       "retry": "Reintentar"
     },
     "exampleNotice": {
       "title": "Esto es un texto de ejemplo",
-      "description": "Para este país solo tenemos un breve ejemplo, no un contrato completo. Haz revisar tu contrato antes de que alguien firme."
+      "description": "Para este país solo tenemos un breve ejemplo, no un contrato de arrendamiento completo. Pide que revisen tu propio contrato antes de firmar."
     }
   },
   "leaseRegime": {

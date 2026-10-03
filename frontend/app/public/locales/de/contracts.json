@@ -1090,17 +1090,17 @@
     },
     "noCountry": {
       "title": "Zuerst Land wählen",
-      "description": "Der Mietvertrag hängt vom Land ab. Fügen Sie diesem Vertrag zuerst ein Land hinzu.",
-      "action": "Vertrag bearbeiten"
+      "description": "Der Mietvertrag hängt vom Land der Immobilie ab. Fügen Sie der Immobilie zuerst ein Land hinzu.",
+      "action": "Immobilie bearbeiten"
     },
     "error": {
-      "title": "Laden fehlgeschlagen",
+      "title": "Klauseln nicht geladen",
       "description": "Bei uns ist etwas schiefgelaufen. Bitte versuchen Sie es gleich noch einmal.",
       "retry": "Erneut versuchen"
     },
     "exampleNotice": {
       "title": "Das ist ein Beispieltext",
-      "description": "Für dieses Land haben wir nur ein kurzes Muster, keinen vollständigen Mietvertrag. Lassen Sie Ihren Vertrag prüfen, bevor jemand unterschreibt."
+      "description": "Für dieses Land haben wir nur ein kurzes Beispiel, keinen vollständigen Mietvertrag. Lassen Sie Ihren eigenen Mietvertrag prüfen, bevor jemand unterschreibt."
     }
   },
   "leaseRegime": {

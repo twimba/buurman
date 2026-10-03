@@ -417,9 +417,12 @@ export const ContractDetailPage = () => {
           <ContractLeaseAgreementTab
             contractId={id}
             onGoToDocuments={() => setActiveTab('documents')}
-            onEditContract={
-              canEdit && canEditData
-                ? () => navigate(`/contracts/${id}/edit`)
+            onEditProperty={
+              canEditData && contract.property?.identifier
+                ? () =>
+                    navigate(
+                      `/properties/${contract.property?.identifier}/edit`
+                    )
                 : undefined
             }
           />

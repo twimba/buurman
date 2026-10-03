@@ -1104,17 +1104,17 @@
     },
     "noCountry": {
       "title": "Scegli prima un paese",
-      "description": "Il contratto di locazione dipende dal paese. Aggiungi prima un paese a questo contratto.",
-      "action": "Modifica contratto"
+      "description": "Il contratto di locazione dipende dal paese dell'immobile. Aggiungi prima un paese all'immobile.",
+      "action": "Modifica immobile"
     },
     "error": {
-      "title": "Impossibile caricare",
+      "title": "Clausole non caricate",
       "description": "Qualcosa è andato storto da parte nostra. Riprova tra un attimo.",
       "retry": "Riprova"
     },
     "exampleNotice": {
       "title": "Questo è un testo di esempio",
-      "description": "Per questo paese abbiamo solo un breve esempio, non un contratto completo. Fai verificare il tuo contratto prima che qualcuno firmi."
+      "description": "Per questo paese abbiamo solo un breve esempio, non un contratto completo. Fai verificare il tuo contratto di locazione prima che qualcuno firmi."
     }
   },
   "leaseRegime": {

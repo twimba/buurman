@@ -1090,17 +1090,17 @@
     },
     "noCountry": {
       "title": "Velg land først",
-      "description": "Leiekontrakten avhenger av landet. Legg først til et land i denne kontrakten.",
-      "action": "Rediger kontrakt"
+      "description": "Leiekontrakten avhenger av landet til eiendommen. Legg først til et land på eiendommen.",
+      "action": "Rediger eiendom"
     },
     "error": {
-      "title": "Kunne ikke laste",
+      "title": "Klausuler ble ikke lastet",
       "description": "Noe gikk galt hos oss. Prøv igjen om litt.",
       "retry": "Prøv igjen"
     },
     "exampleNotice": {
       "title": "Dette er eksempeltekst",
-      "description": "For dette landet har vi bare et kort eksempel, ikke en full leiekontrakt. La din egen kontrakt bli gjennomgått før noen signerer."
+      "description": "For dette landet har vi bare et kort eksempel, ikke en full leiekontrakt. Få din egen kontrakt gjennomgått før noen signerer."
     }
   },
   "leaseRegime": {

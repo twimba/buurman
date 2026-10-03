@@ -1099,16 +1099,16 @@
     "countryLabel": "Pays",
     "unavailable": {
       "title": "Pas encore disponible",
-      "description": "Nous n'avons pas encore de bail pour ce pays. Vous pouvez gérer ce contrat et importer un bail déjà signé.",
+      "description": "Nous n'avons pas encore de bail pour ce pays. Vous pouvez tout de même gérer ce contrat et importer un bail déjà signé.",
       "action": "Aller aux Documents"
     },
     "noCountry": {
       "title": "Choisissez d'abord un pays",
-      "description": "Le bail dépend du pays. Ajoutez d'abord un pays à ce contrat.",
-      "action": "Modifier le contrat"
+      "description": "Le bail dépend du pays du bien. Ajoutez d'abord un pays au bien.",
+      "action": "Modifier le bien"
     },
     "error": {
-      "title": "Chargement impossible",
+      "title": "Clauses non chargées",
       "description": "Un problème est survenu de notre côté. Réessayez dans un instant.",
       "retry": "Réessayer"
     },

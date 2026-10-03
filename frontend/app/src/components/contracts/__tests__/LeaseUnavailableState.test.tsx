@@ -35,7 +35,7 @@ describe('LeaseUnavailableState', () => {
       screen.getByRole('heading', { name: 'Choose a country first' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Edit contract' })
+      screen.getByRole('button', { name: 'Edit property' })
     ).toBeInTheDocument();
   });
 

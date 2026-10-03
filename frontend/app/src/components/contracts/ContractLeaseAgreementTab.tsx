@@ -23,14 +23,14 @@ import {
 export interface ContractLeaseAgreementTabProps {
   contractId: string;
   onGoToDocuments: () => void;
-  /** Omit when the user cannot edit the contract; the action button is then hidden. */
-  onEditContract?: () => void;
+  /** Omit when the user cannot edit the property; the action button is then hidden. */
+  onEditProperty?: () => void;
 }
 
 export const ContractLeaseAgreementTab = ({
   contractId,
   onGoToDocuments,
-  onEditContract,
+  onEditProperty,
 }: ContractLeaseAgreementTabProps) => {
   const { t, i18n } = useTranslation('contracts');
   const {
@@ -40,7 +40,7 @@ export const ContractLeaseAgreementTab = ({
     refetch,
     isFetching,
   } = useLeaseClauses(contractId);
-  const clauses = envelope?.clauses;
+  const clauses = envelope ? (envelope.clauses ?? []) : undefined;
   const availability = envelope?.availability;
   const countryCode = envelope?.countryCode ?? undefined;
   const trackedReasons = useRef(new Set<string>());
@@ -206,7 +206,7 @@ export const ContractLeaseAgreementTab = ({
       )}
 
       {availability === LeaseAvailability.UNAVAILABLE_NO_COUNTRY && (
-        <LeaseUnavailableState reason="no-country" onAction={onEditContract} />
+        <LeaseUnavailableState reason="no-country" onAction={onEditProperty} />
       )}
 
       {availability === LeaseAvailability.AVAILABLE_EXAMPLE_TEXT && (

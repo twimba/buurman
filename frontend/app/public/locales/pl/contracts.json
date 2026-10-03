@@ -1113,22 +1113,22 @@
     "countryLabel": "Kraj",
     "unavailable": {
       "title": "Jeszcze niedostępne",
-      "description": "Nie mamy jeszcze umowy najmu dla tego kraju. Nadal możesz zarządzać tym kontraktem i przesłać już podpisaną umowę.",
+      "description": "Nie mamy jeszcze umowy najmu dla tego kraju. Nadal możesz zarządzać tą umową i przesłać już podpisaną umowę najmu.",
       "action": "Do Dokumentów"
     },
     "noCountry": {
       "title": "Najpierw wybierz kraj",
-      "description": "Umowa najmu zależy od kraju. Najpierw dodaj kraj do tego kontraktu.",
-      "action": "Edytuj kontrakt"
+      "description": "Umowa najmu zależy od kraju nieruchomości. Najpierw dodaj kraj do nieruchomości.",
+      "action": "Edytuj nieruchomość"
     },
     "error": {
-      "title": "Nie udało się wczytać",
+      "title": "Nie wczytano klauzul",
       "description": "Coś poszło nie tak po naszej stronie. Spróbuj ponownie za chwilę.",
       "retry": "Spróbuj ponownie"
     },
     "exampleNotice": {
-      "title": "To jest tekst przykładowy",
-      "description": "Dla tego kraju mamy tylko krótki wzór, a nie pełną umowę najmu. Zleć sprawdzenie własnej umowy, zanim ktoś ją podpisze."
+      "title": "To jest przykładowy tekst",
+      "description": "Dla tego kraju mamy tylko krótki przykład, a nie pełną umowę najmu. Zleć sprawdzenie własnej umowy, zanim ktoś ją podpisze."
     }
   },
   "leaseRegime": {

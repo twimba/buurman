@@ -1090,11 +1090,11 @@
     },
     "noCountry": {
       "title": "Vælg først et land",
-      "description": "Lejekontrakten afhænger af landet. Tilføj først et land til denne kontrakt.",
-      "action": "Rediger kontrakt"
+      "description": "Lejekontrakten afhænger af ejendommens land. Tilføj først et land til ejendommen.",
+      "action": "Rediger ejendom"
     },
     "error": {
-      "title": "Kunne ikke indlæse",
+      "title": "Klausuler blev ikke indlæst",
       "description": "Noget gik galt hos os. Prøv igen om lidt.",
       "retry": "Prøv igen"
     },

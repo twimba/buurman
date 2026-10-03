@@ -12,12 +12,17 @@ describe('formatCountryName', () => {
     expect(formatCountryName('it', 'en')).toBe('Italy');
   });
 
-  it('falls back to the code for malformed codes', () => {
-    expect(formatCountryName('not-a-code', 'en')).toBe('not-a-code');
+  it('returns an empty string for malformed codes', () => {
+    expect(formatCountryName('not-a-code', 'en')).toBe('');
   });
 
-  it('falls back to the code for an invalid language tag', () => {
-    expect(formatCountryName('IT', 'xx_invalid_')).toBe('IT');
+  it('returns an empty string for unassigned regions', () => {
+    expect(formatCountryName('ZZ', 'en')).toBe('');
+    expect(formatCountryName('XY', 'en')).toBe('');
+  });
+
+  it('returns an empty string for an invalid language tag', () => {
+    expect(formatCountryName('IT', 'xx_invalid_')).toBe('');
   });
 
   it('returns an empty string when there is no code', () => {

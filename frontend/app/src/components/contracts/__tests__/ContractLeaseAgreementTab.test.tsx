@@ -55,7 +55,7 @@ describe('ContractLeaseAgreementTab', () => {
         <ContractLeaseAgreementTab
           contractId="CON00000000000000000000001"
           onGoToDocuments={vi.fn()}
-          onEditContract={vi.fn()}
+          onEditProperty={vi.fn()}
         />
       </ToastProvider>
     );
@@ -81,7 +81,7 @@ describe('ContractLeaseAgreementTab', () => {
         <ContractLeaseAgreementTab
           contractId="CON00000000000000000000001"
           onGoToDocuments={vi.fn()}
-          onEditContract={vi.fn()}
+          onEditProperty={vi.fn()}
         />
       </ToastProvider>
     );
@@ -117,7 +117,7 @@ describe('ContractLeaseAgreementTab', () => {
         <ContractLeaseAgreementTab
           contractId="CON00000000000000000000001"
           onGoToDocuments={vi.fn()}
-          onEditContract={vi.fn()}
+          onEditProperty={vi.fn()}
         />
       </ToastProvider>
     );
@@ -169,7 +169,7 @@ describe('ContractLeaseAgreementTab', () => {
           <ContractLeaseAgreementTab
             contractId="CON00000000000000000000001"
             onGoToDocuments={vi.fn()}
-            onEditContract={vi.fn()}
+            onEditProperty={vi.fn()}
           />
         </ToastProvider>
       );
@@ -185,7 +185,7 @@ describe('ContractLeaseAgreementTab', () => {
               <ContractLeaseAgreementTab
                 contractId="CON00000000000000000000001"
                 onGoToDocuments={vi.fn()}
-                onEditContract={vi.fn()}
+                onEditProperty={vi.fn()}
               />
             </ToastProvider>
           </MemoryRouter>
@@ -421,14 +421,14 @@ describe('ContractLeaseAgreementTab', () => {
   describe('availability states', () => {
     const CONTRACT = 'CON00000000000000000000001';
     const renderTab = (
-      props: { onGoToDocuments?: () => void; onEditContract?: () => void } = {}
+      props: { onGoToDocuments?: () => void; onEditProperty?: () => void } = {}
     ) =>
       renderWithProviders(
         <ToastProvider>
           <ContractLeaseAgreementTab
             contractId={CONTRACT}
             onGoToDocuments={props.onGoToDocuments ?? vi.fn()}
-            onEditContract={props.onEditContract}
+            onEditProperty={props.onEditProperty}
           />
         </ToastProvider>
       );
@@ -461,22 +461,22 @@ describe('ContractLeaseAgreementTab', () => {
       expect(onGoToDocuments).toHaveBeenCalledTimes(1);
     });
 
-    it('shows the no-country panel and calls onEditContract', async () => {
+    it('shows the no-country panel and calls onEditProperty', async () => {
       vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
         availability: LeaseAvailability.UNAVAILABLE_NO_COUNTRY,
         clauses: [],
       });
-      const onEditContract = vi.fn();
-      renderTab({ onEditContract });
+      const onEditProperty = vi.fn();
+      renderTab({ onEditProperty });
 
       expect(
         await screen.findByRole('heading', { name: 'Choose a country first' })
       ).toBeInTheDocument();
       expect(screen.queryByText('Country')).toBeNull();
       await userEvent.click(
-        screen.getByRole('button', { name: 'Edit contract' })
+        screen.getByRole('button', { name: 'Edit property' })
       );
-      expect(onEditContract).toHaveBeenCalledTimes(1);
+      expect(onEditProperty).toHaveBeenCalledTimes(1);
     });
 
     it('hides the Edit contract button when no edit handler is available', async () => {
@@ -487,7 +487,7 @@ describe('ContractLeaseAgreementTab', () => {
       renderTab();
       await screen.findByRole('heading', { name: 'Choose a country first' });
       expect(
-        screen.queryByRole('button', { name: 'Edit contract' })
+        screen.queryByRole('button', { name: 'Edit property' })
       ).toBeNull();
     });
 
@@ -537,23 +537,89 @@ describe('ContractLeaseAgreementTab', () => {
       expect(screen.queryByRole('note')).toBeNull();
     });
 
-    it('tracks lease_unavailable_viewed once per reason', async () => {
-      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
-        availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
-        countryCode: 'IT',
-        clauses: [],
-      });
+    it('tracks lease_unavailable_viewed once even when the query refetches', async () => {
+      const getSpy = vi
+        .spyOn(leaseAgreementApi, 'getLeaseClauses')
+        .mockResolvedValue({
+          availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
+          countryCode: 'IT',
+          clauses: [],
+        });
       const track = vi
         .spyOn(analytics, 'trackEvent')
         .mockImplementation(() => {});
-      const { rerender } = renderTab();
+      const queryClient = createTestQueryClient();
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter>
+            <ToastProvider>
+              <ContractLeaseAgreementTab
+                contractId={CONTRACT}
+                onGoToDocuments={vi.fn()}
+              />
+            </ToastProvider>
+          </MemoryRouter>
+        </QueryClientProvider>
+      );
       await screen.findByRole('heading', { name: 'Not available here yet' });
       expect(track).toHaveBeenCalledTimes(1);
       expect(track).toHaveBeenCalledWith('lease_unavailable_viewed', {
         countryCode: 'IT',
         reason: 'unsupported_country',
       });
-      rerender(<div />);
+
+      await queryClient.invalidateQueries();
+      await waitFor(() => {
+        expect(getSpy).toHaveBeenCalledTimes(2);
+      });
+      expect(track).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      LeaseAvailability.AVAILABLE_DOCUMENT,
+      LeaseAvailability.AVAILABLE_EXAMPLE_TEXT,
+    ])(
+      'shows the empty text and a disabled Save for %s without clauses',
+      async (availability) => {
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+          availability,
+          countryCode: 'NL',
+          clauses: [],
+        });
+        renderTab();
+
+        expect(
+          await screen.findByText(/no clauses are configured/i)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save selection/i })
+        ).toBeDisabled();
+      }
+    );
+
+    it('hides the country row when an unavailable envelope has no country code', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+        availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
+        clauses: [],
+      });
+      renderTab();
+
+      await screen.findByRole('heading', { name: 'Not available here yet' });
+      expect(screen.queryByText('Country')).toBeNull();
+    });
+
+    it('does not fall into the error state when clauses is null', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+        availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
+        countryCode: 'IT',
+        clauses: null as unknown as ResolvedLeaseClauseResponse[],
+      });
+      renderTab();
+
+      expect(
+        await screen.findByRole('heading', { name: 'Not available here yet' })
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).toBeNull();
     });
   });
 });

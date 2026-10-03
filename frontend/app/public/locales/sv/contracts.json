@@ -1090,11 +1090,11 @@
     },
     "noCountry": {
       "title": "Välj land först",
-      "description": "Hyresavtalet beror på landet. Lägg först till ett land i det här kontraktet.",
-      "action": "Redigera kontrakt"
+      "description": "Hyresavtalet beror på fastighetens land. Lägg först till ett land för fastigheten.",
+      "action": "Redigera fastighet"
     },
     "error": {
-      "title": "Kunde inte läsa in",
+      "title": "Klausulerna lästes inte in",
       "description": "Något gick fel hos oss. Försök igen om en stund.",
       "retry": "Försök igen"
     },

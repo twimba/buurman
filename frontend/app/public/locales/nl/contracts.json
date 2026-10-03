@@ -1085,22 +1085,22 @@
     "countryLabel": "Land",
     "unavailable": {
       "title": "Nog niet beschikbaar",
-      "description": "We hebben nog geen huurovereenkomst voor dit land. Je kunt dit contract wel beheren en een al getekende huurovereenkomst uploaden.",
+      "description": "We hebben nog geen huurovereenkomst voor dit land. U kunt dit contract wel beheren en een al getekende huurovereenkomst uploaden.",
       "action": "Naar Documenten"
     },
     "noCountry": {
       "title": "Kies eerst een land",
-      "description": "De huurovereenkomst hangt af van het land. Voeg eerst een land toe aan dit contract.",
-      "action": "Contract bewerken"
+      "description": "De huurovereenkomst hangt af van het land van het pand. Voeg eerst een land toe aan het pand.",
+      "action": "Pand bewerken"
     },
     "error": {
-      "title": "Laden is niet gelukt",
+      "title": "Clausules laden mislukt",
       "description": "Er ging iets mis aan onze kant. Probeer het zo meteen opnieuw.",
       "retry": "Opnieuw proberen"
     },
     "exampleNotice": {
       "title": "Dit is voorbeeldtekst",
-      "description": "Voor dit land hebben we alleen een korte voorbeeldtekst, geen volledige huurovereenkomst. Laat je eigen overeenkomst controleren voordat iemand tekent."
+      "description": "Voor dit land hebben we alleen een korte voorbeeldtekst, geen volledige huurovereenkomst. Laat uw eigen huurovereenkomst controleren voordat iemand tekent."
     }
   },
   "leaseRegime": {

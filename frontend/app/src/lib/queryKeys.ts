@@ -111,6 +111,8 @@ export const queryKeys = {
     ) => k('contractTerminationPreview', contractId, givenBy, noticeDate),
     leaseClauses: (contractId?: string) =>
       k('contractLeaseClauses', contractId),
+    /** Prefix of every contract's lease-clauses query, for cross-contract invalidation. */
+    leaseClausesAll: () => k('contractLeaseClauses'),
   },
 
   // --- Signature Requests ---
