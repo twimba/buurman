@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractLeaseClause;
@@ -46,7 +47,12 @@ public class LeaseClauseService {
     return resolver.resolve(contract, contractLocale(contract));
   }
 
+  // ContractLeaseClauseRepository.replaceForContract() hard-deletes every existing override and
+  // re-inserts the new set row by row — without a surrounding transaction, a failure partway
+  // through the inserts would leave the contract with zero overrides (silently reverting every
+  // clause to its template default) rather than either the old or the new set intact.
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  @Transactional
   public List<ResolvedLeaseClauseResponse> updateClauses(
       ContractIdentifier contractIdentifier,
       UpdateContractLeaseClausesRequest request,
