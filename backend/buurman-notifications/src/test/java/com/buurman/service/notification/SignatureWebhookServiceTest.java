@@ -418,6 +418,24 @@ class SignatureWebhookServiceTest {
                 r -> r.getStatus() == SignatureRequestStatus.COMPLETED));
   }
 
+  @Test
+  @DisplayName(
+      "a duplicate DOCUMENT_COMPLETED for an already-COMPLETED request does not re-download or"
+          + " re-save")
+  void duplicateCompletedEventOnAlreadyCompletedRequestIsANoop() {
+    when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
+            "documenso", "envelope_abc123"))
+        .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.COMPLETED)));
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+        .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
+
+    service.processDocumensoEvent(completedEventPayload(), "secret");
+
+    verify(providerClient, never()).downloadCompleted(any());
+    verify(documentRepository, never()).save(any());
+    verify(signatureRequestRepository, never()).save(any());
+  }
+
   private void assertThatThrownByProcessing(String payload, String secret) {
     org.assertj.core.api.Assertions.assertThatThrownBy(
             () -> service.processDocumensoEvent(payload, secret))

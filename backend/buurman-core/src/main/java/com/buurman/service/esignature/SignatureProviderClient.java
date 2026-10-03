@@ -11,6 +11,13 @@ import org.jspecify.annotations.Nullable;
  */
 public interface SignatureProviderClient {
 
+  /**
+   * The {@code signature_requests.provider} value for the only implementation today. Shared so
+   * callers that persist or query by provider (e.g. webhook lookups) don't each hardcode the
+   * literal.
+   */
+  String PROVIDER_DOCUMENSO = "documenso";
+
   /** Uploads the PDF, adds the given signers, and sends it for signature (all in parallel). */
   SignatureSubmission createSubmission(
       byte[] pdfBytes, String fileName, List<SignerRequest> signers);

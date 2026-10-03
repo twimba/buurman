@@ -50,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SignatureService {
 
-  private static final String PROVIDER = "documenso";
+  private static final String PROVIDER = SignatureProviderClient.PROVIDER_DOCUMENSO;
 
   private static final java.util.Set<SignatureRequestStatus> TERMINAL_STATUSES =
       java.util.Set.of(

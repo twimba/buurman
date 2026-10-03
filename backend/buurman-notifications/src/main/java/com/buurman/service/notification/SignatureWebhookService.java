@@ -93,7 +93,8 @@ public class SignatureWebhookService {
     }
 
     Optional<SignatureRequest> maybeRequest =
-        signatureRequestRepository.findByProviderAndProviderSubmissionId("documenso", envelopeId);
+        signatureRequestRepository.findByProviderAndProviderSubmissionId(
+            SignatureProviderClient.PROVIDER_DOCUMENSO, envelopeId);
     if (maybeRequest.isEmpty()) {
       log.debug("Documenso webhook for unknown envelope {} — ignoring", envelopeId);
       return;
