@@ -56,6 +56,7 @@ public class SignatureRequestRepository {
       request.setUpdatedAt(now.toInstant(UTC));
     } else {
       dsl.update(SIGNATURE_REQUESTS)
+          .set(SIGNATURE_REQUESTS.PROVIDER_SUBMISSION_ID, request.getProviderSubmissionId())
           .set(SIGNATURE_REQUESTS.SIGNED_DOCUMENT_ID, request.getSignedDocumentId().orElse(null))
           .set(SIGNATURE_REQUESTS.STATUS, request.getStatus().name())
           .set(SIGNATURE_REQUESTS.UPDATED_AT, now)

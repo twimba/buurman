@@ -85,4 +85,31 @@ class SignatureRequestRepositoryIntegrationTest extends AbstractRepositoryIntegr
     assertThat(reloaded.getStatus()).isEqualTo(SignatureRequestStatus.COMPLETED);
     assertThat(reloaded.getSignedDocumentId()).contains(teamADocumentId);
   }
+
+  @Test
+  @DisplayName(
+      "save() on an existing request persists a changed providerSubmissionId — "
+          + "SignatureService.createSignatureRequest inserts a \"pending-<uuid>\" placeholder,"
+          + " then updates it to the real provider envelope id once the provider call succeeds;"
+          + " an update that silently drops this column leaves every row stuck on the"
+          + " placeholder forever, so findByProviderAndProviderSubmissionId (what webhook"
+          + " processing looks up by) can never match an incoming webhook to this request")
+  void updatePersistsChangedProviderSubmissionId() {
+    SignatureRequest saved = repository.save(newRequest(TEAM_A_ID, teamADocumentId));
+    String placeholderId = saved.getProviderSubmissionId();
+
+    String realEnvelopeId = "envelope_" + UUID.randomUUID();
+    saved.setProviderSubmissionId(realEnvelopeId);
+    repository.save(saved);
+
+    SignatureRequest reloaded =
+        repository.getByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_A_ID);
+    assertThat(reloaded.getProviderSubmissionId()).isEqualTo(realEnvelopeId);
+    assertThat(reloaded.getProviderSubmissionId()).isNotEqualTo(placeholderId);
+
+    assertThat(repository.findByProviderAndProviderSubmissionId("documenso", realEnvelopeId))
+        .isPresent();
+    assertThat(repository.findByProviderAndProviderSubmissionId("documenso", placeholderId))
+        .isEmpty();
+  }
 }
