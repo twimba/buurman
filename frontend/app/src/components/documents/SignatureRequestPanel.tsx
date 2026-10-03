@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import { PenLine } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { PenLine, Ban, AlertTriangle, X } from 'lucide-react';
 import { SignatureStatusBadge } from './SignatureStatusBadge';
 import {
   useSignatureRequest,
   useSignatureRequests,
   useCreateSignatureRequest,
+  useCancelSignatureRequest,
 } from '@/hooks/useSignatureRequestHooks';
 import type { SignatureRequestResponse } from '@/generated/models';
-import { LoadingSpinner } from '@buurman/ui';
+import { Button, LoadingSpinner } from '@buurman/ui';
 
 interface SignatureRequestPanelProps {
   contractId: string;
@@ -25,12 +26,117 @@ const RESUMABLE_STATUSES: SignatureRequestResponse['status'][] = [
   'COMPLETED',
 ];
 
+/** Only a request still in flight can be retracted — everything else already has a final outcome. */
+const CANCELLABLE_STATUSES: SignatureRequestResponse['status'][] = [
+  'PENDING',
+  'PARTIALLY_SIGNED',
+];
+
+const CancelSignatureRequestModal = ({
+  isLoading,
+  onConfirm,
+  onCancel,
+}: {
+  isLoading: boolean;
+  onConfirm: (reason: string) => void;
+  onCancel: () => void;
+}) => {
+  const [reason, setReason] = useState('');
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    cancelRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onCancel();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onCancel]);
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onCancel}>
+      <div className="flex items-center justify-center min-h-[100dvh] px-4 py-8">
+        <div className="fixed inset-0 bg-surface-overlay backdrop-blur-sm" />
+        <div
+          className="relative bg-surface-card rounded-lg shadow-xl w-full max-w-md"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="px-6 pt-6 pb-2">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-error-bg">
+                <AlertTriangle className="h-5 w-5 text-error-text" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-text-primary">
+                  Retract signature request
+                </h3>
+                <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                  Signers will no longer be able to sign this document. You can
+                  send it for signature again afterwards.
+                </p>
+              </div>
+              <button
+                onClick={onCancel}
+                className="flex-shrink-0 p-1 text-text-muted hover:text-text-primary rounded transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="px-6 py-4">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Reason (optional)
+            </label>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="e.g. Tenant backed out, document needs a correction..."
+              rows={3}
+              maxLength={500}
+              disabled={isLoading}
+              className="w-full border border-border-strong rounded px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="px-6 py-4 flex justify-end gap-3">
+            <Button
+              ref={cancelRef}
+              variant="secondary"
+              size="md"
+              onClick={onCancel}
+              disabled={isLoading}
+            >
+              Keep request
+            </Button>
+            <Button
+              variant="danger"
+              size="md"
+              onClick={() => onConfirm(reason.trim())}
+              disabled={isLoading}
+            >
+              Retract
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const SignatureRequestPanel = ({
   contractId,
   documentId,
 }: SignatureRequestPanelProps) => {
   const [createdRequestId, setCreatedRequestId] = useState<string>();
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const createMutation = useCreateSignatureRequest(contractId);
+  const cancelMutation = useCancelSignatureRequest(contractId, documentId);
 
   // Without this the panel only ever knew about a request it created itself in this page's
   // lifetime, so after a reload it offered "Send for signature" again on a document that was
@@ -59,6 +165,16 @@ export const SignatureRequestPanel = ({
     setCreatedRequestId(created.identifier);
   };
 
+  const handleConfirmCancel = (reason: string) => {
+    if (!activeRequestId) {
+      return;
+    }
+    cancelMutation.mutate(
+      { signatureRequestId: activeRequestId, reason: reason || undefined },
+      { onSuccess: () => setShowCancelModal(false) }
+    );
+  };
+
   if (!activeRequestId) {
     if (isLoadingExisting) {
       return <LoadingSpinner className="p-0" />;
@@ -68,10 +184,10 @@ export const SignatureRequestPanel = ({
         type="button"
         onClick={handleSend}
         disabled={createMutation.isPending}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary-500 hover:bg-primary-50 rounded-md transition-colors disabled:opacity-50"
+        className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors disabled:opacity-50"
+        title="Send for signature"
       >
         <PenLine className="h-4 w-4" />
-        {createMutation.isPending ? 'Sending…' : 'Send for signature'}
       </button>
     );
   }
@@ -92,6 +208,23 @@ export const SignatureRequestPanel = ({
         {shown.signers.filter((s) => s.status === 'SIGNED').length}/
         {shown.signers.length} signed
       </span>
+      {CANCELLABLE_STATUSES.includes(shown.status) && (
+        <button
+          type="button"
+          onClick={() => setShowCancelModal(true)}
+          className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
+          title="Retract signature request"
+        >
+          <Ban className="h-4 w-4" />
+        </button>
+      )}
+      {showCancelModal && (
+        <CancelSignatureRequestModal
+          isLoading={cancelMutation.isPending}
+          onConfirm={handleConfirmCancel}
+          onCancel={() => setShowCancelModal(false)}
+        />
+      )}
     </div>
   );
 };

@@ -51,6 +51,13 @@ public class SignatureService {
 
   private static final String PROVIDER = "documenso";
 
+  private static final java.util.Set<SignatureRequestStatus> TERMINAL_STATUSES =
+      java.util.Set.of(
+          SignatureRequestStatus.COMPLETED,
+          SignatureRequestStatus.DECLINED,
+          SignatureRequestStatus.CANCELLED,
+          SignatureRequestStatus.FAILED);
+
   private final FeatureFlagService featureFlagService;
   private final DocumentRepository documentRepository;
   private final ContractRepository contractRepository;
@@ -270,6 +277,54 @@ public class SignatureService {
                     resolvedDocumentIdentifier,
                     signatureSignerRepository.findBySignatureRequestId(request.getId())))
         .toList();
+  }
+
+  /**
+   * Retracts a request that has not yet reached a final state. The provider call happens before the
+   * local status flip, same reasoning as {@link #createSignatureRequest}: if Documenso is
+   * unreachable the request must stay exactly as it was, not silently show as CANCELLED locally
+   * while the signers can still sign it.
+   */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public SignatureRequestResponse cancelSignatureRequest(
+      ContractIdentifier contractIdentifier,
+      DocumentIdentifier documentIdentifier,
+      SignatureRequestIdentifier signatureRequestIdentifier,
+      Optional<String> reason,
+      UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    // contractIdentifier/documentIdentifier are path parameters used only for team-scoped
+    // routing, same as getSignatureRequest — the request is looked up by its own identifier.
+    SignatureRequest request =
+        signatureRequestRepository.getByIdentifierAndTeamId(signatureRequestIdentifier, teamId);
+
+    if (TERMINAL_STATUSES.contains(request.getStatus())) {
+      throw new BusinessRuleException(
+          "This signature request is already "
+              + request.getStatus().name().toLowerCase(Locale.ROOT)
+              + " and can no longer be cancelled");
+    }
+
+    try {
+      providerClient.cancelSubmission(request.getProviderSubmissionId(), reason.orElse(null));
+    } catch (RuntimeException e) {
+      throw new ExternalServiceException(
+          "We couldn't retract this signature request. Please try again in a few minutes — if"
+              + " it keeps happening, contact support.",
+          e);
+    }
+
+    request.setStatus(SignatureRequestStatus.CANCELLED);
+    request.setUpdatedBy(principal.getUserId());
+    signatureRequestRepository.save(request);
+
+    List<SignatureSigner> signers =
+        signatureSignerRepository.findBySignatureRequestId(request.getId());
+    Sid resolvedDocumentIdentifier = resolveDocumentIdentifier(request.getDocumentId(), teamId);
+
+    log.info("Cancelled signature request {}", request.getIdentifier().orElseThrow().value());
+
+    return toResponse(request, resolvedDocumentIdentifier, signers);
   }
 
   private Sid resolveDocumentIdentifier(UUID documentId, UUID teamId) {

@@ -41,6 +41,9 @@ class DocumensoClientTest {
           + "\"recipients\":[{\"id\":1,\"email\":\"tenant@example.com\"},"
           + "{\"id\":2,\"email\":\"a@example.com\"}]}";
   private volatile @Nullable String capturedFieldsBody;
+  private volatile @Nullable String capturedCancelBody;
+  private volatile int cancelStatus = 200;
+  private volatile String cancelResponse = "{\"success\":true}";
   private final List<String> capturedFieldsBodies = new ArrayList<>();
   private final AtomicInteger fieldsCallCount = new AtomicInteger();
 
@@ -118,6 +121,17 @@ class DocumensoClientTest {
           byte[] pdf = "%PDF-1.7\nsigned".getBytes(StandardCharsets.UTF_8);
           exchange.sendResponseHeaders(200, pdf.length);
           exchange.getResponseBody().write(pdf);
+          exchange.close();
+        });
+    server.createContext(
+        "/api/v2/envelope/cancel",
+        exchange -> {
+          capturedCancelBody =
+              new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.ISO_8859_1);
+          byte[] body = cancelResponse.getBytes(StandardCharsets.UTF_8);
+          exchange.getResponseHeaders().set("Content-Type", "application/json");
+          exchange.sendResponseHeaders(cancelStatus, body.length);
+          exchange.getResponseBody().write(body);
           exchange.close();
         });
     server.createContext(
@@ -317,6 +331,34 @@ class DocumensoClientTest {
     assertThat(c.isValidWebhookSecret(null)).isFalse();
     assertThat(c.isValidWebhookSecret("anything")).isFalse();
     assertThat(c.isValidWebhookSecret("")).isFalse();
+  }
+
+  @Test
+  @DisplayName("cancelSubmission posts envelopeId and reason, succeeds on success:true")
+  void cancelSubmissionPostsReason() {
+    client("secret").cancelSubmission("envelope_abc123", "Tenant moved out before signing");
+
+    assertThat(capturedCancelBody)
+        .contains("\"envelopeId\":\"envelope_abc123\"")
+        .contains("\"reason\":\"Tenant moved out before signing\"");
+  }
+
+  @Test
+  @DisplayName("cancelSubmission omits reason from the payload when none is given")
+  void cancelSubmissionOmitsBlankReason() {
+    client("secret").cancelSubmission("envelope_abc123", null);
+
+    assertThat(capturedCancelBody)
+        .contains("\"envelopeId\":\"envelope_abc123\"")
+        .doesNotContain("reason");
+  }
+
+  @Test
+  @DisplayName("cancelSubmission failure (success:false) maps to ExternalServiceException")
+  void cancelSubmissionFailureMapsToExternalServiceException() {
+    cancelResponse = "{\"success\":false}";
+    assertThatThrownBy(() -> client("secret").cancelSubmission("envelope_abc123", null))
+        .isInstanceOf(ExternalServiceException.class);
   }
 
   @Test

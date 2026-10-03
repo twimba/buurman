@@ -90,9 +90,7 @@ export const DocumentList = ({
   );
   const [editingDocument, setEditingDocument] =
     useState<DocumentResponse | null>(null);
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set()
-  );
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   // Documents generated from another one (a signed copy, a signing certificate) are grouped
   // under that original instead of shown as unrelated flat rows — collapsed by default so a
@@ -326,10 +324,7 @@ export const DocumentList = ({
   const renderGroupToggleRow = (doc: DocumentResponse, count: number) => {
     const isExpanded = expandedGroups.has(doc.identifier);
     return (
-      <tr
-        key={`toggle-${doc.identifier}`}
-        className="hover:bg-surface-inset"
-      >
+      <tr key={`toggle-${doc.identifier}`} className="hover:bg-surface-inset">
         <td className="px-6 py-1.5" />
         <td colSpan={4} className="px-6 py-1.5">
           <button

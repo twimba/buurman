@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,6 +10,7 @@ import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.SignatureRequestIdentifier;
 import com.buurman.dto.response.SignatureRequestResponse;
 import com.buurman.generated.api.SignaturesApi;
+import com.buurman.generated.model.CancelSignatureRequestRequest;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.esignature.SignatureService;
@@ -36,6 +38,19 @@ public class SignatureController implements SignaturesApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return signatureService.listSignatureRequests(
         contractIdentifier, documentIdentifier, principal);
+  }
+
+  @Override
+  public SignatureRequestResponse cancelSignatureRequest(
+      ContractIdentifier contractIdentifier,
+      DocumentIdentifier documentIdentifier,
+      SignatureRequestIdentifier signatureRequestIdentifier,
+      Optional<CancelSignatureRequestRequest> cancelSignatureRequestRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    Optional<String> reason =
+        cancelSignatureRequestRequest.map(CancelSignatureRequestRequest::getReason);
+    return signatureService.cancelSignatureRequest(
+        contractIdentifier, documentIdentifier, signatureRequestIdentifier, reason, principal);
   }
 
   @Override

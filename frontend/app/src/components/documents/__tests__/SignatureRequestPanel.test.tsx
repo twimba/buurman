@@ -125,4 +125,108 @@ describe('SignatureRequestPanel', () => {
       await screen.findByRole('button', { name: /send for signature/i })
     ).toBeInTheDocument();
   });
+
+  it('offers to retract a request that is still pending, and sends the typed reason', async () => {
+    vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([
+      {
+        identifier: 'SGR00000000000000000000011',
+        documentIdentifier: 'DOC00000000000000000000001',
+        status: 'PENDING',
+        signers: [
+          { email: 'tenant@example.com', role: 'TENANT', status: 'PENDING' },
+        ],
+        createdAt: '2026-03-01T12:00:00Z',
+        updatedAt: '2026-03-01T12:00:00Z',
+      },
+    ]);
+    vi.spyOn(signaturesApi, 'getSignatureRequest').mockResolvedValue({
+      identifier: 'SGR00000000000000000000011',
+      documentIdentifier: 'DOC00000000000000000000001',
+      status: 'PENDING',
+      signers: [
+        { email: 'tenant@example.com', role: 'TENANT', status: 'PENDING' },
+      ],
+      createdAt: '2026-03-01T12:00:00Z',
+      updatedAt: '2026-03-01T12:00:00Z',
+    });
+    const cancelSpy = vi
+      .spyOn(signaturesApi, 'cancelSignatureRequest')
+      .mockResolvedValue({
+        identifier: 'SGR00000000000000000000011',
+        documentIdentifier: 'DOC00000000000000000000001',
+        status: 'CANCELLED',
+        signers: [
+          { email: 'tenant@example.com', role: 'TENANT', status: 'PENDING' },
+        ],
+        createdAt: '2026-03-01T12:00:00Z',
+        updatedAt: '2026-03-01T12:10:00Z',
+      });
+
+    renderWithProviders(
+      <ToastProvider>
+        <SignatureRequestPanel
+          contractId="CON00000000000000000000001"
+          documentId="DOC00000000000000000000001"
+        />
+      </ToastProvider>
+    );
+
+    const retractButton = await screen.findByRole('button', {
+      name: /retract signature request/i,
+    });
+    await userEvent.click(retractButton);
+
+    const reasonField =
+      await screen.findByPlaceholderText(/tenant backed out/i);
+    await userEvent.type(reasonField, 'Tenant moved out');
+    await userEvent.click(screen.getByRole('button', { name: /^retract$/i }));
+
+    await waitFor(() => {
+      expect(cancelSpy).toHaveBeenCalledWith(
+        'CON00000000000000000000001',
+        'DOC00000000000000000000001',
+        'SGR00000000000000000000011',
+        { reason: 'Tenant moved out' }
+      );
+    });
+  });
+
+  it('does not offer to retract a request that already reached a final state', async () => {
+    vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([
+      {
+        identifier: 'SGR00000000000000000000012',
+        documentIdentifier: 'DOC00000000000000000000001',
+        status: 'COMPLETED',
+        signers: [
+          { email: 'tenant@example.com', role: 'TENANT', status: 'SIGNED' },
+        ],
+        createdAt: '2026-03-01T12:00:00Z',
+        updatedAt: '2026-03-01T12:00:00Z',
+      },
+    ]);
+    vi.spyOn(signaturesApi, 'getSignatureRequest').mockResolvedValue({
+      identifier: 'SGR00000000000000000000012',
+      documentIdentifier: 'DOC00000000000000000000001',
+      status: 'COMPLETED',
+      signers: [
+        { email: 'tenant@example.com', role: 'TENANT', status: 'SIGNED' },
+      ],
+      createdAt: '2026-03-01T12:00:00Z',
+      updatedAt: '2026-03-01T12:00:00Z',
+    });
+
+    renderWithProviders(
+      <ToastProvider>
+        <SignatureRequestPanel
+          contractId="CON00000000000000000000001"
+          documentId="DOC00000000000000000000001"
+        />
+      </ToastProvider>
+    );
+
+    expect(await screen.findByText('Signed')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /retract signature request/i })
+    ).not.toBeInTheDocument();
+  });
 });

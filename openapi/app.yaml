@@ -5175,6 +5175,76 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}/cancel:
+    post:
+      tags:
+        - Signatures
+      summary: Retract a signature request
+      description: Cancels a signature request that has not yet completed — the signers can no longer sign it, and the provider's audit trail (and, where supported, the signers themselves) is told why
+      operationId: cancelSignatureRequest
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: documentIdentifier
+          in: path
+          description: Document identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DocumentIdentifier'
+        - name: signatureRequestIdentifier
+          in: path
+          description: Signature request identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/SignatureRequestIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelSignatureRequestRequest'
+      responses:
+        "200":
+          description: Signature request cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureRequestResponse'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - the request already reached a final state and can no longer be cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     put:
       tags:
@@ -25207,6 +25277,12 @@ components:
           type: string
         notes:
           type: string
+        sourceDocumentIdentifier:
+          type: string
+          description: >-
+            The original document this one was generated from (e.g. a signed copy or signing
+            certificate), so the UI can group it under that document. Absent for everything
+            else, including the original itself.
         uploadedAt:
           type: string
           format: date-time
@@ -25292,6 +25368,14 @@ components:
         - signers
         - createdAt
         - updatedAt
+    CancelSignatureRequestRequest:
+      type: object
+      description: Retracts a signature request before it completes
+      properties:
+        reason:
+          type: string
+          description: Shown to the provider's audit trail and, where supported, the signers themselves
+          maxLength: 500
     ResolvedLeaseClauseResponse:
       type: object
       description: A lease clause template resolved against a contract, with per-contract inclusion state

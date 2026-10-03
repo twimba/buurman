@@ -400,6 +400,119 @@ class SignatureServiceTest {
   }
 
   @Test
+  @DisplayName("cancelSignatureRequest calls the provider, then flips the request to CANCELLED")
+  void cancelSignatureRequestCancelsPendingRequest() {
+    UUID requestId = UUID.randomUUID();
+    com.buurman.domain.SignatureRequest existingRequest =
+        com.buurman.domain.SignatureRequest.builder()
+            .id(requestId)
+            .identifier(Optional.of(Sid.of("SGR00000000000000000000010")))
+            .teamId(TEAM_ID)
+            .documentId(DOCUMENT_ID)
+            .provider("documenso")
+            .providerSubmissionId("envelope_cancel")
+            .status(SignatureRequestStatus.PENDING)
+            .updatedBy(USER_ID)
+            .build();
+    when(signatureRequestRepository.getByIdentifierAndTeamId(
+            any(SignatureRequestIdentifier.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(existingRequest);
+    when(signatureRequestRepository.save(any()))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+    when(signatureSignerRepository.findBySignatureRequestId(requestId)).thenReturn(List.of());
+    Document document =
+        Document.builder()
+            .id(DOCUMENT_ID)
+            .teamId(TEAM_ID)
+            .identifier(Optional.of(Sid.of("DOC00000000000000000000001")))
+            .fileKey("k")
+            .fileName("addendum.pdf")
+            .build();
+    when(documentRepository.findByIdAndTeamId(DOCUMENT_ID, TEAM_ID))
+        .thenReturn(Optional.of(document));
+
+    var response =
+        service.cancelSignatureRequest(
+            ContractIdentifier.of("CON00000000000000000000001"),
+            DocumentIdentifier.of("DOC00000000000000000000001"),
+            SignatureRequestIdentifier.of("SGR00000000000000000000010"),
+            Optional.of("Tenant backed out"),
+            principal);
+
+    assertThat(response.status()).isEqualTo(SignatureRequestStatus.CANCELLED);
+    org.mockito.Mockito.verify(providerClient)
+        .cancelSubmission("envelope_cancel", "Tenant backed out");
+  }
+
+  @Test
+  @DisplayName("cancelSignatureRequest rejects a request that already reached a final state")
+  void cancelSignatureRequestRejectsTerminalRequest() {
+    com.buurman.domain.SignatureRequest completedRequest =
+        com.buurman.domain.SignatureRequest.builder()
+            .id(UUID.randomUUID())
+            .identifier(Optional.of(Sid.of("SGR00000000000000000000011")))
+            .teamId(TEAM_ID)
+            .documentId(DOCUMENT_ID)
+            .provider("documenso")
+            .providerSubmissionId("envelope_done")
+            .status(SignatureRequestStatus.COMPLETED)
+            .build();
+    when(signatureRequestRepository.getByIdentifierAndTeamId(
+            any(SignatureRequestIdentifier.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(completedRequest);
+
+    assertThatThrownBy(
+            () ->
+                service.cancelSignatureRequest(
+                    ContractIdentifier.of("CON00000000000000000000001"),
+                    DocumentIdentifier.of("DOC00000000000000000000001"),
+                    SignatureRequestIdentifier.of("SGR00000000000000000000011"),
+                    Optional.empty(),
+                    principal))
+        .isInstanceOf(BusinessRuleException.class);
+
+    verifyNoInteractions(providerClient);
+  }
+
+  @Test
+  @DisplayName(
+      "cancelSignatureRequest leaves the request untouched and hides the provider's name when"
+          + " the provider call fails")
+  void cancelSignatureRequestWrapsProviderFailure() {
+    com.buurman.domain.SignatureRequest existingRequest =
+        com.buurman.domain.SignatureRequest.builder()
+            .id(UUID.randomUUID())
+            .identifier(Optional.of(Sid.of("SGR00000000000000000000012")))
+            .teamId(TEAM_ID)
+            .documentId(DOCUMENT_ID)
+            .provider("documenso")
+            .providerSubmissionId("envelope_fail")
+            .status(SignatureRequestStatus.PENDING)
+            .build();
+    when(signatureRequestRepository.getByIdentifierAndTeamId(
+            any(SignatureRequestIdentifier.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(existingRequest);
+    org.mockito.Mockito.doThrow(new ExternalServiceException("Documenso unreachable"))
+        .when(providerClient)
+        .cancelSubmission("envelope_fail", null);
+
+    assertThatThrownBy(
+            () ->
+                service.cancelSignatureRequest(
+                    ContractIdentifier.of("CON00000000000000000000001"),
+                    DocumentIdentifier.of("DOC00000000000000000000001"),
+                    SignatureRequestIdentifier.of("SGR00000000000000000000012"),
+                    Optional.empty(),
+                    principal))
+        .isInstanceOf(ExternalServiceException.class)
+        .hasMessageNotContaining("Documenso")
+        .cause()
+        .hasMessageContaining("Documenso unreachable");
+
+    org.mockito.Mockito.verify(signatureRequestRepository, org.mockito.Mockito.never()).save(any());
+  }
+
+  @Test
   @DisplayName(
       "dedupes signer emails when two contract parties resolve to the same email"
           + " (case-insensitive)")

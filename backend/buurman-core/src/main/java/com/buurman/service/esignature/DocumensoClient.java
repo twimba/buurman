@@ -290,6 +290,33 @@ public class DocumensoClient implements SignatureProviderClient {
   }
 
   @Override
+  public void cancelSubmission(String providerSubmissionId, @Nullable String reason) {
+    Map<String, Object> payload =
+        reason == null || reason.isBlank()
+            ? Map.of("envelopeId", providerSubmissionId)
+            : Map.of("envelopeId", providerSubmissionId, "reason", reason);
+    try {
+      String responseBody =
+          client
+              .post()
+              .uri("/envelope/cancel")
+              .contentType(MediaType.APPLICATION_JSON)
+              .body(payload)
+              .retrieve()
+              .body(String.class);
+      JsonNode response = readTree(responseBody);
+      if (response == null || !response.path("success").asBoolean(false)) {
+        throw new ExternalServiceException(
+            "Documenso failed to cancel envelope " + providerSubmissionId);
+      }
+    } catch (ExternalServiceException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new ExternalServiceException("Documenso cancel failed for " + providerSubmissionId, e);
+    }
+  }
+
+  @Override
   public boolean isValidWebhookSecret(@Nullable String providedSecret) {
     if (webhookSecret == null || webhookSecret.isBlank()) {
       // Fail closed. Unlike Mailgun/Twilio (delivery-status-only webhooks), a forged Documenso

@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMutationWithToast } from './useMutationWithToast';
 import {
+  cancelSignatureRequest,
   createSignatureRequest,
   getSignatureRequest,
   listSignatureRequests,
@@ -65,6 +66,34 @@ export const useCreateSignatureRequest = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.documents(contractId),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.signatureRequests.all(contractId, documentId),
+      });
+    },
+  });
+};
+
+export const useCancelSignatureRequest = (
+  contractId: string,
+  documentId: string
+) => {
+  const queryClient = useQueryClient();
+  return useMutationWithToast({
+    successMessage: 'Signature request retracted',
+    mutationFn: ({
+      signatureRequestId,
+      reason,
+    }: {
+      signatureRequestId: string;
+      reason?: string;
+    }) =>
+      cancelSignatureRequest(
+        contractId,
+        documentId,
+        signatureRequestId,
+        reason ? { reason } : undefined
+      ),
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.signatureRequests.all(contractId, documentId),
       });

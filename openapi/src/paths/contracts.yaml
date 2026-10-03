@@ -2681,6 +2681,77 @@ signature-requests-item:
     security:
       - bearer-jwt: []
 
+signature-requests-item-cancel:
+  post:
+    tags:
+      - Signatures
+    summary: Retract a signature request
+    description: Cancels a signature request that has not yet completed — the signers can no longer sign it, and the provider's audit trail (and, where supported, the signers themselves) is told why
+    operationId: cancelSignatureRequest
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+      - name: signatureRequestIdentifier
+        in: path
+        description: Signature request identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/SignatureRequestIdentifier'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CancelSignatureRequestRequest'
+    responses:
+      "200":
+        description: Signature request cancelled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequestResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - the request already reached a final state and can no longer be cancelled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 lease-clauses:
   get:
     tags:

@@ -18,6 +18,9 @@ public interface SignatureProviderClient {
   /** Fetches the final signed PDF and its audit certificate once every signer has signed. */
   SignedDocument downloadCompleted(String providerSubmissionId);
 
+  /** Cancels a pending submission so its signers can no longer sign it. */
+  void cancelSubmission(String providerSubmissionId, @Nullable String reason);
+
   /** Validates a webhook's shared-secret header against the configured secret. */
   boolean isValidWebhookSecret(@Nullable String providedSecret);
 }
