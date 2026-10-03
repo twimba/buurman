@@ -1081,8 +1081,8 @@
     "saveSelection": "Gem valg",
     "generate": "Generer lejekontrakt",
     "pinned": "Fastlåst",
-    "moveUp": "Flyt op",
-    "moveDown": "Flyt ned"
+    "moveUp": "Flyt {{title}} op",
+    "moveDown": "Flyt {{title}} ned"
   },
   "leaseRegime": {
     "STANDARD": "Standard",

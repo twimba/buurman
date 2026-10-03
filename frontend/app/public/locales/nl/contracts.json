@@ -1081,8 +1081,8 @@
     "saveSelection": "Selectie opslaan",
     "generate": "Huurovereenkomst genereren",
     "pinned": "Vastgezet",
-    "moveUp": "Omhoog",
-    "moveDown": "Omlaag"
+    "moveUp": "{{title}} omhoog verplaatsen",
+    "moveDown": "{{title}} omlaag verplaatsen"
   },
   "leaseRegime": {
     "STANDARD": "Standaard",

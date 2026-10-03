@@ -1081,8 +1081,8 @@
     "saveSelection": "Auswahl speichern",
     "generate": "Mietvertrag erstellen",
     "pinned": "Fixiert",
-    "moveUp": "Nach oben",
-    "moveDown": "Nach unten"
+    "moveUp": "{{title}} nach oben verschieben",
+    "moveDown": "{{title}} nach unten verschieben"
   },
   "leaseRegime": {
     "STANDARD": "Standard",

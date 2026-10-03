@@ -1095,8 +1095,8 @@
     "saveSelection": "Enregistrer la sélection",
     "generate": "Générer le bail",
     "pinned": "Épinglée",
-    "moveUp": "Monter",
-    "moveDown": "Descendre"
+    "moveUp": "Monter {{title}}",
+    "moveDown": "Descendre {{title}}"
   },
   "leaseRegime": {
     "STANDARD": "Standard",

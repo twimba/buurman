@@ -1081,8 +1081,8 @@
     "saveSelection": "Save selection",
     "generate": "Generate lease agreement",
     "pinned": "Pinned",
-    "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveUp": "Move up {{title}}",
+    "moveDown": "Move down {{title}}"
   },
   "leaseRegime": {
     "STANDARD": "Standard",

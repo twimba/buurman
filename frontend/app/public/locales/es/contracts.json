@@ -1095,8 +1095,8 @@
     "saveSelection": "Guardar selección",
     "generate": "Generar contrato de arrendamiento",
     "pinned": "Fijada",
-    "moveUp": "Subir",
-    "moveDown": "Bajar"
+    "moveUp": "Subir {{title}}",
+    "moveDown": "Bajar {{title}}"
   },
   "leaseRegime": {
     "STANDARD": "Estándar",

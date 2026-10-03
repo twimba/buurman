@@ -49,9 +49,15 @@ export const ContractLeaseAgreementTab = ({
       return base;
     }
     const byId = new Map(base.map((c) => [c.templateIdentifier, c]));
-    return order
+    const known = new Set(order);
+    const ordered = order
       .map((id) => byId.get(id))
       .filter((c): c is ResolvedLeaseClauseResponse => !!c);
+    // A refetch may add clauses the local order has never seen; keep them in server order.
+    const unseen = base.filter((c) => !known.has(c.templateIdentifier));
+    return [...ordered, ...unseen].sort(
+      (a, b) => Number(b.pinned) - Number(a.pinned)
+    );
   };
 
   const handleMove = (index: number, delta: -1 | 1) => {
@@ -88,7 +94,7 @@ export const ContractLeaseAgreementTab = ({
         templateIdentifier: clause.templateIdentifier,
         included: isIncluded(clause),
         // The server ignores a pinned clause's sortOrder, so it is sent unchanged.
-        sortOrder: clause.pinned ? clause.sortOrder : index + 1,
+        sortOrder: clause.pinned || !order ? clause.sortOrder : index + 1,
       })),
       {
         onSuccess: () => {
@@ -185,7 +191,9 @@ export const ContractLeaseAgreementTab = ({
                 <div className="flex flex-col">
                   <button
                     type="button"
-                    aria-label={t('leaseAgreement.moveUp')}
+                    aria-label={t('leaseAgreement.moveUp', {
+                      title: clause.title,
+                    })}
                     disabled={
                       clause.pinned || !previousClause || previousClause.pinned
                     }
@@ -196,7 +204,9 @@ export const ContractLeaseAgreementTab = ({
                   </button>
                   <button
                     type="button"
-                    aria-label={t('leaseAgreement.moveDown')}
+                    aria-label={t('leaseAgreement.moveDown', {
+                      title: clause.title,
+                    })}
                     disabled={clause.pinned || !nextClause}
                     onClick={() => handleMove(index, 1)}
                     className="p-1 rounded text-text-secondary hover:bg-surface-hover disabled:opacity-40 disabled:cursor-not-allowed"

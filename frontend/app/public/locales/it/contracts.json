@@ -1095,8 +1095,8 @@
     "saveSelection": "Salva selezione",
     "generate": "Genera contratto di locazione",
     "pinned": "Fissata",
-    "moveUp": "Sposta su",
-    "moveDown": "Sposta giù"
+    "moveUp": "Sposta su {{title}}",
+    "moveDown": "Sposta giù {{title}}"
   },
   "leaseRegime": {
     "STANDARD": "Standard",

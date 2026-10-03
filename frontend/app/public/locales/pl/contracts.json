@@ -1109,8 +1109,8 @@
     "saveSelection": "Zapisz wybór",
     "generate": "Wygeneruj umowę najmu",
     "pinned": "Przypięta",
-    "moveUp": "Przesuń w górę",
-    "moveDown": "Przesuń w dół"
+    "moveUp": "Przesuń w górę: {{title}}",
+    "moveDown": "Przesuń w dół: {{title}}"
   },
   "leaseRegime": {
     "STANDARD": "Standardowy",

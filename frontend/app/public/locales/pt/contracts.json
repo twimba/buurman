@@ -1095,8 +1095,8 @@
     "saveSelection": "Guardar seleção",
     "generate": "Gerar contrato de arrendamento",
     "pinned": "Fixada",
-    "moveUp": "Mover para cima",
-    "moveDown": "Mover para baixo"
+    "moveUp": "Mover {{title}} para cima",
+    "moveDown": "Mover {{title}} para baixo"
   },
   "leaseRegime": {
     "STANDARD": "Padrão",

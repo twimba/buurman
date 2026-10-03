@@ -1081,8 +1081,8 @@
     "saveSelection": "Lagre valg",
     "generate": "Generer leiekontrakt",
     "pinned": "Festet",
-    "moveUp": "Flytt opp",
-    "moveDown": "Flytt ned"
+    "moveUp": "Flytt {{title}} opp",
+    "moveDown": "Flytt {{title}} ned"
   },
   "leaseRegime": {
     "STANDARD": "Standard",

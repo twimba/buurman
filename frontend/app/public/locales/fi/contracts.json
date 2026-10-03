@@ -1081,8 +1081,8 @@
     "saveSelection": "Tallenna valinta",
     "generate": "Luo vuokrasopimus",
     "pinned": "Kiinnitetty",
-    "moveUp": "Siirrä ylös",
-    "moveDown": "Siirrä alas"
+    "moveUp": "Siirrä {{title}} ylös",
+    "moveDown": "Siirrä {{title}} alas"
   },
   "leaseRegime": {
     "STANDARD": "Vakio",

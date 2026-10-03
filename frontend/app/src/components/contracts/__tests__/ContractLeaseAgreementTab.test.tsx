@@ -1,10 +1,12 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { ToastProvider } from '@buurman/ui';
 import { ContractLeaseAgreementTab } from '../ContractLeaseAgreementTab';
 import * as leaseAgreementApi from '@/generated/api/lease-agreement/lease-agreement';
-import { renderWithProviders } from '@/test/test-utils';
+import { renderWithProviders, createTestQueryClient } from '@/test/test-utils';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
 import type { ResolvedLeaseClauseResponse } from '@/generated/models';
 
 const CLAUSES: ResolvedLeaseClauseResponse[] = [
@@ -142,6 +144,21 @@ describe('ContractLeaseAgreementTab', () => {
       await screen.findByRole('checkbox', { name: 'Parties' });
     };
 
+    const renderTabWithClient = async () => {
+      const queryClient = createTestQueryClient();
+      render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter>
+            <ToastProvider>
+              <ContractLeaseAgreementTab contractId="CON00000000000000000000001" />
+            </ToastProvider>
+          </MemoryRouter>
+        </QueryClientProvider>
+      );
+      await screen.findByRole('checkbox', { name: 'Parties' });
+      return { queryClient };
+    };
+
     const rowFor = (title: string) =>
       screen
         .getByRole('checkbox', { name: title })
@@ -152,9 +169,9 @@ describe('ContractLeaseAgreementTab', () => {
       await renderTab();
 
       const up = (title: string) =>
-        within(rowFor(title)).getByRole('button', { name: 'Move up' });
+        within(rowFor(title)).getByRole('button', { name: /Move up/ });
       const down = (title: string) =>
-        within(rowFor(title)).getByRole('button', { name: 'Move down' });
+        within(rowFor(title)).getByRole('button', { name: /Move down/ });
 
       expect(up('Parties')).toBeDisabled();
       expect(down('Parties')).toBeDisabled();
@@ -176,7 +193,7 @@ describe('ContractLeaseAgreementTab', () => {
 
       await userEvent.click(
         within(rowFor('Furnished addendum')).getByRole('button', {
-          name: 'Move down',
+          name: /Move down/,
         })
       );
       await userEvent.click(
@@ -231,10 +248,87 @@ describe('ContractLeaseAgreementTab', () => {
       expect(number('Parking')).toHaveTextContent('4');
 
       await userEvent.click(
-        within(rowFor('Parking')).getByRole('button', { name: 'Move up' })
+        within(rowFor('Parking')).getByRole('button', { name: /Move up/ })
       );
       expect(number('Parking')).toHaveTextContent('3');
       expect(number('Pets')).toHaveTextContent('4');
+    });
+
+    it('keeps server sortOrder untouched when nothing was reordered', async () => {
+      const gapped = ORDERED.map((c, i) => ({ ...c, sortOrder: (i + 1) * 10 }));
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(gapped);
+      const updateSpy = vi
+        .spyOn(leaseAgreementApi, 'updateLeaseClauses')
+        .mockResolvedValue(gapped);
+      await renderTab();
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /save selection/i })
+      );
+
+      await waitFor(() => {
+        expect(updateSpy).toHaveBeenCalled();
+      });
+      expect(
+        updateSpy.mock.calls[0][1].clauses.map((c) => c.sortOrder)
+      ).toEqual([10, 20, 30, 40]);
+    });
+
+    it('labels move buttons with the clause title', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(ORDERED);
+      await renderTab();
+      expect(
+        screen.getByRole('button', { name: 'Move up Parking' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Move down Furnished addendum' })
+      ).toBeInTheDocument();
+    });
+
+    it('shows and sends a clause added by a refetch while a reorder is pending', async () => {
+      const getSpy = vi
+        .spyOn(leaseAgreementApi, 'getLeaseClauses')
+        .mockResolvedValue(ORDERED);
+      const updateSpy = vi
+        .spyOn(leaseAgreementApi, 'updateLeaseClauses')
+        .mockResolvedValue(ORDERED);
+      const { queryClient } = await renderTabWithClient();
+
+      await userEvent.click(
+        within(rowFor('Parking')).getByRole('button', { name: /Move up/ })
+      );
+      const added: ResolvedLeaseClauseResponse = {
+        templateIdentifier: 'LCT00000000000000000000005',
+        clauseKey: 'garden',
+        title: 'Garden',
+        body: 'Garden clause.',
+        included: true,
+        optional: true,
+        sortOrder: 5,
+        pinned: false,
+        articleNumber: 4,
+      };
+      getSpy.mockResolvedValue([...ORDERED, added]);
+      await queryClient.invalidateQueries();
+
+      expect(
+        await screen.findByRole('checkbox', { name: 'Garden' })
+      ).toBeInTheDocument();
+      await userEvent.click(
+        screen.getByRole('button', { name: /save selection/i })
+      );
+      await waitFor(() => {
+        expect(updateSpy).toHaveBeenCalled();
+      });
+      expect(
+        updateSpy.mock.calls[0][1].clauses.map((c) => c.templateIdentifier)
+      ).toEqual([
+        'LCT00000000000000000000001',
+        'LCT00000000000000000000002',
+        'LCT00000000000000000000004',
+        'LCT00000000000000000000003',
+        'LCT00000000000000000000005',
+      ]);
     });
 
     it('clears local state after save and shows the server order', async () => {
@@ -256,7 +350,7 @@ describe('ContractLeaseAgreementTab', () => {
       await renderTab();
 
       await userEvent.click(
-        within(rowFor('Parking')).getByRole('button', { name: 'Move up' })
+        within(rowFor('Parking')).getByRole('button', { name: /Move up/ })
       );
       await userEvent.click(
         screen.getByRole('button', { name: /save selection/i })

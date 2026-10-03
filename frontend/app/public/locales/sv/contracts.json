@@ -1081,8 +1081,8 @@
     "saveSelection": "Spara urval",
     "generate": "Generera hyresavtal",
     "pinned": "Fast",
-    "moveUp": "Flytta upp",
-    "moveDown": "Flytta ned"
+    "moveUp": "Flytta upp {{title}}",
+    "moveDown": "Flytta ned {{title}}"
   },
   "leaseRegime": {
     "STANDARD": "Standard",
