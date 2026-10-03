@@ -795,6 +795,16 @@ components:
     ContractIdentifier:
       type: string
       description: Contract identifier
+    ContractStatus:
+      type: string
+      description: Current lifecycle status of the contract
+      enum:
+        - DRAFT
+        - ACTIVE
+        - EXPIRED
+        - TERMINATED
+        - PENDING_SIGNATURE
+        - NOTICE_GIVEN
     ContractTerminationIdentifier:
       type: string
       description: Contract termination identifier

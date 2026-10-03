@@ -11388,15 +11388,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              description: Current lifecycle status of the contract
-              enum:
-                - DRAFT
-                - ACTIVE
-                - EXPIRED
-                - TERMINATED
-                - PENDING_SIGNATURE
-                - NOTICE_GIVEN
+              $ref: '#/components/schemas/ContractStatus'
           style: form
           explode: true
         - name: propertyIdentifier
@@ -19478,16 +19470,18 @@ paths:
           schema:
             type: array
             items:
-              type: string
+              $ref: '#/components/schemas/ContractStatus'
           style: form
           explode: true
         - name: search
           in: query
+          description: Free-text search across contact name, property address/city, and contract identifier
           required: false
           schema:
             type: string
         - name: endingWithinDays
           in: query
+          description: Only contracts whose effective end date falls within this many days from today
           required: false
           schema:
             type: integer
@@ -19519,16 +19513,18 @@ paths:
           schema:
             type: array
             items:
-              type: string
+              $ref: '#/components/schemas/ContractStatus'
           style: form
           explode: true
         - name: search
           in: query
+          description: Free-text search across contact name, property address/city, and contract identifier
           required: false
           schema:
             type: string
         - name: endingWithinDays
           in: query
+          description: Only contracts whose effective end date falls within this many days from today
           required: false
           schema:
             type: integer
@@ -22965,6 +22961,16 @@ components:
     ContractIdentifier:
       type: string
       description: Contract identifier
+    ContractStatus:
+      type: string
+      description: Current lifecycle status of the contract
+      enum:
+        - DRAFT
+        - ACTIVE
+        - EXPIRED
+        - TERMINATED
+        - PENDING_SIGNATURE
+        - NOTICE_GIVEN
     ContractTerminationIdentifier:
       type: string
       description: Contract termination identifier

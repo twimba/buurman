@@ -43,6 +43,7 @@ import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.TerminationPreviewResponse;
 import com.buurman.dto.response.TimelineEventResponse;
 import com.buurman.generated.api.ContractsApi;
+import com.buurman.generated.model.ContractStatus;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ContractPartyService;
@@ -78,7 +79,7 @@ public class ContractController implements ContractsApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getContracts(
-      Optional<List<String>> status,
+      Optional<List<ContractStatus>> status,
       Optional<String> propertyIdentifier,
       Optional<String> tenantIdentifier,
       Optional<String> search,
@@ -110,7 +111,7 @@ public class ContractController implements ContractsApi {
             page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
     return contractService.getContractsPaginated(
         principal,
-        status.orElse(null),
+        status.map(list -> list.stream().map(ContractStatus::getValue).toList()).orElse(null),
         search.orElse(null),
         endingWithinDays.orElse(null),
         pageRequest);

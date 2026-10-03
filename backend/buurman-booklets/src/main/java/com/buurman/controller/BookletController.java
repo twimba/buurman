@@ -21,6 +21,7 @@ import com.buurman.dto.request.GoogleSheetExportRequest;
 import com.buurman.dto.response.GoogleSheetExportResponse;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.BookletsApi;
+import com.buurman.generated.model.ContractStatus;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
@@ -213,26 +214,34 @@ public class BookletController implements BookletsApi {
   // ── Contracts ───────────────────────────────────────────────────────────
   @Override
   public Resource exportContractsCsv(
-      Optional<List<String>> status, Optional<String> search, Optional<Integer> endingWithinDays) {
+      Optional<List<ContractStatus>> status,
+      Optional<String> search,
+      Optional<Integer> endingWithinDays) {
     return downloadCsv(
         "contracts.csv",
         () ->
             exportService.generateContractsCSV(
                 SecurityUtils.getCurrentPrincipal().requireTeamId(),
-                status.orElse(null),
+                status
+                    .map(list -> list.stream().map(ContractStatus::getValue).toList())
+                    .orElse(null),
                 search.orElse(null),
                 endingWithinDays.orElse(null)));
   }
 
   @Override
   public Resource exportContractsXlsx(
-      Optional<List<String>> status, Optional<String> search, Optional<Integer> endingWithinDays) {
+      Optional<List<ContractStatus>> status,
+      Optional<String> search,
+      Optional<Integer> endingWithinDays) {
     return downloadXlsx(
         "contracts.xlsx",
         () ->
             exportService.generateContractsExcel(
                 SecurityUtils.getCurrentPrincipal().requireTeamId(),
-                status.orElse(null),
+                status
+                    .map(list -> list.stream().map(ContractStatus::getValue).toList())
+                    .orElse(null),
                 search.orElse(null),
                 endingWithinDays.orElse(null)));
   }
