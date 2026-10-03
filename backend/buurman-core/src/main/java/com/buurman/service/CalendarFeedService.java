@@ -26,6 +26,7 @@ import com.buurman.domain.CalendarFeed;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
@@ -36,6 +37,7 @@ import com.buurman.repository.CalendarFeedRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
@@ -50,6 +52,7 @@ public class CalendarFeedService {
 
   private final CalendarFeedRepository calendarFeedRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final PaymentRepository paymentRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
@@ -266,6 +269,8 @@ public class CalendarFeedService {
     Map<UUID, List<ContractExtension>> extensionsByContract =
         allMilestoneExtensions.stream()
             .collect(java.util.stream.Collectors.groupingBy(ContractExtension::getContractId));
+    Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(milestoneContractIds, teamId);
 
     // Emit contract milestone events (start, end, signed dates)
     for (Contract contract : milestoneContracts) {
@@ -289,7 +294,10 @@ public class CalendarFeedService {
 
       List<ContractExtension> exts = extensionsByContract.getOrDefault(contract.getId(), List.of());
       Optional<java.time.LocalDate> effectiveEndDate =
-          EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), exts);
+          EffectiveEndDateHelper.computeEffectiveEndDate(
+              contract.getEndDate(),
+              exts,
+              Optional.ofNullable(terminationsByContract.get(contract.getId())));
 
       if (effectiveEndDate.isPresent()) {
         sb.append("BEGIN:VEVENT\r\n");
