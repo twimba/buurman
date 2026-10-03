@@ -10,13 +10,14 @@ export interface PageParams {
 }
 
 interface UsePaginationOptions {
+  defaultPage?: number;
   defaultSize?: number;
   defaultSort?: string;
   defaultDirection?: 'asc' | 'desc';
 }
 
 export const usePagination = (options: UsePaginationOptions = {}) => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(options.defaultPage ?? 0);
   const [size, setSize] = useState(options.defaultSize ?? 25);
   const [sort, setSort] = useState<string | undefined>(options.defaultSort);
   const [direction, setDirection] = useState<'asc' | 'desc'>(

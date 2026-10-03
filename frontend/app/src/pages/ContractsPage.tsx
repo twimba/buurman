@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ContractStatus } from '@/types/contract';
 import { useContracts } from '@/hooks/useContractHooks';
@@ -40,10 +40,45 @@ import {
 } from '@/generated/api/booklets/booklets';
 import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 
+const VALID_STATUSES: string[] = Object.values(ContractStatus);
+const VALID_SORT_FIELDS = ['endDate', 'startDate', 'rentAmount'] as const;
+type SortField = (typeof VALID_SORT_FIELDS)[number];
+
+const parseStatusFilter = (raw: unknown): ContractStatus[] => {
+  const list = Array.isArray(raw) ? raw : typeof raw === 'string' ? [raw] : [];
+  return list.filter(
+    (s): s is ContractStatus =>
+      typeof s === 'string' && VALID_STATUSES.includes(s)
+  );
+};
+
+const parseSortField = (raw: unknown): SortField =>
+  typeof raw === 'string' &&
+  (VALID_SORT_FIELDS as readonly string[]).includes(raw)
+    ? (raw as SortField)
+    : 'endDate';
+
+const parseSortDirection = (raw: unknown): 'ASC' | 'DESC' =>
+  raw === 'DESC' ? 'DESC' : 'ASC';
+
+const parseEndingWithinDays = (raw: unknown): number | undefined => {
+  if (typeof raw !== 'string' || raw === '') {
+    return undefined;
+  }
+  const parsed = Number(raw);
+  return Number.isNaN(parsed) ? undefined : Math.max(0, parsed);
+};
+
 export const ContractsPage = () => {
   const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+
+  // Read once on mount so a refresh, a bookmark, or a shared link reproduces the same filtered
+  // view instead of silently resetting to the defaults — synced back to the URL below as the
+  // user changes anything. Not reactive to further URL changes (e.g. browser back/forward)
+  // beyond this initial read; that would need a second effect watching searchParams.
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const statusOptions = useMemo(
     () => [
@@ -68,18 +103,23 @@ export const ContractsPage = () => {
     ],
     []
   );
-  const [statusFilter, setStatusFilter] = useState<ContractStatus[]>(
-    DEFAULT_STATUS_FILTER
+  const [statusFilter, setStatusFilter] = useState<ContractStatus[]>(() => {
+    const fromUrl = parseStatusFilter(searchParams.getAll('status'));
+    return fromUrl.length > 0 ? fromUrl : DEFAULT_STATUS_FILTER;
+  });
+  const [searchInput, setSearchInput] = useState(
+    () => searchParams.get('search') ?? ''
   );
-  const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebounce(searchInput, 300);
   const [endingWithinDays, setEndingWithinDays] = useState<
     number | undefined
-  >();
-  const [sortField, setSortField] = useState<
-    'endDate' | 'startDate' | 'rentAmount'
-  >('endDate');
-  const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>('ASC');
+  >(() => parseEndingWithinDays(searchParams.get('endingWithinDays')));
+  const [sortField, setSortField] = useState<SortField>(() =>
+    parseSortField(searchParams.get('sort'))
+  );
+  const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>(() =>
+    parseSortDirection(searchParams.get('direction'))
+  );
 
   const sortOptions = useMemo(
     () =>
@@ -97,7 +137,16 @@ export const ContractsPage = () => {
     handlePageChange,
     handleSizeChange,
     resetPage,
-  } = usePagination({ defaultSize: 12 });
+  } = usePagination({
+    defaultPage: (() => {
+      const raw = Number(searchParams.get('page'));
+      return Number.isInteger(raw) && raw >= 0 ? raw : 0;
+    })(),
+    defaultSize: (() => {
+      const raw = Number(searchParams.get('size'));
+      return Number.isInteger(raw) && raw > 0 ? raw : 12;
+    })(),
+  });
 
   const {
     data: contractsData,
@@ -115,8 +164,37 @@ export const ContractsPage = () => {
   });
   const contracts = contractsData?.content;
 
-  const validStatuses: string[] = Object.values(ContractStatus);
-  const validSortFields = ['endDate', 'startDate', 'rentAmount'] as const;
+  // Keeps the URL reproducing exactly the view currently on screen, so a refresh, a bookmark, or
+  // a copy-pasted link lands back on the same filtered/sorted/paged list instead of the defaults.
+  // replace: true so filtering doesn't spam browser history with one entry per keystroke/toggle.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    statusFilter.forEach((s) => params.append('status', s));
+    if (debouncedSearch) {
+      params.set('search', debouncedSearch);
+    }
+    if (endingWithinDays !== undefined) {
+      params.set('endingWithinDays', String(endingWithinDays));
+    }
+    params.set('sort', sortField);
+    params.set('direction', sortDirection);
+    if (page > 0) {
+      params.set('page', String(page));
+    }
+    if (size !== 12) {
+      params.set('size', String(size));
+    }
+    setSearchParams(params, { replace: true });
+  }, [
+    statusFilter,
+    debouncedSearch,
+    endingWithinDays,
+    sortField,
+    sortDirection,
+    page,
+    size,
+    setSearchParams,
+  ]);
 
   const handleApplySavedFilter = (criteria: Record<string, unknown>) => {
     const {
@@ -127,26 +205,11 @@ export const ContractsPage = () => {
       direction,
     } = criteria;
 
-    const statusList = Array.isArray(status)
-      ? status
-      : typeof status === 'string'
-        ? [status]
-        : [];
-    setStatusFilter(
-      statusList.filter(
-        (s): s is ContractStatus =>
-          typeof s === 'string' && validStatuses.includes(s)
-      )
-    );
+    setStatusFilter(parseStatusFilter(status));
     setSearchInput(typeof search === 'string' ? search : '');
     setEndingWithinDays(typeof days === 'number' ? days : undefined);
-    setSortField(
-      typeof sort === 'string' &&
-        (validSortFields as readonly string[]).includes(sort)
-        ? (sort as (typeof validSortFields)[number])
-        : 'endDate'
-    );
-    setSortDirection(direction === 'DESC' ? 'DESC' : 'ASC');
+    setSortField(parseSortField(sort));
+    setSortDirection(parseSortDirection(direction));
     resetPage();
   };
 
