@@ -93,3 +93,5 @@ if [ ! -f "$DOCUMENSO_CERT_PATH" ]; then
 else
   echo "Documenso certificate already exists at $DOCUMENSO_CERT_PATH"
 fi
+
+echo "Start the environment with: docker compose up -d"
