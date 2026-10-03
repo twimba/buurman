@@ -77,13 +77,18 @@ public class TerminationRuleResolver {
 
   private Optional<TerminationNoticeRule> bestMatchingRule(
       UUID countryId, TerminationGivenBy givenBy, LocalDate contractStart, LocalDate noticeDate) {
-    int tenancyMonths =
-        Period.between(contractStart, noticeDate).toTotalMonths() >= 0
-            ? (int) Period.between(contractStart, noticeDate).toTotalMonths()
-            : 0;
+    long totalMonths = Period.between(contractStart, noticeDate).toTotalMonths();
+    int tenancyMonths = totalMonths >= 0 ? (int) totalMonths : 0;
 
+    // thenComparing(id) breaks ties deterministically: nothing stops two rules sharing the same
+    // minTenancyMonths (e.g. a country + a region-specific rule both set to the same threshold),
+    // and without a secondary key, max() over the DB's unordered result picks arbitrarily between
+    // runs instead of consistently.
     return terminationNoticeRuleRepository.findByCountryAndParty(countryId, givenBy).stream()
         .filter(rule -> rule.getMinTenancyMonths().map(min -> tenancyMonths >= min).orElse(true))
-        .max(Comparator.comparing(rule -> rule.getMinTenancyMonths().orElse(0)));
+        .max(
+            Comparator.comparing(
+                    (TerminationNoticeRule rule) -> rule.getMinTenancyMonths().orElse(0))
+                .thenComparing(TerminationNoticeRule::getId));
   }
 }

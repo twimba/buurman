@@ -75,6 +75,50 @@ class TerminationRuleResolverTest {
   }
 
   @Test
+  void breaksATieBetweenTwoRulesWithTheSameMinTenancyMonthsDeterministically() {
+    when(rentRegulationRepository.findCountryByCode("DE"))
+        .thenReturn(
+            Optional.of(RentRegulationCountry.builder().id(COUNTRY_ID).countryCode("DE").build()));
+    TerminationNoticeRule ruleA =
+        TerminationNoticeRule.builder()
+            .id(UUID.fromString("00000000-0000-0000-0000-00000000000a"))
+            .countryId(COUNTRY_ID)
+            .partyType(TerminationGivenBy.LANDLORD)
+            .minTenancyMonths(Optional.of(0))
+            .noticeDays(90)
+            .build();
+    // Nothing stops two rules from sharing the same threshold (e.g. a country-wide rule and a
+    // region-specific one both set to 0); the fix must still pick the same one every time
+    // regardless of which order the repository happens to return them in.
+    TerminationNoticeRule ruleB =
+        TerminationNoticeRule.builder()
+            .id(UUID.fromString("00000000-0000-0000-0000-00000000000b"))
+            .countryId(COUNTRY_ID)
+            .partyType(TerminationGivenBy.LANDLORD)
+            .minTenancyMonths(Optional.of(0))
+            .noticeDays(120)
+            .build();
+
+    when(terminationNoticeRuleRepository.findByCountryAndParty(
+            COUNTRY_ID, TerminationGivenBy.LANDLORD))
+        .thenReturn(List.of(ruleA, ruleB))
+        .thenReturn(List.of(ruleB, ruleA));
+
+    var firstOrder =
+        resolver.resolve(
+            contractStartedYearsAgo(1, Optional.of("DE")),
+            TerminationGivenBy.LANDLORD,
+            LocalDate.now());
+    var secondOrder =
+        resolver.resolve(
+            contractStartedYearsAgo(1, Optional.of("DE")),
+            TerminationGivenBy.LANDLORD,
+            LocalDate.now());
+
+    assertThat(firstOrder.noticeDays()).isEqualTo(secondOrder.noticeDays());
+  }
+
+  @Test
   void fallsBackToContractFieldWhenNoCatalogRuleForCountry() {
     when(rentRegulationRepository.findCountryByCode("XX")).thenReturn(Optional.empty());
 
