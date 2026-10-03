@@ -117,6 +117,7 @@ public class Contract {
   @Builder.Default private Optional<LandlordType> landlordType = Optional.empty();
   @Builder.Default private Optional<String> regionCode = Optional.empty();
   @Builder.Default private List<String> documentLanguages = List.of("en");
+  @Builder.Default private LeaseRegime leaseRegime = LeaseRegime.STANDARD;
 
   /** Tenant-facing payment reminders for this contract. Off by default. */
   @Builder.Default private Boolean tenantRemindersEnabled = false;

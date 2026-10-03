@@ -16,6 +16,7 @@ import org.postgresql.ds.PGSimpleDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import com.buurman.domain.LeaseClauseTemplate;
+import com.buurman.domain.LeaseKind;
 import com.buurman.mapper.LeaseClauseTemplateRecordMapperImpl;
 
 @DisplayName("LeaseClauseTemplateRepository")
@@ -30,8 +31,14 @@ class LeaseClauseTemplateRepositoryIntegrationTest extends AbstractRepositoryInt
   }
 
   private LeaseClauseTemplate newTemplate(String country, String key, int sortOrder) {
+    return newTemplate(country, LeaseKind.RESIDENTIAL, key, sortOrder);
+  }
+
+  private LeaseClauseTemplate newTemplate(
+      String country, LeaseKind kind, String key, int sortOrder) {
     return LeaseClauseTemplate.builder()
         .countryCode(country)
+        .leaseKind(kind)
         .clauseKey(key)
         .titleI18nKey("lease." + key + ".title")
         .bodyI18nKey("lease." + key + ".body")
@@ -56,6 +63,54 @@ class LeaseClauseTemplateRepositoryIntegrationTest extends AbstractRepositoryInt
     assertThat(nlTemplates)
         .extracting(LeaseClauseTemplate::getClauseKey)
         .containsExactly("parties", "rent");
+  }
+
+  @Test
+  @DisplayName("findByCountryAndKind returns only that kind, ordered by sort_order")
+  void filtersByKind() {
+    repository.save(newTemplate("NL", LeaseKind.RESIDENTIAL, "zzz-test-b", 2));
+    repository.save(newTemplate("NL", LeaseKind.RESIDENTIAL, "zzz-test-a", 1));
+    repository.save(newTemplate("NL", LeaseKind.COMMERCIAL, "zzz-test-c", 1));
+
+    assertThat(repository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .extracting(LeaseClauseTemplate::getClauseKey)
+        .containsExactly("zzz-test-a", "zzz-test-b");
+  }
+
+  @Test
+  @DisplayName("same clause_key may exist under different kinds, but not twice for one kind")
+  void uniquenessIsPerKind() {
+    repository.save(newTemplate("NL", LeaseKind.RESIDENTIAL, "rent", 1));
+    repository.save(newTemplate("NL", LeaseKind.COMMERCIAL, "rent", 1));
+
+    assertThat(repository.findByCountryCode("NL")).hasSize(2);
+    org.junit.jupiter.api.Assertions.assertThrows(
+        org.jooq.exception.DataAccessException.class,
+        () -> repository.save(newTemplate("NL", LeaseKind.RESIDENTIAL, "rent", 2)));
+  }
+
+  @Test
+  @DisplayName("pinned flag and lease kind round-trip, defaulting to RESIDENTIAL / unpinned")
+  void pinnedAndKindRoundTrip() {
+    LeaseClauseTemplate pinned = newTemplate("NL", LeaseKind.MIXED_USE, "pin", 1);
+    pinned.setPinned(true);
+    repository.save(pinned);
+    repository.save(newTemplate("NL", "plain", 2));
+
+    var found = repository.findByCountryAndKind("NL", LeaseKind.MIXED_USE);
+    assertThat(found).hasSize(1);
+    assertThat(found.get(0).isPinned()).isTrue();
+    assertThat(found.get(0).getLeaseKind()).isEqualTo(LeaseKind.MIXED_USE);
+    assertThat(repository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .extracting(LeaseClauseTemplate::isPinned)
+        .containsExactly(false);
+  }
+
+  @Test
+  @DisplayName("LeaseKind.pathSegment is lowercase-hyphen")
+  void pathSegment() {
+    assertThat(LeaseKind.RESIDENTIAL_FURNISHED.pathSegment()).isEqualTo("residential-furnished");
+    assertThat(LeaseKind.STUDENT_MOBILITY.pathSegment()).isEqualTo("student-mobility");
   }
 
   @Test
@@ -105,6 +160,10 @@ class LeaseClauseTemplateRepositoryIntegrationTest extends AbstractRepositoryInt
 
       List<LeaseClauseTemplate> nlTemplates = seedRepository.findByCountryCode("NL");
       assertThat(nlTemplates).hasSize(7);
+      assertThat(nlTemplates)
+          .extracting(LeaseClauseTemplate::getLeaseKind)
+          .containsOnly(LeaseKind.LEGACY);
+      assertThat(seedRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL)).isEmpty();
 
       assertThat(nlTemplates)
           .filteredOn(template -> !template.isOptional())

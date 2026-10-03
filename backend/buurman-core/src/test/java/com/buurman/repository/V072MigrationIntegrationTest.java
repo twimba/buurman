@@ -101,6 +101,9 @@ class V072MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
     UUID unitId = seedUnit(propertyId, "1");
     UUID olderContractId = seedContractAt(propertyId, unitId, NOW.minusDays(1));
     seedContractAt(propertyId, unitId, NOW);
+    // ContractRepository selects every current column; add the one introduced after V071.
+    dsl.execute(
+        "ALTER TABLE contracts ADD COLUMN lease_regime VARCHAR(32) NOT NULL DEFAULT 'STANDARD'");
 
     CountryMetadataSerializer countryMetadataSerializer =
         new CountryMetadataSerializer(new ObjectMapper());

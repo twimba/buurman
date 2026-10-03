@@ -310,6 +310,7 @@ public class ContractRepository {
           .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
           .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null))
           .set(DOCUMENT_LANGUAGES, contract.getDocumentLanguages().toArray(new String[0]))
+          .set(CONTRACTS.LEASE_REGIME, contract.getLeaseRegime().name())
           .set(CONTRACTS.CREATED_AT, now)
           .set(CONTRACTS.UPDATED_AT, now)
           .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
@@ -367,7 +368,8 @@ public class ContractRepository {
               .set(CONTRACTS.RENT_ADJUSTMENT_VALUE, contract.getRentAdjustmentValue().orElse(null))
               .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
               .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null))
-              .set(DOCUMENT_LANGUAGES, contract.getDocumentLanguages().toArray(new String[0]));
+              .set(DOCUMENT_LANGUAGES, contract.getDocumentLanguages().toArray(new String[0]))
+              .set(CONTRACTS.LEASE_REGIME, contract.getLeaseRegime().name());
 
       // Only update country_code and country_metadata while contract is DRAFT (locked after
       // activation)

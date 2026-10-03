@@ -95,6 +95,8 @@ public class ContractRecordMapper {
     contract.setDocumentLanguages(
         docLangs != null ? List.copyOf(Arrays.asList(docLangs)) : List.of("en"));
 
+    contract.setLeaseRegime(com.buurman.domain.LeaseRegime.valueOf(record.getLeaseRegime()));
+
     return Optional.of(contract);
   }
 }

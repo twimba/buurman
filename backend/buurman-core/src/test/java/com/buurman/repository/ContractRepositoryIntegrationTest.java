@@ -204,6 +204,41 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   }
 
   @Test
+  @DisplayName("lease_regime defaults to STANDARD and round-trips SHORT_TERM, incl. on update")
+  void leaseRegimeRoundTrips() {
+    Contract standard = repository.save(contractBuilder().build());
+    assertThat(
+            repository
+                .getByIdentifierAndTeamId(standard.getIdentifier().orElseThrow(), TEAM_A_ID)
+                .getLeaseRegime())
+        .isEqualTo(com.buurman.domain.LeaseRegime.STANDARD);
+
+    UUID otherUnitId = UUID.randomUUID();
+    TestDataHelper.insertUnit(dsl, otherUnitId, propertyId, TEAM_A_ID, "2", "OCCUPIED");
+    Contract shortTerm =
+        repository.save(
+            contractBuilder()
+                .unitId(otherUnitId)
+                .leaseRegime(com.buurman.domain.LeaseRegime.SHORT_TERM)
+                .build());
+    Contract reloaded =
+        repository.getByIdentifierAndTeamId(shortTerm.getIdentifier().orElseThrow(), TEAM_A_ID);
+    assertThat(reloaded.getLeaseRegime()).isEqualTo(com.buurman.domain.LeaseRegime.SHORT_TERM);
+
+    reloaded.setLeaseRegime(com.buurman.domain.LeaseRegime.STUDENT_OR_MOBILITY);
+    repository.save(reloaded);
+    assertThat(
+            repository
+                .getByIdentifierAndTeamId(shortTerm.getIdentifier().orElseThrow(), TEAM_A_ID)
+                .getLeaseRegime())
+        .isEqualTo(com.buurman.domain.LeaseRegime.STUDENT_OR_MOBILITY);
+    assertThat(
+            repository.findByIdentifierAndTeamId(
+                shortTerm.getIdentifier().orElseThrow(), TEAM_B_ID))
+        .isEmpty();
+  }
+
+  @Test
   @DisplayName("a team-B-scoped read cannot see team A's contract")
   void isolatesByTeam() {
     Contract saved = repository.save(contractBuilder().build());

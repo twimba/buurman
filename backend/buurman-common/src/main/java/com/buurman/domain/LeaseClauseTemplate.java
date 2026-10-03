@@ -19,11 +19,13 @@ public class LeaseClauseTemplate {
   private UUID id;
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private String countryCode;
+  @Builder.Default private LeaseKind leaseKind = LeaseKind.RESIDENTIAL;
   private String clauseKey;
   private String titleI18nKey;
   private String bodyI18nKey;
   private boolean defaultIncluded;
   private boolean optional;
+  private boolean pinned;
   private int sortOrder;
   private int version;
   private Instant createdAt;

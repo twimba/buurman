@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.LeaseClauseTemplate;
+import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.LeaseClauseTemplateRecordMapper;
@@ -39,6 +40,20 @@ public class LeaseClauseTemplateRepository {
                 LEASE_CLAUSE_TEMPLATES
                     .COUNTRY_CODE
                     .eq(countryCode)
+                    .and(LEASE_CLAUSE_TEMPLATES.DELETED_AT.isNull()))
+            .orderBy(LEASE_CLAUSE_TEMPLATES.SORT_ORDER.asc())
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
+  public List<LeaseClauseTemplate> findByCountryAndKind(String countryCode, LeaseKind kind) {
+    return List.copyOf(
+        dsl.selectFrom(LEASE_CLAUSE_TEMPLATES)
+            .where(
+                LEASE_CLAUSE_TEMPLATES
+                    .COUNTRY_CODE
+                    .eq(countryCode)
+                    .and(LEASE_CLAUSE_TEMPLATES.LEASE_KIND.eq(kind.name()))
                     .and(LEASE_CLAUSE_TEMPLATES.DELETED_AT.isNull()))
             .orderBy(LEASE_CLAUSE_TEMPLATES.SORT_ORDER.asc())
             .fetch()
@@ -72,11 +87,13 @@ public class LeaseClauseTemplateRepository {
           .set(LEASE_CLAUSE_TEMPLATES.ID, newId)
           .set(LEASE_CLAUSE_TEMPLATES.IDENTIFIER, identifier)
           .set(LEASE_CLAUSE_TEMPLATES.COUNTRY_CODE, template.getCountryCode())
+          .set(LEASE_CLAUSE_TEMPLATES.LEASE_KIND, template.getLeaseKind().name())
           .set(LEASE_CLAUSE_TEMPLATES.CLAUSE_KEY, template.getClauseKey())
           .set(LEASE_CLAUSE_TEMPLATES.TITLE_I18N_KEY, template.getTitleI18nKey())
           .set(LEASE_CLAUSE_TEMPLATES.BODY_I18N_KEY, template.getBodyI18nKey())
           .set(LEASE_CLAUSE_TEMPLATES.DEFAULT_INCLUDED, template.isDefaultIncluded())
           .set(LEASE_CLAUSE_TEMPLATES.OPTIONAL, template.isOptional())
+          .set(LEASE_CLAUSE_TEMPLATES.PINNED, template.isPinned())
           .set(LEASE_CLAUSE_TEMPLATES.SORT_ORDER, template.getSortOrder())
           .set(LEASE_CLAUSE_TEMPLATES.VERSION, template.getVersion())
           .set(LEASE_CLAUSE_TEMPLATES.CREATED_AT, now)
@@ -93,6 +110,7 @@ public class LeaseClauseTemplateRepository {
           .set(LEASE_CLAUSE_TEMPLATES.BODY_I18N_KEY, template.getBodyI18nKey())
           .set(LEASE_CLAUSE_TEMPLATES.DEFAULT_INCLUDED, template.isDefaultIncluded())
           .set(LEASE_CLAUSE_TEMPLATES.OPTIONAL, template.isOptional())
+          .set(LEASE_CLAUSE_TEMPLATES.PINNED, template.isPinned())
           .set(LEASE_CLAUSE_TEMPLATES.SORT_ORDER, template.getSortOrder())
           .set(LEASE_CLAUSE_TEMPLATES.VERSION, template.getVersion())
           .set(LEASE_CLAUSE_TEMPLATES.UPDATED_AT, now)
