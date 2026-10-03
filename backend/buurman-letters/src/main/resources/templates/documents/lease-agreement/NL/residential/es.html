@@ -1,0 +1,246 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Spanish courtesy translation of nl.html (a translation of Dutch law (Boek 7 BW), not Spanish law); the Dutch
+  text is authoritative. Draft text, not vetted by legal counsel. Only prose differs from nl.html: fragments,
+  th: expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Los abajo firmantes:</p>
+  <p><strong th:text="${landlordName}">arrendador</strong>, en adelante «el arrendador» (verhuurder), y</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">arrendatario</strong>, en
+    adelante (conjuntamente) «el arrendatario» (huurder),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">el arrendatario o los arrendatarios que firman a continuación, en
+    adelante (conjuntamente) «el arrendatario» (huurder),</p>
+  <p>declaran haber convenido lo estipulado en el presente contrato de arrendamiento. Si el presente contrato
+    designa a más de 1 arrendatario, cada uno de ellos responde solidariamente (hoofdelijk aansprakelijk) del
+    cumplimiento de todas las obligaciones del arrendatario derivadas del presente contrato.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>El arrendador arrienda al arrendatario, que lo toma en arrendamiento, el inmueble de vivienda situado en
+    <strong th:text="${propertyAddress}">dirección</strong>, con los anexos inmobiliarios que le corresponden,
+    en adelante «el inmueble arrendado» (het gehuurde).</p>
+  <p>Al presente contrato le son aplicables las disposiciones legales sobre el arrendamiento de vivienda (Libro 7,
+    Título 4, Sección 5 del Código Civil neerlandés, Burgerlijk Wetboek). En la medida en que la ley disponga que
+    no puede pactarse en perjuicio del arrendatario nada distinto de lo en ella previsto, esas disposiciones
+    prevalecen sobre los pactos contrarios del presente contrato.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>El presente contrato comienza el <strong th:text="${startDate}">fecha de inicio</strong>.</p>
+  <p th:if="${!fixedTerm}">El contrato se celebra por tiempo indefinido.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>El contrato se celebra por tiempo determinado<span th:if="${endDate != null}">, hasta el
+      <strong th:text="${endDate}">fecha de fin</strong> inclusive</span>. Un arrendamiento de vivienda
+      celebrado por tiempo determinado no termina por el mero transcurso del plazo del arrendamiento. Cada una de
+      las dos partes puede resolver el arrendamiento para un día convenido para el pago de la renta, pero no antes
+      de que finalice el tiempo determinado (art. 7:271, apartado 1 del BW).</p>
+    <p>Solo es distinto en el caso de un arrendamiento de como máximo 2 años con un arrendatario que pertenezca a
+      una categoría designada mediante reglamento gubernativo (algemene maatregel van bestuur) (art. 7:271,
+      apartado 2 del BW). En ese caso, el arrendador informa por escrito al arrendatario, no antes de 3 meses y
+      como máximo 1 mes antes del vencimiento del plazo del arrendamiento, del día en que termina el
+      arrendamiento; si no lo hace, el arrendamiento se prorroga por tiempo indefinido tras el vencimiento del
+      plazo. El arrendatario también puede resolver ese arrendamiento antes del vencimiento del plazo, para un día
+      convenido para el pago de la renta.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>La renta por el simple uso del inmueble arrendado (renta base, kale huurprijs, art. 7:237, apartado 2 del BW)
+    asciende a <strong th:text="${rentAmount}">importe</strong> <span th:text="${paymentFrequency}">al mes</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Además, el arrendatario debe
+    abonar las compensaciones por suministros y los gastos de servicios (servicekosten) (véase el artículo <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>En la medida en que al inmueble arrendado le sea aplicable una renta máxima legal, incluidas las normas
+    introducidas por la Wet betaalbare huur (ley de alquileres asequibles) el 1 de julio de 2024, el arrendatario
+    no debe más que esa renta máxima. El arrendatario puede, como máximo 6 meses después del inicio de un contrato
+    de arrendamiento celebrado por él por primera vez respecto de esta vivienda, solicitar a la comisión de
+    alquileres (huurcommissie) que se pronuncie sobre el carácter razonable de la renta convenida
+    (art. 7:249 del BW).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">La actualización de la renta se rige por lo dispuesto al respecto en el presente contrato (véase el artículo <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>El arrendador puede actualizar la renta 1 vez al año, por primera vez 12 meses después de la fecha de inicio
+    del presente contrato. El arrendador comunica la actualización al arrendatario, con indicación de la renta
+    vigente y de la nueva renta y de la fecha de efectos, con antelación suficiente y por escrito.</p>
+  <p>La actualización nunca es superior al aumento de renta máximo permitido por la ley que se aplique al
+    inmueble arrendado en la fecha de efectos de la actualización. Si esta cláusula conduce a un aumento superior
+    al que la ley permite, la cláusula es nula en esa medida y se considera que la renta ha aumentado en el
+    aumento permitido (art. 7:248 del BW). En la medida en que la ley lo permita, el arrendatario puede solicitar
+    a la comisión de alquileres (huurcommissie) que se pronuncie sobre un aumento.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Además de la renta, el arrendatario paga, por cada período de pago, una provisión por los costes de los
+    suministros con contador individual y por los gastos de servicios (servicekosten) (art. 7:237, apartado 3 del
+    BW), según se indica en el presente contrato.</p>
+  <p>Cada año, como máximo 6 meses después de terminar un año natural, el arrendador entrega al arrendatario un
+    estado, desglosado por tipo, de los costes facturados en ese año natural, con indicación del modo de cálculo
+    (art. 7:259, apartado 2 del BW). Lo que se haya pagado de más o de menos en concepto de provisiones se
+    liquida entre las partes tras la entrega de ese estado.</p>
+  <p>Si las partes no llegan a un acuerdo sobre los costes debidos, cualquiera de ellas puede solicitar a la
+    comisión de alquileres (huurcommissie) que se pronuncie al respecto (art. 7:260 del BW).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Al inicio del arrendamiento, el arrendatario paga una fianza (waarborgsom) de
+    <strong th:text="${depositAmount}">importe</strong>.</p>
+  <p th:if="${depositAmount == null}">Al inicio del arrendamiento, el arrendatario paga una fianza (waarborgsom)
+    por el importe convenido por escrito entre las partes.</p>
+  <p>La fianza sirve de garantía del cumplimiento de lo convenido en el presente contrato y asciende
+    como máximo a 2 veces la renta base (kale huurprijs) (art. 7:261b, apartados 1 y 2 del BW).</p>
+  <p>El arrendador devuelve la fianza dentro de los 14 días siguientes a la terminación del contrato de
+    arrendamiento. Si existe un daño en el inmueble arrendado del que el arrendatario es responsable, o si el
+    arrendatario aún debe renta, gastos de servicios o una compensación por prestaciones energéticas
+    (energieprestatievergoeding), el arrendador devuelve el resto dentro de los 30 días siguientes a la
+    terminación, tras deducir los costes de reparación acreditados o, según proceda, los importes aún debidos. El
+    arrendador informa por escrito al arrendatario de toda deducción, con un desglose completo de los costes
+    (art. 7:261b, apartados 3 y 4 del BW).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Para la
+    determinación de los daños es determinante la entrega (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>El arrendatario paga la renta<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (véase el artículo <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> y las provisiones por gastos de servicios</span>
+    <span th:text="${paymentFrequency}">al mes</span><span th:if="${paymentDueDay == 1}"> por
+    adelantado</span>,
+    <span th:if="${paymentDueDay != null}">a más tardar el día <strong th:text="${paymentDueDay}">1</strong> del
+      mes en que comienza el período de pago</span><span th:if="${paymentDueDay == null}">a más tardar el día de pago
+      convenido entre las partes</span>, mediante transferencia a la cuenta que el arrendador haya
+    indicado por escrito a tal efecto.</p>
+  <p>Si el arrendatario no paga a tiempo, debe el interés legal sobre el importe vencido
+    y solo reembolsa los gastos extrajudiciales de cobro en la medida en que la ley
+    lo permita.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>El arrendatario utiliza el inmueble arrendado exclusivamente como vivienda y se comporta en cuanto a su uso
+    como un buen arrendatario (goed huurder) (art. 7:213 del BW). El arrendatario y las personas que se
+    encuentren en el inmueble arrendado con su consentimiento no causan molestias a los vecinos.</p>
+  <p>Las modificaciones de la distribución o de la forma del inmueble arrendado que al terminar el arrendamiento no
+    puedan deshacerse sin costes apreciables solo las realiza el arrendatario con el consentimiento escrito del
+    arrendador. El arrendador da su consentimiento en un plazo de 8 semanas en todo caso si la
+    modificación no perjudica la posibilidad de arrendar de nuevo y no conlleva una pérdida de valor del inmueble
+    arrendado (art. 7:215 del BW).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>El arrendatario no cede el uso del inmueble arrendado, total o parcialmente, a un tercero, salvo que el
+    arrendador haya dado previamente su consentimiento escrito para ello.</p>
+  <p>Si el arrendatario tiene su residencia principal en el inmueble arrendado, cuando este sea una vivienda
+    independiente, está legalmente facultado para ceder el uso de una parte de ella a un tercero (art. 7:244 del
+    BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>A petición del arrendatario, el arrendador subsana los defectos (gebreken) del inmueble arrendado, salvo que
+    ello sea imposible o exija gastos que, en las circunstancias dadas, no puedan razonablemente exigirse al
+    arrendador (art. 7:206 del BW). El arrendatario comunica un defecto al arrendador con la mayor brevedad
+    posible.</p>
+  <p>El arrendatario realiza a su costa las reparaciones menores (kleine herstellingen), salvo que hayan pasado a
+    ser necesarias porque el arrendador ha incumplido su obligación de subsanar los defectos (art. 7:217 del BW).
+    Qué reparaciones se consideran menores resulta de la regulación legal de la materia.</p>
+  <p>Si el arrendador está en mora en la subsanación de un defecto, el arrendatario puede subsanar el defecto por
+    sí mismo y repercutir al arrendador los costes razonables, si lo desea deduciéndolos de la renta
+    (art. 7:206, apartado 3 del BW). De estas normas no puede pactarse nada distinto en perjuicio del arrendatario
+    (art. 7:242 del BW).</p>
+  <p>El arrendatario da al arrendador la oportunidad de ejecutar obras urgentes en el inmueble arrendado, sin
+    perjuicio de sus derechos legales a la reducción de la renta, a la resolución y a la indemnización de daños y
+    perjuicios (art. 7:220, apartado 1 del BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>En un nuevo arrendamiento de una vivienda existente es obligatorio un certificado de eficiencia energética
+    (energielabel) válido, en virtud del Besluit bouwwerken leefomgeving (decreto sobre construcciones y entorno
+    de vida). El arrendador entrega al arrendatario, a más tardar al celebrarse el presente contrato, una copia
+    del certificado de eficiencia energética válido del inmueble arrendado. Un certificado es válido hasta la
+    fecha indicada en él.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Al inicio del arrendamiento, las partes elaboran conjuntamente una descripción del estado del inmueble
+    arrendado (opnamerapport). Ambas partes firman la descripción y cada una recibe un ejemplar.</p>
+  <p>Al terminar el arrendamiento, el arrendatario pone de nuevo el inmueble arrendado a disposición del
+    arrendador, en el estado en que lo recibió según esa descripción, con excepción de las modificaciones y
+    adiciones permitidas y de lo que haya perecido o se haya deteriorado por antigüedad. Si no se ha elaborado
+    ninguna descripción, se presume, salvo prueba en contrario, que el arrendatario ha recibido el inmueble
+    arrendado en el estado en que se encuentra al terminar el arrendamiento (art. 7:224 del BW).</p>
+  <p>Antes de que termine el arrendamiento, las partes realizan una inspección previa conjunta, para que el
+    arrendatario todavía pueda reparar por sí mismo los eventuales defectos, y en la entrega una inspección
+    final.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> La liquidación de la fianza se realiza
+    después (véase el artículo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>La resolución del presente contrato se realiza mediante requerimiento de un alguacil
+    (deurwaardersexploot) o mediante carta certificada, para un día convenido para el pago de la renta
+    (art. 7:271, apartados 3 y 4 del BW).</p>
+  <p>El arrendatario respeta un plazo de preaviso igual al tiempo que media entre 2 días de pago
+    consecutivos, pero no inferior a 1 mes ni superior a 3 meses (art. 7:271, apartado 6, letra a
+    del BW).</p>
+  <p th:if="${fixedTerm}">Si el arrendamiento se ha celebrado por tiempo determinado, ninguna de las dos partes puede, como excepción a lo anterior,
+    resolverlo para un día anterior al final del tiempo determinado<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (véase el artículo <span th:text="${refs['term']}"></span>)</span>;
+    los plazos de preaviso del presente artículo se aplican entonces a la resolución para ese final o para un día
+    de pago posterior (art. 7:271, apartado 1 del BW). Solo en un arrendamiento temporal en el sentido del
+    art. 7:271, apartado 2 del BW puede el arrendatario resolver también antes.</p>
+  <p>El arrendador solo puede resolver por uno de los motivos que la ley enumera a tal efecto (art. 7:274,
+    apartado 1 del BW) y menciona esos motivos en la resolución; una resolución por otros motivos es nula. El
+    plazo de preaviso del arrendador es de al menos 3 meses, prorrogado en 1 mes por cada año en que el
+    arrendatario haya tenido el uso ininterrumpido del inmueble arrendado en virtud de un contrato, hasta un
+    máximo de 6 meses. En la resolución, el arrendador pide al arrendatario que comunique en un plazo de
+    6 semanas si consiente la terminación (art. 7:271, apartados 5 y 6, letra b del BW). Si el arrendatario no
+    consiente por escrito, el contrato permanece en vigor hasta que el juez haya resuelto de forma firme sobre una
+    demanda del arrendador (art. 7:272 del BW).</p>
+  <p>Las partes también pueden, una vez iniciado el arrendamiento, ponerle fin de común acuerdo
+    (art. 7:271, apartado 10 del BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> La entrega se rige por lo dispuesto al respecto en el presente contrato (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> La fianza se devuelve según lo
+    dispuesto en el presente contrato (véase el artículo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>El arrendador trata los datos personales del arrendatario únicamente en la medida en que sea necesario para
+    la celebración y ejecución del presente contrato y para el cumplimiento de obligaciones legales, de
+    conformidad con el Reglamento general de protección de datos (RGPD; en neerlandés: Algemene verordening
+    gegevensbescherming, AVG, Reglamento (UE) 2016/679). El arrendador no conserva esos datos durante más tiempo
+    del necesario a tal efecto.</p>
+  <p>El arrendatario puede ejercer ante el arrendador sus derechos en virtud del RGPD, entre ellos el derecho de
+    acceso, rectificación y supresión de sus datos personales, y puede presentar una reclamación ante la
+    autoridad de control, en los Países Bajos la Autoriteit Persoonsgegevens (autoridad neerlandesa de protección
+    de datos).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>El presente contrato se rige por el derecho neerlandés.</p>
+  <p>Los litigios sobre los que la comisión de alquileres (huurcommissie) pueda pronunciarse según la ley, como los
+    relativos al carácter razonable de la renta y a los gastos de servicios, pueden ser sometidos por las partes a
+    la comisión de alquileres. Se considera que las partes han convenido lo que la comisión de alquileres haya
+    determinado en su decisión, salvo que una de ellas, en un plazo de 8 semanas desde el envío de una copia de la
+    decisión, pida una decisión al juez (art. 7:262 del BW). Los demás litigios se someten al juez competente.</p>
+</div>
+
+</body>
+</html>

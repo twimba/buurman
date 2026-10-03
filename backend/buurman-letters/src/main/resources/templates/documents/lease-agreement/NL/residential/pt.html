@@ -1,0 +1,244 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Portuguese courtesy translation of nl.html (a translation of Dutch law (Boek 7 BW), not Portuguese law); the Dutch
+  text is authoritative. Draft text, not vetted by legal counsel. Only prose differs from nl.html: fragments,
+  th: expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Os abaixo assinados:</p>
+  <p><strong th:text="${landlordName}">senhorio</strong>, a seguir designado «o senhorio» (verhuurder), e</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">arrendatário</strong>, a seguir
+    designado (conjuntamente) «o arrendatário» (huurder),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">o arrendatário ou os arrendatários que assinam abaixo, a seguir
+    designados (conjuntamente) «o arrendatário» (huurder),</p>
+  <p>declaram ter acordado o que se estipula no presente contrato de arrendamento. Se o presente contrato
+    designar mais de 1 arrendatário, cada um deles responde solidariamente (hoofdelijk aansprakelijk) pelo
+    cumprimento de todas as obrigações do arrendatário decorrentes do presente contrato.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>O senhorio dá de arrendamento ao arrendatário, que o toma de arrendamento, o imóvel habitacional situado em
+    <strong th:text="${propertyAddress}">morada</strong>, com as dependências imobiliárias que lhe pertencem,
+    a seguir designado «o imóvel arrendado» (het gehuurde).</p>
+  <p>Ao presente contrato aplicam-se as disposições legais relativas ao arrendamento de habitação (Livro 7,
+    Título 4, Secção 5 do Código Civil neerlandês, Burgerlijk Wetboek). Na medida em que a lei determine que não
+    se pode derrogar o que nela se dispõe em prejuízo do arrendatário, essas disposições prevalecem sobre as
+    estipulações contrárias do presente contrato.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>O presente contrato produz efeitos em <strong th:text="${startDate}">data de início</strong>.</p>
+  <p th:if="${!fixedTerm}">O contrato é celebrado por tempo indeterminado.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>O contrato é celebrado por tempo determinado<span th:if="${endDate != null}">, até
+      <strong th:text="${endDate}">data de fim</strong> inclusive</span>. Um arrendamento de habitação
+      celebrado por tempo determinado não cessa pelo simples decurso do prazo do arrendamento. Cada uma das
+      partes pode denunciar o arrendamento para um dia acordado para o pagamento da renda, mas não antes do
+      termo do tempo determinado (art. 7:271, n.º 1 do BW).</p>
+    <p>Só é diferente no caso de um arrendamento de no máximo 2 anos com um arrendatário que pertença a uma
+      categoria designada por regulamento governamental (algemene maatregel van bestuur) (art. 7:271, n.º 2
+      do BW). Nesse caso, o senhorio informa o arrendatário por escrito, não antes de 3 meses e o mais tardar
+      1 mês antes do termo do prazo do arrendamento, do dia em que o arrendamento cessa; se não o fizer, o
+      arrendamento é prorrogado por tempo indeterminado após o termo do prazo. O arrendatário também pode denunciar
+      esse arrendamento antes do termo do prazo, para um dia acordado para o pagamento da renda.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>A renda pela simples utilização do imóvel arrendado (renda base, kale huurprijs, art. 7:237, n.º 2 do BW)
+    é de <strong th:text="${rentAmount}">montante</strong> <span th:text="${paymentFrequency}">por mês</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Além disso, o arrendatário é
+    devedor das compensações por serviços públicos essenciais e das despesas de serviços (servicekosten) (ver o artigo <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Na medida em que ao imóvel arrendado se aplique uma renda máxima legal, incluindo as regras introduzidas
+    pela Wet betaalbare huur (lei das rendas comportáveis) em 1 de julho de 2024, o arrendatário não deve mais do
+    que essa renda máxima. O arrendatário pode, o mais tardar 6 meses após o início de um contrato de
+    arrendamento por ele celebrado pela primeira vez relativamente a esta habitação, solicitar à comissão de
+    rendas (huurcommissie) que se pronuncie sobre o caráter razoável da renda acordada (art. 7:249 do BW).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">A atualização da renda rege-se pelo que o presente contrato dispõe a esse respeito (ver o artigo <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>O senhorio pode atualizar a renda 1 vez por ano, pela primeira vez 12 meses após a data de início
+    do presente contrato. O senhorio comunica a atualização ao arrendatário, com indicação da renda em vigor e da
+    nova renda e da data de produção de efeitos, em tempo útil e por escrito.</p>
+  <p>A atualização nunca é superior ao aumento de renda máximo permitido por lei que se aplique ao
+    imóvel arrendado à data de produção de efeitos da atualização. Se esta cláusula conduzir a um aumento superior
+    ao que a lei permite, a cláusula é nula nessa medida e considera-se que a renda foi aumentada no
+    aumento permitido (art. 7:248 do BW). Na medida em que a lei o permita, o arrendatário pode solicitar à
+    comissão de rendas (huurcommissie) que se pronuncie sobre um aumento.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Além da renda, o arrendatário paga, por cada período de pagamento, um adiantamento relativo aos custos dos
+    serviços públicos essenciais com contador individual e às despesas de serviços (servicekosten) (art. 7:237,
+    n.º 3 do BW), conforme indicado no presente contrato.</p>
+  <p>Todos os anos, o mais tardar 6 meses após o termo de um ano civil, o senhorio entrega ao arrendatário um
+    mapa, discriminado por espécie, dos custos faturados nesse ano civil, com indicação do modo de cálculo
+    (art. 7:259, n.º 2 do BW). O que tiver sido pago a mais ou a menos a título de adiantamentos é acertado entre
+    as partes após a entrega desse mapa.</p>
+  <p>Se as partes não chegarem a acordo quanto aos custos devidos, qualquer uma delas pode solicitar à
+    comissão de rendas (huurcommissie) que se pronuncie a esse respeito (art. 7:260 do BW).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">No início do arrendamento, o arrendatário paga uma caução (waarborgsom) de
+    <strong th:text="${depositAmount}">montante</strong>.</p>
+  <p th:if="${depositAmount == null}">No início do arrendamento, o arrendatário paga uma caução (waarborgsom)
+    no montante acordado por escrito entre as partes.</p>
+  <p>A caução serve de garantia do cumprimento do que se acordou no presente contrato e é, no máximo,
+    de 2 vezes a renda base (kale huurprijs) (art. 7:261b, n.os 1 e 2 do BW).</p>
+  <p>O senhorio devolve a caução no prazo de 14 dias após a cessação do contrato de arrendamento.
+    Se existir um dano no imóvel arrendado pelo qual o arrendatário seja responsável, ou se o arrendatário
+    ainda tiver de pagar renda, despesas de serviços ou uma compensação de desempenho energético
+    (energieprestatievergoeding), o senhorio devolve o remanescente no prazo de 30 dias após a cessação,
+    depois de deduzidos os custos de reparação comprovadamente suportados ou, consoante o caso, os montantes
+    ainda devidos. O senhorio informa por escrito o arrendatário de qualquer dedução, com uma discriminação
+    completa dos custos (art. 7:261b, n.os 3 e 4 do BW).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Para a
+    determinação dos danos releva a entrega (ver o artigo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>O arrendatário paga a renda<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (ver o artigo <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> e os adiantamentos das despesas de serviços</span>
+    <span th:text="${paymentFrequency}">por mês</span><span th:if="${paymentDueDay == 1}">,
+    antecipadamente</span>,
+    <span th:if="${paymentDueDay != null}">o mais tardar no dia <strong th:text="${paymentDueDay}">1</strong> do
+      mês em que o período de pagamento tem início</span><span th:if="${paymentDueDay == null}">o mais tardar no dia de pagamento
+      acordado entre as partes</span>, por transferência para a conta que o senhorio tenha
+    indicado por escrito para o efeito.</p>
+  <p>Se o arrendatário não pagar atempadamente, deve os juros legais sobre o montante em atraso
+    e só reembolsa as despesas extrajudiciais de cobrança na medida em que a lei
+    o permita.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>O arrendatário utiliza o imóvel arrendado exclusivamente como habitação e comporta-se, no que respeita à
+    sua utilização, como um bom arrendatário (goed huurder) (art. 7:213 do BW). O arrendatário e as pessoas que
+    se encontrem no imóvel arrendado com o seu consentimento não causam incómodos à vizinhança.</p>
+  <p>As alterações à disposição ou à configuração do imóvel arrendado que, no termo do arrendamento, não possam
+    ser desfeitas sem custos significativos só são efetuadas pelo arrendatário mediante consentimento escrito do
+    senhorio. O senhorio dá o seu consentimento no prazo de 8 semanas em todo o caso se a
+    alteração não prejudicar a possibilidade de novo arrendamento e não implicar uma desvalorização do imóvel
+    arrendado (art. 7:215 do BW).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>O arrendatário não cede o uso do imóvel arrendado, total ou parcialmente, a terceiro, salvo se o senhorio
+    tiver dado previamente o seu consentimento escrito para o efeito.</p>
+  <p>Se o arrendatário tiver a sua residência principal no imóvel arrendado, quando este seja uma habitação
+    autónoma, está legalmente habilitado a ceder o uso de uma parte do mesmo a terceiro (art. 7:244 do BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>A pedido do arrendatário, o senhorio repara os defeitos (gebreken) do imóvel arrendado, salvo se tal for
+    impossível ou exigir despesas que, nas circunstâncias dadas, não possam razoavelmente ser exigidas ao
+    senhorio (art. 7:206 do BW). O arrendatário comunica um defeito ao senhorio o mais depressa possível.</p>
+  <p>O arrendatário efetua à sua custa as reparações de pequena monta (kleine herstellingen), salvo se tiverem
+    passado a ser necessárias porque o senhorio incumpriu a sua obrigação de reparar os defeitos
+    (art. 7:217 do BW). As reparações que se consideram de pequena monta resultam da regulamentação legal da
+    matéria.</p>
+  <p>Se o senhorio estiver em mora na reparação de um defeito, o arrendatário pode reparar o defeito ele próprio
+    e exigir ao senhorio os custos razoáveis, se assim o desejar deduzindo-os da renda
+    (art. 7:206, n.º 3 do BW). Destas regras não se pode derrogar em prejuízo do arrendatário
+    (art. 7:242 do BW).</p>
+  <p>O arrendatário dá ao senhorio a oportunidade de executar obras urgentes no imóvel arrendado, sem prejuízo
+    dos seus direitos legais à redução da renda, à resolução e à indemnização por perdas e danos
+    (art. 7:220, n.º 1 do BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Num novo arrendamento de uma habitação existente é obrigatório um certificado energético (energielabel)
+    válido, nos termos do Besluit bouwwerken leefomgeving (decreto relativo às construções e ao ambiente de
+    vida). O senhorio entrega ao arrendatário, o mais tardar aquando da celebração do presente contrato, uma
+    cópia do certificado energético válido do imóvel arrendado. Um certificado é válido até à data nele
+    indicada.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>No início do arrendamento, as partes elaboram conjuntamente uma descrição do estado do imóvel arrendado
+    (opnamerapport). Ambas as partes assinam a descrição e cada uma recebe um exemplar.</p>
+  <p>No termo do arrendamento, o arrendatário volta a pôr o imóvel arrendado à disposição do senhorio, no estado
+    em que o recebeu segundo essa descrição, com exceção das alterações e
+    acrescentos permitidos e do que tenha perecido ou sido danificado por vetustez. Se não tiver sido elaborada
+    descrição, presume-se, salvo prova em contrário, que o arrendatário recebeu o imóvel arrendado no estado em que
+    se encontra no termo do arrendamento (art. 7:224 do BW).</p>
+  <p>Antes do termo do arrendamento, as partes realizam uma vistoria prévia conjunta, para que o
+    arrendatário ainda possa reparar por si próprio eventuais defeitos, e, na entrega, uma vistoria
+    final.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> O acerto da caução segue-se
+    depois (ver o artigo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>A denúncia do presente contrato faz-se por notificação de oficial de justiça
+    (deurwaardersexploot) ou por carta registada, para um dia acordado para o pagamento da renda
+    (art. 7:271, n.os 3 e 4 do BW).</p>
+  <p>O arrendatário respeita um pré-aviso igual ao tempo que medeia entre 2 dias de pagamento
+    consecutivos, mas não inferior a 1 mês nem superior a 3 meses (art. 7:271, n.º 6, alínea a
+    do BW).</p>
+  <p th:if="${fixedTerm}">Se o arrendamento tiver sido celebrado por tempo determinado, nenhuma das partes pode, em derrogação do que precede,
+    denunciar para um dia anterior ao termo do tempo determinado<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (ver o artigo <span th:text="${refs['term']}"></span>)</span>;
+    os pré-avisos do presente artigo aplicam-se então à denúncia para esse termo ou para um dia de
+    pagamento posterior (art. 7:271, n.º 1 do BW). Só num arrendamento temporário na aceção do
+    art. 7:271, n.º 2 do BW pode o arrendatário denunciar também mais cedo.</p>
+  <p>O senhorio só pode denunciar com um dos fundamentos que a lei para o efeito enumera (art. 7:274,
+    n.º 1 do BW) e indica esses fundamentos na denúncia; uma denúncia com outros fundamentos é nula. O
+    pré-aviso do senhorio é de pelo menos 3 meses, prorrogado por 1 mês por cada ano em que o
+    arrendatário tenha tido o uso ininterrupto do imóvel arrendado por força de um contrato, até ao
+    máximo de 6 meses. Na denúncia, o senhorio pede ao arrendatário que comunique no prazo de
+    6 semanas se consente na cessação (art. 7:271, n.os 5 e 6, alínea b do BW). Se o arrendatário não
+    consentir por escrito, o contrato permanece em vigor até que o tribunal tenha decidido de forma definitiva
+    sobre um pedido do senhorio (art. 7:272 do BW).</p>
+  <p>As partes também podem, depois de o arrendamento ter tido início, pôr-lhe termo por mútuo acordo
+    (art. 7:271, n.º 10 do BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> A entrega rege-se pelo que o presente contrato dispõe a esse respeito (ver o artigo <span th:text="${refs['handover-inspection']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> A caução é devolvida conforme o
+    disposto no presente contrato (ver o artigo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>O senhorio trata os dados pessoais do arrendatário apenas na medida em que tal seja necessário para a
+    celebração e execução do presente contrato e para o cumprimento de obrigações legais, em conformidade com o
+    Regulamento Geral sobre a Proteção de Dados (RGPD; em neerlandês: Algemene verordening
+    gegevensbescherming, AVG, Regulamento (UE) 2016/679). O senhorio não conserva esses dados por mais tempo
+    do que o necessário para esse fim.</p>
+  <p>O arrendatário pode exercer perante o senhorio os seus direitos ao abrigo do RGPD, nomeadamente o direito de
+    acesso, retificação e apagamento dos seus dados pessoais, e pode apresentar reclamação junto da
+    autoridade de controlo, nos Países Baixos a Autoriteit Persoonsgegevens (autoridade neerlandesa de proteção
+    de dados).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>O presente contrato rege-se pelo direito neerlandês.</p>
+  <p>Os litígios sobre os quais a comissão de rendas (huurcommissie) se possa pronunciar nos termos da lei, como os
+    relativos ao caráter razoável da renda e às despesas de serviços, podem ser submetidos pelas partes à
+    comissão de rendas. Considera-se que as partes acordaram o que a comissão de rendas tiver determinado na sua
+    decisão, salvo se uma delas, no prazo de 8 semanas após o envio de uma cópia da
+    decisão, pedir ao tribunal uma decisão (art. 7:262 do BW). Os demais litígios são submetidos ao tribunal
+    competente.</p>
+</div>
+
+</body>
+</html>

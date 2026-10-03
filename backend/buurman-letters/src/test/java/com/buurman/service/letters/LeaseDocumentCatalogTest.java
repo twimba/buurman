@@ -43,7 +43,7 @@ class LeaseDocumentCatalogTest {
    * here; the final batch sets this to {@link DocumentLanguages#ORDERED}. Until then the locator
    * falls back to the national-language document.
    */
-  static final List<String> ENFORCED_LANGUAGES = List.of("nl", "en", "de", "fr");
+  static final List<String> ENFORCED_LANGUAGES = List.of("nl", "en", "de", "fr", "es", "pt", "it");
 
   private static final String DOCUMENT_ROOT = "templates/documents/lease-agreement/";
   private static final String BUNDLE = "messages/document-lease-agreement";

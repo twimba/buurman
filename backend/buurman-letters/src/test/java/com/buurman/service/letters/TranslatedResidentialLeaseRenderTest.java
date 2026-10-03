@@ -63,7 +63,31 @@ class TranslatedResidentialLeaseRenderTest {
               "(voir l’article <span>",
               "à l’avance",
               "le <strong>1</strong> du mois",
-              "le <strong>5</strong> du mois"));
+              "le <strong>5</strong> du mois"),
+          new Lang(
+              "es",
+              new Locale("es"),
+              "fianza (waarborgsom)",
+              "(véase el artículo <span>",
+              "por adelantado",
+              "el día <strong>1</strong> del mes",
+              "el día <strong>5</strong> del mes"),
+          new Lang(
+              "pt",
+              new Locale("pt"),
+              "caução (waarborgsom)",
+              "(ver o artigo <span>",
+              "antecipadamente",
+              "o dia <strong>1</strong> do mês",
+              "o dia <strong>5</strong> do mês"),
+          new Lang(
+              "it",
+              Locale.ITALIAN,
+              "deposito cauzionale (waarborgsom)",
+              "(si veda l’articolo <span>",
+              "in via anticipata",
+              "il giorno <strong>1</strong> del mese",
+              "il giorno <strong>5</strong> del mese"));
 
   private static Stream<Lang> languages() {
     return LANGS.stream();
