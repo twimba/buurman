@@ -17,7 +17,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LeaseClauseTemplate {
 
-  /** A clause key selects a {@code clause-<key>} template fragment, so only safe slugs are valid. */
+  /**
+   * A clause key selects a {@code clause-<key>} template fragment, so only safe slugs are valid.
+   */
   public static final Pattern CLAUSE_KEY_PATTERN = Pattern.compile("^[a-z0-9-]{1,64}$");
 
   private UUID id;

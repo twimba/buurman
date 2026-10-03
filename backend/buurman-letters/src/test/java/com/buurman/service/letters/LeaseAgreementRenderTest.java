@@ -136,10 +136,44 @@ class LeaseAgreementRenderTest {
   }
 
   @Test
-  @DisplayName("the draft disclaimer is always present")
+  @DisplayName("the shell disclaimer says draft, not legal advice, and to consult counsel")
   void disclaimerAlwaysPresent() {
     List<Map<String, Object>> clauses = List.of(clause("a", "A", 1));
-    assertThat(render(clauses, Map.of("a", 1), true, false)).contains("qualified legal counsel");
-    assertThat(render(clauses, Map.of("a", 1), false, true)).contains("qualified legal counsel");
+    assertThat(render(clauses, Map.of("a", 1), true, false))
+        .contains("not legal advice")
+        .contains("qualified legal counsel");
+    assertThat(render(clauses, Map.of("a", 1), false, true))
+        .contains("not legal advice")
+        .contains("qualified legal counsel");
+  }
+
+  @Test
+  @DisplayName("the legacy placeholder document keeps the pre-branch example-text disclaimer")
+  void legacyDisclaimer() {
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("generatedDate", "1 January 2026");
+    vars.put("contractIdentifier", "CON1");
+    vars.put("propertyAddress", "Street 1");
+    vars.put("signatureBlocks", List.of());
+    vars.put("rentComponents", List.of());
+    vars.put("clauses", List.of(Map.of("title", "T", "body", "B")));
+    Context ctx = new Context(Locale.ENGLISH);
+    ctx.setVariables(vars);
+
+    String html = engine.process("lease-agreement/generic", ctx);
+
+    assertThat(html)
+        .contains("generated from example clause text")
+        .contains("has not been reviewed by qualified legal counsel")
+        .doesNotContain("not legal advice");
+  }
+
+  @Test
+  @DisplayName(
+      "a clause without a fragment in the document makes Thymeleaf fail (it is not silent)")
+  void missingFragmentBehaviour() {
+    org.assertj.core.api.Assertions.assertThatThrownBy(
+            () -> render(List.of(clause("nonexistent", "X", 1)), Map.of(), true, false))
+        .isInstanceOf(org.thymeleaf.exceptions.TemplateProcessingException.class);
   }
 }

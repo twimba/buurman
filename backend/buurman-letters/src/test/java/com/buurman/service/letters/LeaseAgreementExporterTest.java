@@ -30,8 +30,11 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.context.MessageSource;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractRentComponent;
+import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
+import com.buurman.domain.RentComponentType;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.Unit;
@@ -40,12 +43,14 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractRentComponentRepository;
+import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.service.LeaseClauseResolver;
 import com.buurman.service.LeaseKindResolver;
+import com.buurman.util.CurrencyUtils;
 import com.buurman.util.MoneyAmount;
 
 /**
@@ -61,6 +66,8 @@ class LeaseAgreementExporterTest {
   private final PropertyRepository propertyRepository = mock(PropertyRepository.class);
   private final ContractRentComponentRepository rentComponentRepository =
       mock(ContractRentComponentRepository.class);
+  private final ContractRentPeriodRepository rentPeriodRepository =
+      mock(ContractRentPeriodRepository.class);
   private final LeaseClauseResolver clauseResolver = mock(LeaseClauseResolver.class);
   private final UnitResidentialDetailsRepository unitDetailsRepository =
       mock(UnitResidentialDetailsRepository.class);
@@ -90,6 +97,7 @@ class LeaseAgreementExporterTest {
             contractRepository,
             propertyRepository,
             rentComponentRepository,
+            rentPeriodRepository,
             clauseResolver,
             leaseKindResolver,
             documentLocator,
@@ -421,5 +429,195 @@ class LeaseAgreementExporterTest {
     assertThat(captor.getValue())
         .doesNotContainKeys("landlordName", "tenantNames", "startDate", "rentAmount", "refs");
     verifyNoInteractions(teamRepository);
+  }
+
+  private static final Locale NL = Locale.forLanguageTag("nl");
+
+  private static MoneyAmount eur(String value) {
+    return new MoneyAmount(new BigDecimal(value), "EUR");
+  }
+
+  private static String money(String value) {
+    return CurrencyUtils.formatCurrency(new BigDecimal(value), "EUR", NL);
+  }
+
+  private static ContractRentComponent component(
+      RentComponentType type, String amount, UUID periodId) {
+    return ContractRentComponent.builder()
+        .componentType(type)
+        .amount(eur(amount))
+        .rentPeriodId(periodId)
+        .build();
+  }
+
+  private Map<String, Object> renderShellVariables() {
+    when(documentLocator.locate("NL", LeaseKind.RESIDENTIAL, "nl"))
+        .thenReturn(
+            Optional.of(
+                new LeaseDocumentLocator.LeaseDocument(
+                    "lease-agreement/NL/residential/nl", "nl", true)));
+    when(documentTemplateService.renderToPdfTemplate(anyString(), any(Locale.class), anyMap()))
+        .thenReturn("%PDF".getBytes(UTF_8));
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(clause("rent", "Rent", "Body", true)));
+
+    exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "nl");
+
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+    verify(documentTemplateService)
+        .renderToPdfTemplate(eq("lease-agreement/_shell"), any(Locale.class), captor.capture());
+    return captor.getValue();
+  }
+
+  @Test
+  @DisplayName("rentAmount is the BASE_RENT sum, not the sum of all components")
+  void rentAmountIsBaseRentOnly() {
+    contract.setRentAmount(eur("1150.00"));
+    when(rentComponentRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(
+            List.of(
+                component(RentComponentType.BASE_RENT, "1000.00", null),
+                component(RentComponentType.SERVICE_COSTS, "150.00", null)));
+
+    Map<String, Object> vars = renderShellVariables();
+
+    assertThat(vars).containsEntry("rentAmount", money("1000.00"));
+    assertThat(vars.get("rentAmount")).isNotEqualTo(money("1150.00"));
+  }
+
+  @Test
+  @DisplayName("several BASE_RENT components are summed")
+  void severalBaseRentComponentsAreSummed() {
+    contract.setRentAmount(eur("1400.00"));
+    when(rentComponentRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(
+            List.of(
+                component(RentComponentType.BASE_RENT, "900.00", null),
+                component(RentComponentType.BASE_RENT, "100.00", null),
+                component(RentComponentType.PARKING, "400.00", null)));
+
+    assertThat(renderShellVariables()).containsEntry("rentAmount", money("1000.00"));
+  }
+
+  @Test
+  @DisplayName("a contract without components keeps its own rentAmount")
+  void noComponentsKeepsContractRent() {
+    assertThat(renderShellVariables()).containsEntry("rentAmount", money("1000.00"));
+  }
+
+  @Test
+  @DisplayName("components without any BASE_RENT fall back to the contract rentAmount")
+  void componentsWithoutBaseRentFallBack() {
+    contract.setRentAmount(eur("1150.00"));
+    when(rentComponentRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(List.of(component(RentComponentType.SERVICE_COSTS, "150.00", null)));
+
+    assertThat(renderShellVariables()).containsEntry("rentAmount", money("1150.00"));
+  }
+
+  @Test
+  @DisplayName("with several rent periods only the active period's components count")
+  void onlyActivePeriodComponentsCount() {
+    UUID oldPeriod = UUID.randomUUID();
+    UUID currentPeriod = UUID.randomUUID();
+    contract.setRentAmount(eur("1250.00"));
+    when(rentComponentRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(
+            List.of(
+                component(RentComponentType.BASE_RENT, "1000.00", oldPeriod),
+                component(RentComponentType.BASE_RENT, "1100.00", currentPeriod),
+                component(RentComponentType.SERVICE_COSTS, "150.00", currentPeriod)));
+    when(rentPeriodRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(
+            List.of(
+                ContractRentPeriod.builder()
+                    .id(oldPeriod)
+                    .effectiveFrom(LocalDate.of(2025, 1, 1))
+                    .effectiveTo(Optional.of(LocalDate.of(2025, 12, 31)))
+                    .build(),
+                ContractRentPeriod.builder()
+                    .id(currentPeriod)
+                    .effectiveFrom(LocalDate.of(2026, 1, 1))
+                    .build()));
+
+    assertThat(renderShellVariables()).containsEntry("rentAmount", money("1100.00"));
+  }
+
+  @Test
+  @DisplayName("deposit falls back to securityDeposit when depositAmount is unset")
+  void depositFallsBackToSecurityDeposit() {
+    contract.setSecurityDeposit(Optional.of(eur("2000.00")));
+
+    assertThat(renderShellVariables()).containsEntry("depositAmount", money("2000.00"));
+  }
+
+  @Test
+  @DisplayName("depositAmount wins when both deposits are set")
+  void depositAmountWins() {
+    contract.setDepositAmount(Optional.of(eur("1800.00")));
+    contract.setSecurityDeposit(Optional.of(eur("2000.00")));
+
+    assertThat(renderShellVariables()).containsEntry("depositAmount", money("1800.00"));
+  }
+
+  @Test
+  @DisplayName("no deposit at all yields null")
+  void noDeposit() {
+    assertThat(renderShellVariables()).containsEntry("depositAmount", null);
+  }
+
+  @Test
+  @DisplayName("rent component labels come from the document-locale bundle, not the enum name")
+  void rentComponentLabelsAreLocalized() {
+    when(rentComponentRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(List.of(component(RentComponentType.SERVICE_COSTS, "150.00", null)));
+    when(messageSource.getMessage(eq("lease.rentComponent.SERVICE_COSTS"), any(), eq(NL)))
+        .thenReturn("Servicekosten");
+
+    @SuppressWarnings("unchecked")
+    List<Map<String, String>> rows =
+        (List<Map<String, String>>) (List<?>) renderShellVariables().get("rentComponents");
+
+    assertThat(rows).extracting(r -> r.get("type")).containsExactly("Servicekosten");
+  }
+
+  @Test
+  @DisplayName("legacy path also localizes the rent component labels")
+  void legacyPathLocalizesRentComponentLabels() {
+    when(rentComponentRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(List.of(component(RentComponentType.PARKING, "50.00", null)));
+    when(messageSource.getMessage(eq("lease.rentComponent.PARKING"), any(), any(Locale.class)))
+        .thenReturn("Parking-label");
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(clause("term", "Term", "Body", true)));
+
+    exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
+
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+    verify(documentTemplateService).renderToPdf(eq("lease-agreement"), any(), captor.capture());
+    assertThat((List<Map<String, String>>) (List<?>) captor.getValue().get("rentComponents"))
+        .extracting(r -> r.get("type"))
+        .containsExactly("Parking-label");
+  }
+
+  @Test
+  @DisplayName("a clause key without a fragment in the located document fails before rendering")
+  void clauseWithoutFragmentFailsBeforeRender() {
+    when(documentLocator.locate("NL", LeaseKind.RESIDENTIAL, "nl"))
+        .thenReturn(
+            Optional.of(
+                new LeaseDocumentLocator.LeaseDocument(
+                    "lease-agreement/NL/residential/nl", "nl", true)));
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(
+            List.of(clause("rent", "Rent", "Body", true), clause("pets", "Pets", "Body", true)));
+
+    assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "nl"))
+        .isInstanceOf(BusinessRuleException.class)
+        .hasMessageContaining("pets")
+        .hasMessageContaining("lease-agreement/NL/residential/nl");
+    verifyNoInteractions(documentTemplateService);
   }
 }

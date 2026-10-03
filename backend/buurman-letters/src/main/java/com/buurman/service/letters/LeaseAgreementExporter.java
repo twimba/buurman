@@ -1,14 +1,18 @@
 package com.buurman.service.letters;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
@@ -17,13 +21,16 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractRentComponent;
+import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
+import com.buurman.domain.RentComponentType;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractRentComponentRepository;
+import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
@@ -53,6 +60,7 @@ public class LeaseAgreementExporter {
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
   private final ContractRentComponentRepository rentComponentRepository;
+  private final ContractRentPeriodRepository rentPeriodRepository;
   private final LeaseClauseResolver clauseResolver;
   private final LeaseKindResolver leaseKindResolver;
   private final LeaseDocumentLocator documentLocator;
@@ -66,6 +74,7 @@ public class LeaseAgreementExporter {
       ContractRepository contractRepository,
       PropertyRepository propertyRepository,
       ContractRentComponentRepository rentComponentRepository,
+      ContractRentPeriodRepository rentPeriodRepository,
       LeaseClauseResolver clauseResolver,
       LeaseKindResolver leaseKindResolver,
       LeaseDocumentLocator documentLocator,
@@ -77,6 +86,7 @@ public class LeaseAgreementExporter {
     this.contractRepository = contractRepository;
     this.propertyRepository = propertyRepository;
     this.rentComponentRepository = rentComponentRepository;
+    this.rentPeriodRepository = rentPeriodRepository;
     this.clauseResolver = clauseResolver;
     this.leaseKindResolver = leaseKindResolver;
     this.documentLocator = documentLocator;
@@ -105,7 +115,6 @@ public class LeaseAgreementExporter {
       ContractIdentifier contractIdentifier, UUID teamId, String lang) {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
-    LetterTemplateService.resolveLocale(lang);
 
     LeaseKind kind = leaseKindResolver.resolveFor(contract, property, teamId);
     Optional<LeaseDocumentLocator.LeaseDocument> document =
@@ -124,7 +133,9 @@ public class LeaseAgreementExporter {
               + " remain included");
     }
 
-    Map<String, Object> variables = buildTemplateVariables(contract, property, teamId, locale);
+    List<ContractRentComponent> rentComponents = activeRentComponents(contract, teamId);
+    Map<String, Object> variables =
+        buildTemplateVariables(contract, property, teamId, locale, rentComponents);
     if (document.isEmpty()) {
       variables.put("clauses", legacyClauses(includedClauses));
       return new RenderedLease(
@@ -138,7 +149,8 @@ public class LeaseAgreementExporter {
           }
         });
     LeaseDocumentLocator.LeaseDocument doc = document.get();
-    addTypedValues(variables, contract, teamId, locale);
+    requireClauseFragments(doc, includedClauses);
+    addTypedValues(variables, contract, teamId, locale, rentComponents);
     variables.put("clauses", shellClauses(includedClauses));
     variables.put("clauseSource", doc.templatePath());
     variables.put("refs", clauseRefs(includedClauses));
@@ -179,8 +191,85 @@ public class LeaseAgreementExporter {
     return refs;
   }
 
+  /**
+   * A missing fragment makes Thymeleaf fail deep inside the PDF render (see {@link
+   * LeaseDocumentFragments}); checking up front names the clause key and the document instead.
+   */
+  private static void requireClauseFragments(
+      LeaseDocumentLocator.LeaseDocument doc, List<ResolvedLeaseClauseResponse> included) {
+    Set<String> fragments = LeaseDocumentFragments.names(doc.templatePath());
+    included.forEach(
+        c -> {
+          if (!fragments.contains("clause-" + c.clauseKey())) {
+            throw new BusinessRuleException(
+                "Lease document "
+                    + doc.templatePath()
+                    + " has no fragment for clause '"
+                    + c.clauseKey()
+                    + "'");
+          }
+        });
+  }
+
+  /**
+   * The contract's rent components of the rent period that applies now (else the first one):
+   * components exist per rent period, so mixing periods would double-count the rent.
+   */
+  private List<ContractRentComponent> activeRentComponents(Contract contract, UUID teamId) {
+    List<ContractRentComponent> all =
+        rentComponentRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+    long periods = all.stream().map(ContractRentComponent::getRentPeriodId).distinct().count();
+    if (periods <= 1) {
+      return all;
+    }
+    LocalDate today = LocalDate.now(clock);
+    List<ContractRentPeriod> candidates =
+        rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+    Optional<UUID> activePeriodId =
+        candidates.stream()
+            .filter(p -> !p.getEffectiveFrom().isAfter(today))
+            .filter(p -> p.getEffectiveTo().map(to -> !to.isBefore(today)).orElse(true))
+            .max(Comparator.comparing(ContractRentPeriod::getEffectiveFrom))
+            .or(
+                () ->
+                    candidates.stream()
+                        .min(Comparator.comparing(ContractRentPeriod::getEffectiveFrom)))
+            .map(ContractRentPeriod::getId);
+    return activePeriodId
+        .map(
+            id ->
+                all.stream()
+                    .filter(c -> id.equals(c.getRentPeriodId()))
+                    .collect(Collectors.toList()))
+        .orElse(all);
+  }
+
+  /**
+   * The net rent ("kale huur"): {@code Contract.rentAmount} is the SUM of all rent components (base
+   * rent, service costs, parking, ...) whenever components were supplied on create/update, so the
+   * base rent is the sum of the BASE_RENT components. Contracts without components, or whose
+   * components include no BASE_RENT, fall back to {@code Contract.rentAmount} (for a component-less
+   * contract that is the entered rent itself).
+   */
+  static MoneyAmount baseRent(Contract contract, List<ContractRentComponent> components) {
+    List<ContractRentComponent> base =
+        components.stream()
+            .filter(c -> c.getComponentType() == RentComponentType.BASE_RENT)
+            .toList();
+    if (base.isEmpty()) {
+      return contract.getRentAmount();
+    }
+    BigDecimal sum =
+        base.stream().map(c -> c.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
+    return MoneyAmount.of(sum, base.get(0).getAmount().currency());
+  }
+
   private Map<String, Object> buildTemplateVariables(
-      Contract contract, Property property, UUID teamId, Locale locale) {
+      Contract contract,
+      Property property,
+      UUID teamId,
+      Locale locale,
+      List<ContractRentComponent> components) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     Map<String, Object> vars =
         LetterExporterHelper.headerVariables(contract, LocalDate.now(clock), dateFmt);
@@ -191,15 +280,15 @@ public class LeaseAgreementExporter {
         helper.premisesInfo(contract, property, messageSource, locale);
     vars.put("propertyAddress", LetterExporterHelper.premisesAddress(property, premisesInfo));
 
-    List<ContractRentComponent> components =
-        rentComponentRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     vars.put(
         "rentComponents",
         components.stream()
             .map(
                 c ->
                     Map.of(
-                        "type", c.getComponentType().getDisplayName(),
+                        "type",
+                            messageSource.getMessage(
+                                "lease.rentComponent." + c.getComponentType().name(), null, locale),
                         "amount",
                             CurrencyUtils.formatCurrency(
                                 c.getAmount().value(), c.getAmount().currency(), locale)))
@@ -215,7 +304,11 @@ public class LeaseAgreementExporter {
 
   /** Typed, pre-formatted values the per-language clause fragments may reference. */
   private void addTypedValues(
-      Map<String, Object> vars, Contract contract, UUID teamId, Locale locale) {
+      Map<String, Object> vars,
+      Contract contract,
+      UUID teamId,
+      Locale locale,
+      List<ContractRentComponent> components) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     vars.put("landlordName", teamRepository.getById(teamId).getName());
     LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
@@ -229,9 +322,15 @@ public class LeaseAgreementExporter {
         "contractTypeLabel",
         messageSource.getMessage(
             "lease.contractType." + contract.getContractType().name(), null, locale));
-    vars.put("rentAmount", formatMoney(contract.getRentAmount(), locale));
+    vars.put("rentAmount", formatMoney(baseRent(contract, components), locale));
+    // Same precedence as the product's deposit card: depositAmount, else securityDeposit.
     vars.put(
-        "depositAmount", contract.getDepositAmount().map(m -> formatMoney(m, locale)).orElse(null));
+        "depositAmount",
+        contract
+            .getDepositAmount()
+            .or(contract::getSecurityDeposit)
+            .map(m -> formatMoney(m, locale))
+            .orElse(null));
     vars.put("paymentDueDay", contract.getPaymentDueDay().orElse(null));
     vars.put(
         "paymentFrequency",

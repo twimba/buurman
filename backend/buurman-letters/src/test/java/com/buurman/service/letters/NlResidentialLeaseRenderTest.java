@@ -173,7 +173,7 @@ class NlResidentialLeaseRenderTest {
     String html = render(ALL, true, vars("fixedTerm", false, "endDate", "31 oktober 2028"));
     String term = clauseBody(html, "term");
     assertThat(term).contains("voor onbepaalde tijd").doesNotContain("31 oktober 2028");
-    assertThat(clauseBody(html, "termination")).doesNotContain("bepaalde tijd is aangegaan");
+    assertThat(clauseBody(html, "termination")).doesNotContain("in afwijking hiervan");
     assertNoLeaks(html);
   }
 

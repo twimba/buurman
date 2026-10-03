@@ -28,6 +28,9 @@ class LeaseKindTest {
   @ParameterizedTest
   @EnumSource(LeaseKind.class)
   void everyChainStartsWithTheKindAndEndsWithLegacy(LeaseKind kind) {
-    assertThat(kind.fallbackChain()).startsWith(kind).endsWith(LeaseKind.LEGACY).doesNotHaveDuplicates();
+    assertThat(kind.fallbackChain())
+        .startsWith(kind)
+        .endsWith(LeaseKind.LEGACY)
+        .doesNotHaveDuplicates();
   }
 }
