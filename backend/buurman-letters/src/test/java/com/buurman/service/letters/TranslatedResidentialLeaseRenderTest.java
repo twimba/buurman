@@ -133,7 +133,23 @@ class TranslatedResidentialLeaseRenderTest {
               "(ks. <span>",
               "etukäteen",
               "viimeistään kunkin maksukauden alkamiskuukauden <strong>1</strong>. päivänä",
-              "viimeistään kunkin maksukauden alkamiskuukauden <strong>5</strong>. päivänä"));
+              "viimeistään kunkin maksukauden alkamiskuukauden <strong>5</strong>. päivänä"),
+          new Lang(
+              "el",
+              Locale.of("el"),
+              "εγγύηση (waarborgsom)",
+              "(βλ. άρθρο <span>",
+              "προκαταβολικά",
+              "το αργότερο την <strong>1</strong>η ημέρα",
+              "το αργότερο την <strong>5</strong>η ημέρα"),
+          new Lang(
+              "pl",
+              Locale.of("pl"),
+              "kaucję (waarborgsom)",
+              "(zob. artykuł <span>",
+              "z góry",
+              "najpóźniej <strong>1</strong>. dnia miesiąca",
+              "najpóźniej <strong>5</strong>. dnia miesiąca"));
 
   private static Stream<Lang> languages() {
     return LANGS.stream();

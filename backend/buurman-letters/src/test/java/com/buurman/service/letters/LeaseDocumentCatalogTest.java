@@ -39,12 +39,10 @@ import com.buurman.util.DocumentLanguages;
 class LeaseDocumentCatalogTest {
 
   /**
-   * Languages whose document must exist for every (country, kind). Task 7 batches add languages
-   * here; the final batch sets this to {@link DocumentLanguages#ORDERED}. Until then the locator
-   * falls back to the national-language document.
+   * Languages whose document must exist for every (country, kind): all supported document
+   * languages. Task 7 is complete, there are no later batches.
    */
-  static final List<String> ENFORCED_LANGUAGES =
-      List.of("nl", "en", "de", "fr", "es", "pt", "it", "sv", "da", "nb", "fi");
+  static final List<String> ENFORCED_LANGUAGES = DocumentLanguages.ORDERED;
 
   private static final String DOCUMENT_ROOT = "templates/documents/lease-agreement/";
   private static final String BUNDLE = "messages/document-lease-agreement";
@@ -144,6 +142,18 @@ class LeaseDocumentCatalogTest {
     assertThat(found.keySet())
         .as("every shipped document directory must be catalogued")
         .isSubsetOf(CATALOG.keySet());
+  }
+
+  @Test
+  @DisplayName(
+      "the language files of every catalogued (country, kind) are exactly the supported set")
+  void languageFilesEqualSupportedLanguages() throws IOException {
+    Map<String, Map<String, Resource>> found = discover();
+    for (String countryKind : CATALOG.keySet()) {
+      assertThat(found.getOrDefault(countryKind, Map.of()).keySet())
+          .as("%s language files", countryKind)
+          .containsExactlyInAnyOrderElementsOf(DocumentLanguages.ORDERED);
+    }
   }
 
   @Test

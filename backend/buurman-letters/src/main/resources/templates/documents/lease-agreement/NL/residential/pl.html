@@ -1,0 +1,241 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Polish courtesy translation of nl.html (a translation of Dutch law, Boek 7 BW, into Polish, not Polish law); the
+  Dutch text is authoritative. Draft text, not vetted by legal counsel. Only prose differs from nl.html: fragments, th:
+  expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Niżej podpisani:</p>
+  <p><strong th:text="${landlordName}">wynajmujący</strong>, dalej &bdquo;wynajmujący&rdquo; (verhuurder), oraz</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">najemca</strong>, dalej
+    (łącznie) &bdquo;najemca&rdquo; (huurder),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">niżej podpisany najemca lub najemcy, dalej (łącznie)
+    &bdquo;najemca&rdquo; (huurder),</p>
+  <p>oświadczają, że uzgodnili tak, jak określono w niniejszej umowie najmu. Jeżeli w niniejszej umowie
+    wskazano więcej niż 1 najemcę, każdy z nich odpowiada solidarnie (hoofdelijk aansprakelijk) za wykonanie
+    wszystkich zobowiązań najemcy z niniejszej umowy.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Wynajmujący wynajmuje najemcy, który przyjmuje w najem, lokal mieszkalny położony przy
+    <strong th:text="${propertyAddress}">adres</strong>, wraz z należącymi do niego nieruchomymi
+    przynależnościami, dalej &bdquo;przedmiot najmu&rdquo; (het gehuurde).</p>
+  <p>Do niniejszej umowy mają zastosowanie ustawowe przepisy o najmie lokali mieszkalnych (Księga 7,
+    tytuł 4, dział 5 niderlandzkiego kodeksu cywilnego, Burgerlijk Wetboek). W zakresie, w jakim ustawa
+    przewiduje, że nie można od nich odstąpić na niekorzyść najemcy, przepisy te mają pierwszeństwo przed
+    odmiennymi postanowieniami niniejszej umowy.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Niniejsza umowa obowiązuje od dnia <strong th:text="${startDate}">data rozpoczęcia</strong>.</p>
+  <p th:if="${!fixedTerm}">Umowę zawarto na czas nieoznaczony.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Umowę zawarto na czas oznaczony<span th:if="${endDate != null}">, do dnia
+      <strong th:text="${endDate}">data zakończenia</strong> włącznie</span>. Najem lokalu mieszkalnego
+      zawarty na czas oznaczony nie wygasa z samym upływem okresu najmu. Każda ze stron może wypowiedzieć
+      (opzegging) najem na dzień uzgodniony dla zapłaty czynszu, jednak nie na dzień przypadający przed
+      zakończeniem czasu oznaczonego (art. 7:271 ust. 1 BW).</p>
+    <p>Inaczej jest wyłącznie w przypadku najmu na okres najwyżej 2 lat z najemcą należącym do kategorii
+      wskazanej w rozporządzeniu rządu Niderlandów (algemene maatregel van bestuur)
+      (art. 7:271 ust. 2 BW). W takim przypadku wynajmujący informuje najemcę na piśmie o dniu zakończenia
+      najmu nie wcześniej niż 3 miesiące i najpóźniej 1 miesiąc przed upływem okresu najmu; jeżeli
+      wynajmujący tego nie uczyni, najem po upływie tego okresu przedłuża się na czas nieoznaczony. Najemca
+      może wypowiedzieć taki najem także przed upływem okresu, na dzień uzgodniony dla zapłaty
+      czynszu.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Czynsz za samo korzystanie z przedmiotu najmu (czynsz podstawowy, kale huurprijs, art. 7:237 ust. 2 BW)
+    wynosi <strong th:text="${rentAmount}">kwota</strong> <span th:text="${paymentFrequency}">miesięcznie</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Ponadto najemca jest
+    zobowiązany do zapłaty opłat za media i kosztów usług (servicekosten) (zob. artykuł <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>W zakresie, w jakim dla przedmiotu najmu obowiązuje ustawowy maksymalny czynsz, w tym przepisy
+    wprowadzone ustawą Wet betaalbare huur (ustawa o przystępnych czynszach) z dniem 1 lipca 2024 r.,
+    najemca nie jest zobowiązany do zapłaty czynszu wyższego niż ten maksymalny. Najemca może najpóźniej w
+    ciągu 6 miesięcy od rozpoczęcia pierwszej zawartej przez niego umowy najmu dotyczącej tego lokalu
+    zwrócić się do komisji czynszowej (huurcommissie) o rozstrzygnięcie w sprawie słuszności uzgodnionego
+    czynszu (art. 7:249 BW).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Do waloryzacji czynszu stosuje się postanowienia niniejszej umowy w tym zakresie (zob. artykuł <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Wynajmujący może waloryzować czynsz 1 raz w roku, po raz pierwszy po upływie 12 miesięcy od daty
+    rozpoczęcia niniejszej umowy. Wynajmujący zawiadamia najemcę o zmianie z odpowiednim wyprzedzeniem i na
+    piśmie, podając obowiązujący i nowy czynsz oraz datę wejścia zmiany w życie.</p>
+  <p>Waloryzacja nigdy nie jest wyższa niż ustawowo dopuszczalna maksymalna podwyżka czynszu obowiązująca
+    dla przedmiotu najmu w dniu wejścia zmiany w życie. Jeżeli to postanowienie prowadzi do podwyżki
+    wyższej niż dopuszczalna ustawowo, postanowienie jest w tym zakresie nieważne, a czynsz uważa się za
+    podwyższony o podwyżkę dopuszczalną (art. 7:248 BW). W zakresie, w jakim pozwala na to ustawa, najemca
+    może zwrócić się do komisji czynszowej o rozstrzygnięcie w sprawie podwyżki.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Oprócz czynszu najemca płaci w każdym okresie płatności zaliczkę na koszty mediów z indywidualnym
+    licznikiem oraz na koszty usług (servicekosten) (art. 7:237 ust. 3 BW), tak jak wskazano w niniejszej
+    umowie.</p>
+  <p>Wynajmujący przekazuje najemcy co roku, najpóźniej 6 miesięcy po upływie roku kalendarzowego,
+    zestawienie kosztów naliczonych w tym roku kalendarzowym, podzielone według rodzaju, ze wskazaniem
+    sposobu obliczenia (art. 7:259 ust. 2 BW). Nadwyżka lub niedobór zapłaconych zaliczek jest rozliczana
+    między stronami po przekazaniu tego zestawienia.</p>
+  <p>Jeżeli strony nie dojdą do porozumienia w sprawie należnych kosztów, każda z nich może zwrócić się do
+    komisji czynszowej o rozstrzygnięcie w tej sprawie (art. 7:260 BW).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Najemca płaci przy rozpoczęciu najmu kaucję (waarborgsom) w
+    wysokości <strong th:text="${depositAmount}">kwota</strong>.</p>
+  <p th:if="${depositAmount == null}">Najemca płaci przy rozpoczęciu najmu kaucję (waarborgsom) w
+    wysokości kwoty uzgodnionej między stronami na piśmie.</p>
+  <p>Kaucja stanowi zabezpieczenie wykonania tego, co uzgodniono w niniejszej umowie, i wynosi najwyżej
+    równowartość 2 czynszów podstawowych (art. 7:261b ust. 1 i 2 BW).</p>
+  <p>Wynajmujący zwraca kaucję w terminie 14 dni od zakończenia umowy najmu.
+    Jeżeli przedmiot najmu został uszkodzony i najemca za to odpowiada, lub jeżeli najemca ma jeszcze do
+    zapłaty czynsz, koszty usług (servicekosten) albo opłatę za efektywność energetyczną
+    (energieprestatievergoeding), wynajmujący zwraca pozostałą kwotę w terminie 30 dni od zakończenia, po
+    potrąceniu wykazanych kosztów naprawy lub kwot jeszcze należnych, odpowiednio. O potrąceniu
+    wynajmujący zawiadamia najemcę na piśmie, wraz z pełnym zestawieniem kosztów
+    (art. 7:261b ust. 3 i 4 BW).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Przy ustalaniu
+    szkody decyduje stan przy zwrocie (zob. artykuł <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Najemca płaci czynsz<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (zob. artykuł <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> oraz zaliczki na koszty usług</span>
+    <span th:text="${paymentFrequency}">miesięcznie</span><span th:if="${paymentDueDay == 1}">
+    z góry</span>,
+    <span th:if="${paymentDueDay != null}">najpóźniej <strong th:text="${paymentDueDay}">1</strong>. dnia
+      miesiąca, w którym rozpoczyna się okres płatności</span><span th:if="${paymentDueDay == null}">najpóźniej w dniu
+      płatności uzgodnionym między stronami</span>, przelewem na rachunek, który wynajmujący w tym celu
+    wskazał na piśmie.</p>
+  <p>Jeżeli najemca nie zapłaci w terminie, jest zobowiązany do zapłaty odsetek ustawowych od zaległej
+    kwoty oraz zwraca koszty pozasądowego dochodzenia należności wyłącznie w zakresie, w jakim pozwala na to
+    ustawa.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Najemca korzysta z przedmiotu najmu wyłącznie jako z lokalu mieszkalnego i zachowuje się w zakresie
+    korzystania jak dobry najemca (goed huurder) (art. 7:213 BW). Najemca oraz osoby przebywające w
+    przedmiocie najmu za jego zgodą nie powodują uciążliwości dla sąsiadów.</p>
+  <p>Zmiany w urządzeniu lub wyglądzie przedmiotu najmu, których po zakończeniu najmu nie można usunąć bez
+    znacznych kosztów, najemca wprowadza wyłącznie po uzyskaniu pisemnej zgody wynajmującego. Wynajmujący
+    udziela zgody w terminie 8 tygodni w każdym razie, gdy zmiana nie szkodzi możliwości wynajęcia i nie
+    prowadzi do spadku wartości przedmiotu najmu (art. 7:215 BW).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Najemca nie oddaje przedmiotu najmu w całości ani w części do używania innej osobie, chyba że
+    wynajmujący uprzednio wyraził na to pisemną zgodę.</p>
+  <p>Jeżeli najemca ma w przedmiocie najmu, o ile jest on samodzielnym lokalem mieszkalnym, swoje główne
+    miejsce zamieszkania, jest z mocy ustawy uprawniony do oddania jego części do używania innej osobie
+    (art. 7:244 BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Wynajmujący usuwa na żądanie najemcy wady (gebreken) przedmiotu najmu, chyba że jest to niemożliwe
+    albo wymaga wydatków, których w danych okolicznościach nie można rozsądnie wymagać od wynajmującego
+    (art. 7:206 BW). Najemca zgłasza wynajmującemu każdą wadę możliwie najszybciej.</p>
+  <p>Najemca wykonuje na własny koszt drobne naprawy (kleine herstellingen), chyba że stały się one
+    konieczne z powodu tego, że wynajmujący uchybił swojemu obowiązkowi usuwania wad (art. 7:217 BW). To,
+    które naprawy uważa się za drobne, wynika z odpowiednich przepisów ustawy.</p>
+  <p>Jeżeli wynajmujący pozostaje w zwłoce z usunięciem wady, najemca może sam usunąć wadę i dochodzić od
+    wynajmującego rozsądnych kosztów, w razie potrzeby przez potrącenie ich z czynszu
+    (art. 7:206 ust. 3 BW). Od tych przepisów nie można odstąpić na niekorzyść najemcy
+    (art. 7:242 BW).</p>
+  <p>Najemca umożliwia wynajmującemu wykonanie pilnych prac w przedmiocie najmu, bez uszczerbku dla swoich
+    ustawowych roszczeń o obniżenie czynszu, rozwiązanie umowy (ontbinding) i odszkodowanie
+    (art. 7:220 ust. 1 BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Przy nowym wynajmie istniejącego lokalu mieszkalnego wymagane jest ważne świadectwo charakterystyki
+    energetycznej (energielabel) na podstawie niderlandzkiego rozporządzenia o obiektach budowlanych i
+    środowisku życia (Besluit bouwwerken leefomgeving). Wynajmujący przekazuje najemcy najpóźniej przy
+    zawarciu niniejszej umowy kopię ważnego świadectwa charakterystyki energetycznej przedmiotu najmu.
+    Świadectwo jest ważne do daty na nim wskazanej.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Przy rozpoczęciu najmu strony wspólnie sporządzają opis stanu przedmiotu najmu (protokół stanu,
+    opnamerapport). Obie strony podpisują opis i każda otrzymuje egzemplarz.</p>
+  <p>Po zakończeniu najmu najemca oddaje przedmiot najmu do dyspozycji wynajmującego w stanie, w jakim go
+    według tego opisu przyjął, z wyjątkiem dozwolonych zmian i dobudowań oraz tego, co uległo zniszczeniu
+    lub uszkodzeniu na skutek upływu czasu. Jeżeli opisu nie sporządzono, domniemywa się, do czasu
+    udowodnienia przeciwnego, że najemca otrzymał przedmiot najmu w stanie, w jakim znajduje się on po
+    zakończeniu najmu (art. 7:224 BW).</p>
+  <p>Strony przeprowadzają przed zakończeniem najmu wspólny przegląd wstępny, aby najemca mógł jeszcze sam
+    usunąć ewentualne wady, a przy zwrocie przegląd końcowy.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Rozliczenie kaucji (waarborgsom)
+    następuje potem (zob. artykuł <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Wypowiedzenie (opzegging) niniejszej umowy następuje przez doręczenie przez holenderskiego
+    komornika/doręczyciela (gerechtsdeurwaarder; deurwaardersexploot) albo listem poleconym, na dzień
+    uzgodniony dla zapłaty czynszu (art. 7:271 ust. 3 i 4 BW).</p>
+  <p>Najemca zachowuje okres wypowiedzenia równy odstępowi między 2 kolejnymi dniami płatności, nie
+    krótszy jednak niż 1 miesiąc i nie dłuższy niż 3 miesiące (art. 7:271 ust. 6 lit. a
+    BW).</p>
+  <p th:if="${fixedTerm}">Jeżeli najem zawarto na czas oznaczony, to odmiennie od powyższego żadna ze stron
+    nie może wypowiedzieć najmu na dzień przypadający przed zakończeniem czasu oznaczonego<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (zob. artykuł <span th:text="${refs['term']}"></span>)</span>;
+    okresy wypowiedzenia z niniejszego artykułu mają wówczas zastosowanie do wypowiedzenia na to
+    zakończenie lub na późniejszy dzień płatności (art. 7:271 ust. 1 BW). Jedynie w przypadku najmu
+    czasowego w rozumieniu art. 7:271 ust. 2 BW najemca może wypowiedzieć najem także wcześniej.</p>
+  <p>Wynajmujący może wypowiedzieć najem tylko z podstaw wymienionych w ustawie
+    (art. 7:274 ust. 1 BW) i wskazuje te podstawy w wypowiedzeniu; wypowiedzenie z innych podstaw jest
+    nieważne. Okres wypowiedzenia dla wynajmującego wynosi co najmniej 3 miesiące, przedłużany o
+    1 miesiąc za każdy rok, w którym najemca nieprzerwanie korzystał z przedmiotu najmu na podstawie
+    umowy, najwyżej do 6 miesięcy. W wypowiedzeniu wynajmujący wzywa najemcę, aby w ciągu 6 tygodni
+    oświadczył, czy zgadza się na zakończenie najmu (art. 7:271 ust. 5 i 6 lit. b BW). Jeżeli najemca nie
+    wyrazi zgody na piśmie, umowa pozostaje w mocy aż do prawomocnego rozstrzygnięcia przez sąd powództwa
+    wynajmującego (art. 7:272 BW).</p>
+  <p>Strony mogą także, po rozpoczęciu najmu, zakończyć go za wzajemnym porozumieniem
+    (art. 7:271 ust. 10 BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Do zwrotu przedmiotu najmu stosuje się postanowienia niniejszej umowy w tym zakresie (zob. artykuł <span th:text="${refs['handover-inspection']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Kaucja (waarborgsom) jest zwracana tak,
+    jak określono w niniejszej umowie (zob. artykuł <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Wynajmujący przetwarza dane osobowe najemcy wyłącznie w zakresie, w jakim jest to niezbędne do
+    zawarcia i wykonania niniejszej umowy oraz do wypełnienia obowiązków prawnych, zgodnie z ogólnym
+    rozporządzeniem o ochronie danych (RODO, rozporządzenie (UE) 2016/679). Wynajmujący nie przechowuje
+    tych danych dłużej, niż jest to w tym celu konieczne.</p>
+  <p>Najemca może wobec wynajmującego wykonywać swoje prawa wynikające z RODO, w tym prawo dostępu,
+    sprostowania i usunięcia swoich danych osobowych, oraz może wnieść skargę do organu nadzorczego, w
+    Niderlandach do Autoriteit Persoonsgegevens (holenderski organ ochrony danych).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Do niniejszej umowy stosuje się prawo niderlandzkie.</p>
+  <p>Spory, w sprawie których komisja czynszowa (huurcommissie) może według ustawy orzekać, takie jak
+    spory o słuszność czynszu i o koszty usług (servicekosten), strony mogą przedstawić komisji czynszowej.
+    Uważa się, że strony uzgodniły to, co komisja czynszowa ustaliła w swoim orzeczeniu, chyba że któraś z
+    nich w terminie 8 tygodni od wysłania odpisu orzeczenia zażąda rozstrzygnięcia przez sąd
+    (art. 7:262 BW). Inne spory przedstawia się właściwemu sądowi.</p>
+</div>
+
+</body>
+</html>
