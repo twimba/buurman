@@ -38,6 +38,7 @@ import {
   useChangePrimaryContact,
 } from '@/hooks/useContractHooks';
 import { useTranslation } from 'react-i18next';
+import { LeaseRegimeSelect } from './LeaseRegimeSelect';
 
 interface ContractFormProps {
   contract?: ContractResponse;
@@ -139,6 +140,7 @@ export const ContractForm = ({
     propertyIdentifier:
       prefilledPropertyId || contract?.property.identifier || '',
     contractType: contract?.contractType ?? ContractType.FIXED_TERM,
+    leaseRegime: contract?.leaseRegime ?? 'STANDARD',
     startDate: contract?.startDate ?? '',
     endDate: contract?.endDate ?? '',
     signedDate: contract?.signedDate ?? '',
@@ -865,6 +867,12 @@ export const ContractForm = ({
                   </option>
                 </select>
               </div>
+
+              <LeaseRegimeSelect
+                value={formData.leaseRegime ?? 'STANDARD'}
+                onChange={(regime) => handleChange('leaseRegime', regime)}
+                disabled={isLoading}
+              />
 
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">

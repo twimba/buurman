@@ -330,6 +330,7 @@
   },
   "form": {
     "contractType": "Tipo de Contrato",
+    "leaseRegime": "Regime de arrendamento",
     "property": "Imóvel",
     "propertyAndParties": "Imóvel e Partes",
     "propertyPlaceholder": "Selecionar um imóvel...",
@@ -1092,6 +1093,14 @@
     "empty": "Ainda não há cláusulas configuradas para o país deste contrato.",
     "required": "Obrigatória",
     "saveSelection": "Guardar seleção",
-    "generate": "Gerar contrato de arrendamento"
+    "generate": "Gerar contrato de arrendamento",
+    "pinned": "Fixada",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo"
+  },
+  "leaseRegime": {
+    "STANDARD": "Padrão",
+    "SHORT_TERM": "Curta duração",
+    "STUDENT_OR_MOBILITY": "Estudante ou mobilidade"
   }
 }

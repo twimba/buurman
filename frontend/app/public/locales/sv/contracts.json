@@ -328,6 +328,7 @@
   },
   "form": {
     "contractType": "Kontraktstyp",
+    "leaseRegime": "Hyresregim",
     "property": "Fastighet",
     "propertyAndParties": "Fastighet & Parter",
     "propertyPlaceholder": "Valj en fastighet...",
@@ -1078,6 +1079,14 @@
     "empty": "Inga klausuler har konfigurerats för detta kontrakts land ännu.",
     "required": "Obligatorisk",
     "saveSelection": "Spara urval",
-    "generate": "Generera hyresavtal"
+    "generate": "Generera hyresavtal",
+    "pinned": "Fast",
+    "moveUp": "Flytta upp",
+    "moveDown": "Flytta ned"
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Korttidshyra",
+    "STUDENT_OR_MOBILITY": "Student eller mobilitet"
   }
 }

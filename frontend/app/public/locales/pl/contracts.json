@@ -332,6 +332,7 @@
   },
   "form": {
     "contractType": "Typ umowy",
+    "leaseRegime": "Reżim najmu",
     "property": "Nieruchomość",
     "propertyAndParties": "Nieruchomość i strony",
     "propertyPlaceholder": "Wybierz nieruchomość...",
@@ -1106,6 +1107,14 @@
     "empty": "Dla kraju tej umowy nie skonfigurowano jeszcze żadnych klauzul.",
     "required": "Wymagana",
     "saveSelection": "Zapisz wybór",
-    "generate": "Wygeneruj umowę najmu"
+    "generate": "Wygeneruj umowę najmu",
+    "pinned": "Przypięta",
+    "moveUp": "Przesuń w górę",
+    "moveDown": "Przesuń w dół"
+  },
+  "leaseRegime": {
+    "STANDARD": "Standardowy",
+    "SHORT_TERM": "Krótkoterminowy",
+    "STUDENT_OR_MOBILITY": "Studencki lub mobilnościowy"
   }
 }

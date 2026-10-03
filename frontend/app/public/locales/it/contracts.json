@@ -330,6 +330,7 @@
   },
   "form": {
     "contractType": "Tipo di contratto",
+    "leaseRegime": "Regime di locazione",
     "property": "Immobile",
     "propertyAndParties": "Immobile e parti",
     "propertyPlaceholder": "Seleziona un immobile...",
@@ -1092,6 +1093,14 @@
     "empty": "Non sono ancora state configurate clausole per il paese di questo contratto.",
     "required": "Obbligatoria",
     "saveSelection": "Salva selezione",
-    "generate": "Genera contratto di locazione"
+    "generate": "Genera contratto di locazione",
+    "pinned": "Fissata",
+    "moveUp": "Sposta su",
+    "moveDown": "Sposta giù"
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Breve durata",
+    "STUDENT_OR_MOBILITY": "Studenti o mobilità"
   }
 }

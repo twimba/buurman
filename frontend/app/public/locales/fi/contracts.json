@@ -328,6 +328,7 @@
   },
   "form": {
     "contractType": "Sopimustyyppi",
+    "leaseRegime": "Vuokrajärjestelmä",
     "property": "Kohde",
     "propertyAndParties": "Kohde ja osapuolet",
     "propertyPlaceholder": "Valitse kohde...",
@@ -1078,6 +1079,14 @@
     "empty": "Tämän sopimuksen maalle ei ole vielä määritetty lausekkeita.",
     "required": "Pakollinen",
     "saveSelection": "Tallenna valinta",
-    "generate": "Luo vuokrasopimus"
+    "generate": "Luo vuokrasopimus",
+    "pinned": "Kiinnitetty",
+    "moveUp": "Siirrä ylös",
+    "moveDown": "Siirrä alas"
+  },
+  "leaseRegime": {
+    "STANDARD": "Vakio",
+    "SHORT_TERM": "Lyhytaikainen",
+    "STUDENT_OR_MOBILITY": "Opiskelija- tai liikkuvuusvuokra"
   }
 }

@@ -328,6 +328,7 @@
   },
   "form": {
     "contractType": "Contract Type",
+    "leaseRegime": "Lease regime",
     "property": "Property",
     "propertyAndParties": "Property & Parties",
     "propertyPlaceholder": "Select a property...",
@@ -1078,6 +1079,14 @@
     "empty": "No clauses are configured for this contract's country yet.",
     "required": "Required",
     "saveSelection": "Save selection",
-    "generate": "Generate lease agreement"
+    "generate": "Generate lease agreement",
+    "pinned": "Pinned",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Short-term",
+    "STUDENT_OR_MOBILITY": "Student or mobility"
   }
 }

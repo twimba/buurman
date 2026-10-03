@@ -328,6 +328,7 @@
   },
   "form": {
     "contractType": "Vertragsart",
+    "leaseRegime": "Mietregime",
     "property": "Immobilie",
     "propertyAndParties": "Immobilie & Parteien",
     "propertyPlaceholder": "Immobilie auswählen...",
@@ -1078,6 +1079,14 @@
     "empty": "Für das Land dieses Vertrags sind noch keine Klauseln konfiguriert.",
     "required": "Erforderlich",
     "saveSelection": "Auswahl speichern",
-    "generate": "Mietvertrag erstellen"
+    "generate": "Mietvertrag erstellen",
+    "pinned": "Fixiert",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten"
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Kurzzeitmiete",
+    "STUDENT_OR_MOBILITY": "Studenten- oder Mobilitätsmiete"
   }
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileSignature } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileSignature } from 'lucide-react';
 import { Button, LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
@@ -28,6 +28,43 @@ export const ContractLeaseAgreementTab = ({
   // save so the overrides don't linger once the server reflects them.
   const [overrides, setOverrides] = useState<Record<string, boolean>>({});
 
+  // Local clause order (templateIdentifiers) once the landlord has moved something; null means
+  // "show the server order". Cleared on a successful save, like overrides.
+  const [order, setOrder] = useState<string[] | null>(null);
+
+  const isIncluded = (clause: ResolvedLeaseClauseResponse) =>
+    clause.optional
+      ? (overrides[clause.templateIdentifier] ?? clause.included)
+      : true;
+
+  const orderedClauses = (): ResolvedLeaseClauseResponse[] => {
+    // Pinned clauses (parties, premises) always lead; the rest follow by sortOrder.
+    const base = (clauses ?? [])
+      .slice()
+      .sort(
+        (a, b) =>
+          Number(b.pinned) - Number(a.pinned) || a.sortOrder - b.sortOrder
+      );
+    if (!order) {
+      return base;
+    }
+    const byId = new Map(base.map((c) => [c.templateIdentifier, c]));
+    return order
+      .map((id) => byId.get(id))
+      .filter((c): c is ResolvedLeaseClauseResponse => !!c);
+  };
+
+  const handleMove = (index: number, delta: -1 | 1) => {
+    const current = orderedClauses();
+    const target = current[index + delta];
+    if (current[index].pinned || !target || target.pinned) {
+      return;
+    }
+    const next = current.map((c) => c.templateIdentifier);
+    [next[index], next[index + delta]] = [next[index + delta], next[index]];
+    setOrder(next);
+  };
+
   const handleToggle = (clause: ResolvedLeaseClauseResponse) => {
     // Non-optional clauses cannot be excluded — enforced here as well as server-side, since this
     // is data integrity for a legal document, not just UX polish.
@@ -47,14 +84,18 @@ export const ContractLeaseAgreementTab = ({
       return;
     }
     updateMutation.mutate(
-      clauses.map((clause) => ({
+      orderedClauses().map((clause, index) => ({
         templateIdentifier: clause.templateIdentifier,
-        included: clause.optional
-          ? (overrides[clause.templateIdentifier] ?? clause.included)
-          : true,
-        sortOrder: clause.sortOrder,
+        included: isIncluded(clause),
+        // The server ignores a pinned clause's sortOrder, so it is sent unchanged.
+        sortOrder: clause.pinned ? clause.sortOrder : index + 1,
       })),
-      { onSuccess: () => setOverrides({}) }
+      {
+        onSuccess: () => {
+          setOverrides({});
+          setOrder(null);
+        },
+      }
     );
   };
 
@@ -70,9 +111,12 @@ export const ContractLeaseAgreementTab = ({
     return <ErrorMessage message={t('leaseAgreement.loadError')} />;
   }
 
-  const sortedClauses = clauses
-    .slice()
-    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const sortedClauses = orderedClauses();
+  const articleNumbers = sortedClauses.map((clause, index) =>
+    isIncluded(clause)
+      ? sortedClauses.slice(0, index + 1).filter(isIncluded).length
+      : null
+  );
 
   return (
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 space-y-6">
@@ -92,10 +136,11 @@ export const ContractLeaseAgreementTab = ({
         </p>
       ) : (
         <ul className="space-y-3">
-          {sortedClauses.map((clause) => {
-            const checked = clause.optional
-              ? (overrides[clause.templateIdentifier] ?? clause.included)
-              : true;
+          {sortedClauses.map((clause, index) => {
+            const checked = isIncluded(clause);
+            const nextClause = sortedClauses[index + 1];
+            const previousClause = sortedClauses[index - 1];
+            const articleNumber = articleNumbers[index];
             return (
               <li
                 key={clause.templateIdentifier}
@@ -111,9 +156,22 @@ export const ContractLeaseAgreementTab = ({
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
+                    {articleNumber !== null && (
+                      <span
+                        data-testid="article-number"
+                        className="text-sm font-semibold text-text-secondary"
+                      >
+                        {articleNumber}
+                      </span>
+                    )}
                     <span className="text-sm font-medium text-text-primary">
                       {clause.title}
                     </span>
+                    {clause.pinned && (
+                      <span className="text-xs text-text-muted">
+                        {t('leaseAgreement.pinned')}
+                      </span>
+                    )}
                     {!clause.optional && (
                       <span className="text-xs text-text-muted">
                         {t('leaseAgreement.required')}
@@ -123,6 +181,28 @@ export const ContractLeaseAgreementTab = ({
                   <p className="text-xs text-text-secondary mt-1 line-clamp-2">
                     {clause.body}
                   </p>
+                </div>
+                <div className="flex flex-col">
+                  <button
+                    type="button"
+                    aria-label={t('leaseAgreement.moveUp')}
+                    disabled={
+                      clause.pinned || !previousClause || previousClause.pinned
+                    }
+                    onClick={() => handleMove(index, -1)}
+                    className="p-1 rounded text-text-secondary hover:bg-surface-hover disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={t('leaseAgreement.moveDown')}
+                    disabled={clause.pinned || !nextClause}
+                    onClick={() => handleMove(index, 1)}
+                    className="p-1 rounded text-text-secondary hover:bg-surface-hover disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
                 </div>
               </li>
             );

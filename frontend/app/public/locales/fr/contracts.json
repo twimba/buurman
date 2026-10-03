@@ -330,6 +330,7 @@
   },
   "form": {
     "contractType": "Type de contrat",
+    "leaseRegime": "Régime de bail",
     "property": "Bien",
     "propertyAndParties": "Bien et parties",
     "propertyPlaceholder": "Sélectionner un bien...",
@@ -1092,6 +1093,14 @@
     "empty": "Aucune clause n'est encore configurée pour le pays de ce contrat.",
     "required": "Obligatoire",
     "saveSelection": "Enregistrer la sélection",
-    "generate": "Générer le bail"
+    "generate": "Générer le bail",
+    "pinned": "Épinglée",
+    "moveUp": "Monter",
+    "moveDown": "Descendre"
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Courte durée",
+    "STUDENT_OR_MOBILITY": "Étudiant ou mobilité"
   }
 }

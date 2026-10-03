@@ -328,6 +328,7 @@
   },
   "form": {
     "contractType": "Kontrakttype",
+    "leaseRegime": "Leieregime",
     "property": "Eiendom",
     "propertyAndParties": "Eiendom og parter",
     "propertyPlaceholder": "Velg en eiendom...",
@@ -1078,6 +1079,14 @@
     "empty": "Det er ennå ikke konfigurert klausuler for landet til denne kontrakten.",
     "required": "Obligatorisk",
     "saveSelection": "Lagre valg",
-    "generate": "Generer leiekontrakt"
+    "generate": "Generer leiekontrakt",
+    "pinned": "Festet",
+    "moveUp": "Flytt opp",
+    "moveDown": "Flytt ned"
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Korttidsleie",
+    "STUDENT_OR_MOBILITY": "Student eller mobilitet"
   }
 }

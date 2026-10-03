@@ -328,6 +328,7 @@
   },
   "form": {
     "contractType": "Contracttype",
+    "leaseRegime": "Huurregime",
     "property": "Pand",
     "propertyAndParties": "Pand & Partijen",
     "propertyPlaceholder": "Selecteer een pand...",
@@ -1078,6 +1079,14 @@
     "empty": "Er zijn nog geen clausules geconfigureerd voor het land van dit contract.",
     "required": "Verplicht",
     "saveSelection": "Selectie opslaan",
-    "generate": "Huurovereenkomst genereren"
+    "generate": "Huurovereenkomst genereren",
+    "pinned": "Vastgezet",
+    "moveUp": "Omhoog",
+    "moveDown": "Omlaag"
+  },
+  "leaseRegime": {
+    "STANDARD": "Standaard",
+    "SHORT_TERM": "Korte termijn",
+    "STUDENT_OR_MOBILITY": "Student of mobiliteit"
   }
 }
