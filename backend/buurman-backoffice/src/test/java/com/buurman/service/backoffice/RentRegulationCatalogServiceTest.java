@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.buurman.domain.RentRegulationCountry;
+import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.TerminationGivenBy;
 import com.buurman.domain.regulation.CatalogCountry;
 import com.buurman.domain.regulation.RentRegulationCatalog;
@@ -152,6 +153,69 @@ class RentRegulationCatalogServiceTest {
     service.reload(principal);
 
     verify(repository).deleteAllReferenceData();
+    verify(terminationRuleRepository, org.mockito.Mockito.never()).save(any());
+  }
+
+  @Test
+  @DisplayName(
+      "drops a region-specific termination rule rather than silently promoting it to"
+          + " country-wide when its region is no longer in the reloaded catalog — a plain"
+          + " Optional.map(lookup) cannot distinguish \"no region\" from \"region vanished\","
+          + " since a null-returning mapper collapses to empty either way")
+  void reload_dropsRegionSpecificRuleForRemovedRegion() {
+    // The reloaded catalog still has the country, but with no regions at all — the region the
+    // existing rule is scoped to is gone.
+    CatalogCountry catalogCountry =
+        new CatalogCountry(
+            "NL", "Netherlands", false, null, null, List.of(), null, null, null, null);
+    RentRegulationCatalog catalog =
+        new RentRegulationCatalog("v1", "2026-03-01", "test catalog", List.of(catalogCountry));
+    when(loader.load()).thenReturn(catalog);
+
+    UUID oldRegionId = UUID.randomUUID();
+    RentRegulationCountry existingCountry =
+        RentRegulationCountry.builder().id(OLD_COUNTRY_ID).countryCode("NL").build();
+    RentRegulationRegion existingRegion =
+        RentRegulationRegion.builder()
+            .id(oldRegionId)
+            .countryId(OLD_COUNTRY_ID)
+            .regionCode("NH")
+            .regionName("North Holland")
+            .build();
+    when(repository.findAllCountries()).thenReturn(List.of(existingCountry));
+    when(repository.findAllRegions()).thenReturn(List.of(existingRegion));
+
+    TerminationNoticeRule regionSpecificRule =
+        TerminationNoticeRule.builder()
+            .id(UUID.randomUUID())
+            .countryId(OLD_COUNTRY_ID)
+            .regionId(Optional.of(oldRegionId))
+            .partyType(TerminationGivenBy.LANDLORD)
+            .noticeDays(90)
+            .groundsRequired(false)
+            .build();
+    when(terminationRuleRepository.findAll()).thenReturn(List.of(regionSpecificRule));
+
+    when(repository.saveCountry(any(RentRegulationCountry.class)))
+        .thenAnswer(
+            invocation -> {
+              RentRegulationCountry country = invocation.getArgument(0);
+              country.setId(NEW_COUNTRY_ID);
+              return country;
+            });
+
+    BackofficePrincipal principal =
+        new BackofficePrincipal(
+            UUID.randomUUID().toString(),
+            Optional.of("admin@buurman.io"),
+            Optional.empty(),
+            Optional.empty());
+
+    service.reload(principal);
+
+    verify(repository).deleteAllReferenceData();
+    // Must be dropped, not re-inserted with an empty regionId (which would wrongly make this a
+    // country-wide rule).
     verify(terminationRuleRepository, org.mockito.Mockito.never()).save(any());
   }
 }

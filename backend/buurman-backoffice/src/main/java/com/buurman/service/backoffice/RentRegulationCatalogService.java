@@ -201,11 +201,28 @@ public class RentRegulationCatalogService {
             seed.countryCode());
         continue;
       }
-      Optional<UUID> regionId =
-          Optional.ofNullable(seed.regionCode())
-              .map(
-                  code ->
-                      regionIdsByCountryCode.getOrDefault(seed.countryCode(), Map.of()).get(code));
+      // A plain Optional.ofNullable(seed.regionCode()).map(lookup) would silently collapse to
+      // empty when the lookup itself returns null — indistinguishable from seed.regionCode()
+      // having been null to begin with. That would make a region that vanished from the reloaded
+      // catalog look country-wide (no regionId) instead of being dropped, silently broadening a
+      // region-specific legal notice-period rule to the whole country. Looked up and checked
+      // explicitly instead, mirroring the country-miss branch above.
+      Optional<UUID> regionId = Optional.empty();
+      if (seed.regionCode() != null) {
+        UUID resolvedRegionId =
+            regionIdsByCountryCode
+                .getOrDefault(seed.countryCode(), Map.of())
+                .get(seed.regionCode());
+        if (resolvedRegionId == null) {
+          log.warn(
+              "Dropping termination rule for country '{}' region '{}' — region no longer present"
+                  + " in reloaded catalog",
+              seed.countryCode(),
+              seed.regionCode());
+          continue;
+        }
+        regionId = Optional.of(resolvedRegionId);
+      }
 
       terminationRuleRepository.save(
           TerminationNoticeRule.builder()
