@@ -196,4 +196,24 @@ describe('TerminationWizardPage — override reason reveal', () => {
     // Confirmation step is shown.
     expect(screen.getByText('Notice Given')).toBeInTheDocument();
   });
+
+  it('shows the deposit reminder on confirmation while the deposit query is still loading, instead of false-negativing to "no deposit"', () => {
+    mockedUseContractDeposit.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
+    renderWithProviders(<TerminationWizardPage />);
+
+    advanceToReviewStep();
+    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /confirm & terminate/i })
+    );
+
+    expect(
+      screen.getByText(
+        'The deposit return due date has been updated to match the effective end date.'
+      )
+    ).toBeInTheDocument();
+  });
 });

@@ -31,7 +31,8 @@ export const TerminationWizardPage = () => {
   const { id = '' } = useParams<{ id: string }>();
 
   const { data: contract } = useContract(id);
-  const { data: deposit } = useContractDeposit(id);
+  const { data: deposit, isLoading: isDepositLoading } =
+    useContractDeposit(id);
 
   const STEPS = useMemo(
     () => [
@@ -206,7 +207,14 @@ export const TerminationWizardPage = () => {
         )}
 
         {step === 'confirmation' && result && (
-          <ConfirmationStep response={result} hasDeposit={!!deposit} />
+          // While the deposit query is still loading, !!deposit alone would false-negative to
+          // "no deposit" — assume one might exist until we actually know otherwise, since
+          // silently omitting the deposit-return reminder is worse than a brief over-inclusive
+          // render.
+          <ConfirmationStep
+            response={result}
+            hasDeposit={isDepositLoading || !!deposit}
+          />
         )}
       </div>
     </div>
