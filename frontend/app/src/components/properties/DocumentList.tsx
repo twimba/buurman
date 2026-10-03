@@ -430,6 +430,14 @@ export const DocumentList = ({
             >
               <Download className="h-5 w-5" />
             </button>
+            {renderRowAction && (
+              <div
+                className="flex-shrink-0"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {renderRowAction(doc)}
+              </div>
+            )}
           </div>
         </div>
       </SwipeAction>

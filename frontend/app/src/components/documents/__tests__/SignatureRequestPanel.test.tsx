@@ -126,6 +126,29 @@ describe('SignatureRequestPanel', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows a disabled, non-actionable state instead of "Send for signature" when the existing-requests fetch fails — a failed check is not "no request exists"', async () => {
+    vi.spyOn(signaturesApi, 'listSignatureRequests').mockRejectedValue(
+      new Error('network error')
+    );
+    const createSpy = vi.spyOn(signaturesApi, 'createSignatureRequest');
+
+    renderWithProviders(
+      <ToastProvider>
+        <SignatureRequestPanel
+          contractId="CON00000000000000000000001"
+          documentId="DOC00000000000000000000001"
+        />
+      </ToastProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('button', { name: /send for signature/i })
+      ).not.toBeInTheDocument();
+    });
+    expect(createSpy).not.toHaveBeenCalled();
+  });
+
   it('offers to retract a request that is still pending, and sends the typed reason', async () => {
     vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([
       {

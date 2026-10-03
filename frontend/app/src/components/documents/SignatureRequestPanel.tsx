@@ -96,10 +96,14 @@ const CancelSignatureRequestModal = ({
           </div>
 
           <div className="px-6 py-4">
-            <label className="block text-sm font-medium text-text-secondary mb-1">
+            <label
+              htmlFor="retract-signature-reason"
+              className="block text-sm font-medium text-text-secondary mb-1"
+            >
               Reason (optional)
             </label>
             <textarea
+              id="retract-signature-reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="e.g. Tenant backed out, document needs a correction..."
@@ -149,8 +153,11 @@ export const SignatureRequestPanel = ({
   // lifetime, so after a reload it offered "Send for signature" again on a document that was
   // already out for signing — one click away from a second envelope and a second round of
   // tenant emails.
-  const { data: existingRequests, isLoading: isLoadingExisting } =
-    useSignatureRequests(contractId, documentId);
+  const {
+    data: existingRequests,
+    isLoading: isLoadingExisting,
+    isError: isErrorExisting,
+  } = useSignatureRequests(contractId, documentId);
 
   // The list is ordered newest-first by the API. Derived, not copied into state, so there is no
   // setState-in-an-effect and no render where a known request is briefly forgotten.
@@ -185,6 +192,20 @@ export const SignatureRequestPanel = ({
   if (!activeRequestId) {
     if (isLoadingExisting) {
       return <LoadingSpinner className="p-0" />;
+    }
+    // A failed fetch is NOT "no existing request" — it's "unknown". Defaulting to the plain Send
+    // button here would be the exact duplicate-send hazard this whole existing-requests lookup
+    // exists to prevent (see the comment above): a document already out for signing would offer
+    // to send it again the moment its status check happens to fail.
+    if (isErrorExisting) {
+      return (
+        <span
+          className="p-1.5 text-text-muted inline-flex"
+          title="Couldn't check this document's signature status — reload the page to try again"
+        >
+          <AlertTriangle className="h-4 w-4" />
+        </span>
+      );
     }
     return (
       <button
