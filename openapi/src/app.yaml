@@ -3720,9 +3720,9 @@ components:
           items:
             $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
+          example: ["en"]
         leaseRegime:
           $ref: '#/components/schemas/LeaseRegime'
-          example: ["en"]
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -6278,9 +6278,9 @@ components:
           items:
             $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
+          example: ["en"]
         leaseRegime:
           $ref: '#/components/schemas/LeaseRegime'
-          example: ["en"]
         countryMetadata:
           type: object
           additionalProperties: {}

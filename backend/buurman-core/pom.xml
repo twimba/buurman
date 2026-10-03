@@ -649,6 +649,7 @@
                                 <importMapping>GenerateExtensionDocumentsRequest=com.buurman.dto.request.GenerateExtensionDocumentsRequest</importMapping>
                                 <importMapping>GenerateRentChangeDocumentsRequest=com.buurman.dto.request.GenerateRentChangeDocumentsRequest</importMapping>
                                 <importMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</importMapping>
+                                <importMapping>LeaseRegime=com.buurman.domain.LeaseRegime</importMapping>
                                 <importMapping>PaymentType=com.buurman.domain.Payment.PaymentType</importMapping>
                                 <importMapping>ContactCreditIdentifier=com.buurman.domain.identifier.ContactCreditIdentifier</importMapping>
                                 <importMapping>CancelPaymentRequest=com.buurman.dto.request.CancelPaymentRequest</importMapping>
