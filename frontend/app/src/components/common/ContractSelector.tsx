@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { getContracts } from '@/generated/api/contracts/contracts';
-import type { GetContractsParams } from '@/generated/models';
+import type { ContractStatus, GetContractsParams } from '@/generated/models';
 import { getCurrencySymbol } from '@/utils/currencies';
+import { queryKeys } from '@/lib/queryKeys';
 import { ChevronDown, FileText } from 'lucide-react';
 
 interface ContractSelectorProps {
@@ -11,7 +12,7 @@ interface ContractSelectorProps {
   onChange: (value: string) => void;
   disabled?: boolean;
   /** Filter contracts by status. Defaults to 'ACTIVE'. Pass undefined to load all. */
-  status?: string;
+  status?: ContractStatus;
   /** Show a "clear" option to deselect. */
   clearable?: boolean;
   /** Placeholder text when no contract is selected. */
@@ -34,12 +35,12 @@ export const ContractSelector = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
+  const params: GetContractsParams | undefined = status
+    ? { status: [status] }
+    : undefined;
   const { data: contractsData, isLoading } = useQuery({
-    queryKey: ['contracts', status ?? 'ALL'],
-    queryFn: () =>
-      getContracts(
-        status ? ({ status: [status] } as GetContractsParams) : undefined
-      ),
+    queryKey: queryKeys.contracts.all(params),
+    queryFn: () => getContracts(params),
   });
   const contracts = contractsData?.content ?? [];
 
