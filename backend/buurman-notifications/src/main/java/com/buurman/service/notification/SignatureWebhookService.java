@@ -57,70 +57,82 @@ public class SignatureWebhookService {
   private final AppProperties appProperties;
   private final ObjectMapper objectMapper;
 
+  /**
+   * Deliberately does NOT catch and swallow processing exceptions (beyond the one genuinely
+   * non-retryable case, unparseable JSON, handled below). {@code completeRequest} downloads the
+   * signed PDF and certificate from Documenso and uploads both to S3 — a transient failure there
+   * used to be logged and discarded, leaving the request stuck PENDING/PARTIALLY_SIGNED forever
+   * with no way to recover. Letting the exception propagate instead surfaces it through {@code
+   * GlobalExceptionHandler}'s generic handler as a 500, which Documenso's webhook job retries (it
+   * already does, up to its own max-retries) — turning a silent, permanent failure into an
+   * automatic retry of exactly the kind this webhook needs.
+   */
   public void processDocumensoEvent(String rawPayload, @Nullable String secretHeader) {
     if (!providerClient.isValidWebhookSecret(secretHeader)) {
       log.warn("Documenso webhook secret verification failed");
       throw new ForbiddenException("Documenso webhook secret verification failed");
     }
 
+    JsonNode root;
     try {
-      JsonNode root = objectMapper.readTree(rawPayload);
-      String event = root.path("event").asText();
-      JsonNode payload = root.path("payload");
-      String envelopeId = payload.path("envelopeId").asText();
+      root = objectMapper.readTree(rawPayload);
+    } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+      // Malformed JSON is never retryable — Documenso would send the exact same bytes again.
+      // Log and accept (200) so it isn't retried forever; everything past this point, by
+      // contrast, is left to propagate (see the class-level note below).
+      log.warn("Documenso webhook had unparseable payload: {}", e.getMessage());
+      return;
+    }
+    String event = root.path("event").asText();
+    JsonNode payload = root.path("payload");
+    String envelopeId = payload.path("envelopeId").asText();
 
-      if (envelopeId.isEmpty()) {
-        log.warn("Documenso webhook missing envelopeId");
-        return;
+    if (envelopeId.isEmpty()) {
+      log.warn("Documenso webhook missing envelopeId");
+      return;
+    }
+
+    Optional<SignatureRequest> maybeRequest =
+        signatureRequestRepository.findByProviderAndProviderSubmissionId("documenso", envelopeId);
+    if (maybeRequest.isEmpty()) {
+      log.debug("Documenso webhook for unknown envelope {} — ignoring", envelopeId);
+      return;
+    }
+    SignatureRequest request = maybeRequest.get();
+
+    List<SignatureSigner> signers =
+        signatureSignerRepository.findBySignatureRequestId(request.getId());
+    // Merge function on purpose: a duplicate provider_signer_id should not happen, but without
+    // it Collectors.toMap throws IllegalStateException instead of processing the rest of the
+    // signers.
+    Map<String, SignatureSigner> byProviderSignerId =
+        signers.stream()
+            .collect(
+                java.util.stream.Collectors.toMap(
+                    SignatureSigner::getProviderSignerId, s -> s, (first, duplicate) -> first));
+
+    for (JsonNode recipient : payload.path("recipients")) {
+      String recipientId = recipient.path("id").asText();
+      SignatureSigner signer = byProviderSignerId.get(recipientId);
+      if (signer == null) {
+        continue;
       }
-
-      Optional<SignatureRequest> maybeRequest =
-          signatureRequestRepository.findByProviderAndProviderSubmissionId("documenso", envelopeId);
-      if (maybeRequest.isEmpty()) {
-        log.debug("Documenso webhook for unknown envelope {} — ignoring", envelopeId);
-        return;
+      SignatureSignerStatus newStatus = mapSignerStatus(recipient);
+      if (isForwardProgress(signer.getStatus(), newStatus)) {
+        Optional<java.time.Instant> signedAt =
+            recipient.has("signedAt") && !recipient.path("signedAt").isNull()
+                ? Optional.of(java.time.Instant.parse(recipient.path("signedAt").asText()))
+                : Optional.empty();
+        signatureSignerRepository.updateStatus(signer.getId(), newStatus, signedAt);
+        signer.setStatus(newStatus);
       }
-      SignatureRequest request = maybeRequest.get();
+    }
 
-      List<SignatureSigner> signers =
-          signatureSignerRepository.findBySignatureRequestId(request.getId());
-      // Merge function on purpose: a duplicate provider_signer_id should not happen, but without
-      // it Collectors.toMap throws IllegalStateException, which the outer catch would swallow —
-      // silently dropping the whole event's processing rather than just the duplicate row.
-      Map<String, SignatureSigner> byProviderSignerId =
-          signers.stream()
-              .collect(
-                  java.util.stream.Collectors.toMap(
-                      SignatureSigner::getProviderSignerId, s -> s, (first, duplicate) -> first));
-
-      for (JsonNode recipient : payload.path("recipients")) {
-        String recipientId = recipient.path("id").asText();
-        SignatureSigner signer = byProviderSignerId.get(recipientId);
-        if (signer == null) {
-          continue;
-        }
-        SignatureSignerStatus newStatus = mapSignerStatus(recipient);
-        if (isForwardProgress(signer.getStatus(), newStatus)) {
-          Optional<java.time.Instant> signedAt =
-              recipient.has("signedAt") && !recipient.path("signedAt").isNull()
-                  ? Optional.of(java.time.Instant.parse(recipient.path("signedAt").asText()))
-                  : Optional.empty();
-          signatureSignerRepository.updateStatus(signer.getId(), newStatus, signedAt);
-          signer.setStatus(newStatus);
-        }
-      }
-
-      switch (event) {
-        case "DOCUMENT_REJECTED" -> declineRequest(request, payload);
-        case "DOCUMENT_CANCELLED" ->
-            finalizeRequestStatus(request, SignatureRequestStatus.CANCELLED);
-        case "DOCUMENT_COMPLETED" -> completeRequest(request, envelopeId);
-        default -> updatePartialProgress(request, signers);
-      }
-    } catch (ForbiddenException e) {
-      throw e;
-    } catch (Exception e) {
-      log.error("Error processing Documenso webhook: {}", e.getMessage(), e);
+    switch (event) {
+      case "DOCUMENT_REJECTED" -> declineRequest(request, payload);
+      case "DOCUMENT_CANCELLED" -> finalizeRequestStatus(request, SignatureRequestStatus.CANCELLED);
+      case "DOCUMENT_COMPLETED" -> completeRequest(request, envelopeId);
+      default -> updatePartialProgress(request, signers);
     }
   }
 

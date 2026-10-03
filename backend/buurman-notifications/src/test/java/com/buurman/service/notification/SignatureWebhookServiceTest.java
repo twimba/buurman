@@ -312,6 +312,29 @@ class SignatureWebhookServiceTest {
 
   @Test
   @DisplayName(
+      "a processing failure during DOCUMENT_COMPLETED propagates instead of being swallowed, so"
+          + " the webhook responds 5xx and Documenso retries delivery")
+  void processingFailurePropagates() {
+    when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
+            "documenso", "envelope_abc123"))
+        .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PARTIALLY_SIGNED)));
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+        .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
+    when(providerClient.downloadCompleted("envelope_abc123"))
+        .thenThrow(new com.buurman.exception.ExternalServiceException("Documenso unreachable"));
+
+    org.assertj.core.api.Assertions.assertThatThrownBy(
+            () -> service.processDocumensoEvent(completedEventPayload(), "secret"))
+        .isInstanceOf(com.buurman.exception.ExternalServiceException.class);
+
+    verify(signatureRequestRepository, never())
+        .save(
+            org.mockito.ArgumentMatchers.argThat(
+                r -> r.getStatus() == SignatureRequestStatus.COMPLETED));
+  }
+
+  @Test
+  @DisplayName(
       "a stale DOCUMENT_COMPLETED arriving after DECLINED does not re-download or overwrite the"
           + " decline")
   void staleCompletedDoesNotRegressDeclinedRequest() {

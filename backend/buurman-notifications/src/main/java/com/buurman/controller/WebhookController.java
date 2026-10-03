@@ -68,13 +68,10 @@ public class WebhookController implements WebhooksApi {
 
   @Override
   public void handleDocumensoEvents(String body, Optional<String> xDocumensoSecret) {
-    try {
-      signatureWebhookService.processDocumensoEvent(body, xDocumensoSecret.orElse(null));
-    } catch (ForbiddenException e) {
-      throw e;
-    } catch (Exception e) {
-      log.error("Error processing Documenso webhook: {}", e.getMessage(), e);
-    }
+    // No catch here on purpose — see processDocumensoEvent's javadoc. A processing failure must
+    // reach the caller as a 5xx so Documenso retries the delivery instead of the event being
+    // silently lost.
+    signatureWebhookService.processDocumensoEvent(body, xDocumensoSecret.orElse(null));
   }
 
   private boolean verifyMailgunSignature(String body) {
