@@ -82,6 +82,10 @@ class TakeoutMetaModelCoverageTest {
           // signature_requests (BUUR-105 e-signature integration) — takeout export for signature
           // data is out of scope for that plan.
           "SIGNATURE_REQUESTS",
+          // signature_signers gained team_id for defense-in-depth (it was already reachable only
+          // via signature_requests, which this same gap list already excludes) — not a new
+          // export surface.
+          "SIGNATURE_SIGNERS",
           "TEAM_INVITATIONS",
           "TEAM_PREFERENCES",
           "USERS",
