@@ -36,6 +36,13 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
 .sig-label { font-size: 13px; color: #57534e; font-weight: 500; }
 .sig-date { font-size: 12px; color: #57534e; margin-top: 16px; display: flex; gap: 4px; }
 .sig-date-line { flex: 1; border-bottom: 1px solid #78716c; margin-bottom: 2px; }
+/*
+  Carries a signer's placeholder as faint, tiny text alongside the visible label — present in
+  the PDF's text layer (so Documenso's placeholder-text matching finds it) without reading as
+  visible clutter. Do not use display:none/visibility:hidden: some PDF text extraction paths
+  drop such content from the text layer entirely.
+*/
+.sig-placeholder { font-size: 5px; color: #e7e5e4; letter-spacing: 0; }
 
 .letter-disclaimer { margin-top: 40px; padding: 14px 16px; background-color: #fafaf9;
   border: 1px solid #e7e5e4; border-radius: 6px; font-size: 11px; color: #78716c;

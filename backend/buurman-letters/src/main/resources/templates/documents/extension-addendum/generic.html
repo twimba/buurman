@@ -69,6 +69,13 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
 .sig-field-label { font-size: 11px; color: #57534e; display: inline; }
 .sig-field-line { display: inline-block; width: 75%; border-bottom: 1px solid #78716c;
   margin-left: 4px; height: 14px; vertical-align: bottom; }
+/*
+  Carries a signer's placeholder as faint, tiny text alongside the visible role label —
+  present in the PDF's text layer (so Documenso's placeholder-text matching finds it) without
+  reading as visible clutter. Do not use display:none/visibility:hidden: some PDF text
+  extraction paths drop such content from the text layer entirely.
+*/
+.sig-placeholder { font-size: 5px; color: #e7e5e4; letter-spacing: 0; }
 
 /* Footer elements */
 .disclaimer { margin-top: 40px; padding: 16px; background-color: #fafaf9;
@@ -233,7 +240,10 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
   <table class="signature-table">
     <tr>
       <td class="signature-cell">
-        <div class="signature-role" th:text="#{addendum.signature.landlord}">Landlord</div>
+        <div class="signature-role">
+          <span th:text="#{addendum.signature.landlord}">Landlord</span>
+          <span class="sig-placeholder" th:text="${landlordSignaturePlaceholder}"></span>
+        </div>
         <div class="signature-line"></div>
         <div style="font-size: 10px; color: #78716c; margin-bottom: 20px;" th:text="#{addendum.signature.signatureLabel}">Signature</div>
         <div class="sig-field-row">
@@ -247,7 +257,13 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
       </td>
       <td class="signature-spacer"></td>
       <td class="signature-cell">
-        <div class="signature-role" th:text="#{addendum.signature.tenant}">Tenant</div>
+        <div class="signature-role">
+          <span th:text="#{addendum.signature.tenant}">Tenant</span>
+          <span
+              th:if="${tenantSignaturePlaceholder != null}"
+              class="sig-placeholder"
+              th:text="${tenantSignaturePlaceholder}"></span>
+        </div>
         <div class="signature-line"></div>
         <div style="font-size: 10px; color: #78716c; margin-bottom: 20px;" th:text="#{addendum.signature.signatureLabel}">Signature</div>
         <div class="sig-field-row">

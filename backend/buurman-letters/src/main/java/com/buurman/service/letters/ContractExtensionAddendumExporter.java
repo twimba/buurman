@@ -79,7 +79,13 @@ public class ContractExtensionAddendumExporter {
     Locale locale = LetterTemplateService.resolveLocale(lang);
     Map<String, Object> variables =
         buildTemplateVariables(
-            extension, contract, property, partyData.parties(), partyData.contactMap(), locale);
+            extension,
+            contract,
+            property,
+            partyData.parties(),
+            partyData.contactMap(),
+            teamId,
+            locale);
 
     return documentTemplateService.renderToPdf("extension-addendum", locale, variables);
   }
@@ -90,6 +96,7 @@ public class ContractExtensionAddendumExporter {
       Property property,
       List<ContractParty> parties,
       Map<UUID, Contact> contactMap,
+      UUID teamId,
       Locale locale) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     String ccy = extension.getNewRentAmount().currency();
@@ -175,6 +182,18 @@ public class ContractExtensionAddendumExporter {
 
     vars.putAll(
         helper.legalVariables(messageSource, "legal.", "extension-addendum", contract, locale));
+
+    // The template's signature table is a fixed landlord|tenant pair (it shows every tenant's
+    // name in one combined cell, but only has room for one physical tenant signature line), so
+    // unlike LeaseAgreementExporter's dynamic per-tenant blocks, only the first tenant signer (if
+    // any) gets a placeholder here — matching the layout's own existing one-tenant-slot design.
+    List<Map<String, String>> signatureBlocks =
+        helper.signatureBlocks(
+            contract.getId(), teamId, messageSource, "addendum.signature.landlord", locale);
+    vars.put("landlordSignaturePlaceholder", signatureBlocks.get(0).get("placeholder"));
+    vars.put(
+        "tenantSignaturePlaceholder",
+        signatureBlocks.size() > 1 ? signatureBlocks.get(1).get("placeholder") : null);
 
     return vars;
   }

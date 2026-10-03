@@ -159,6 +159,10 @@ public class PaymentFormalNoticeExporter implements TenantNoticeDocumentService 
     vars.putAll(
         helper.legalVariables(
             messageSource, "notice.legal.", DOCUMENT_TYPE, data.contract(), locale));
+    vars.put(
+        "signatureBlocks",
+        helper.signatureBlocks(
+            data.contract().getId(), teamId, messageSource, "letter.signature", locale));
     return documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, vars);
   }
 

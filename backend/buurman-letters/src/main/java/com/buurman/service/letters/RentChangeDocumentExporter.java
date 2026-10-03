@@ -116,6 +116,7 @@ public class RentChangeDocumentExporter {
             addressee,
             linkedExtension,
             regulationRule,
+            teamId,
             locale);
 
     return documentTemplateService.renderToPdf("rent-change", locale, variables);
@@ -129,6 +130,7 @@ public class RentChangeDocumentExporter {
       LetterExporterHelper.Addressee addressee,
       Optional<ContractExtension> linkedExtension,
       Optional<RentRegulationRule> regulationRule,
+      UUID teamId,
       Locale locale) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     String ccy = currentPeriod.getRentAmount().currency();
@@ -256,6 +258,11 @@ public class RentChangeDocumentExporter {
           vars.put("regulation", null);
           vars.put("exceedsMaxIncrease", false);
         });
+
+    vars.put(
+        "signatureBlocks",
+        helper.signatureBlocks(
+            contract.getId(), teamId, messageSource, "rentchange.signature", locale));
 
     return vars;
   }

@@ -119,6 +119,10 @@ class ContractTerminationTemplateRenderTest {
     vars.put("givenByLabel", "Landlord");
     vars.put("noticeDate", "2026-01-15");
     vars.put("effectiveEndDate", "2026-04-15");
+    vars.put(
+        "signatureBlocks",
+        List.of(
+            Map.of("label", "Landlord / Property Manager", "placeholder", "signature-landlord")));
     return vars;
   }
 }

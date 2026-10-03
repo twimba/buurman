@@ -131,6 +131,10 @@ public class DepositStatementExporter {
     vars.put("notes", deposit.getNotes().orElse(null));
     vars.putAll(
         helper.legalVariables(messageSource, "deposit.legal.", DOCUMENT_TYPE, contract, locale));
+    vars.put(
+        "signatureBlocks",
+        helper.signatureBlocks(
+            contract.getId(), teamId, messageSource, "letter.signature", locale));
     return documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, vars);
   }
 }

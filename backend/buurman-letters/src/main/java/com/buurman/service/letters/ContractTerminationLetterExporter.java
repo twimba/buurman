@@ -55,7 +55,7 @@ public class ContractTerminationLetterExporter implements ContractTerminationLet
 
     Locale locale = LetterTemplateService.resolveLocale(lang);
     Map<String, Object> variables =
-        buildTemplateVariables(contract, termination, property, addressee, locale);
+        buildTemplateVariables(contract, termination, property, addressee, teamId, locale);
 
     return documentTemplateService.renderToPdf("contract-termination-notice", locale, variables);
   }
@@ -65,6 +65,7 @@ public class ContractTerminationLetterExporter implements ContractTerminationLet
       ContractTermination termination,
       Property property,
       LetterExporterHelper.Addressee addressee,
+      UUID teamId,
       Locale locale) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
 
@@ -96,6 +97,11 @@ public class ContractTerminationLetterExporter implements ContractTerminationLet
     vars.putAll(
         helper.legalVariables(
             messageSource, "termination.legal.", "contract-termination-notice", contract, locale));
+
+    vars.put(
+        "signatureBlocks",
+        helper.signatureBlocks(
+            contract.getId(), teamId, messageSource, "letter.signature", locale));
 
     return vars;
   }

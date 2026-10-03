@@ -133,6 +133,14 @@ class LandlordLetterLocaleRenderTest {
     v.put("rentPeriodIdentifier", "rnp_01TEST");
     v.put("countryCode", "DE");
     v.put("legalClauses", legalClauses);
+    // rent-increase-letter / rent-change read signatureBlocks; extension-addendum reads these
+    // two directly instead (its signature table is a fixed landlord|tenant pair, not a loop).
+    v.put(
+        "signatureBlocks",
+        List.of(
+            Map.of("label", "Landlord / Property Manager", "placeholder", "signature-landlord")));
+    v.put("landlordSignaturePlaceholder", "signature-landlord");
+    v.put("tenantSignaturePlaceholder", "signature-tenant-1");
     return v;
   }
 }

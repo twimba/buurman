@@ -128,6 +128,11 @@ public class LeaseAgreementExporter {
                                 c.getAmount().value(), c.getAmount().currency(), locale)))
             .toList());
 
+    vars.put(
+        "signatureBlocks",
+        helper.signatureBlocks(
+            contract.getId(), teamId, messageSource, "letter.signature", locale));
+
     return vars;
   }
 }

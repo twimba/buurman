@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -221,6 +222,47 @@ class LetterExporterHelper {
         contactRepository.findByIdsAndTeamId(contactIds, teamId).stream()
             .collect(toMap(Contact::getId, t -> t));
     return new PartyData(parties, contactMap);
+  }
+
+  /**
+   * Signature blocks for a document that may be sent for e-signature: the landlord always first
+   * with a fixed placeholder, then one block per distinct tenant email (deduped, in contract-party
+   * order), numbered {@code "signature-tenant-N"}.
+   *
+   * <p>These placeholders are matched against this exact literal text in the rendered PDF by {@code
+   * DocumensoClient} to place each signer's signature field, so they must agree exactly with {@code
+   * SignatureService}'s own numbering — both sides independently iterate the same contract-party
+   * list in the same order, which is what keeps the two in sync without the two modules sharing a
+   * dependency.
+   */
+  List<Map<String, String>> signatureBlocks(
+      UUID contractId,
+      UUID teamId,
+      MessageSource messageSource,
+      String landlordLabelKey,
+      Locale locale) {
+    List<Map<String, String>> blocks = new ArrayList<>();
+    blocks.add(
+        Map.of(
+            "label",
+            messageSource.getMessage(landlordLabelKey, null, locale),
+            "placeholder",
+            "signature-landlord"));
+
+    PartyData partyData = loadPartyData(contractId, teamId);
+    Set<String> seenEmails = new HashSet<>();
+    int tenantIndex = 0;
+    for (ContractParty party : partyData.parties()) {
+      Optional<Contact> contact = party.getContactId().map(partyData.contactMap()::get);
+      Optional<String> email = contact.flatMap(Contact::getEmail);
+      if (email.isEmpty() || !seenEmails.add(email.get().toLowerCase(Locale.ROOT))) {
+        continue;
+      }
+      tenantIndex++;
+      String label = contact.map(Contact::getDisplayName).orElse(email.get());
+      blocks.add(Map.of("label", label, "placeholder", "signature-tenant-" + tenantIndex));
+    }
+    return blocks;
   }
 
   /** Finds the primary tenant contact from a list of contract parties. */

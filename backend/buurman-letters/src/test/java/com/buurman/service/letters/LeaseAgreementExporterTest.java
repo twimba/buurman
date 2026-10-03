@@ -114,6 +114,13 @@ class LeaseAgreementExporterTest {
     when(rentComponentRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
         .thenReturn(List.of());
 
+    when(helper.signatureBlocks(
+            eq(CONTRACT_ID), eq(TEAM_ID), eq(messageSource), anyString(), any(Locale.class)))
+        .thenReturn(
+            List.of(
+                Map.of(
+                    "label", "Landlord / Property Manager", "placeholder", "signature-landlord")));
+
     when(documentTemplateService.renderToPdf(anyString(), any(Locale.class), anyMap()))
         .thenReturn("%PDF-1.7\nstub".getBytes(UTF_8));
   }

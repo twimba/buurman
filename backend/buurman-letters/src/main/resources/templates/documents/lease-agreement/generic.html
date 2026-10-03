@@ -56,10 +56,13 @@
     </div>
   </div>
 
-  <!-- Signature -->
-  <div class="letter-signature">
+  <!-- Signatures: one block per signer (landlord, then each tenant) — see signatureBlocks. -->
+  <div th:each="block : ${signatureBlocks}" class="letter-signature">
     <div class="sig-line"></div>
-    <div class="sig-label" th:text="#{letter.signature}">Landlord / Property Manager</div>
+    <div class="sig-label">
+      <span th:text="${block.label}">Landlord / Property Manager</span>
+      <span class="sig-placeholder" th:text="${block.placeholder}"></span>
+    </div>
     <div class="sig-date"><span th:text="#{letter.signature.date}">Date:</span> <span class="sig-date-line"></span></div>
   </div>
 
