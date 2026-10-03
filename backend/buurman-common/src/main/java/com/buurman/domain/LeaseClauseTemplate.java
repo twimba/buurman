@@ -3,6 +3,7 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LeaseClauseTemplate {
+
+  /** A clause key selects a {@code clause-<key>} template fragment, so only safe slugs are valid. */
+  public static final Pattern CLAUSE_KEY_PATTERN = Pattern.compile("^[a-z0-9-]{1,64}$");
 
   private UUID id;
   @Builder.Default private Optional<Sid> identifier = Optional.empty();

@@ -72,4 +72,21 @@ class LeaseDocumentLocatorTest {
   void countryIsValidated(String country) {
     assertThat(locator.locate(country, LeaseKind.RESIDENTIAL, "nl")).isEmpty();
   }
+
+  @Test
+  @DisplayName("a furnished unit uses the residential document until a furnished one exists")
+  void furnishedFallsBackToResidentialDocument() {
+    var doc = locator.locate("ZZ", LeaseKind.RESIDENTIAL_FURNISHED, "nl").orElseThrow();
+    assertThat(doc.templatePath()).isEqualTo("lease-agreement/ZZ/residential/nl");
+  }
+
+  @Test
+  @DisplayName("a furnished document wins over the residential one, even in another language")
+  void furnishedDocumentTakesPrecedence() {
+    var zy = new LeaseDocumentLocator(Map.of("ZY", List.of("nl")));
+    assertThat(zy.locate("ZY", LeaseKind.RESIDENTIAL_FURNISHED, "nl").orElseThrow().templatePath())
+        .isEqualTo("lease-agreement/ZY/residential-furnished/en");
+    assertThat(zy.locate("ZY", LeaseKind.RESIDENTIAL, "nl").orElseThrow().templatePath())
+        .isEqualTo("lease-agreement/ZY/residential/nl");
+  }
 }

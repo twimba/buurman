@@ -3,7 +3,6 @@ package com.buurman.service.backoffice;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -21,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BackofficeLeaseClauseTemplateService {
-
-  private static final Pattern CLAUSE_KEY_PATTERN = Pattern.compile("^[a-z0-9-]{1,64}$");
 
   private final LeaseClauseTemplateRepository repository;
 
@@ -90,7 +87,7 @@ public class BackofficeLeaseClauseTemplateService {
   // The clause key selects a "clause-{key}" fragment in the lease documents, so it must be a safe
   // slug. Existing seeded keys (e.g. termination-reference) all match.
   private void rejectInvalidClauseKey(String clauseKey) {
-    if (clauseKey == null || !CLAUSE_KEY_PATTERN.matcher(clauseKey).matches()) {
+    if (clauseKey == null || !LeaseClauseTemplate.CLAUSE_KEY_PATTERN.matcher(clauseKey).matches()) {
       throw new BadRequestException("Clause key must match ^[a-z0-9-]{1,64}$");
     }
   }

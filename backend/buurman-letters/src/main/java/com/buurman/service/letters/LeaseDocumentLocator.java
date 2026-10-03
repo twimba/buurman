@@ -16,7 +16,8 @@ import com.buurman.util.DocumentLanguages;
 
 /**
  * Finds the per-language clause document for a country and lease kind, falling back from the
- * requested language to the country's national language(s) and finally English.
+ * requested language to the country's national language(s) and finally English. The kind takes
+ * precedence over the language: {@link LeaseKind#fallbackChain()} is walked outermost.
  */
 @Component
 public class LeaseDocumentLocator {
@@ -69,12 +70,16 @@ public class LeaseDocumentLocator {
     chain.addAll(national);
     chain.add("en");
 
-    return chain.stream()
-        .filter(lang -> exists(countryCode, kind, lang))
-        .findFirst()
-        .map(
-            lang ->
-                new LeaseDocument(path(countryCode, kind, lang), lang, national.contains(lang)));
+    return kind.fallbackChain().stream()
+        .flatMap(
+            k ->
+                chain.stream()
+                    .filter(lang -> exists(countryCode, k, lang))
+                    .map(
+                        lang ->
+                            new LeaseDocument(
+                                path(countryCode, k, lang), lang, national.contains(lang))))
+        .findFirst();
   }
 
   private static String path(String country, LeaseKind kind, String lang) {

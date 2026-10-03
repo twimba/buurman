@@ -65,6 +65,13 @@ tab show "no template available" and generation throws `BusinessRuleException` (
 templates). `LetterTemplateService.renderToHtml` currently hard-codes `/generic`; it gains an overload
 taking the full template name. Other letter types are unaffected.
 
+**Kind fallback chain.** Both clause templates (`LeaseClauseResolver.templatesFor`) and documents
+(`LeaseDocumentLocator.locate`) walk one shared chain, `LeaseKind.fallbackChain()`:
+`RESIDENTIAL_FURNISHED -> RESIDENTIAL -> LEGACY`, every other kind `kind -> LEGACY`. The kind takes
+precedence over the language (a furnished-specific document in any language beats the residential
+one), so a furnished unit uses the residential document until a furnished-specific one exists. The
+property-level `PropertyResidentialDetails.furnished` fallback is deferred.
+
 ### D2 — Clauses live in the document
 
 ```html

@@ -44,24 +44,22 @@ public class LeaseClauseResolver {
   }
 
   /**
-   * Templates for the contract's country and kind; falls back to the {@link LeaseKind#LEGACY} set
-   * when the kind has none configured yet.
+   * Templates for the contract's country and kind, walking {@link LeaseKind#fallbackChain()} (e.g.
+   * furnished -> residential -> legacy) until a kind has templates configured.
    */
   public List<LeaseClauseTemplate> templatesFor(Contract contract, LeaseKind kind) {
     String countryCode =
         contract
             .getCountryCode()
             .orElseThrow(() -> new BusinessRuleException("Contract has no country code set"));
-    List<LeaseClauseTemplate> templates =
-        templateRepository.findByCountryAndKind(countryCode, kind);
-    if (templates.isEmpty() && kind != LeaseKind.LEGACY) {
-      templates = templateRepository.findByCountryAndKind(countryCode, LeaseKind.LEGACY);
-    }
-    if (templates.isEmpty()) {
-      throw new BusinessRuleException(
-          "No lease clause templates are configured for country " + countryCode);
-    }
-    return templates;
+    return kind.fallbackChain().stream()
+        .map(k -> templateRepository.findByCountryAndKind(countryCode, k))
+        .filter(templates -> !templates.isEmpty())
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new BusinessRuleException(
+                    "No lease clause templates are configured for country " + countryCode));
   }
 
   public List<ResolvedLeaseClauseResponse> resolve(

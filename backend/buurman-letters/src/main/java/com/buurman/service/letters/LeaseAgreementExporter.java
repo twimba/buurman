@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractRentComponent;
+import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -49,9 +49,6 @@ public class LeaseAgreementExporter {
 
   static final String DOCUMENT_TYPE = "lease-agreement";
   static final String SHELL_TEMPLATE = "lease-agreement/_shell";
-
-  /** Clause keys select a fragment name in the shell, so only safe slugs may reach it. */
-  private static final Pattern CLAUSE_KEY_PATTERN = Pattern.compile("^[a-z0-9-]{1,64}$");
 
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
@@ -136,7 +133,7 @@ public class LeaseAgreementExporter {
 
     includedClauses.forEach(
         c -> {
-          if (!CLAUSE_KEY_PATTERN.matcher(c.clauseKey()).matches()) {
+          if (!LeaseClauseTemplate.CLAUSE_KEY_PATTERN.matcher(c.clauseKey()).matches()) {
             throw new BusinessRuleException("Lease clause has an invalid key: " + c.clauseKey());
           }
         });

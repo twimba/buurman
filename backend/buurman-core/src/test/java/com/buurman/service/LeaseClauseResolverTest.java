@@ -233,4 +233,36 @@ class LeaseClauseResolverTest {
         .extracting(ResolvedLeaseClauseResponse::clauseKey)
         .containsExactly("a", "b");
   }
+
+  @Test
+  void furnishedKindUsesResidentialTemplatesWhenNoFurnishedOnesExist() {
+    var residential = template("parties", true, false, 1);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL_FURNISHED))
+        .thenReturn(List.of());
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(residential));
+
+    assertThat(resolver.templatesFor(contract("NL"), LeaseKind.RESIDENTIAL_FURNISHED))
+        .containsExactly(residential);
+  }
+
+  @Test
+  void furnishedKindPrefersItsOwnTemplates() {
+    var furnished = template("furnished-parties", true, false, 1);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL_FURNISHED))
+        .thenReturn(List.of(furnished));
+
+    assertThat(resolver.templatesFor(contract("NL"), LeaseKind.RESIDENTIAL_FURNISHED))
+        .containsExactly(furnished);
+  }
+
+  @Test
+  void furnishedKindFallsAllTheWayToLegacy() {
+    var legacy = template("term", true, false, 1);
+    when(templateRepository.findByCountryAndKind("DE", LeaseKind.LEGACY))
+        .thenReturn(List.of(legacy));
+
+    assertThat(resolver.templatesFor(contract("DE"), LeaseKind.RESIDENTIAL_FURNISHED))
+        .containsExactly(legacy);
+  }
 }
