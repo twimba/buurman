@@ -39,6 +39,7 @@ import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.ContractRentPeriod;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
@@ -75,6 +76,7 @@ import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.RentRegulationRepository;
@@ -95,6 +97,7 @@ public class ContractService {
 
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository extensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final ContractExtensionService contractExtensionService;
   private final ContractRentComponentRepository rentComponentRepository;
   private final ContractRentComponentMapper rentComponentMapper;
@@ -1161,8 +1164,11 @@ public class ContractService {
     // Compute effective end date and extension statistics
     List<ContractExtension> extensions =
         contractExtensionService.getExtensionsForContract(contract.getId(), teamId);
+    Optional<ContractTermination> termination =
+        contractTerminationRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     Optional<LocalDate> effectiveEndDate =
-        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+        EffectiveEndDateHelper.computeEffectiveEndDate(
+            contract.getEndDate(), extensions, termination);
     int extensionCount = contractExtensionService.getExtensionCount(contract.getId(), teamId);
     Optional<Integer> extensionsRemaining =
         contract.getMaxRenewals().map(max -> max - extensionCount);
@@ -1261,6 +1267,11 @@ public class ContractService {
     Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
 
+    // Batch load terminations for all contracts, so a contract under notice reports its actual
+    // (earlier) effective end date instead of its stale, unchanged contracts.end_date.
+    Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId);
+
     // Batch load current rent period components
     Map<UUID, List<ContractRentComponent>> componentsByContract =
         contractRentPeriodService.getCurrentRentComponentsBatch(contractIds, teamId);
@@ -1303,7 +1314,10 @@ public class ContractService {
               List<ContractExtension> extensions =
                   extensionsByContract.getOrDefault(contract.getId(), List.of());
               Optional<LocalDate> effectiveEndDate =
-                  EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+                  EffectiveEndDateHelper.computeEffectiveEndDate(
+                      contract.getEndDate(),
+                      extensions,
+                      Optional.ofNullable(terminationsByContract.get(contract.getId())));
               int extensionCount =
                   (int)
                       extensions.stream()
