@@ -61,7 +61,7 @@ class ContractTerminationRepositoryIntegrationTest extends AbstractRepositoryInt
   @Test
   @DisplayName(
       "findDueForTransition finds NOTICE_GIVEN terminations on/before the given date, ignores later"
-          + " ones")
+          + " ones and already-TERMINATED ones")
   void findsDueForTransition() {
     ContractTermination due =
         newTermination(TEAM_A_ID, teamAContractId).toBuilder()
@@ -73,6 +73,17 @@ class ContractTerminationRepositoryIntegrationTest extends AbstractRepositoryInt
             .effectiveEndDate(LocalDate.of(2026, 12, 31))
             .build();
     repository.save(notDue);
+    // Same past effective_end_date as `due`, but already transitioned — must not be
+    // re-swept, or the sweep job would try to re-terminate an already-terminated contract.
+    UUID teamAPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    UUID alreadyTerminatedContractId =
+        TestDataHelper.insertContract(dsl, TEAM_A_ID, teamAPropertyId, USER_ID);
+    ContractTermination alreadyTerminated =
+        newTermination(TEAM_A_ID, alreadyTerminatedContractId).toBuilder()
+            .effectiveEndDate(LocalDate.of(2026, 1, 5))
+            .status(ContractTerminationStatus.TERMINATED)
+            .build();
+    repository.save(alreadyTerminated);
 
     var results = repository.findDueForTransition(LocalDate.of(2026, 1, 15));
 
