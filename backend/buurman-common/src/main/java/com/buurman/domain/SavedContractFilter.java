@@ -20,6 +20,8 @@ public class SavedContractFilter {
   private UUID id;
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
+  // Deliberately no separate createdBy/updatedBy: a personal filter preset is only ever
+  // created or edited by the one user it belongs to, so userId already is the audit trail.
   private UUID userId;
   private String name;
   private Map<String, Object> criteria;
