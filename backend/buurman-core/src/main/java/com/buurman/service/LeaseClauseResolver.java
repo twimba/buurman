@@ -1,9 +1,11 @@
 package com.buurman.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,9 +46,18 @@ public class LeaseClauseResolver {
         contract
             .getCountryCode()
             .orElseThrow(() -> new BusinessRuleException("Contract has no country code set"));
+    return resolve(contract, locale, templateRepository.findByCountryCode(countryCode));
+  }
 
-    List<LeaseClauseTemplate> templates = templateRepository.findByCountryCode(countryCode);
+  /**
+   * Same resolution, but using a template list the caller already fetched (e.g. {@code
+   * LeaseClauseService#updateClauses}, which needs the same country's templates to validate the
+   * request before calling this) instead of fetching it again here.
+   */
+  public List<ResolvedLeaseClauseResponse> resolve(
+      Contract contract, Locale locale, List<LeaseClauseTemplate> templates) {
     if (templates.isEmpty()) {
+      String countryCode = contract.getCountryCode().orElse("?");
       throw new BusinessRuleException(
           "No lease clause templates are configured for country " + countryCode);
     }
@@ -55,7 +66,8 @@ public class LeaseClauseResolver {
         overrideRepository
             .findByContractIdAndTeamId(contract.getId(), contract.getTeamId())
             .stream()
-            .collect(Collectors.toMap(ContractLeaseClause::getClauseTemplateId, o -> o));
+            .collect(
+                Collectors.toMap(ContractLeaseClause::getClauseTemplateId, Function.identity()));
 
     return templates.stream()
         .map(
@@ -79,7 +91,7 @@ public class LeaseClauseResolver {
                   t.isOptional(),
                   sortOrder);
             })
-        .sorted((a, b) -> Integer.compare(a.sortOrder(), b.sortOrder()))
+        .sorted(Comparator.comparingInt(ResolvedLeaseClauseResponse::sortOrder))
         .toList();
   }
 }

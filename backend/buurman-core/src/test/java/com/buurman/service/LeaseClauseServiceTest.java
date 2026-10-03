@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -159,7 +160,7 @@ class LeaseClauseServiceTest {
         List.of(
             new ResolvedLeaseClauseResponse(
                 templateIdentifier, "house-rules", "Title", "Body", true, true, 1));
-    when(resolver.resolve(any(), any())).thenReturn(resolved);
+    when(resolver.resolve(any(), any(), any())).thenReturn(resolved);
 
     UpdateContractLeaseClausesRequest request =
         new UpdateContractLeaseClausesRequest(
@@ -180,5 +181,9 @@ class LeaseClauseServiceTest {
     assertThat(saved.get(0).getClauseTemplateId()).isEqualTo(optionalClause.getId());
     assertThat(saved.get(0).isIncluded()).isTrue();
     assertThat(saved.get(0).getSortOrder()).isEqualTo(1);
+
+    // The already-fetched template list is passed into resolve(), not re-fetched by it.
+    verify(templateRepository, times(1)).findByCountryCode("NL");
+    verify(resolver).resolve(any(), any(), eq(List.of(optionalClause)));
   }
 }

@@ -81,7 +81,7 @@ public class LeaseClauseService {
         request.clauses().stream().map(selection -> toClause(selection, templates)).toList();
 
     overrideRepository.replaceForContract(contract.getId(), teamId, principal.getUserId(), toSave);
-    return resolver.resolve(contract, contractLocale(contract));
+    return resolver.resolve(contract, contractLocale(contract), templates);
   }
 
   private ContractLeaseClause toClause(
