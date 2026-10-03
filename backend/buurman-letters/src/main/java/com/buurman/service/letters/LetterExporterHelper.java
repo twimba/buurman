@@ -152,9 +152,10 @@ class LetterExporterHelper {
 
   /**
    * Resolves the ordered legal clauses for a letter: a {@link CountryLetterClauseCatalog} entry for
-   * {@code documentType}/country if one exists (each clause pre-resolved to {@code {title, body}}
-   * string maps, {@code title} omitted when the catalog gives no title key), else the single legacy
-   * {@code keyPrefix + COUNTRY} clause wrapped as a one-item list, else empty.
+   * {@code documentType}/country if one exists (each clause pre-resolved to a {@code {title, body}}
+   * string map — {@link LetterClauseKey#titleKey()} is required, every catalog entry supplies one),
+   * else the single legacy {@code keyPrefix + COUNTRY} clause wrapped as a one-item list (body
+   * only, no title), else empty.
    */
   List<Map<String, String>> resolveLegalClauses(
       MessageSource messageSource,
