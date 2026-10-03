@@ -111,6 +111,7 @@ export const LeaseClauseTemplatesPage = () => {
     data: templates,
     isLoading,
     isError,
+    isRefreshing,
     refetch,
   } = useLeaseClauseTemplates(loadedCountries, language);
   const createTemplate = useCreateLeaseClauseTemplate();
@@ -327,6 +328,7 @@ export const LeaseClauseTemplatesPage = () => {
       </div>
       <p aria-live="polite" className="mb-4 text-xs text-text-muted">
         {visible.length} of {templates.length} clauses
+        {isRefreshing && ' · Updating…'}
         {filtersActive && (
           <>
             {' · '}
@@ -341,22 +343,25 @@ export const LeaseClauseTemplatesPage = () => {
         )}
       </p>
 
-      {isLoading ? (
-        <LoadingSpinner message="Loading clause templates..." />
-      ) : isError ? (
+      {isError && (
         <div
           role="alert"
-          className="rounded-lg border border-error-border bg-error-bg px-4 py-3 text-sm text-error-text"
+          className="mb-4 rounded-lg border border-error-border bg-error-bg px-4 py-3 text-sm text-error-text"
         >
-          Couldn&apos;t load clause templates.{' '}
+          Couldn&apos;t load clause templates for every country
+          {templates.length > 0 ? '; showing what loaded.' : '.'}{' '}
           <button
             type="button"
-            onClick={refetch}
+            onClick={() => refetch()}
             className="font-medium underline"
           >
             Retry
           </button>
         </div>
+      )}
+
+      {isLoading ? (
+        <LoadingSpinner message="Loading clause templates..." />
       ) : groups.length === 0 ? (
         <div className="rounded-lg border border-border-default bg-surface-card px-4 py-12 text-center text-sm text-text-muted">
           {filtersActive
@@ -364,7 +369,12 @@ export const LeaseClauseTemplatesPage = () => {
             : 'No clause templates yet.'}
         </div>
       ) : (
-        <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+        <div
+          aria-busy={isRefreshing}
+          className={`bg-surface-card rounded-lg border border-border-default overflow-hidden transition-opacity ${
+            isRefreshing ? 'opacity-60' : ''
+          }`}
+        >
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>

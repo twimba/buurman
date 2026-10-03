@@ -167,3 +167,17 @@ describe('applyFilters', () => {
     ).toEqual(['d']);
   });
 });
+
+describe('applyFilters country', () => {
+  it('filters by country', () => {
+    const rows = [
+      make({ identifier: 'x', countryCode: 'NL' }),
+      make({ identifier: 'y', countryCode: 'DE' }),
+    ];
+    expect(
+      applyFilters(rows, { ...DEFAULT_FILTERS, country: 'DE' }, 'en').map(
+        (r) => r.identifier
+      )
+    ).toEqual(['y']);
+  });
+});

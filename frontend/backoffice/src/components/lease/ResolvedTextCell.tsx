@@ -29,6 +29,7 @@ export const ResolvedTextCell = ({
         </p>
       ) : (
         <p
+          title={clamp ? text : undefined}
           className={`text-sm ${
             englishFallback
               ? 'italic text-text-muted'

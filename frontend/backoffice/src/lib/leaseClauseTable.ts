@@ -44,6 +44,8 @@ export const DEFAULT_FILTERS: TableFilters = {
 export const isUnresolved = (text: string, key: string): boolean =>
   text === key;
 
+// `missingLanguages` is the union of title and body gaps, so the EN-fallback badge shows on
+// both cells of a row even if only one key is missing (accepted).
 export const isEnglishFallback = (
   template: LeaseClauseTemplateResponse,
   language: DocumentLanguage

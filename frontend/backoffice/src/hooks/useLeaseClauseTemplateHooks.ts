@@ -1,4 +1,8 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQueries,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useMutationWithToast } from './useMutationWithToast';
 import {
   listLeaseClauseTemplates,
@@ -6,6 +10,7 @@ import {
   updateLeaseClauseTemplate,
   deleteLeaseClauseTemplate,
 } from '../generated/api/backoffice-lease-clause-templates/backoffice-lease-clause-templates';
+import { combineTemplateQueries } from '../lib/combineTemplateQueries';
 import type {
   DocumentLanguage,
   UpsertLeaseClauseTemplateRequest,
@@ -26,13 +31,9 @@ export const useLeaseClauseTemplates = (
     queries: countryCodes.map((countryCode) => ({
       queryKey: [...BASE_KEY, countryCode, language],
       queryFn: () => listLeaseClauseTemplates({ countryCode, language }),
+      placeholderData: keepPreviousData,
     })),
-    combine: (results) => ({
-      data: results.flatMap((r) => r.data ?? []),
-      isLoading: results.some((r) => r.isLoading),
-      isError: results.some((r) => r.isError),
-      refetch: () => results.forEach((r) => r.refetch()),
-    }),
+    combine: combineTemplateQueries,
   });
 };
 

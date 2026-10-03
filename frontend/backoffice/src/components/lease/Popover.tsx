@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { useOverlayPosition } from './useOverlayPosition';
 
 interface PopoverProps {
   /** Accessible name for both the trigger button and the dialog. */
@@ -31,6 +33,7 @@ export const Popover = ({
   const panelId = useId();
 
   const close = () => setOpen(false);
+  useOverlayPosition(open, triggerRef, panelRef, align);
 
   useEffect(() => {
     if (!open) {
@@ -43,7 +46,11 @@ export const Popover = ({
       }
     };
     const onPointerDown = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        !rootRef.current?.contains(target) &&
+        !panelRef.current?.contains(target)
+      ) {
         setOpen(false);
       }
     };
@@ -62,6 +69,27 @@ export const Popover = ({
     };
   }, [open]);
 
+  // The panel is portaled to <body>, so Tab would leave the DOM order: close at its edges.
+  const onPanelKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'Tab') {
+      return;
+    }
+    const items = panelRef.current?.querySelectorAll<HTMLElement>(
+      'button, a[href], input, select'
+    );
+    const first = items?.[0];
+    const last = items?.[items.length - 1];
+    const active = document.activeElement;
+    if (
+      !items?.length ||
+      (e.shiftKey && (active === first || active === panelRef.current)) ||
+      (!e.shiftKey && active === last)
+    ) {
+      e.preventDefault();
+      setOpen(false);
+    }
+  };
+
   return (
     <span ref={rootRef} className="relative inline-flex">
       <button
@@ -76,20 +104,22 @@ export const Popover = ({
       >
         {trigger}
       </button>
-      {open && (
-        <div
-          ref={panelRef}
-          id={panelId}
-          role="dialog"
-          aria-label={label}
-          tabIndex={-1}
-          className={`absolute top-full z-30 mt-1 max-h-[70vh] max-w-[90vw] overflow-y-auto rounded-lg border border-border-default bg-surface-card p-4 text-left normal-case tracking-normal shadow-xl focus:outline-none ${widthClassName} ${
-            align === 'right' ? 'right-0' : 'left-0'
-          }`}
-        >
-          {typeof children === 'function' ? children(close) : children}
-        </div>
-      )}
+      {open &&
+        createPortal(
+          <div
+            ref={panelRef}
+            id={panelId}
+            role="dialog"
+            aria-label={label}
+            tabIndex={-1}
+            style={{ position: 'fixed', top: 0, left: 0, visibility: 'hidden' }}
+            onKeyDown={onPanelKeyDown}
+            className={`z-50 max-h-[70vh] max-w-[90vw] overflow-y-auto rounded-lg border border-border-default bg-surface-card p-4 text-left normal-case tracking-normal shadow-xl focus:outline-none ${widthClassName}`}
+          >
+            {typeof children === 'function' ? children(close) : children}
+          </div>,
+          document.body
+        )}
     </span>
   );
 };
