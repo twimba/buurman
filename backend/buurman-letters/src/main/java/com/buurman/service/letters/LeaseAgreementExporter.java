@@ -125,9 +125,11 @@ public class LeaseAgreementExporter {
 
     List<ResolvedLeaseClauseResponse> includedClauses =
         requireIncluded(clauseResolver.resolve(contract, country, plan.locale(), plan.templates()));
+    // Before any repository access, so a broken document fails with the same error as always.
+    validateShell(plan, includedClauses);
 
     LeaseRenderInput input = loadInput(contract, property, teamId, plan);
-    return render(assemble(plan, input, includedClauses));
+    return render(assembleResolved(plan, input, includedClauses, includedClauses));
   }
 
   /** Which templates and per-language document apply, and the language the output is in. */
@@ -144,22 +146,39 @@ public class LeaseAgreementExporter {
     boolean legacy() {
       return document.isEmpty();
     }
+
+    /** The kind whose templates apply: the first of the fallback chain that has any. */
+    LeaseKind kindUsed() {
+      return templates.get(0).getLeaseKind();
+    }
   }
 
-  /** The template and variables ready to hand to {@link LetterTemplateService}. */
+  /**
+   * The template and variables ready to hand to {@link LetterTemplateService}.
+   *
+   * @param clauses every resolved clause (article number, forced-included, pinned, excluded ones
+   *     too) when assembled from overrides; the included subset when assembled from a real
+   *     contract's already-filtered list
+   */
   record AssembledLease(
       boolean legacy,
       String templateName,
       Locale locale,
       Map<String, Object> variables,
-      String languageUsed) {}
+      String languageUsed,
+      List<ResolvedLeaseClauseResponse> clauses) {}
 
   /**
    * Looks up templates (failing fast for an unavailable country) and locates the per-language
    * document. Holds no contract state, so a synthetic caller can use it with a request's country.
    */
   LeaseRenderPlan plan(Optional<String> country, LeaseKind kind, String lang) {
-    List<LeaseClauseTemplate> templates = clauseResolver.templatesFor(country, kind);
+    return plan(country, kind, lang, clauseResolver.templatesFor(country, kind));
+  }
+
+  /** As {@link #plan(Optional, LeaseKind, String)} for templates the caller already fetched. */
+  LeaseRenderPlan plan(
+      Optional<String> country, LeaseKind kind, String lang, List<LeaseClauseTemplate> templates) {
     Optional<LeaseDocumentLocator.LeaseDocument> document =
         country.flatMap(cc -> documentLocator.locate(cc, kind, lang));
     String languageUsed =
@@ -189,38 +208,56 @@ public class LeaseAgreementExporter {
 
   /**
    * Resolves the plan's templates against explicit overrides (same required/pinned/numbering rules
-   * as for a real contract) and assembles the document.
+   * as for a real contract) and assembles the document. The result's {@code clauses} is the full
+   * resolved list, including excluded optional clauses.
    */
-  AssembledLease assemble(
+  AssembledLease assembleWithOverrides(
       LeaseRenderPlan plan,
       LeaseRenderInput input,
       Collection<LeaseClauseResolver.ClauseOverride> overrides) {
-    return assemble(
-        plan,
-        input,
-        requireIncluded(
-            clauseResolver.resolve(plan.templates(), overrides, plan.country(), plan.locale())));
+    List<ResolvedLeaseClauseResponse> resolved =
+        clauseResolver.resolve(plan.templates(), overrides, plan.country(), plan.locale());
+    List<ResolvedLeaseClauseResponse> included = requireIncluded(resolved);
+    validateShell(plan, included);
+    return assembleResolved(plan, input, included, resolved);
   }
 
-  /** Builds the template name and variables from the plan, input and included clauses. */
-  AssembledLease assemble(
+  /**
+   * A shell document needs a valid key and a fragment for every included clause; checking up front
+   * names the clause instead of failing deep inside the render. The legacy path has no fragments.
+   */
+  static void validateShell(LeaseRenderPlan plan, List<ResolvedLeaseClauseResponse> included) {
+    plan.document()
+        .ifPresent(
+            doc -> {
+              included.forEach(
+                  c -> {
+                    if (!LeaseClauseTemplate.CLAUSE_KEY_PATTERN.matcher(c.clauseKey()).matches()) {
+                      throw new BusinessRuleException(
+                          "Lease clause has an invalid key: " + c.clauseKey());
+                    }
+                  });
+              requireClauseFragments(doc, included);
+            });
+  }
+
+  /**
+   * Builds the template name and variables from the plan, input and included clauses; {@code
+   * allClauses} is only passed through to the result.
+   */
+  AssembledLease assembleResolved(
       LeaseRenderPlan plan,
       LeaseRenderInput input,
-      List<ResolvedLeaseClauseResponse> includedClauses) {
+      List<ResolvedLeaseClauseResponse> includedClauses,
+      List<ResolvedLeaseClauseResponse> allClauses) {
     Map<String, Object> variables = variables(input, plan.locale(), !plan.legacy());
     if (plan.legacy()) {
       variables.put("clauses", legacyClauses(includedClauses));
-      return new AssembledLease(true, DOCUMENT_TYPE, plan.locale(), variables, plan.languageUsed());
+      return new AssembledLease(
+          true, DOCUMENT_TYPE, plan.locale(), variables, plan.languageUsed(), allClauses);
     }
 
-    includedClauses.forEach(
-        c -> {
-          if (!LeaseClauseTemplate.CLAUSE_KEY_PATTERN.matcher(c.clauseKey()).matches()) {
-            throw new BusinessRuleException("Lease clause has an invalid key: " + c.clauseKey());
-          }
-        });
     LeaseDocumentLocator.LeaseDocument doc = plan.document().orElseThrow();
-    requireClauseFragments(doc, includedClauses);
     variables.put("clauses", shellClauses(includedClauses));
     variables.put("clauseSource", doc.templatePath());
     variables.put("refs", clauseRefs(includedClauses));
@@ -228,7 +265,8 @@ public class LeaseAgreementExporter {
     variables.put("languageUsed", plan.languageUsed());
     variables.put("requestedLang", plan.requestedLang());
     variables.put("fallbackUsed", !plan.languageUsed().equals(plan.requestedLang()));
-    return new AssembledLease(false, SHELL_TEMPLATE, plan.locale(), variables, plan.languageUsed());
+    return new AssembledLease(
+        false, SHELL_TEMPLATE, plan.locale(), variables, plan.languageUsed(), allClauses);
   }
 
   /** The real path's final step: the same {@code LetterTemplateService} calls as always. */
@@ -401,11 +439,11 @@ public class LeaseAgreementExporter {
    */
   Map<String, Object> variables(LeaseRenderInput input, Locale locale, boolean typed) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
-    Map<String, Object> vars = new HashMap<>();
-    vars.put("generatedDate", input.today().format(dateFmt));
-    vars.put("contractIdentifier", input.contractIdentifier());
-    vars.put("primaryContactName", input.primaryContactName().orElse(null));
-    vars.put("contactAddress", input.contactAddress().orElse(null));
+    Map<String, Object> vars =
+        LetterExporterHelper.headerVariables(input.contractIdentifier(), input.today(), dateFmt);
+    vars.putAll(
+        LetterExporterHelper.addresseeVariables(
+            input.primaryContactName(), input.contactAddress()));
     vars.put("propertyAddress", input.propertyAddress());
 
     vars.put(
@@ -430,8 +468,22 @@ public class LeaseAgreementExporter {
   /** Typed, pre-formatted values the per-language clause fragments may reference. */
   private void addTypedValues(
       Map<String, Object> vars, LeaseRenderInput input, Locale locale, DateTimeFormatter dateFmt) {
-    vars.put("landlordName", input.landlordName().orElseThrow());
-    vars.put("tenantNames", input.tenantNames().orElseThrow());
+    vars.put(
+        "landlordName",
+        input
+            .landlordName()
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "landlordName is required for a per-language lease document")));
+    vars.put(
+        "tenantNames",
+        input
+            .tenantNames()
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "tenantNames is required for a per-language lease document")));
     vars.put("startDate", input.startDate().format(dateFmt));
     vars.put("endDate", input.endDate().map(d -> d.format(dateFmt)).orElse(null));
     // The lease regime follows the contract type; an end date alone does not make it fixed-term.

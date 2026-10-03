@@ -123,14 +123,21 @@ class LetterExporterHelper {
   /** Variables every letter starts with: generation date and the contract reference. */
   static Map<String, Object> headerVariables(
       Contract contract, LocalDate today, DateTimeFormatter dateFmt) {
-    Map<String, Object> vars = new HashMap<>();
-    vars.put("generatedDate", today.format(dateFmt));
-    vars.put(
-        "contractIdentifier",
+    return headerVariables(
         contract
             .getIdentifier()
             .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
-            .value());
+            .value(),
+        today,
+        dateFmt);
+  }
+
+  /** Same variables from an already-resolved contract reference (no contract needed). */
+  static Map<String, Object> headerVariables(
+      String contractIdentifier, LocalDate today, DateTimeFormatter dateFmt) {
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("generatedDate", today.format(dateFmt));
+    vars.put("contractIdentifier", contractIdentifier);
     return vars;
   }
 
@@ -191,11 +198,17 @@ class LetterExporterHelper {
   /** The tenant a letter is addressed to, with their mailing address when known. */
   record Addressee(Optional<Contact> contact, Optional<ContactAddress> address) {
     Map<String, Object> variables() {
-      Map<String, Object> vars = new HashMap<>();
-      vars.put("primaryContactName", contact.map(Contact::getDisplayName).orElse(null));
-      vars.put("contactAddress", buildAddressMap(address).orElse(null));
-      return vars;
+      return addresseeVariables(contact.map(Contact::getDisplayName), buildAddressMap(address));
     }
+  }
+
+  /** The addressee template variables from already-resolved values. */
+  static Map<String, Object> addresseeVariables(
+      Optional<String> contactName, Optional<Map<String, String>> contactAddress) {
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("primaryContactName", contactName.orElse(null));
+    vars.put("contactAddress", contactAddress.orElse(null));
+    return vars;
   }
 
   /** The contract's primary tenant as addressee. */
