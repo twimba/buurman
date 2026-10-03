@@ -1075,14 +1075,33 @@
   "leaseAgreement": {
     "title": "Huurovereenkomst",
     "description": "Kies welke clausules moeten worden opgenomen en genereer vervolgens de huurovereenkomst-PDF voor dit contract.",
-    "loadError": "Kan huurclausules niet laden",
     "empty": "Er zijn nog geen clausules geconfigureerd voor het land van dit contract.",
     "required": "Verplicht",
     "saveSelection": "Selectie opslaan",
     "generate": "Huurovereenkomst genereren",
     "pinned": "Vastgezet",
     "moveUp": "{{title}} omhoog verplaatsen",
-    "moveDown": "{{title}} omlaag verplaatsen"
+    "moveDown": "{{title}} omlaag verplaatsen",
+    "countryLabel": "Land",
+    "unavailable": {
+      "title": "Nog niet beschikbaar",
+      "description": "We hebben nog geen huurovereenkomst voor dit land. Je kunt dit contract wel beheren en een al getekende huurovereenkomst uploaden.",
+      "action": "Naar Documenten"
+    },
+    "noCountry": {
+      "title": "Kies eerst een land",
+      "description": "De huurovereenkomst hangt af van het land. Voeg eerst een land toe aan dit contract.",
+      "action": "Contract bewerken"
+    },
+    "error": {
+      "title": "Laden is niet gelukt",
+      "description": "Er ging iets mis aan onze kant. Probeer het zo meteen opnieuw.",
+      "retry": "Opnieuw proberen"
+    },
+    "exampleNotice": {
+      "title": "Dit is voorbeeldtekst",
+      "description": "Voor dit land hebben we alleen een korte voorbeeldtekst, geen volledige huurovereenkomst. Laat je eigen overeenkomst controleren voordat iemand tekent."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standaard",

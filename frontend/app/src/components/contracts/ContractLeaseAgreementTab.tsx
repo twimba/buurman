@@ -1,24 +1,66 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp, FileSignature } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileSignature, Info } from 'lucide-react';
 import { Button, LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import {
+  CountryRow,
+  LeaseUnavailableState,
+} from '@/components/contracts/LeaseUnavailableState';
+import { AnalyticsEvent } from '@/constants/analyticsEvents';
+import { trackEvent } from '@/utils/analytics';
+import { formatCountryName } from '@/utils/countryName';
 import {
   useLeaseClauses,
   useUpdateLeaseClauses,
   useGenerateLeaseAgreement,
 } from '@/hooks/useLeaseAgreementHooks';
-import type { ResolvedLeaseClauseResponse } from '@/generated/models';
+import {
+  LeaseAvailability,
+  type ResolvedLeaseClauseResponse,
+} from '@/generated/models';
 
-interface ContractLeaseAgreementTabProps {
+export interface ContractLeaseAgreementTabProps {
   contractId: string;
+  onGoToDocuments: () => void;
+  /** Omit when the user cannot edit the contract; the action button is then hidden. */
+  onEditContract?: () => void;
 }
 
 export const ContractLeaseAgreementTab = ({
   contractId,
+  onGoToDocuments,
+  onEditContract,
 }: ContractLeaseAgreementTabProps) => {
-  const { t } = useTranslation('contracts');
-  const { data: clauses, isLoading, isError } = useLeaseClauses(contractId);
+  const { t, i18n } = useTranslation('contracts');
+  const {
+    data: envelope,
+    isLoading,
+    isError,
+    refetch,
+    isFetching,
+  } = useLeaseClauses(contractId);
+  const clauses = envelope?.clauses;
+  const availability = envelope?.availability;
+  const countryCode = envelope?.countryCode ?? undefined;
+  const trackedReasons = useRef(new Set<string>());
+
+  useEffect(() => {
+    const reason =
+      availability === LeaseAvailability.UNAVAILABLE_COUNTRY
+        ? 'unsupported_country'
+        : availability === LeaseAvailability.UNAVAILABLE_NO_COUNTRY
+          ? 'no_country'
+          : undefined;
+    if (!reason || trackedReasons.current.has(reason)) {
+      return;
+    }
+    trackedReasons.current.add(reason);
+    trackEvent(AnalyticsEvent.LEASE_UNAVAILABLE_VIEWED, {
+      countryCode,
+      reason,
+    });
+  }, [availability, countryCode]);
   const updateMutation = useUpdateLeaseClauses(contractId);
   const generateMutation = useGenerateLeaseAgreement(contractId);
 
@@ -113,9 +155,23 @@ export const ContractLeaseAgreementTab = ({
     return <LoadingSpinner className="p-0" />;
   }
 
-  if (isError || !clauses) {
-    return <ErrorMessage message={t('leaseAgreement.loadError')} />;
+  if (isError || !envelope || !clauses) {
+    return (
+      <ErrorMessage
+        message={t('leaseAgreement.error.title')}
+        description={t('leaseAgreement.error.description')}
+        retryLabel={t('leaseAgreement.error.retry')}
+        isRetrying={isFetching}
+        onRetry={() => {
+          refetch();
+        }}
+      />
+    );
   }
+
+  const isUnavailable =
+    availability === LeaseAvailability.UNAVAILABLE_COUNTRY ||
+    availability === LeaseAvailability.UNAVAILABLE_NO_COUNTRY;
 
   const sortedClauses = orderedClauses();
   const articleNumbers = sortedClauses.map((clause, index) =>
@@ -131,12 +187,55 @@ export const ContractLeaseAgreementTab = ({
           <FileSignature className="h-5 w-5" />
           {t('leaseAgreement.title')}
         </h2>
-        <p className="text-sm text-text-secondary">
-          {t('leaseAgreement.description')}
-        </p>
+        {!isUnavailable && (
+          <p className="text-sm text-text-secondary">
+            {t('leaseAgreement.description')}
+          </p>
+        )}
       </div>
 
-      {sortedClauses.length === 0 ? (
+      {availability === LeaseAvailability.UNAVAILABLE_COUNTRY && (
+        <LeaseUnavailableState
+          reason="country"
+          countryName={formatCountryName(
+            countryCode,
+            i18n.resolvedLanguage ?? i18n.language
+          )}
+          onAction={onGoToDocuments}
+        />
+      )}
+
+      {availability === LeaseAvailability.UNAVAILABLE_NO_COUNTRY && (
+        <LeaseUnavailableState reason="no-country" onAction={onEditContract} />
+      )}
+
+      {availability === LeaseAvailability.AVAILABLE_EXAMPLE_TEXT && (
+        <div
+          role="note"
+          className="flex items-start gap-2 rounded-md border border-warning-border bg-warning-bg px-3 py-2 text-sm text-text-primary"
+        >
+          <Info
+            className="mt-0.5 h-4 w-4 shrink-0 text-warning-text"
+            aria-hidden="true"
+          />
+          <div className="min-w-0 break-words">
+            <p className="font-medium">
+              {t('leaseAgreement.exampleNotice.title')}
+            </p>
+            <p>{t('leaseAgreement.exampleNotice.description')}</p>
+            {countryCode && (
+              <CountryRow
+                name={formatCountryName(
+                  countryCode,
+                  i18n.resolvedLanguage ?? i18n.language
+                )}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {isUnavailable ? null : sortedClauses.length === 0 ? (
         <p className="text-sm text-text-secondary">
           {t('leaseAgreement.empty')}
         </p>
@@ -220,24 +319,26 @@ export const ContractLeaseAgreementTab = ({
         </ul>
       )}
 
-      <div className="flex gap-3">
-        <Button
-          variant="secondary"
-          onClick={handleSave}
-          isLoading={updateMutation.isPending}
-          disabled={sortedClauses.length === 0}
-        >
-          {t('leaseAgreement.saveSelection')}
-        </Button>
-        <Button
-          variant="primary"
-          leftIcon={<FileSignature />}
-          onClick={handleGenerate}
-          isLoading={generateMutation.isPending}
-        >
-          {t('leaseAgreement.generate')}
-        </Button>
-      </div>
+      {!isUnavailable && (
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={handleSave}
+            isLoading={updateMutation.isPending}
+            disabled={sortedClauses.length === 0}
+          >
+            {t('leaseAgreement.saveSelection')}
+          </Button>
+          <Button
+            variant="primary"
+            leftIcon={<FileSignature />}
+            onClick={handleGenerate}
+            isLoading={generateMutation.isPending}
+          >
+            {t('leaseAgreement.generate')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

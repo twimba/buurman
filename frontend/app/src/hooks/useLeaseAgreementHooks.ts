@@ -5,17 +5,22 @@ import {
   updateLeaseClauses,
   generateLeaseAgreement,
 } from '../generated/api/lease-agreement/lease-agreement';
-import type { UpdateContractLeaseClausesRequestClausesItem } from '../generated/models';
+import type {
+  LeaseClausesResponse,
+  UpdateContractLeaseClausesRequestClausesItem,
+} from '../generated/models';
 import { queryKeys } from '../lib/queryKeys';
 
 /**
- * Resolved lease clauses for a contract — the country's default clause set combined with any
- * per-contract overrides, in sort order with each clause's current inclusion state.
+ * Lease clause envelope for a contract: the availability state for its country plus the resolved
+ * clauses (the country's default set combined with per-contract overrides, in sort order with
+ * each clause's inclusion state). Clauses are empty when the lease is unavailable.
  */
 export const useLeaseClauses = (contractId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.contracts.leaseClauses(contractId),
-    queryFn: () => getLeaseClauses(contractId ?? ''),
+    queryFn: (): Promise<LeaseClausesResponse> =>
+      getLeaseClauses(contractId ?? ''),
     enabled: !!contractId,
   });
 };

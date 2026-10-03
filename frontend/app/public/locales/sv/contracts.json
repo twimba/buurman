@@ -1075,14 +1075,33 @@
   "leaseAgreement": {
     "title": "Hyresavtal",
     "description": "Välj vilka klausuler som ska ingå och generera sedan hyresavtalets PDF för detta kontrakt.",
-    "loadError": "Det gick inte att läsa in hyresklausuler",
     "empty": "Inga klausuler har konfigurerats för detta kontrakts land ännu.",
     "required": "Obligatorisk",
     "saveSelection": "Spara urval",
     "generate": "Generera hyresavtal",
     "pinned": "Fast",
     "moveUp": "Flytta upp {{title}}",
-    "moveDown": "Flytta ned {{title}}"
+    "moveDown": "Flytta ned {{title}}",
+    "countryLabel": "Land",
+    "unavailable": {
+      "title": "Inte tillgängligt än",
+      "description": "Vi har inget hyresavtal för det här landet än. Du kan fortfarande hantera kontraktet och ladda upp ett redan signerat hyresavtal.",
+      "action": "Gå till Dokument"
+    },
+    "noCountry": {
+      "title": "Välj land först",
+      "description": "Hyresavtalet beror på landet. Lägg först till ett land i det här kontraktet.",
+      "action": "Redigera kontrakt"
+    },
+    "error": {
+      "title": "Kunde inte läsa in",
+      "description": "Något gick fel hos oss. Försök igen om en stund.",
+      "retry": "Försök igen"
+    },
+    "exampleNotice": {
+      "title": "Det här är exempeltext",
+      "description": "För det här landet har vi bara ett kort exempel, inte ett fullständigt hyresavtal. Låt granska ditt avtal innan någon skriver under."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standard",

@@ -1075,14 +1075,33 @@
   "leaseAgreement": {
     "title": "Lease Agreement",
     "description": "Choose which clauses to include, then generate the lease agreement PDF for this contract.",
-    "loadError": "Failed to load lease clauses",
     "empty": "No clauses are configured for this contract's country yet.",
     "required": "Required",
     "saveSelection": "Save selection",
     "generate": "Generate lease agreement",
     "pinned": "Pinned",
     "moveUp": "Move up {{title}}",
-    "moveDown": "Move down {{title}}"
+    "moveDown": "Move down {{title}}",
+    "countryLabel": "Country",
+    "unavailable": {
+      "title": "Not available here yet",
+      "description": "We don't have a lease agreement for this country yet. You can still manage this contract and upload a lease you've already signed.",
+      "action": "Go to Documents"
+    },
+    "noCountry": {
+      "title": "Choose a country first",
+      "description": "The lease agreement depends on the country, so add one to this contract first.",
+      "action": "Edit contract"
+    },
+    "error": {
+      "title": "We couldn't load the clauses",
+      "description": "Something went wrong on our side. Please try again in a moment.",
+      "retry": "Try again"
+    },
+    "exampleNotice": {
+      "title": "This is example text",
+      "description": "For this country we only have a short sample, not a full lease. Have your own lease reviewed before anyone signs it."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standard",

@@ -4,10 +4,20 @@ import { describe, expect, it, vi } from 'vitest';
 import { ToastProvider } from '@buurman/ui';
 import { ContractLeaseAgreementTab } from '../ContractLeaseAgreementTab';
 import * as leaseAgreementApi from '@/generated/api/lease-agreement/lease-agreement';
+import * as analytics from '@/utils/analytics';
 import { renderWithProviders, createTestQueryClient } from '@/test/test-utils';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
-import type { ResolvedLeaseClauseResponse } from '@/generated/models';
+import {
+  LeaseAvailability,
+  type LeaseClausesResponse,
+  type ResolvedLeaseClauseResponse,
+} from '@/generated/models';
+
+const documentEnvelope = (
+  clauses: ResolvedLeaseClauseResponse[],
+  availability: LeaseAvailability = LeaseAvailability.AVAILABLE_DOCUMENT
+): LeaseClausesResponse => ({ availability, countryCode: 'NL', clauses });
 
 const CLAUSES: ResolvedLeaseClauseResponse[] = [
   {
@@ -36,11 +46,17 @@ const CLAUSES: ResolvedLeaseClauseResponse[] = [
 
 describe('ContractLeaseAgreementTab', () => {
   it('renders the resolved clause list with the correct checked state', async () => {
-    vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(CLAUSES);
+    vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+      documentEnvelope(CLAUSES)
+    );
 
     renderWithProviders(
       <ToastProvider>
-        <ContractLeaseAgreementTab contractId="CON00000000000000000000001" />
+        <ContractLeaseAgreementTab
+          contractId="CON00000000000000000000001"
+          onGoToDocuments={vi.fn()}
+          onEditContract={vi.fn()}
+        />
       </ToastProvider>
     );
 
@@ -56,11 +72,17 @@ describe('ContractLeaseAgreementTab', () => {
   });
 
   it('disables the checkbox for a non-optional clause', async () => {
-    vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(CLAUSES);
+    vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+      documentEnvelope(CLAUSES)
+    );
 
     renderWithProviders(
       <ToastProvider>
-        <ContractLeaseAgreementTab contractId="CON00000000000000000000001" />
+        <ContractLeaseAgreementTab
+          contractId="CON00000000000000000000001"
+          onGoToDocuments={vi.fn()}
+          onEditContract={vi.fn()}
+        />
       </ToastProvider>
     );
 
@@ -76,7 +98,9 @@ describe('ContractLeaseAgreementTab', () => {
   });
 
   it('generates the lease agreement and shows a success toast', async () => {
-    vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(CLAUSES);
+    vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+      documentEnvelope(CLAUSES)
+    );
     const generateSpy = vi
       .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
       .mockResolvedValue({
@@ -90,7 +114,11 @@ describe('ContractLeaseAgreementTab', () => {
 
     renderWithProviders(
       <ToastProvider>
-        <ContractLeaseAgreementTab contractId="CON00000000000000000000001" />
+        <ContractLeaseAgreementTab
+          contractId="CON00000000000000000000001"
+          onGoToDocuments={vi.fn()}
+          onEditContract={vi.fn()}
+        />
       </ToastProvider>
     );
 
@@ -138,7 +166,11 @@ describe('ContractLeaseAgreementTab', () => {
     const renderTab = async () => {
       renderWithProviders(
         <ToastProvider>
-          <ContractLeaseAgreementTab contractId="CON00000000000000000000001" />
+          <ContractLeaseAgreementTab
+            contractId="CON00000000000000000000001"
+            onGoToDocuments={vi.fn()}
+            onEditContract={vi.fn()}
+          />
         </ToastProvider>
       );
       await screen.findByRole('checkbox', { name: 'Parties' });
@@ -150,7 +182,11 @@ describe('ContractLeaseAgreementTab', () => {
         <QueryClientProvider client={queryClient}>
           <MemoryRouter>
             <ToastProvider>
-              <ContractLeaseAgreementTab contractId="CON00000000000000000000001" />
+              <ContractLeaseAgreementTab
+                contractId="CON00000000000000000000001"
+                onGoToDocuments={vi.fn()}
+                onEditContract={vi.fn()}
+              />
             </ToastProvider>
           </MemoryRouter>
         </QueryClientProvider>
@@ -165,7 +201,9 @@ describe('ContractLeaseAgreementTab', () => {
         .closest('li') as HTMLElement;
 
     it('renders move buttons per clause and disables them where a move is impossible', async () => {
-      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(ORDERED);
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(ORDERED)
+      );
       await renderTab();
 
       const up = (title: string) =>
@@ -185,10 +223,12 @@ describe('ContractLeaseAgreementTab', () => {
     });
 
     it('sends swapped sortOrder for the moved pair only and keeps pinned sortOrder', async () => {
-      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(ORDERED);
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(ORDERED)
+      );
       const updateSpy = vi
         .spyOn(leaseAgreementApi, 'updateLeaseClauses')
-        .mockResolvedValue(ORDERED);
+        .mockResolvedValue(documentEnvelope(ORDERED));
       await renderTab();
 
       await userEvent.click(
@@ -229,7 +269,9 @@ describe('ContractLeaseAgreementTab', () => {
     });
 
     it('shows article numbers for included clauses only and updates them locally', async () => {
-      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(ORDERED);
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(ORDERED)
+      );
       await renderTab();
 
       const number = (title: string) =>
@@ -256,10 +298,12 @@ describe('ContractLeaseAgreementTab', () => {
 
     it('keeps server sortOrder untouched when nothing was reordered', async () => {
       const gapped = ORDERED.map((c, i) => ({ ...c, sortOrder: (i + 1) * 10 }));
-      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(gapped);
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(gapped)
+      );
       const updateSpy = vi
         .spyOn(leaseAgreementApi, 'updateLeaseClauses')
-        .mockResolvedValue(gapped);
+        .mockResolvedValue(documentEnvelope(gapped));
       await renderTab();
 
       await userEvent.click(
@@ -275,7 +319,9 @@ describe('ContractLeaseAgreementTab', () => {
     });
 
     it('labels move buttons with the clause title', async () => {
-      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(ORDERED);
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(ORDERED)
+      );
       await renderTab();
       expect(
         screen.getByRole('button', { name: 'Move up Parking' })
@@ -288,10 +334,10 @@ describe('ContractLeaseAgreementTab', () => {
     it('shows and sends a clause added by a refetch while a reorder is pending', async () => {
       const getSpy = vi
         .spyOn(leaseAgreementApi, 'getLeaseClauses')
-        .mockResolvedValue(ORDERED);
+        .mockResolvedValue(documentEnvelope(ORDERED));
       const updateSpy = vi
         .spyOn(leaseAgreementApi, 'updateLeaseClauses')
-        .mockResolvedValue(ORDERED);
+        .mockResolvedValue(documentEnvelope(ORDERED));
       const { queryClient } = await renderTabWithClient();
 
       await userEvent.click(
@@ -308,7 +354,7 @@ describe('ContractLeaseAgreementTab', () => {
         pinned: false,
         articleNumber: 4,
       };
-      getSpy.mockResolvedValue([...ORDERED, added]);
+      getSpy.mockResolvedValue(documentEnvelope([...ORDERED, added]));
       await queryClient.invalidateQueries();
 
       expect(
@@ -334,7 +380,7 @@ describe('ContractLeaseAgreementTab', () => {
     it('clears local state after save and shows the server order', async () => {
       const getSpy = vi
         .spyOn(leaseAgreementApi, 'getLeaseClauses')
-        .mockResolvedValue(ORDERED);
+        .mockResolvedValue(documentEnvelope(ORDERED));
       const serverOrder: ResolvedLeaseClauseResponse[] = [
         ORDERED[0],
         { ...ORDERED[3], sortOrder: 2, articleNumber: 2 },
@@ -343,8 +389,8 @@ describe('ContractLeaseAgreementTab', () => {
       ];
       vi.spyOn(leaseAgreementApi, 'updateLeaseClauses').mockImplementation(
         async () => {
-          getSpy.mockResolvedValue(serverOrder);
-          return serverOrder;
+          getSpy.mockResolvedValue(documentEnvelope(serverOrder));
+          return documentEnvelope(serverOrder);
         }
       );
       await renderTab();
@@ -370,6 +416,144 @@ describe('ContractLeaseAgreementTab', () => {
       expect(
         within(rowFor('Parking')).getByTestId('article-number')
       ).toHaveTextContent('2');
+    });
+  });
+  describe('availability states', () => {
+    const CONTRACT = 'CON00000000000000000000001';
+    const renderTab = (
+      props: { onGoToDocuments?: () => void; onEditContract?: () => void } = {}
+    ) =>
+      renderWithProviders(
+        <ToastProvider>
+          <ContractLeaseAgreementTab
+            contractId={CONTRACT}
+            onGoToDocuments={props.onGoToDocuments ?? vi.fn()}
+            onEditContract={props.onEditContract}
+          />
+        </ToastProvider>
+      );
+
+    it('shows the unavailable-country panel with the country row and hides actions', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+        availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
+        countryCode: 'IT',
+        clauses: [],
+      });
+      const onGoToDocuments = vi.fn();
+      renderTab({ onGoToDocuments });
+
+      expect(
+        await screen.findByRole('heading', { name: 'Not available here yet' })
+      ).toBeInTheDocument();
+      expect(screen.getByText('Country')).toBeInTheDocument();
+      expect(screen.getByText('Italy')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /save selection/i })
+      ).toBeNull();
+      expect(
+        screen.queryByRole('button', { name: /generate lease agreement/i })
+      ).toBeNull();
+      expect(screen.queryByRole('checkbox')).toBeNull();
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Go to Documents' })
+      );
+      expect(onGoToDocuments).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows the no-country panel and calls onEditContract', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+        availability: LeaseAvailability.UNAVAILABLE_NO_COUNTRY,
+        clauses: [],
+      });
+      const onEditContract = vi.fn();
+      renderTab({ onEditContract });
+
+      expect(
+        await screen.findByRole('heading', { name: 'Choose a country first' })
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Country')).toBeNull();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Edit contract' })
+      );
+      expect(onEditContract).toHaveBeenCalledTimes(1);
+    });
+
+    it('hides the Edit contract button when no edit handler is available', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+        availability: LeaseAvailability.UNAVAILABLE_NO_COUNTRY,
+        clauses: [],
+      });
+      renderTab();
+      await screen.findByRole('heading', { name: 'Choose a country first' });
+      expect(
+        screen.queryByRole('button', { name: 'Edit contract' })
+      ).toBeNull();
+    });
+
+    it('shows an alert with a working Try again button on a query error', async () => {
+      const getSpy = vi
+        .spyOn(leaseAgreementApi, 'getLeaseClauses')
+        .mockRejectedValueOnce(new Error('boom'))
+        .mockResolvedValue(documentEnvelope(CLAUSES));
+      renderTab();
+
+      const alert = await screen.findByRole('alert');
+      expect(alert).toHaveTextContent("We couldn't load the clauses");
+      await userEvent.click(
+        within(alert).getByRole('button', { name: 'Try again' })
+      );
+      expect(
+        await screen.findByRole('checkbox', { name: 'Parties' })
+      ).toBeInTheDocument();
+      expect(getSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('shows the example-text note above the clause list and keeps the actions', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_EXAMPLE_TEXT)
+      );
+      renderTab();
+
+      const note = await screen.findByRole('note');
+      expect(note).toHaveTextContent('This is example text');
+      expect(
+        screen.getByRole('checkbox', { name: 'Parties' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /save selection/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /generate lease agreement/i })
+      ).toBeInTheDocument();
+    });
+
+    it('shows no note for a full document', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      renderTab();
+      await screen.findByRole('checkbox', { name: 'Parties' });
+      expect(screen.queryByRole('note')).toBeNull();
+    });
+
+    it('tracks lease_unavailable_viewed once per reason', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+        availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
+        countryCode: 'IT',
+        clauses: [],
+      });
+      const track = vi
+        .spyOn(analytics, 'trackEvent')
+        .mockImplementation(() => {});
+      const { rerender } = renderTab();
+      await screen.findByRole('heading', { name: 'Not available here yet' });
+      expect(track).toHaveBeenCalledTimes(1);
+      expect(track).toHaveBeenCalledWith('lease_unavailable_viewed', {
+        countryCode: 'IT',
+        reason: 'unsupported_country',
+      });
+      rerender(<div />);
     });
   });
 });

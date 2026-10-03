@@ -1089,14 +1089,33 @@
   "leaseAgreement": {
     "title": "Contrat de Bail",
     "description": "Choisissez les clauses à inclure, puis générez le PDF du bail pour ce contrat.",
-    "loadError": "Impossible de charger les clauses du bail",
     "empty": "Aucune clause n'est encore configurée pour le pays de ce contrat.",
     "required": "Obligatoire",
     "saveSelection": "Enregistrer la sélection",
     "generate": "Générer le bail",
     "pinned": "Épinglée",
     "moveUp": "Monter {{title}}",
-    "moveDown": "Descendre {{title}}"
+    "moveDown": "Descendre {{title}}",
+    "countryLabel": "Pays",
+    "unavailable": {
+      "title": "Pas encore disponible",
+      "description": "Nous n'avons pas encore de bail pour ce pays. Vous pouvez gérer ce contrat et importer un bail déjà signé.",
+      "action": "Aller aux Documents"
+    },
+    "noCountry": {
+      "title": "Choisissez d'abord un pays",
+      "description": "Le bail dépend du pays. Ajoutez d'abord un pays à ce contrat.",
+      "action": "Modifier le contrat"
+    },
+    "error": {
+      "title": "Chargement impossible",
+      "description": "Un problème est survenu de notre côté. Réessayez dans un instant.",
+      "retry": "Réessayer"
+    },
+    "exampleNotice": {
+      "title": "Ceci est un texte d'exemple",
+      "description": "Pour ce pays, nous n'avons qu'un court exemple, pas un bail complet. Faites vérifier votre bail avant toute signature."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standard",

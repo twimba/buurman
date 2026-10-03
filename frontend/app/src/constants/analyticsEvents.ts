@@ -20,6 +20,7 @@ export const AnalyticsEvent = {
   SERVICE_PROVIDER_TAB_VIEWED: 'service_provider_tab_viewed',
   CONTRACT_CREATED: 'contract_created',
   CONTRACT_VIEWED: 'contract_viewed',
+  LEASE_UNAVAILABLE_VIEWED: 'lease_unavailable_viewed',
   CONTRACT_STATUS_CHANGED: 'contract_status_changed',
   PAYMENT_CREATED: 'payment_created',
   PAYMENT_MARKED_PAID: 'payment_marked_paid',

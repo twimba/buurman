@@ -1089,14 +1089,33 @@
   "leaseAgreement": {
     "title": "Contrato de Arrendamiento",
     "description": "Elige qué cláusulas incluir y luego genera el PDF del contrato de arrendamiento para este contrato.",
-    "loadError": "No se pudieron cargar las cláusulas del contrato",
     "empty": "Todavía no hay cláusulas configuradas para el país de este contrato.",
     "required": "Obligatoria",
     "saveSelection": "Guardar selección",
     "generate": "Generar contrato de arrendamiento",
     "pinned": "Fijada",
     "moveUp": "Subir {{title}}",
-    "moveDown": "Bajar {{title}}"
+    "moveDown": "Bajar {{title}}",
+    "countryLabel": "País",
+    "unavailable": {
+      "title": "Aún no disponible",
+      "description": "Todavía no tenemos contrato de arrendamiento para este país. Puedes seguir gestionando este contrato y subir uno ya firmado.",
+      "action": "Ir a Documentos"
+    },
+    "noCountry": {
+      "title": "Elige primero un país",
+      "description": "El contrato de arrendamiento depende del país. Añade primero un país a este contrato.",
+      "action": "Editar contrato"
+    },
+    "error": {
+      "title": "No se pudo cargar",
+      "description": "Algo salió mal por nuestra parte. Inténtalo de nuevo en un momento.",
+      "retry": "Reintentar"
+    },
+    "exampleNotice": {
+      "title": "Esto es un texto de ejemplo",
+      "description": "Para este país solo tenemos un breve ejemplo, no un contrato completo. Haz revisar tu contrato antes de que alguien firme."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Estándar",

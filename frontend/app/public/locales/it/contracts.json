@@ -1089,14 +1089,33 @@
   "leaseAgreement": {
     "title": "Contratto di Locazione",
     "description": "Scegli quali clausole includere, quindi genera il PDF del contratto di locazione per questo contratto.",
-    "loadError": "Impossibile caricare le clausole del contratto",
     "empty": "Non sono ancora state configurate clausole per il paese di questo contratto.",
     "required": "Obbligatoria",
     "saveSelection": "Salva selezione",
     "generate": "Genera contratto di locazione",
     "pinned": "Fissata",
     "moveUp": "Sposta su {{title}}",
-    "moveDown": "Sposta giù {{title}}"
+    "moveDown": "Sposta giù {{title}}",
+    "countryLabel": "Paese",
+    "unavailable": {
+      "title": "Non ancora disponibile",
+      "description": "Non abbiamo ancora un contratto di locazione per questo paese. Puoi comunque gestire questo contratto e caricare un contratto già firmato.",
+      "action": "Vai a Documenti"
+    },
+    "noCountry": {
+      "title": "Scegli prima un paese",
+      "description": "Il contratto di locazione dipende dal paese. Aggiungi prima un paese a questo contratto.",
+      "action": "Modifica contratto"
+    },
+    "error": {
+      "title": "Impossibile caricare",
+      "description": "Qualcosa è andato storto da parte nostra. Riprova tra un attimo.",
+      "retry": "Riprova"
+    },
+    "exampleNotice": {
+      "title": "Questo è un testo di esempio",
+      "description": "Per questo paese abbiamo solo un breve esempio, non un contratto completo. Fai verificare il tuo contratto prima che qualcuno firmi."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standard",

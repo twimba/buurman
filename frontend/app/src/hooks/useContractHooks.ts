@@ -134,6 +134,10 @@ export const useUpdateContract = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.auditLog(id),
       });
+      // The lease availability depends on the contract's country.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.leaseClauses(id),
+      });
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.all(),
       });

@@ -1075,14 +1075,33 @@
   "leaseAgreement": {
     "title": "Leiekontrakt",
     "description": "Velg hvilke klausuler som skal inkluderes, og generer deretter leiekontrakt-PDF-en for denne kontrakten.",
-    "loadError": "Kunne ikke laste leieklausuler",
     "empty": "Det er ennå ikke konfigurert klausuler for landet til denne kontrakten.",
     "required": "Obligatorisk",
     "saveSelection": "Lagre valg",
     "generate": "Generer leiekontrakt",
     "pinned": "Festet",
     "moveUp": "Flytt {{title}} opp",
-    "moveDown": "Flytt {{title}} ned"
+    "moveDown": "Flytt {{title}} ned",
+    "countryLabel": "Land",
+    "unavailable": {
+      "title": "Ikke tilgjengelig ennå",
+      "description": "Vi har ikke leiekontrakt for dette landet ennå. Du kan fortsatt administrere kontrakten og laste opp en allerede signert leiekontrakt.",
+      "action": "Gå til Dokumenter"
+    },
+    "noCountry": {
+      "title": "Velg land først",
+      "description": "Leiekontrakten avhenger av landet. Legg først til et land i denne kontrakten.",
+      "action": "Rediger kontrakt"
+    },
+    "error": {
+      "title": "Kunne ikke laste",
+      "description": "Noe gikk galt hos oss. Prøv igjen om litt.",
+      "retry": "Prøv igjen"
+    },
+    "exampleNotice": {
+      "title": "Dette er eksempeltekst",
+      "description": "For dette landet har vi bare et kort eksempel, ikke en full leiekontrakt. La din egen kontrakt bli gjennomgått før noen signerer."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standard",

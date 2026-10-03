@@ -1075,14 +1075,33 @@
   "leaseAgreement": {
     "title": "Mietvertrag",
     "description": "Wählen Sie die einzuschließenden Klauseln aus und erstellen Sie anschließend das Mietvertrags-PDF für diesen Vertrag.",
-    "loadError": "Mietklauseln konnten nicht geladen werden",
     "empty": "Für das Land dieses Vertrags sind noch keine Klauseln konfiguriert.",
     "required": "Erforderlich",
     "saveSelection": "Auswahl speichern",
     "generate": "Mietvertrag erstellen",
     "pinned": "Fixiert",
     "moveUp": "{{title}} nach oben verschieben",
-    "moveDown": "{{title}} nach unten verschieben"
+    "moveDown": "{{title}} nach unten verschieben",
+    "countryLabel": "Land",
+    "unavailable": {
+      "title": "Noch nicht verfügbar",
+      "description": "Für dieses Land gibt es noch keinen Mietvertrag. Sie können den Vertrag weiter verwalten und einen unterschriebenen Mietvertrag hochladen.",
+      "action": "Zu Dokumenten"
+    },
+    "noCountry": {
+      "title": "Zuerst Land wählen",
+      "description": "Der Mietvertrag hängt vom Land ab. Fügen Sie diesem Vertrag zuerst ein Land hinzu.",
+      "action": "Vertrag bearbeiten"
+    },
+    "error": {
+      "title": "Laden fehlgeschlagen",
+      "description": "Bei uns ist etwas schiefgelaufen. Bitte versuchen Sie es gleich noch einmal.",
+      "retry": "Erneut versuchen"
+    },
+    "exampleNotice": {
+      "title": "Das ist ein Beispieltext",
+      "description": "Für dieses Land haben wir nur ein kurzes Muster, keinen vollständigen Mietvertrag. Lassen Sie Ihren Vertrag prüfen, bevor jemand unterschreibt."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standard",

@@ -1075,14 +1075,33 @@
   "leaseAgreement": {
     "title": "Lejekontrakt",
     "description": "Vælg, hvilke klausuler der skal medtages, og generer derefter lejekontrakt-PDF'en for denne kontrakt.",
-    "loadError": "Kunne ikke indlæse lejeklausuler",
     "empty": "Der er endnu ikke konfigureret klausuler for denne kontrakts land.",
     "required": "Obligatorisk",
     "saveSelection": "Gem valg",
     "generate": "Generer lejekontrakt",
     "pinned": "Fastlåst",
     "moveUp": "Flyt {{title}} op",
-    "moveDown": "Flyt {{title}} ned"
+    "moveDown": "Flyt {{title}} ned",
+    "countryLabel": "Land",
+    "unavailable": {
+      "title": "Ikke tilgængelig endnu",
+      "description": "Vi har endnu ikke en lejekontrakt til dette land. Du kan stadig administrere kontrakten og uploade en allerede underskrevet lejekontrakt.",
+      "action": "Gå til Dokumenter"
+    },
+    "noCountry": {
+      "title": "Vælg først et land",
+      "description": "Lejekontrakten afhænger af landet. Tilføj først et land til denne kontrakt.",
+      "action": "Rediger kontrakt"
+    },
+    "error": {
+      "title": "Kunne ikke indlæse",
+      "description": "Noget gik galt hos os. Prøv igen om lidt.",
+      "retry": "Prøv igen"
+    },
+    "exampleNotice": {
+      "title": "Dette er eksempeltekst",
+      "description": "Til dette land har vi kun et kort eksempel, ikke en fuld lejekontrakt. Få din egen kontrakt gennemgået, før nogen skriver under."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standard",

@@ -1075,14 +1075,33 @@
   "leaseAgreement": {
     "title": "Vuokrasopimus",
     "description": "Valitse mukaan otettavat lausekkeet ja luo tämän sopimuksen vuokrasopimus-PDF.",
-    "loadError": "Vuokralausekkeiden lataaminen epäonnistui",
     "empty": "Tämän sopimuksen maalle ei ole vielä määritetty lausekkeita.",
     "required": "Pakollinen",
     "saveSelection": "Tallenna valinta",
     "generate": "Luo vuokrasopimus",
     "pinned": "Kiinnitetty",
     "moveUp": "Siirrä {{title}} ylös",
-    "moveDown": "Siirrä {{title}} alas"
+    "moveDown": "Siirrä {{title}} alas",
+    "countryLabel": "Maa",
+    "unavailable": {
+      "title": "Ei vielä saatavilla",
+      "description": "Tälle maalle ei ole vielä vuokrasopimusta. Voit silti hallita tätä sopimusta ja ladata jo allekirjoitetun vuokrasopimuksen.",
+      "action": "Asiakirjoihin"
+    },
+    "noCountry": {
+      "title": "Valitse ensin maa",
+      "description": "Vuokrasopimus riippuu maasta. Lisää ensin maa tähän sopimukseen.",
+      "action": "Muokkaa sopimusta"
+    },
+    "error": {
+      "title": "Lataus epäonnistui",
+      "description": "Meidän päässämme tapahtui virhe. Yritä hetken kuluttua uudelleen.",
+      "retry": "Yritä uudelleen"
+    },
+    "exampleNotice": {
+      "title": "Tämä on esimerkkiteksti",
+      "description": "Tälle maalle on vain lyhyt esimerkki, ei täydellistä vuokrasopimusta. Tarkistuta oma sopimuksesi ennen allekirjoitusta."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Vakio",

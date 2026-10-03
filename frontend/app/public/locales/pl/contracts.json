@@ -1103,14 +1103,33 @@
   "leaseAgreement": {
     "title": "Umowa Najmu",
     "description": "Wybierz, które klauzule mają zostać uwzględnione, a następnie wygeneruj plik PDF umowy najmu dla tej umowy.",
-    "loadError": "Nie udało się wczytać klauzul umowy najmu",
     "empty": "Dla kraju tej umowy nie skonfigurowano jeszcze żadnych klauzul.",
     "required": "Wymagana",
     "saveSelection": "Zapisz wybór",
     "generate": "Wygeneruj umowę najmu",
     "pinned": "Przypięta",
     "moveUp": "Przesuń w górę: {{title}}",
-    "moveDown": "Przesuń w dół: {{title}}"
+    "moveDown": "Przesuń w dół: {{title}}",
+    "countryLabel": "Kraj",
+    "unavailable": {
+      "title": "Jeszcze niedostępne",
+      "description": "Nie mamy jeszcze umowy najmu dla tego kraju. Nadal możesz zarządzać tym kontraktem i przesłać już podpisaną umowę.",
+      "action": "Do Dokumentów"
+    },
+    "noCountry": {
+      "title": "Najpierw wybierz kraj",
+      "description": "Umowa najmu zależy od kraju. Najpierw dodaj kraj do tego kontraktu.",
+      "action": "Edytuj kontrakt"
+    },
+    "error": {
+      "title": "Nie udało się wczytać",
+      "description": "Coś poszło nie tak po naszej stronie. Spróbuj ponownie za chwilę.",
+      "retry": "Spróbuj ponownie"
+    },
+    "exampleNotice": {
+      "title": "To jest tekst przykładowy",
+      "description": "Dla tego kraju mamy tylko krótki wzór, a nie pełną umowę najmu. Zleć sprawdzenie własnej umowy, zanim ktoś ją podpisze."
+    }
   },
   "leaseRegime": {
     "STANDARD": "Standardowy",
