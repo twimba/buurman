@@ -465,6 +465,7 @@ class ContractServiceTest {
           Optional.empty(),
           Optional.empty(),
           Optional.empty(),
+          Optional.empty(),
           null,
           Optional.empty(),
           Optional.empty(),

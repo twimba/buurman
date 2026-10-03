@@ -16,6 +16,8 @@ const CLAUSES: ResolvedLeaseClauseResponse[] = [
     included: true,
     optional: false,
     sortOrder: 1,
+    pinned: true,
+    articleNumber: 1,
   },
   {
     templateIdentifier: 'LCT00000000000000000000002',
@@ -25,6 +27,8 @@ const CLAUSES: ResolvedLeaseClauseResponse[] = [
     included: true,
     optional: true,
     sortOrder: 2,
+    pinned: false,
+    articleNumber: 2,
   },
 ];
 

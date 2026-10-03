@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.LeaseRegime;
 import com.buurman.domain.identifier.PropertyIdentifier;
 
 import jakarta.validation.Valid;
@@ -55,6 +56,7 @@ public record CreateContractRequest(
     Optional<Contract.LandlordType> landlordType,
     Optional<String> regionCode,
     Optional<List<String>> documentLanguages,
+    Optional<LeaseRegime> leaseRegime,
     Optional<@PositiveOrZero(message = "Late fee percentage must be zero or positive") BigDecimal>
         lateFeePercentage,
     Optional<String> termsAndConditions,

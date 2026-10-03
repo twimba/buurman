@@ -32,6 +32,9 @@ public interface ContractMapper {
       target = "documentLanguages",
       expression = "java(request.documentLanguages().orElse(java.util.List.of(\"en\")))")
   @Mapping(
+      target = "leaseRegime",
+      expression = "java(request.leaseRegime().orElse(com.buurman.domain.LeaseRegime.STANDARD))")
+  @Mapping(
       target = "rentAmount",
       expression =
           "java(com.buurman.util.MoneyAmount.of(request.rentAmount(),"
@@ -70,6 +73,9 @@ public interface ContractMapper {
   @Mapping(
       target = "documentLanguages",
       expression = "java(request.documentLanguages().orElse(contract.getDocumentLanguages()))")
+  @Mapping(
+      target = "leaseRegime",
+      expression = "java(request.leaseRegime().orElse(contract.getLeaseRegime()))")
   @Mapping(
       target = "rentAmount",
       expression =

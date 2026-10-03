@@ -25400,6 +25400,10 @@ components:
           type: boolean
         sortOrder:
           type: integer
+        pinned:
+          type: boolean
+        articleNumber:
+          type: integer
       required:
         - templateIdentifier
         - clauseKey
@@ -25408,6 +25412,8 @@ components:
         - included
         - optional
         - sortOrder
+        - pinned
+        - articleNumber
     UpdateContractLeaseClausesRequest:
       type: object
       properties:
@@ -25880,6 +25886,8 @@ components:
           items:
             $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
+        leaseRegime:
+          $ref: '#/components/schemas/LeaseRegime'
           example: ["en"]
         countryMetadata:
           type: object
@@ -26303,6 +26311,8 @@ components:
           items:
             $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
+        leaseRegime:
+          $ref: '#/components/schemas/LeaseRegime'
         effectiveEndDate:
           type: string
           format: date
@@ -26327,6 +26337,7 @@ components:
         - createdAt
         - documentLanguages
         - extensionCount
+        - leaseRegime
         - identifier
         - landlordNoticeDays
         - parties
@@ -28433,6 +28444,8 @@ components:
           items:
             $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
+        leaseRegime:
+          $ref: '#/components/schemas/LeaseRegime'
           example: ["en"]
         countryMetadata:
           type: object
@@ -31861,6 +31874,13 @@ components:
         - NONE
         - AUTOMATIC
         - MANUAL
+    LeaseRegime:
+      type: string
+      description: Legal regime the lease falls under; selects the clause set used for the lease agreement
+      enum:
+        - STANDARD
+        - SHORT_TERM
+        - STUDENT_OR_MOBILITY
     RentAdjustmentType:
       type: string
       enum:

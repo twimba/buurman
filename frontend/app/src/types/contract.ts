@@ -27,6 +27,9 @@ export {
   type ContractPartyResponseRole,
 } from '../generated/models';
 
+export { LeaseRegime } from '../generated/models';
+export type { LeaseRegime as LeaseRegimeValue } from '../generated/models';
+
 export type { EnumValue } from '../generated/models';
 export type { ValidationSchema } from '../generated/models';
 export type { CountryMetadataSchemaResponse } from '../generated/models';
@@ -43,6 +46,7 @@ import type { ContractResponsePaymentFrequency } from '../generated/models';
 import type { ContractResponseStatus } from '../generated/models';
 import { ContractPartyResponseRole } from '../generated/models';
 import { RentComponentType } from '../generated/models';
+import type { LeaseRegime } from '../generated/models';
 
 export interface RentComponentFormItem {
   componentType: RentComponentType;
@@ -115,6 +119,7 @@ export interface ContractResponse {
   landlordType?: LandlordType;
   regionCode?: string;
   documentLanguages?: string[];
+  leaseRegime?: LeaseRegime;
   extensionCount?: number;
   extensionsRemaining?: number;
   rentComponents: RentComponentResponseItem[];
