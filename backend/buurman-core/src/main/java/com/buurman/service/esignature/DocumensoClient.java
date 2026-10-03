@@ -3,7 +3,9 @@ package com.buurman.service.esignature;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -12,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import com.buurman.config.models.DocumensoProperties;
@@ -48,6 +51,7 @@ public class DocumensoClient implements SignatureProviderClient {
       byte[] pdfBytes, String fileName, List<SignerRequest> signers) {
     try {
       String envelopeId = createEnvelope(pdfBytes, fileName, signers);
+      createSignatureFields(envelopeId, signers);
       return distributeEnvelope(envelopeId);
     } catch (ExternalServiceException e) {
       throw e;
@@ -92,6 +96,110 @@ public class DocumensoClient implements SignatureProviderClient {
       throw new ExternalServiceException("Documenso did not return an envelope id");
     }
     return envelopeId;
+  }
+
+  /**
+   * Documenso refuses to distribute an envelope whose recipients have no fields to sign — see
+   * {@code create-envelope.js}'s MISSING_SIGNATURE_FIELD check. A field is placed per signer by
+   * matching that signer's {@code placeholder} text (e.g. {@code "signature-landlord"}) against the
+   * PDF's own text content, so the document template must render that exact literal text at the
+   * spot the signature belongs (see {@code SignerRequest}).
+   *
+   * <p>Not every PDF sent for signature was rendered by one of our own templates — a demo-data
+   * fixture or a landlord's own uploaded scan has no placeholder text at all. When Documenso
+   * reports the placeholder wasn't found, this falls back to fixed coordinates near the bottom of
+   * the first page (stacked per signer) instead of failing the whole request. Documenso rejects the
+   * entire batch if even one placeholder in it is missing, so the fallback re-submits every
+   * signer's field with coordinates, not just the one that was missing.
+   *
+   * <p>{@code envelope/create}'s response carries no recipient ids — a fresh {@code GET} is the
+   * only way to resolve each signer's email to the recipient id {@code envelope/field/create-many}
+   * requires.
+   */
+  private void createSignatureFields(String envelopeId, List<SignerRequest> signers)
+      throws JsonProcessingException {
+    String envelopeBody =
+        client.get().uri("/envelope/{envelopeId}", envelopeId).retrieve().body(String.class);
+    JsonNode envelope = readTree(envelopeBody);
+    if (envelope == null) {
+      throw new ExternalServiceException("Documenso envelope not found: " + envelopeId);
+    }
+
+    Map<String, Integer> recipientIdByEmail = new HashMap<>();
+    for (JsonNode recipient : envelope.path("recipients")) {
+      String email = recipient.path("email").asText(null);
+      if (email != null) {
+        recipientIdByEmail.put(email.toLowerCase(Locale.ROOT), recipient.path("id").asInt());
+      }
+    }
+
+    List<Integer> recipientIds = new ArrayList<>();
+    List<Map<String, Object>> placeholderFields = new ArrayList<>();
+    for (SignerRequest signer : signers) {
+      Integer recipientId = recipientIdByEmail.get(signer.email().toLowerCase(Locale.ROOT));
+      if (recipientId == null) {
+        throw new ExternalServiceException(
+            "Documenso envelope "
+                + envelopeId
+                + " has no recipient matching signer "
+                + signer.email());
+      }
+      recipientIds.add(recipientId);
+      placeholderFields.add(
+          Map.of(
+              "recipientId",
+              recipientId,
+              "type",
+              "SIGNATURE",
+              "placeholder",
+              signer.placeholder()));
+    }
+
+    try {
+      createFields(envelopeId, placeholderFields);
+    } catch (HttpClientErrorException e) {
+      if (!isPlaceholderNotFoundError(e)) {
+        throw e;
+      }
+      createFields(envelopeId, coordinateFields(recipientIds));
+    }
+  }
+
+  private void createFields(String envelopeId, List<Map<String, Object>> fields) {
+    client
+        .post()
+        .uri("/envelope/field/create-many")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(Map.of("envelopeId", envelopeId, "data", fields))
+        .retrieve()
+        .body(String.class);
+  }
+
+  private static boolean isPlaceholderNotFoundError(HttpClientErrorException e) {
+    String body = e.getResponseBodyAsString();
+    return body != null && body.contains("not found in PDF");
+  }
+
+  /**
+   * One signature field per recipient, stacked upward from the bottom-left of the first page.
+   * Percentage-based coordinates (Documenso's {@code positionY} is measured from the top), so this
+   * works regardless of the page's actual size. Page 1 is a deliberate, universal choice — we have
+   * no reliable way to know the document's real page count here, and every PDF has a first page.
+   */
+  private static List<Map<String, Object>> coordinateFields(List<Integer> recipientIds) {
+    List<Map<String, Object>> fields = new ArrayList<>();
+    for (int i = 0; i < recipientIds.size(); i++) {
+      fields.add(
+          Map.of(
+              "recipientId", recipientIds.get(i),
+              "type", "SIGNATURE",
+              "page", 1,
+              "positionX", 10,
+              "positionY", Math.max(5, 90 - i * 8),
+              "width", 25,
+              "height", 5));
+    }
+    return fields;
   }
 
   private SignatureSubmission distributeEnvelope(String envelopeId) throws JsonProcessingException {

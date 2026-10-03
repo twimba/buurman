@@ -29,6 +29,7 @@ import com.buurman.domain.identifier.SignatureRequestIdentifier;
 import com.buurman.dto.response.SignatureRequestResponse;
 import com.buurman.dto.response.SignatureSignerResponse;
 import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.ExternalServiceException;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRepository;
@@ -94,18 +95,28 @@ public class SignatureService {
     // Keyed by lower-cased email to dedupe: a contract party resolving to the same address as
     // another party, or as the landlord's own email, must never produce two signer entries for
     // the same person (Documenso may error, or double-send, on a duplicate signer email).
+    //
+    // Each signer also gets a "placeholder" — the literal PDF text DocumensoClient asks Documenso
+    // to locate to place that signer's signature field. "signature-landlord" for the landlord,
+    // "signature-tenant-N" for the Nth distinct tenant email encountered (1-based) — this must
+    // match LeaseAgreementExporter's own signatureBlocks numbering exactly, since both sides
+    // independently iterate contractPartyRepository.findByContractIdAndTeamId in the same order.
     Map<String, SignerRequest> signerRequestsByEmail = new LinkedHashMap<>();
     signerRequestsByEmail.put(
         principal.getEmail().toLowerCase(Locale.ROOT),
-        new SignerRequest(principal.getEmail(), principal.getName(), SignatureSignerRole.LANDLORD));
+        new SignerRequest(
+            principal.getEmail(),
+            principal.getName(),
+            SignatureSignerRole.LANDLORD,
+            "signature-landlord"));
 
-    // SignerRequest is the provider's wire shape (email/name/role only) and must stay that way —
-    // DocumensoClient depends on it. The Buurman-side contact a tenant signer came from is kept
-    // here, keyed by the same lower-cased email, so the persisted SignatureSigner can carry it.
+    // The Buurman-side contact a tenant signer came from is kept here, keyed by the same
+    // lower-cased email, so the persisted SignatureSigner can carry it.
     Map<String, UUID> contactIdByEmail = new LinkedHashMap<>();
 
     List<ContractParty> parties =
         contractPartyRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+    int[] tenantIndex = {0};
     for (ContractParty party : parties) {
       Optional<UUID> partyContactId = party.getContactId();
       partyContactId
@@ -114,13 +125,18 @@ public class SignatureService {
           .ifPresent(
               email -> {
                 String emailKey = email.toLowerCase(Locale.ROOT);
-                SignerRequest previous =
-                    signerRequestsByEmail.putIfAbsent(
-                        emailKey, new SignerRequest(email, email, SignatureSignerRole.TENANT));
-                if (previous == null) {
-                  // Only the party that actually won the dedupe contributes its contact id.
-                  partyContactId.ifPresent(contactId -> contactIdByEmail.put(emailKey, contactId));
+                if (signerRequestsByEmail.containsKey(emailKey)) {
+                  return;
                 }
+                tenantIndex[0]++;
+                signerRequestsByEmail.put(
+                    emailKey,
+                    new SignerRequest(
+                        email,
+                        email,
+                        SignatureSignerRole.TENANT,
+                        "signature-tenant-" + tenantIndex[0]));
+                partyContactId.ifPresent(contactId -> contactIdByEmail.put(emailKey, contactId));
               });
     }
     List<SignerRequest> signerRequests = new ArrayList<>(signerRequestsByEmail.values());
@@ -146,7 +162,16 @@ public class SignatureService {
       request.setStatus(SignatureRequestStatus.FAILED);
       request.setUpdatedBy(principal.getUserId());
       signatureRequestRepository.save(request);
-      throw e;
+      // The provider's own exception message (e.g. "Documenso did not return an envelope id")
+      // names the third-party service and is meaningless to a landlord — it still reaches the
+      // logs via this exception's cause, but the end user gets a plain, actionable message
+      // instead. Re-thrown as-is, this would surface verbatim in the UI toast (see
+      // GlobalExceptionHandler.handleExternalService, which copies ex.getMessage() straight into
+      // the response).
+      throw new ExternalServiceException(
+          "We couldn't send this document for signature. Please try again in a few minutes —"
+              + " if it keeps happening, contact support.",
+          e);
     }
 
     request.setProviderSubmissionId(submission.providerSubmissionId());

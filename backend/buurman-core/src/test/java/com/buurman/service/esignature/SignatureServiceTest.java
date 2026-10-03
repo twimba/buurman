@@ -196,7 +196,11 @@ class SignatureServiceTest {
   }
 
   @Test
-  @DisplayName("provider failure leaves the request FAILED, not stuck PENDING with no signers")
+  @DisplayName(
+      "provider failure leaves the request FAILED, not stuck PENDING with no signers, and"
+          + " surfaces a plain message that never names the signing provider — the provider's own"
+          + " exception message reaches the user-facing ProblemDetail verbatim otherwise (see"
+          + " GlobalExceptionHandler.handleExternalService)")
   void providerFailureMarksRequestFailed() {
     when(providerClient.createSubmission(any(byte[].class), any(String.class), anyList()))
         .thenThrow(new ExternalServiceException("Documenso unreachable"));
@@ -217,7 +221,10 @@ class SignatureServiceTest {
                     ContractIdentifier.of("CON00000000000000000000001"),
                     DocumentIdentifier.of("DOC00000000000000000000001"),
                     principal))
-        .isInstanceOf(ExternalServiceException.class);
+        .isInstanceOf(ExternalServiceException.class)
+        .hasMessageNotContaining("Documenso")
+        .cause()
+        .hasMessageContaining("Documenso unreachable");
 
     org.mockito.Mockito.verify(signatureRequestRepository, org.mockito.Mockito.times(2))
         .save(any());

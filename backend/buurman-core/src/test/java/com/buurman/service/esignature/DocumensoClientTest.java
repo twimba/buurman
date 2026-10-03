@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
@@ -35,7 +37,24 @@ class DocumensoClientTest {
       "{\"success\":true,\"id\":\"envelope_abc123\",\"recipients\":"
           + "[{\"id\":1,\"email\":\"tenant@example.com\"}]}";
   private volatile String envelopeResponse =
-      "{\"status\":\"COMPLETED\",\"envelopeItems\":[{\"id\":\"envelope_item_1\"}]}";
+      "{\"status\":\"COMPLETED\",\"envelopeItems\":[{\"id\":\"envelope_item_1\"}],"
+          + "\"recipients\":[{\"id\":1,\"email\":\"tenant@example.com\"},"
+          + "{\"id\":2,\"email\":\"a@example.com\"}]}";
+  private volatile @Nullable String capturedFieldsBody;
+  private final List<String> capturedFieldsBodies = new ArrayList<>();
+  private final AtomicInteger fieldsCallCount = new AtomicInteger();
+
+  /** When > 0, the first N calls to field/create-many return {@link #PLACEHOLDER_NOT_FOUND}. */
+  private volatile int failFieldsCallsWithPlaceholderNotFound = 0;
+
+  /** When true, every call to field/create-many returns {@link #UNRELATED_FIELD_ERROR} (400). */
+  private volatile boolean failFieldsWithUnrelatedError = false;
+
+  private static final String PLACEHOLDER_NOT_FOUND =
+      "{\"message\":\"Placeholder \\\"signature-landlord\\\" not found in PDF\","
+          + "\"code\":\"INTERNAL_SERVER_ERROR\"}";
+  private static final String UNRELATED_FIELD_ERROR =
+      "{\"message\":\"Recipient 999 not found\",\"code\":\"INTERNAL_SERVER_ERROR\"}";
 
   @BeforeEach
   void startServer() throws IOException {
@@ -48,6 +67,30 @@ class DocumensoClientTest {
           byte[] body = createResponse.getBytes(StandardCharsets.UTF_8);
           exchange.getResponseHeaders().set("Content-Type", "application/json");
           exchange.sendResponseHeaders(createStatus, body.length);
+          exchange.getResponseBody().write(body);
+          exchange.close();
+        });
+    server.createContext(
+        "/api/v2/envelope/field/create-many",
+        exchange -> {
+          capturedFieldsBody =
+              new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.ISO_8859_1);
+          capturedFieldsBodies.add(capturedFieldsBody);
+          int call = fieldsCallCount.incrementAndGet();
+          byte[] body;
+          int status;
+          if (failFieldsWithUnrelatedError) {
+            body = UNRELATED_FIELD_ERROR.getBytes(StandardCharsets.UTF_8);
+            status = 400;
+          } else if (call <= failFieldsCallsWithPlaceholderNotFound) {
+            body = PLACEHOLDER_NOT_FOUND.getBytes(StandardCharsets.UTF_8);
+            status = 400;
+          } else {
+            body = "{\"data\":[]}".getBytes(StandardCharsets.UTF_8);
+            status = 200;
+          }
+          exchange.getResponseHeaders().set("Content-Type", "application/json");
+          exchange.sendResponseHeaders(status, body.length);
           exchange.getResponseBody().write(body);
           exchange.close();
         });
@@ -118,12 +161,19 @@ class DocumensoClientTest {
                 "addendum.pdf",
                 List.of(
                     new SignerRequest(
-                        "tenant@example.com", "Jane Tenant", SignatureSignerRole.TENANT)));
+                        "tenant@example.com",
+                        "Jane Tenant",
+                        SignatureSignerRole.TENANT,
+                        "signature-tenant-1")));
 
     assertThat(submission.providerSubmissionId()).isEqualTo("envelope_abc123");
     assertThat(submission.signers()).hasSize(1);
     assertThat(submission.signers().get(0).email()).isEqualTo("tenant@example.com");
     assertThat(capturedCreateBody).contains("addendum.pdf").contains("\"role\":\"SIGNER\"");
+    assertThat(capturedFieldsBody)
+        .contains("\"recipientId\":1")
+        .contains("\"type\":\"SIGNATURE\"")
+        .contains("\"placeholder\":\"signature-tenant-1\"");
   }
 
   @Test
@@ -137,7 +187,11 @@ class DocumensoClientTest {
                         "%PDF".getBytes(StandardCharsets.UTF_8),
                         "x.pdf",
                         List.of(
-                            new SignerRequest("a@example.com", "A", SignatureSignerRole.TENANT))))
+                            new SignerRequest(
+                                "a@example.com",
+                                "A",
+                                SignatureSignerRole.TENANT,
+                                "signature-tenant-1"))))
         .isInstanceOf(ExternalServiceException.class);
   }
 
@@ -153,7 +207,11 @@ class DocumensoClientTest {
                         "%PDF".getBytes(StandardCharsets.UTF_8),
                         "x.pdf",
                         List.of(
-                            new SignerRequest("a@example.com", "A", SignatureSignerRole.TENANT))))
+                            new SignerRequest(
+                                "a@example.com",
+                                "A",
+                                SignatureSignerRole.TENANT,
+                                "signature-tenant-1"))))
         .isInstanceOf(ExternalServiceException.class);
   }
 
@@ -166,6 +224,81 @@ class DocumensoClientTest {
         .isEqualTo("%PDF");
     assertThat(new String(document.certificatePdfBytes(), 0, 4, StandardCharsets.UTF_8))
         .isEqualTo("%PDF");
+  }
+
+  @Test
+  @DisplayName(
+      "createSubmission fails loudly when Documenso's envelope has no recipient matching a"
+          + " signer's email, instead of silently skipping that signer's field")
+  void createSubmissionFailsWhenNoRecipientMatchesSignerEmail() {
+    assertThatThrownBy(
+            () ->
+                client("secret")
+                    .createSubmission(
+                        "%PDF".getBytes(StandardCharsets.UTF_8),
+                        "x.pdf",
+                        List.of(
+                            new SignerRequest(
+                                "unmatched@example.com",
+                                "Nobody",
+                                SignatureSignerRole.TENANT,
+                                "signature-tenant-1"))))
+        .isInstanceOf(ExternalServiceException.class)
+        .hasMessageContaining("no recipient matching signer unmatched@example.com");
+  }
+
+  @Test
+  @DisplayName(
+      "createSubmission falls back to coordinate-based fields when Documenso reports the"
+          + " placeholder wasn't found (e.g. a demo-data PDF or a landlord's own upload, which"
+          + " was never rendered with placeholder text)")
+  void createSubmissionFallsBackToCoordinatesWhenPlaceholderMissing() {
+    failFieldsCallsWithPlaceholderNotFound = 1;
+
+    SignatureSubmission submission =
+        client("secret")
+            .createSubmission(
+                "%PDF-1.7\ndoc".getBytes(StandardCharsets.UTF_8),
+                "uploaded-scan.pdf",
+                List.of(
+                    new SignerRequest(
+                        "tenant@example.com",
+                        "Jane Tenant",
+                        SignatureSignerRole.TENANT,
+                        "signature-tenant-1")));
+
+    assertThat(submission.providerSubmissionId()).isEqualTo("envelope_abc123");
+    assertThat(capturedFieldsBodies).hasSize(2);
+    assertThat(capturedFieldsBodies.get(0)).contains("\"placeholder\":\"signature-tenant-1\"");
+    assertThat(capturedFieldsBodies.get(1))
+        .contains("\"recipientId\":1")
+        .contains("\"type\":\"SIGNATURE\"")
+        .contains("\"page\":1")
+        .doesNotContain("placeholder");
+  }
+
+  @Test
+  @DisplayName(
+      "createSubmission rethrows a field-creation error unrelated to a missing placeholder")
+  void createSubmissionRethrowsUnrelatedFieldCreationError() {
+    // A different 400 (e.g. a malformed request) must NOT trigger the coordinate-fallback
+    // retry — only "not found in PDF" should.
+    failFieldsWithUnrelatedError = true;
+    assertThatThrownBy(
+            () ->
+                client("secret")
+                    .createSubmission(
+                        "%PDF".getBytes(StandardCharsets.UTF_8),
+                        "x.pdf",
+                        List.of(
+                            new SignerRequest(
+                                "tenant@example.com",
+                                "Jane Tenant",
+                                SignatureSignerRole.TENANT,
+                                "signature-tenant-1"))))
+        .isInstanceOf(ExternalServiceException.class);
+    // Only the one (failed, placeholder-based) field-creation call happened — no retry.
+    assertThat(capturedFieldsBodies).hasSize(1);
   }
 
   @Test
