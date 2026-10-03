@@ -183,6 +183,7 @@ class DocumensoClientTest {
           + "\"token\":\"tok_landlord\",\"signingStatus\":\"NOT_SIGNED\"},"
           + "{\"id\":8,\"name\":\"t@example.com\",\"email\":\"t@example.com\","
           + "\"token\":\"tok_tenant\",\"signingStatus\":\"SIGNED\"},"
+          + "{\"id\":10,\"name\":\"\",\"email\":\"blank@example.com\",\"token\":\"t\"},"
           + "{\"id\":9,\"name\":\"No Token\",\"email\":\"n@example.com\"}]}";
 
   @Test
@@ -194,13 +195,14 @@ class DocumensoClientTest {
     List<ProviderSigningLink> links =
         clientWithPublicUrl("https://sign.example.com/").fetchSigningLinks("envelope_abc123");
 
-    assertThat(links).hasSize(3);
+    assertThat(links).hasSize(4);
     assertThat(links.get(0).providerSignerId()).isEqualTo("7");
     assertThat(links.get(0).name()).isEqualTo("Lena Landlord");
     assertThat(links.get(0).email()).isEqualTo("l@example.com");
     assertThat(links.get(0).signingUrl()).contains("https://sign.example.com/sign/tok_landlord");
     assertThat(links.get(1).signingUrl()).contains("https://sign.example.com/sign/tok_tenant");
-    assertThat(links.get(2).signingUrl()).isEmpty();
+    assertThat(links.get(2).name()).isEqualTo("blank@example.com");
+    assertThat(links.get(3).signingUrl()).isEmpty();
   }
 
   @Test

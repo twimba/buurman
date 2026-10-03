@@ -15,4 +15,19 @@ public record SignatureSigningLinkResponse(
     SignatureSignerRole role,
     SignatureSignerStatus status,
     Optional<String> signingUrl,
-    boolean signed) {}
+    boolean signed) {
+
+  /** Omits {@code signingUrl}: a record's default toString would put the credential in logs. */
+  @Override
+  public String toString() {
+    return "SignatureSigningLinkResponse[role="
+        + role
+        + ", status="
+        + status
+        + ", hasSigningUrl="
+        + signingUrl.isPresent()
+        + ", signed="
+        + signed
+        + "]";
+  }
+}

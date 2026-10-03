@@ -50,7 +50,7 @@ booklet:
 documenso:
   base-url: http://documenso:3000
   # Signing links are opened by signers in a browser, never over the internal docker host.
-  public-url: ${DOCUMENSO_PUBLIC_URL:https://documenso.local.buurman.io}
+  public-url: ${DOCUMENSO_PUBLIC_URL:${DOCUMENSO_WEBAPP_URL:https://documenso.local.buurman.io}}
 
 app:
   public-url: https://app.local.buurman.io

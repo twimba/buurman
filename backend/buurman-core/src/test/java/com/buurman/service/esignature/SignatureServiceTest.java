@@ -88,6 +88,8 @@ class SignatureServiceTest {
         Document.builder()
             .id(DOCUMENT_ID)
             .teamId(TEAM_ID)
+            .entityType("CONTRACT")
+            .entityId(CONTRACT_ID)
             .fileKey("k")
             .fileName("addendum.pdf")
             .build();
@@ -386,39 +388,79 @@ class SignatureServiceTest {
   }
 
   @Test
-  @DisplayName("getSigningLinks falls back to email match and to the email as the name")
-  void getSigningLinksFallsBackToEmailMatch() {
+  @DisplayName(
+      "getSigningLinks matches on provider id only: two signers sharing an email each get their"
+          + " own link, and an unmatched signer gets none")
+  void getSigningLinksMatchesOnProviderIdOnly() {
     var request = linksRequest(SignatureRequestStatus.PENDING);
+    var tenantRole = com.buurman.domain.SignatureSignerRole.TENANT;
     when(signatureSignerRepository.findBySignatureRequestId(request.getId(), TEAM_ID))
         .thenReturn(
             List.of(
                 linksSigner(
                     request.getId(),
-                    "Tenant@Example.com",
-                    com.buurman.domain.SignatureSignerRole.TENANT,
-                    "tenant@example.com",
+                    "same@example.com",
+                    tenantRole,
+                    "11",
+                    SignatureSignerStatus.PENDING),
+                linksSigner(
+                    request.getId(),
+                    "same@example.com",
+                    tenantRole,
+                    "12",
                     SignatureSignerStatus.PENDING),
                 linksSigner(
                     request.getId(),
                     "gone@example.com",
-                    com.buurman.domain.SignatureSignerRole.TENANT,
+                    tenantRole,
                     "99",
+                    SignatureSignerStatus.PENDING),
+                linksSigner(
+                    request.getId(),
+                    "other@example.com",
+                    tenantRole,
+                    "13",
                     SignatureSignerStatus.PENDING)));
     when(providerClient.fetchSigningLinks("envelope_links"))
         .thenReturn(
             List.of(
                 new ProviderSigningLink(
-                    "5",
-                    "tenant@example.com",
-                    "Tess",
-                    Optional.of("https://sign.example.com/sign/t"))));
+                    "12",
+                    "same@example.com",
+                    "Second",
+                    Optional.of("https://sign.example.com/sign/second")),
+                new ProviderSigningLink(
+                    "11",
+                    "same@example.com",
+                    "First",
+                    Optional.of("https://sign.example.com/sign/first")),
+                new ProviderSigningLink(
+                    "14",
+                    "gone@example.com",
+                    "Wrong",
+                    Optional.of("https://sign.example.com/sign/wrong")),
+                new ProviderSigningLink("13", "other@example.com", "", Optional.empty())));
 
     var links = fetchLinks();
 
-    assertThat(links.get(0).signingUrl()).contains("https://sign.example.com/sign/t");
-    assertThat(links.get(0).name()).isEqualTo("Tess");
-    assertThat(links.get(1).signingUrl()).isEmpty();
-    assertThat(links.get(1).name()).isEqualTo("gone@example.com");
+    assertThat(links.get(0).signingUrl()).contains("https://sign.example.com/sign/first");
+    assertThat(links.get(1).signingUrl()).contains("https://sign.example.com/sign/second");
+    assertThat(links.get(2).signingUrl()).isEmpty();
+    assertThat(links.get(2).name()).isEqualTo("gone@example.com");
+    assertThat(links.get(3).signingUrl()).isEmpty();
+  }
+
+  @Test
+  @DisplayName("getSigningLinks 404s when the path contract is not the document's contract")
+  void getSigningLinksContractMismatchIsNotFound() {
+    linksRequest(SignatureRequestStatus.PENDING);
+    when(contractRepository.getByIdentifierAndTeamId(
+            any(Sid.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(com.buurman.domain.Contract.builder().id(UUID.randomUUID()).build());
+
+    assertThatThrownBy(this::fetchLinks).isInstanceOf(NotFoundException.class);
+
+    verifyNoInteractions(providerClient);
   }
 
   @Test
@@ -473,12 +515,13 @@ class SignatureServiceTest {
     when(signatureSignerRepository.findBySignatureRequestId(request.getId(), TEAM_ID))
         .thenReturn(List.of());
     when(providerClient.fetchSigningLinks("envelope_links"))
-        .thenThrow(new ExternalServiceException("Documenso is down"));
+        .thenThrow(new ExternalServiceException("Documenso is down tok_secret_leak"));
 
     assertThatThrownBy(this::fetchLinks)
         .isInstanceOf(ExternalServiceException.class)
         .hasMessageContaining("couldn't load the signing links")
-        .hasMessageNotContaining("Documenso");
+        .hasMessageNotContaining("Documenso")
+        .hasNoCause();
   }
 
   @Test

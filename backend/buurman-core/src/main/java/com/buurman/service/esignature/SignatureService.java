@@ -367,10 +367,13 @@ public class SignatureService {
     UUID teamId = principal.requireTeamId();
     SignatureRequest request =
         signatureRequestRepository.getByIdentifierAndTeamId(signatureRequestIdentifier, teamId);
-    // Unlike the status endpoints, this one hands out secrets: the path's document must really be
-    // the request's document (both team-scoped), otherwise it is a 404.
+    // Unlike the status endpoints, this one hands out secrets: the path's contract and document
+    // must really be the request's own (all team-scoped), otherwise it is a 404.
     Document document = documentRepository.getByIdentifierAndTeamId(documentIdentifier, teamId);
-    if (!document.getId().equals(request.getDocumentId())) {
+    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
+    if (!document.getId().equals(request.getDocumentId())
+        || !Document.EntityType.CONTRACT.name().equals(document.getEntityType())
+        || !contract.getId().equals(document.getEntityId())) {
       throw new NotFoundException("Signature request not found");
     }
 
@@ -385,8 +388,14 @@ public class SignatureService {
     try {
       providerLinks = providerClient.fetchSigningLinks(request.getProviderSubmissionId());
     } catch (RuntimeException e) {
+      // Deliberately no cause: GlobalExceptionHandler logs the whole chain, and a provider
+      // exception must never be able to carry a token into the logs.
+      log.warn(
+          "Fetching signing links failed for request {}: {}",
+          request.getIdentifier().orElseThrow().value(),
+          e.getClass().getSimpleName());
       throw new ExternalServiceException(
-          "We couldn't load the signing links. Please try again in a few minutes.", e);
+          "We couldn't load the signing links. Please try again in a few minutes.");
     }
 
     List<SignatureSigner> signers =
@@ -407,12 +416,7 @@ public class SignatureService {
     Optional<ProviderSigningLink> match =
         providerLinks.stream()
             .filter(l -> l.providerSignerId().equals(signer.getProviderSignerId()))
-            .findFirst()
-            .or(
-                () ->
-                    providerLinks.stream()
-                        .filter(l -> l.email().equalsIgnoreCase(signer.getEmail()))
-                        .findFirst());
+            .findFirst();
     boolean usable =
         signer.getStatus() == SignatureSignerStatus.PENDING
             || signer.getStatus() == SignatureSignerStatus.VIEWED;

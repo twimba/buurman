@@ -329,7 +329,9 @@ public class DocumensoClient implements SignatureProviderClient {
             new ProviderSigningLink(
                 recipient.path("id").asText(),
                 email,
-                recipient.path("name").asText(email),
+                Optional.of(recipient.path("name").asText(""))
+                    .filter(n -> !n.isBlank())
+                    .orElse(email),
                 signingUrl));
       }
       return links;
