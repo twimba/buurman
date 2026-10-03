@@ -41,6 +41,12 @@ public final class EffectiveEndDateHelper {
   private static final Field<LocalDate> CE_NEW_END_DATE =
       DSL.field("contract_extensions.new_end_date", LocalDate.class);
 
+  private static final org.jooq.Table<?> CT = DSL.table("contract_terminations");
+  private static final Field<java.util.UUID> CT_CONTRACT_ID =
+      DSL.field("contract_terminations.contract_id", java.util.UUID.class);
+  private static final Field<LocalDate> CT_EFFECTIVE_END_DATE =
+      DSL.field("contract_terminations.effective_end_date", LocalDate.class);
+
   private EffectiveEndDateHelper() {}
 
   /**
@@ -64,24 +70,40 @@ public final class EffectiveEndDateHelper {
    * <p>Use this in WHERE clauses: PostgreSQL does not allow SELECT-list aliases to be referenced in
    * WHERE, so the aliased variant renders as a bare {@code "effective_end_date"} reference and
    * fails with "column does not exist". The aliased variant is only safe in SELECT and ORDER BY.
+   *
+   * <p>Also capped by the contract's termination, if one is on record — same rule as {@link
+   * #capByTermination}, expressed in SQL via {@code LEAST()}: Postgres's {@code LEAST} ignores a
+   * NULL argument rather than propagating it, so an open-ended (NULL) extension/contract end date
+   * capped against a non-NULL termination date correctly yields the termination date, and a
+   * contract with no termination row (NULL from the uncorrelated subquery) is left unaffected.
    */
   public static Field<LocalDate> effectiveEndDateExpr() {
-    return DSL.when(
-            DSL.exists(
-                DSL.selectOne()
-                    .from(CE)
-                    .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
-                    .and(CE_STATUS.eq("ACTIVE"))
-                    .and(CE_DELETED_AT.isNull())),
-            DSL.field(
-                DSL.select(CE_NEW_END_DATE)
-                    .from(CE)
-                    .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
-                    .and(CE_STATUS.eq("ACTIVE"))
-                    .and(CE_DELETED_AT.isNull())
-                    .orderBy(CE_EXTENSION_NUMBER.desc())
-                    .limit(1)))
-        .otherwise(CONTRACTS.END_DATE);
+    Field<LocalDate> extensionOrContractEndDate =
+        DSL.when(
+                DSL.exists(
+                    DSL.selectOne()
+                        .from(CE)
+                        .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
+                        .and(CE_STATUS.eq("ACTIVE"))
+                        .and(CE_DELETED_AT.isNull())),
+                DSL.field(
+                    DSL.select(CE_NEW_END_DATE)
+                        .from(CE)
+                        .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
+                        .and(CE_STATUS.eq("ACTIVE"))
+                        .and(CE_DELETED_AT.isNull())
+                        .orderBy(CE_EXTENSION_NUMBER.desc())
+                        .limit(1)))
+            .otherwise(CONTRACTS.END_DATE);
+
+    Field<LocalDate> terminationEffectiveEndDate =
+        DSL.field(
+            DSL.select(CT_EFFECTIVE_END_DATE)
+                .from(CT)
+                .where(CT_CONTRACT_ID.eq(CONTRACTS.ID))
+                .limit(1));
+
+    return DSL.least(extensionOrContractEndDate, terminationEffectiveEndDate);
   }
 
   /**

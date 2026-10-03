@@ -463,6 +463,72 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
     assertThat(descending.items()).extracting(Contract::getId).containsExactly(laterId, soonerId);
   }
 
+  @Test
+  @DisplayName(
+      "endDate sort and endingWithinDays both use the termination's effective_end_date, not the"
+          + " contract's stale end_date, once notice has been given — EffectiveEndDateHelper's SQL"
+          + " expression must correlate against contract_terminations, the same rule the in-memory"
+          + " Java overload already applies for ReportService/PropertyDashboardService")
+  void effectiveEndDateExprAccountsForTermination() {
+    UUID noticePropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    UUID farPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    UUID noticeContractId =
+        TestDataHelper.insertContract(dsl, TEAM_A_ID, noticePropertyId, USER_ID);
+    UUID farContractId = TestDataHelper.insertContract(dsl, TEAM_A_ID, farPropertyId, USER_ID);
+    LocalDate today = LocalDate.now(CLOCK);
+    // Both contracts nominally end far in the future — only the termination row makes the
+    // notice-given contract's REAL (earlier) end date visible to SQL-level sort/filter.
+    dsl.update(DSL.table("contracts"))
+        .set(DSL.field("end_date", LocalDate.class), today.plusDays(200))
+        .where(DSL.field("id", UUID.class).eq(noticeContractId))
+        .execute();
+    dsl.update(DSL.table("contracts"))
+        .set(DSL.field("end_date", LocalDate.class), today.plusDays(200))
+        .where(DSL.field("id", UUID.class).eq(farContractId))
+        .execute();
+    insertContractTermination(noticeContractId, TEAM_A_ID, USER_ID, today.plusDays(30));
+
+    var withinWindow =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID,
+            null,
+            null,
+            null,
+            null,
+            90,
+            PageRequest.of(0, 25, null, (SortDirection) null));
+    assertThat(withinWindow.items()).extracting(Contract::getId).contains(noticeContractId);
+    assertThat(withinWindow.items()).extracting(Contract::getId).doesNotContain(farContractId);
+
+    var ascending =
+        repository.findAllByTeamIdPaginated(
+            TEAM_A_ID, null, null, null, null, null, PageRequest.of(0, 25, "endDate", "ASC"));
+    assertThat(ascending.items())
+        .extracting(Contract::getId)
+        .containsExactly(noticeContractId, farContractId);
+  }
+
+  /** Mirrors {@code contract_terminations}' column set (V080) — no existing fixture for it. */
+  private void insertContractTermination(
+      UUID contractId, UUID teamId, UUID createdBy, LocalDate effectiveEndDate) {
+    LocalDateTime now = LocalDateTime.of(2026, 3, 1, 12, 0, 0);
+    dsl.insertInto(DSL.table("contract_terminations"))
+        .set(DSL.field("id", UUID.class), UUID.randomUUID())
+        .set(DSL.field("identifier", String.class), SidGenerator.newContractTerminationId().value())
+        .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("contract_id", UUID.class), contractId)
+        .set(DSL.field("given_by", String.class), "LANDLORD")
+        .set(DSL.field("notice_date", LocalDate.class), now.toLocalDate())
+        .set(DSL.field("computed_end_date", LocalDate.class), effectiveEndDate)
+        .set(DSL.field("effective_end_date", LocalDate.class), effectiveEndDate)
+        .set(DSL.field("status", String.class), "NOTICE_GIVEN")
+        .set(DSL.field("created_at", LocalDateTime.class), now)
+        .set(DSL.field("updated_at", LocalDateTime.class), now)
+        .set(DSL.field("created_by", UUID.class), createdBy)
+        .set(DSL.field("updated_by", UUID.class), createdBy)
+        .execute();
+  }
+
   /**
    * Inserts a {@code contract_parties} row linking a contact to a contract, matching the exact
    * column set {@link ContractPartyRepository#save} uses (there is no existing {@code
