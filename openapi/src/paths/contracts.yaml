@@ -2568,7 +2568,7 @@ signature-requests:
         schema:
           $ref: '#/components/schemas/DocumentIdentifier'
     responses:
-      "200":
+      "201":
         description: Signature request created and sent
         content:
           application/json:
