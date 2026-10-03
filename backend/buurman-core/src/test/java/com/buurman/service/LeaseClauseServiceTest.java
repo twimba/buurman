@@ -417,4 +417,33 @@ class LeaseClauseServiceTest {
     verify(resolver, times(1)).availabilityFor(any(), eq(LeaseKind.RESIDENTIAL));
     verify(resolver).resolve(any(), any(), eq(List.of(optionalClause)));
   }
+
+  @Test
+  void getClausesWithRealResolverAgreesWithEnvelopeForLowerCaseStoredCountry() {
+    var templateRepository = mock(com.buurman.repository.LeaseClauseTemplateRepository.class);
+    var messageSource = mock(org.springframework.context.MessageSource.class);
+    var realResolver =
+        new LeaseClauseResolver(templateRepository, overrideRepository, messageSource);
+    var realService =
+        new LeaseClauseService(
+            contractRepository,
+            overrideRepository,
+            realResolver,
+            propertyRepository,
+            leaseKindResolver);
+    LeaseClauseTemplate t = template(Sid.of("LCT0000000000000000000000001"), "parties", false, 1);
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contractIn(Optional.of("nl")));
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(t));
+    when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(List.of());
+    when(messageSource.getMessage(any(), any(), any(java.util.Locale.class))).thenReturn("text");
+
+    LeaseClausesResponse response = realService.getClauses(CONTRACT_IDENTIFIER, principal);
+
+    assertThat(response.availability()).isEqualTo(LeaseAvailability.AVAILABLE_DOCUMENT);
+    assertThat(response.countryCode()).contains("NL");
+    assertThat(response.clauses()).hasSize(1);
+    verify(propertyRepository, times(1)).getByIdAndTeamId(PROPERTY_ID, TEAM_ID);
+  }
 }

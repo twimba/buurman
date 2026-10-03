@@ -118,16 +118,16 @@ public class LeaseAgreementExporter {
 
     LeaseKind kind = leaseKindResolver.resolveFor(contract, property, teamId);
     // Fail fast for an unavailable country before any document lookup or rendering work.
-    clauseResolver.templatesFor(contract, kind);
+    Optional<String> country = LeaseClauseResolver.effectiveCountryCode(contract, property);
+    List<LeaseClauseTemplate> templates = clauseResolver.templatesFor(country, kind);
     Optional<LeaseDocumentLocator.LeaseDocument> document =
-        LeaseClauseResolver.effectiveCountryCode(contract, property)
-            .flatMap(cc -> documentLocator.locate(cc, kind, lang));
+        country.flatMap(cc -> documentLocator.locate(cc, kind, lang));
     String languageUsed =
         document.map(LeaseDocumentLocator.LeaseDocument::languageUsed).orElse(lang);
     Locale locale = LetterTemplateService.resolveLocale(languageUsed);
 
     List<ResolvedLeaseClauseResponse> includedClauses =
-        clauseResolver.resolve(contract, locale, kind).stream()
+        clauseResolver.resolve(contract, locale, templates).stream()
             .filter(ResolvedLeaseClauseResponse::included)
             .toList();
     if (includedClauses.isEmpty()) {

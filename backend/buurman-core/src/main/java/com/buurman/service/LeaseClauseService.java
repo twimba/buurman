@@ -51,21 +51,19 @@ public class LeaseClauseService {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
+    Optional<String> country = LeaseClauseResolver.effectiveCountryCode(contract, property);
     LeaseClauseResolver.Availability availability =
-        resolver.availabilityFor(contract, leaseKind(contract, property, teamId));
-    return envelope(contract, property, availability);
+        resolver.availabilityFor(country, leaseKind(contract, property, teamId));
+    return envelope(contract, country, availability);
   }
 
   private LeaseClausesResponse envelope(
-      Contract contract, Property property, LeaseClauseResolver.Availability availability) {
+      Contract contract, Optional<String> country, LeaseClauseResolver.Availability availability) {
     List<ResolvedLeaseClauseResponse> clauses =
         availability.state().isAvailable()
             ? resolver.resolve(contract, contractLocale(contract), availability.templates())
             : List.of();
-    return new LeaseClausesResponse(
-        availability.state(),
-        LeaseClauseResolver.effectiveCountryCode(contract, property),
-        clauses);
+    return new LeaseClausesResponse(availability.state(), country, clauses);
   }
 
   // ContractLeaseClauseRepository.replaceForContract() hard-deletes every existing override and
@@ -98,7 +96,7 @@ public class LeaseClauseService {
     }
 
     LeaseClauseResolver.Availability availability =
-        resolver.availabilityFor(contract, leaseKind(contract, property, teamId));
+        resolver.availabilityFor(country, leaseKind(contract, property, teamId));
     if (!availability.state().isAvailable()) {
       throw LeaseNotAvailableException.forContract(country);
     }
@@ -108,7 +106,7 @@ public class LeaseClauseService {
         request.clauses().stream().map(selection -> toClause(selection, templates)).toList();
 
     overrideRepository.replaceForContract(contract.getId(), teamId, principal.getUserId(), toSave);
-    return envelope(contract, property, availability);
+    return envelope(contract, country, availability);
   }
 
   private ContractLeaseClause toClause(

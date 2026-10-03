@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,7 +26,6 @@ import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.LeaseNotAvailableException;
 import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.LeaseClauseTemplateRepository;
-import com.buurman.repository.PropertyRepository;
 
 /**
  * Single source of truth for "what clauses apply to this contract right now" — combines
@@ -38,46 +38,51 @@ public class LeaseClauseResolver {
   private final LeaseClauseTemplateRepository templateRepository;
   private final ContractLeaseClauseRepository overrideRepository;
   private final MessageSource messageSource;
-  private final PropertyRepository propertyRepository;
 
   public LeaseClauseResolver(
       LeaseClauseTemplateRepository templateRepository,
       ContractLeaseClauseRepository overrideRepository,
-      @Qualifier("letterMessageSource") MessageSource messageSource,
-      PropertyRepository propertyRepository) {
+      @Qualifier("letterMessageSource") MessageSource messageSource) {
     this.templateRepository = templateRepository;
     this.overrideRepository = overrideRepository;
     this.messageSource = messageSource;
-    this.propertyRepository = propertyRepository;
   }
+
+  private static final Pattern ISO_ALPHA2 = Pattern.compile("[A-Z]{2}");
 
   /**
    * The country that decides lease availability: the contract's own country when set, otherwise the
    * property's (a contract only copies the property's country while it is a draft, so an older
-   * contract can lack one the property has since gained). Blank counts as none. Shared by the
-   * resolver, the clause service and the lease exporter so they can never disagree.
+   * contract can lack one the property has since gained). Blank or malformed counts as none.
+   * Callers compute it once per request and pass it to {@link #availabilityFor} / {@link
+   * #templatesFor}.
    */
   public static Optional<String> effectiveCountryCode(Contract contract, Property property) {
     return contract
         .getCountryCode()
-        .map(CountryMetadataRegistry::normalizeCountryCode)
-        .filter(c -> !c.isBlank())
+        .flatMap(LeaseClauseResolver::leaseCountry)
         .or(
             () ->
                 Optional.ofNullable(property.getCountryCode())
-                    .map(CountryMetadataRegistry::normalizeCountryCode)
-                    .filter(c -> !c.isBlank()));
+                    .flatMap(LeaseClauseResolver::leaseCountry));
   }
 
-  /** Same, loading the (team-scoped) property only when the contract has no country of its own. */
-  public Optional<String> effectiveCountryCode(Contract contract) {
-    Optional<String> own = contract.getCountryCode().filter(c -> !c.isBlank());
-    if (own.isPresent()) {
-      return own;
+  /**
+   * Known countries and names normalise to their ISO code; any other well-formed two-letter code
+   * (the property picker offers more countries than the supported list) is kept upper-cased so the
+   * state is "no templates for JP" rather than "no country".
+   */
+  private static Optional<String> leaseCountry(String raw) {
+    String trimmed = raw.trim();
+    if (trimmed.isEmpty()) {
+      return Optional.empty();
     }
-    return effectiveCountryCode(
-        contract,
-        propertyRepository.getByIdAndTeamId(contract.getPropertyId(), contract.getTeamId()));
+    return Optional.ofNullable(CountryMetadataRegistry.normalizeCountryCode(trimmed))
+        .filter(c -> !c.isBlank())
+        .or(
+            () ->
+                Optional.of(trimmed.toUpperCase(Locale.ROOT))
+                    .filter(c -> ISO_ALPHA2.matcher(c).matches()));
   }
 
   /** Availability state plus the templates it was derived from (empty when unavailable). */
@@ -88,8 +93,8 @@ public class LeaseClauseResolver {
    * residential -> legacy) until a kind has templates configured. Templates of kind LEGACY are
    * placeholder example text rather than a reviewed document.
    */
-  public Availability availabilityFor(Contract contract, LeaseKind kind) {
-    return effectiveCountryCode(contract)
+  public Availability availabilityFor(Optional<String> country, LeaseKind kind) {
+    return country
         .map(
             countryCode ->
                 kind.fallbackChain().stream()
@@ -110,32 +115,26 @@ public class LeaseClauseResolver {
   }
 
   /**
-   * Templates for the contract's country and kind.
+   * Templates for the given effective country and kind.
    *
-   * @throws LeaseNotAvailableException when the contract has no country or the country has none
+   * @throws LeaseNotAvailableException when there is no country or the country has no templates
    */
-  public List<LeaseClauseTemplate> templatesFor(Contract contract, LeaseKind kind) {
-    Availability availability = availabilityFor(contract, kind);
+  public List<LeaseClauseTemplate> templatesFor(Optional<String> country, LeaseKind kind) {
+    Availability availability = availabilityFor(country, kind);
     if (!availability.state().isAvailable()) {
-      throw LeaseNotAvailableException.forContract(effectiveCountryCode(contract));
+      throw LeaseNotAvailableException.forContract(country);
     }
     return availability.templates();
   }
 
-  public List<ResolvedLeaseClauseResponse> resolve(
-      Contract contract, Locale locale, LeaseKind kind) {
-    return resolve(contract, locale, templatesFor(contract, kind));
-  }
-
   /**
-   * Same resolution, but using a template list the caller already fetched (e.g. {@code
-   * LeaseClauseService#updateClauses}, which needs the same country's templates to validate the
-   * request before calling this) instead of fetching it again here.
+   * Resolves the given templates (already fetched by the caller via {@link #availabilityFor} or
+   * {@link #templatesFor}) against the contract's overrides.
    */
   public List<ResolvedLeaseClauseResponse> resolve(
       Contract contract, Locale locale, List<LeaseClauseTemplate> templates) {
     if (templates.isEmpty()) {
-      throw LeaseNotAvailableException.forContract(effectiveCountryCode(contract));
+      throw LeaseNotAvailableException.forContract(contract.getCountryCode());
     }
 
     Map<UUID, ContractLeaseClause> overridesByTemplateId =

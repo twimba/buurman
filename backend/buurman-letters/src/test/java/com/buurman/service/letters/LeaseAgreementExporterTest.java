@@ -32,6 +32,7 @@ import org.springframework.context.MessageSource;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.ContractRentPeriod;
+import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
@@ -72,6 +73,8 @@ class LeaseAgreementExporterTest {
   private final ContractRentPeriodRepository rentPeriodRepository =
       mock(ContractRentPeriodRepository.class);
   private final LeaseClauseResolver clauseResolver = mock(LeaseClauseResolver.class);
+  private final List<LeaseClauseTemplate> templates =
+      List.of(LeaseClauseTemplate.builder().clauseKey("term").build());
   private final UnitResidentialDetailsRepository unitDetailsRepository =
       mock(UnitResidentialDetailsRepository.class);
   private final LeaseKindResolver leaseKindResolver = new LeaseKindResolver(unitDetailsRepository);
@@ -109,6 +112,8 @@ class LeaseAgreementExporterTest {
             documentTemplateService,
             messageSource,
             clock);
+
+    when(clauseResolver.templatesFor(any(), any(LeaseKind.class))).thenReturn(templates);
 
     contract =
         Contract.builder()
@@ -183,7 +188,7 @@ class LeaseAgreementExporterTest {
   @Test
   @DisplayName("a contract without a unit resolves the kind without any unit-details lookup")
   void nullUnitIdSkipsUnitDetailsLookup() {
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("term", "Term", "Body", true)));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -198,14 +203,13 @@ class LeaseAgreementExporterTest {
     contract.setUnitId(unitId);
     when(unitDetailsRepository.findByUnitIdAndTeamId(unitId, TEAM_ID))
         .thenReturn(Optional.of(UnitResidentialDetails.builder().furnished(true).build()));
-    when(clauseResolver.resolve(
-            eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL_FURNISHED)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("term", "Term", "Body", true)));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
 
-    verify(clauseResolver)
-        .resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL_FURNISHED));
+    verify(clauseResolver).templatesFor(any(), eq(LeaseKind.RESIDENTIAL_FURNISHED));
+    verify(clauseResolver).resolve(eq(contract), any(Locale.class), eq(templates));
   }
 
   @Test
@@ -216,7 +220,7 @@ class LeaseAgreementExporterTest {
     ResolvedLeaseClauseResponse excluded = clause("pets", "Pets", "Pets are not permitted.", false);
     ResolvedLeaseClauseResponse included2 =
         clause("maintenance", "Maintenance", "Tenant handles minor repairs.", true);
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(included1, excluded, included2));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -248,7 +252,7 @@ class LeaseAgreementExporterTest {
   void regenerationIsNotCached() {
     ResolvedLeaseClauseResponse firstSelectionClause =
         clause("term", "Term of Lease", "The lease runs for twelve months.", true);
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(firstSelectionClause));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -257,7 +261,7 @@ class LeaseAgreementExporterTest {
     // different set of included clauses for the very same contract.
     ResolvedLeaseClauseResponse secondSelectionClause =
         clause("pets", "Pets", "Pets are permitted with a deposit.", true);
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(secondSelectionClause));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -286,8 +290,7 @@ class LeaseAgreementExporterTest {
         propertyRepository,
         rentComponentRepository,
         rentPeriodRepository,
-        new LeaseClauseResolver(
-            repo, mock(ContractLeaseClauseRepository.class), messageSource, propertyRepository),
+        new LeaseClauseResolver(repo, mock(ContractLeaseClauseRepository.class), messageSource),
         leaseKindResolver,
         documentLocator,
         teamRepository,
@@ -370,7 +373,7 @@ class LeaseAgreementExporterTest {
   void emptyIncludedClausesThrowsBeforeRender() {
     ResolvedLeaseClauseResponse excludedOnly =
         clause("pets", "Pets", "Pets are not permitted.", false);
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(excludedOnly));
 
     assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
@@ -390,7 +393,7 @@ class LeaseAgreementExporterTest {
                     "lease-agreement/NL/residential/nl", "nl", true)));
     when(documentTemplateService.renderToPdfTemplate(anyString(), any(Locale.class), anyMap()))
         .thenReturn("%PDF".getBytes(UTF_8));
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(
             List.of(
                 clause("term", "Term", "Body", true),
@@ -432,7 +435,7 @@ class LeaseAgreementExporterTest {
                     "lease-agreement/NL/residential/nl", "nl", true)));
     when(documentTemplateService.renderToPdfTemplate(anyString(), any(Locale.class), anyMap()))
         .thenReturn("%PDF".getBytes(UTF_8));
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("term", "Term", "Body", true)));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "nl");
@@ -452,7 +455,7 @@ class LeaseAgreementExporterTest {
             Optional.of(
                 new LeaseDocumentLocator.LeaseDocument(
                     "lease-agreement/NL/residential/en", "en", false)));
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("pets", "Pets", "Body", false)));
 
     assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
@@ -470,15 +473,14 @@ class LeaseAgreementExporterTest {
                     "lease-agreement/NL/residential/nl", "nl", true)));
     when(documentTemplateService.renderToPdfTemplate(anyString(), any(Locale.class), anyMap()))
         .thenReturn("%PDF".getBytes(UTF_8));
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("term", "Term", "Body", true)));
 
     LeaseAgreementExporter.RenderedLease rendered =
         exporter.generateWithLanguage(CONTRACT_IDENTIFIER, TEAM_ID, "en");
 
     assertThat(rendered.languageUsed()).isEqualTo("nl");
-    verify(clauseResolver)
-        .resolve(eq(contract), eq(Locale.forLanguageTag("nl")), eq(LeaseKind.RESIDENTIAL));
+    verify(clauseResolver).resolve(eq(contract), eq(Locale.forLanguageTag("nl")), eq(templates));
     verify(documentTemplateService)
         .renderToPdfTemplate(
             eq("lease-agreement/_shell"), eq(Locale.forLanguageTag("nl")), anyMap());
@@ -492,7 +494,7 @@ class LeaseAgreementExporterTest {
             Optional.of(
                 new LeaseDocumentLocator.LeaseDocument(
                     "lease-agreement/NL/residential/en", "en", false)));
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("a::b", "Bad", "Body", true)));
 
     assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
@@ -503,7 +505,7 @@ class LeaseAgreementExporterTest {
   @Test
   @DisplayName("legacy path adds no typed values and does no team or party lookups")
   void legacyPathHasNoTypedValues() {
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("term", "Term", "Body", true)));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -544,7 +546,7 @@ class LeaseAgreementExporterTest {
                     "lease-agreement/NL/residential/nl", "nl", true)));
     when(documentTemplateService.renderToPdfTemplate(anyString(), any(Locale.class), anyMap()))
         .thenReturn("%PDF".getBytes(UTF_8));
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("rent", "Rent", "Body", true)));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "nl");
@@ -675,7 +677,7 @@ class LeaseAgreementExporterTest {
         .thenReturn(List.of(component(RentComponentType.PARKING, "50.00", null)));
     when(messageSource.getMessage(eq("lease.rentComponent.PARKING"), any(), any(Locale.class)))
         .thenReturn("Parking-label");
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(List.of(clause("term", "Term", "Body", true)));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -696,7 +698,7 @@ class LeaseAgreementExporterTest {
             Optional.of(
                 new LeaseDocumentLocator.LeaseDocument(
                     "lease-agreement/NL/residential/nl", "nl", true)));
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(templates)))
         .thenReturn(
             List.of(clause("rent", "Rent", "Body", true), clause("pets", "Pets", "Body", true)));
 
@@ -705,5 +707,22 @@ class LeaseAgreementExporterTest {
         .hasMessageContaining("pets")
         .hasMessageContaining("lease-agreement/NL/residential/nl");
     verifyNoInteractions(documentTemplateService);
+  }
+
+  @Test
+  @DisplayName("a property in a country outside the supported list reports that country, not none")
+  void unsupportedPropertyCountryThrowsCountryCodeNotNoCountry() {
+    LeaseClauseTemplateRepository repo = mock(LeaseClauseTemplateRepository.class);
+    contract = Contract.builder().id(CONTRACT_ID).teamId(TEAM_ID).propertyId(PROPERTY_ID).build();
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contract);
+    property.setCountryCode("JP");
+
+    assertThatThrownBy(
+            () -> exporterWithRealResolver(repo).generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_NOT_AVAILABLE_FOR_COUNTRY"));
+    assertNothingRendered();
   }
 }
