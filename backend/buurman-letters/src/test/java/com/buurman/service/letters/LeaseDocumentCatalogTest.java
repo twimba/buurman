@@ -39,11 +39,11 @@ import com.buurman.util.DocumentLanguages;
 class LeaseDocumentCatalogTest {
 
   /**
-   * Languages whose document must exist for every (country, kind). Task 7 widens this to {@link
-   * DocumentLanguages#ORDERED} once the courtesy translations ship; until then the locator falls
-   * back to the national-language document.
+   * Languages whose document must exist for every (country, kind). Task 7 batches add languages
+   * here; the final batch sets this to {@link DocumentLanguages#ORDERED}. Until then the locator
+   * falls back to the national-language document.
    */
-  private static final List<String> ENFORCED_LANGUAGES = List.of("nl");
+  static final List<String> ENFORCED_LANGUAGES = List.of("nl", "en");
 
   private static final String DOCUMENT_ROOT = "templates/documents/lease-agreement/";
   private static final String BUNDLE = "messages/document-lease-agreement";
