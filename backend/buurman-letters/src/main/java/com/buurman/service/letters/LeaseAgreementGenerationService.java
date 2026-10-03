@@ -92,6 +92,7 @@ public class LeaseAgreementGenerationService {
         response.mimeType(),
         response.title(),
         response.notes(),
+        response.sourceDocumentIdentifier(),
         response.uploadedAt(),
         Optional.of(downloadUrl));
   }

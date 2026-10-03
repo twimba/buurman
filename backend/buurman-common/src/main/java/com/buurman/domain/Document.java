@@ -27,6 +27,9 @@ public class Document {
   private String mimeType;
   @Builder.Default private Optional<String> title = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();
+  // Points at the document this one was generated from (e.g. a signed copy or signing
+  // certificate produced from the original PDF sent for signature). Empty for everything else.
+  @Builder.Default private Optional<UUID> sourceDocumentId = Optional.empty();
   private UUID uploadedBy;
   private Instant uploadedAt;
   @Builder.Default private Optional<Instant> deletedAt = Optional.empty();

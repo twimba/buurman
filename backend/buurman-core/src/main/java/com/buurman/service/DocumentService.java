@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -152,7 +153,13 @@ public class DocumentService {
       String entityType, UUID entityId, UserPrincipal principal) {
     List<Document> documents =
         documentRepository.findByEntityAndTeamId(entityType, entityId, principal.requireTeamId());
-    return documents.stream().map(this::toResponseWithDownloadUrl).toList();
+    // sourceDocumentId is resolved against this same batch rather than a per-row lookup: every
+    // document a source could point to shares the same entity, so it is always already fetched.
+    Map<UUID, Sid> identifiersById =
+        documents.stream()
+            .filter(d -> d.getIdentifier().isPresent())
+            .collect(Collectors.toMap(Document::getId, d -> d.getIdentifier().orElseThrow()));
+    return documents.stream().map(d -> toResponseWithDownloadUrl(d, identifiersById)).toList();
   }
 
   public URL getDownloadUrl(DocumentIdentifier identifier, UserPrincipal principal) {
@@ -245,8 +252,15 @@ public class DocumentService {
   }
 
   private DocumentResponse toResponseWithDownloadUrl(Document document) {
+    return toResponseWithDownloadUrl(document, Map.of());
+  }
+
+  private DocumentResponse toResponseWithDownloadUrl(
+      Document document, Map<UUID, Sid> sourceIdentifiersById) {
     DocumentResponse response = documentMapper.toResponse(document);
     String downloadUrl = s3StorageService.generatePresignedUrl(document.getFileKey()).toString();
+    Optional<Sid> sourceDocumentIdentifier =
+        document.getSourceDocumentId().map(sourceIdentifiersById::get);
 
     return new DocumentResponse(
         response.identifier(),
@@ -258,6 +272,7 @@ public class DocumentService {
         response.mimeType(),
         response.title(),
         response.notes(),
+        sourceDocumentIdentifier,
         response.uploadedAt(),
         Optional.of(downloadUrl));
   }

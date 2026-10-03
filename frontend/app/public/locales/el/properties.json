@@ -676,7 +676,9 @@
       "confirmLabel_other": "Διαγραφή {{count}} εγγράφων"
     },
     "editModal": "Επεξεργασία Εγγράφου",
-    "downloading": "Λήψη..."
+    "downloading": "Λήψη...",
+    "generated_one": "{{count}} δημιουργημένο αρχείο",
+    "generated_other": "{{count}} δημιουργημένα αρχεία"
   },
   "photos": {
     "title": "Φωτογραφίες",

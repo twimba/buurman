@@ -232,7 +232,9 @@
       "message_many": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer."
     },
     "editModal": "Editar Documento",
-    "downloading": "Descargando..."
+    "downloading": "Descargando...",
+    "generated_one": "{{count}} archivo generado",
+    "generated_other": "{{count}} archivos generados"
   },
   "photos": {
     "title": "Fotos",

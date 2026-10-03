@@ -264,14 +264,16 @@ public class SignatureWebhookService {
             .mimeType(MediaType.APPLICATION_PDF_VALUE)
             .title(Optional.of("Signed: " + original.getFileName()))
             .notes(Optional.empty())
+            .sourceDocumentId(Optional.of(original.getId()))
             .uploadedBy(request.getUpdatedBy())
             .build();
     Document savedSignedDocument = documentRepository.save(signedDocument);
 
     // The provider's audit certificate is the evidence of who signed what and when, so it is
-    // persisted as its own Document on the same entity as the signed PDF — it shows up in the
-    // contract's Documents list beside it. It deliberately does not go in
-    // signature_requests.signed_document_id: that column points at the signed PDF only.
+    // persisted as its own Document on the same entity as the signed PDF — sourceDocumentId
+    // groups it (and the signed copy) under the original in the Documents list. It deliberately
+    // does not go in signature_requests.signed_document_id: that column points at the signed PDF
+    // only.
     Document savedCertificateDocument =
         persistCertificate(request, original, teamIdentifier, documentIdentifier, signed);
 
@@ -313,6 +315,7 @@ public class SignatureWebhookService {
             .mimeType(MediaType.APPLICATION_PDF_VALUE)
             .title(Optional.of("Signing certificate: " + original.getFileName()))
             .notes(Optional.empty())
+            .sourceDocumentId(Optional.of(original.getId()))
             .uploadedBy(request.getUpdatedBy())
             .build());
   }

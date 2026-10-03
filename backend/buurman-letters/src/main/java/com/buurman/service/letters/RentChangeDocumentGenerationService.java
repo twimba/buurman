@@ -132,6 +132,7 @@ public class RentChangeDocumentGenerationService {
               response.mimeType(),
               response.title(),
               response.notes(),
+              response.sourceDocumentIdentifier(),
               response.uploadedAt(),
               Optional.of(downloadUrl)));
     }

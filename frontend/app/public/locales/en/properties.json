@@ -676,7 +676,9 @@
       "confirmLabel_other": "Delete {{count}} documents"
     },
     "editModal": "Edit Document",
-    "downloading": "Downloading..."
+    "downloading": "Downloading...",
+    "generated_one": "{{count}} generated file",
+    "generated_other": "{{count}} generated files"
   },
   "photos": {
     "title": "Photos",
