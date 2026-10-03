@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bookmark, Trash2 } from 'lucide-react';
+import { FilterPopover } from '@buurman/ui';
 import {
   useSavedContractFilters,
   useCreateSavedContractFilter,
@@ -20,7 +21,6 @@ export const SavedFiltersDropdown = ({
   const { data: filters = [] } = useSavedContractFilters();
   const createMutation = useCreateSavedContractFilter();
   const deleteMutation = useDeleteSavedContractFilter();
-  const [isOpen, setIsOpen] = useState(false);
   const [nameInput, setNameInput] = useState('');
 
   const handleSave = async () => {
@@ -35,17 +35,13 @@ export const SavedFiltersDropdown = ({
   };
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setIsOpen((open) => !open)}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset transition-colors"
-      >
-        <Bookmark className="h-4 w-4" />
-        {t('list.savedFilters.button')}
-      </button>
-      {isOpen && (
-        <div className="absolute z-10 mt-1 w-64 bg-surface-card border border-border-default rounded-md shadow-lg p-2">
+    <FilterPopover
+      label={t('list.savedFilters.button')}
+      icon={Bookmark}
+      panelClassName="w-64"
+    >
+      {(close) => (
+        <>
           <ul className="space-y-1 max-h-48 overflow-y-auto">
             {filters.map((filter) => (
               <li
@@ -56,7 +52,7 @@ export const SavedFiltersDropdown = ({
                   type="button"
                   onClick={() => {
                     onApply(filter.criteria);
-                    setIsOpen(false);
+                    close();
                   }}
                   className="flex-1 text-left px-2 py-1 text-sm rounded hover:bg-surface-inset"
                 >
@@ -93,8 +89,8 @@ export const SavedFiltersDropdown = ({
               {t('list.savedFilters.save')}
             </button>
           </div>
-        </div>
+        </>
       )}
-    </div>
+    </FilterPopover>
   );
 };

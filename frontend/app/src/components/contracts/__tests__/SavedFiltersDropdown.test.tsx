@@ -31,4 +31,25 @@ describe('SavedFiltersDropdown', () => {
 
     expect(onApply).toHaveBeenCalledWith({ endingWithinDays: 90 });
   });
+
+  it('closes on Escape and exposes aria-expanded/aria-haspopup — gained by rebuilding on the shared FilterPopover instead of a hand-rolled toggle', async () => {
+    vi.spyOn(savedFiltersApi, 'getSavedContractFilters').mockResolvedValue([]);
+    renderWithProviders(
+      <ToastProvider>
+        <SavedFiltersDropdown currentCriteria={{}} onApply={vi.fn()} />
+      </ToastProvider>
+    );
+
+    const trigger = screen.getByRole('button', { name: /saved filters/i });
+    expect(trigger).toHaveAttribute('aria-haspopup', 'true');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() =>
+      expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    );
+  });
 });
