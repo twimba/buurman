@@ -13,6 +13,7 @@ import {
   useChangeContractStatus,
   useReopenContract,
   useDuplicateContract,
+  useContractTimeline,
 } from '@/hooks/useContractHooks';
 import {
   exportContractBooklet,
@@ -30,7 +31,6 @@ import { ContractExtensionsTab } from '@/components/contracts/ContractExtensions
 import { ContractDocumentsTab } from '@/components/contracts/ContractDocumentsTab';
 import { ContractLeaseAgreementTab } from '@/components/contracts/ContractLeaseAgreementTab';
 import { ContractTimeline } from '@/components/contracts/ContractTimeline';
-import { useContractTimeline } from '@/hooks/useContractTimeline';
 import { useTeam } from '@/context/TeamContext';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';

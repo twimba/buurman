@@ -31,6 +31,7 @@ import {
   getContractPaymentPlans,
   createContractPaymentPlan,
   cancelContractPaymentPlan,
+  getContractTimeline,
 } from '../generated/api/contracts/contracts';
 import {
   CreateContractRequest,
@@ -597,5 +598,13 @@ export const useCancelPaymentPlan = (
       invalidateAfterPlanChange(queryClient, contractId);
       trackEvent(AnalyticsEvent.PAYMENT_PLAN_CANCELLED);
     },
+  });
+};
+
+export const useContractTimeline = (contractId: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.contracts.timeline(contractId),
+    queryFn: () => getContractTimeline(contractId ?? ''),
+    enabled: !!contractId,
   });
 };
