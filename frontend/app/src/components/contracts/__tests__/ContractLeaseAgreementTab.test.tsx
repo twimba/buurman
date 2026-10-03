@@ -479,7 +479,7 @@ describe('ContractLeaseAgreementTab', () => {
       expect(onEditProperty).toHaveBeenCalledTimes(1);
     });
 
-    it('hides the Edit contract button when no edit handler is available', async () => {
+    it('hides the Edit property button when no edit handler is available', async () => {
       vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
         availability: LeaseAvailability.UNAVAILABLE_NO_COUNTRY,
         clauses: [],
@@ -528,6 +528,29 @@ describe('ContractLeaseAgreementTab', () => {
       ).toBeInTheDocument();
     });
 
+    it('hides the country row in the example-text note when the region code is unknown', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+        ...documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_EXAMPLE_TEXT),
+        countryCode: 'ZZ',
+      });
+      renderTab();
+
+      expect(await screen.findByRole('note')).toBeInTheDocument();
+      expect(screen.queryByText('Country')).toBeNull();
+    });
+
+    it('shows the country row in the example-text note for a known country', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+        ...documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_EXAMPLE_TEXT),
+        countryCode: 'BE',
+      });
+      renderTab();
+
+      await screen.findByRole('note');
+      expect(screen.getByText('Country')).toBeInTheDocument();
+      expect(screen.getByText('Belgium')).toBeInTheDocument();
+    });
+
     it('shows no note for a full document', async () => {
       vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
         documentEnvelope(CLAUSES)
@@ -568,10 +591,18 @@ describe('ContractLeaseAgreementTab', () => {
         reason: 'unsupported_country',
       });
 
+      // The refetch returns a changed payload (new countryCode, same reason): without the
+      // once-per-reason guard the effect would fire again.
+      getSpy.mockResolvedValue({
+        availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
+        countryCode: 'FR',
+        clauses: [],
+      });
       await queryClient.invalidateQueries();
       await waitFor(() => {
         expect(getSpy).toHaveBeenCalledTimes(2);
       });
+      await screen.findByText('France');
       expect(track).toHaveBeenCalledTimes(1);
     });
 

@@ -43,6 +43,10 @@ export const ContractLeaseAgreementTab = ({
   const clauses = envelope ? (envelope.clauses ?? []) : undefined;
   const availability = envelope?.availability;
   const countryCode = envelope?.countryCode ?? undefined;
+  const countryName = formatCountryName(
+    countryCode,
+    i18n.resolvedLanguage ?? i18n.language
+  );
   const trackedReasons = useRef(new Set<string>());
 
   useEffect(() => {
@@ -197,10 +201,7 @@ export const ContractLeaseAgreementTab = ({
       {availability === LeaseAvailability.UNAVAILABLE_COUNTRY && (
         <LeaseUnavailableState
           reason="country"
-          countryName={formatCountryName(
-            countryCode,
-            i18n.resolvedLanguage ?? i18n.language
-          )}
+          countryName={countryName}
           onAction={onGoToDocuments}
         />
       )}
@@ -223,14 +224,7 @@ export const ContractLeaseAgreementTab = ({
               {t('leaseAgreement.exampleNotice.title')}
             </p>
             <p>{t('leaseAgreement.exampleNotice.description')}</p>
-            {countryCode && (
-              <CountryRow
-                name={formatCountryName(
-                  countryCode,
-                  i18n.resolvedLanguage ?? i18n.language
-                )}
-              />
-            )}
+            {countryName && <CountryRow name={countryName} />}
           </div>
         </div>
       )}

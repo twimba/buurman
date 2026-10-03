@@ -17,7 +17,7 @@ export const CountryRow = ({ name }: { name: string }) => {
 interface LeaseUnavailableStateProps {
   reason: 'country' | 'no-country';
   countryName?: string;
-  /** Go to Documents (country) or Edit contract (no-country); no button when omitted. */
+  /** Go to Documents (country) or Edit property (no-country); no button when omitted. */
   onAction?: () => void;
 }
 
