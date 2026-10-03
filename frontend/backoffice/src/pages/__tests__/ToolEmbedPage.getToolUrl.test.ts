@@ -56,8 +56,6 @@ describe('ToolEmbedPage getToolUrl', () => {
 
   it('carries over a non-default port even without a workspace prefix', () => {
     setLocation('backoffice.local.buurman.io', '2443');
-    expect(getToolUrl('mailpit')).toBe(
-      'https://mailpit.local.buurman.io:2443'
-    );
+    expect(getToolUrl('mailpit')).toBe('https://mailpit.local.buurman.io:2443');
   });
 });

@@ -111,9 +111,9 @@ export const ContractsPage = () => {
     () => searchParams.get('search') ?? ''
   );
   const debouncedSearch = useDebounce(searchInput, 300);
-  const [endingWithinDays, setEndingWithinDays] = useState<
-    number | undefined
-  >(() => parseEndingWithinDays(searchParams.get('endingWithinDays')));
+  const [endingWithinDays, setEndingWithinDays] = useState<number | undefined>(
+    () => parseEndingWithinDays(searchParams.get('endingWithinDays'))
+  );
   const [sortField, setSortField] = useState<SortField>(() =>
     parseSortField(searchParams.get('sort'))
   );
@@ -130,16 +130,17 @@ export const ContractsPage = () => {
       ] as const,
     [t]
   );
-  const { page, size, handlePageChange, handleSizeChange, resetPage } = usePagination({
-    defaultPage: (() => {
-      const raw = Number(searchParams.get('page'));
-      return Number.isInteger(raw) && raw >= 0 ? raw : 0;
-    })(),
-    defaultSize: (() => {
-      const raw = Number(searchParams.get('size'));
-      return Number.isInteger(raw) && raw > 0 ? raw : 12;
-    })(),
-  });
+  const { page, size, handlePageChange, handleSizeChange, resetPage } =
+    usePagination({
+      defaultPage: (() => {
+        const raw = Number(searchParams.get('page'));
+        return Number.isInteger(raw) && raw >= 0 ? raw : 0;
+      })(),
+      defaultSize: (() => {
+        const raw = Number(searchParams.get('size'));
+        return Number.isInteger(raw) && raw > 0 ? raw : 12;
+      })(),
+    });
 
   const {
     data: contractsData,

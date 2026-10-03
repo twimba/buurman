@@ -31,8 +31,7 @@ export const TerminationWizardPage = () => {
   const { id = '' } = useParams<{ id: string }>();
 
   const { data: contract } = useContract(id);
-  const { data: deposit, isLoading: isDepositLoading } =
-    useContractDeposit(id);
+  const { data: deposit, isLoading: isDepositLoading } = useContractDeposit(id);
 
   const STEPS = useMemo(
     () => [

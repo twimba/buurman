@@ -11,7 +11,10 @@ describe('useCancelSignatureRequest', () => {
       undefined as never
     );
     const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
     });
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
     const wrapper = ({ children }: { children: React.ReactNode }) => (
