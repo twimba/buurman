@@ -78,7 +78,7 @@ public class ContractController implements ContractsApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getContracts(
-      Optional<String> status,
+      Optional<List<String>> status,
       Optional<String> propertyIdentifier,
       Optional<String> tenantIdentifier,
       Optional<String> search,

@@ -50,10 +50,10 @@ class ContractTabularExportBuilderTest {
     // stub simulates that so the builder's forwarding of the status/search/endingWithinDays
     // params can be verified in isolation, same as build(teamId) already forwards to
     // findAllByTeamId(teamId, null, null, null).
-    when(contractRepository.findAllByTeamId(teamId, "ACTIVE", null, null))
+    when(contractRepository.findAllByTeamId(teamId, List.of("ACTIVE"), null, null))
         .thenReturn(List.of(active));
 
-    TabularExport export = builder.build(teamId, "ACTIVE", null, null);
+    TabularExport export = builder.build(teamId, List.of("ACTIVE"), null, null);
 
     List<Object[]> rows = export.sheets().getFirst().rows();
     assertThat(rows).hasSize(1);

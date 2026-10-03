@@ -44,24 +44,64 @@ describe('ContractsPage status filter', () => {
     });
   });
 
-  it('offers a "Notice Given" status filter option and applies it', async () => {
+  it('defaults to Active, Draft, Pending Signature and Notice Given on first load', async () => {
     renderWithProviders(
       <ToastProvider>
         <ContractsPage />
       </ToastProvider>
     );
 
-    await userEvent.click(screen.getByRole('button', { name: /^status$/i }));
-    const noticeGivenOption = await screen.findByRole('option', {
-      name: 'Notice Given',
+    await waitFor(() => {
+      const lastCallParams = mockUseContracts.mock.calls.at(-1)?.[0];
+      expect(lastCallParams?.status).toEqual(
+        expect.arrayContaining([
+          'ACTIVE',
+          'DRAFT',
+          'PENDING_SIGNATURE',
+          'NOTICE_GIVEN',
+        ])
+      );
+      expect(lastCallParams?.status).toHaveLength(4);
     });
-    expect(noticeGivenOption).toBeInTheDocument();
+  });
 
-    await userEvent.click(noticeGivenOption);
+  it('is a multi-select — toggling "Expired" on adds it without clearing the others', async () => {
+    renderWithProviders(
+      <ToastProvider>
+        <ContractsPage />
+      </ToastProvider>
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /status/i }));
+    const expiredOption = await screen.findByRole('checkbox', {
+      name: 'Expired',
+    });
+    await userEvent.click(expiredOption);
+
+    // Multi-select popovers stay open after a toggle.
+    expect(expiredOption).toBeInTheDocument();
 
     await waitFor(() => {
       const lastCallParams = mockUseContracts.mock.calls.at(-1)?.[0];
-      expect(lastCallParams).toMatchObject({ status: 'NOTICE_GIVEN' });
+      expect(lastCallParams?.status).toEqual(
+        expect.arrayContaining([
+          'ACTIVE',
+          'DRAFT',
+          'PENDING_SIGNATURE',
+          'NOTICE_GIVEN',
+          'EXPIRED',
+        ])
+      );
+      expect(lastCallParams?.status).toHaveLength(5);
+    });
+
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: 'Notice Given' })
+    );
+
+    await waitFor(() => {
+      const lastCallParams = mockUseContracts.mock.calls.at(-1)?.[0];
+      expect(lastCallParams?.status).not.toContain('NOTICE_GIVEN');
     });
   });
 });

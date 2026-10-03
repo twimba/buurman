@@ -37,7 +37,9 @@ export const ContractSelector = ({
   const { data: contractsData, isLoading } = useQuery({
     queryKey: ['contracts', status ?? 'ALL'],
     queryFn: () =>
-      getContracts(status ? ({ status } as GetContractsParams) : undefined),
+      getContracts(
+        status ? ({ status: [status] } as GetContractsParams) : undefined
+      ),
   });
   const contracts = contractsData?.content ?? [];
 

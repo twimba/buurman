@@ -1202,9 +1202,14 @@ booklets-contracts-csv:
     parameters:
       - name: status
         in: query
+        description: Filter by status — repeat the param to match multiple statuses
         required: false
         schema:
-          type: string
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
       - name: search
         in: query
         required: false
@@ -1239,9 +1244,14 @@ booklets-contracts-xlsx:
     parameters:
       - name: status
         in: query
+        description: Filter by status — repeat the param to match multiple statuses
         required: false
         schema:
-          type: string
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
       - name: search
         in: query
         required: false

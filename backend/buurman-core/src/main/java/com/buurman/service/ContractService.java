@@ -335,7 +335,7 @@ public class ContractService {
 
   public PageResponse<ContractResponse> getContractsPaginated(
       UserPrincipal principal,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable String search,
       @Nullable Integer endingWithinDays,
       PageRequest pageRequest) {

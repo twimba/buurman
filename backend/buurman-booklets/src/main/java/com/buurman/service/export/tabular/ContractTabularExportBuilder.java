@@ -30,7 +30,7 @@ public class ContractTabularExportBuilder {
 
   public TabularExport build(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable String search,
       @Nullable Integer endingWithinDays) {
     List<Contract> contracts =

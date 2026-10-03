@@ -1,5 +1,6 @@
 package com.buurman.service.export;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -18,7 +19,7 @@ public class ContractExcelExporter {
 
   public byte[] generate(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable String search,
       @Nullable Integer endingWithinDays) {
     return renderer.render(builder.build(teamId, status, search, endingWithinDays));

@@ -59,8 +59,17 @@ export const ContractsPage = () => {
     ],
     [t]
   );
-  const [statusFilter, setStatusFilter] = useState<ContractStatus | undefined>(
-    undefined
+  const DEFAULT_STATUS_FILTER = useMemo(
+    () => [
+      ContractStatus.ACTIVE,
+      ContractStatus.DRAFT,
+      ContractStatus.PENDING_SIGNATURE,
+      ContractStatus.NOTICE_GIVEN,
+    ],
+    []
+  );
+  const [statusFilter, setStatusFilter] = useState<ContractStatus[]>(
+    DEFAULT_STATUS_FILTER
   );
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebounce(searchInput, 300);
@@ -97,7 +106,7 @@ export const ContractsPage = () => {
     refetch,
     error,
   } = useContracts({
-    ...(statusFilter ? { status: statusFilter } : {}),
+    ...(statusFilter.length > 0 ? { status: statusFilter } : {}),
     ...pageParams,
     search: debouncedSearch || undefined,
     endingWithinDays,
@@ -118,10 +127,16 @@ export const ContractsPage = () => {
       direction,
     } = criteria;
 
+    const statusList = Array.isArray(status)
+      ? status
+      : typeof status === 'string'
+        ? [status]
+        : [];
     setStatusFilter(
-      typeof status === 'string' && validStatuses.includes(status)
-        ? (status as ContractStatus)
-        : undefined
+      statusList.filter(
+        (s): s is ContractStatus =>
+          typeof s === 'string' && validStatuses.includes(s)
+      )
     );
     setSearchInput(typeof search === 'string' ? search : '');
     setEndingWithinDays(typeof days === 'number' ? days : undefined);
@@ -285,12 +300,15 @@ export const ContractsPage = () => {
             icon={CircleDot}
             label={t('list.status')}
             options={statusOptions}
-            value={statusFilter}
-            onChange={(value) => {
-              setStatusFilter(value);
+            values={statusFilter}
+            onToggle={(value) => {
+              setStatusFilter((prev) =>
+                prev.includes(value)
+                  ? prev.filter((s) => s !== value)
+                  : [...prev, value]
+              );
               resetPage();
             }}
-            allLabel={t('list.allStatuses')}
           />
 
           <input
@@ -361,16 +379,19 @@ export const ContractsPage = () => {
         </div>
 
         {/* Active filter chips */}
-        {(statusFilter ||
+        {(statusFilter.length > 0 ||
           debouncedSearch ||
           endingWithinDays !== undefined) && (
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            {statusFilter && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
-                {statusOptions.find((o) => o.value === statusFilter)?.label}
+            {statusFilter.map((status) => (
+              <span
+                key={status}
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300"
+              >
+                {statusOptions.find((o) => o.value === status)?.label}
                 <button
                   onClick={() => {
-                    setStatusFilter(undefined);
+                    setStatusFilter((prev) => prev.filter((s) => s !== status));
                     resetPage();
                   }}
                   aria-label={t('common:buttons.clear', 'Clear')}
@@ -379,7 +400,7 @@ export const ContractsPage = () => {
                   <X className="h-3 w-3" />
                 </button>
               </span>
-            )}
+            ))}
             {debouncedSearch && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
                 {debouncedSearch}

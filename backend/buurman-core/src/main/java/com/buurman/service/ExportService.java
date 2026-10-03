@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
@@ -85,13 +86,13 @@ public interface ExportService {
   // Contracts
   byte[] generateContractsCSV(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable String search,
       @Nullable Integer endingWithinDays);
 
   byte[] generateContractsExcel(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable String search,
       @Nullable Integer endingWithinDays);
 }

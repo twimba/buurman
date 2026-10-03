@@ -3,6 +3,7 @@ package com.buurman.controller;
 import static com.buurman.util.FeatureFlags.GOOGLE_SHEETS_EXPORT;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -212,7 +213,7 @@ public class BookletController implements BookletsApi {
   // ── Contracts ───────────────────────────────────────────────────────────
   @Override
   public Resource exportContractsCsv(
-      Optional<String> status, Optional<String> search, Optional<Integer> endingWithinDays) {
+      Optional<List<String>> status, Optional<String> search, Optional<Integer> endingWithinDays) {
     return downloadCsv(
         "contracts.csv",
         () ->
@@ -225,7 +226,7 @@ public class BookletController implements BookletsApi {
 
   @Override
   public Resource exportContractsXlsx(
-      Optional<String> status, Optional<String> search, Optional<Integer> endingWithinDays) {
+      Optional<List<String>> status, Optional<String> search, Optional<Integer> endingWithinDays) {
     return downloadXlsx(
         "contracts.xlsx",
         () ->

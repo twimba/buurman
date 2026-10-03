@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
@@ -223,7 +224,7 @@ public class ExportServiceImpl implements ExportService {
   @Override
   public byte[] generateContractsCSV(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable String search,
       @Nullable Integer endingWithinDays) {
     return withMetrics(
@@ -234,7 +235,7 @@ public class ExportServiceImpl implements ExportService {
   @Override
   public byte[] generateContractsExcel(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable String search,
       @Nullable Integer endingWithinDays) {
     return withMetrics(

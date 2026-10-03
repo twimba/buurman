@@ -397,7 +397,7 @@ public class ContractRepository {
 
   public PaginatedResult<Contract> findAllByTeamIdPaginated(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable UUID propertyId,
       @Nullable UUID contactId,
       @Nullable String search,
@@ -433,7 +433,7 @@ public class ContractRepository {
 
   public List<Contract> findAllByTeamId(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable String search,
       @Nullable Integer endingWithinDays) {
     Condition condition = buildListCondition(teamId, status, null, null, search, endingWithinDays);
@@ -450,14 +450,14 @@ public class ContractRepository {
 
   private Condition buildListCondition(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable UUID propertyId,
       @Nullable UUID contactId,
       @Nullable String search,
       @Nullable Integer endingWithinDays) {
     Condition condition = CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
-      condition = condition.and(CONTRACTS.STATUS.eq(status));
+      condition = condition.and(CONTRACTS.STATUS.in(status));
     }
     if (propertyId != null) {
       condition = condition.and(CONTRACTS.PROPERTY_ID.eq(propertyId));

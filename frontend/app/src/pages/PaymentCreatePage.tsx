@@ -55,7 +55,7 @@ export const PaymentCreatePage = () => {
 
   const { data: activeContracts } = useQuery({
     queryKey: ['contracts', 'ACTIVE'],
-    queryFn: () => getContracts({ status: 'ACTIVE' } as GetContractsParams),
+    queryFn: () => getContracts({ status: ['ACTIVE'] } as GetContractsParams),
   });
 
   const isPrefillInvalid = useMemo(() => {

@@ -11313,18 +11313,22 @@ paths:
       parameters:
         - name: status
           in: query
-          description: Filter by status
+          description: Filter by status — repeat the param to match multiple statuses
           required: false
           schema:
-            type: string
-            description: Current lifecycle status of the contract
-            enum:
-              - DRAFT
-              - ACTIVE
-              - EXPIRED
-              - TERMINATED
-              - PENDING_SIGNATURE
-              - NOTICE_GIVEN
+            type: array
+            items:
+              type: string
+              description: Current lifecycle status of the contract
+              enum:
+                - DRAFT
+                - ACTIVE
+                - EXPIRED
+                - TERMINATED
+                - PENDING_SIGNATURE
+                - NOTICE_GIVEN
+          style: form
+          explode: true
         - name: propertyIdentifier
           in: query
           description: Property identifier
@@ -19399,9 +19403,14 @@ paths:
       parameters:
         - name: status
           in: query
+          description: Filter by status — repeat the param to match multiple statuses
           required: false
           schema:
-            type: string
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
         - name: search
           in: query
           required: false
@@ -19435,9 +19444,14 @@ paths:
       parameters:
         - name: status
           in: query
+          description: Filter by status — repeat the param to match multiple statuses
           required: false
           schema:
-            type: string
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
         - name: search
           in: query
           required: false
