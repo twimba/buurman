@@ -4,12 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,7 +24,7 @@ import org.springframework.core.io.ClassPathResource;
  * Mechanical fidelity gate: a translated lease document may change prose only. Against the
  * authoritative {@code nl.html} it must keep the same fragments, the same Thymeleaf expressions and
  * structural attributes in the same order, the same element skeleton, the same statute citations
- * and bare numbers per fragment, and the legal header.
+ * and bare numbers, and the legal header.
  *
  * <p>Rules of the checks, all language-neutral so that word order may change freely:
  *
@@ -36,17 +39,30 @@ import org.springframework.core.io.ClassPathResource;
  *       as a multiset per element (innermost enclosing {@code <p>}, {@code <li>}, conditional span
  *       ...), so citations may be reordered within an element but not moved to another one, and lid
  *       numbers cannot swap between citations.
- *   <li>Numbers: sorted multiset of the remaining digit sequences per fragment.
+ *   <li>Numbers: sorted multiset of the remaining digit sequences, keyed by the element holding
+ *       them, so numbers may be reordered within an element but not swapped across paragraphs.
  * </ul>
+ *
+ * <p>Citation convention for translators (all languages): write the paragraph number as a DIGIT
+ * after the statute citation, within the same sentence or parenthesis: "7:271 lid 2" is fr "art.
+ * 7:271, alinéa 2", de "7:271 Abs. 2", sv "7:271 st. 2", da "7:271, stk. 2", nb "7:271 2. ledd", fi
+ * "7:271 2 momentti", pl "7:271 ust. 2", el "7:271 παρ. 2". Never put the paragraph before the
+ * article ("Absatz 2 von 7:271", "l'alinéa 2 de l'article 7:271") and never spell ordinals out
+ * ("andra stycket").
+ *
+ * <p>Inherent limits: the gate checks structure, expressions, citations and digits only. A deleted
+ * or added sentence without digits, citation or expression, a dropped "niet" or "schriftelijk", or
+ * a huurder/verhuurder swap is NOT detectable; human and legal review covers those.
  *
  * <p>Translator convention that makes the number check meaningful: every numeric quantity in the
  * prose (deadlines, periods, multiples, amounts, counts) is written as DIGITS exactly as in {@code
- * nl.html}, in every language, and never spelled out ("2 times", "2 fois", "2 Monatsmieten" for "2
- * maal de kale huurprijs", not "twice" or "zweifach"). {@code nl.html} is itself checked for Dutch
- * number words (whitespace tolerant): the article "een" is allowed ("een dag die valt", "een
- * termijn van 2 jaar") but "een" before maand/week/jaar, or after a quantity cue ("binnen een dag",
- * "per een termijn"), is a quantity; "in acht" is allowed only in the idiom "in acht nemen" (also
- * "in acht die ...", "... in acht." at the end of a clause), so "in acht weken" still flags.
+ * nl.html}, in every language, and never spelled out ("2 maal de kale huurprijs" is "2 times the
+ * net rent", "2 Kaltmieten", "2 fois le loyer de base", never "twice" or "zweifach"). {@code
+ * nl.html} is itself checked for Dutch number words (whitespace tolerant): the article "een" is
+ * allowed ("een dag die valt", "een termijn van 2 jaar") but "een" before maand/week/jaar, or after
+ * a quantity cue ("binnen een dag", "per een termijn"), is a quantity; "in acht" is allowed only in
+ * the idiom "in acht nemen" (also "in acht die ...", "... in acht." at the end of a clause), so "in
+ * acht weken" still flags.
  */
 @DisplayName("lease document fidelity")
 class LeaseDocumentFidelityTest {
@@ -54,6 +70,8 @@ class LeaseDocumentFidelityTest {
   private static final String DOCUMENT_ROOT = "templates/documents/lease-agreement/";
   private static final List<String> COUNTRY_KINDS = List.of("NL/residential");
 
+  private static final Set<String> VOID_TAGS =
+      Set.of("br", "hr", "img", "input", "meta", "link", "wbr");
   private static final Pattern FRAGMENT_START = Pattern.compile("th:fragment=\"([^\"]+)\"");
   private static final Pattern COMMENT = Pattern.compile("<!--.*?-->", Pattern.DOTALL);
   private static final Pattern STRUCTURE =
@@ -209,16 +227,13 @@ class LeaseDocumentFidelityTest {
     return result;
   }
 
-  private static final java.util.Set<String> VOID_TAGS =
-      java.util.Set.of("br", "hr", "img", "input", "meta", "link", "wbr");
-
   /** One element of a fragment: its position, tag name and the text directly inside it. */
   private record Element(int index, String name, StringBuilder ownText) {}
 
   /** Open/close events of a fragment with each element's own text, in document order. */
   private static List<Element> elements(String fragment) {
     List<Element> all = new ArrayList<>();
-    java.util.Deque<Element> stack = new java.util.ArrayDeque<>();
+    Deque<Element> stack = new ArrayDeque<>();
     Element root = new Element(-1, "#root", new StringBuilder());
     Matcher m = TAG.matcher(fragment);
     int last = 0;
@@ -300,12 +315,15 @@ class LeaseDocumentFidelityTest {
     return result;
   }
 
-  /** Sorted multiset of the remaining digit sequences in the prose. */
+  /** Sorted multiset of the remaining digit sequences, keyed by the element holding them. */
   static List<String> numbers(String fragment) {
     List<String> result = new ArrayList<>();
-    Matcher m = NUMBER.matcher(CITATION.matcher(prose(fragment)).replaceAll(" "));
-    while (m.find()) {
-      result.add(m.group());
+    for (Element element : elements(fragment)) {
+      String text = ENTITY.matcher(element.ownText()).replaceAll(" ");
+      Matcher m = NUMBER.matcher(CITATION.matcher(text).replaceAll(" "));
+      while (m.find()) {
+        result.add(element.index() + ": " + m.group());
+      }
     }
     Collections.sort(result);
     return result;
@@ -447,6 +465,25 @@ class LeaseDocumentFidelityTest {
         .anyMatch(v -> v.startsWith("numbers differ in clause-a"));
     assertThat(violations(NL, GOOD.replace("Amount of 250 euro.", "Amount of 250 euro in 2026.")))
         .anyMatch(v -> v.startsWith("numbers differ in clause-b"));
+  }
+
+  @Test
+  @DisplayName("numbers are a multiset per element: swapping across paragraphs fails")
+  void checkerFlagsNumbersSwappedBetweenElements() {
+    String nlHeader = "<!-- legal-basis: x reviewed-by: none translation: authoritative -->\n";
+    String header = "<!-- legal-basis: x reviewed-by: none translation: machine-drafted -->\n";
+    String nl =
+        "<div th:fragment=\"clause-a\"><p>Binnen 14 dagen.</p><p>Binnen 30 dagen of 2"
+            + " maal.</p></div>";
+    String good =
+        "<div th:fragment=\"clause-a\"><p>Within 14 days.</p><p>Within 2 times or 30"
+            + " days.</p></div>";
+    String swapped =
+        "<div th:fragment=\"clause-a\"><p>Within 30 days.</p><p>Within 14 times or 2"
+            + " days.</p></div>";
+    assertThat(violations(nlHeader + nl, header + good)).isEmpty();
+    assertThat(violations(nlHeader + nl, header + swapped))
+        .anyMatch(v -> v.startsWith("numbers differ in clause-a"));
   }
 
   @Test

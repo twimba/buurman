@@ -44,7 +44,7 @@ class TranslatedResidentialLeaseRenderTest {
               "en",
               Locale.ENGLISH,
               "security deposit (waarborgsom)",
-              "(see article <span",
+              "(see article <span>",
               "in advance",
               "no later than day <strong>1</strong>",
               "no later than day <strong>5</strong> of the month"),
@@ -52,7 +52,7 @@ class TranslatedResidentialLeaseRenderTest {
               "de",
               Locale.GERMAN,
               "Kaution (waarborgsom)",
-              "(siehe Artikel <span",
+              "(siehe Artikel <span>",
               "im Voraus",
               "am <strong>1</strong>. Tag",
               "am <strong>5</strong>. Tag"),
@@ -60,10 +60,10 @@ class TranslatedResidentialLeaseRenderTest {
               "fr",
               Locale.FRENCH,
               "dépôt de garantie (waarborgsom)",
-              "(voir l’article <span",
+              "(voir l’article <span>",
               "à l’avance",
-              "le jour <strong>1</strong> du mois",
-              "le jour <strong>5</strong> du mois"));
+              "le <strong>1</strong> du mois",
+              "le <strong>5</strong> du mois"));
 
   private static Stream<Lang> languages() {
     return LANGS.stream();
@@ -170,7 +170,7 @@ class TranslatedResidentialLeaseRenderTest {
         .doesNotContain("${")
         .doesNotContain("#{")
         .doesNotContain("[[")
-        .doesNotContain("null")
+        .doesNotContainPattern("(?<!\\p{L})null(?!\\p{L})")
         .doesNotContain("??")
         .contains(messages.getMessage("lease.ref", new Object[] {"CON01TEST"}, lang.locale()))
         .contains(messages.getMessage("lease.notice.courtesy", null, lang.locale()));

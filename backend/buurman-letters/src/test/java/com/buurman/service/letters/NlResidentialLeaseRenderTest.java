@@ -145,7 +145,7 @@ class NlResidentialLeaseRenderTest {
         .doesNotContain("${")
         .doesNotContain("#{")
         .doesNotContain("[[")
-        .doesNotContain("null")
+        .doesNotContainPattern("(?<!\\p{L})null(?!\\p{L})")
         .doesNotContain("??");
     assertThat(html).as("raw bundle key rendered").doesNotContainPattern(RAW_KEY);
     assertThat(html).contains("Kenmerk: CON01TEST");

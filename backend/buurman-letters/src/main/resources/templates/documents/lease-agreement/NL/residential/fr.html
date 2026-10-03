@@ -11,7 +11,7 @@
                wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
                tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
                7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
-               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Monatsmieten" in German), enforced by the translation fidelity gate.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
   reviewed-by: none
   translation: machine-drafted
   French courtesy translation of nl.html (a translation of Dutch law, not French or Belgian law); the Dutch
@@ -53,7 +53,7 @@
     <p>Le contrat est conclu pour une durée déterminée<span th:if="${endDate != null}">, jusqu’au
       <strong th:text="${endDate}">date de fin</strong> inclus</span>. Un bail de logement conclu pour une
       durée déterminée ne prend pas fin par le seul écoulement de la durée du bail. Chacune des deux parties peut
-      résilier le bail pour un jour convenu pour le paiement du loyer, mais pas avant
+      résilier le bail pour un jour convenu pour le paiement du loyer, mais au plus tôt pour
       la fin de la durée déterminée (article 7:271, alinéa 1 du BW).</p>
     <p>Il n’en va autrement que pour un bail d’au plus 2 ans conclu avec un locataire appartenant à une catégorie
       désignée par décret (algemene maatregel van bestuur) (article 7:271, alinéa 2 du BW). Dans ce cas, le
@@ -83,7 +83,7 @@
     actuel et le nouveau loyer ainsi que la date de prise d’effet, en temps utile et par écrit.</p>
   <p>L’adaptation n’est jamais supérieure à l’augmentation de loyer maximale autorisée par la loi qui s’applique au
     bien loué à la date de prise d’effet de l’adaptation. Si cette clause conduit à une augmentation supérieure à celle
-    que la loi autorise, la clause est réputée non avenue dans cette mesure et le loyer est réputé augmenté de
+    que la loi autorise, la clause est nulle dans cette mesure et le loyer est réputé augmenté de
     l’augmentation autorisée (article 7:248 du BW). Dans la mesure où la loi le permet, le locataire peut demander à la commission des loyers (huurcommissie)
     de se prononcer sur une augmentation.</p>
 </div>
@@ -109,7 +109,7 @@
     s’élève à 2 fois le loyer de base (kale huurprijs) au plus (article 7:261b, alinéas 1 et 2 du BW).</p>
   <p>Le bailleur rembourse le dépôt de garantie dans les 14 jours suivant la fin du contrat de bail.
     S’il existe un dommage au bien loué dont le locataire est responsable, ou si le locataire doit encore du loyer,
-    des charges de service ou une indemnité de performance énergétique, le bailleur rembourse le solde
+    des charges de service ou une indemnité de performance énergétique (energieprestatievergoeding), le bailleur rembourse le solde
     dans les 30 jours suivant la fin du bail, après imputation des frais de remise en état dont la réalité est établie
     ou, selon le cas, des sommes encore dues. Le bailleur informe le locataire de toute imputation
     par écrit, avec un décompte détaillé des coûts (article 7:261b, alinéas 3 et 4 du BW).<span
@@ -122,7 +122,7 @@
     th:if="${refs['service-costs']}"> et les provisions pour charges de service</span>
     <span th:text="${paymentFrequency}">par mois</span><span th:if="${paymentDueDay == 1}"> à
     l’avance</span>,
-    <span th:if="${paymentDueDay != null}">au plus tard le jour <strong th:text="${paymentDueDay}">1</strong> du
+    <span th:if="${paymentDueDay != null}">au plus tard le <strong th:text="${paymentDueDay}">1</strong> du
       mois au cours duquel la période de paiement commence</span><span th:if="${paymentDueDay == null}">au plus tard le jour de paiement
       convenu entre les parties</span>, par virement sur le compte que le bailleur a
     indiqué par écrit à cette fin.</p>
@@ -137,7 +137,7 @@
     bien loué avec son autorisation ne causent pas de nuisances au voisinage.</p>
   <p>Les modifications de l’aménagement ou de la forme du bien loué qui ne peuvent pas, à la fin du bail, être supprimées sans
     frais notables ne sont apportées par le locataire qu’avec l’autorisation écrite du bailleur. Le
-    bailleur donne son autorisation dans un délai de 8 semaines en tout cas si la modification ne nuit pas à
+    bailleur donne son autorisation dans un délai de 8 semaines en tout état de cause si la modification ne nuit pas à
     la possibilité de relouer et n’entraîne pas de perte de valeur du bien loué
     (article 7:215 du BW).</p>
 </div>
@@ -151,7 +151,7 @@
 
 <div th:fragment="clause-maintenance" data-clause="maintenance">
   <p>Sur demande du locataire, le bailleur remédie aux défauts (gebreken) du bien loué, sauf si cela est impossible
-    ou exige des dépenses qui, dans les circonstances données, ne peuvent raisonnablement être demandées au bailleur
+    ou exige des dépenses qui, dans les circonstances données, ne peuvent raisonnablement être exigées du bailleur
     (article 7:206 du BW). Le locataire signale un défaut au bailleur dans les meilleurs délais.</p>
   <p>Le locataire effectue à ses frais les menues réparations (kleine herstellingen), sauf si elles sont devenues nécessaires parce que le
     bailleur a manqué à son obligation de remédier aux défauts (article 7:217 du BW). Les réparations
@@ -199,7 +199,7 @@
     paiement ultérieur (article 7:271, alinéa 1 du BW). Ce n’est que pour un bail temporaire au sens de l’article 7:271, alinéa 2 du BW que le
     locataire peut aussi résilier plus tôt.</p>
   <p>Le bailleur ne peut résilier que pour l’un des motifs que la loi énumère à cet effet (article 7:274, alinéa 1
-    du BW) et indique ces motifs dans la résiliation ; une résiliation pour d’autres motifs est réputée non avenue. Le préavis du
+    du BW) et indique ces motifs dans la résiliation ; une résiliation pour d’autres motifs est nulle. Le préavis du
     bailleur est d’au moins 3 mois, prolongé de 1 mois pour chaque année pendant laquelle le locataire a eu la jouissance ininterrompue
     du bien loué en vertu d’un contrat, jusqu’à un maximum de 6 mois. Dans la résiliation,
     le bailleur demande au locataire de faire savoir dans un délai de 6 semaines s’il consent à la fin du bail (article
