@@ -36,7 +36,19 @@ class TranslatedResidentialLeaseRenderTest {
       String articleRef,
       String inAdvance,
       String dueDay1,
-      String dueDay5) {}
+      String dueDay5,
+      String ownArticleWord) {
+    Lang(
+        String code,
+        Locale locale,
+        String depositTerm,
+        String articleRef,
+        String inAdvance,
+        String dueDay1,
+        String dueDay5) {
+      this(code, locale, depositTerm, articleRef, inAdvance, dueDay1, dueDay5, "");
+    }
+  }
 
   static final List<Lang> LANGS =
       List.of(
@@ -87,7 +99,41 @@ class TranslatedResidentialLeaseRenderTest {
               "(si veda l’articolo <span>",
               "in via anticipata",
               "il giorno <strong>1</strong> del mese",
-              "il giorno <strong>5</strong> del mese"));
+              "il giorno <strong>5</strong> del mese"),
+          new Lang(
+              "sv",
+              Locale.of("sv"),
+              "deposition (waarborgsom)",
+              "(se artikel <span>",
+              "i förskott",
+              "senast den <strong>1</strong> i den månad",
+              "senast den <strong>5</strong> i den månad",
+              "denna artikel"),
+          new Lang(
+              "da",
+              Locale.of("da"),
+              "depositum (waarborgsom)",
+              "(se artikel <span>",
+              "forud",
+              "senest den <strong>1</strong>. i den måned",
+              "senest den <strong>5</strong>. i den måned",
+              "denne artikel"),
+          new Lang(
+              "nb",
+              Locale.of("nb"),
+              "depositum (waarborgsom)",
+              "(se artikkel <span>",
+              "forskuddsvis",
+              "senest den <strong>1</strong>. i den måneden",
+              "senest den <strong>5</strong>. i den måneden"),
+          new Lang(
+              "fi",
+              Locale.of("fi"),
+              "vakuuden (waarborgsom)",
+              "(ks. <span>",
+              "etukäteen",
+              "viimeistään kunkin maksukauden alkamiskuukauden <strong>1</strong>. päivänä",
+              "viimeistään kunkin maksukauden alkamiskuukauden <strong>5</strong>. päivänä"));
 
   private static Stream<Lang> languages() {
     return LANGS.stream();
@@ -201,7 +247,13 @@ class TranslatedResidentialLeaseRenderTest {
     assertThat(html)
         .as("raw bundle key rendered")
         .doesNotContainPattern(NlResidentialLeaseRenderTest.RAW_KEY);
-    assertThat(html).doesNotContain("artikel").doesNotContain("de huurder");
+    // sv and da legitimately use "artikel" in the cross-reference phrase and in "denna/denne
+    // artikel" (this article); drop exactly those phrases first, any other "artikel" is leakage
+    String withoutOwnWord = html.replace(lang.articleRef(), "");
+    if (!lang.ownArticleWord().isEmpty()) {
+      withoutOwnWord = withoutOwnWord.replace(lang.ownArticleWord(), "");
+    }
+    assertThat(withoutOwnWord).doesNotContain("artikel").doesNotContain("de huurder");
   }
 
   @ParameterizedTest(name = "{0}")
