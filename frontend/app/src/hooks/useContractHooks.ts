@@ -17,7 +17,6 @@ import {
   getContractDocuments,
   uploadContractDocument,
   deleteContractDocument,
-  getContractAuditLog,
   generatePayments,
   getMetadataSchema,
   addParty,
@@ -338,14 +337,6 @@ export const useDeleteContractDocument = (contractId: string) => {
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
     },
-  });
-};
-
-export const useContractAuditLog = (contractId: string | undefined) => {
-  return useQuery({
-    queryKey: queryKeys.contracts.auditLog(contractId),
-    queryFn: () => getContractAuditLog(contractId ?? ''),
-    enabled: !!contractId,
   });
 };
 
