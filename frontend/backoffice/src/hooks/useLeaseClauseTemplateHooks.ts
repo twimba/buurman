@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { useMutationWithToast } from './useMutationWithToast';
 import {
   listLeaseClauseTemplates,
@@ -6,22 +6,37 @@ import {
   updateLeaseClauseTemplate,
   deleteLeaseClauseTemplate,
 } from '../generated/api/backoffice-lease-clause-templates/backoffice-lease-clause-templates';
-import type { UpsertLeaseClauseTemplateRequest } from '../generated/models';
+import type {
+  DocumentLanguage,
+  UpsertLeaseClauseTemplateRequest,
+} from '../generated/models';
 
-const queryKey = (countryCode: string) => [
-  'lease-clause-templates',
-  countryCode,
-];
+const BASE_KEY = ['lease-clause-templates'];
 
-export const useLeaseClauseTemplates = (countryCode: string) => {
-  return useQuery({
-    queryKey: queryKey(countryCode),
-    queryFn: () => listLeaseClauseTemplates({ countryCode }),
-    enabled: !!countryCode,
+/**
+ * Loads the templates of several countries in parallel (one request each) with titles and
+ * bodies resolved in `language`. Mutations invalidate the whole prefix, so every language
+ * and country view refreshes.
+ */
+export const useLeaseClauseTemplates = (
+  countryCodes: string[],
+  language: DocumentLanguage
+) => {
+  return useQueries({
+    queries: countryCodes.map((countryCode) => ({
+      queryKey: [...BASE_KEY, countryCode, language],
+      queryFn: () => listLeaseClauseTemplates({ countryCode, language }),
+    })),
+    combine: (results) => ({
+      data: results.flatMap((r) => r.data ?? []),
+      isLoading: results.some((r) => r.isLoading),
+      isError: results.some((r) => r.isError),
+      refetch: () => results.forEach((r) => r.refetch()),
+    }),
   });
 };
 
-export const useCreateLeaseClauseTemplate = (countryCode: string) => {
+export const useCreateLeaseClauseTemplate = () => {
   const queryClient = useQueryClient();
   return useMutationWithToast({
     mutationFn: (data: UpsertLeaseClauseTemplateRequest) =>
@@ -29,12 +44,12 @@ export const useCreateLeaseClauseTemplate = (countryCode: string) => {
     errorTitle: "Couldn't create clause template",
     successMessage: 'Clause template created',
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKey(countryCode) });
+      queryClient.invalidateQueries({ queryKey: BASE_KEY });
     },
   });
 };
 
-export const useUpdateLeaseClauseTemplate = (countryCode: string) => {
+export const useUpdateLeaseClauseTemplate = () => {
   const queryClient = useQueryClient();
   return useMutationWithToast({
     mutationFn: ({
@@ -47,19 +62,19 @@ export const useUpdateLeaseClauseTemplate = (countryCode: string) => {
     errorTitle: "Couldn't update clause template",
     successMessage: 'Clause template updated',
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKey(countryCode) });
+      queryClient.invalidateQueries({ queryKey: BASE_KEY });
     },
   });
 };
 
-export const useDeleteLeaseClauseTemplate = (countryCode: string) => {
+export const useDeleteLeaseClauseTemplate = () => {
   const queryClient = useQueryClient();
   return useMutationWithToast({
     mutationFn: (identifier: string) => deleteLeaseClauseTemplate(identifier),
     errorTitle: "Couldn't delete clause template",
     successMessage: 'Clause template deleted',
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKey(countryCode) });
+      queryClient.invalidateQueries({ queryKey: BASE_KEY });
     },
   });
 };

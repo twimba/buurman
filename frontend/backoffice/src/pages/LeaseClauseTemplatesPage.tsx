@@ -1,6 +1,15 @@
-import { useState } from 'react';
-import { AlertTriangle, Pencil, Plus, Trash2, X } from 'lucide-react';
-import { Button, ConfirmDialog } from '@buurman/ui';
+import { Fragment, useMemo, useState } from 'react';
+import {
+  AlertTriangle,
+  Languages,
+  Lock,
+  Pencil,
+  Pin,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { Button, ConfirmDialog, StatusBadge } from '@buurman/ui';
 import {
   useLeaseClauseTemplates,
   useCreateLeaseClauseTemplate,
@@ -8,8 +17,32 @@ import {
   useDeleteLeaseClauseTemplate,
 } from '../hooks/useLeaseClauseTemplateHooks';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { LeaseKind } from '../generated/models';
+import { DocumentLanguage, LeaseKind } from '../generated/models';
 import type { LeaseClauseTemplateResponse } from '../generated/models';
+import { LanguageSwitcher } from '../components/lease/LanguageSwitcher';
+import { LeaseKindBadge } from '../components/lease/LeaseKindBadge';
+import { LeaseKindLegend } from '../components/lease/LeaseKindLegend';
+import { Popover } from '../components/lease/Popover';
+import { ResolvedTextCell } from '../components/lease/ResolvedTextCell';
+import {
+  DEFAULT_FILTERS,
+  LANGUAGE_LABELS,
+  applyFilters,
+  behaviourFlags,
+  groupTemplates,
+  hasProblem,
+  isEnglishFallback,
+} from '../lib/leaseClauseTable';
+import type {
+  BehaviourFilter,
+  BehaviourFlag,
+  TableFilters,
+} from '../lib/leaseClauseTable';
+import {
+  LEASE_KIND_META,
+  LEASE_KIND_ORDER,
+  fallbackText,
+} from '../lib/leaseKindMeta';
 
 // The 7 countries seeded with placeholder lease clause templates (BUUR-105).
 const COUNTRIES = [
@@ -61,11 +94,28 @@ const emptyForm = (
  * and non-dismissible on this page.
  */
 export const LeaseClauseTemplatesPage = () => {
-  const [countryCode, setCountryCode] = useState(COUNTRIES[0].code);
-  const { data: templates, isLoading } = useLeaseClauseTemplates(countryCode);
-  const createTemplate = useCreateLeaseClauseTemplate(countryCode);
-  const updateTemplate = useUpdateLeaseClauseTemplate(countryCode);
-  const deleteTemplate = useDeleteLeaseClauseTemplate(countryCode);
+  const [language, setLanguage] = useState<DocumentLanguage>(
+    DocumentLanguage.en
+  );
+  const [filters, setFilters] = useState<TableFilters>(DEFAULT_FILTERS);
+  const countryCode =
+    filters.country === 'all' ? COUNTRIES[0].code : filters.country;
+  const loadedCountries = useMemo(
+    () =>
+      filters.country === 'all'
+        ? COUNTRIES.map((c) => c.code)
+        : [filters.country],
+    [filters.country]
+  );
+  const {
+    data: templates,
+    isLoading,
+    isError,
+    refetch,
+  } = useLeaseClauseTemplates(loadedCountries, language);
+  const createTemplate = useCreateLeaseClauseTemplate();
+  const updateTemplate = useUpdateLeaseClauseTemplate();
+  const deleteTemplate = useDeleteLeaseClauseTemplate();
 
   const [showForm, setShowForm] = useState(false);
   const [editingTemplate, setEditingTemplate] =
@@ -74,9 +124,12 @@ export const LeaseClauseTemplatesPage = () => {
   const [deleteTarget, setDeleteTarget] =
     useState<LeaseClauseTemplateResponse | null>(null);
 
-  const openCreate = () => {
+  const openCreate = (country?: string, kind?: LeaseKind) => {
     setEditingTemplate(null);
-    setForm(emptyForm(countryCode));
+    setForm({
+      ...emptyForm(country ?? countryCode),
+      leaseKind: kind ?? '',
+    });
     setShowForm(true);
   };
 
@@ -137,9 +190,21 @@ export const LeaseClauseTemplatesPage = () => {
   };
 
   const isSaving = createTemplate.isPending || updateTemplate.isPending;
-  const sortedTemplates = (templates ?? [])
-    .slice()
-    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const visible = useMemo(
+    () => applyFilters(templates, filters, language),
+    [templates, filters, language]
+  );
+  const groups = useMemo(() => groupTemplates(visible), [visible]);
+  const problemCount = useMemo(
+    () => templates.filter((t) => hasProblem(t, language)).length,
+    [templates, language]
+  );
+  const setFilter = <K extends keyof TableFilters>(
+    key: K,
+    value: TableFilters[K]
+  ) => setFilters((f) => ({ ...f, [key]: value }));
+  const filtersActive =
+    JSON.stringify(filters) !== JSON.stringify(DEFAULT_FILTERS);
 
   return (
     <div>
@@ -156,130 +221,232 @@ export const LeaseClauseTemplatesPage = () => {
         </p>
       </div>
 
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-text-primary">
             Lease Clause Templates
           </h1>
-          <p className="text-sm text-text-secondary mt-1">
-            Manage the lease clause library by country. Bodies are i18n key
-            references — edit the actual translated text in the .properties
-            bundles.
+          <p className="text-sm text-text-secondary mt-1 max-w-3xl">
+            Title and summary come from the message bundles (
+            <code className="font-mono text-xs">
+              document-lease-agreement*.properties
+            </code>
+            ). The summary is the short text shown next to the clause in the
+            contract&apos;s clause list; the full legal wording lives in the
+            country documents, edited in code. This page controls which clauses
+            exist, their order and their rules.
           </p>
         </div>
         <Button
           variant="primary"
           size="sm"
           leftIcon={<Plus />}
-          onClick={openCreate}
+          onClick={() => openCreate()}
         >
           Add Clause Template
         </Button>
       </div>
 
-      {/* Country filter */}
-      <div className="mb-4 max-w-xs">
-        <label className="block text-sm font-medium text-text-secondary mb-1">
-          Country
+      <div
+        role="search"
+        aria-label="Clause filters"
+        className="mb-3 flex flex-wrap items-end gap-4"
+      >
+        <label className="block">
+          <span className="mb-1 block text-sm font-medium text-text-secondary">
+            Country
+          </span>
+          <select
+            value={filters.country}
+            onChange={(e) => setFilter('country', e.target.value)}
+            className={INPUT_CLASS}
+          >
+            <option value="all">All countries</option>
+            {COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name} ({c.code})
+              </option>
+            ))}
+          </select>
         </label>
-        <select
-          value={countryCode}
-          onChange={(e) => setCountryCode(e.target.value)}
-          className={INPUT_CLASS}
-        >
-          {COUNTRIES.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.name} ({c.code})
-            </option>
-          ))}
-        </select>
+        <div>
+          <span className="mb-1 flex items-center gap-1 text-sm font-medium text-text-secondary">
+            <label htmlFor="kind-filter">Kind</label>
+            <LeaseKindLegend />
+          </span>
+          <select
+            id="kind-filter"
+            value={filters.kind}
+            onChange={(e) =>
+              setFilter('kind', e.target.value as TableFilters['kind'])
+            }
+            className={INPUT_CLASS}
+          >
+            <option value="all">All kinds</option>
+            {LEASE_KIND_ORDER.map((kind) => (
+              <option key={kind} value={kind}>
+                {LEASE_KIND_META[kind].label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <label className="block">
+          <span className="mb-1 block text-sm font-medium text-text-secondary">
+            Behaviour
+          </span>
+          <select
+            value={filters.behaviour}
+            onChange={(e) =>
+              setFilter('behaviour', e.target.value as BehaviourFilter)
+            }
+            className={INPUT_CLASS}
+          >
+            <option value="all">Any</option>
+            <option value="optional">Optional</option>
+            <option value="required">Required</option>
+            <option value="pinned">Pinned</option>
+          </select>
+        </label>
+        <label className="flex items-center gap-2 pb-2 text-sm text-text-secondary cursor-pointer">
+          <input
+            type="checkbox"
+            checked={filters.problemsOnly}
+            onChange={(e) => setFilter('problemsOnly', e.target.checked)}
+            className="rounded border-border-default text-primary-500 focus:ring-primary-500/20"
+          />
+          Problems only
+          <span className="text-xs text-text-muted">({problemCount})</span>
+        </label>
+        <div className="ml-auto">
+          <LanguageSwitcher
+            value={language}
+            onChange={setLanguage}
+            className={INPUT_CLASS}
+          />
+        </div>
       </div>
+      <p aria-live="polite" className="mb-4 text-xs text-text-muted">
+        {visible.length} of {templates.length} clauses
+        {filtersActive && (
+          <>
+            {' · '}
+            <button
+              type="button"
+              onClick={() => setFilters(DEFAULT_FILTERS)}
+              className="text-primary-600 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 rounded"
+            >
+              Reset filters
+            </button>
+          </>
+        )}
+      </p>
 
       {isLoading ? (
         <LoadingSpinner message="Loading clause templates..." />
+      ) : isError ? (
+        <div
+          role="alert"
+          className="rounded-lg border border-error-border bg-error-bg px-4 py-3 text-sm text-error-text"
+        >
+          Couldn&apos;t load clause templates.{' '}
+          <button
+            type="button"
+            onClick={refetch}
+            className="font-medium underline"
+          >
+            Retry
+          </button>
+        </div>
+      ) : groups.length === 0 ? (
+        <div className="rounded-lg border border-border-default bg-surface-card px-4 py-12 text-center text-sm text-text-muted">
+          {filtersActive
+            ? 'No clauses match these filters.'
+            : 'No clause templates yet.'}
+        </div>
       ) : (
         <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border-default">
-                  <th className={TH_CLASS}>Order</th>
-                  <th className={TH_CLASS}>Kind</th>
-                  <th className={TH_CLASS}>Clause Key</th>
-                  <th className={TH_CLASS}>Title Key</th>
-                  <th className={TH_CLASS}>Body Key</th>
-                  <th className={TH_CLASS}>Optional</th>
-                  <th className={TH_CLASS}>Default Included</th>
-                  <th className={TH_CLASS}>Pinned</th>
-                  <th className={TH_CLASS}>Version</th>
-                  <th className={`${TH_CLASS} text-right`}>Actions</th>
+                  <th scope="col" className={`${TH_CLASS} w-12`}>
+                    #
+                  </th>
+                  <th scope="col" className={`${TH_CLASS} w-[16%]`}>
+                    Clause
+                  </th>
+                  <th scope="col" className={`${TH_CLASS} w-[24%]`}>
+                    Title
+                  </th>
+                  <th scope="col" className={TH_CLASS}>
+                    Summary (shown in clause list)
+                  </th>
+                  <th scope="col" className={`${TH_CLASS} w-40`}>
+                    Behaviour
+                  </th>
+                  <th scope="col" className={`${TH_CLASS} w-28 text-right`}>
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody>
-                {sortedTemplates.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={10}
-                      className="px-4 py-12 text-center text-sm text-text-muted"
+              {groups.map((country) => (
+                <tbody key={country.countryCode}>
+                  <tr className="bg-surface-inset">
+                    <th
+                      scope="colgroup"
+                      colSpan={6}
+                      className="px-4 py-2 text-left text-sm font-semibold text-text-primary"
                     >
-                      No clause templates for this country yet.
-                    </td>
+                      {COUNTRIES.find((c) => c.code === country.countryCode)
+                        ?.name ?? country.countryCode}{' '}
+                      <span className="ml-1 rounded-full bg-surface-card px-2 py-0.5 text-xs font-normal text-text-secondary">
+                        {country.count}
+                      </span>
+                    </th>
                   </tr>
-                ) : (
-                  sortedTemplates.map((template) => (
-                    <tr
-                      key={template.identifier}
-                      className="border-b border-border-default last:border-b-0"
-                    >
-                      <td className="px-4 py-3 text-sm text-text-secondary">
-                        {template.sortOrder}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-text-secondary">
-                        {template.leaseKind}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium text-text-primary">
-                        {template.clauseKey}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-mono text-text-secondary">
-                        {template.titleI18nKey}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-mono text-text-secondary">
-                        {template.bodyI18nKey}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-text-secondary">
-                        {template.optional ? 'Yes' : 'No'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-text-secondary">
-                        {template.defaultIncluded ? 'Yes' : 'No'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-text-secondary">
-                        {template.pinned ? 'Yes' : 'No'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-text-secondary">
-                        v{template.version}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => openEdit(template)}
-                            className="p-1.5 rounded-md text-text-secondary hover:text-primary-600 hover:bg-primary-500/10 transition-colors"
-                            title="Edit"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(template)}
-                            className="p-1.5 rounded-md text-text-secondary hover:text-error-text hover:bg-error-bg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
+                  {country.kinds.map((group) => (
+                    <Fragment key={group.kind}>
+                      <tr className="border-t border-border-default">
+                        <th
+                          scope="colgroup"
+                          colSpan={6}
+                          className="pl-8 pr-4 py-2 text-left"
+                        >
+                          <span className="flex items-center gap-2 text-xs font-normal text-text-muted">
+                            <LeaseKindBadge kind={group.kind} />
+                            <LeaseKindLegend current={group.kind} />
+                            <span>
+                              falls back to {fallbackText(group.kind)} ·{' '}
+                              {group.rows.length} clause
+                              {group.rows.length === 1 ? '' : 's'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openCreate(country.countryCode, group.kind)
+                              }
+                              aria-label={`Add clause to ${country.countryCode} ${LEASE_KIND_META[group.kind].label}`}
+                              className="ml-auto rounded-md p-1 text-text-secondary hover:text-primary-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+                            >
+                              <Plus className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                          </span>
+                        </th>
+                      </tr>
+                      {group.rows.map((template) => (
+                        <ClauseRow
+                          key={template.identifier}
+                          template={template}
+                          language={language}
+                          onLanguage={setLanguage}
+                          onEdit={() => openEdit(template)}
+                          onDelete={() => setDeleteTarget(template)}
+                        />
+                      ))}
+                    </Fragment>
+                  ))}
+                </tbody>
+              ))}
             </table>
           </div>
         </div>
@@ -298,6 +465,7 @@ export const LeaseClauseTemplatesPage = () => {
               </h2>
               <button
                 onClick={closeForm}
+                aria-label="Close"
                 className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-inset transition-colors"
               >
                 <X className="h-5 w-5" />
@@ -306,9 +474,37 @@ export const LeaseClauseTemplatesPage = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
+                  Country
+                </label>
+                <select
+                  required
+                  disabled={!!editingTemplate}
+                  value={form.countryCode}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, countryCode: e.target.value }))
+                  }
+                  className={
+                    INPUT_CLASS +
+                    (editingTemplate ? ' opacity-50 cursor-not-allowed' : '')
+                  }
+                >
+                  {COUNTRIES.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.name} ({c.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label
+                  htmlFor="lease-kind-select"
+                  className="block text-sm font-medium text-text-secondary mb-1"
+                >
                   Lease Kind
                 </label>
                 <select
+                  id="lease-kind-select"
+                  aria-describedby="lease-kind-help"
                   required
                   disabled={!!editingTemplate}
                   value={form.leaseKind}
@@ -326,12 +522,28 @@ export const LeaseClauseTemplatesPage = () => {
                   <option value="" disabled>
                     Select a lease kind…
                   </option>
-                  {Object.values(LeaseKind).map((kind) => (
+                  {LEASE_KIND_ORDER.map((kind) => (
                     <option key={kind} value={kind}>
-                      {kind}
+                      {LEASE_KIND_META[kind].label} ({kind})
                     </option>
                   ))}
                 </select>
+                <p
+                  id="lease-kind-help"
+                  aria-live="polite"
+                  className="mt-1 text-xs text-text-muted"
+                >
+                  {form.leaseKind ? (
+                    <>
+                      {LEASE_KIND_META[form.leaseKind].oneLine}{' '}
+                      <span className="font-medium">Applies when:</span>{' '}
+                      {LEASE_KIND_META[form.leaseKind].appliesWhen} Falls back
+                      to: {fallbackText(form.leaseKind)}.
+                    </>
+                  ) : (
+                    'Pick the kind of contract this clause belongs to.'
+                  )}
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
@@ -471,5 +683,141 @@ export const LeaseClauseTemplatesPage = () => {
         />
       )}
     </div>
+  );
+};
+
+const FLAG_META: Record<
+  BehaviourFlag,
+  { label: string; icon?: React.ReactNode; color: 'gray' | 'amber' | 'blue' }
+> = {
+  required: {
+    label: 'Required',
+    icon: <Lock className="h-3 w-3" aria-hidden="true" />,
+    color: 'gray',
+  },
+  pinned: {
+    label: 'Pinned',
+    icon: <Pin className="h-3 w-3" aria-hidden="true" />,
+    color: 'blue',
+  },
+  defaultOff: { label: 'Default off', color: 'amber' },
+};
+
+interface ClauseRowProps {
+  template: LeaseClauseTemplateResponse;
+  language: DocumentLanguage;
+  onLanguage: (language: DocumentLanguage) => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+const ClauseRow = ({
+  template,
+  language,
+  onLanguage,
+  onEdit,
+  onDelete,
+}: ClauseRowProps) => {
+  const fallback = isEnglishFallback(template, language);
+  const name = `${template.clauseKey}, ${template.countryCode} ${LEASE_KIND_META[template.leaseKind].label}`;
+  return (
+    <tr className="border-t border-border-default align-top">
+      <td className="px-4 py-3 text-sm tabular-nums text-text-muted">
+        {template.sortOrder}
+      </td>
+      <td className="px-4 py-3">
+        <p className="text-sm font-medium text-text-primary">
+          {template.clauseKey}
+        </p>
+        <p className="text-xs text-text-muted">v{template.version}</p>
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex items-start gap-1">
+          <ResolvedTextCell
+            text={template.titleText}
+            i18nKey={template.titleI18nKey}
+            englishFallback={fallback}
+          />
+          {template.missingLanguages.length > 0 && (
+            <Popover
+              label={`Translation status for ${name}`}
+              trigger={<Languages className="h-4 w-4" aria-hidden="true" />}
+              widthClassName="w-72"
+            >
+              {(close) => (
+                <>
+                  <h3 className="text-sm font-semibold text-text-primary">
+                    Missing translations
+                  </h3>
+                  <p className="mt-1 text-xs text-text-muted">
+                    These languages do not define the title or summary
+                    themselves and show the English text. Select one to view it.
+                  </p>
+                  <ul className="mt-2 flex flex-wrap gap-1.5">
+                    {template.missingLanguages.map((lang) => (
+                      <li key={lang}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onLanguage(lang);
+                            close();
+                          }}
+                          className="rounded bg-warning-bg px-2 py-0.5 text-xs text-warning-text focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+                        >
+                          {lang.toUpperCase()} {LANGUAGE_LABELS[lang]}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </Popover>
+          )}
+        </div>
+      </td>
+      <td className="px-4 py-3">
+        <ResolvedTextCell
+          text={template.bodyText}
+          i18nKey={template.bodyI18nKey}
+          englishFallback={fallback}
+          clamp
+        />
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex flex-wrap gap-1">
+          {behaviourFlags(template).map((flag) => (
+            <StatusBadge
+              key={flag}
+              label={FLAG_META[flag].label}
+              icon={FLAG_META[flag].icon}
+              color={FLAG_META[flag].color}
+              size="xs"
+            />
+          ))}
+        </div>
+      </td>
+      <td className="px-4 py-3 text-right">
+        <div className="flex items-center justify-end gap-1">
+          <button
+            type="button"
+            onClick={onEdit}
+            aria-label={`Edit ${name}`}
+            title="Edit"
+            className="p-1.5 rounded-md text-text-secondary hover:text-primary-600 hover:bg-primary-500/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+          >
+            <Pencil className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label={`Delete ${name}`}
+            title="Delete"
+            className="p-1.5 rounded-md text-text-secondary hover:text-error-text hover:bg-error-bg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+          >
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      </td>
+    </tr>
   );
 };
