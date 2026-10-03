@@ -1,7 +1,20 @@
 import { screen, fireEvent } from '@testing-library/react';
+import { useLocation } from 'react-router-dom';
 import { renderWithProviders } from '@/test/test-utils';
 import { ConfirmationStep } from '../ConfirmationStep';
 import type { ContractTerminationResponse } from '@/generated/models';
+
+// MemoryRouter keeps its own history, not the real window.location — a sibling reading
+// useLocation() inside the same router is how a test observes where navigate() actually went.
+const LocationDisplay = () => {
+  const location = useLocation();
+  return (
+    <div data-testid="location">
+      {location.pathname}
+      {location.search}
+    </div>
+  );
+};
 
 const response: ContractTerminationResponse = {
   identifier: 'CTM1',
@@ -35,9 +48,30 @@ describe('ConfirmationStep', () => {
   });
 
   it('navigates back to the contract when clicked', () => {
-    renderWithProviders(<ConfirmationStep response={response} />);
+    renderWithProviders(
+      <>
+        <ConfirmationStep response={response} />
+        <LocationDisplay />
+      </>
+    );
 
     fireEvent.click(screen.getByRole('button', { name: /back to contract/i }));
-    // No error thrown means navigation was attempted without crashing.
+
+    expect(screen.getByTestId('location').textContent).toBe('/contracts/CTR1');
+  });
+
+  it('navigates to the document tab when "view document" is clicked', () => {
+    renderWithProviders(
+      <>
+        <ConfirmationStep response={response} />
+        <LocationDisplay />
+      </>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /view document/i }));
+
+    expect(screen.getByTestId('location').textContent).toBe(
+      '/contracts/CTR1?tab=documents'
+    );
   });
 });
