@@ -194,7 +194,7 @@ public class PaymentService {
 
     if (!contract.getStatus().isInForce()) {
       throw new BusinessRuleException(
-          "Payments can only be created for active contracts. Current status: "
+          "Payments can only be created for in-force contracts. Current status: "
               + contract.getStatus());
     }
 
@@ -389,11 +389,11 @@ public class PaymentService {
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    // Validate contract is still active
+    // Validate contract is still in force
     Contract contract = contractRepository.getByIdAndTeamId(payment.getContractId(), teamId);
     if (!contract.getStatus().isInForce()) {
       throw new BusinessRuleException(
-          "Payments can only be edited for active contracts. Current status: "
+          "Payments can only be edited for in-force contracts. Current status: "
               + contract.getStatus());
     }
 
