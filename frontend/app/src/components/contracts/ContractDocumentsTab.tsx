@@ -1,4 +1,5 @@
 import {
+  useContract,
   useContractDocuments,
   useUploadContractDocument,
   useDeleteContractDocument,
@@ -17,6 +18,9 @@ export const ContractDocumentsTab = ({
   contractId,
 }: ContractDocumentsTabProps) => {
   const { canEditData } = useTeam();
+  // The copy-all signing message is written in the tenants' document language.
+  const { data: contract } = useContract(contractId);
+  const messageLanguage = contract?.documentLanguages?.[0];
 
   const {
     data: documents = [],
@@ -63,6 +67,7 @@ export const ContractDocumentsTab = ({
                     <SignatureRequestPanel
                       contractId={contractId}
                       documentId={doc.identifier}
+                      messageLanguage={messageLanguage}
                     />
                   </FeatureGate>
                 ) : null

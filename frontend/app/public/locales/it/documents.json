@@ -99,5 +99,46 @@
     "editTitleNotes": "Modifica titolo e note",
     "delete": "Elimina",
     "download": "Scarica"
+  },
+  "signatureLinks": {
+    "trigger": "Ottieni i link di firma",
+    "retract": "Ritira la richiesta di firma",
+    "title": "Link di firma",
+    "description": "Invii a ciascuna persona il proprio link. Chiunque abbia il link può firmare al posto di quella persona.",
+    "warning": "Condivida ogni link solo con il relativo firmatario. I link smettono di funzionare dopo la firma o il ritiro della richiesta.",
+    "signers": "Firmatari",
+    "role": {
+      "LANDLORD": "Locatore",
+      "TENANT": "Conduttore"
+    },
+    "status": {
+      "PENDING": "In attesa",
+      "VIEWED": "Visualizzato",
+      "SIGNED": "Firmato",
+      "DECLINED": "Rifiutato"
+    },
+    "alreadySigned": "Già firmato",
+    "notReady": "Link non ancora disponibile. Controlleremo di nuovo automaticamente.",
+    "unavailable": "Link non più disponibile. Ritiri la richiesta e la invii di nuovo per ottenere nuovi link.",
+    "copyLink": "Copia link",
+    "copyLinkFor": "Copia il link di firma per {{name}}",
+    "copied": "Copiato",
+    "copiedAnnouncement": "Link di {{name}} copiato",
+    "copiedAllAnnouncement": "Messaggio per tutti i firmatari in attesa copiato",
+    "copyAll": "Copia tutto come messaggio",
+    "share": "Condividi",
+    "shareFor": "Condividi il link di firma per {{name}}",
+    "shareTitle": "Documento da firmare",
+    "shareText": "Buongiorno {{name}}, la preghiamo di firmare qui:",
+    "message": "Buongiorno {{name}}, la preghiamo di firmare qui: {{url}}",
+    "copyFailed": "Copia non riuscita. Selezioni il link qui sotto e lo copi manualmente.",
+    "retry": "Riprova",
+    "done": "Fatto",
+    "error": {
+      "inactive": "Questa richiesta non è più attiva, quindi non ci sono link di firma.",
+      "forbidden": "Non ha l'autorizzazione per visualizzare i link di firma.",
+      "provider": "Il servizio di firma al momento non è raggiungibile. Riprovi tra un istante.",
+      "generic": "Impossibile caricare i link di firma."
+    }
   }
 }

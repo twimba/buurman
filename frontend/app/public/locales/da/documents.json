@@ -99,5 +99,46 @@
     "editTitleNotes": "Rediger titel & noter",
     "delete": "Slet",
     "download": "Download"
+  },
+  "signatureLinks": {
+    "trigger": "Hent signeringslinks",
+    "retract": "Træk signeringsanmodningen tilbage",
+    "title": "Signeringslinks",
+    "description": "Send hver person sit eget link. Alle med linket kan underskrive som den pågældende person.",
+    "warning": "Del kun hvert link med den, der skal underskrive. Linkene holder op med at virke, når dokumentet er underskrevet, eller anmodningen er trukket tilbage.",
+    "signers": "Underskrivere",
+    "role": {
+      "LANDLORD": "Udlejer",
+      "TENANT": "Lejer"
+    },
+    "status": {
+      "PENDING": "Afventer",
+      "VIEWED": "Set",
+      "SIGNED": "Underskrevet",
+      "DECLINED": "Afvist"
+    },
+    "alreadySigned": "Allerede underskrevet",
+    "notReady": "Linket er ikke klar endnu. Vi tjekker automatisk igen.",
+    "unavailable": "Linket er ikke længere tilgængeligt. Træk anmodningen tilbage, og send den igen for at få nye links.",
+    "copyLink": "Kopiér link",
+    "copyLinkFor": "Kopiér signeringslink til {{name}}",
+    "copied": "Kopieret",
+    "copiedAnnouncement": "Link til {{name}} kopieret",
+    "copiedAllAnnouncement": "Besked til alle afventende underskrivere kopieret",
+    "copyAll": "Kopiér alle som besked",
+    "share": "Del",
+    "shareFor": "Del signeringslink til {{name}}",
+    "shareTitle": "Dokument til underskrift",
+    "shareText": "Hej {{name}}, underskriv her:",
+    "message": "Hej {{name}}, underskriv her: {{url}}",
+    "copyFailed": "Kopieringen mislykkedes. Markér linket nedenfor, og kopiér det manuelt.",
+    "retry": "Prøv igen",
+    "done": "Færdig",
+    "error": {
+      "inactive": "Denne anmodning er ikke længere aktiv, så der er ingen signeringslinks.",
+      "forbidden": "Du har ikke tilladelse til at se signeringslinks.",
+      "provider": "Signeringstjenesten kan ikke nås lige nu. Prøv igen om lidt.",
+      "generic": "Signeringslinkene kunne ikke indlæses."
+    }
   }
 }

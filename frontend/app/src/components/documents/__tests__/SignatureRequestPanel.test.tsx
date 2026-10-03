@@ -327,4 +327,109 @@ describe('SignatureRequestPanel', () => {
       screen.queryByRole('button', { name: /retract signature request/i })
     ).not.toBeInTheDocument();
   });
+
+  describe('signing links', () => {
+    const requestWith = (
+      status: 'PENDING' | 'PARTIALLY_SIGNED' | 'COMPLETED'
+    ) => ({
+      identifier: 'SGR00000000000000000000020',
+      documentIdentifier: 'DOC00000000000000000000001',
+      status,
+      signers: [
+        {
+          email: 'tenant@example.com',
+          role: 'TENANT' as const,
+          status: 'PENDING' as const,
+        },
+      ],
+      createdAt: '2026-03-01T12:00:00Z',
+      updatedAt: '2026-03-01T12:00:00Z',
+    });
+
+    const renderPanel = () =>
+      renderWithProviders(
+        <ToastProvider>
+          <SignatureRequestPanel
+            contractId="CON00000000000000000000001"
+            documentId="DOC00000000000000000000001"
+            messageLanguage="nl"
+          />
+        </ToastProvider>
+      );
+
+    it.each(['PENDING', 'PARTIALLY_SIGNED'] as const)(
+      'shows labelled signing-links and retract icon buttons for a %s request',
+      async (status) => {
+        vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([
+          requestWith(status),
+        ]);
+        vi.spyOn(signaturesApi, 'getSignatureRequest').mockResolvedValue(
+          requestWith(status)
+        );
+        renderPanel();
+
+        expect(
+          await screen.findByRole('button', { name: 'Get signing links' })
+        ).toHaveAttribute('aria-haspopup', 'dialog');
+        expect(
+          screen.getByRole('button', { name: 'Retract signature request' })
+        ).toHaveAttribute('aria-label', 'Retract signature request');
+      }
+    );
+
+    it('does not show the signing-links button once the request is completed', async () => {
+      vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([
+        requestWith('COMPLETED'),
+      ]);
+      vi.spyOn(signaturesApi, 'getSignatureRequest').mockResolvedValue(
+        requestWith('COMPLETED')
+      );
+      renderPanel();
+
+      await screen.findByText('Signed');
+      expect(
+        screen.queryByRole('button', { name: 'Get signing links' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('opens the sheet on click, fetches only then, and returns focus to the trigger on close', async () => {
+      vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([
+        requestWith('PENDING'),
+      ]);
+      vi.spyOn(signaturesApi, 'getSignatureRequest').mockResolvedValue(
+        requestWith('PENDING')
+      );
+      const linksSpy = vi
+        .spyOn(signaturesApi, 'getSigningLinks')
+        .mockResolvedValue([
+          {
+            name: 'Maria Jansen',
+            email: 'tenant@example.com',
+            role: 'TENANT',
+            status: 'PENDING',
+            signingUrl: 'https://sign.example.com/sign/abc',
+            signed: false,
+          },
+        ]);
+      renderPanel();
+      const user = userEvent.setup();
+
+      const trigger = await screen.findByRole('button', {
+        name: 'Get signing links',
+      });
+      expect(linksSpy).not.toHaveBeenCalled();
+      await user.click(trigger);
+
+      expect(await screen.findByText('Maria Jansen')).toBeInTheDocument();
+      expect(linksSpy).toHaveBeenCalledWith(
+        'CON00000000000000000000001',
+        'DOC00000000000000000000001',
+        'SGR00000000000000000000020'
+      );
+
+      await user.click(screen.getByRole('button', { name: 'Done' }));
+      await waitFor(() => expect(trigger).toHaveFocus());
+      expect(screen.queryByText('Maria Jansen')).not.toBeInTheDocument();
+    });
+  });
 });

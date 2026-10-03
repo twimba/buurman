@@ -99,5 +99,46 @@
     "editTitleNotes": "Edytuj tytuł i notatki",
     "delete": "Usuń",
     "download": "Pobierz"
+  },
+  "signatureLinks": {
+    "trigger": "Pobierz linki do podpisu",
+    "retract": "Wycofaj prośbę o podpis",
+    "title": "Linki do podpisu",
+    "description": "Wyślij każdej osobie jej własny link. Każdy, kto ma link, może podpisać w imieniu tej osoby.",
+    "warning": "Udostępniaj każdy link wyłącznie jego podpisującemu. Linki przestają działać po podpisaniu dokumentu lub wycofaniu prośby.",
+    "signers": "Podpisujący",
+    "role": {
+      "LANDLORD": "Wynajmujący",
+      "TENANT": "Najemca"
+    },
+    "status": {
+      "PENDING": "Oczekuje",
+      "VIEWED": "Wyświetlono",
+      "SIGNED": "Podpisano",
+      "DECLINED": "Odrzucono"
+    },
+    "alreadySigned": "Już podpisano",
+    "notReady": "Link nie jest jeszcze gotowy. Sprawdzimy ponownie automatycznie.",
+    "unavailable": "Link nie jest już dostępny. Wycofaj prośbę i wyślij ją ponownie, aby wygenerować nowe linki.",
+    "copyLink": "Kopiuj link",
+    "copyLinkFor": "Kopiuj link do podpisu dla: {{name}}",
+    "copied": "Skopiowano",
+    "copiedAnnouncement": "Skopiowano link dla: {{name}}",
+    "copiedAllAnnouncement": "Skopiowano wiadomość dla wszystkich oczekujących podpisujących",
+    "copyAll": "Kopiuj wszystko jako wiadomość",
+    "share": "Udostępnij",
+    "shareFor": "Udostępnij link do podpisu dla: {{name}}",
+    "shareTitle": "Dokument do podpisania",
+    "shareText": "Dzień dobry {{name}}, proszę podpisać tutaj:",
+    "message": "Dzień dobry {{name}}, proszę podpisać tutaj: {{url}}",
+    "copyFailed": "Kopiowanie nie powiodło się. Zaznacz poniższy link i skopiuj go ręcznie.",
+    "retry": "Spróbuj ponownie",
+    "done": "Gotowe",
+    "error": {
+      "inactive": "Ta prośba nie jest już aktywna, więc nie ma linków do podpisu.",
+      "forbidden": "Nie masz uprawnień do wyświetlania linków do podpisu.",
+      "provider": "Usługa podpisu jest w tej chwili niedostępna. Spróbuj ponownie za chwilę.",
+      "generic": "Nie udało się wczytać linków do podpisu."
+    }
   }
 }

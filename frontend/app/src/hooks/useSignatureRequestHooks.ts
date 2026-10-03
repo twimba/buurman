@@ -4,6 +4,7 @@ import {
   cancelSignatureRequest,
   createSignatureRequest,
   getSignatureRequest,
+  getSigningLinks,
   listSignatureRequests,
 } from '../generated/api/signatures/signatures';
 import type { SignatureRequestResponse } from '../generated/models';
@@ -105,5 +106,39 @@ export const useCancelSignatureRequest = (
         ),
       });
     },
+  });
+};
+
+const SIGNING_LINKS_POLL_MS = 15_000;
+
+/**
+ * Per-signer signing links of an in-flight request. The links are bearer credentials, so the
+ * query is never cached (gcTime 0), only runs while the sheet showing it is open, and stops
+ * polling once it fails (a 409/403 will not fix itself; the user retries explicitly).
+ */
+export const useSignatureSigningLinks = (
+  contractId: string | undefined,
+  documentId: string | undefined,
+  signatureRequestId: string | undefined,
+  { enabled }: { enabled: boolean }
+) => {
+  return useQuery({
+    queryKey: queryKeys.signatureRequests.signingLinks(
+      contractId,
+      documentId,
+      signatureRequestId
+    ),
+    queryFn: () =>
+      getSigningLinks(
+        contractId ?? '',
+        documentId ?? '',
+        signatureRequestId ?? ''
+      ),
+    enabled: enabled && !!contractId && !!documentId && !!signatureRequestId,
+    gcTime: 0,
+    staleTime: 0,
+    retry: false,
+    refetchInterval: (query) =>
+      query.state.status === 'error' ? false : SIGNING_LINKS_POLL_MS,
   });
 };

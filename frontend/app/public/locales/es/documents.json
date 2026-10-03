@@ -99,5 +99,46 @@
     "editTitleNotes": "Editar título y notas",
     "delete": "Eliminar",
     "download": "Descargar"
+  },
+  "signatureLinks": {
+    "trigger": "Obtener enlaces de firma",
+    "retract": "Retirar la solicitud de firma",
+    "title": "Enlaces de firma",
+    "description": "Envíe a cada persona su propio enlace. Quien tenga el enlace puede firmar en nombre de esa persona.",
+    "warning": "Comparta cada enlace solo con su firmante. Los enlaces dejan de funcionar una vez firmado el documento o retirada la solicitud.",
+    "signers": "Firmantes",
+    "role": {
+      "LANDLORD": "Arrendador",
+      "TENANT": "Inquilino"
+    },
+    "status": {
+      "PENDING": "Pendiente",
+      "VIEWED": "Visto",
+      "SIGNED": "Firmado",
+      "DECLINED": "Rechazado"
+    },
+    "alreadySigned": "Ya firmado",
+    "notReady": "Enlace aún no disponible. Volveremos a comprobarlo automáticamente.",
+    "unavailable": "Enlace ya no disponible. Retire la solicitud y envíela de nuevo para generar enlaces nuevos.",
+    "copyLink": "Copiar enlace",
+    "copyLinkFor": "Copiar el enlace de firma de {{name}}",
+    "copied": "Copiado",
+    "copiedAnnouncement": "Enlace de {{name}} copiado",
+    "copiedAllAnnouncement": "Mensaje para todos los firmantes pendientes copiado",
+    "copyAll": "Copiar todo como mensaje",
+    "share": "Compartir",
+    "shareFor": "Compartir el enlace de firma de {{name}}",
+    "shareTitle": "Documento para firmar",
+    "shareText": "Hola {{name}}, firme aquí, por favor:",
+    "message": "Hola {{name}}, firme aquí, por favor: {{url}}",
+    "copyFailed": "No se pudo copiar. Seleccione el enlace de abajo y cópielo manualmente.",
+    "retry": "Reintentar",
+    "done": "Listo",
+    "error": {
+      "inactive": "Esta solicitud ya no está activa, por lo que no hay enlaces de firma.",
+      "forbidden": "No tiene permiso para ver los enlaces de firma.",
+      "provider": "El servicio de firma no está disponible en este momento. Inténtelo de nuevo en unos instantes.",
+      "generic": "No se pudieron cargar los enlaces de firma."
+    }
   }
 }

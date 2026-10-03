@@ -99,5 +99,46 @@
     "editTitleNotes": "Titel & notities bewerken",
     "delete": "Verwijderen",
     "download": "Downloaden"
+  },
+  "signatureLinks": {
+    "trigger": "Ondertekeningslinks ophalen",
+    "retract": "Ondertekeningsverzoek intrekken",
+    "title": "Ondertekeningslinks",
+    "description": "Stuur iedereen een eigen link. Wie de link heeft, kan namens die persoon ondertekenen.",
+    "warning": "Deel elke link alleen met de ondertekenaar zelf. Links werken niet meer na ondertekening of intrekking.",
+    "signers": "Ondertekenaars",
+    "role": {
+      "LANDLORD": "Verhuurder",
+      "TENANT": "Huurder"
+    },
+    "status": {
+      "PENDING": "In afwachting",
+      "VIEWED": "Bekeken",
+      "SIGNED": "Ondertekend",
+      "DECLINED": "Geweigerd"
+    },
+    "alreadySigned": "Al ondertekend",
+    "notReady": "Link nog niet beschikbaar. We controleren automatisch opnieuw.",
+    "unavailable": "Link niet langer beschikbaar. Trek het verzoek in en verstuur opnieuw voor nieuwe links.",
+    "copyLink": "Link kopiëren",
+    "copyLinkFor": "Ondertekeningslink van {{name}} kopiëren",
+    "copied": "Gekopieerd",
+    "copiedAnnouncement": "Link van {{name}} gekopieerd",
+    "copiedAllAnnouncement": "Bericht voor alle wachtende ondertekenaars gekopieerd",
+    "copyAll": "Alles kopiëren als bericht",
+    "share": "Delen",
+    "shareFor": "Ondertekeningslink van {{name}} delen",
+    "shareTitle": "Document om te ondertekenen",
+    "shareText": "Beste {{name}}, onderteken hier alstublieft:",
+    "message": "Beste {{name}}, onderteken hier alstublieft: {{url}}",
+    "copyFailed": "Kopiëren is mislukt. Selecteer de link hieronder en kopieer hem handmatig.",
+    "retry": "Opnieuw proberen",
+    "done": "Klaar",
+    "error": {
+      "inactive": "Dit verzoek is niet meer actief, dus er zijn geen ondertekeningslinks.",
+      "forbidden": "U heeft geen toestemming om ondertekeningslinks te bekijken.",
+      "provider": "De ondertekeningsdienst is momenteel niet bereikbaar. Probeer het zo opnieuw.",
+      "generic": "Ondertekeningslinks konden niet worden geladen."
+    }
   }
 }

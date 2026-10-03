@@ -99,5 +99,46 @@
     "editTitleNotes": "Muokkaa otsikkoa ja muistiinpanoja",
     "delete": "Poista",
     "download": "Lataa"
+  },
+  "signatureLinks": {
+    "trigger": "Hae allekirjoituslinkit",
+    "retract": "Peruuta allekirjoituspyyntö",
+    "title": "Allekirjoituslinkit",
+    "description": "Lähetä jokaiselle henkilölle oma linkkinsä. Jokainen, jolla on linkki, voi allekirjoittaa kyseisen henkilön puolesta.",
+    "warning": "Jaa kukin linkki vain sen allekirjoittajan kanssa. Linkit lakkaavat toimimasta, kun asiakirja on allekirjoitettu tai pyyntö peruutettu.",
+    "signers": "Allekirjoittajat",
+    "role": {
+      "LANDLORD": "Vuokranantaja",
+      "TENANT": "Vuokralainen"
+    },
+    "status": {
+      "PENDING": "Odottaa",
+      "VIEWED": "Katsottu",
+      "SIGNED": "Allekirjoitettu",
+      "DECLINED": "Hylätty"
+    },
+    "alreadySigned": "Jo allekirjoitettu",
+    "notReady": "Linkki ei ole vielä valmis. Tarkistamme uudelleen automaattisesti.",
+    "unavailable": "Linkki ei ole enää käytettävissä. Peruuta pyyntö ja lähetä se uudelleen saadaksesi uudet linkit.",
+    "copyLink": "Kopioi linkki",
+    "copyLinkFor": "Kopioi henkilön {{name}} allekirjoituslinkki",
+    "copied": "Kopioitu",
+    "copiedAnnouncement": "Henkilön {{name}} linkki kopioitu",
+    "copiedAllAnnouncement": "Viesti kaikille odottaville allekirjoittajille kopioitu",
+    "copyAll": "Kopioi kaikki viestinä",
+    "share": "Jaa",
+    "shareFor": "Jaa henkilön {{name}} allekirjoituslinkki",
+    "shareTitle": "Allekirjoitettava asiakirja",
+    "shareText": "Hei {{name}}, allekirjoita tässä:",
+    "message": "Hei {{name}}, allekirjoita tässä: {{url}}",
+    "copyFailed": "Kopiointi epäonnistui. Valitse alla oleva linkki ja kopioi se käsin.",
+    "retry": "Yritä uudelleen",
+    "done": "Valmis",
+    "error": {
+      "inactive": "Tämä pyyntö ei ole enää aktiivinen, joten allekirjoituslinkkejä ei ole.",
+      "forbidden": "Sinulla ei ole oikeutta nähdä allekirjoituslinkkejä.",
+      "provider": "Allekirjoituspalvelu ei ole juuri nyt tavoitettavissa. Yritä hetken kuluttua uudelleen.",
+      "generic": "Allekirjoituslinkkien lataaminen epäonnistui."
+    }
   }
 }

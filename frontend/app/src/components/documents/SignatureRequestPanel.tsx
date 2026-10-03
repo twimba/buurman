@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { FileSignature, Ban, AlertTriangle, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { FileSignature, Ban, AlertTriangle, Link2, X } from 'lucide-react';
 import { SignatureStatusBadge } from './SignatureStatusBadge';
+import { SignatureLinksSheet } from './SignatureLinksSheet';
 import {
   useSignatureRequest,
   useSignatureRequests,
@@ -14,6 +16,8 @@ import { Button, LoadingSpinner } from '@buurman/ui';
 interface SignatureRequestPanelProps {
   contractId: string;
   documentId: string;
+  /** Document language of the contract's tenants, used for the copy-all signing message. */
+  messageLanguage?: string;
 }
 
 /**
@@ -143,7 +147,11 @@ const CancelSignatureRequestModal = ({
 export const SignatureRequestPanel = ({
   contractId,
   documentId,
+  messageLanguage,
 }: SignatureRequestPanelProps) => {
+  const { t } = useTranslation('documents');
+  const [showLinksSheet, setShowLinksSheet] = useState(false);
+  const linksTriggerRef = useRef<HTMLButtonElement>(null);
   const [createdRequestId, setCreatedRequestId] = useState<string>();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const createMutation = useCreateSignatureRequest(contractId);
@@ -247,14 +255,43 @@ export const SignatureRequestPanel = ({
         {shown.signers.length} signed
       </span>
       {CANCELLABLE_STATUSES.includes(shown.status) && (
-        <button
-          type="button"
-          onClick={() => setShowCancelModal(true)}
-          className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
-          title="Retract signature request"
-        >
-          <Ban className="h-4 w-4" />
-        </button>
+        <>
+          <button
+            ref={linksTriggerRef}
+            type="button"
+            onClick={() => setShowLinksSheet(true)}
+            className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors"
+            title={t('signatureLinks.trigger')}
+            aria-label={t('signatureLinks.trigger')}
+            aria-haspopup="dialog"
+          >
+            <Link2 className="h-4 w-4" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowCancelModal(true)}
+            className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
+            title={t('signatureLinks.retract')}
+            aria-label={t('signatureLinks.retract')}
+          >
+            <Ban className="h-4 w-4" aria-hidden="true" />
+          </button>
+          {/* The sheet is a Radix dialog and portals to <body>, so it does not inherit this
+              table cell's text-right / whitespace-nowrap, same as the retract modal below. */}
+          <SignatureLinksSheet
+            open={showLinksSheet}
+            onClose={() => {
+              setShowLinksSheet(false);
+              // Radix restores focus in its own timeout when the dialog unmounts and can land on
+              // <body> when the trigger was activated by pointer; queue ours after it.
+              window.setTimeout(() => linksTriggerRef.current?.focus(), 0);
+            }}
+            contractId={contractId}
+            documentId={documentId}
+            signatureRequestId={shown.identifier}
+            messageLanguage={messageLanguage}
+          />
+        </>
       )}
       {showCancelModal && (
         <CancelSignatureRequestModal

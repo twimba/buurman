@@ -99,5 +99,46 @@
     "editTitleNotes": "Modifier le titre et les notes",
     "delete": "Supprimer",
     "download": "Télécharger"
+  },
+  "signatureLinks": {
+    "trigger": "Obtenir les liens de signature",
+    "retract": "Retirer la demande de signature",
+    "title": "Liens de signature",
+    "description": "Envoyez à chaque personne son propre lien. Toute personne disposant du lien peut signer à la place du signataire.",
+    "warning": "Ne partagez chaque lien qu'avec son signataire. Les liens cessent de fonctionner une fois le document signé ou la demande retirée.",
+    "signers": "Signataires",
+    "role": {
+      "LANDLORD": "Bailleur",
+      "TENANT": "Locataire"
+    },
+    "status": {
+      "PENDING": "En attente",
+      "VIEWED": "Consulté",
+      "SIGNED": "Signé",
+      "DECLINED": "Refusé"
+    },
+    "alreadySigned": "Déjà signé",
+    "notReady": "Lien pas encore disponible. Nous vérifierons à nouveau automatiquement.",
+    "unavailable": "Lien plus disponible. Retirez la demande et renvoyez-la pour obtenir de nouveaux liens.",
+    "copyLink": "Copier le lien",
+    "copyLinkFor": "Copier le lien de signature de {{name}}",
+    "copied": "Copié",
+    "copiedAnnouncement": "Lien de {{name}} copié",
+    "copiedAllAnnouncement": "Message pour tous les signataires en attente copié",
+    "copyAll": "Tout copier en message",
+    "share": "Partager",
+    "shareFor": "Partager le lien de signature de {{name}}",
+    "shareTitle": "Document à signer",
+    "shareText": "Bonjour {{name}}, veuillez signer ici :",
+    "message": "Bonjour {{name}}, veuillez signer ici : {{url}}",
+    "copyFailed": "La copie a échoué. Sélectionnez le lien ci-dessous et copiez-le manuellement.",
+    "retry": "Réessayer",
+    "done": "Terminé",
+    "error": {
+      "inactive": "Cette demande n'est plus active, il n'y a donc plus de liens de signature.",
+      "forbidden": "Vous n'avez pas l'autorisation de consulter les liens de signature.",
+      "provider": "Le service de signature est actuellement injoignable. Réessayez dans un instant.",
+      "generic": "Impossible de charger les liens de signature."
+    }
   }
 }

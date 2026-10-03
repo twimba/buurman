@@ -124,6 +124,11 @@ export const queryKeys = {
       documentId?: string,
       signatureRequestId?: string
     ) => k('signatureRequest', contractId, documentId, signatureRequestId),
+    signingLinks: (
+      contractId?: string,
+      documentId?: string,
+      signatureRequestId?: string
+    ) => k('signingLinks', contractId, documentId, signatureRequestId),
   },
 
   // --- Contract Extensions ---
