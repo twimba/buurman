@@ -5,9 +5,11 @@ import java.util.Optional;
 
 import com.buurman.domain.TerminationGivenBy;
 
+import jakarta.validation.constraints.NotNull;
+
 public record TerminateContractRequest(
-    TerminationGivenBy givenBy,
-    LocalDate noticeDate,
+    @NotNull(message = "givenBy is required") TerminationGivenBy givenBy,
+    @NotNull(message = "noticeDate is required") LocalDate noticeDate,
     Optional<String> groundCode,
     Optional<LocalDate> effectiveEndDate,
     Optional<String> overrideReason,
