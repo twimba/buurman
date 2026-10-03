@@ -41,6 +41,8 @@ public class BackofficeLeaseClauseTemplateService {
                 .optional(request.optional())
                 .sortOrder(request.sortOrder())
                 .version(1)
+                .createdBy(actorId)
+                .updatedBy(actorId)
                 .build());
     return toResponse(saved);
   }
@@ -55,6 +57,7 @@ public class BackofficeLeaseClauseTemplateService {
     existing.setDefaultIncluded(request.defaultIncluded());
     existing.setOptional(request.optional());
     existing.setSortOrder(request.sortOrder());
+    existing.setUpdatedBy(actorId);
     return toResponse(repository.save(existing));
   }
 

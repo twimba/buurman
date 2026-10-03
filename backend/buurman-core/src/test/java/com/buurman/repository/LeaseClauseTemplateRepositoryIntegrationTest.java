@@ -39,6 +39,8 @@ class LeaseClauseTemplateRepositoryIntegrationTest extends AbstractRepositoryInt
         .optional(false)
         .sortOrder(sortOrder)
         .version(1)
+        .createdBy(USER_ID)
+        .updatedBy(USER_ID)
         .build();
   }
 

@@ -29,4 +29,6 @@ public class LeaseClauseTemplate {
   private Instant createdAt;
   private Instant updatedAt;
   @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
+  private UUID createdBy;
+  private UUID updatedBy;
 }

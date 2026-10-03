@@ -81,6 +81,8 @@ public class LeaseClauseTemplateRepository {
           .set(LEASE_CLAUSE_TEMPLATES.VERSION, template.getVersion())
           .set(LEASE_CLAUSE_TEMPLATES.CREATED_AT, now)
           .set(LEASE_CLAUSE_TEMPLATES.UPDATED_AT, now)
+          .set(LEASE_CLAUSE_TEMPLATES.CREATED_BY, template.getCreatedBy())
+          .set(LEASE_CLAUSE_TEMPLATES.UPDATED_BY, template.getUpdatedBy())
           .execute();
 
       template.setId(newId);
@@ -93,6 +95,7 @@ public class LeaseClauseTemplateRepository {
           .set(LEASE_CLAUSE_TEMPLATES.OPTIONAL, template.isOptional())
           .set(LEASE_CLAUSE_TEMPLATES.SORT_ORDER, template.getSortOrder())
           .set(LEASE_CLAUSE_TEMPLATES.UPDATED_AT, now)
+          .set(LEASE_CLAUSE_TEMPLATES.UPDATED_BY, template.getUpdatedBy())
           .where(LEASE_CLAUSE_TEMPLATES.ID.eq(template.getId()))
           .execute();
     }

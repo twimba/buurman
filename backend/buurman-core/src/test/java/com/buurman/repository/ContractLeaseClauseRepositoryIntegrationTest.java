@@ -45,6 +45,8 @@ class ContractLeaseClauseRepositoryIntegrationTest extends AbstractRepositoryInt
                 .optional(true)
                 .sortOrder(5)
                 .version(1)
+                .createdBy(USER_ID)
+                .updatedBy(USER_ID)
                 .build());
     templateId = template.getId();
   }

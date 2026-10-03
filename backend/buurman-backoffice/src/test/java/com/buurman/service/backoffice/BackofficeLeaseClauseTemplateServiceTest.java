@@ -68,6 +68,79 @@ class BackofficeLeaseClauseTemplateServiceTest {
   }
 
   @Test
+  @DisplayName("create records the acting backoffice admin as both createdBy and updatedBy")
+  void createRecordsActor() {
+    UpsertLeaseClauseTemplateRequest request =
+        new UpsertLeaseClauseTemplateRequest(
+            "NL",
+            "governing_law",
+            "clause.governingLaw.title",
+            "clause.governingLaw.body",
+            true,
+            false,
+            10);
+    when(repository.save(any(LeaseClauseTemplate.class)))
+        .thenAnswer(
+            invocation -> {
+              LeaseClauseTemplate template = invocation.getArgument(0);
+              template.setIdentifier(Optional.of(LeaseClauseTemplateIdentifier.of("LCT01")));
+              return template;
+            });
+
+    service.create(request, ACTOR_ID);
+
+    org.mockito.ArgumentCaptor<LeaseClauseTemplate> captor =
+        org.mockito.ArgumentCaptor.forClass(LeaseClauseTemplate.class);
+    verify(repository).save(captor.capture());
+    assertThat(captor.getValue().getCreatedBy()).isEqualTo(ACTOR_ID);
+    assertThat(captor.getValue().getUpdatedBy()).isEqualTo(ACTOR_ID);
+  }
+
+  @Test
+  @DisplayName(
+      "update records the acting backoffice admin as updatedBy, without touching createdBy")
+  void updateRecordsActorAsUpdatedByOnly() {
+    UUID originalCreator = UUID.randomUUID();
+    Sid identifier = LeaseClauseTemplateIdentifier.of("LCT01");
+    LeaseClauseTemplate existing =
+        LeaseClauseTemplate.builder()
+            .identifier(Optional.of(identifier))
+            .countryCode("NL")
+            .clauseKey("governing_law")
+            .titleI18nKey("clause.governingLaw.title")
+            .bodyI18nKey("clause.governingLaw.body")
+            .defaultIncluded(true)
+            .optional(false)
+            .sortOrder(10)
+            .version(1)
+            .createdBy(originalCreator)
+            .updatedBy(originalCreator)
+            .build();
+    when(repository.getByIdentifier(identifier)).thenReturn(existing);
+    when(repository.save(any(LeaseClauseTemplate.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+    UpsertLeaseClauseTemplateRequest request =
+        new UpsertLeaseClauseTemplateRequest(
+            "NL",
+            "governing_law",
+            "clause.governingLaw.title (edited)",
+            "clause.governingLaw.body",
+            true,
+            false,
+            10);
+
+    service.update(identifier, request, ACTOR_ID);
+
+    org.mockito.ArgumentCaptor<LeaseClauseTemplate> captor =
+        org.mockito.ArgumentCaptor.forClass(LeaseClauseTemplate.class);
+    verify(repository).save(captor.capture());
+    assertThat(captor.getValue().getCreatedBy())
+        .as("createdBy must not change on update")
+        .isEqualTo(originalCreator);
+    assertThat(captor.getValue().getUpdatedBy()).isEqualTo(ACTOR_ID);
+  }
+
+  @Test
   @DisplayName("create rejects a required clause that defaults to excluded")
   void createRejectsRequiredButExcludedByDefault() {
     UpsertLeaseClauseTemplateRequest request =
