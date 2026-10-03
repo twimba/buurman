@@ -2,6 +2,7 @@ package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
@@ -146,9 +148,7 @@ class LeaseClauseResolverTest {
   @Test
   void fallsBackToLegacyTemplatesWithContiguousArticleNumbers() {
     List<LeaseClauseTemplate> legacy =
-        java.util.stream.IntStream.rangeClosed(1, 7)
-            .mapToObj(i -> template("legacy" + i, true, false, i))
-            .toList();
+        IntStream.rangeClosed(1, 7).mapToObj(i -> template("legacy" + i, true, false, i)).toList();
     when(templateRepository.findByCountryAndKind("NL", LeaseKind.COMMERCIAL)).thenReturn(List.of());
     when(templateRepository.findByCountryAndKind("NL", LeaseKind.LEGACY)).thenReturn(legacy);
     when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(List.of());
@@ -169,7 +169,7 @@ class LeaseClauseResolverTest {
     when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
         .thenReturn(List.of(parties, rent));
     when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
-        .thenReturn(List.of(override(parties, true, 99)));
+        .thenReturn(List.of(override(parties, true, 99), override(rent, true, 5)));
     when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("text");
 
     var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.RESIDENTIAL);
@@ -178,6 +178,8 @@ class LeaseClauseResolverTest {
         .extracting(ResolvedLeaseClauseResponse::clauseKey)
         .containsExactly("parties", "rent");
     assertThat(resolved.get(0).pinned()).isTrue();
+    assertThat(resolved.get(0).sortOrder()).isEqualTo(1);
+    assertThat(resolved.get(1).sortOrder()).isEqualTo(5);
   }
 
   @Test
@@ -212,10 +214,7 @@ class LeaseClauseResolverTest {
     assertThat(resolved)
         .extracting(
             ResolvedLeaseClauseResponse::clauseKey, ResolvedLeaseClauseResponse::articleNumber)
-        .containsExactly(
-            org.assertj.core.groups.Tuple.tuple("a", 1),
-            org.assertj.core.groups.Tuple.tuple("b", 0),
-            org.assertj.core.groups.Tuple.tuple("c", 2));
+        .containsExactly(tuple("a", 1), tuple("b", 0), tuple("c", 2));
   }
 
   @Test

@@ -32,6 +32,7 @@ import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Unit;
+import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
@@ -58,7 +59,7 @@ class LeaseAgreementExporterTest {
   private final LeaseClauseResolver clauseResolver = mock(LeaseClauseResolver.class);
   private final UnitResidentialDetailsRepository unitDetailsRepository =
       mock(UnitResidentialDetailsRepository.class);
-  private final LeaseKindResolver leaseKindResolver = mock(LeaseKindResolver.class);
+  private final LeaseKindResolver leaseKindResolver = new LeaseKindResolver(unitDetailsRepository);
   private final LetterExporterHelper helper = mock(LetterExporterHelper.class);
   private final LetterTemplateService documentTemplateService = mock(LetterTemplateService.class);
   private final MessageSource messageSource = mock(MessageSource.class);
@@ -83,7 +84,6 @@ class LeaseAgreementExporterTest {
             propertyRepository,
             rentComponentRepository,
             clauseResolver,
-            unitDetailsRepository,
             leaseKindResolver,
             helper,
             documentTemplateService,
@@ -108,10 +108,6 @@ class LeaseAgreementExporterTest {
             .city("Amsterdam")
             .build();
     when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(property);
-    when(unitDetailsRepository.findByUnitIdAndTeamId(any(), eq(TEAM_ID)))
-        .thenReturn(Optional.empty());
-    when(leaseKindResolver.resolve(eq(contract), eq(property), any()))
-        .thenReturn(LeaseKind.RESIDENTIAL);
 
     Unit unit = Unit.builder().unitNumber("1").name(Optional.empty()).build();
     LetterExporterHelper.PremisesInfo premisesInfo =
@@ -149,6 +145,34 @@ class LeaseAgreementExporterTest {
         0,
         false,
         included ? 1 : 0);
+  }
+
+  @Test
+  @DisplayName("a contract without a unit resolves the kind without any unit-details lookup")
+  void nullUnitIdSkipsUnitDetailsLookup() {
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(clause("term", "Term", "Body", true)));
+
+    exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
+
+    verifyNoInteractions(unitDetailsRepository);
+  }
+
+  @Test
+  @DisplayName("a furnished unit makes the exporter ask the resolver for the furnished kind")
+  void furnishedUnitResolvesFurnishedKind() {
+    UUID unitId = UUID.randomUUID();
+    contract.setUnitId(unitId);
+    when(unitDetailsRepository.findByUnitIdAndTeamId(unitId, TEAM_ID))
+        .thenReturn(Optional.of(UnitResidentialDetails.builder().furnished(true).build()));
+    when(clauseResolver.resolve(
+            eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL_FURNISHED)))
+        .thenReturn(List.of(clause("term", "Term", "Body", true)));
+
+    exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
+
+    verify(clauseResolver)
+        .resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL_FURNISHED));
   }
 
   @Test

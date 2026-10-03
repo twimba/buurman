@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -44,18 +45,11 @@ class LeaseClauseServiceTest {
       mock(ContractLeaseClauseRepository.class);
   private final LeaseClauseResolver resolver = mock(LeaseClauseResolver.class);
   private final PropertyRepository propertyRepository = mock(PropertyRepository.class);
-  private final UnitResidentialDetailsRepository unitDetailsRepository =
-      mock(UnitResidentialDetailsRepository.class);
   private final LeaseKindResolver leaseKindResolver = mock(LeaseKindResolver.class);
 
   private final LeaseClauseService service =
       new LeaseClauseService(
-          contractRepository,
-          overrideRepository,
-          resolver,
-          propertyRepository,
-          unitDetailsRepository,
-          leaseKindResolver);
+          contractRepository, overrideRepository, resolver, propertyRepository, leaseKindResolver);
 
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID USER_ID = UUID.randomUUID();
@@ -81,9 +75,7 @@ class LeaseClauseServiceTest {
   void stubKind() {
     Property property = Property.builder().id(PROPERTY_ID).build();
     when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(property);
-    when(unitDetailsRepository.findByUnitIdAndTeamId(UNIT_ID, TEAM_ID))
-        .thenReturn(Optional.empty());
-    when(leaseKindResolver.resolve(any(), any(), any())).thenReturn(LeaseKind.RESIDENTIAL);
+    when(leaseKindResolver.resolveFor(any(), any(), eq(TEAM_ID))).thenReturn(LeaseKind.RESIDENTIAL);
   }
 
   private Contract contract() {
@@ -175,6 +167,34 @@ class LeaseClauseServiceTest {
   }
 
   @Test
+  void contractWithoutUnitResolvesKindThroughRealResolverWithoutUnitLookup() {
+    var unitRepo = mock(UnitResidentialDetailsRepository.class);
+    var realService =
+        new LeaseClauseService(
+            contractRepository,
+            overrideRepository,
+            resolver,
+            propertyRepository,
+            new LeaseKindResolver(unitRepo));
+    Contract noUnit =
+        Contract.builder()
+            .id(CONTRACT_ID)
+            .teamId(TEAM_ID)
+            .propertyId(PROPERTY_ID)
+            .countryCode(Optional.of("NL"))
+            .documentLanguages(List.of("en"))
+            .build();
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(noUnit);
+    when(resolver.resolve(any(), any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(List.of());
+
+    realService.getClauses(CONTRACT_IDENTIFIER, principal);
+
+    verify(resolver).resolve(any(), any(), eq(LeaseKind.RESIDENTIAL));
+    verifyNoInteractions(unitRepo);
+  }
+
+  @Test
   void getClausesResolvesWithDerivedKind() {
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(contract());
@@ -186,7 +206,7 @@ class LeaseClauseServiceTest {
   }
 
   @Test
-  void pinnedClauseSortOrderInRequestIsStoredButIgnoredByResolver() {
+  void requestSortOrderIsStoredVerbatimEvenForPinnedClauses() {
     Sid templateIdentifier = Sid.of("LCT0000000000000000000000001");
     LeaseClauseTemplate pinned = template(templateIdentifier, "parties", false, 1);
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
@@ -200,7 +220,11 @@ class LeaseClauseServiceTest {
             List.of(new ClauseSelection(templateIdentifier.value(), true, 99))),
         principal);
 
-    verify(overrideRepository).replaceForContract(any(), any(), any(), any());
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<List<ContractLeaseClause>> captor = ArgumentCaptor.forClass(List.class);
+    verify(overrideRepository).replaceForContract(any(), any(), any(), captor.capture());
+    // Ignoring a pinned clause's position is the resolver's job (see LeaseClauseResolverTest).
+    assertThat(captor.getValue().get(0).getSortOrder()).isEqualTo(99);
   }
 
   @Test

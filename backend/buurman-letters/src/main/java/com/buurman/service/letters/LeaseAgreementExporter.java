@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,14 +17,12 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
-import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.service.LeaseClauseResolver;
 import com.buurman.service.LeaseKindResolver;
 import com.buurman.util.CurrencyUtils;
@@ -48,7 +45,6 @@ public class LeaseAgreementExporter {
   private final PropertyRepository propertyRepository;
   private final ContractRentComponentRepository rentComponentRepository;
   private final LeaseClauseResolver clauseResolver;
-  private final UnitResidentialDetailsRepository unitDetailsRepository;
   private final LeaseKindResolver leaseKindResolver;
   private final LetterExporterHelper helper;
   private final LetterTemplateService documentTemplateService;
@@ -60,7 +56,6 @@ public class LeaseAgreementExporter {
       PropertyRepository propertyRepository,
       ContractRentComponentRepository rentComponentRepository,
       LeaseClauseResolver clauseResolver,
-      UnitResidentialDetailsRepository unitDetailsRepository,
       LeaseKindResolver leaseKindResolver,
       LetterExporterHelper helper,
       LetterTemplateService documentTemplateService,
@@ -70,7 +65,6 @@ public class LeaseAgreementExporter {
     this.propertyRepository = propertyRepository;
     this.rentComponentRepository = rentComponentRepository;
     this.clauseResolver = clauseResolver;
-    this.unitDetailsRepository = unitDetailsRepository;
     this.leaseKindResolver = leaseKindResolver;
     this.helper = helper;
     this.documentTemplateService = documentTemplateService;
@@ -103,10 +97,7 @@ public class LeaseAgreementExporter {
    */
   private List<Map<String, String>> resolveIncludedClauses(
       Contract contract, Property property, UUID teamId, Locale locale) {
-    Optional<UnitResidentialDetails> unitDetails =
-        Optional.ofNullable(contract.getUnitId())
-            .flatMap(unitId -> unitDetailsRepository.findByUnitIdAndTeamId(unitId, teamId));
-    LeaseKind kind = leaseKindResolver.resolve(contract, property, unitDetails);
+    LeaseKind kind = leaseKindResolver.resolveFor(contract, property, teamId);
     return clauseResolver.resolve(contract, locale, kind).stream()
         .filter(ResolvedLeaseClauseResponse::included)
         .map(c -> Map.of("title", c.title(), "body", c.body()))

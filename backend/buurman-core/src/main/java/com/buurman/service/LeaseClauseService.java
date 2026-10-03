@@ -3,7 +3,6 @@ package com.buurman.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,7 +15,6 @@ import com.buurman.domain.ContractLeaseClause;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
-import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.request.UpdateContractLeaseClausesRequest;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
@@ -24,7 +22,6 @@ import com.buurman.exception.BadRequestException;
 import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.DocumentLanguages;
 
@@ -43,7 +40,6 @@ public class LeaseClauseService {
   private final ContractLeaseClauseRepository overrideRepository;
   private final LeaseClauseResolver resolver;
   private final PropertyRepository propertyRepository;
-  private final UnitResidentialDetailsRepository unitDetailsRepository;
   private final LeaseKindResolver leaseKindResolver;
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
@@ -124,10 +120,7 @@ public class LeaseClauseService {
 
   private LeaseKind leaseKind(Contract contract, UUID teamId) {
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
-    Optional<UnitResidentialDetails> unitDetails =
-        Optional.ofNullable(contract.getUnitId())
-            .flatMap(unitId -> unitDetailsRepository.findByUnitIdAndTeamId(unitId, teamId));
-    return leaseKindResolver.resolve(contract, property, unitDetails);
+    return leaseKindResolver.resolveFor(contract, property, teamId);
   }
 
   private Locale contractLocale(Contract contract) {
