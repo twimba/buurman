@@ -58,6 +58,9 @@ public class BackofficeLeaseClauseTemplateService {
     existing.setOptional(request.optional());
     existing.setSortOrder(request.sortOrder());
     existing.setUpdatedBy(actorId);
+    // Bumped on every content change so a stale cached resolution (keyed by version) is
+    // detectable, and so the admin UI can show "this clause has been edited since X".
+    existing.setVersion(existing.getVersion() + 1);
     return toResponse(repository.save(existing));
   }
 

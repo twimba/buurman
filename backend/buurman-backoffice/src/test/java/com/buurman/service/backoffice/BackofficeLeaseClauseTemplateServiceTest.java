@@ -138,6 +138,9 @@ class BackofficeLeaseClauseTemplateServiceTest {
         .as("createdBy must not change on update")
         .isEqualTo(originalCreator);
     assertThat(captor.getValue().getUpdatedBy()).isEqualTo(ACTOR_ID);
+    assertThat(captor.getValue().getVersion())
+        .as("version must be bumped so a cached resolution keyed by it is detectably stale")
+        .isEqualTo(2);
   }
 
   @Test
