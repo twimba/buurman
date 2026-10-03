@@ -120,6 +120,7 @@
     "alreadySigned": "Allerede underskrevet",
     "notReady": "Linket er ikke klar endnu. Vi tjekker automatisk igen.",
     "unavailable": "Linket er ikke længere tilgængeligt. Træk anmodningen tilbage, og send den igen for at få nye links.",
+    "empty": "Der er ingen links at dele for denne anmodning.",
     "copyLink": "Kopiér link",
     "copyLinkFor": "Kopiér signeringslink til {{name}}",
     "copied": "Kopieret",

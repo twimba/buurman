@@ -120,6 +120,7 @@
     "alreadySigned": "Redan signerat",
     "notReady": "Länken är inte klar än. Vi kontrollerar igen automatiskt.",
     "unavailable": "Länken är inte längre tillgänglig. Återkalla begäran och skicka den igen för att få nya länkar.",
+    "empty": "Det finns inga länkar att dela för den här begäran.",
     "copyLink": "Kopiera länk",
     "copyLinkFor": "Kopiera signeringslänk för {{name}}",
     "copied": "Kopierad",

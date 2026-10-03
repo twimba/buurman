@@ -120,6 +120,7 @@
     "alreadySigned": "Bereits unterzeichnet",
     "notReady": "Link noch nicht verfügbar. Wir prüfen automatisch erneut.",
     "unavailable": "Link nicht mehr verfügbar. Ziehen Sie die Anfrage zurück und senden Sie sie erneut, um neue Links zu erhalten.",
+    "empty": "Für diese Anfrage gibt es keine Links zum Teilen.",
     "copyLink": "Link kopieren",
     "copyLinkFor": "Signierlink für {{name}} kopieren",
     "copied": "Kopiert",

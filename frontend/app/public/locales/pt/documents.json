@@ -120,6 +120,7 @@
     "alreadySigned": "Já assinado",
     "notReady": "Ligação ainda não disponível. Voltaremos a verificar automaticamente.",
     "unavailable": "Ligação já não disponível. Retire o pedido e envie-o novamente para gerar novas ligações.",
+    "empty": "Não há ligações para partilhar neste pedido.",
     "copyLink": "Copiar ligação",
     "copyLinkFor": "Copiar a ligação de assinatura de {{name}}",
     "copied": "Copiado",

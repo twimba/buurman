@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isAxiosError } from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Check,
   Clock,
@@ -13,6 +14,7 @@ import {
 import { Button, Sheet, Skeleton, StatusBadge } from '@buurman/ui';
 import type { BadgeColorVariant } from '@buurman/ui';
 import { useSignatureSigningLinks } from '@/hooks/useSignatureRequestHooks';
+import { queryKeys } from '@/lib/queryKeys';
 import type { SignatureSigningLinkResponse } from '@/generated/models';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { trackEvent } from '@/utils/analytics';
@@ -79,6 +81,13 @@ export const SignatureLinksSheet = ({
   const [announcement, setAnnouncement] = useState('');
   const [fallback, setFallback] = useState<{ key: string; url: string }>();
   const resetTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const announceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const queryClient = useQueryClient();
+  const linksKey = queryKeys.signatureRequests.signingLinks(
+    contractId,
+    documentId,
+    signatureRequestId
+  );
 
   const { data, isPending, error, refetch, isFetching } =
     useSignatureSigningLinks(contractId, documentId, signatureRequestId, {
@@ -88,29 +97,48 @@ export const SignatureLinksSheet = ({
   useEffect(() => {
     if (open) {
       trackEvent(AnalyticsEvent.SIGNATURE_LINKS_OPENED);
-      if (messageLanguage) {
-        // Warm the message language now: the copy handler must stay synchronous to keep the
-        // browser's user-activation, so it cannot await a locale download.
-        void i18n.loadLanguages(messageLanguage.toLowerCase());
-      }
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (open && messageLanguage) {
+      // Warm the message language now: the copy handler must stay synchronous to keep the
+      // browser's user-activation, so it cannot await a locale download.
+      void i18n.loadLanguages(messageLanguage.toLowerCase());
     }
   }, [open, messageLanguage, i18n]);
 
-  useEffect(() => () => clearTimeout(resetTimer.current), []);
+  // Links are bearer credentials: drop them from the cache when the sheet or its panel goes away.
+  useEffect(
+    () => () => {
+      clearTimeout(resetTimer.current);
+      clearTimeout(announceTimer.current);
+      queryClient.removeQueries({ queryKey: linksKey });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [queryClient, contractId, documentId, signatureRequestId]
+  );
 
   // Reset here rather than in an effect on `open`: every close path (Done, Esc, overlay) lands
   // in this handler, and nothing here may outlive the sheet, least of all a copied link.
   const handleClose = () => {
     clearTimeout(resetTimer.current);
+    clearTimeout(announceTimer.current);
     setCopiedKey(undefined);
     setAnnouncement('');
     setFallback(undefined);
+    // The observer outlives the closed sheet (the panel keeps it mounted), so without this the
+    // links would stay in memory and reappear, copyable, before the next refetch.
+    queryClient.removeQueries({ queryKey: linksKey });
     onClose();
   };
 
   const flashCopied = useCallback((key: string, message: string) => {
     setCopiedKey(key);
-    setAnnouncement(message);
+    // Clear first so a repeat copy changes the live region's text and is announced again.
+    setAnnouncement('');
+    clearTimeout(announceTimer.current);
+    announceTimer.current = setTimeout(() => setAnnouncement(message), 0);
     clearTimeout(resetTimer.current);
     resetTimer.current = setTimeout(() => {
       setCopiedKey(undefined);
@@ -118,7 +146,9 @@ export const SignatureLinksSheet = ({
     }, COPIED_RESET_MS);
   }, []);
 
-  const signers = [...(data ?? [])].sort(
+  // React Query keeps the last data after a failed refetch; a failed poll (e.g. 409 once the
+  // request is retracted) must not leave stale links copyable.
+  const signers = [...(open && !error ? (data ?? []) : [])].sort(
     (a, b) => Number(a.signed) - Number(b.signed)
   );
   const copyable = signers.filter((s) => linkOf(s));
@@ -141,8 +171,10 @@ export const SignatureLinksSheet = ({
   };
 
   const handleCopyAll = async () => {
+    const lng = messageLanguage?.toLowerCase();
+    // An unloaded bundle would silently render English; use the UI language instead.
     const tMessage = i18n.getFixedT(
-      messageLanguage ? messageLanguage.toLowerCase() : null,
+      lng && i18n.hasResourceBundle(lng, 'documents') ? lng : null,
       'documents'
     );
     const message = copyable
@@ -213,12 +245,19 @@ export const SignatureLinksSheet = ({
     }
     if (signers.length === 0) {
       return (
-        <p
-          className="px-6 py-8 text-center text-sm text-text-primary"
-          role="alert"
-        >
-          {t('signatureLinks.error.generic')}
-        </p>
+        <div className="px-6 py-8 text-center space-y-3" role="alert">
+          <p className="text-sm text-text-primary">
+            {t('signatureLinks.empty')}
+          </p>
+          <Button
+            variant="secondary"
+            size="sm"
+            isLoading={isFetching}
+            onClick={() => void refetch()}
+          >
+            {t('signatureLinks.retry')}
+          </Button>
+        </div>
       );
     }
     return (

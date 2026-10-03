@@ -1,4 +1,10 @@
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
+import i18n from 'i18next';
+import documentsNl from '../../../../public/locales/nl/documents.json';
+import { queryKeys } from '@/lib/queryKeys';
+import { createTestQueryClient } from '@/test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { AxiosError } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -133,6 +139,7 @@ describe('SignatureLinksSheet', () => {
       scope: 'single',
     });
     expect(document.body.textContent).not.toContain('token-maria');
+    expect(screen.queryByDisplayValue(URL_MARIA)).toBeNull();
     expect(JSON.stringify(trackSpy.mock.calls)).not.toContain('token-');
   });
 
@@ -303,5 +310,235 @@ describe('SignatureLinksSheet', () => {
     const user = userEvent.setup();
     await user.click(await screen.findByRole('button', { name: 'Done' }));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  describe('credential hygiene and robustness', () => {
+    const Harness = ({
+      client,
+      language,
+    }: {
+      client: ReturnType<typeof createTestQueryClient>;
+      language?: string;
+    }) => {
+      const [open, setOpen] = useState(true);
+      return (
+        <QueryClientProvider client={client}>
+          <button onClick={() => setOpen(true)}>reopen</button>
+          <SignatureLinksSheet
+            open={open}
+            onClose={() => setOpen(false)}
+            contractId="CON1"
+            documentId="DOC1"
+            signatureRequestId="SGR1"
+            messageLanguage={language}
+          />
+        </QueryClientProvider>
+      );
+    };
+
+    it('drops the links from the cache on close and shows the skeleton again on reopen', async () => {
+      let resolveSecond: (v: SignatureSigningLinkResponse[]) => void = () => {};
+      vi.spyOn(signaturesApi, 'getSigningLinks')
+        .mockResolvedValueOnce([maria])
+        .mockReturnValueOnce(
+          new Promise((resolve) => {
+            resolveSecond = resolve;
+          })
+        );
+      const client = createTestQueryClient();
+      render(<Harness client={client} />);
+      const user = userEvent.setup();
+      await screen.findByText('Maria Jansen');
+      const key = queryKeys.signatureRequests.signingLinks(
+        'CON1',
+        'DOC1',
+        'SGR1'
+      );
+      expect(client.getQueryData(key)).toBeDefined();
+
+      await user.click(screen.getByRole('button', { name: 'Done' }));
+      expect(client.getQueryData(key)).toBeUndefined();
+
+      await user.click(screen.getByRole('button', { name: 'reopen' }));
+      expect(
+        await screen.findByTestId('signing-links-skeleton')
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Maria Jansen')).toBeNull();
+      await act(async () => resolveSecond([maria]));
+      expect(await screen.findByText('Maria Jansen')).toBeInTheDocument();
+    });
+
+    it('stops polling after close', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      const spy = vi
+        .spyOn(signaturesApi, 'getSigningLinks')
+        .mockResolvedValue([maria]);
+      render(<Harness client={createTestQueryClient()} />);
+      await screen.findByText('Maria Jansen');
+      await act(async () => {
+        await userEvent
+          .setup({ advanceTimers: vi.advanceTimersByTime })
+          .click(screen.getByRole('button', { name: 'Done' }));
+      });
+      const calls = spy.mock.calls.length;
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(45_000);
+      });
+      expect(spy).toHaveBeenCalledTimes(calls);
+    });
+
+    it('removes every copy action when a later poll fails, even though React Query keeps the old data', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      vi.spyOn(signaturesApi, 'getSigningLinks')
+        .mockResolvedValueOnce([maria, jan])
+        .mockRejectedValue(httpError(409));
+      renderSheet();
+      await screen.findByRole('button', { name: /copy all as message/i });
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(15_000);
+      });
+      expect(await screen.findByText(/no longer active/i)).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /copy all as message/i })
+      ).toBeNull();
+      expect(
+        screen.queryByRole('button', { name: /copy signing link/i })
+      ).toBeNull();
+      expect(screen.queryByText('Maria Jansen')).toBeNull();
+    });
+
+    it('shows a neutral message with retry for an empty signer list, not a load error', async () => {
+      vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([]);
+      renderSheet();
+      expect(
+        await screen.findByText('No links to share for this request.')
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/could not load/i)).toBeNull();
+      expect(
+        screen.getByRole('button', { name: /retry/i })
+      ).toBeInTheDocument();
+    });
+
+    it('shows the copy-all fallback field only when copying fails', async () => {
+      vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([
+        maria,
+        jan,
+      ]);
+      renderSheet();
+      const user = userEvent.setup();
+      setClipboard({ writeText });
+      await user.click(
+        await screen.findByRole('button', { name: /copy all as message/i })
+      );
+      expect(screen.queryByRole('textbox')).toBeNull();
+
+      setClipboard({ writeText: vi.fn().mockRejectedValue(new Error('no')) });
+      Object.defineProperty(document, 'execCommand', {
+        value: vi.fn().mockReturnValue(false),
+        configurable: true,
+      });
+      await user.click(
+        screen.getByRole('button', { name: /copy all as message/i })
+      );
+      const field = await screen.findByRole('textbox');
+      expect(field).toHaveAttribute('readonly');
+      expect((field as HTMLTextAreaElement).value).toContain(URL_JAN);
+      Reflect.deleteProperty(document, 'execCommand');
+    });
+
+    it('omits signers whose link is not ready from the copied message', async () => {
+      vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([
+        maria,
+        jan,
+        {
+          ...maria,
+          name: 'Pending Pete',
+          email: 'pete@example.com',
+          signingUrl: null,
+        },
+      ]);
+      renderSheet();
+      const user = userEvent.setup();
+      setClipboard({ writeText });
+      await user.click(
+        await screen.findByRole('button', { name: /copy all as message/i })
+      );
+      expect(writeText.mock.calls[0][0]).not.toContain('Pete');
+    });
+
+    it('writes the copied message in the document language when its bundle is loaded', async () => {
+      i18n.addResourceBundle('nl', 'documents', documentsNl, true, true);
+      vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([
+        maria,
+        jan,
+      ]);
+      render(<Harness client={createTestQueryClient()} language="nl" />);
+      const user = userEvent.setup();
+      setClipboard({ writeText });
+      await user.click(
+        await screen.findByRole('button', { name: /copy all as message/i })
+      );
+      expect(writeText.mock.calls[0][0]).toContain(
+        `Beste Maria Jansen, onderteken hier alstublieft: ${URL_MARIA}`
+      );
+      i18n.removeResourceBundle('nl', 'documents');
+    });
+
+    it('falls back to the UI language when the document-language bundle is not loaded', async () => {
+      vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([
+        maria,
+        jan,
+      ]);
+      render(<Harness client={createTestQueryClient()} language="de" />);
+      const user = userEvent.setup();
+      setClipboard({ writeText });
+      await user.click(
+        await screen.findByRole('button', { name: /copy all as message/i })
+      );
+      expect(writeText.mock.calls[0][0]).toContain(
+        'Hi Maria Jansen, please sign here:'
+      );
+    });
+
+    it('tracks signature_links_opened once per open even if the message language arrives later', async () => {
+      vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([maria]);
+      const client = createTestQueryClient();
+      const { rerender } = render(<Harness client={client} />);
+      await screen.findByText('Maria Jansen');
+      rerender(<Harness client={client} language="nl" />);
+      await screen.findByText('Maria Jansen');
+      expect(
+        trackSpy.mock.calls.filter((c) => c[0] === 'signature_links_opened')
+      ).toHaveLength(1);
+    });
+
+    it('announces a repeat copy again', async () => {
+      vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([maria]);
+      renderSheet();
+      const user = userEvent.setup();
+      setClipboard({ writeText });
+      const button = await screen.findByRole('button', {
+        name: 'Copy signing link for Maria Jansen',
+      });
+      await user.click(button);
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(/copied/i)
+      );
+      const seen: string[] = [];
+      const observer = new MutationObserver(() =>
+        seen.push(screen.getByRole('status').textContent ?? '')
+      );
+      observer.observe(screen.getByRole('status'), {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+      await user.click(button);
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(/copied/i)
+      );
+      observer.disconnect();
+      expect(seen).toContain('');
+    });
   });
 });

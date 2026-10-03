@@ -1,4 +1,9 @@
 const legacyCopy = (text: string): boolean => {
+  const previouslyFocused = document.activeElement as HTMLElement | null;
+  // Inside an open dialog the textarea must live in the dialog: a focus trap (Radix) would
+  // otherwise pull focus out of a body-level node and drop the selection mid-copy.
+  const container =
+    previouslyFocused?.closest<HTMLElement>('[role="dialog"]') ?? document.body;
   const textarea = document.createElement('textarea');
   textarea.value = text;
   textarea.setAttribute('readonly', '');
@@ -6,16 +11,18 @@ const legacyCopy = (text: string): boolean => {
   textarea.style.position = 'fixed';
   textarea.style.top = '0';
   textarea.style.left = '-9999px';
-  document.body.appendChild(textarea);
-  const previouslyFocused = document.activeElement as HTMLElement | null;
+  container.appendChild(textarea);
   try {
+    textarea.focus();
     textarea.select();
     textarea.setSelectionRange(0, text.length);
-    return document.execCommand('copy');
+    const selectionIntact =
+      textarea.selectionEnd - textarea.selectionStart === text.length;
+    return document.execCommand('copy') && selectionIntact;
   } catch {
     return false;
   } finally {
-    document.body.removeChild(textarea);
+    container.removeChild(textarea);
     previouslyFocused?.focus?.();
   }
 };

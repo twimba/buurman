@@ -47,6 +47,29 @@ describe('copyText', () => {
     expect(execCommand).toHaveBeenCalledWith('copy');
   });
 
+  it('appends the fallback textarea inside the active dialog so a focus trap cannot steal the selection', async () => {
+    setClipboard(undefined);
+    const dialog = document.createElement('div');
+    dialog.setAttribute('role', 'dialog');
+    const button = document.createElement('button');
+    dialog.appendChild(button);
+    document.body.appendChild(dialog);
+    button.focus();
+    let parent: HTMLElement | null | undefined;
+    Object.defineProperty(document, 'execCommand', {
+      value: vi.fn(() => {
+        parent = document.querySelector('textarea')?.parentElement;
+        return true;
+      }),
+      configurable: true,
+    });
+
+    await expect(copyText('hello')).resolves.toBe(true);
+    expect(parent).toBe(dialog);
+    expect(button).toHaveFocus();
+    dialog.remove();
+  });
+
   it('returns false when every strategy fails', async () => {
     setClipboard({ writeText: vi.fn().mockRejectedValue(new Error('denied')) });
     Object.defineProperty(document, 'execCommand', {

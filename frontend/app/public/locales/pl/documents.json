@@ -120,6 +120,7 @@
     "alreadySigned": "Już podpisano",
     "notReady": "Link nie jest jeszcze gotowy. Sprawdzimy ponownie automatycznie.",
     "unavailable": "Link nie jest już dostępny. Wycofaj prośbę i wyślij ją ponownie, aby wygenerować nowe linki.",
+    "empty": "Brak linków do udostępnienia dla tej prośby.",
     "copyLink": "Kopiuj link",
     "copyLinkFor": "Kopiuj link do podpisu dla: {{name}}",
     "copied": "Skopiowano",

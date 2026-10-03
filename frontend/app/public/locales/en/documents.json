@@ -120,6 +120,7 @@
     "alreadySigned": "Already signed",
     "notReady": "Link not ready yet. We will check again automatically.",
     "unavailable": "Link no longer available. Retract and send again to issue new links.",
+    "empty": "No links to share for this request.",
     "copyLink": "Copy link",
     "copyLinkFor": "Copy signing link for {{name}}",
     "copied": "Copied",

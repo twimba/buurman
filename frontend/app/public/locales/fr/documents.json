@@ -120,6 +120,7 @@
     "alreadySigned": "Déjà signé",
     "notReady": "Lien pas encore disponible. Nous vérifierons à nouveau automatiquement.",
     "unavailable": "Lien plus disponible. Retirez la demande et renvoyez-la pour obtenir de nouveaux liens.",
+    "empty": "Il n'y a aucun lien à partager pour cette demande.",
     "copyLink": "Copier le lien",
     "copyLinkFor": "Copier le lien de signature de {{name}}",
     "copied": "Copié",

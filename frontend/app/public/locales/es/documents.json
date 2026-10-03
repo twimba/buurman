@@ -120,6 +120,7 @@
     "alreadySigned": "Ya firmado",
     "notReady": "Enlace aún no disponible. Volveremos a comprobarlo automáticamente.",
     "unavailable": "Enlace ya no disponible. Retire la solicitud y envíela de nuevo para generar enlaces nuevos.",
+    "empty": "No hay enlaces para compartir en esta solicitud.",
     "copyLink": "Copiar enlace",
     "copyLinkFor": "Copiar el enlace de firma de {{name}}",
     "copied": "Copiado",

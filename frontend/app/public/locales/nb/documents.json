@@ -120,6 +120,7 @@
     "alreadySigned": "Allerede signert",
     "notReady": "Lenken er ikke klar ennå. Vi sjekker automatisk på nytt.",
     "unavailable": "Lenken er ikke lenger tilgjengelig. Trekk tilbake forespørselen og send den på nytt for å få nye lenker.",
+    "empty": "Det finnes ingen lenker å dele for denne forespørselen.",
     "copyLink": "Kopier lenke",
     "copyLinkFor": "Kopier signeringslenke for {{name}}",
     "copied": "Kopiert",

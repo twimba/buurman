@@ -120,6 +120,7 @@
     "alreadySigned": "Jo allekirjoitettu",
     "notReady": "Linkki ei ole vielä valmis. Tarkistamme uudelleen automaattisesti.",
     "unavailable": "Linkki ei ole enää käytettävissä. Peruuta pyyntö ja lähetä se uudelleen saadaksesi uudet linkit.",
+    "empty": "Tälle pyynnölle ei ole jaettavia linkkejä.",
     "copyLink": "Kopioi linkki",
     "copyLinkFor": "Kopioi henkilön {{name}} allekirjoituslinkki",
     "copied": "Kopioitu",

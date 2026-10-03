@@ -260,7 +260,7 @@ export const SignatureRequestPanel = ({
             ref={linksTriggerRef}
             type="button"
             onClick={() => setShowLinksSheet(true)}
-            className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors"
+            className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors [@media(pointer:coarse)]:min-h-touch [@media(pointer:coarse)]:min-w-touch inline-flex items-center justify-center"
             title={t('signatureLinks.trigger')}
             aria-label={t('signatureLinks.trigger')}
             aria-haspopup="dialog"
@@ -270,7 +270,7 @@ export const SignatureRequestPanel = ({
           <button
             type="button"
             onClick={() => setShowCancelModal(true)}
-            className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
+            className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors [@media(pointer:coarse)]:min-h-touch [@media(pointer:coarse)]:min-w-touch inline-flex items-center justify-center"
             title={t('signatureLinks.retract')}
             aria-label={t('signatureLinks.retract')}
           >
@@ -282,8 +282,8 @@ export const SignatureRequestPanel = ({
             open={showLinksSheet}
             onClose={() => {
               setShowLinksSheet(false);
-              // Radix restores focus in its own timeout when the dialog unmounts and can land on
-              // <body> when the trigger was activated by pointer; queue ours after it.
+              // Radix does not hand focus back to this button (it can land on <body> after pointer
+              // activation), so restore it explicitly once the dialog has unmounted.
               window.setTimeout(() => linksTriggerRef.current?.focus(), 0);
             }}
             contractId={contractId}
