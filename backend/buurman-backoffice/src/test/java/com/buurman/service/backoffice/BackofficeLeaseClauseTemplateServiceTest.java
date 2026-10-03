@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
@@ -44,7 +47,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
     return new UpsertLeaseClauseTemplateRequest(
         "NL",
         leaseKind,
-        "governing_law",
+        "governing-law",
         titleKey,
         "clause.governingLaw.body",
         defaultIncluded,
@@ -58,7 +61,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
         .identifier(Optional.of(LeaseClauseTemplateIdentifier.of("LCT01")))
         .countryCode("NL")
         .leaseKind(kind)
-        .clauseKey("governing_law")
+        .clauseKey("governing-law")
         .titleI18nKey("clause.governingLaw.title")
         .bodyI18nKey("clause.governingLaw.body")
         .defaultIncluded(true)
@@ -66,6 +69,36 @@ class BackofficeLeaseClauseTemplateServiceTest {
         .sortOrder(10)
         .version(1)
         .build();
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"../x", "a b", "A", "a::b", "", "a_b"})
+  @DisplayName("create rejects clause keys outside ^[a-z0-9-]{1,64}$")
+  void createRejectsUnsafeClauseKey(String key) {
+    UpsertLeaseClauseTemplateRequest bad =
+        new UpsertLeaseClauseTemplateRequest("NL", null, key, "t", "b", true, false, false, 10);
+    assertThatThrownBy(() -> service.create(bad, ACTOR_ID)).isInstanceOf(BadRequestException.class);
+    verifyNoInteractions(repository);
+  }
+
+  @Test
+  @DisplayName("create accepts a seeded-style key")
+  void createAcceptsTerminationReference() {
+    when(repository.save(any(LeaseClauseTemplate.class)))
+        .thenAnswer(
+            i -> {
+              LeaseClauseTemplate t = i.getArgument(0);
+              t.setIdentifier(Optional.of(LeaseClauseTemplateIdentifier.of("LCT01")));
+              return t;
+            });
+    assertThat(
+            service
+                .create(
+                    new UpsertLeaseClauseTemplateRequest(
+                        "NL", null, "termination-reference", "t", "b", true, false, false, 10),
+                    ACTOR_ID)
+                .clauseKey())
+        .isEqualTo("termination-reference");
   }
 
   @Test
@@ -86,7 +119,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
 
     assertThat(response.identifier().value()).isEqualTo("LCT01");
     assertThat(response.countryCode()).isEqualTo("NL");
-    assertThat(response.clauseKey()).isEqualTo("governing_law");
+    assertThat(response.clauseKey()).isEqualTo("governing-law");
     assertThat(response.titleI18nKey()).isEqualTo("clause.governingLaw.title");
     assertThat(response.bodyI18nKey()).isEqualTo("clause.governingLaw.body");
     assertThat(response.defaultIncluded()).isTrue();
@@ -127,7 +160,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
         LeaseClauseTemplate.builder()
             .identifier(Optional.of(identifier))
             .countryCode("NL")
-            .clauseKey("governing_law")
+            .clauseKey("governing-law")
             .titleI18nKey("clause.governingLaw.title")
             .bodyI18nKey("clause.governingLaw.body")
             .defaultIncluded(true)
@@ -199,7 +232,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
         LeaseClauseTemplate.builder()
             .identifier(Optional.of(LeaseClauseTemplateIdentifier.of("LCT01")))
             .countryCode("NL")
-            .clauseKey("governing_law")
+            .clauseKey("governing-law")
             .titleI18nKey("clause.governingLaw.title")
             .bodyI18nKey("clause.governingLaw.body")
             .defaultIncluded(true)

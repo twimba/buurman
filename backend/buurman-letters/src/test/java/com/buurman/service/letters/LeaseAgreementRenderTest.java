@@ -84,7 +84,8 @@ class LeaseAgreementRenderTest {
     assertThat(html.indexOf("Second by key")).isPositive().isLessThan(html.indexOf("First by key"));
     assertThat(html).containsPattern("<span>1</span>\\. <span>Second by key</span>");
     assertThat(html).containsPattern("<span>2</span>\\. <span>First by key</span>");
-    assertThat(html).contains("Clause A text for ").contains("Landlord BV");
+    assertThat(html.indexOf("BODY-BETA")).isPositive().isLessThan(html.indexOf("BODY-ALPHA"));
+    assertThat(html).contains("BODY-ALPHA for ").contains("Landlord BV");
     assertNoLeaks(html);
   }
 
@@ -105,7 +106,7 @@ class LeaseAgreementRenderTest {
   void excludedReferenceOmitted() {
     String html = render(List.of(clause("b", "B", 1)), Map.of("b", 1), true, false);
 
-    assertThat(html).contains("Clause B text").doesNotContain("see article");
+    assertThat(html).contains("BODY-BETA").doesNotContain("see article");
     assertNoLeaks(html);
   }
 
@@ -124,7 +125,9 @@ class LeaseAgreementRenderTest {
   @DisplayName("fallback notice appears only when the requested language was not available")
   void fallbackNotice() {
     List<Map<String, Object>> clauses = List.of(clause("a", "A", 1));
-    assertThat(render(clauses, Map.of("a", 1), true, true)).contains("not available");
+    assertThat(render(clauses, Map.of("a", 1), true, true))
+        .contains("not available")
+        .contains("(en)");
     assertThat(render(clauses, Map.of("a", 1), true, false)).doesNotContain("not available");
   }
 

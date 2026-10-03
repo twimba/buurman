@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
@@ -39,12 +40,18 @@ import com.buurman.util.MoneyAmount;
  * template ever sees them, so the template itself never has to re-check {@code clause.included}.
  * Every {@link #generate} call re-resolves clauses fresh; nothing here caches a prior resolution,
  * so a landlord who changes a clause selection and regenerates sees the new selection immediately.
+ *
+ * <p>Assumption: the {@code landlordName} template value is the team's name, a stand-in until the
+ * contract carries an explicit landlord party; callers should confirm that is acceptable.
  */
 @Component
 public class LeaseAgreementExporter {
 
   static final String DOCUMENT_TYPE = "lease-agreement";
   static final String SHELL_TEMPLATE = "lease-agreement/_shell";
+
+  /** Clause keys select a fragment name in the shell, so only safe slugs may reach it. */
+  private static final Pattern CLAUSE_KEY_PATTERN = Pattern.compile("^[a-z0-9-]{1,64}$");
 
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
@@ -83,13 +90,33 @@ public class LeaseAgreementExporter {
     this.clock = clock;
   }
 
+  /** The rendered PDF together with the language it was actually rendered in. */
+  public record RenderedLease(byte[] pdf, String languageUsed) {}
+
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public byte[] generate(ContractIdentifier contractIdentifier, UUID teamId, String lang) {
+    return generateWithLanguage(contractIdentifier, teamId, lang).pdf();
+  }
+
+  /**
+   * Renders the agreement. When a per-language document exists but only in another language than
+   * requested, the whole PDF (chrome, clause titles, notices, formats) is rendered in that language
+   * so the output is never mixed-language, and a fallback notice names the requested one.
+   */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public RenderedLease generateWithLanguage(
+      ContractIdentifier contractIdentifier, UUID teamId, String lang) {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
-    Locale locale = LetterTemplateService.resolveLocale(lang);
+    LetterTemplateService.resolveLocale(lang);
 
     LeaseKind kind = leaseKindResolver.resolveFor(contract, property, teamId);
+    Optional<LeaseDocumentLocator.LeaseDocument> document =
+        contract.getCountryCode().flatMap(cc -> documentLocator.locate(cc, kind, lang));
+    String languageUsed =
+        document.map(LeaseDocumentLocator.LeaseDocument::languageUsed).orElse(lang);
+    Locale locale = LetterTemplateService.resolveLocale(languageUsed);
+
     List<ResolvedLeaseClauseResponse> includedClauses =
         clauseResolver.resolve(contract, locale, kind).stream()
             .filter(ResolvedLeaseClauseResponse::included)
@@ -100,39 +127,31 @@ public class LeaseAgreementExporter {
               + " remain included");
     }
 
-    Optional<LeaseDocumentLocator.LeaseDocument> document =
-        contract.getCountryCode().flatMap(cc -> documentLocator.locate(cc, kind, lang));
-
     Map<String, Object> variables = buildTemplateVariables(contract, property, teamId, locale);
     if (document.isEmpty()) {
       variables.put("clauses", legacyClauses(includedClauses));
-      return documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, variables);
+      return new RenderedLease(
+          documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, variables), languageUsed);
     }
 
+    includedClauses.forEach(
+        c -> {
+          if (!CLAUSE_KEY_PATTERN.matcher(c.clauseKey()).matches()) {
+            throw new BusinessRuleException("Lease clause has an invalid key: " + c.clauseKey());
+          }
+        });
     LeaseDocumentLocator.LeaseDocument doc = document.get();
+    addTypedValues(variables, contract, teamId, locale);
     variables.put("clauses", shellClauses(includedClauses));
     variables.put("clauseSource", doc.templatePath());
     variables.put("refs", clauseRefs(includedClauses));
     variables.put("authoritative", doc.authoritative());
-    variables.put("languageUsed", doc.languageUsed());
+    variables.put("languageUsed", languageUsed);
     variables.put("requestedLang", lang);
-    variables.put("fallbackUsed", !doc.languageUsed().equals(lang));
-    return documentTemplateService.renderToPdfTemplate(SHELL_TEMPLATE, locale, variables);
-  }
-
-  /**
-   * The language the agreement will actually be rendered in: the located document's language, or
-   * the requested one on the legacy path.
-   */
-  public String languageUsed(ContractIdentifier contractIdentifier, UUID teamId, String lang) {
-    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
-    Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
-    LeaseKind kind = leaseKindResolver.resolveFor(contract, property, teamId);
-    return contract
-        .getCountryCode()
-        .flatMap(cc -> documentLocator.locate(cc, kind, lang))
-        .map(LeaseDocumentLocator.LeaseDocument::languageUsed)
-        .orElse(lang);
+    variables.put("fallbackUsed", !languageUsed.equals(lang));
+    return new RenderedLease(
+        documentTemplateService.renderToPdfTemplate(SHELL_TEMPLATE, locale, variables),
+        languageUsed);
   }
 
   private static List<Map<String, String>> legacyClauses(
@@ -174,8 +193,6 @@ public class LeaseAgreementExporter {
     LetterExporterHelper.PremisesInfo premisesInfo =
         helper.premisesInfo(contract, property, messageSource, locale);
     vars.put("propertyAddress", LetterExporterHelper.premisesAddress(property, premisesInfo));
-
-    addTypedValues(vars, contract, teamId, locale);
 
     List<ContractRentComponent> components =
         rentComponentRepository.findByContractIdAndTeamId(contract.getId(), teamId);

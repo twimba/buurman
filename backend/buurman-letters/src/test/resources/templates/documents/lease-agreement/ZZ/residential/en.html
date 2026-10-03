@@ -1,5 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"><body>
-<div th:fragment="clause-a"><p>Clause A text for <span th:text="${landlordName}">x</span>.</p></div>
-<div th:fragment="clause-b"><p>Clause B text<span th:if="${refs['a']}"> see article <span th:text="#{lease.article.ref(${refs['a']})}"></span></span>.</p></div>
+<div th:fragment="clause-a"><p>BODY-ALPHA for <span th:text="${landlordName}">x</span>.</p></div>
+<div th:fragment="clause-b"><p>BODY-BETA<span th:if="${refs['a']}"> see article <span th:text="#{lease.article.ref(${refs['a']})}"></span></span>.</p></div>
 </body></html>

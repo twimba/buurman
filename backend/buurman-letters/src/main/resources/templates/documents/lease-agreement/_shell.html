@@ -33,7 +33,7 @@
   <div class="letter-subject" th:text="#{lease.title}">Lease Agreement</div>
 
   <div th:if="${!authoritative}" class="lease-notice" th:text="#{lease.notice.courtesy}"></div>
-  <div th:if="${fallbackUsed}" class="lease-notice" th:text="#{lease.notice.fallback}"></div>
+  <div th:if="${fallbackUsed}" class="lease-notice" th:text="#{lease.notice.fallback(${requestedLang})}"></div>
 
   <div class="letter-body">
     <p th:text="#{lease.premises(${propertyAddress})}"></p>

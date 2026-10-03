@@ -327,13 +327,75 @@ class LeaseAgreementExporterTest {
   }
 
   @Test
-  @DisplayName("all clauses excluded throws before the locator or any rendering")
+  @DisplayName("all clauses excluded throws before any rendering on the shell path too")
   void allExcludedThrowsOnShellPathToo() {
+    when(documentLocator.locate("NL", LeaseKind.RESIDENTIAL, "en"))
+        .thenReturn(
+            Optional.of(
+                new LeaseDocumentLocator.LeaseDocument(
+                    "lease-agreement/NL/residential/en", "en", false)));
     when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
         .thenReturn(List.of(clause("pets", "Pets", "Body", false)));
 
     assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
         .isInstanceOf(BusinessRuleException.class);
-    verifyNoInteractions(documentTemplateService, documentLocator);
+    verifyNoInteractions(documentTemplateService);
+  }
+
+  @Test
+  @DisplayName("fallback renders the whole PDF in the located language's locale")
+  void fallbackRendersWholePdfInLocatedLocale() {
+    when(documentLocator.locate("NL", LeaseKind.RESIDENTIAL, "en"))
+        .thenReturn(
+            Optional.of(
+                new LeaseDocumentLocator.LeaseDocument(
+                    "lease-agreement/NL/residential/nl", "nl", true)));
+    when(documentTemplateService.renderToPdfTemplate(anyString(), any(Locale.class), anyMap()))
+        .thenReturn("%PDF".getBytes(UTF_8));
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(clause("term", "Term", "Body", true)));
+
+    LeaseAgreementExporter.RenderedLease rendered =
+        exporter.generateWithLanguage(CONTRACT_IDENTIFIER, TEAM_ID, "en");
+
+    assertThat(rendered.languageUsed()).isEqualTo("nl");
+    verify(clauseResolver)
+        .resolve(eq(contract), eq(Locale.forLanguageTag("nl")), eq(LeaseKind.RESIDENTIAL));
+    verify(documentTemplateService)
+        .renderToPdfTemplate(
+            eq("lease-agreement/_shell"), eq(Locale.forLanguageTag("nl")), anyMap());
+  }
+
+  @Test
+  @DisplayName("an unsafe clause key is rejected before rendering on the shell path")
+  void unsafeClauseKeyRejected() {
+    when(documentLocator.locate("NL", LeaseKind.RESIDENTIAL, "en"))
+        .thenReturn(
+            Optional.of(
+                new LeaseDocumentLocator.LeaseDocument(
+                    "lease-agreement/NL/residential/en", "en", false)));
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(clause("a::b", "Bad", "Body", true)));
+
+    assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
+        .isInstanceOf(BusinessRuleException.class);
+    verifyNoInteractions(documentTemplateService);
+  }
+
+  @Test
+  @DisplayName("legacy path adds no typed values and does no team or party lookups")
+  void legacyPathHasNoTypedValues() {
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(clause("term", "Term", "Body", true)));
+
+    exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
+
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+    verify(documentTemplateService)
+        .renderToPdf(eq("lease-agreement"), any(Locale.class), captor.capture());
+    assertThat(captor.getValue())
+        .doesNotContainKeys("landlordName", "tenantNames", "startDate", "rentAmount", "refs");
+    verifyNoInteractions(teamRepository);
   }
 }

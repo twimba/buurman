@@ -1,6 +1,5 @@
 package com.buurman.service.letters;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class LeaseDocumentLocator {
   /** The country and language segments are interpolated into a classpath path: allowlist both. */
   private static final Pattern COUNTRY_PATTERN = Pattern.compile("[A-Z]{2}");
 
-  private static final Map<String, List<String>> NATIONAL_LANGUAGES =
+  private static final Map<String, List<String>> DEFAULT_NATIONAL_LANGUAGES =
       Map.of(
           "NL", List.of("nl"),
           "BE", List.of("nl", "fr"),
@@ -36,6 +35,17 @@ public class LeaseDocumentLocator {
           "FR", List.of("fr"),
           "GB", List.of("en"),
           "PT", List.of("pt"));
+
+  private final Map<String, List<String>> nationalLanguages;
+
+  public LeaseDocumentLocator() {
+    this(DEFAULT_NATIONAL_LANGUAGES);
+  }
+
+  /** Test seam: lets tests register a fake country so they never shadow real documents. */
+  LeaseDocumentLocator(Map<String, List<String>> nationalLanguages) {
+    this.nationalLanguages = nationalLanguages;
+  }
 
   /**
    * @param templatePath template name relative to {@code templates/documents/}, without {@code
@@ -50,8 +60,7 @@ public class LeaseDocumentLocator {
     if (kind == null || countryCode == null || !COUNTRY_PATTERN.matcher(countryCode).matches()) {
       return Optional.empty();
     }
-    String country = countryCode;
-    List<String> national = NATIONAL_LANGUAGES.getOrDefault(country, List.of());
+    List<String> national = nationalLanguages.getOrDefault(countryCode, List.of());
 
     Set<String> chain = new LinkedHashSet<>();
     if (requestedLang != null && DocumentLanguages.isSupported(requestedLang)) {
@@ -60,13 +69,12 @@ public class LeaseDocumentLocator {
     chain.addAll(national);
     chain.add("en");
 
-    return new ArrayList<>(chain)
-        .stream()
-            .filter(lang -> exists(country, kind, lang))
-            .findFirst()
-            .map(
-                lang ->
-                    new LeaseDocument(path(country, kind, lang), lang, national.contains(lang)));
+    return chain.stream()
+        .filter(lang -> exists(countryCode, kind, lang))
+        .findFirst()
+        .map(
+            lang ->
+                new LeaseDocument(path(countryCode, kind, lang), lang, national.contains(lang)));
   }
 
   private static String path(String country, LeaseKind kind, String lang) {

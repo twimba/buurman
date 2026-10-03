@@ -46,9 +46,10 @@ public class LeaseAgreementGenerationService {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     String lang = DocumentLanguages.firstSupportedOrDefault(contract.getDocumentLanguages());
-    byte[] pdf = leaseAgreementExporter.generate(contractIdentifier, teamId, lang);
-
-    String languageUsed = leaseAgreementExporter.languageUsed(contractIdentifier, teamId, lang);
+    LeaseAgreementExporter.RenderedLease rendered =
+        leaseAgreementExporter.generateWithLanguage(contractIdentifier, teamId, lang);
+    byte[] pdf = rendered.pdf();
+    String languageUsed = rendered.languageUsed();
     String filename = "lease-agreement-" + contractIdentifier.value() + "-" + languageUsed + ".pdf";
     String title = "Lease Agreement (" + languageUsed + ")";
 
