@@ -67,6 +67,11 @@ public class ContractTerminationRepository {
       termination.setCreatedAt(now.toInstant(UTC));
       termination.setUpdatedAt(now.toInstant(UTC));
     } else {
+      // Deliberately partial: only status and the notice letter ever change after creation (the
+      // sweep job transitioning to TERMINATED, or attaching the generated letter right after
+      // terminate()). Every other field is set once at creation and is immutable thereafter — add
+      // a .set(...) here explicitly if a future caller needs to change something else, rather than
+      // assuming this persists the whole entity.
       dsl.update(CONTRACT_TERMINATIONS)
           .set(CONTRACT_TERMINATIONS.STATUS, termination.getStatus().name())
           .set(
