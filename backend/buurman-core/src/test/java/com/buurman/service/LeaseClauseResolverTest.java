@@ -54,7 +54,8 @@ class LeaseClauseResolverTest {
 
   private List<ResolvedLeaseClauseResponse> resolveFor(
       Contract contract, Locale locale, LeaseKind kind) {
-    return resolver.resolve(contract, locale, resolver.templatesFor(country(contract), kind));
+    return resolver.resolve(
+        contract, country(contract), locale, resolver.templatesFor(country(contract), kind));
   }
 
   private Contract contract(String countryCode) {
@@ -377,8 +378,29 @@ class LeaseClauseResolverTest {
 
   @Test
   void resolveWithEmptyTemplateListThrowsCountryCode() {
-    assertThatThrownBy(() -> resolver.resolve(contract("IT"), Locale.ENGLISH, List.of()))
-        .isInstanceOf(LeaseNotAvailableException.class);
+    assertThatThrownBy(
+            () -> resolver.resolve(contract("IT"), Optional.of("IT"), Locale.ENGLISH, List.of()))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_NOT_AVAILABLE_FOR_COUNTRY"));
+  }
+
+  @Test
+  void resolveWithEmptyTemplatesReportsTheEffectiveCountryNotTheContractsRawOne() {
+    Contract noContractCountry =
+        Contract.builder().id(CONTRACT_ID).propertyId(PROPERTY_ID).teamId(TEAM_ID).build();
+    Optional<String> effective =
+        LeaseClauseResolver.effectiveCountryCode(
+            noContractCountry, Property.builder().countryCode("JP").build());
+
+    assertThatThrownBy(
+            () -> resolver.resolve(noContractCountry, effective, Locale.ENGLISH, List.of()))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> {
+              assertThat(ex.getCode()).isEqualTo("LEASE_NOT_AVAILABLE_FOR_COUNTRY");
+              assertThat(ex.getMessage()).contains("JP");
+            });
   }
 
   @Test

@@ -61,7 +61,8 @@ public class LeaseClauseService {
       Contract contract, Optional<String> country, LeaseClauseResolver.Availability availability) {
     List<ResolvedLeaseClauseResponse> clauses =
         availability.state().isAvailable()
-            ? resolver.resolve(contract, contractLocale(contract), availability.templates())
+            ? resolver.resolve(
+                contract, country, contractLocale(contract), availability.templates())
             : List.of();
     return new LeaseClausesResponse(availability.state(), country, clauses);
   }

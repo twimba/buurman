@@ -194,7 +194,7 @@ class LeaseClauseServiceTest {
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(noUnit);
     when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(available());
-    when(resolver.resolve(any(), any(), anyList())).thenReturn(List.of());
+    when(resolver.resolve(any(), any(), any(), anyList())).thenReturn(List.of());
 
     realService.getClauses(CONTRACT_IDENTIFIER, principal);
 
@@ -207,7 +207,7 @@ class LeaseClauseServiceTest {
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(contract());
     when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(available());
-    when(resolver.resolve(any(), any(), anyList())).thenReturn(List.of());
+    when(resolver.resolve(any(), any(), any(), anyList())).thenReturn(List.of());
 
     assertThat(service.getClauses(CONTRACT_IDENTIFIER, principal).clauses()).isEmpty();
 
@@ -240,7 +240,8 @@ class LeaseClauseServiceTest {
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(contract());
     when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(availability);
-    when(resolver.resolve(any(), any(), eq(List.of(t)))).thenReturn(List.of(resolvedClause()));
+    when(resolver.resolve(any(), any(), any(), eq(List.of(t))))
+        .thenReturn(List.of(resolvedClause()));
 
     LeaseClausesResponse response = service.getClauses(CONTRACT_IDENTIFIER, principal);
 
@@ -262,7 +263,7 @@ class LeaseClauseServiceTest {
     assertThat(response.availability()).isEqualTo(LeaseAvailability.UNAVAILABLE_COUNTRY);
     assertThat(response.countryCode()).contains("IT");
     assertThat(response.clauses()).isEmpty();
-    verify(resolver, never()).resolve(any(), any(), anyList());
+    verify(resolver, never()).resolve(any(), any(), any(), anyList());
   }
 
   @Test
@@ -304,7 +305,7 @@ class LeaseClauseServiceTest {
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(contractIn(Optional.empty()));
     when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(available());
-    when(resolver.resolve(any(), any(), anyList())).thenReturn(List.of());
+    when(resolver.resolve(any(), any(), any(), anyList())).thenReturn(List.of());
 
     LeaseClausesResponse response =
         service.updateClauses(
@@ -330,6 +331,44 @@ class LeaseClauseServiceTest {
             ex -> assertThat(ex.getCode()).isEqualTo("LEASE_CONTRACT_HAS_NO_COUNTRY"));
 
     verify(overrideRepository, never()).replaceForContract(any(), any(), any(), any());
+  }
+
+  @Test
+  void updateClausesWithBlankContractAndBlankPropertyCountryThrowsNoCountryBeforeAnyWrite() {
+    Property blankProperty = Property.builder().id(PROPERTY_ID).countryCode("   ").build();
+    when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(blankProperty);
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contractIn(Optional.of("  ")));
+
+    assertThatThrownBy(
+            () ->
+                service.updateClauses(
+                    CONTRACT_IDENTIFIER,
+                    new UpdateContractLeaseClausesRequest(List.of()),
+                    principal))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_CONTRACT_HAS_NO_COUNTRY"));
+
+    verify(overrideRepository, never()).replaceForContract(any(), any(), any(), any());
+    verify(resolver, never()).availabilityFor(any(), any());
+  }
+
+  @Test
+  void getClausesWithBlankContractAndBlankPropertyCountryPassesNoCountryToTheResolver() {
+    Property blankProperty = Property.builder().id(PROPERTY_ID).countryCode("").build();
+    when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(blankProperty);
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contractIn(Optional.of("  ")));
+    when(resolver.availabilityFor(eq(Optional.empty()), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(
+            new LeaseClauseResolver.Availability(
+                LeaseAvailability.UNAVAILABLE_NO_COUNTRY, List.of()));
+
+    LeaseClausesResponse response = service.getClauses(CONTRACT_IDENTIFIER, principal);
+
+    assertThat(response.availability()).isEqualTo(LeaseAvailability.UNAVAILABLE_NO_COUNTRY);
+    assertThat(response.countryCode()).isEmpty();
   }
 
   @Test
@@ -360,7 +399,7 @@ class LeaseClauseServiceTest {
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(contract());
     when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(available(pinned));
-    when(resolver.resolve(any(), any(), anyList())).thenReturn(List.of());
+    when(resolver.resolve(any(), any(), any(), anyList())).thenReturn(List.of());
 
     service.updateClauses(
         CONTRACT_IDENTIFIER,
@@ -390,7 +429,7 @@ class LeaseClauseServiceTest {
         List.of(
             new ResolvedLeaseClauseResponse(
                 templateIdentifier, "house-rules", "Title", "Body", true, true, 1, false, 1));
-    when(resolver.resolve(any(), any(), anyList())).thenReturn(resolved);
+    when(resolver.resolve(any(), any(), any(), anyList())).thenReturn(resolved);
 
     UpdateContractLeaseClausesRequest request =
         new UpdateContractLeaseClausesRequest(
@@ -415,7 +454,7 @@ class LeaseClauseServiceTest {
 
     // The already-fetched template list is passed into resolve(), not re-fetched by it.
     verify(resolver, times(1)).availabilityFor(any(), eq(LeaseKind.RESIDENTIAL));
-    verify(resolver).resolve(any(), any(), eq(List.of(optionalClause)));
+    verify(resolver).resolve(any(), any(), any(), eq(List.of(optionalClause)));
   }
 
   @Test

@@ -129,12 +129,16 @@ public class LeaseClauseResolver {
 
   /**
    * Resolves the given templates (already fetched by the caller via {@link #availabilityFor} or
-   * {@link #templatesFor}) against the contract's overrides.
+   * {@link #templatesFor}) against the contract's overrides. {@code country} is the effective
+   * country the caller already computed; it is only used to report an empty template list.
    */
   public List<ResolvedLeaseClauseResponse> resolve(
-      Contract contract, Locale locale, List<LeaseClauseTemplate> templates) {
+      Contract contract,
+      Optional<String> country,
+      Locale locale,
+      List<LeaseClauseTemplate> templates) {
     if (templates.isEmpty()) {
-      throw LeaseNotAvailableException.forContract(contract.getCountryCode());
+      throw LeaseNotAvailableException.forContract(country);
     }
 
     Map<UUID, ContractLeaseClause> overridesByTemplateId =

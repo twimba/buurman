@@ -127,7 +127,7 @@ public class LeaseAgreementExporter {
     Locale locale = LetterTemplateService.resolveLocale(languageUsed);
 
     List<ResolvedLeaseClauseResponse> includedClauses =
-        clauseResolver.resolve(contract, locale, templates).stream()
+        clauseResolver.resolve(contract, country, locale, templates).stream()
             .filter(ResolvedLeaseClauseResponse::included)
             .toList();
     if (includedClauses.isEmpty()) {
