@@ -17,7 +17,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.context.MessageSource;
 
+import com.buurman.document.DocumentTemplateSupport;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Sid;
@@ -27,14 +29,21 @@ import com.buurman.dto.response.LeaseClauseTemplateResponse;
 import com.buurman.exception.BadRequestException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.LeaseClauseTemplateRepository;
+import com.buurman.service.letters.LeaseMessageCatalog;
+import com.buurman.util.DocumentLanguages;
 
 class BackofficeLeaseClauseTemplateServiceTest {
+
+  private static final MessageSource MESSAGES =
+      DocumentTemplateSupport.messageSource(true, "classpath:messages/document-lease-agreement");
+
+  private static final LeaseMessageCatalog CATALOG = new LeaseMessageCatalog();
 
   private final LeaseClauseTemplateRepository repository =
       mock(LeaseClauseTemplateRepository.class);
 
   private final BackofficeLeaseClauseTemplateService service =
-      new BackofficeLeaseClauseTemplateService(repository);
+      new BackofficeLeaseClauseTemplateService(repository, MESSAGES, CATALOG);
 
   private static final UUID ACTOR_ID = UUID.randomUUID();
 
@@ -252,7 +261,8 @@ class BackofficeLeaseClauseTemplateServiceTest {
 
     when(repository.findByCountryCode("NL")).thenReturn(List.of(nlTemplate));
 
-    List<LeaseClauseTemplateResponse> responses = service.list("NL", Optional.empty());
+    List<LeaseClauseTemplateResponse> responses =
+        service.list("NL", Optional.empty(), Optional.of("en"));
 
     assertThat(responses).hasSize(1);
     assertThat(responses.get(0).countryCode()).isEqualTo("NL");
@@ -333,10 +343,107 @@ class BackofficeLeaseClauseTemplateServiceTest {
         .thenReturn(List.of(storedTemplate(LeaseKind.COMMERCIAL)));
 
     List<LeaseClauseTemplateResponse> responses =
-        service.list("NL", Optional.of(LeaseKind.COMMERCIAL));
+        service.list("NL", Optional.of(LeaseKind.COMMERCIAL), Optional.of("en"));
 
     assertThat(responses).hasSize(1);
     verify(repository).findByCountryAndKind("NL", LeaseKind.COMMERCIAL);
     verify(repository, org.mockito.Mockito.never()).findByCountryCode(any());
+  }
+
+  private static LeaseClauseTemplate nlDepositTemplate(String titleKey, String bodyKey) {
+    LeaseClauseTemplate template = storedTemplate(LeaseKind.RESIDENTIAL);
+    template.setTitleI18nKey(titleKey);
+    template.setBodyI18nKey(bodyKey);
+    return template;
+  }
+
+  @Test
+  @DisplayName("list resolves title and body in the requested language")
+  void listResolvesTextPerLanguage() {
+    when(repository.findByCountryCode("NL"))
+        .thenReturn(
+            List.of(
+                nlDepositTemplate(
+                    "lease.nl.residential.deposit.title", "lease.nl.residential.deposit.summary")));
+
+    LeaseClauseTemplateResponse en = service.list("NL", Optional.empty(), Optional.of("en")).get(0);
+    LeaseClauseTemplateResponse nl = service.list("NL", Optional.empty(), Optional.of("nl")).get(0);
+    LeaseClauseTemplateResponse de = service.list("NL", Optional.empty(), Optional.of("de")).get(0);
+
+    assertThat(en.titleText()).isEqualTo("Deposit");
+    assertThat(nl.titleText()).isEqualTo("Waarborgsom");
+    assertThat(de.titleText()).isNotEqualTo("Deposit").isNotEqualTo(en.titleI18nKey());
+    assertThat(nl.bodyText()).startsWith("Waarborgsom van ten hoogste");
+    assertThat(nl.titleI18nKey()).isEqualTo("lease.nl.residential.deposit.title");
+    assertThat(nl.missingLanguages()).isEmpty();
+  }
+
+  @Test
+  @DisplayName("a key inherited from the English base counts as missing in other languages")
+  void baseInheritanceReportedMissing() {
+    when(repository.findByCountryCode("NL"))
+        .thenReturn(
+            List.of(
+                nlDepositTemplate(
+                    "lease.nl.residential.deposit.title", "lease.test.only.in.base")));
+    LeaseMessageCatalog catalog = mock(LeaseMessageCatalog.class);
+    when(catalog.missingLanguages("lease.nl.residential.deposit.title")).thenReturn(List.of());
+    when(catalog.missingLanguages("lease.test.only.in.base")).thenReturn(List.of("nl", "de"));
+    BackofficeLeaseClauseTemplateService mocked =
+        new BackofficeLeaseClauseTemplateService(repository, MESSAGES, catalog);
+
+    assertThat(mocked.list("NL", Optional.empty(), Optional.of("nl")).get(0).missingLanguages())
+        .containsExactly("nl", "de");
+  }
+
+  @Test
+  @DisplayName("missing languages merge title and body gaps in language order without duplicates")
+  void missingLanguagesUnionOrdered() {
+    when(repository.findByCountryCode("NL"))
+        .thenReturn(List.of(nlDepositTemplate("t.key", "b.key")));
+    LeaseMessageCatalog catalog = mock(LeaseMessageCatalog.class);
+    when(catalog.missingLanguages("t.key")).thenReturn(List.of("nl", "sv"));
+    when(catalog.missingLanguages("b.key")).thenReturn(List.of("nl", "de"));
+    BackofficeLeaseClauseTemplateService mocked =
+        new BackofficeLeaseClauseTemplateService(repository, MESSAGES, catalog);
+
+    assertThat(mocked.list("NL", Optional.empty(), Optional.of("en")).get(0).missingLanguages())
+        .containsExactly("nl", "de", "sv");
+  }
+
+  @Test
+  @DisplayName("a key defined nowhere resolves to itself and is missing in all 13 languages")
+  void keyMissingEverywhere() {
+    when(repository.findByCountryCode("NL"))
+        .thenReturn(List.of(nlDepositTemplate("lease.nope.title", "lease.nope.body")));
+
+    LeaseClauseTemplateResponse response =
+        service.list("NL", Optional.empty(), Optional.of("nl")).get(0);
+
+    assertThat(response.titleText()).isEqualTo("lease.nope.title");
+    assertThat(response.bodyText()).isEqualTo("lease.nope.body");
+    assertThat(response.missingLanguages()).containsExactlyElementsOf(DocumentLanguages.ORDERED);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"xx", "EN", "", "en-US"})
+  @DisplayName("list rejects a language outside the 13-language allowlist")
+  void listRejectsUnknownLanguage(String language) {
+    assertThatThrownBy(() -> service.list("NL", Optional.empty(), Optional.of(language)))
+        .isInstanceOf(BadRequestException.class);
+    verifyNoInteractions(repository);
+  }
+
+  @Test
+  @DisplayName("list without a language resolves in English")
+  void listDefaultsToEnglish() {
+    when(repository.findByCountryCode("NL"))
+        .thenReturn(
+            List.of(
+                nlDepositTemplate(
+                    "lease.nl.residential.deposit.title", "lease.nl.residential.deposit.summary")));
+
+    assertThat(service.list("NL", Optional.empty(), Optional.empty()).get(0).titleText())
+        .isEqualTo("Deposit");
   }
 }

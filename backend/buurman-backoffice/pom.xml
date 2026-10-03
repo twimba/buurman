@@ -30,6 +30,10 @@
             <groupId>com.buurman</groupId>
             <artifactId>buurman-notifications</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-letters</artifactId>
+        </dependency>
 
         <!-- Lombok -->
         <dependency>
@@ -140,6 +144,7 @@
                                 <typeMapping>DateTime=java.time.Instant</typeMapping>
                             </typeMappings>
                             <schemaMappings>
+                                <schemaMapping>DocumentLanguage=java.lang.String</schemaMapping>
                                 <schemaMapping>PageResponseBackofficeNotificationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseBackofficeTeamResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseBackofficeUserResponse=com.buurman.dto.response.PageResponse</schemaMapping>

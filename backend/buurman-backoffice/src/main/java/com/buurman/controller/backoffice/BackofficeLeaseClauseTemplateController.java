@@ -24,8 +24,8 @@ public class BackofficeLeaseClauseTemplateController implements BackofficeLeaseC
 
   @Override
   public List<LeaseClauseTemplateResponse> listLeaseClauseTemplates(
-      String countryCode, Optional<LeaseKind> leaseKind) {
-    return leaseClauseTemplateService.list(countryCode, leaseKind);
+      String countryCode, Optional<LeaseKind> leaseKind, Optional<String> language) {
+    return leaseClauseTemplateService.list(countryCode, leaseKind, language);
   }
 
   @Override

@@ -1,5 +1,7 @@
 package com.buurman.dto.response;
 
+import java.util.List;
+
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Sid;
 
@@ -14,4 +16,7 @@ public record LeaseClauseTemplateResponse(
     boolean optional,
     boolean pinned,
     int sortOrder,
-    int version) {}
+    int version,
+    String titleText,
+    String bodyText,
+    List<String> missingLanguages) {}

@@ -4952,6 +4952,12 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/LeaseKind"
+        - name: language
+          in: query
+          description: Language the title and body texts are resolved in (default en)
+          required: false
+          schema:
+            $ref: "#/components/schemas/DocumentLanguage"
       responses:
         "200":
           description: OK
@@ -8326,6 +8332,17 @@ components:
           type: integer
         version:
           type: integer
+        titleText:
+          type: string
+          description: Title resolved in the requested language (the key itself when undefined)
+        bodyText:
+          type: string
+          description: Body resolved in the requested language (the key itself when undefined)
+        missingLanguages:
+          type: array
+          description: Languages whose own bundle lacks the title or body key
+          items:
+            $ref: "#/components/schemas/DocumentLanguage"
       required:
         - identifier
         - countryCode
@@ -8338,6 +8355,12 @@ components:
         - pinned
         - sortOrder
         - version
+        - titleText
+        - bodyText
+        - missingLanguages
+    DocumentLanguage:
+      type: string
+      enum: [en, nl, de, fr, pt, es, sv, it, fi, el, pl, da, nb]
     UpsertLeaseClauseTemplateRequest:
       type: object
       properties:
