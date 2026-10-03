@@ -124,6 +124,55 @@ describe('SignatureRequestPanel', () => {
     expect(createSpy).not.toHaveBeenCalled();
   });
 
+  it('picks the request with the latest createdAt as "most recent", not whichever is first in the list', async () => {
+    // listSignatureRequests returned oldest-first here on purpose — the component must not
+    // trust array order and must sort by createdAt itself.
+    vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([
+      {
+        identifier: 'SGR00000000000000000000001',
+        documentIdentifier: 'DOC00000000000000000000001',
+        status: 'DECLINED',
+        signers: [],
+        createdAt: '2026-01-01T12:00:00Z',
+        updatedAt: '2026-01-01T12:05:00Z',
+      },
+      {
+        identifier: 'SGR00000000000000000000002',
+        documentIdentifier: 'DOC00000000000000000000001',
+        status: 'PARTIALLY_SIGNED',
+        signers: [
+          { email: 'landlord@example.com', role: 'LANDLORD', status: 'SIGNED' },
+          { email: 'tenant@example.com', role: 'TENANT', status: 'PENDING' },
+        ],
+        createdAt: '2026-03-01T12:00:00Z',
+        updatedAt: '2026-03-01T12:05:00Z',
+      },
+    ]);
+    vi.spyOn(signaturesApi, 'getSignatureRequest').mockResolvedValue({
+      identifier: 'SGR00000000000000000000002',
+      documentIdentifier: 'DOC00000000000000000000001',
+      status: 'PARTIALLY_SIGNED',
+      signers: [
+        { email: 'landlord@example.com', role: 'LANDLORD', status: 'SIGNED' },
+        { email: 'tenant@example.com', role: 'TENANT', status: 'PENDING' },
+      ],
+      createdAt: '2026-03-01T12:00:00Z',
+      updatedAt: '2026-03-01T12:05:00Z',
+    });
+
+    renderWithProviders(
+      <ToastProvider>
+        <SignatureRequestPanel
+          contractId="CON00000000000000000000001"
+          documentId="DOC00000000000000000000001"
+        />
+      </ToastProvider>
+    );
+
+    expect(await screen.findByText('Partially signed')).toBeInTheDocument();
+    expect(screen.getByText('1/2 signed')).toBeInTheDocument();
+  });
+
   it('offers to send again when the most recent request was declined', async () => {
     vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([
       {

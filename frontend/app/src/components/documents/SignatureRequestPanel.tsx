@@ -159,9 +159,14 @@ export const SignatureRequestPanel = ({
     isError: isErrorExisting,
   } = useSignatureRequests(contractId, documentId);
 
-  // The list is ordered newest-first by the API. Derived, not copied into state, so there is no
-  // setState-in-an-effect and no render where a known request is briefly forgotten.
-  const mostRecent = existingRequests?.[0];
+  // The API orders this newest-first today, but that's not a documented contract — sort by
+  // createdAt explicitly rather than trusting array order. Derived, not copied into state, so
+  // there is no setState-in-an-effect and no render where a known request is briefly forgotten.
+  const mostRecent = existingRequests
+    ? [...existingRequests].sort(
+        (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
+      )[0]
+    : undefined;
   const resumable =
     mostRecent && RESUMABLE_STATUSES.includes(mostRecent.status)
       ? mostRecent
