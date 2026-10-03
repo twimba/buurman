@@ -9,4 +9,6 @@ public record ResolvedLeaseClauseResponse(
     String body,
     boolean included,
     boolean optional,
-    int sortOrder) {}
+    int sortOrder,
+    boolean pinned,
+    int articleNumber) {}

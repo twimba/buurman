@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractLeaseClause;
 import com.buurman.domain.LeaseClauseTemplate;
+import com.buurman.domain.LeaseKind;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractLeaseClauseRepository;
@@ -41,12 +43,30 @@ public class LeaseClauseResolver {
     this.messageSource = messageSource;
   }
 
-  public List<ResolvedLeaseClauseResponse> resolve(Contract contract, Locale locale) {
+  /**
+   * Templates for the contract's country and kind; falls back to the {@link LeaseKind#LEGACY} set
+   * when the kind has none configured yet.
+   */
+  public List<LeaseClauseTemplate> templatesFor(Contract contract, LeaseKind kind) {
     String countryCode =
         contract
             .getCountryCode()
             .orElseThrow(() -> new BusinessRuleException("Contract has no country code set"));
-    return resolve(contract, locale, templateRepository.findByCountryCode(countryCode));
+    List<LeaseClauseTemplate> templates =
+        templateRepository.findByCountryAndKind(countryCode, kind);
+    if (templates.isEmpty() && kind != LeaseKind.LEGACY) {
+      templates = templateRepository.findByCountryAndKind(countryCode, LeaseKind.LEGACY);
+    }
+    if (templates.isEmpty()) {
+      throw new BusinessRuleException(
+          "No lease clause templates are configured for country " + countryCode);
+    }
+    return templates;
+  }
+
+  public List<ResolvedLeaseClauseResponse> resolve(
+      Contract contract, Locale locale, LeaseKind kind) {
+    return resolve(contract, locale, templatesFor(contract, kind));
   }
 
   /**
@@ -69,29 +89,52 @@ public class LeaseClauseResolver {
             .collect(
                 Collectors.toMap(ContractLeaseClause::getClauseTemplateId, Function.identity()));
 
-    return templates.stream()
-        .map(
-            t -> {
-              ContractLeaseClause override = overridesByTemplateId.get(t.getId());
-              boolean included = override != null ? override.isIncluded() : t.isDefaultIncluded();
-              // Required clauses are always included, regardless of a stored override or the
-              // template's default — this is the single source of truth enforcing that a
-              // non-optional clause can never be excluded from the generated document, even if
-              // a template was changed from optional to required after overrides already existed.
-              included = included || !t.isOptional();
-              int sortOrder = override != null ? override.getSortOrder() : t.getSortOrder();
-              String title = messageSource.getMessage(t.getTitleI18nKey(), null, locale);
-              String body = messageSource.getMessage(t.getBodyI18nKey(), null, locale);
-              return new ResolvedLeaseClauseResponse(
-                  t.getIdentifier().orElseThrow(),
-                  t.getClauseKey(),
-                  title,
-                  body,
-                  included,
-                  t.isOptional(),
-                  sortOrder);
-            })
-        .sorted(Comparator.comparingInt(ResolvedLeaseClauseResponse::sortOrder))
-        .toList();
+    List<Resolved> ordered =
+        templates.stream()
+            .map(
+                t -> {
+                  ContractLeaseClause override = overridesByTemplateId.get(t.getId());
+                  boolean included =
+                      override != null ? override.isIncluded() : t.isDefaultIncluded();
+                  // Required clauses are always included, regardless of a stored override or the
+                  // template's default — this is the single source of truth enforcing that a
+                  // non-optional clause can never be excluded from the generated document, even
+                  // if a template was changed from optional to required after overrides existed.
+                  included = included || !t.isOptional();
+                  // A pinned clause keeps its template position; any override sortOrder is ignored.
+                  int sortOrder =
+                      override != null && !t.isPinned()
+                          ? override.getSortOrder()
+                          : t.getSortOrder();
+                  return new Resolved(t, included, sortOrder);
+                })
+            .sorted(
+                Comparator.comparing((Resolved r) -> !r.template().isPinned())
+                    .thenComparingInt(Resolved::sortOrder)
+                    .thenComparingInt(r -> r.template().getSortOrder()))
+            .toList();
+
+    List<ResolvedLeaseClauseResponse> result = new ArrayList<>();
+    int article = 0;
+    for (Resolved r : ordered) {
+      LeaseClauseTemplate t = r.template();
+      if (r.included()) {
+        article++;
+      }
+      result.add(
+          new ResolvedLeaseClauseResponse(
+              t.getIdentifier().orElseThrow(),
+              t.getClauseKey(),
+              messageSource.getMessage(t.getTitleI18nKey(), null, locale),
+              messageSource.getMessage(t.getBodyI18nKey(), null, locale),
+              r.included(),
+              t.isOptional(),
+              r.sortOrder(),
+              t.isPinned(),
+              r.included() ? article : 0));
+    }
+    return List.copyOf(result);
   }
+
+  private record Resolved(LeaseClauseTemplate template, boolean included, int sortOrder) {}
 }

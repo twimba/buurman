@@ -28,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.context.MessageSource;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Unit;
@@ -37,7 +38,9 @@ import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.service.LeaseClauseResolver;
+import com.buurman.service.LeaseKindResolver;
 
 /**
  * Mockito unit test (no Spring context, mirrors {@code SignatureServiceTest}'s style). Proves the
@@ -53,6 +56,9 @@ class LeaseAgreementExporterTest {
   private final ContractRentComponentRepository rentComponentRepository =
       mock(ContractRentComponentRepository.class);
   private final LeaseClauseResolver clauseResolver = mock(LeaseClauseResolver.class);
+  private final UnitResidentialDetailsRepository unitDetailsRepository =
+      mock(UnitResidentialDetailsRepository.class);
+  private final LeaseKindResolver leaseKindResolver = mock(LeaseKindResolver.class);
   private final LetterExporterHelper helper = mock(LetterExporterHelper.class);
   private final LetterTemplateService documentTemplateService = mock(LetterTemplateService.class);
   private final MessageSource messageSource = mock(MessageSource.class);
@@ -77,6 +83,8 @@ class LeaseAgreementExporterTest {
             propertyRepository,
             rentComponentRepository,
             clauseResolver,
+            unitDetailsRepository,
+            leaseKindResolver,
             helper,
             documentTemplateService,
             messageSource,
@@ -100,6 +108,10 @@ class LeaseAgreementExporterTest {
             .city("Amsterdam")
             .build();
     when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(property);
+    when(unitDetailsRepository.findByUnitIdAndTeamId(any(), eq(TEAM_ID)))
+        .thenReturn(Optional.empty());
+    when(leaseKindResolver.resolve(eq(contract), eq(property), any()))
+        .thenReturn(LeaseKind.RESIDENTIAL);
 
     Unit unit = Unit.builder().unitNumber("1").name(Optional.empty()).build();
     LetterExporterHelper.PremisesInfo premisesInfo =
@@ -134,7 +146,9 @@ class LeaseAgreementExporterTest {
         body,
         included,
         true,
-        0);
+        0,
+        false,
+        included ? 1 : 0);
   }
 
   @Test
@@ -145,7 +159,7 @@ class LeaseAgreementExporterTest {
     ResolvedLeaseClauseResponse excluded = clause("pets", "Pets", "Pets are not permitted.", false);
     ResolvedLeaseClauseResponse included2 =
         clause("maintenance", "Maintenance", "Tenant handles minor repairs.", true);
-    when(clauseResolver.resolve(eq(contract), any(Locale.class)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
         .thenReturn(List.of(included1, excluded, included2));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -177,7 +191,7 @@ class LeaseAgreementExporterTest {
   void regenerationIsNotCached() {
     ResolvedLeaseClauseResponse firstSelectionClause =
         clause("term", "Term of Lease", "The lease runs for twelve months.", true);
-    when(clauseResolver.resolve(eq(contract), any(Locale.class)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
         .thenReturn(List.of(firstSelectionClause));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -186,7 +200,7 @@ class LeaseAgreementExporterTest {
     // different set of included clauses for the very same contract.
     ResolvedLeaseClauseResponse secondSelectionClause =
         clause("pets", "Pets", "Pets are permitted with a deposit.", true);
-    when(clauseResolver.resolve(eq(contract), any(Locale.class)))
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
         .thenReturn(List.of(secondSelectionClause));
 
     exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en");
@@ -216,7 +230,8 @@ class LeaseAgreementExporterTest {
   void emptyIncludedClausesThrowsBeforeRender() {
     ResolvedLeaseClauseResponse excludedOnly =
         clause("pets", "Pets", "Pets are not permitted.", false);
-    when(clauseResolver.resolve(eq(contract), any(Locale.class))).thenReturn(List.of(excludedOnly));
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(List.of(excludedOnly));
 
     assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
         .isInstanceOf(BusinessRuleException.class);

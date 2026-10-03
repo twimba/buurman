@@ -17,7 +17,9 @@ import org.springframework.context.MessageSource;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractLeaseClause;
 import com.buurman.domain.LeaseClauseTemplate;
+import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Sid;
+import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.LeaseClauseTemplateRepository;
@@ -46,7 +48,13 @@ class LeaseClauseResolverTest {
 
   private LeaseClauseTemplate template(
       String key, boolean defaultIncluded, boolean optional, int sortOrder) {
+    return template(key, defaultIncluded, optional, sortOrder, false);
+  }
+
+  private LeaseClauseTemplate template(
+      String key, boolean defaultIncluded, boolean optional, int sortOrder, boolean pinned) {
     return LeaseClauseTemplate.builder()
+        .pinned(pinned)
         .id(UUID.randomUUID())
         .identifier(Optional.of(Sid.of("LCT0000000000000000000000001")))
         .countryCode("NL")
@@ -63,11 +71,12 @@ class LeaseClauseResolverTest {
   @Test
   void defaultInclusionAppliesWhenNoOverrideExists() {
     LeaseClauseTemplate parties = template("parties", true, false, 1);
-    when(templateRepository.findByCountryCode("NL")).thenReturn(List.of(parties));
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(parties));
     when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(List.of());
     when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("resolved text");
 
-    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH);
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.RESIDENTIAL);
 
     assertThat(resolved).hasSize(1);
     assertThat(resolved.get(0).included()).isTrue();
@@ -76,7 +85,8 @@ class LeaseClauseResolverTest {
   @Test
   void overrideFlipsInclusion() {
     LeaseClauseTemplate houseRules = template("house-rules", true, true, 5);
-    when(templateRepository.findByCountryCode("NL")).thenReturn(List.of(houseRules));
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(houseRules));
     when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
         .thenReturn(
             List.of(
@@ -87,7 +97,7 @@ class LeaseClauseResolverTest {
                     .build()));
     when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("resolved text");
 
-    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH);
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.RESIDENTIAL);
 
     assertThat(resolved.get(0).included()).isFalse();
   }
@@ -97,7 +107,8 @@ class LeaseClauseResolverTest {
     // Simulates a template that was made required after an override excluding it was already
     // stored (e.g. back when it was still optional) — the resolver must force it back in.
     LeaseClauseTemplate parties = template("parties", true, false, 1);
-    when(templateRepository.findByCountryCode("NL")).thenReturn(List.of(parties));
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(parties));
     when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
         .thenReturn(
             List.of(
@@ -108,16 +119,119 @@ class LeaseClauseResolverTest {
                     .build()));
     when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("resolved text");
 
-    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH);
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.RESIDENTIAL);
 
     assertThat(resolved.get(0).included()).isTrue();
   }
 
   @Test
   void countryWithNoTemplatesRejectsWithBusinessRuleException() {
-    when(templateRepository.findByCountryCode("GB")).thenReturn(List.of());
+    when(templateRepository.findByCountryAndKind("GB", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of());
+    when(templateRepository.findByCountryAndKind("GB", LeaseKind.LEGACY)).thenReturn(List.of());
 
-    assertThatThrownBy(() -> resolver.resolve(contract("GB"), Locale.ENGLISH))
+    assertThatThrownBy(
+            () -> resolver.resolve(contract("GB"), Locale.ENGLISH, LeaseKind.RESIDENTIAL))
         .isInstanceOf(BusinessRuleException.class);
+  }
+
+  private ContractLeaseClause override(LeaseClauseTemplate t, boolean included, int sortOrder) {
+    return ContractLeaseClause.builder()
+        .clauseTemplateId(t.getId())
+        .included(included)
+        .sortOrder(sortOrder)
+        .build();
+  }
+
+  @Test
+  void fallsBackToLegacyTemplatesWithContiguousArticleNumbers() {
+    List<LeaseClauseTemplate> legacy =
+        java.util.stream.IntStream.rangeClosed(1, 7)
+            .mapToObj(i -> template("legacy" + i, true, false, i))
+            .toList();
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.COMMERCIAL)).thenReturn(List.of());
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.LEGACY)).thenReturn(legacy);
+    when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(List.of());
+    when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("text");
+
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.COMMERCIAL);
+
+    assertThat(resolved).hasSize(7);
+    assertThat(resolved)
+        .extracting(ResolvedLeaseClauseResponse::articleNumber)
+        .containsExactly(1, 2, 3, 4, 5, 6, 7);
+  }
+
+  @Test
+  void pinnedClauseIgnoresConflictingOverrideSortOrder() {
+    var parties = template("parties", true, false, 1, true);
+    var rent = template("rent", true, false, 2);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(parties, rent));
+    when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(List.of(override(parties, true, 99)));
+    when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("text");
+
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.RESIDENTIAL);
+
+    assertThat(resolved)
+        .extracting(ResolvedLeaseClauseResponse::clauseKey)
+        .containsExactly("parties", "rent");
+    assertThat(resolved.get(0).pinned()).isTrue();
+  }
+
+  @Test
+  void pinnedClausesComeFirstEvenWhenNonPinnedHasLowerSortOrder() {
+    var rent = template("rent", true, false, 1);
+    var parties = template("parties", true, false, 5, true);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(rent, parties));
+    when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(List.of());
+    when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("text");
+
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.RESIDENTIAL);
+
+    assertThat(resolved)
+        .extracting(ResolvedLeaseClauseResponse::clauseKey)
+        .containsExactly("parties", "rent");
+  }
+
+  @Test
+  void excludedClauseGetsArticleZeroAndLaterArticlesRenumber() {
+    var a = template("a", true, false, 1);
+    var b = template("b", true, true, 2);
+    var c = template("c", true, false, 3);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(a, b, c));
+    when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(List.of(override(b, false, 2)));
+    when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("text");
+
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.RESIDENTIAL);
+
+    assertThat(resolved)
+        .extracting(
+            ResolvedLeaseClauseResponse::clauseKey, ResolvedLeaseClauseResponse::articleNumber)
+        .containsExactly(
+            org.assertj.core.groups.Tuple.tuple("a", 1),
+            org.assertj.core.groups.Tuple.tuple("b", 0),
+            org.assertj.core.groups.Tuple.tuple("c", 2));
+  }
+
+  @Test
+  void tiesOnEffectiveSortOrderBreakByTemplateSortOrder() {
+    var a = template("a", true, true, 1);
+    var b = template("b", true, true, 2);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(b, a));
+    when(overrideRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(List.of(override(a, true, 10), override(b, true, 10)));
+    when(messageSource.getMessage(any(), any(), any(Locale.class))).thenReturn("text");
+
+    var resolved = resolver.resolve(contract("NL"), Locale.ENGLISH, LeaseKind.RESIDENTIAL);
+
+    assertThat(resolved)
+        .extracting(ResolvedLeaseClauseResponse::clauseKey)
+        .containsExactly("a", "b");
   }
 }

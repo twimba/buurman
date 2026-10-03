@@ -3,6 +3,7 @@ package com.buurman.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -13,13 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractLeaseClause;
 import com.buurman.domain.LeaseClauseTemplate;
+import com.buurman.domain.LeaseKind;
+import com.buurman.domain.Property;
+import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.request.UpdateContractLeaseClausesRequest;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BadRequestException;
 import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.ContractRepository;
-import com.buurman.repository.LeaseClauseTemplateRepository;
+import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.DocumentLanguages;
 
@@ -35,16 +40,18 @@ import lombok.RequiredArgsConstructor;
 public class LeaseClauseService {
 
   private final ContractRepository contractRepository;
-  private final LeaseClauseTemplateRepository templateRepository;
   private final ContractLeaseClauseRepository overrideRepository;
   private final LeaseClauseResolver resolver;
+  private final PropertyRepository propertyRepository;
+  private final UnitResidentialDetailsRepository unitDetailsRepository;
+  private final LeaseKindResolver leaseKindResolver;
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public List<ResolvedLeaseClauseResponse> getClauses(
       ContractIdentifier contractIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
-    return resolver.resolve(contract, contractLocale(contract));
+    return resolver.resolve(contract, contractLocale(contract), leaseKind(contract, teamId));
   }
 
   // ContractLeaseClauseRepository.replaceForContract() hard-deletes every existing override and
@@ -59,10 +66,9 @@ public class LeaseClauseService {
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
-    String countryCode =
-        contract
-            .getCountryCode()
-            .orElseThrow(() -> new BadRequestException("Contract has no country code"));
+    if (contract.getCountryCode().isEmpty()) {
+      throw new BadRequestException("Contract has no country code");
+    }
 
     // A duplicate templateIdentifier would otherwise reach the repository and hit
     // uq_contract_lease_clauses_contract_template as a raw constraint-violation 500. Checked
@@ -75,7 +81,8 @@ public class LeaseClauseService {
       }
     }
 
-    List<LeaseClauseTemplate> templates = templateRepository.findByCountryCode(countryCode);
+    List<LeaseClauseTemplate> templates =
+        resolver.templatesFor(contract, leaseKind(contract, teamId));
 
     List<ContractLeaseClause> toSave =
         request.clauses().stream().map(selection -> toClause(selection, templates)).toList();
@@ -113,6 +120,14 @@ public class LeaseClauseService {
         .included(selection.included())
         .sortOrder(selection.sortOrder())
         .build();
+  }
+
+  private LeaseKind leaseKind(Contract contract, UUID teamId) {
+    Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
+    Optional<UnitResidentialDetails> unitDetails =
+        Optional.ofNullable(contract.getUnitId())
+            .flatMap(unitId -> unitDetailsRepository.findByUnitIdAndTeamId(unitId, teamId));
+    return leaseKindResolver.resolve(contract, property, unitDetails);
   }
 
   private Locale contractLocale(Contract contract) {
