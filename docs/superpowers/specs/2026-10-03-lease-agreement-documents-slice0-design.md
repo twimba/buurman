@@ -23,7 +23,7 @@ with the clause toggles they already have. Success for Slice 0: an NL residentia
 - **Scope overall:** BE, DE, ES, FR, GB, NL, PT × 13 languages, fully translated.
 - **Model:** one document per (country, kind, language) containing the legal text inline; the document
   also drives clauses (each clause is a tagged block that can be included/excluded).
-- **Kinds derived from the property**, not a new full-blown `lease_kind`:
+- **Kinds derived from the property**, not stored on the contract. `lease_kind` exists only as a template-catalog discriminator on `lease_clause_templates` (D2); `contracts` gains only `lease_regime`:
   - `Property.PropertyCategory` `RESIDENTIAL` → residential (furnished vs unfurnished from
     `UnitResidentialDetails.furnished`, unit-level via `UnitResidentialDetailsRepository.findByUnitIdAndTeamId`,
     falling back to `PropertyResidentialDetails.furnished`); `COMMERCIAL` and `INDUSTRIAL` → commercial;
@@ -74,16 +74,16 @@ taking the full template name. Other letter types are unaffected.
 </section>
 ```
 
-- `lease_clause_templates` gains `lease_kind VARCHAR(32) NOT NULL DEFAULT 'residential'` and `pinned`.
+- `lease_clause_templates` gains `lease_kind VARCHAR(32) NOT NULL DEFAULT 'RESIDENTIAL'` and `pinned`.
   `title_i18n_key` / `body_i18n_key` STAY: they provide the title and a one-line summary for the clause
   toggle UI. The full legal text lives only in the per-language documents.
 - Migrations (highest existing is V090):
   - `V091__lease_kind_and_regime.sql`: `lease_kind` and `pinned` columns, `contracts.lease_regime`
-    (see D4), relabel legacy placeholder rows as `lease_kind='legacy'`, and replace the active-uniqueness
+    (see D4), relabel legacy placeholder rows as `lease_kind='LEGACY'`, and replace the active-uniqueness
     index from V090 with one that includes `lease_kind`.
   - `V092__seed_nl_residential_lease_clauses.sql`: NL residential clause rows.
   Never edit earlier migrations (V083, V090).
-- **Legacy fallback:** old placeholder rows are relabelled `lease_kind='legacy'` and kept, not
+- **Legacy fallback:** old placeholder rows are relabelled `lease_kind='LEGACY'` and kept, not
   soft-deleted, so other countries and kinds without a document keep working with the current
   bundle-based rendering.
 - `LeaseClauseResolver` returns the structure (key, included, optional, order) plus the title/summary
@@ -98,8 +98,8 @@ taking the full template name. Other letter types are unaffected.
   - **No hard-coded cross-references:** clause text refers to other clauses via `clauses.ref('rent')`,
     which renders the current article number, or omits the reference if that clause is excluded.
   - **Pinned clauses:** clauses flagged `pinned` (parties, premises, signatures; the required core)
-    keep fixed positions; only the remaining clauses can be moved. Pinning is a new boolean
-    `lease_clause_templates.pinned`, default false.
+    keep fixed positions; only the remaining clauses can be moved. Pinning uses the `pinned` column
+    (see D2).
   - The clause tab gains up/down controls (disabled for pinned clauses); `sortOrder` already round-trips
     through the API, so no API change is needed.
 
