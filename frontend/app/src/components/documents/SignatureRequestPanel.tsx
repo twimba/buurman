@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { FileSignature, Ban, AlertTriangle, X } from 'lucide-react';
 import { SignatureStatusBadge } from './SignatureStatusBadge';
 import {
@@ -58,7 +59,12 @@ const CancelSignatureRequestModal = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onCancel]);
 
-  return (
+  // This panel is invoked from inside a table row (DocumentList's actions <td>, which sets
+  // text-right and whitespace-nowrap to lay out its row of icon buttons). Both properties
+  // inherit, and position: fixed does not reset inheritance — only a portal actually detaches
+  // this subtree from that ancestor, so the modal can't silently pick up text-align/white-space
+  // (or anything else) from wherever its trigger happens to be rendered.
+  return createPortal(
     <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onCancel}>
       <div className="flex items-center justify-center min-h-[100dvh] px-4 py-8">
         <div className="fixed inset-0 bg-surface-overlay backdrop-blur-sm" />
@@ -125,7 +131,8 @@ const CancelSignatureRequestModal = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
