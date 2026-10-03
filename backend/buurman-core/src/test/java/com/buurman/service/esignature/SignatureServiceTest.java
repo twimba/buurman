@@ -251,7 +251,8 @@ class SignatureServiceTest {
     when(signatureRequestRepository.getByIdentifierAndTeamId(
             any(SignatureRequestIdentifier.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
         .thenReturn(existingRequest);
-    when(signatureSignerRepository.findBySignatureRequestId(requestId)).thenReturn(List.of());
+    when(signatureSignerRepository.findBySignatureRequestId(requestId, TEAM_ID))
+        .thenReturn(List.of());
 
     // The document actually linked to the request (looked up by its real documentId) has an
     // identifier that is deliberately different from whatever the URL's documentIdentifier path
@@ -360,7 +361,9 @@ class SignatureServiceTest {
                     .providerSubmissionId("envelope_old")
                     .status(SignatureRequestStatus.DECLINED)
                     .build()));
-    when(signatureSignerRepository.findBySignatureRequestIds(any())).thenReturn(List.of());
+    when(signatureSignerRepository.findBySignatureRequestIds(
+            any(), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(List.of());
 
     var responses =
         service.listSignatureRequests(
@@ -440,7 +443,7 @@ class SignatureServiceTest {
             .providerSignerId("ps_b")
             .status(SignatureSignerStatus.PENDING)
             .build();
-    when(signatureSignerRepository.findBySignatureRequestIds(any()))
+    when(signatureSignerRepository.findBySignatureRequestIds(any(), any()))
         .thenReturn(List.of(signerA, signerB));
 
     var responses =
@@ -450,11 +453,12 @@ class SignatureServiceTest {
             principal);
 
     org.mockito.Mockito.verify(signatureSignerRepository, org.mockito.Mockito.never())
-        .findBySignatureRequestId(any());
+        .findBySignatureRequestId(any(), any());
     org.mockito.Mockito.verify(signatureSignerRepository, org.mockito.Mockito.times(1))
         .findBySignatureRequestIds(
             org.mockito.ArgumentMatchers.argThat(
-                ids -> ids.containsAll(List.of(requestAId, requestBId)) && ids.size() == 2));
+                ids -> ids.containsAll(List.of(requestAId, requestBId)) && ids.size() == 2),
+            org.mockito.ArgumentMatchers.eq(TEAM_ID));
     assertThat(responses)
         .extracting(r -> r.identifier().value(), r -> r.signers().size())
         .containsExactlyInAnyOrder(
@@ -500,7 +504,8 @@ class SignatureServiceTest {
         .thenReturn(existingRequest);
     when(signatureRequestRepository.save(any()))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    when(signatureSignerRepository.findBySignatureRequestId(requestId)).thenReturn(List.of());
+    when(signatureSignerRepository.findBySignatureRequestId(requestId, TEAM_ID))
+        .thenReturn(List.of());
     Document document =
         Document.builder()
             .id(DOCUMENT_ID)

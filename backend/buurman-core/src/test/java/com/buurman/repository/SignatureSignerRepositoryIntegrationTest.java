@@ -53,6 +53,7 @@ class SignatureSignerRepositoryIntegrationTest extends AbstractRepositoryIntegra
         repository.save(
             SignatureSigner.builder()
                 .signatureRequestId(signatureRequestId)
+                .teamId(TEAM_A_ID)
                 .email("landlord@example.com")
                 .role(SignatureSignerRole.LANDLORD)
                 .providerSignerId("1")
@@ -62,13 +63,14 @@ class SignatureSignerRepositoryIntegrationTest extends AbstractRepositoryIntegra
         repository.save(
             SignatureSigner.builder()
                 .signatureRequestId(signatureRequestId)
+                .teamId(TEAM_A_ID)
                 .email("tenant@example.com")
                 .role(SignatureSignerRole.TENANT)
                 .providerSignerId("2")
                 .status(SignatureSignerStatus.PENDING)
                 .build());
 
-    var signers = repository.findBySignatureRequestId(signatureRequestId);
+    var signers = repository.findBySignatureRequestId(signatureRequestId, TEAM_A_ID);
     assertThat(signers)
         .extracting(SignatureSigner::getId)
         .containsExactly(landlord.getId(), tenant.getId());
@@ -81,6 +83,7 @@ class SignatureSignerRepositoryIntegrationTest extends AbstractRepositoryIntegra
         repository.save(
             SignatureSigner.builder()
                 .signatureRequestId(signatureRequestId)
+                .teamId(TEAM_A_ID)
                 .email("tenant@example.com")
                 .role(SignatureSignerRole.TENANT)
                 .providerSignerId("3")
@@ -88,11 +91,39 @@ class SignatureSignerRepositoryIntegrationTest extends AbstractRepositoryIntegra
                 .build());
 
     Instant signedAt = Instant.parse("2026-03-01T13:00:00Z");
-    repository.updateStatus(signer.getId(), SignatureSignerStatus.SIGNED, Optional.of(signedAt));
+    repository.updateStatus(
+        signer.getId(), TEAM_A_ID, SignatureSignerStatus.SIGNED, Optional.of(signedAt));
 
-    var reloaded = repository.findBySignatureRequestId(signatureRequestId);
+    var reloaded = repository.findBySignatureRequestId(signatureRequestId, TEAM_A_ID);
     assertThat(reloaded).hasSize(1);
     assertThat(reloaded.get(0).getStatus()).isEqualTo(SignatureSignerStatus.SIGNED);
     assertThat(reloaded.get(0).getSignedAt()).contains(signedAt);
+  }
+
+  @Test
+  @DisplayName(
+      "a query scoped to one team cannot see another team's signers or update their status")
+  void crossTeamIsolation() {
+    SignatureSigner signer =
+        repository.save(
+            SignatureSigner.builder()
+                .signatureRequestId(signatureRequestId)
+                .teamId(TEAM_A_ID)
+                .email("tenant@example.com")
+                .role(SignatureSignerRole.TENANT)
+                .providerSignerId("4")
+                .status(SignatureSignerStatus.PENDING)
+                .build());
+
+    assertThat(repository.findBySignatureRequestId(signatureRequestId, TEAM_B_ID)).isEmpty();
+    assertThat(
+            repository.findBySignatureRequestIds(java.util.List.of(signatureRequestId), TEAM_B_ID))
+        .isEmpty();
+
+    repository.updateStatus(
+        signer.getId(), TEAM_B_ID, SignatureSignerStatus.SIGNED, Optional.empty());
+    var stillPending = repository.findBySignatureRequestId(signatureRequestId, TEAM_A_ID);
+    assertThat(stillPending).hasSize(1);
+    assertThat(stillPending.get(0).getStatus()).isEqualTo(SignatureSignerStatus.PENDING);
   }
 }

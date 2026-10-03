@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.SIGNATURE_SIGNERS;
+import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -33,6 +34,7 @@ public class SignatureSignerRepository {
     dsl.insertInto(SIGNATURE_SIGNERS)
         .set(SIGNATURE_SIGNERS.ID, newId)
         .set(SIGNATURE_SIGNERS.SIGNATURE_REQUEST_ID, signer.getSignatureRequestId())
+        .set(SIGNATURE_SIGNERS.TEAM_ID, signer.getTeamId())
         .set(SIGNATURE_SIGNERS.CONTACT_ID, signer.getContactId().orElse(null))
         .set(SIGNATURE_SIGNERS.EMAIL, signer.getEmail())
         .set(SIGNATURE_SIGNERS.ROLE, signer.getRole().name())
@@ -43,41 +45,51 @@ public class SignatureSignerRepository {
         .execute();
 
     signer.setId(newId);
-    signer.setCreatedAt(now.toInstant(java.time.ZoneOffset.UTC));
-    signer.setUpdatedAt(now.toInstant(java.time.ZoneOffset.UTC));
+    signer.setCreatedAt(now.toInstant(UTC));
+    signer.setUpdatedAt(now.toInstant(UTC));
     return signer;
   }
 
-  public List<SignatureSigner> findBySignatureRequestId(UUID signatureRequestId) {
+  public List<SignatureSigner> findBySignatureRequestId(UUID signatureRequestId, UUID teamId) {
     return List.copyOf(
         dsl.selectFrom(SIGNATURE_SIGNERS)
-            .where(SIGNATURE_SIGNERS.SIGNATURE_REQUEST_ID.eq(signatureRequestId))
+            .where(
+                SIGNATURE_SIGNERS
+                    .SIGNATURE_REQUEST_ID
+                    .eq(signatureRequestId)
+                    .and(SIGNATURE_SIGNERS.TEAM_ID.eq(teamId)))
             .orderBy(SIGNATURE_SIGNERS.CREATED_AT.asc())
             .fetch()
             .map(mapper::toDomain));
   }
 
-  public List<SignatureSigner> findBySignatureRequestIds(List<UUID> signatureRequestIds) {
+  public List<SignatureSigner> findBySignatureRequestIds(
+      List<UUID> signatureRequestIds, UUID teamId) {
     if (signatureRequestIds.isEmpty()) {
       return List.of();
     }
     return List.copyOf(
         dsl.selectFrom(SIGNATURE_SIGNERS)
-            .where(SIGNATURE_SIGNERS.SIGNATURE_REQUEST_ID.in(signatureRequestIds))
+            .where(
+                SIGNATURE_SIGNERS
+                    .SIGNATURE_REQUEST_ID
+                    .in(signatureRequestIds)
+                    .and(SIGNATURE_SIGNERS.TEAM_ID.eq(teamId)))
             .orderBy(SIGNATURE_SIGNERS.CREATED_AT.asc())
             .fetch()
             .map(mapper::toDomain));
   }
 
-  public void updateStatus(UUID id, SignatureSignerStatus status, Optional<Instant> signedAt) {
+  public void updateStatus(
+      UUID id, UUID teamId, SignatureSignerStatus status, Optional<Instant> signedAt) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(SIGNATURE_SIGNERS)
         .set(SIGNATURE_SIGNERS.STATUS, status.name())
         .set(
             SIGNATURE_SIGNERS.SIGNED_AT,
-            signedAt.map(i -> LocalDateTime.ofInstant(i, java.time.ZoneOffset.UTC)).orElse(null))
+            signedAt.map(i -> LocalDateTime.ofInstant(i, UTC)).orElse(null))
         .set(SIGNATURE_SIGNERS.UPDATED_AT, now)
-        .where(SIGNATURE_SIGNERS.ID.eq(id))
+        .where(SIGNATURE_SIGNERS.ID.eq(id).and(SIGNATURE_SIGNERS.TEAM_ID.eq(teamId)))
         .execute();
   }
 }

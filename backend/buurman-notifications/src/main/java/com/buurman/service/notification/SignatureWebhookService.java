@@ -102,7 +102,7 @@ public class SignatureWebhookService {
     SignatureRequest request = maybeRequest.get();
 
     List<SignatureSigner> signers =
-        signatureSignerRepository.findBySignatureRequestId(request.getId());
+        signatureSignerRepository.findBySignatureRequestId(request.getId(), request.getTeamId());
     // Merge function on purpose: a duplicate provider_signer_id should not happen, but without
     // it Collectors.toMap throws IllegalStateException instead of processing the rest of the
     // signers.
@@ -124,7 +124,8 @@ public class SignatureWebhookService {
             recipient.has("signedAt") && !recipient.path("signedAt").isNull()
                 ? Optional.of(java.time.Instant.parse(recipient.path("signedAt").asText()))
                 : Optional.empty();
-        signatureSignerRepository.updateStatus(signer.getId(), newStatus, signedAt);
+        signatureSignerRepository.updateStatus(
+            signer.getId(), signer.getTeamId(), newStatus, signedAt);
         signer.setStatus(newStatus);
       }
     }

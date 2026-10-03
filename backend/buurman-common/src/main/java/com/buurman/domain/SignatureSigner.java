@@ -18,6 +18,7 @@ public class SignatureSigner {
 
   private UUID id;
   private UUID signatureRequestId;
+  private UUID teamId;
   @Builder.Default private Optional<UUID> contactId = Optional.empty();
   private String email;
   private SignatureSignerRole role;

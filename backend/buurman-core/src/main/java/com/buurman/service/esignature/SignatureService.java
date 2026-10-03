@@ -226,6 +226,7 @@ public class SignatureService {
           signatureSignerRepository.save(
               SignatureSigner.builder()
                   .signatureRequestId(request.getId())
+                  .teamId(request.getTeamId())
                   .contactId(
                       Optional.ofNullable(
                           contactIdByEmail.get(signerRequest.email().toLowerCase(Locale.ROOT))))
@@ -261,7 +262,7 @@ public class SignatureService {
     SignatureRequest request =
         signatureRequestRepository.getByIdentifierAndTeamId(signatureRequestIdentifier, teamId);
     List<SignatureSigner> signers =
-        signatureSignerRepository.findBySignatureRequestId(request.getId());
+        signatureSignerRepository.findBySignatureRequestId(request.getId(), teamId);
     Sid resolvedDocumentIdentifier = resolveDocumentIdentifier(request.getDocumentId(), teamId);
     return toResponse(request, resolvedDocumentIdentifier, signers);
   }
@@ -287,7 +288,8 @@ public class SignatureService {
         signatureRequestRepository.findByDocumentIdAndTeamId(document.getId(), teamId);
     Map<UUID, List<SignatureSigner>> signersByRequestId =
         signatureSignerRepository
-            .findBySignatureRequestIds(requests.stream().map(SignatureRequest::getId).toList())
+            .findBySignatureRequestIds(
+                requests.stream().map(SignatureRequest::getId).toList(), teamId)
             .stream()
             .collect(Collectors.groupingBy(SignatureSigner::getSignatureRequestId));
 
@@ -341,7 +343,7 @@ public class SignatureService {
     signatureRequestRepository.save(request);
 
     List<SignatureSigner> signers =
-        signatureSignerRepository.findBySignatureRequestId(request.getId());
+        signatureSignerRepository.findBySignatureRequestId(request.getId(), teamId);
     Sid resolvedDocumentIdentifier = resolveDocumentIdentifier(request.getDocumentId(), teamId);
 
     log.info("Cancelled signature request {}", request.getIdentifier().orElseThrow().value());

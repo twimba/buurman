@@ -103,6 +103,7 @@ class SignatureWebhookServiceTest {
     return SignatureSigner.builder()
         .id(SIGNER_ID)
         .signatureRequestId(REQUEST_ID)
+        .teamId(TEAM_ID)
         .email("tenant@example.com")
         .role(SignatureSignerRole.TENANT)
         .providerSignerId("52")
@@ -130,7 +131,7 @@ class SignatureWebhookServiceTest {
 
     service.processDocumensoEvent(openedEventPayload(), "secret");
 
-    verify(signatureSignerRepository, never()).findBySignatureRequestId(any());
+    verify(signatureSignerRepository, never()).findBySignatureRequestId(any(), any());
   }
 
   @Test
@@ -139,13 +140,13 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PENDING)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.PENDING)));
 
     service.processDocumensoEvent(openedEventPayload(), "secret");
 
     verify(signatureSignerRepository)
-        .updateStatus(SIGNER_ID, SignatureSignerStatus.VIEWED, Optional.empty());
+        .updateStatus(SIGNER_ID, TEAM_ID, SignatureSignerStatus.VIEWED, Optional.empty());
   }
 
   @Test
@@ -154,12 +155,12 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PARTIALLY_SIGNED)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
 
     service.processDocumensoEvent(openedEventPayload(), "secret");
 
-    verify(signatureSignerRepository, never()).updateStatus(eq(SIGNER_ID), any(), any());
+    verify(signatureSignerRepository, never()).updateStatus(eq(SIGNER_ID), any(), any(), any());
   }
 
   @Test
@@ -168,13 +169,13 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PENDING)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.PENDING)));
 
     service.processDocumensoEvent(rejectedEventPayload(), "secret");
 
     verify(signatureSignerRepository)
-        .updateStatus(SIGNER_ID, SignatureSignerStatus.DECLINED, Optional.empty());
+        .updateStatus(SIGNER_ID, TEAM_ID, SignatureSignerStatus.DECLINED, Optional.empty());
     verify(signatureRequestRepository)
         .save(
             org.mockito.ArgumentMatchers.argThat(
@@ -188,7 +189,7 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PENDING)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.PENDING)));
     UUID contractId = UUID.randomUUID();
     when(documentRepository.findByIdAndTeamId(DOCUMENT_ID, TEAM_ID))
@@ -231,7 +232,7 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.DECLINED)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.DECLINED)));
 
     service.processDocumensoEvent(rejectedEventPayload(), "secret");
@@ -247,7 +248,7 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PARTIALLY_SIGNED)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
     when(providerClient.downloadCompleted("envelope_abc123"))
         .thenReturn(new SignedDocument("%PDF-signed".getBytes(), "%PDF-cert".getBytes()));
@@ -318,7 +319,7 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PARTIALLY_SIGNED)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
     when(providerClient.downloadCompleted("envelope_abc123"))
         .thenReturn(new SignedDocument("%PDF-signed".getBytes(), "%PDF-cert".getBytes()));
@@ -383,7 +384,7 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PARTIALLY_SIGNED)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
     when(providerClient.downloadCompleted("envelope_abc123"))
         .thenThrow(new com.buurman.exception.ExternalServiceException("Documenso unreachable"));
@@ -406,7 +407,7 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.DECLINED)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.DECLINED)));
 
     service.processDocumensoEvent(completedEventPayload(), "secret");
@@ -426,7 +427,7 @@ class SignatureWebhookServiceTest {
     when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
             "documenso", "envelope_abc123"))
         .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.COMPLETED)));
-    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
 
     service.processDocumensoEvent(completedEventPayload(), "secret");
