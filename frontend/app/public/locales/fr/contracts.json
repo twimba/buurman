@@ -1112,9 +1112,9 @@
       "description": "Un problème est survenu de notre côté. Réessayez dans un instant.",
       "retry": "Réessayer"
     },
-    "exampleNotice": {
-      "title": "Ceci est un texte d'exemple",
-      "description": "Pour ce pays, nous n'avons qu'un court exemple, pas un bail complet. Faites vérifier votre bail avant toute signature."
+    "errors": {
+      "notAvailableForCountry": "Aucun bail n'est encore disponible pour le pays de ce bien. Importez plutôt un bail signé dans Documents.",
+      "noCountry": "Ajoutez un pays au bien avant d'utiliser le bail."
     }
   },
   "leaseRegime": {

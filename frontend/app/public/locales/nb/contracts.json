@@ -1098,9 +1098,9 @@
       "description": "Noe gikk galt hos oss. Prøv igjen om litt.",
       "retry": "Prøv igjen"
     },
-    "exampleNotice": {
-      "title": "Dette er eksempeltekst",
-      "description": "For dette landet har vi bare et kort eksempel, ikke en full leiekontrakt. Få din egen kontrakt gjennomgått før noen signerer."
+    "errors": {
+      "notAvailableForCountry": "Det finnes ennå ingen leiekontrakt for eiendommens land. Last i stedet opp en signert leiekontrakt under Dokumenter.",
+      "noCountry": "Legg til et land på eiendommen før du bruker leiekontrakten."
     }
   },
   "leaseRegime": {

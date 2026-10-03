@@ -1098,9 +1098,9 @@
       "description": "Något gick fel hos oss. Försök igen om en stund.",
       "retry": "Försök igen"
     },
-    "exampleNotice": {
-      "title": "Det här är exempeltext",
-      "description": "För det här landet har vi bara ett kort exempel, inte ett fullständigt hyresavtal. Låt granska ditt avtal innan någon skriver under."
+    "errors": {
+      "notAvailableForCountry": "Det finns inget hyresavtal för fastighetens land än. Ladda i stället upp ett signerat hyresavtal under Dokument.",
+      "noCountry": "Lägg till ett land för fastigheten innan du använder hyresavtalet."
     }
   },
   "leaseRegime": {

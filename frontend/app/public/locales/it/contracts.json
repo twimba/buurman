@@ -1112,9 +1112,9 @@
       "description": "Qualcosa è andato storto da parte nostra. Riprova tra un attimo.",
       "retry": "Riprova"
     },
-    "exampleNotice": {
-      "title": "Questo è un testo di esempio",
-      "description": "Per questo paese abbiamo solo un breve esempio, non un contratto completo. Fai verificare il tuo contratto di locazione prima che qualcuno firmi."
+    "errors": {
+      "notAvailableForCountry": "Non è ancora disponibile un contratto di locazione per il paese di questo immobile. Carica invece un contratto firmato in Documenti.",
+      "noCountry": "Aggiungi un paese all'immobile prima di usare il contratto di locazione."
     }
   },
   "leaseRegime": {

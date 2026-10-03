@@ -1098,9 +1098,9 @@
       "description": "Something went wrong on our side. Please try again in a moment.",
       "retry": "Try again"
     },
-    "exampleNotice": {
-      "title": "This is example text",
-      "description": "For this country we only have a short sample, not a full lease. Have your own lease reviewed before anyone signs it."
+    "errors": {
+      "notAvailableForCountry": "A lease agreement isn't available for this property's country yet. Upload a signed lease in Documents instead.",
+      "noCountry": "Add a country to the property before using the lease agreement."
     }
   },
   "leaseRegime": {

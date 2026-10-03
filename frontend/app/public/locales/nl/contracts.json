@@ -1098,9 +1098,9 @@
       "description": "Er ging iets mis aan onze kant. Probeer het zo meteen opnieuw.",
       "retry": "Opnieuw proberen"
     },
-    "exampleNotice": {
-      "title": "Dit is voorbeeldtekst",
-      "description": "Voor dit land hebben we alleen een korte voorbeeldtekst, geen volledige huurovereenkomst. Laat uw eigen huurovereenkomst controleren voordat iemand tekent."
+    "errors": {
+      "notAvailableForCountry": "Voor het land van dit pand is nog geen huurovereenkomst beschikbaar. Upload in plaats daarvan een getekende huurovereenkomst bij Documenten.",
+      "noCountry": "Voeg een land toe aan het pand voordat u de huurovereenkomst gebruikt."
     }
   },
   "leaseRegime": {

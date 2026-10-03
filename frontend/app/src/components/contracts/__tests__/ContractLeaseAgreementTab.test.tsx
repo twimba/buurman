@@ -8,6 +8,7 @@ import * as analytics from '@/utils/analytics';
 import { renderWithProviders, createTestQueryClient } from '@/test/test-utils';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
+import { AxiosError, type AxiosResponse } from 'axios';
 import {
   LeaseAvailability,
   type LeaseClausesResponse,
@@ -509,16 +510,14 @@ describe('ContractLeaseAgreementTab', () => {
       expect(getSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('shows the example-text note above the clause list and keeps the actions', async () => {
+    it('treats example text like a full document: clause list and actions, no notice', async () => {
       vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
         documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_EXAMPLE_TEXT)
       );
       renderTab();
 
-      const note = await screen.findByRole('note');
-      expect(note).toHaveTextContent('This is example text');
       expect(
-        screen.getByRole('checkbox', { name: 'Parties' })
+        await screen.findByRole('checkbox', { name: 'Parties' })
       ).toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: /save selection/i })
@@ -526,29 +525,9 @@ describe('ContractLeaseAgreementTab', () => {
       expect(
         screen.getByRole('button', { name: /generate lease agreement/i })
       ).toBeInTheDocument();
-    });
-
-    it('hides the country row in the example-text note when the region code is unknown', async () => {
-      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
-        ...documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_EXAMPLE_TEXT),
-        countryCode: 'ZZ',
-      });
-      renderTab();
-
-      expect(await screen.findByRole('note')).toBeInTheDocument();
+      expect(screen.queryByRole('note')).toBeNull();
+      expect(screen.queryByText(/example text/i)).toBeNull();
       expect(screen.queryByText('Country')).toBeNull();
-    });
-
-    it('shows the country row in the example-text note for a known country', async () => {
-      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
-        ...documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_EXAMPLE_TEXT),
-        countryCode: 'BE',
-      });
-      renderTab();
-
-      await screen.findByRole('note');
-      expect(screen.getByText('Country')).toBeInTheDocument();
-      expect(screen.getByText('Belgium')).toBeInTheDocument();
     });
 
     it('shows no note for a full document', async () => {
@@ -559,6 +538,41 @@ describe('ContractLeaseAgreementTab', () => {
       await screen.findByRole('checkbox', { name: 'Parties' });
       expect(screen.queryByRole('note')).toBeNull();
     });
+
+    it.each(['XA', 'EU', 'UN', 'QO', 'ZZ', 'XX'])(
+      'hides the country row for the pseudo region %s on the unavailable panel',
+      async (countryCode) => {
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+          availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
+          countryCode,
+          clauses: [],
+        });
+        renderTab();
+
+        await screen.findByRole('heading', { name: 'Not available here yet' });
+        expect(screen.queryByText('Country')).toBeNull();
+      }
+    );
+
+    it.each([
+      ['BE', 'Belgium'],
+      ['JP', 'Japan'],
+      ['IT', 'Italy'],
+    ])(
+      'shows the country row for %s on the unavailable panel',
+      async (countryCode, name) => {
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
+          availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
+          countryCode,
+          clauses: [],
+        });
+        renderTab();
+
+        await screen.findByRole('heading', { name: 'Not available here yet' });
+        expect(screen.getByText('Country')).toBeInTheDocument();
+        expect(screen.getByText(name)).toBeInTheDocument();
+      }
+    );
 
     it('tracks lease_unavailable_viewed once even when the query refetches', async () => {
       const getSpy = vi
@@ -651,6 +665,112 @@ describe('ContractLeaseAgreementTab', () => {
         await screen.findByRole('heading', { name: 'Not available here yet' })
       ).toBeInTheDocument();
       expect(screen.queryByRole('alert')).toBeNull();
+    });
+  });
+
+  describe('409 problem codes', () => {
+    const CONTRACT = 'CON00000000000000000000001';
+    const conflict = (code: string | undefined) =>
+      new AxiosError('Request failed', 'ERR_BAD_REQUEST', undefined, undefined, {
+        status: 409,
+        data: {
+          detail: 'Server English detail',
+          ...(code ? { code } : {}),
+        },
+      } as AxiosResponse);
+    const renderTab = () =>
+      renderWithProviders(
+        <ToastProvider>
+          <ContractLeaseAgreementTab
+            contractId={CONTRACT}
+            onGoToDocuments={vi.fn()}
+          />
+        </ToastProvider>
+      );
+
+    const cases: [string, string, string][] = [
+      [
+        'LEASE_NOT_AVAILABLE_FOR_COUNTRY',
+        'save',
+        "A lease agreement isn't available for this property's country yet",
+      ],
+      [
+        'LEASE_CONTRACT_HAS_NO_COUNTRY',
+        'save',
+        'Add a country to the property',
+      ],
+      [
+        'LEASE_NOT_AVAILABLE_FOR_COUNTRY',
+        'generate',
+        "A lease agreement isn't available for this property's country yet",
+      ],
+      [
+        'LEASE_CONTRACT_HAS_NO_COUNTRY',
+        'generate',
+        'Add a country to the property',
+      ],
+    ];
+
+    it.each(cases)(
+      'shows the translated message for %s on %s',
+      async (code, action, expected) => {
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+          documentEnvelope(CLAUSES)
+        );
+        vi.spyOn(leaseAgreementApi, 'updateLeaseClauses').mockRejectedValue(
+          conflict(code)
+        );
+        vi.spyOn(leaseAgreementApi, 'generateLeaseAgreement').mockRejectedValue(
+          conflict(code)
+        );
+        renderTab();
+        await screen.findByRole('checkbox', { name: 'Parties' });
+
+        await userEvent.click(
+          screen.getByRole('button', {
+            name: action === 'save' ? /save selection/i : /generate lease/i,
+          })
+        );
+
+        expect(
+          await screen.findByText(new RegExp(expected))
+        ).toBeInTheDocument();
+        expect(screen.queryByText('Server English detail')).toBeNull();
+      }
+    );
+
+    it('falls back to the server detail for an unknown code', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      vi.spyOn(leaseAgreementApi, 'updateLeaseClauses').mockRejectedValue(
+        conflict('SOMETHING_ELSE')
+      );
+      renderTab();
+      await screen.findByRole('checkbox', { name: 'Parties' });
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /save selection/i })
+      );
+
+      expect(await screen.findByText('Server English detail')).toBeInTheDocument();
+    });
+
+    it('falls back to the server detail when there is no code', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      vi.spyOn(leaseAgreementApi, 'generateLeaseAgreement').mockRejectedValue(
+        conflict(undefined)
+      );
+      renderTab();
+      await screen.findByRole('checkbox', { name: 'Parties' });
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /generate lease/i })
+      );
+
+      expect(await screen.findByText('Server English detail')).toBeInTheDocument();
     });
   });
 });

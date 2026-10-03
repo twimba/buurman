@@ -21,6 +21,22 @@ describe('formatCountryName', () => {
     expect(formatCountryName('XY', 'en')).toBe('');
   });
 
+  it.each(['XA', 'XB', 'EU', 'UN', 'QO', 'ZZ', 'XX'])(
+    'returns an empty string for the pseudo or unlisted region %s',
+    (code) => {
+      expect(formatCountryName(code, 'en')).toBe('');
+      expect(formatCountryName(code.toLowerCase(), 'en')).toBe('');
+    }
+  );
+
+  it.each([
+    ['BE', 'Belgium'],
+    ['JP', 'Japan'],
+    ['IT', 'Italy'],
+  ])('names the listed country %s', (code, name) => {
+    expect(formatCountryName(code, 'en')).toBe(name);
+  });
+
   it('returns an empty string for an invalid language tag', () => {
     expect(formatCountryName('IT', 'xx_invalid_')).toBe('');
   });

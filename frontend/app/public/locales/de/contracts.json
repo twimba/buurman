@@ -1098,9 +1098,9 @@
       "description": "Bei uns ist etwas schiefgelaufen. Bitte versuchen Sie es gleich noch einmal.",
       "retry": "Erneut versuchen"
     },
-    "exampleNotice": {
-      "title": "Das ist ein Beispieltext",
-      "description": "Für dieses Land haben wir nur ein kurzes Beispiel, keinen vollständigen Mietvertrag. Lassen Sie Ihren eigenen Mietvertrag prüfen, bevor jemand unterschreibt."
+    "errors": {
+      "notAvailableForCountry": "Für das Land dieser Immobilie ist noch kein Mietvertrag verfügbar. Laden Sie stattdessen unter Dokumente einen unterschriebenen Mietvertrag hoch.",
+      "noCountry": "Fügen Sie der Immobilie ein Land hinzu, bevor Sie den Mietvertrag verwenden."
     }
   },
   "leaseRegime": {

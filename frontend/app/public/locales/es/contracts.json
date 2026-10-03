@@ -1112,9 +1112,9 @@
       "description": "Algo salió mal por nuestra parte. Inténtalo de nuevo en un momento.",
       "retry": "Reintentar"
     },
-    "exampleNotice": {
-      "title": "Esto es un texto de ejemplo",
-      "description": "Para este país solo tenemos un breve ejemplo, no un contrato de arrendamiento completo. Pide que revisen tu propio contrato antes de firmar."
+    "errors": {
+      "notAvailableForCountry": "Todavía no hay contrato de arrendamiento disponible para el país de esta propiedad. Sube un contrato firmado en Documentos.",
+      "noCountry": "Añade un país a la propiedad antes de usar el contrato de arrendamiento."
     }
   },
   "leaseRegime": {

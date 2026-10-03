@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { useMutationWithToast } from './useMutationWithToast';
 import {
   getLeaseClauses,
@@ -25,9 +26,22 @@ export const useLeaseClauses = (contractId: string | undefined) => {
   });
 };
 
+/** Translated toast text for the 409 problem codes the lease endpoints can return. */
+const useLeaseErrorCodeMessages = (): Record<string, string> => {
+  const { t } = useTranslation('contracts');
+  return {
+    LEASE_NOT_AVAILABLE_FOR_COUNTRY: t(
+      'leaseAgreement.errors.notAvailableForCountry'
+    ),
+    LEASE_CONTRACT_HAS_NO_COUNTRY: t('leaseAgreement.errors.noCountry'),
+  };
+};
+
 export const useUpdateLeaseClauses = (contractId: string) => {
   const queryClient = useQueryClient();
+  const errorCodeMessages = useLeaseErrorCodeMessages();
   return useMutationWithToast({
+    errorCodeMessages,
     successMessage: 'Clause selection saved',
     mutationFn: (clauses: UpdateContractLeaseClausesRequestClausesItem[]) =>
       updateLeaseClauses(contractId, { clauses }),
@@ -50,7 +64,9 @@ export const useUpdateLeaseClauses = (contractId: string) => {
  */
 export const useGenerateLeaseAgreement = (contractId: string) => {
   const queryClient = useQueryClient();
+  const errorCodeMessages = useLeaseErrorCodeMessages();
   return useMutationWithToast({
+    errorCodeMessages,
     successMessage: 'Lease agreement generated — find it in the Documents tab',
     mutationFn: () => generateLeaseAgreement(contractId),
     onSuccess: () => {

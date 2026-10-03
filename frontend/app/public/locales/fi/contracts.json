@@ -1098,9 +1098,9 @@
       "description": "Meidän päässämme tapahtui virhe. Yritä hetken kuluttua uudelleen.",
       "retry": "Yritä uudelleen"
     },
-    "exampleNotice": {
-      "title": "Tämä on esimerkkiteksti",
-      "description": "Tälle maalle on vain lyhyt esimerkki, ei täydellistä vuokrasopimusta. Tarkistuta oma sopimuksesi ennen allekirjoitusta."
+    "errors": {
+      "notAvailableForCountry": "Kohteen maalle ei ole vielä saatavilla vuokrasopimusta. Lataa sen sijaan allekirjoitettu vuokrasopimus Asiakirjat-osiossa.",
+      "noCountry": "Lisää kohteelle maa ennen kuin käytät vuokrasopimusta."
     }
   },
   "leaseRegime": {

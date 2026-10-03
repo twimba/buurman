@@ -755,7 +755,7 @@
     "types": {
       "EXTENSION_ADDENDUM": {
         "label": "Aneks przedłużenia",
-        "description": "Formalna umowa przedłużenia kontraktu"
+        "description": "Formalna umowa przedłużenia umowy"
       },
       "RENT_INCREASE_LETTER": {
         "label": "Pismo o podwyżce czynszu",
@@ -1126,9 +1126,9 @@
       "description": "Coś poszło nie tak po naszej stronie. Spróbuj ponownie za chwilę.",
       "retry": "Spróbuj ponownie"
     },
-    "exampleNotice": {
-      "title": "To jest przykładowy tekst",
-      "description": "Dla tego kraju mamy tylko krótki przykład, a nie pełną umowę najmu. Zleć sprawdzenie własnej umowy, zanim ktoś ją podpisze."
+    "errors": {
+      "notAvailableForCountry": "Umowa najmu nie jest jeszcze dostępna dla kraju tej nieruchomości. Prześlij zamiast tego podpisaną umowę w Dokumentach.",
+      "noCountry": "Dodaj kraj do nieruchomości, zanim skorzystasz z umowy najmu."
     }
   },
   "leaseRegime": {

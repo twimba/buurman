@@ -1,7 +1,7 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { useToast } from '@buurman/ui';
 
-import { getErrorMessage } from '../utils/errorMessages';
+import { getErrorMessage, getProblemCode } from '../utils/errorMessages';
 
 type ToastMutationOptions<TData, TVars> = Omit<
   UseMutationOptions<TData, unknown, TVars>,
@@ -9,6 +9,11 @@ type ToastMutationOptions<TData, TVars> = Omit<
 > & {
   /** Toast shown on success (omit to show none). */
   successMessage?: string;
+  /**
+   * Translated toast text per ProblemDetail `code`; a response whose code is listed shows that
+   * text instead of the server's detail. Other errors keep the default handling.
+   */
+  errorCodeMessages?: Record<string, string>;
 };
 
 /**
@@ -20,7 +25,7 @@ export function useMutationWithToast<TData, TVars>(
   options: ToastMutationOptions<TData, TVars>
 ) {
   const { showToast } = useToast();
-  const { successMessage, onSuccess, ...rest } = options;
+  const { successMessage, errorCodeMessages, onSuccess, ...rest } = options;
   return useMutation<TData, unknown, TVars>({
     ...rest,
     onSuccess: (...args) => {
@@ -29,6 +34,10 @@ export function useMutationWithToast<TData, TVars>(
       }
       onSuccess?.(...args);
     },
-    onError: (error) => showToast(getErrorMessage(error), 'error'),
+    onError: (error) => {
+      const code = getProblemCode(error);
+      const mapped = code ? errorCodeMessages?.[code] : undefined;
+      showToast(mapped ?? getErrorMessage(error), 'error');
+    },
   });
 }

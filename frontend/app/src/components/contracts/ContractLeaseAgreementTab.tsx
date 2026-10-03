@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp, FileSignature, Info } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileSignature } from 'lucide-react';
 import { Button, LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import {
-  CountryRow,
-  LeaseUnavailableState,
-} from '@/components/contracts/LeaseUnavailableState';
+import { LeaseUnavailableState } from '@/components/contracts/LeaseUnavailableState';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { trackEvent } from '@/utils/analytics';
 import { formatCountryName } from '@/utils/countryName';
@@ -208,25 +205,6 @@ export const ContractLeaseAgreementTab = ({
 
       {availability === LeaseAvailability.UNAVAILABLE_NO_COUNTRY && (
         <LeaseUnavailableState reason="no-country" onAction={onEditProperty} />
-      )}
-
-      {availability === LeaseAvailability.AVAILABLE_EXAMPLE_TEXT && (
-        <div
-          role="note"
-          className="flex items-start gap-2 rounded-md border border-warning-border bg-warning-bg px-3 py-2 text-sm text-text-primary"
-        >
-          <Info
-            className="mt-0.5 h-4 w-4 shrink-0 text-warning-text"
-            aria-hidden="true"
-          />
-          <div className="min-w-0 break-words">
-            <p className="font-medium">
-              {t('leaseAgreement.exampleNotice.title')}
-            </p>
-            <p>{t('leaseAgreement.exampleNotice.description')}</p>
-            {countryName && <CountryRow name={countryName} />}
-          </div>
-        </div>
       )}
 
       {isUnavailable ? null : sortedClauses.length === 0 ? (

@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Globe, MapPin } from 'lucide-react';
 import { Button, EmptyState } from '@buurman/ui';
 
-export const CountryRow = ({ name }: { name: string }) => {
+const CountryRow = ({ name }: { name: string }) => {
   const { t } = useTranslation('contracts');
   return (
     <dl className="flex items-baseline gap-2 text-sm">
