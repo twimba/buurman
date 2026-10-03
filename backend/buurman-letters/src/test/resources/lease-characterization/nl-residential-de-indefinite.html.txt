@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style> @page { margin: 60px 60px 70px 60px; size: A4; } body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; color: #292524; font-size: 13px; line-height: 1.6; } .letter { max-width: 100%; } .letter-header { margin-bottom: 40px; } .letter-date { font-size: 14px; color: #292524; font-weight: 500; } .letter-ref { font-size: 12px; color: #78716c; margin-top: 4px; letter-spacing: 0.5px; } .letter-addressee { margin-bottom: 30px; line-height: 1.5; font-size: 14px; color: #292524; } .addressee-name { font-weight: 600; font-size: 15px; } .letter-subject { font-size: 16px; font-weight: 700; color: #0c4a6e; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #0c4a6e; } .letter-body { font-size: 13px; color: #292524; line-height: 1.7; } .letter-body p { margin: 0 0 14px 0; } .letter-body strong { font-weight: 600; } .summary-table { width: 100%; border-collapse: collapse; margin: 20px 0 24px 0; border: 1px solid #e7e5e4; border-radius: 6px; } .summary-table tr { border-bottom: 1px solid #e7e5e4; } .summary-table tr:last-child { border-bottom: none; } .st-label { padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #78716c; font-weight: 600; width: 40%; background-color: #fafaf9; vertical-align: top; } .st-value { padding: 10px 16px; font-size: 13px; color: #292524; vertical-align: top; } .legal-clause { margin: 16px 0; padding: 12px 16px; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 12px; color: #0c4a6e; line-height: 1.5; } .letter-signature { margin-top: 50px; width: 50%; } .sig-line { border-bottom: 1px solid #292524; margin-bottom: 8px; height: 40px; } .sig-label { font-size: 13px; color: #57534e; font-weight: 500; } .sig-date { font-size: 12px; color: #57534e; margin-top: 16px; display: flex; gap: 4px; } .sig-date-line { flex: 1; border-bottom: 1px solid #78716c; margin-bottom: 2px; } /* Carries a signer's placeholder as faint, tiny text alongside the visible label — present in the PDF's text layer (so Documenso's placeholder-text matching finds it) without reading as visible clutter. Do not use display:none/visibility:hidden: some PDF text extraction paths drop such content from the text layer entirely. */ .sig-placeholder { font-size: 5px; color: #e7e5e4; letter-spacing: 0; } .letter-disclaimer { margin-top: 40px; padding: 14px 16px; background-color: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; font-size: 11px; color: #78716c; line-height: 1.5; font-style: italic; } .letter-footer { text-align: center; margin-top: 30px; font-size: 10px; color: #a8a29e; } </style>
+<style> .clause { margin: 18px 0; } .clause-title { font-size: 14px; font-weight: 700; color: #0c4a6e; margin-bottom: 6px; } .clause p { font-size: 13px; color: #292524; line-height: 1.6; margin: 0 0 6px 0; } .lease-notice { margin: 12px 0; padding: 10px 14px; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; font-size: 12px; color: #78350f; } </style>
+</head>
+<body>
+<div class="letter">
+<div class="letter-header">
+<div class="letter-date">15 Januar 2026</div>
+<div class="letter-ref">Referenz: CON00000000000000000000001</div>
+</div>
+<div class="letter-addressee">
+<div>
+<div class="addressee-name">J. Jansen</div>
+</div>
+</div>
+<div class="letter-subject">Mietvertrag</div>
+<div class="lease-notice">Dies ist eine Übersetzung zur Orientierung. Rechtlich maßgeblich ist nur die Fassung in der Landessprache.</div>
+<div class="letter-body">
+<table class="summary-table">
+<tr>
+<td class="st-label">Grundmiete</td>
+<td class="st-value">1.000,00 €</td>
+</tr>
+<tr>
+<td class="st-label">Servicekosten</td>
+<td class="st-value">250,00 €</td>
+</tr>
+</table>
+<!-- "clauses" holds only the included clauses, already in final order with their article numbers assigned by LeaseClauseResolver. The legal text of each clause is the "clause-{key}" fragment of the per-language document named by clauseSource. -->
+<div class="clause">
+<h2 class="clause-title"><span>1</span>. <span>Parteien</span></h2>
+<div><div data-clause="parties">
+<p>Die Unterzeichnenden:</p>
+<p><strong>Verhuur Voorbeeld BV</strong>, nachfolgend &bdquo;der Vermieter&ldquo; (verhuurder) genannt, und</p>
+<p><strong>J. Jansen, P. de Vries</strong>, nachfolgend (gemeinsam) &bdquo;der Mieter&ldquo; (huurder) genannt,</p>
+<p>erkl&auml;ren, dass sie sich wie in diesem Mietvertrag bestimmt geeinigt haben. Nennt dieser Vertrag mehr als 1 Mieter, so haftet jeder von ihnen gesamtschuldnerisch (hoofdelijk aansprakelijk) f&uuml;r die Erf&uuml;llung aller Verpflichtungen des Mieters aus diesem Vertrag.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>2</span>. <span>Mietsache</span></h2>
+<div><div data-clause="premises">
+<p>Der Vermieter vermietet dem Mieter, der die Miete annimmt, die Wohnung in <strong>Keizersgracht 12, 1015 CJ Amsterdam</strong> nebst den dazugeh&ouml;rigen unbeweglichen Nebenr&auml;umen, nachfolgend &bdquo;die Mietsache&ldquo; (het gehuurde) genannt.</p>
+<p>Auf diesen Vertrag sind die gesetzlichen Bestimmungen &uuml;ber die Wohnraummiete anwendbar (Buch 7, Titel 4, Abschnitt 5 des niederl&auml;ndischen B&uuml;rgerlichen Gesetzbuchs, Burgerlijk Wetboek). Soweit das Gesetz bestimmt, dass nicht zum Nachteil des Mieters davon abgewichen werden darf, gehen diese Bestimmungen abweichenden Vereinbarungen in diesem Vertrag vor.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>3</span>. <span>Mietdauer</span></h2>
+<div><div data-clause="term">
+<p>Dieser Vertrag beginnt am <strong>1 Februar 2026</strong>.</p>
+<p>Der Vertrag ist auf unbestimmte Zeit geschlossen.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>4</span>. <span>Miete</span></h2>
+<div><div data-clause="rent">
+<p>Die Miete f&uuml;r die blo&szlig;e Nutzung der Mietsache (Kaltmiete, kale huurprijs, Art. 7:237 Abs. 2 BW) betr&auml;gt <strong>1.000,00 €</strong>
+<span>monatlich</span>.<span class="clause-ref" data-ref="service-costs"> Zus&auml;tzlich schuldet der Mieter die Verg&uuml;tungen f&uuml;r Versorgungsleistungen und Servicekosten (servicekosten) (siehe Artikel <span>6</span>).</span></p>
+<p>Soweit f&uuml;r die Mietsache eine gesetzliche H&ouml;chstmiete gilt, darunter die mit dem Wet betaalbare huur (Gesetz &uuml;ber bezahlbare Mieten) zum 1. Juli 2024 eingef&uuml;hrten Regeln, schuldet der Mieter nicht mehr als diese H&ouml;chstmiete. Der Mieter kann sp&auml;testens 6 Monate nach Beginn eines von ihm erstmals in Bezug auf diese Wohnung geschlossenen Mietvertrags die Mietkommission (huurcommissie) bitten, &uuml;ber die Angemessenheit der vereinbarten Miete zu entscheiden (Art. 7:249 BW).</p>
+<p class="clause-ref" data-ref="rent-adjustment">F&uuml;r die Anpassung der Miete gilt das hierzu in diesem Vertrag Bestimmte (siehe Artikel <span>5</span>).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>5</span>. <span>Mietanpassung</span></h2>
+<div><div data-clause="rent-adjustment">
+<p>Der Vermieter kann die Miete 1 Mal pro Jahr anpassen, erstmals 12 Monate nach dem Beginn dieses Vertrags. Der Vermieter teilt dem Mieter die Anpassung unter Angabe der geltenden und der neuen Miete sowie des Wirksamkeitsdatums rechtzeitig und schriftlich mit.</p>
+<p>Die Anpassung ist nie h&ouml;her als die gesetzlich h&ouml;chstzul&auml;ssige Mieterh&ouml;hung, die am Wirksamkeitsdatum der Anpassung f&uuml;r die Mietsache gilt. F&uuml;hrt diese Bestimmung zu einer h&ouml;heren Erh&ouml;hung als gesetzlich zul&auml;ssig, so ist die Bestimmung insoweit nichtig, und die Miete gilt als um die zul&auml;ssige Erh&ouml;hung erh&ouml;ht (Art. 7:248 BW). Soweit das Gesetz dies zul&auml;sst, kann der Mieter die Mietkommission (huurcommissie) bitten, &uuml;ber eine Erh&ouml;hung zu entscheiden.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>6</span>. <span>Nebenkosten</span></h2>
+<div><div data-clause="service-costs">
+<p>Neben der Miete zahlt der Mieter je Zahlungszeitraum eine Vorauszahlung auf die Kosten f&uuml;r Versorgungsleistungen mit individuellem Z&auml;hler und auf die Servicekosten (servicekosten) (Art. 7:237 Abs. 3 BW), wie in diesem Vertrag angegeben.</p>
+<p>Der Vermieter stellt dem Mieter jedes Jahr, sp&auml;testens 6 Monate nach Ablauf eines Kalenderjahres, eine nach Art aufgeschl&uuml;sselte &Uuml;bersicht der in diesem Kalenderjahr berechneten Kosten zur Verf&uuml;gung, unter Angabe der Berechnungsweise (Art. 7:259 Abs. 2 BW). Was an Vorauszahlungen zu viel oder zu wenig gezahlt wurde, wird nach Zurverf&uuml;gungstellung dieser &Uuml;bersicht zwischen den Parteien verrechnet.</p>
+<p>Erzielen die Parteien keine Einigung &uuml;ber die geschuldeten Kosten, so kann jede von ihnen die Mietkommission (huurcommissie) bitten, hier&uuml;ber zu entscheiden (Art. 7:260 BW).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>7</span>. <span>Kaution</span></h2>
+<div><div data-clause="deposit">
+<p>Der Mieter zahlt bei Mietbeginn eine Kaution (waarborgsom) in H&ouml;he von <strong>2.000,00 €</strong>.</p>
+<p>Die Kaution dient der Sicherung der Erf&uuml;llung dessen, was in diesem Vertrag vereinbart ist, und betr&auml;gt h&ouml;chstens 2 Kaltmieten (kale huurprijs) (Art. 7:261b Abs. 1 und 2 BW).</p>
+<p>Der Vermieter zahlt die Kaution innerhalb von 14 Tagen nach Beendigung des Mietvertrags zur&uuml;ck. Besteht ein Schaden an der Mietsache, f&uuml;r den der Mieter haftet, oder hat der Mieter noch Miete, Servicekosten oder eine Energieleistungsverg&uuml;tung (energieprestatievergoeding) zu zahlen, so zahlt der Vermieter den Restbetrag innerhalb von 30 Tagen nach Beendigung zur&uuml;ck, nach Verrechnung der nachweislich entstandenen Reparaturkosten bzw. der noch geschuldeten Betr&auml;ge. Von einer Verrechnung unterrichtet der Vermieter den Mieter schriftlich, mit einer vollst&auml;ndigen Kostenaufstellung (Art. 7:261b Abs. 3 und 4 BW).<span class="clause-ref" data-ref="handover-inspection"> F&uuml;r die Feststellung von Sch&auml;den ist die &Uuml;bergabe ma&szlig;geblich (siehe Artikel <span>13</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>8</span>. <span>Zahlung</span></h2>
+<div><div data-clause="payment">
+<p>Der Mieter zahlt die Miete<span class="clause-ref" data-ref="rent"> (siehe Artikel <span>4</span>)</span><span> und die Vorauszahlungen auf die Servicekosten</span>
+<span>monatlich</span><span> im Voraus</span>, <span>sp&auml;testens am <strong>1</strong>. Tag des Monats, in dem der Zahlungszeitraum beginnt</span>, per &Uuml;berweisung auf das Konto, das der Vermieter hierf&uuml;r schriftlich angegeben hat.</p>
+<p>Zahlt der Mieter nicht rechtzeitig, so schuldet er auf den &uuml;berf&auml;lligen Betrag die gesetzlichen Zinsen und ersetzt au&szlig;ergerichtliche Inkassokosten nur, soweit das Gesetz dies erlaubt.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>9</span>. <span>Nutzung</span></h2>
+<div><div data-clause="use">
+<p>Der Mieter nutzt die Mietsache ausschlie&szlig;lich als Wohnraum und verh&auml;lt sich bei der Nutzung wie ein guter Mieter (goed huurder) (Art. 7:213 BW). Der Mieter und diejenigen, die sich mit seiner Erlaubnis in der Mietsache aufhalten, verursachen keine Bel&auml;stigung f&uuml;r Anwohner.</p>
+<p>Ver&auml;nderungen an der Einrichtung oder Gestalt der Mietsache, die bei Mietende nicht ohne nennenswerte Kosten r&uuml;ckg&auml;ngig gemacht werden k&ouml;nnen, nimmt der Mieter nur nach schriftlicher Zustimmung des Vermieters vor. Der Vermieter erteilt die Zustimmung innerhalb von 8 Wochen jedenfalls dann, wenn die Ver&auml;nderung die Vermietbarkeit nicht beeintr&auml;chtigt und nicht zu einer Wertminderung der Mietsache f&uuml;hrt (Art. 7:215 BW).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>10</span>. <span>Untervermietung</span></h2>
+<div><div data-clause="subletting">
+<p>Der Mieter &uuml;berl&auml;sst die Mietsache nicht ganz oder teilweise einem anderen zur Nutzung, es sei denn, der Vermieter hat hierzu vorher schriftlich seine Zustimmung erteilt.</p>
+<p>Hat der Mieter in der Mietsache, sofern sie eine selbstst&auml;ndige Wohnung ist, seinen Hauptwohnsitz, so ist er gesetzlich berechtigt, einen Teil davon einem anderen zur Nutzung zu &uuml;berlassen (Art. 7:244 BW).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>11</span>. <span>Instandhaltung und Reparaturen</span></h2>
+<div><div data-clause="maintenance">
+<p>Der Vermieter beseitigt auf Verlangen des Mieters M&auml;ngel (gebreken) an der Mietsache, es sei denn, dies ist unm&ouml;glich oder erfordert Aufwendungen, die dem Vermieter unter den gegebenen Umst&auml;nden vern&uuml;nftigerweise nicht zuzumuten sind (Art. 7:206 BW). Der Mieter meldet einen Mangel so schnell wie m&ouml;glich dem Vermieter.</p>
+<p>Der Mieter f&uuml;hrt auf eigene Kosten die Kleinreparaturen (kleine herstellingen) aus, es sei denn, diese sind erforderlich geworden, weil der Vermieter seiner Verpflichtung zur Beseitigung von M&auml;ngeln nicht nachgekommen ist (Art. 7:217 BW). Welche Reparaturen als klein gelten, ergibt sich aus der gesetzlichen Regelung hierzu.</p>
+<p>Ist der Vermieter mit der Beseitigung eines Mangels in Verzug, so kann der Mieter den Mangel selbst beseitigen und die angemessenen Kosten vom Vermieter ersetzt verlangen, auf Wunsch durch Abzug von der Miete (Art. 7:206 Abs. 3 BW). Von diesen Regeln kann nicht zum Nachteil des Mieters abgewichen werden (Art. 7:242 BW).</p>
+<p>Der Mieter gibt dem Vermieter Gelegenheit, dringende Arbeiten an der Mietsache auszuf&uuml;hren, unbeschadet seiner gesetzlichen Anspr&uuml;che auf Mietminderung, Aufl&ouml;sung und Schadensersatz (Art. 7:220 Abs. 1 BW).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>12</span>. <span>Energieausweis</span></h2>
+<div><div data-clause="energy-label">
+<p>Bei Neuvermietung einer bestehenden Wohnung ist nach dem Besluit bouwwerken leefomgeving (Verordnung &uuml;ber Bauwerke und Lebensumwelt) ein g&uuml;ltiger Energieausweis (energielabel) vorgeschrieben. Der Vermieter &uuml;bergibt dem Mieter sp&auml;testens bei Abschluss dieses Vertrags eine Kopie des g&uuml;ltigen Energieausweises der Mietsache. Ein Energieausweis ist bis zu dem auf dem Ausweis angegebenen Datum g&uuml;ltig.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>13</span>. <span>Abnahme und Übergabe</span></h2>
+<div><div data-clause="handover-inspection">
+<p>Bei Mietbeginn erstellen die Parteien gemeinsam eine Beschreibung des Zustands der Mietsache (opnamerapport). Beide Parteien unterzeichnen die Beschreibung, und jede erh&auml;lt ein Exemplar.</p>
+<p>Bei Mietende stellt der Mieter die Mietsache dem Vermieter wieder zur Verf&uuml;gung, in dem Zustand, in dem er sie nach dieser Beschreibung angenommen hat, mit Ausnahme zul&auml;ssiger Ver&auml;nderungen und Erg&auml;nzungen sowie dessen, was durch Alter untergegangen oder besch&auml;digt ist. Wurde keine Beschreibung erstellt, so wird vermutet, vorbehaltlich des Gegenbeweises, dass der Mieter die Mietsache in dem Zustand erhalten hat, in dem sie sich bei Mietende befindet (Art. 7:224 BW).</p>
+<p>Die Parteien f&uuml;hren vor Mietende eine gemeinsame Vorabnahme durch, damit der Mieter etwaige M&auml;ngel noch selbst beheben kann, und bei der &Uuml;bergabe eine Endabnahme.<span class="clause-ref" data-ref="deposit"> Die Abrechnung der Kaution folgt danach (siehe Artikel <span>7</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>14</span>. <span>Beendigung</span></h2>
+<div><div data-clause="termination">
+<p>Die K&uuml;ndigung dieses Vertrags erfolgt durch Gerichtsvollzieherzustellung (deurwaardersexploot) oder durch Einschreiben, zu einem f&uuml;r die Zahlung der Miete vereinbarten Tag (Art. 7:271 Abs. 3 und 4 BW).</p>
+<p>Der Mieter h&auml;lt eine K&uuml;ndigungsfrist ein, die der Zeit zwischen 2 aufeinanderfolgenden Zahlungstagen entspricht, jedoch nicht k&uuml;rzer als 1 Monat und nicht l&auml;nger als 3 Monate ist (Art. 7:271 Abs. 6 Buchst. a BW).</p>
+<p>Der Vermieter kann nur aus einem der Gr&uuml;nde k&uuml;ndigen, die das Gesetz hierf&uuml;r nennt (Art. 7:274 Abs. 1 BW), und gibt diese Gr&uuml;nde in der K&uuml;ndigung an; eine K&uuml;ndigung aus anderen Gr&uuml;nden ist nichtig. Die K&uuml;ndigungsfrist f&uuml;r den Vermieter betr&auml;gt mindestens 3 Monate, verl&auml;ngert um 1 Monat f&uuml;r jedes Jahr, in dem der Mieter die Mietsache aufgrund eines Vertrags ununterbrochen genutzt hat, bis zu h&ouml;chstens 6 Monaten. In der K&uuml;ndigung bittet der Vermieter den Mieter, innerhalb von 6 Wochen mitzuteilen, ob er der Beendigung zustimmt (Art. 7:271 Abs. 5 und 6 Buchst. b BW). Stimmt der Mieter nicht schriftlich zu, so bleibt der Vertrag in Kraft, bis das Gericht &uuml;ber eine Klage des Vermieters unanfechtbar entschieden hat (Art. 7:272 BW).</p>
+<p>Die Parteien k&ouml;nnen die Miete, nachdem sie begonnen hat, auch einvernehmlich beenden (Art. 7:271 Abs. 10 BW).<span class="clause-ref" data-ref="handover-inspection"> F&uuml;r die &Uuml;bergabe gilt das hierzu in diesem Vertrag Bestimmte (siehe Artikel <span>13</span>).</span><span class="clause-ref" data-ref="deposit"> Die Kaution wird zur&uuml;ckgezahlt, wie in diesem Vertrag bestimmt (siehe Artikel <span>7</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>15</span>. <span>Datenschutz</span></h2>
+<div><div data-clause="data-protection">
+<p>Der Vermieter verarbeitet personenbezogene Daten des Mieters nur, soweit dies f&uuml;r den Abschluss und die Durchf&uuml;hrung dieses Vertrags und zur Erf&uuml;llung gesetzlicher Pflichten erforderlich ist, gem&auml;&szlig; der Datenschutz-Grundverordnung (DSGVO; niederl&auml;ndisch: Algemene verordening gegevensbescherming, AVG, Verordnung (EU) 2016/679). Der Vermieter speichert diese Daten nicht l&auml;nger, als hierf&uuml;r erforderlich ist.</p>
+<p>Der Mieter kann gegen&uuml;ber dem Vermieter seine Rechte aus der DSGVO aus&uuml;ben, darunter das Recht auf Auskunft, Berichtigung und L&ouml;schung seiner personenbezogenen Daten, und kann bei der Aufsichtsbeh&ouml;rde Beschwerde einlegen, in den Niederlanden bei der Autoriteit Persoonsgegevens (niederl&auml;ndische Datenschutzbeh&ouml;rde).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>16</span>. <span>Streitigkeiten</span></h2>
+<div><div data-clause="disputes">
+<p>Auf diesen Vertrag ist niederl&auml;ndisches Recht anwendbar.</p>
+<p>Streitigkeiten, &uuml;ber die die Mietkommission (huurcommissie) nach dem Gesetz entscheiden kann, etwa &uuml;ber die Angemessenheit der Miete und &uuml;ber Servicekosten, k&ouml;nnen die Parteien der Mietkommission vorlegen. Die Parteien gelten als mit dem einverstanden, was die Mietkommission in ihrer Entscheidung festgestellt hat, es sei denn, eine von ihnen verlangt innerhalb von 8 Wochen, nachdem eine Abschrift der Entscheidung versandt wurde, eine Entscheidung des Gerichts (Art. 7:262 BW). Andere Streitigkeiten werden dem zust&auml;ndigen Gericht vorgelegt.</p>
+</div></div>
+</div>
+</div>
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>Vermieter / Immobilienverwalter</span>
+<span class="sig-placeholder">signature-landlord</span>
+</div>
+<div class="sig-date"><span>Datum:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>J. Jansen</span>
+<span class="sig-placeholder">signature-tenant-1</span>
+</div>
+<div class="sig-date"><span>Datum:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>P. de Vries</span>
+<span class="sig-placeholder">signature-tenant-2</span>
+</div>
+<div class="sig-date"><span>Datum:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-disclaimer">Entwurf, keine Rechtsberatung: Lassen Sie das Dokument vor der Unterzeichnung von einem qualifizierten Rechtsberater prüfen.</div>
+<div class="letter-footer">
+<span>Dokument erstellt am 15 Januar 2026</span>
+<span> &mdash; </span>
+<span>Buurman Immobilienverwaltung</span>
+</div>
+</div>
+</body>
+</html>

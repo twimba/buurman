@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style> @page { margin: 60px 60px 70px 60px; size: A4; } body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; color: #292524; font-size: 13px; line-height: 1.6; } .letter { max-width: 100%; } .letter-header { margin-bottom: 40px; } .letter-date { font-size: 14px; color: #292524; font-weight: 500; } .letter-ref { font-size: 12px; color: #78716c; margin-top: 4px; letter-spacing: 0.5px; } .letter-addressee { margin-bottom: 30px; line-height: 1.5; font-size: 14px; color: #292524; } .addressee-name { font-weight: 600; font-size: 15px; } .letter-subject { font-size: 16px; font-weight: 700; color: #0c4a6e; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #0c4a6e; } .letter-body { font-size: 13px; color: #292524; line-height: 1.7; } .letter-body p { margin: 0 0 14px 0; } .letter-body strong { font-weight: 600; } .summary-table { width: 100%; border-collapse: collapse; margin: 20px 0 24px 0; border: 1px solid #e7e5e4; border-radius: 6px; } .summary-table tr { border-bottom: 1px solid #e7e5e4; } .summary-table tr:last-child { border-bottom: none; } .st-label { padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #78716c; font-weight: 600; width: 40%; background-color: #fafaf9; vertical-align: top; } .st-value { padding: 10px 16px; font-size: 13px; color: #292524; vertical-align: top; } .legal-clause { margin: 16px 0; padding: 12px 16px; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 12px; color: #0c4a6e; line-height: 1.5; } .letter-signature { margin-top: 50px; width: 50%; } .sig-line { border-bottom: 1px solid #292524; margin-bottom: 8px; height: 40px; } .sig-label { font-size: 13px; color: #57534e; font-weight: 500; } .sig-date { font-size: 12px; color: #57534e; margin-top: 16px; display: flex; gap: 4px; } .sig-date-line { flex: 1; border-bottom: 1px solid #78716c; margin-bottom: 2px; } /* Carries a signer's placeholder as faint, tiny text alongside the visible label — present in the PDF's text layer (so Documenso's placeholder-text matching finds it) without reading as visible clutter. Do not use display:none/visibility:hidden: some PDF text extraction paths drop such content from the text layer entirely. */ .sig-placeholder { font-size: 5px; color: #e7e5e4; letter-spacing: 0; } .letter-disclaimer { margin-top: 40px; padding: 14px 16px; background-color: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; font-size: 11px; color: #78716c; line-height: 1.5; font-style: italic; } .letter-footer { text-align: center; margin-top: 30px; font-size: 10px; color: #a8a29e; } </style>
+<style> .clause { margin: 18px 0; } .clause-title { font-size: 14px; font-weight: 700; color: #0c4a6e; margin-bottom: 6px; } .clause p { font-size: 13px; color: #292524; line-height: 1.6; margin: 0 0 6px 0; } .lease-notice { margin: 12px 0; padding: 10px 14px; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; font-size: 12px; color: #78350f; } </style>
+</head>
+<body>
+<div class="letter">
+<div class="letter-header">
+<div class="letter-date">15 januari 2026</div>
+<div class="letter-ref">Kenmerk: CON00000000000000000000001</div>
+</div>
+<div class="letter-addressee">
+<div>
+<div class="addressee-name">Maria Jansen</div>
+</div>
+</div>
+<div class="letter-subject">Huurovereenkomst</div>
+<div class="letter-body">
+<table class="summary-table">
+<tr>
+<td class="st-label">Kale huur</td>
+<td class="st-value">€ 900,00</td>
+</tr>
+<tr>
+<td class="st-label">Voorschot nutsvoorzieningen</td>
+<td class="st-value">€ 120,50</td>
+</tr>
+<tr>
+<td class="st-label">Parkeren</td>
+<td class="st-value">€ 80,00</td>
+</tr>
+</table>
+<!-- "clauses" holds only the included clauses, already in final order with their article numbers assigned by LeaseClauseResolver. The legal text of each clause is the "clause-{key}" fragment of the per-language document named by clauseSource. -->
+<div class="clause">
+<h2 class="clause-title"><span>1</span>. <span>Partijen</span></h2>
+<div><div data-clause="parties">
+<p>Ondergetekenden:</p>
+<p><strong>Verhuur Voorbeeld BV</strong>, hierna te noemen &ldquo;de verhuurder&rdquo;, en</p>
+<p><strong>Maria Jansen</strong>, hierna (gezamenlijk) te noemen &ldquo;de huurder&rdquo;,</p>
+<p>verklaren te zijn overeengekomen zoals in deze huurovereenkomst is bepaald. Noemt deze overeenkomst meer dan 1 huurder, dan is ieder van hen hoofdelijk aansprakelijk voor de nakoming van alle verplichtingen van de huurder uit deze overeenkomst.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>2</span>. <span>Het gehuurde</span></h2>
+<div><div data-clause="premises">
+<p>De verhuurder verhuurt aan de huurder, die in huur aanneemt, de woonruimte gelegen aan <strong>Keizersgracht 12, woning 2B, 1015 CJ Amsterdam</strong>, met de daarbij behorende onroerende aanhorigheden, hierna te noemen &ldquo;het gehuurde&rdquo;.</p>
+<p>Op deze overeenkomst zijn de wettelijke bepalingen over huur van woonruimte van toepassing (Boek 7, titel 4, afdeling 5 van het Burgerlijk Wetboek). Voor zover de wet bepaalt dat daarvan niet ten nadele van de huurder kan worden afgeweken, gaan die bepalingen voor op afwijkende afspraken in deze overeenkomst.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>3</span>. <span>Waarborgsom</span></h2>
+<div><div data-clause="deposit">
+<p>De huurder betaalt bij aanvang van de huur een waarborgsom van <strong>€ 1.800,00</strong>.</p>
+<p>De waarborgsom strekt tot zekerheid van de nakoming van wat in deze overeenkomst is overeengekomen en bedraagt ten hoogste 2 maal de kale huurprijs (artikel 7:261b leden 1 en 2 BW).</p>
+<p>De verhuurder betaalt de waarborgsom terug binnen 14 dagen na beëindiging van de huurovereenkomst. Is er schade aan het gehuurde waarvoor de huurder aansprakelijk is, of heeft de huurder nog huurprijs, servicekosten of een energieprestatievergoeding te voldoen, dan betaalt de verhuurder het restant terug binnen 30 dagen na beëindiging, na verrekening van de aantoonbaar gemaakte herstelkosten respectievelijk de nog verschuldigde bedragen. Van een verrekening stelt de verhuurder de huurder schriftelijk in kennis, met een volledige kostenspecificatie (artikel 7:261b leden 3 en 4 BW).<span class="clause-ref" data-ref="handover-inspection"> Voor de vaststelling van schade geldt de oplevering (zie artikel <span>13</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>4</span>. <span>Geschillen</span></h2>
+<div><div data-clause="disputes">
+<p>Op deze overeenkomst is Nederlands recht van toepassing.</p>
+<p>Geschillen waarover de huurcommissie volgens de wet uitspraak kan doen, zoals over de redelijkheid van de huurprijs en over servicekosten, kunnen partijen aan de huurcommissie voorleggen. Partijen worden geacht te zijn overeengekomen wat de huurcommissie in haar uitspraak heeft vastgesteld, tenzij een van hen binnen 8 weken nadat een afschrift van de uitspraak is verzonden een beslissing van de rechter vordert (artikel 7:262 BW). Andere geschillen worden voorgelegd aan de bevoegde rechter.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>5</span>. <span>Duur</span></h2>
+<div><div data-clause="term">
+<p>Deze overeenkomst gaat in op <strong>1 februari 2026</strong>.</p>
+<p>De overeenkomst is aangegaan voor bepaalde tijd<span>, tot en met <strong>31 januari 2028</strong></span>. Een voor bepaalde tijd aangegane huur van woonruimte eindigt niet door het enkele verloop van de huurtijd. Elk van beide partijen kan de huur opzeggen tegen een voor de betaling van de huurprijs overeengekomen dag, maar niet eerder dan tegen het einde van de bepaalde tijd (artikel 7:271 lid 1 BW).</p>
+<p>Dit is alleen anders bij een huur voor ten hoogste 2 jaar aan een huurder die behoort tot een bij algemene maatregel van bestuur aangewezen categorie (artikel 7:271 lid 2 BW). In dat geval informeert de verhuurder de huurder niet eerder dan 3 maanden en uiterlijk 1 maand v&oacute;&oacute;r het verstrijken van de huurtermijn schriftelijk over de dag waarop de huur eindigt; doet de verhuurder dat niet, dan wordt de huur na het verstrijken van de termijn voor onbepaalde tijd verlengd. De huurder kan zo&rsquo;n huur ook v&oacute;&oacute;r het verstrijken van de termijn opzeggen tegen een voor de betaling van de huurprijs overeengekomen dag.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>6</span>. <span>Huurprijs</span></h2>
+<div><div data-clause="rent">
+<p>De huurprijs voor het enkele gebruik van het gehuurde (kale huurprijs, artikel 7:237 lid 2 BW) bedraagt <strong>€ 900,00</strong>
+<span>per maand</span>.<span class="clause-ref" data-ref="service-costs"> Daarnaast is de huurder de vergoedingen voor nutsvoorzieningen en servicekosten verschuldigd (zie artikel <span>8</span>).</span></p>
+<p>Voor zover op het gehuurde een wettelijke maximale huurprijs van toepassing is, waaronder de regels die met de Wet betaalbare huur per 1 juli 2024 zijn ingevoerd, is de huurder niet meer verschuldigd dan die maximale huurprijs. De huurder kan tot uiterlijk 6 maanden na het ingaan van een door hem voor de eerste maal met betrekking tot deze woonruimte aangegane huurovereenkomst de huurcommissie verzoeken uitspraak te doen over de redelijkheid van de overeengekomen huurprijs (artikel 7:249 BW).</p>
+<p class="clause-ref" data-ref="rent-adjustment">Voor de aanpassing van de huurprijs geldt het daarover in deze overeenkomst bepaalde (zie artikel <span>7</span>).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>7</span>. <span>Huurprijsaanpassing</span></h2>
+<div><div data-clause="rent-adjustment">
+<p>De verhuurder kan de huurprijs 1 maal per jaar aanpassen, voor het eerst 12 maanden na de ingangsdatum van deze overeenkomst. De verhuurder deelt de aanpassing, met vermelding van de geldende en de nieuwe huurprijs en de ingangsdatum, tijdig en schriftelijk aan de huurder mee.</p>
+<p>De aanpassing is nooit hoger dan de wettelijk maximaal toegestane huurverhoging die op de ingangsdatum van de aanpassing voor het gehuurde geldt. Leidt dit beding tot een hogere verhoging dan wettelijk is toegelaten, dan is het beding in zoverre nietig en geldt de huurprijs als verhoogd met de toegelaten verhoging (artikel 7:248 BW). Voor zover de wet dat toelaat, kan de huurder de huurcommissie verzoeken uitspraak te doen over een verhoging.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>8</span>. <span>Servicekosten</span></h2>
+<div><div data-clause="service-costs">
+<p>Naast de huurprijs betaalt de huurder per betalingstermijn een voorschot op de kosten voor nutsvoorzieningen met een individuele meter en op de servicekosten (artikel 7:237 lid 3 BW), zoals in deze overeenkomst vermeld.</p>
+<p>De verhuurder verstrekt de huurder elk jaar, uiterlijk 6 maanden na het verstrijken van een kalenderjaar, een naar soort uitgesplitst overzicht van de in dat kalenderjaar in rekening gebrachte kosten, met vermelding van de wijze van berekening (artikel 7:259 lid 2 BW). Wat te veel of te weinig aan voorschotten is betaald, wordt na verstrekking van dat overzicht tussen partijen verrekend.</p>
+<p>Bereiken partijen geen overeenstemming over de verschuldigde kosten, dan kan ieder van hen de huurcommissie verzoeken daarover uitspraak te doen (artikel 7:260 BW).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>9</span>. <span>Betaling</span></h2>
+<div><div data-clause="payment">
+<p>De huurder betaalt de huurprijs<span class="clause-ref" data-ref="rent"> (zie artikel <span>6</span>)</span><span> en de voorschotten op de servicekosten</span>
+<span>per maand</span>, <span>uiterlijk op de <strong>25</strong>e dag van de maand waarin de betalingstermijn aanvangt</span>, door overmaking naar de rekening die de verhuurder daarvoor schriftelijk heeft opgegeven.</p>
+<p>Betaalt de huurder niet tijdig, dan is hij over het achterstallige bedrag de wettelijke rente verschuldigd, en vergoedt hij buitengerechtelijke incassokosten uitsluitend voor zover de wet dat toestaat.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>10</span>. <span>Gebruik</span></h2>
+<div><div data-clause="use">
+<p>De huurder gebruikt het gehuurde uitsluitend als woonruimte en gedraagt zich ten aanzien van het gebruik als een goed huurder (artikel 7:213 BW). De huurder en degenen die zich met zijn toestemming in het gehuurde bevinden, veroorzaken geen overlast voor omwonenden.</p>
+<p>Veranderingen aan de inrichting of gedaante van het gehuurde die bij het einde van de huur niet zonder noemenswaardige kosten ongedaan kunnen worden gemaakt, brengt de huurder alleen aan na schriftelijke toestemming van de verhuurder. De verhuurder verleent binnen 8 weken toestemming in ieder geval als de verandering de verhuurbaarheid niet schaadt en niet tot een waardedaling van het gehuurde leidt (artikel 7:215 BW).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>11</span>. <span>Onderhoud en herstel</span></h2>
+<div><div data-clause="maintenance">
+<p>De verhuurder verhelpt op verlangen van de huurder gebreken aan het gehuurde, tenzij dit onmogelijk is of uitgaven vereist die in de gegeven omstandigheden redelijkerwijs niet van de verhuurder zijn te vergen (artikel 7:206 BW). De huurder meldt een gebrek zo spoedig mogelijk aan de verhuurder.</p>
+<p>De huurder verricht op eigen kosten de kleine herstellingen, tenzij deze nodig zijn geworden doordat de verhuurder is tekortgeschoten in zijn verplichting gebreken te verhelpen (artikel 7:217 BW). Welke herstellingen als klein gelden, volgt uit de wettelijke regeling daarvan.</p>
+<p>Is de verhuurder met het verhelpen van een gebrek in verzuim, dan kan de huurder het gebrek zelf verhelpen en de redelijke kosten op de verhuurder verhalen, desgewenst door die in mindering op de huurprijs te brengen (artikel 7:206 lid 3 BW). Van deze regels kan niet ten nadele van de huurder worden afgeweken (artikel 7:242 BW).</p>
+<p>De huurder geeft de verhuurder gelegenheid tot het uitvoeren van dringende werkzaamheden aan het gehuurde, onverminderd zijn wettelijke aanspraken op huurvermindering, ontbinding en schadevergoeding (artikel 7:220 lid 1 BW).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>12</span>. <span>Energielabel</span></h2>
+<div><div data-clause="energy-label">
+<p>Bij nieuwe verhuur van een bestaande woning is een geldig energielabel verplicht op grond van het Besluit bouwwerken leefomgeving. De verhuurder verstrekt de huurder uiterlijk bij het aangaan van deze overeenkomst een afschrift van het geldige energielabel van het gehuurde. Een energielabel is geldig tot de op het label vermelde datum.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>13</span>. <span>Inspectie en oplevering</span></h2>
+<div><div data-clause="handover-inspection">
+<p>Bij aanvang van de huur maken partijen gezamenlijk een beschrijving op van de staat van het gehuurde (opnamerapport). Beide partijen ondertekenen de beschrijving en ieder ontvangt een exemplaar.</p>
+<p>Bij het einde van de huur stelt de huurder het gehuurde weer ter beschikking van de verhuurder, in de staat waarin hij het volgens die beschrijving heeft aanvaard, met uitzondering van geoorloofde veranderingen en toevoegingen en van wat door ouderdom is tenietgegaan of beschadigd. Is geen beschrijving opgemaakt, dan wordt de huurder, behoudens tegenbewijs, verondersteld het gehuurde te hebben ontvangen in de staat waarin het zich bij het einde van de huur bevindt (artikel 7:224 BW).</p>
+<p>Partijen voeren v&oacute;&oacute;r het einde van de huur een gezamenlijke voorinspectie uit, zodat de huurder eventuele gebreken nog zelf kan herstellen, en bij de oplevering een eindinspectie.<span class="clause-ref" data-ref="deposit"> De afrekening van de waarborgsom volgt daarna (zie artikel <span>3</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>14</span>. <span>Beëindiging</span></h2>
+<div><div data-clause="termination">
+<p>Opzegging van deze overeenkomst geschiedt bij deurwaardersexploot of bij aangetekende brief, tegen een voor de betaling van de huurprijs overeengekomen dag (artikel 7:271 leden 3 en 4 BW).</p>
+<p>De huurder neemt een opzegtermijn in acht die gelijk is aan de tijd tussen 2 opeenvolgende betaaldagen, maar niet korter dan 1 maand en niet langer dan 3 maanden (artikel 7:271 lid 6 onder a BW).</p>
+<p>Is de huur voor bepaalde tijd aangegaan, dan kan in afwijking hiervan geen van beide partijen opzeggen tegen een dag die valt v&oacute;&oacute;r het einde van de bepaalde tijd<span class="clause-ref" data-ref="term"> (zie artikel <span>5</span>)</span>; de opzegtermijnen van dit artikel gelden dan voor opzegging tegen dat einde of een latere betaaldag (artikel 7:271 lid 1 BW). Alleen bij een tijdelijke huur als bedoeld in artikel 7:271 lid 2 BW kan de huurder ook eerder opzeggen.</p>
+<p>De verhuurder kan slechts opzeggen op een van de gronden die de wet daarvoor noemt (artikel 7:274 lid 1 BW) en vermeldt die gronden in de opzegging; een opzegging op andere gronden is nietig. De opzegtermijn voor de verhuurder is ten minste 3 maanden, verlengd met 1 maand voor elk jaar dat de huurder het gehuurde krachtens overeenkomst ononderbroken in gebruik heeft gehad, tot ten hoogste 6 maanden. Bij de opzegging vraagt de verhuurder de huurder binnen 6 weken mee te delen of hij in de beëindiging toestemt (artikel 7:271 leden 5 en 6 onder b BW). Stemt de huurder niet schriftelijk in, dan blijft de overeenkomst van kracht totdat de rechter onherroepelijk heeft beslist op een vordering van de verhuurder (artikel 7:272 BW).</p>
+<p>Partijen kunnen de huur, nadat deze is ingegaan, ook met wederzijds goedvinden beëindigen (artikel 7:271 lid 10 BW).<span class="clause-ref" data-ref="handover-inspection"> Voor de oplevering geldt het daarover in deze overeenkomst bepaalde (zie artikel <span>13</span>).</span><span class="clause-ref" data-ref="deposit"> De waarborgsom wordt terugbetaald zoals in deze overeenkomst bepaald (zie artikel <span>3</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>15</span>. <span>Gegevensbescherming</span></h2>
+<div><div data-clause="data-protection">
+<p>De verhuurder verwerkt persoonsgegevens van de huurder alleen voor zover dat nodig is voor het aangaan en uitvoeren van deze overeenkomst en voor het voldoen aan wettelijke verplichtingen, overeenkomstig de Algemene verordening gegevensbescherming (AVG, Verordening (EU) 2016/679). De verhuurder bewaart die gegevens niet langer dan daarvoor noodzakelijk is.</p>
+<p>De huurder kan bij de verhuurder zijn rechten op grond van de AVG uitoefenen, waaronder het recht op inzage, rectificatie en wissing van zijn persoonsgegevens, en kan een klacht indienen bij de toezichthoudende autoriteit, in Nederland de Autoriteit Persoonsgegevens.</p>
+</div></div>
+</div>
+</div>
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>Verhuurder / Vastgoedbeheerder</span>
+<span class="sig-placeholder">signature-landlord</span>
+</div>
+<div class="sig-date"><span>Datum:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>Maria Jansen</span>
+<span class="sig-placeholder">signature-tenant-1</span>
+</div>
+<div class="sig-date"><span>Datum:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-disclaimer">Conceptdocument, geen juridisch advies: laat het vóór ondertekening beoordelen door een gekwalificeerde juridisch adviseur.</div>
+<div class="letter-footer">
+<span>Document gegenereerd op 15 januari 2026</span>
+<span> &mdash; </span>
+<span>Buurman Vastgoedbeheer</span>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+languageUsed=nl
+authoritative=Boolean:true
+clauseSource=String:lease-agreement/NL/residential/nl
+clauses:
+  [0]:
+    articleNumber=Integer:1
+    clauseKey=String:parties
+    optional=Boolean:false
+    pinned=Boolean:true
+    title=String:Partijen
+  [1]:
+    articleNumber=Integer:2
+    clauseKey=String:premises
+    optional=Boolean:false
+    pinned=Boolean:true
+    title=String:Het gehuurde
+  [2]:
+    articleNumber=Integer:3
+    clauseKey=String:deposit
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Waarborgsom
+  [3]:
+    articleNumber=Integer:4
+    clauseKey=String:disputes
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Geschillen
+  [4]:
+    articleNumber=Integer:5
+    clauseKey=String:term
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Duur
+  [5]:
+    articleNumber=Integer:6
+    clauseKey=String:rent
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Huurprijs
+  [6]:
+    articleNumber=Integer:7
+    clauseKey=String:rent-adjustment
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Huurprijsaanpassing
+  [7]:
+    articleNumber=Integer:8
+    clauseKey=String:service-costs
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Servicekosten
+  [8]:
+    articleNumber=Integer:9
+    clauseKey=String:payment
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Betaling
+  [9]:
+    articleNumber=Integer:10
+    clauseKey=String:use
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Gebruik
+  [10]:
+    articleNumber=Integer:11
+    clauseKey=String:maintenance
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Onderhoud en herstel
+  [11]:
+    articleNumber=Integer:12
+    clauseKey=String:energy-label
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Energielabel
+  [12]:
+    articleNumber=Integer:13
+    clauseKey=String:handover-inspection
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Inspectie en oplevering
+  [13]:
+    articleNumber=Integer:14
+    clauseKey=String:termination
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Beëindiging
+  [14]:
+    articleNumber=Integer:15
+    clauseKey=String:data-protection
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Gegevensbescherming
+contactAddress=<null>
+contractIdentifier=String:CON00000000000000000000001
+contractTypeLabel=String:Bepaalde tijd
+countryMetadata=<null>
+depositAmount=String:€ 1.800,00
+endDate=String:31 januari 2028
+fallbackUsed=Boolean:false
+fixedTerm=Boolean:true
+generatedDate=String:15 januari 2026
+landlordName=String:Verhuur Voorbeeld BV
+landlordNoticeDays=Integer:90
+languageUsed=String:nl
+paymentDueDay=Integer:25
+paymentFrequency=String:per maand
+primaryContactName=String:Maria Jansen
+propertyAddress=String:Keizersgracht 12, woning 2B, 1015 CJ Amsterdam
+refs:
+  data-protection=Integer:15
+  deposit=Integer:3
+  disputes=Integer:4
+  energy-label=Integer:12
+  handover-inspection=Integer:13
+  maintenance=Integer:11
+  parties=Integer:1
+  payment=Integer:9
+  premises=Integer:2
+  rent=Integer:6
+  rent-adjustment=Integer:7
+  service-costs=Integer:8
+  term=Integer:5
+  termination=Integer:14
+  use=Integer:10
+rentAmount=String:€ 900,00
+rentComponents:
+  [0]:
+    amount=String:€ 900,00
+    type=String:Kale huur
+  [1]:
+    amount=String:€ 120,50
+    type=String:Voorschot nutsvoorzieningen
+  [2]:
+    amount=String:€ 80,00
+    type=String:Parkeren
+requestedLang=String:nl
+signatureBlocks:
+  [0]:
+    label=String:Verhuurder / Vastgoedbeheerder
+    placeholder=String:signature-landlord
+  [1]:
+    label=String:Maria Jansen
+    placeholder=String:signature-tenant-1
+startDate=String:1 februari 2026
+tenantNames=String:Maria Jansen
+tenantNoticeDays=Integer:60

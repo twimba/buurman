@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style> @page { margin: 60px 60px 70px 60px; size: A4; } body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; color: #292524; font-size: 13px; line-height: 1.6; } .letter { max-width: 100%; } .letter-header { margin-bottom: 40px; } .letter-date { font-size: 14px; color: #292524; font-weight: 500; } .letter-ref { font-size: 12px; color: #78716c; margin-top: 4px; letter-spacing: 0.5px; } .letter-addressee { margin-bottom: 30px; line-height: 1.5; font-size: 14px; color: #292524; } .addressee-name { font-weight: 600; font-size: 15px; } .letter-subject { font-size: 16px; font-weight: 700; color: #0c4a6e; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #0c4a6e; } .letter-body { font-size: 13px; color: #292524; line-height: 1.7; } .letter-body p { margin: 0 0 14px 0; } .letter-body strong { font-weight: 600; } .summary-table { width: 100%; border-collapse: collapse; margin: 20px 0 24px 0; border: 1px solid #e7e5e4; border-radius: 6px; } .summary-table tr { border-bottom: 1px solid #e7e5e4; } .summary-table tr:last-child { border-bottom: none; } .st-label { padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #78716c; font-weight: 600; width: 40%; background-color: #fafaf9; vertical-align: top; } .st-value { padding: 10px 16px; font-size: 13px; color: #292524; vertical-align: top; } .legal-clause { margin: 16px 0; padding: 12px 16px; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 12px; color: #0c4a6e; line-height: 1.5; } .letter-signature { margin-top: 50px; width: 50%; } .sig-line { border-bottom: 1px solid #292524; margin-bottom: 8px; height: 40px; } .sig-label { font-size: 13px; color: #57534e; font-weight: 500; } .sig-date { font-size: 12px; color: #57534e; margin-top: 16px; display: flex; gap: 4px; } .sig-date-line { flex: 1; border-bottom: 1px solid #78716c; margin-bottom: 2px; } /* Carries a signer's placeholder as faint, tiny text alongside the visible label — present in the PDF's text layer (so Documenso's placeholder-text matching finds it) without reading as visible clutter. Do not use display:none/visibility:hidden: some PDF text extraction paths drop such content from the text layer entirely. */ .sig-placeholder { font-size: 5px; color: #e7e5e4; letter-spacing: 0; } .letter-disclaimer { margin-top: 40px; padding: 14px 16px; background-color: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; font-size: 11px; color: #78716c; line-height: 1.5; font-style: italic; } .letter-footer { text-align: center; margin-top: 30px; font-size: 10px; color: #a8a29e; } </style>
+<style> .clause { margin: 18px 0; } .clause-title { font-size: 14px; font-weight: 700; color: #0c4a6e; margin-bottom: 6px; } .clause-body { font-size: 13px; color: #292524; line-height: 1.6; white-space: pre-wrap; } </style>
+</head>
+<body>
+<div class="letter">
+<!-- Header -->
+<div class="letter-header">
+<div class="letter-date">15 January 2026</div>
+<div class="letter-ref">Ref.: CON00000000000000000000001</div>
+</div>
+<!-- Addressee -->
+<div class="letter-addressee">
+<div>
+<div class="addressee-name">L. Peeters</div>
+</div>
+</div>
+<!-- Title -->
+<div class="letter-subject">Lease Agreement</div>
+<div class="letter-body">
+<!-- Premises -->
+<p>The landlord lets to the tenant the premises located at Keizersgracht 12, 1015 CJ Amsterdam.</p>
+<!-- Rent components -->
+<!-- Clause body: "clauses" is already filtered to the included subset by the exporter (per LeaseClauseResolver's resolution). This template never inspects clause.included — deciding what counts as included is the resolver's job, done once, not the template's job done again. -->
+<div class="clause">
+<div class="clause-title">Parties</div>
+<div class="clause-body">This agreement is between the landlord and tenant named above.</div>
+</div>
+<div class="clause">
+<div class="clause-title">Premises</div>
+<div class="clause-body">The landlord lets to the tenant the premises described above.</div>
+</div>
+<div class="clause">
+<div class="clause-title">Rent</div>
+<div class="clause-body">The tenant shall pay the rent set out in this agreement.</div>
+</div>
+<div class="clause">
+<div class="clause-title">Duration</div>
+<div class="clause-body">This agreement runs for the term set out in this agreement.</div>
+</div>
+<div class="clause">
+<div class="clause-title">Deposit</div>
+<div class="clause-body">A security deposit may be required as set out in this agreement.</div>
+</div>
+<div class="clause">
+<div class="clause-title">Maintenance</div>
+<div class="clause-body">Each party&#39;s maintenance obligations are as set out in this agreement.</div>
+</div>
+<div class="clause">
+<div class="clause-title">Termination</div>
+<div class="clause-body">This agreement may be terminated as provided by applicable law and this agreement&#39;s termination terms.</div>
+</div>
+</div>
+<!-- Signatures: one block per signer (landlord, then each tenant) — see signatureBlocks. -->
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>Landlord / Property Manager</span>
+<span class="sig-placeholder">signature-landlord</span>
+</div>
+<div class="sig-date"><span>Date:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>L. Peeters</span>
+<span class="sig-placeholder">signature-tenant-1</span>
+</div>
+<div class="sig-date"><span>Date:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-disclaimer">This document was generated from example clause text and has not been reviewed by qualified legal counsel.</div>
+<!-- Footer -->
+<div class="letter-footer">
+<span>Document generated on 15 January 2026</span>
+<span> &mdash; </span>
+<span>Buurman Property Management</span>
+</div>
+</div>
+</body>
+</html>

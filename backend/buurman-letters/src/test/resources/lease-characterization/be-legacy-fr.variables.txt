@@ -1,0 +1,36 @@
+languageUsed=fr
+clauses:
+  [0]:
+    body=String:Le présent contrat est conclu entre le bailleur et le locataire nommés ci-dessus.
+    title=String:Parties
+  [1]:
+    body=String:Le bailleur loue au locataire les locaux décrits ci-dessus.
+    title=String:Locaux
+  [2]:
+    body=String:Le locataire paie le loyer fixé dans le présent contrat.
+    title=String:Loyer
+  [3]:
+    body=String:Le présent contrat court pour la durée fixée dans le présent contrat.
+    title=String:Durée
+  [4]:
+    body=String:Un dépôt de garantie peut être exigé comme prévu dans le présent contrat.
+    title=String:Dépôt de garantie
+  [5]:
+    body=String:Les obligations d'entretien de chaque partie sont fixées dans le présent contrat.
+    title=String:Entretien
+  [6]:
+    body=String:Le présent contrat peut être résilié conformément au droit applicable et aux conditions de résiliation du présent contrat.
+    title=String:Résiliation
+contactAddress=<null>
+contractIdentifier=String:CON00000000000000000000001
+generatedDate=String:15 janvier 2026
+primaryContactName=String:L. Peeters
+propertyAddress=String:Keizersgracht 12, 1015 CJ Amsterdam
+rentComponents:
+signatureBlocks:
+  [0]:
+    label=String:Propriétaire / Gestionnaire Immobilier
+    placeholder=String:signature-landlord
+  [1]:
+    label=String:L. Peeters
+    placeholder=String:signature-tenant-1

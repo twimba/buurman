@@ -1,0 +1,36 @@
+languageUsed=en
+clauses:
+  [0]:
+    body=String:This agreement is between the landlord and tenant named above.
+    title=String:Parties
+  [1]:
+    body=String:The landlord lets to the tenant the premises described above.
+    title=String:Premises
+  [2]:
+    body=String:The tenant shall pay the rent set out in this agreement.
+    title=String:Rent
+  [3]:
+    body=String:This agreement runs for the term set out in this agreement.
+    title=String:Duration
+  [4]:
+    body=String:A security deposit may be required as set out in this agreement.
+    title=String:Deposit
+  [5]:
+    body=String:Each party's maintenance obligations are as set out in this agreement.
+    title=String:Maintenance
+  [6]:
+    body=String:This agreement may be terminated as provided by applicable law and this agreement's termination terms.
+    title=String:Termination
+contactAddress=<null>
+contractIdentifier=String:CON00000000000000000000001
+generatedDate=String:15 January 2026
+primaryContactName=String:L. Peeters
+propertyAddress=String:Keizersgracht 12, 1015 CJ Amsterdam
+rentComponents:
+signatureBlocks:
+  [0]:
+    label=String:Landlord / Property Manager
+    placeholder=String:signature-landlord
+  [1]:
+    label=String:L. Peeters
+    placeholder=String:signature-tenant-1
