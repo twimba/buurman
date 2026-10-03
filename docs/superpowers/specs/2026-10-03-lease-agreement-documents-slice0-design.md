@@ -25,7 +25,8 @@ with the clause toggles they already have. Success for Slice 0: an NL residentia
   also drives clauses (each clause is a tagged block that can be included/excluded).
 - **Kinds derived from the property**, not a new full-blown `lease_kind`:
   - `Property.PropertyCategory` `RESIDENTIAL` → residential (furnished vs unfurnished from
-    `PropertyResidentialDetails.furnished`); `COMMERCIAL` and `INDUSTRIAL` → commercial;
+    `UnitResidentialDetails.furnished`, unit-level via `UnitResidentialDetailsRepository.findByUnitIdAndTeamId`,
+    falling back to `PropertyResidentialDetails.furnished`); `COMMERCIAL` and `INDUSTRIAL` → commercial;
     `MIXED_USE` → a dedicated **generic mixed-use** agreement; `AGRICULTURAL` → its own kind.
   - A small optional contract field **`lease_regime`** (`STANDARD` default, `SHORT_TERM`,
     `STUDENT_OR_MOBILITY`) covers what a property cannot express. Shown only for residential properties
@@ -73,14 +74,21 @@ taking the full template name. Other letter types are unaffected.
 </section>
 ```
 
-- `lease_clause_templates` keeps structure only: add `lease_kind VARCHAR(32) NOT NULL DEFAULT
-  'residential'`; `title_i18n_key` / `body_i18n_key` become nullable and unused for new rows. New unique
-  key `(country_code, lease_kind, clause_key, version)`. Old placeholder rows are soft-deleted by a new
-  migration (never edit V083); new rows are inserted with `version = 2`.
-- `LeaseClauseResolver` returns the structure (key, included, optional, order) and **also** the clause
-  title for the toggle UI, read from a small per-document metadata block (`<meta data-clause-title>` or a
-  sidecar bundle `lease-clauses_{lang}.properties` — decided in the plan after checking Thymeleaf's
-  fragment API). Required clauses stay forced-included (V084 constraint and resolver rule unchanged).
+- `lease_clause_templates` gains `lease_kind VARCHAR(32) NOT NULL DEFAULT 'residential'` and `pinned`.
+  `title_i18n_key` / `body_i18n_key` STAY: they provide the title and a one-line summary for the clause
+  toggle UI. The full legal text lives only in the per-language documents.
+- Migrations (highest existing is V090):
+  - `V091__lease_kind_and_regime.sql`: `lease_kind` and `pinned` columns, `contracts.lease_regime`
+    (see D4), relabel legacy placeholder rows as `lease_kind='legacy'`, and replace the active-uniqueness
+    index from V090 with one that includes `lease_kind`.
+  - `V092__seed_nl_residential_lease_clauses.sql`: NL residential clause rows.
+  Never edit earlier migrations (V083, V090).
+- **Legacy fallback:** old placeholder rows are relabelled `lease_kind='legacy'` and kept, not
+  soft-deleted, so other countries and kinds without a document keep working with the current
+  bundle-based rendering.
+- `LeaseClauseResolver` returns the structure (key, included, optional, order) plus the title/summary
+  from the existing i18n keys. Required clauses stay forced-included (V084 constraint and resolver rule
+  unchanged).
 - **Reordering is kept.** The per-contract `sort_order` override (already persisted by
   `LeaseClauseService`) drives render order: the document renders clause blocks in the resolved order via
   a loop over `clauses.ordered()` that includes each block by key (blocks are Thymeleaf fragments
@@ -107,11 +115,11 @@ document and the regulations page cannot disagree; otherwise the text states the
 
 ### D4 — Contract regime field
 
-Migration adds `contracts.lease_regime VARCHAR(32) NOT NULL DEFAULT 'STANDARD'` with a CHECK
+Migration V091 adds `contracts.lease_regime VARCHAR(32) NOT NULL DEFAULT 'STANDARD'` with a CHECK
 constraint. OpenAPI (`openapi/src/`, then `make bundle-openapi` and `yarn generate:api`), create/update
-DTOs, mapper, and a select in the contract form shown only when a document exists for another regime in
-that country (served by a new endpoint `GET /lease-agreements/availability?country=&propertyId=`).
-Slice 0 ships the field and plumbing; only `STANDARD` has content for NL.
+DTOs, mapper, and a regime select in the contract form. There is no availability endpoint in Slice 0:
+no non-`STANDARD` regime has content, so the select exists in code but is rendered only when a later
+slice enables a regime. Slice 0 ships the field and plumbing; only `STANDARD` has content for NL.
 
 ### D5 — NL residential reference
 
@@ -134,6 +142,13 @@ data protection, disputes, signatures. Optional/required flags follow the legal 
 - **Migration/repository test**: kind-aware `findByCountryCode` is team-agnostic (templates are global),
   contract `lease_regime` defaults to `STANDARD`; multi-tenant assertions for the contract field.
 - Existing `LeaseAgreementExporterTest` and `ContractLeaseAgreementTab` tests updated, not deleted.
+
+### D7 — Backoffice CRUD
+
+The backoffice already has lease clause template CRUD (`BackofficeLeaseClauseTemplateService` /
+Controller, `frontend/backoffice` `LeaseClauseTemplatesPage`). It becomes kind- and pinned-aware
+(create/edit/list expose `lease_kind` and `pinned`). The lease kind of an existing template cannot be
+changed.
 
 ## Slice roadmap (not part of this spec)
 
