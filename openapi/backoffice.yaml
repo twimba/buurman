@@ -8361,6 +8361,7 @@ components:
           type: integer
       required:
         - countryCode
+        - leaseKind
         - clauseKey
         - titleI18nKey
         - bodyI18nKey

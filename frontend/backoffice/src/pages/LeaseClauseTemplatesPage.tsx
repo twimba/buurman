@@ -29,7 +29,8 @@ const INPUT_CLASS =
   'w-full px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 
 interface TemplateForm {
-  leaseKind: LeaseKind;
+  // Empty only on a fresh create form: the kind must be chosen explicitly (no default).
+  leaseKind: LeaseKind | '';
   clauseKey: string;
   titleI18nKey: string;
   bodyI18nKey: string;
@@ -43,7 +44,7 @@ const emptyForm = (
   countryCode: string
 ): TemplateForm & { countryCode: string } => ({
   countryCode,
-  leaseKind: LeaseKind.RESIDENTIAL,
+  leaseKind: '',
   clauseKey: '',
   titleI18nKey: '',
   bodyI18nKey: '',
@@ -102,6 +103,9 @@ export const LeaseClauseTemplatesPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.leaseKind) {
+      return;
+    }
     const data = {
       countryCode: form.countryCode,
       leaseKind: form.leaseKind,
@@ -147,9 +151,8 @@ export const LeaseClauseTemplatesPage = () => {
       >
         <AlertTriangle className="h-5 w-5 flex-shrink-0 text-warning-text mt-0.5" />
         <p className="text-sm text-warning-text">
-          Clause bodies reference placeholder i18n keys with example
-          legal-boilerplate text. This is not vetted legal content — review with
-          qualified counsel before relying on generated leases in production.
+          NL residential clauses are draft legal text pending counsel review;
+          other countries use placeholder text. Not vetted legal content.
         </p>
       </div>
 
@@ -306,6 +309,7 @@ export const LeaseClauseTemplatesPage = () => {
                   Lease Kind
                 </label>
                 <select
+                  required
                   disabled={!!editingTemplate}
                   value={form.leaseKind}
                   onChange={(e) =>
@@ -319,6 +323,9 @@ export const LeaseClauseTemplatesPage = () => {
                     (editingTemplate ? ' opacity-50 cursor-not-allowed' : '')
                   }
                 >
+                  <option value="" disabled>
+                    Select a lease kind…
+                  </option>
                   {Object.values(LeaseKind).map((kind) => (
                     <option key={kind} value={kind}>
                       {kind}

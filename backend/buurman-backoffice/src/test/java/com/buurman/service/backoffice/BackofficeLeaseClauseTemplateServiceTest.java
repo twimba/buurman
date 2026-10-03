@@ -76,7 +76,8 @@ class BackofficeLeaseClauseTemplateServiceTest {
   @DisplayName("create rejects clause keys outside ^[a-z0-9-]{1,64}$")
   void createRejectsUnsafeClauseKey(String key) {
     UpsertLeaseClauseTemplateRequest bad =
-        new UpsertLeaseClauseTemplateRequest("NL", null, key, "t", "b", true, false, false, 10);
+        new UpsertLeaseClauseTemplateRequest(
+            "NL", LeaseKind.RESIDENTIAL, key, "t", "b", true, false, false, 10);
     assertThatThrownBy(() -> service.create(bad, ACTOR_ID)).isInstanceOf(BadRequestException.class);
     verifyNoInteractions(repository);
   }
@@ -95,7 +96,15 @@ class BackofficeLeaseClauseTemplateServiceTest {
             service
                 .create(
                     new UpsertLeaseClauseTemplateRequest(
-                        "NL", null, "termination-reference", "t", "b", true, false, false, 10),
+                        "NL",
+                        LeaseKind.RESIDENTIAL,
+                        "termination-reference",
+                        "t",
+                        "b",
+                        true,
+                        false,
+                        false,
+                        10),
                     ACTOR_ID)
                 .clauseKey())
         .isEqualTo("termination-reference");
@@ -105,7 +114,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
   @DisplayName("create persists and returns the right response shape")
   void createPersistsAndReturnsResponse() {
     UpsertLeaseClauseTemplateRequest request =
-        request("clause.governingLaw.title", true, false, null, false);
+        request("clause.governingLaw.title", true, false, LeaseKind.RESIDENTIAL, false);
 
     when(repository.save(any(LeaseClauseTemplate.class)))
         .thenAnswer(
@@ -132,7 +141,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
   @DisplayName("create records the acting backoffice admin as both createdBy and updatedBy")
   void createRecordsActor() {
     UpsertLeaseClauseTemplateRequest request =
-        request("clause.governingLaw.title", true, false, null, false);
+        request("clause.governingLaw.title", true, false, LeaseKind.RESIDENTIAL, false);
     when(repository.save(any(LeaseClauseTemplate.class)))
         .thenAnswer(
             invocation -> {
@@ -194,7 +203,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
   @DisplayName("create rejects a required clause that defaults to excluded")
   void createRejectsRequiredButExcludedByDefault() {
     UpsertLeaseClauseTemplateRequest request =
-        request("clause.governingLaw.title", false, false, null, false);
+        request("clause.governingLaw.title", false, false, LeaseKind.RESIDENTIAL, false);
 
     assertThatThrownBy(() -> service.create(request, ACTOR_ID))
         .isInstanceOf(BadRequestException.class);
@@ -274,21 +283,14 @@ class BackofficeLeaseClauseTemplateServiceTest {
   }
 
   @Test
-  @DisplayName("create without a kind defaults to RESIDENTIAL")
-  void createDefaultsKindToResidential() {
-    when(repository.save(any(LeaseClauseTemplate.class)))
-        .thenAnswer(
-            invocation -> {
-              LeaseClauseTemplate template = invocation.getArgument(0);
-              template.setIdentifier(Optional.of(LeaseClauseTemplateIdentifier.of("LCT01")));
-              return template;
-            });
+  @DisplayName("create without a kind is rejected, never defaulted")
+  void createRequiresKind() {
+    UpsertLeaseClauseTemplateRequest noKind = request("t", true, false, null, false);
 
-    LeaseClauseTemplateResponse response =
-        service.create(request("t", true, false, null, false), ACTOR_ID);
-
-    assertThat(response.leaseKind()).isEqualTo(LeaseKind.RESIDENTIAL);
-    assertThat(response.pinned()).isFalse();
+    assertThatThrownBy(() -> service.create(noKind, ACTOR_ID))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessage("leaseKind is required");
+    verifyNoInteractions(repository);
   }
 
   @Test

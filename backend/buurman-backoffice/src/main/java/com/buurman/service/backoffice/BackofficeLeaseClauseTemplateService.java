@@ -35,12 +35,17 @@ public class BackofficeLeaseClauseTemplateService {
   public LeaseClauseTemplateResponse create(
       UpsertLeaseClauseTemplateRequest request, UUID actorId) {
     rejectInvalidClauseKey(request.clauseKey());
+    // No default kind: a RESIDENTIAL default would make a lone new row shadow a country's whole
+    // LEGACY set (the resolver only falls back when a kind has no rows at all).
+    LeaseKind leaseKind =
+        Optional.ofNullable(request.leaseKind())
+            .orElseThrow(() -> new BadRequestException("leaseKind is required"));
     rejectRequiredButExcludedByDefault(request);
     LeaseClauseTemplate saved =
         repository.save(
             LeaseClauseTemplate.builder()
                 .countryCode(request.countryCode())
-                .leaseKind(Optional.ofNullable(request.leaseKind()).orElse(LeaseKind.RESIDENTIAL))
+                .leaseKind(leaseKind)
                 .clauseKey(request.clauseKey())
                 .titleI18nKey(request.titleI18nKey())
                 .bodyI18nKey(request.bodyI18nKey())
