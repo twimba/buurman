@@ -66,7 +66,7 @@ class TranslatedResidentialLeaseRenderTest {
               "le <strong>5</strong> du mois"),
           new Lang(
               "es",
-              new Locale("es"),
+              Locale.of("es"),
               "fianza (waarborgsom)",
               "(véase el artículo <span>",
               "por adelantado",
@@ -74,7 +74,7 @@ class TranslatedResidentialLeaseRenderTest {
               "el día <strong>5</strong> del mes"),
           new Lang(
               "pt",
-              new Locale("pt"),
+              Locale.of("pt"),
               "caução (waarborgsom)",
               "(ver o artigo <span>",
               "antecipadamente",

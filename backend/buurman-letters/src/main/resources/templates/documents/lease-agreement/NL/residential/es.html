@@ -53,14 +53,14 @@
     <p>El contrato se celebra por tiempo determinado<span th:if="${endDate != null}">, hasta el
       <strong th:text="${endDate}">fecha de fin</strong> inclusive</span>. Un arrendamiento de vivienda
       celebrado por tiempo determinado no termina por el mero transcurso del plazo del arrendamiento. Cada una de
-      las dos partes puede resolver el arrendamiento para un día convenido para el pago de la renta, pero no antes
-      de que finalice el tiempo determinado (art. 7:271, apartado 1 del BW).</p>
+      las dos partes puede denunciar el arrendamiento para un día convenido para el pago de la renta, pero no para
+      un día anterior al fin del tiempo determinado (art. 7:271, apartado 1 del BW).</p>
     <p>Solo es distinto en el caso de un arrendamiento de como máximo 2 años con un arrendatario que pertenezca a
-      una categoría designada mediante reglamento gubernativo (algemene maatregel van bestuur) (art. 7:271,
+      una categoría designada mediante reglamento del Gobierno neerlandés (algemene maatregel van bestuur) (art. 7:271,
       apartado 2 del BW). En ese caso, el arrendador informa por escrito al arrendatario, no antes de 3 meses y
-      como máximo 1 mes antes del vencimiento del plazo del arrendamiento, del día en que termina el
+      a más tardar 1 mes antes del vencimiento del plazo del arrendamiento, del día en que termina el
       arrendamiento; si no lo hace, el arrendamiento se prorroga por tiempo indefinido tras el vencimiento del
-      plazo. El arrendatario también puede resolver ese arrendamiento antes del vencimiento del plazo, para un día
+      plazo. El arrendatario también puede denunciar ese arrendamiento antes del vencimiento del plazo, para un día
       convenido para el pago de la renta.</p>
   </th:block>
 </div>
@@ -72,7 +72,7 @@
     abonar las compensaciones por suministros y los gastos de servicios (servicekosten) (véase el artículo <span th:text="${refs['service-costs']}"></span>).</span></p>
   <p>En la medida en que al inmueble arrendado le sea aplicable una renta máxima legal, incluidas las normas
     introducidas por la Wet betaalbare huur (ley de alquileres asequibles) el 1 de julio de 2024, el arrendatario
-    no debe más que esa renta máxima. El arrendatario puede, como máximo 6 meses después del inicio de un contrato
+    no debe más que esa renta máxima. El arrendatario puede, a más tardar 6 meses después del inicio de un contrato
     de arrendamiento celebrado por él por primera vez respecto de esta vivienda, solicitar a la comisión de
     alquileres (huurcommissie) que se pronuncie sobre el carácter razonable de la renta convenida
     (art. 7:249 del BW).</p>
@@ -94,7 +94,7 @@
   <p>Además de la renta, el arrendatario paga, por cada período de pago, una provisión por los costes de los
     suministros con contador individual y por los gastos de servicios (servicekosten) (art. 7:237, apartado 3 del
     BW), según se indica en el presente contrato.</p>
-  <p>Cada año, como máximo 6 meses después de terminar un año natural, el arrendador entrega al arrendatario un
+  <p>Cada año, a más tardar 6 meses después de terminar un año natural, el arrendador entrega al arrendatario un
     estado, desglosado por tipo, de los costes facturados en ese año natural, con indicación del modo de cálculo
     (art. 7:259, apartado 2 del BW). Lo que se haya pagado de más o de menos en concepto de provisiones se
     liquida entre las partes tras la entrega de ese estado.</p>
@@ -111,13 +111,13 @@
     como máximo a 2 veces la renta base (kale huurprijs) (art. 7:261b, apartados 1 y 2 del BW).</p>
   <p>El arrendador devuelve la fianza dentro de los 14 días siguientes a la terminación del contrato de
     arrendamiento. Si existe un daño en el inmueble arrendado del que el arrendatario es responsable, o si el
-    arrendatario aún debe renta, gastos de servicios o una compensación por prestaciones energéticas
+    arrendatario aún debe renta, gastos de servicios o una compensación por rendimiento energético
     (energieprestatievergoeding), el arrendador devuelve el resto dentro de los 30 días siguientes a la
     terminación, tras deducir los costes de reparación acreditados o, según proceda, los importes aún debidos. El
     arrendador informa por escrito al arrendatario de toda deducción, con un desglose completo de los costes
     (art. 7:261b, apartados 3 y 4 del BW).<span
     class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Para la
-    determinación de los daños es determinante la entrega (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+    determinación de los daños se atiende a la entrega (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
 
 <div th:fragment="clause-payment" data-clause="payment">
@@ -194,23 +194,23 @@
 </div>
 
 <div th:fragment="clause-termination" data-clause="termination">
-  <p>La resolución del presente contrato se realiza mediante requerimiento de un alguacil
+  <p>La denuncia del presente contrato se realiza mediante notificación por agente judicial
     (deurwaardersexploot) o mediante carta certificada, para un día convenido para el pago de la renta
     (art. 7:271, apartados 3 y 4 del BW).</p>
   <p>El arrendatario respeta un plazo de preaviso igual al tiempo que media entre 2 días de pago
     consecutivos, pero no inferior a 1 mes ni superior a 3 meses (art. 7:271, apartado 6, letra a
     del BW).</p>
   <p th:if="${fixedTerm}">Si el arrendamiento se ha celebrado por tiempo determinado, ninguna de las dos partes puede, como excepción a lo anterior,
-    resolverlo para un día anterior al final del tiempo determinado<span
+    denunciarlo para un día anterior al final del tiempo determinado<span
     class="clause-ref" data-ref="term" th:if="${refs['term']}"> (véase el artículo <span th:text="${refs['term']}"></span>)</span>;
-    los plazos de preaviso del presente artículo se aplican entonces a la resolución para ese final o para un día
+    los plazos de preaviso del presente artículo se aplican entonces a la denuncia para ese final o para un día
     de pago posterior (art. 7:271, apartado 1 del BW). Solo en un arrendamiento temporal en el sentido del
-    art. 7:271, apartado 2 del BW puede el arrendatario resolver también antes.</p>
-  <p>El arrendador solo puede resolver por uno de los motivos que la ley enumera a tal efecto (art. 7:274,
-    apartado 1 del BW) y menciona esos motivos en la resolución; una resolución por otros motivos es nula. El
+    art. 7:271, apartado 2 del BW puede el arrendatario denunciar también antes.</p>
+  <p>El arrendador solo puede denunciar por uno de los motivos que la ley enumera a tal efecto (art. 7:274,
+    apartado 1 del BW) y menciona esos motivos en la denuncia; una denuncia por otros motivos es nula. El
     plazo de preaviso del arrendador es de al menos 3 meses, prorrogado en 1 mes por cada año en que el
     arrendatario haya tenido el uso ininterrumpido del inmueble arrendado en virtud de un contrato, hasta un
-    máximo de 6 meses. En la resolución, el arrendador pide al arrendatario que comunique en un plazo de
+    máximo de 6 meses. En la denuncia, el arrendador pide al arrendatario que comunique en un plazo de
     6 semanas si consiente la terminación (art. 7:271, apartados 5 y 6, letra b del BW). Si el arrendatario no
     consiente por escrito, el contrato permanece en vigor hasta que el juez haya resuelto de forma firme sobre una
     demanda del arrendador (art. 7:272 del BW).</p>
