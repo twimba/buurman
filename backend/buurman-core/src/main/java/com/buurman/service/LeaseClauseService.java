@@ -17,8 +17,10 @@ import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Property;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.request.UpdateContractLeaseClausesRequest;
+import com.buurman.dto.response.LeaseClausesResponse;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BadRequestException;
+import com.buurman.exception.LeaseNotAvailableException;
 import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
@@ -43,11 +45,22 @@ public class LeaseClauseService {
   private final LeaseKindResolver leaseKindResolver;
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
-  public List<ResolvedLeaseClauseResponse> getClauses(
+  public LeaseClausesResponse getClauses(
       ContractIdentifier contractIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
-    return resolver.resolve(contract, contractLocale(contract), leaseKind(contract, teamId));
+    LeaseClauseResolver.Availability availability =
+        resolver.availabilityFor(contract, leaseKind(contract, teamId));
+    return envelope(contract, availability);
+  }
+
+  private LeaseClausesResponse envelope(
+      Contract contract, LeaseClauseResolver.Availability availability) {
+    List<ResolvedLeaseClauseResponse> clauses =
+        availability.state().isAvailable()
+            ? resolver.resolve(contract, contractLocale(contract), availability.templates())
+            : List.of();
+    return new LeaseClausesResponse(availability.state(), contract.getCountryCode(), clauses);
   }
 
   // ContractLeaseClauseRepository.replaceForContract() hard-deletes every existing override and
@@ -56,14 +69,14 @@ public class LeaseClauseService {
   // clause to its template default) rather than either the old or the new set intact.
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   @Transactional
-  public List<ResolvedLeaseClauseResponse> updateClauses(
+  public LeaseClausesResponse updateClauses(
       ContractIdentifier contractIdentifier,
       UpdateContractLeaseClausesRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     if (contract.getCountryCode().isEmpty()) {
-      throw new BadRequestException("Contract has no country code");
+      throw LeaseNotAvailableException.noCountry();
     }
 
     // A duplicate templateIdentifier would otherwise reach the repository and hit
@@ -77,14 +90,18 @@ public class LeaseClauseService {
       }
     }
 
-    List<LeaseClauseTemplate> templates =
-        resolver.templatesFor(contract, leaseKind(contract, teamId));
+    LeaseClauseResolver.Availability availability =
+        resolver.availabilityFor(contract, leaseKind(contract, teamId));
+    if (!availability.state().isAvailable()) {
+      throw LeaseNotAvailableException.forCountry(contract.getCountryCode().orElse("?"));
+    }
+    List<LeaseClauseTemplate> templates = availability.templates();
 
     List<ContractLeaseClause> toSave =
         request.clauses().stream().map(selection -> toClause(selection, templates)).toList();
 
     overrideRepository.replaceForContract(contract.getId(), teamId, principal.getUserId(), toSave);
-    return resolver.resolve(contract, contractLocale(contract), templates);
+    return envelope(contract, availability);
   }
 
   private ContractLeaseClause toClause(

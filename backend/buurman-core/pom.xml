@@ -358,6 +358,8 @@
                                 <schemaMapping>GenerateRentChangeDocumentsRequest=com.buurman.dto.request.GenerateRentChangeDocumentsRequest</schemaMapping>
                                 <schemaMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</schemaMapping>
                                 <schemaMapping>LeaseRegime=com.buurman.domain.LeaseRegime</schemaMapping>
+                                <schemaMapping>LeaseAvailability=com.buurman.domain.LeaseAvailability</schemaMapping>
+                                <schemaMapping>LeaseClausesResponse=com.buurman.dto.response.LeaseClausesResponse</schemaMapping>
                                 <schemaMapping>PaymentType=com.buurman.domain.Payment.PaymentType</schemaMapping>
                                 <schemaMapping>ContactCreditIdentifier=com.buurman.domain.identifier.ContactCreditIdentifier</schemaMapping>
                                 <schemaMapping>CancelPaymentRequest=com.buurman.dto.request.CancelPaymentRequest</schemaMapping>
@@ -650,6 +652,8 @@
                                 <importMapping>GenerateRentChangeDocumentsRequest=com.buurman.dto.request.GenerateRentChangeDocumentsRequest</importMapping>
                                 <importMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</importMapping>
                                 <importMapping>LeaseRegime=com.buurman.domain.LeaseRegime</importMapping>
+                                <importMapping>LeaseAvailability=com.buurman.domain.LeaseAvailability</importMapping>
+                                <importMapping>LeaseClausesResponse=com.buurman.dto.response.LeaseClausesResponse</importMapping>
                                 <importMapping>PaymentType=com.buurman.domain.Payment.PaymentType</importMapping>
                                 <importMapping>ContactCreditIdentifier=com.buurman.domain.identifier.ContactCreditIdentifier</importMapping>
                                 <importMapping>CancelPaymentRequest=com.buurman.dto.request.CancelPaymentRequest</importMapping>

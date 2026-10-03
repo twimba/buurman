@@ -15,10 +15,11 @@ import org.springframework.stereotype.Service;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractLeaseClause;
+import com.buurman.domain.LeaseAvailability;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
-import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.LeaseNotAvailableException;
 import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.LeaseClauseTemplateRepository;
 
@@ -43,23 +44,50 @@ public class LeaseClauseResolver {
     this.messageSource = messageSource;
   }
 
+  /** Availability state plus the templates it was derived from (empty when unavailable). */
+  public record Availability(LeaseAvailability state, List<LeaseClauseTemplate> templates) {}
+
   /**
-   * Templates for the contract's country and kind, walking {@link LeaseKind#fallbackChain()} (e.g.
-   * furnished -> residential -> legacy) until a kind has templates configured.
+   * Non-throwing availability check: walks {@link LeaseKind#fallbackChain()} (e.g. furnished ->
+   * residential -> legacy) until a kind has templates configured. Templates of kind LEGACY are
+   * placeholder example text rather than a reviewed document.
+   */
+  public Availability availabilityFor(Contract contract, LeaseKind kind) {
+    return contract
+        .getCountryCode()
+        .map(
+            countryCode ->
+                kind.fallbackChain().stream()
+                    .map(k -> templateRepository.findByCountryAndKind(countryCode, k))
+                    .filter(templates -> !templates.isEmpty())
+                    .findFirst()
+                    .map(
+                        templates ->
+                            new Availability(
+                                templates.stream()
+                                        .allMatch(t -> t.getLeaseKind() == LeaseKind.LEGACY)
+                                    ? LeaseAvailability.AVAILABLE_EXAMPLE_TEXT
+                                    : LeaseAvailability.AVAILABLE_DOCUMENT,
+                                templates))
+                    .orElseGet(
+                        () -> new Availability(LeaseAvailability.UNAVAILABLE_COUNTRY, List.of())))
+        .orElseGet(() -> new Availability(LeaseAvailability.UNAVAILABLE_NO_COUNTRY, List.of()));
+  }
+
+  /**
+   * Templates for the contract's country and kind.
+   *
+   * @throws LeaseNotAvailableException when the contract has no country or the country has none
    */
   public List<LeaseClauseTemplate> templatesFor(Contract contract, LeaseKind kind) {
-    String countryCode =
-        contract
-            .getCountryCode()
-            .orElseThrow(() -> new BusinessRuleException("Contract has no country code set"));
-    return kind.fallbackChain().stream()
-        .map(k -> templateRepository.findByCountryAndKind(countryCode, k))
-        .filter(templates -> !templates.isEmpty())
-        .findFirst()
-        .orElseThrow(
-            () ->
-                new BusinessRuleException(
-                    "No lease clause templates are configured for country " + countryCode));
+    Availability availability = availabilityFor(contract, kind);
+    if (availability.state() == LeaseAvailability.UNAVAILABLE_NO_COUNTRY) {
+      throw LeaseNotAvailableException.noCountry();
+    }
+    if (availability.state() == LeaseAvailability.UNAVAILABLE_COUNTRY) {
+      throw LeaseNotAvailableException.forCountry(contract.getCountryCode().orElse("?"));
+    }
+    return availability.templates();
   }
 
   public List<ResolvedLeaseClauseResponse> resolve(
@@ -75,9 +103,10 @@ public class LeaseClauseResolver {
   public List<ResolvedLeaseClauseResponse> resolve(
       Contract contract, Locale locale, List<LeaseClauseTemplate> templates) {
     if (templates.isEmpty()) {
-      String countryCode = contract.getCountryCode().orElse("?");
-      throw new BusinessRuleException(
-          "No lease clause templates are configured for country " + countryCode);
+      throw contract
+          .getCountryCode()
+          .map(LeaseNotAvailableException::forCountry)
+          .orElseGet(LeaseNotAvailableException::noCountry);
     }
 
     Map<UUID, ContractLeaseClause> overridesByTemplateId =

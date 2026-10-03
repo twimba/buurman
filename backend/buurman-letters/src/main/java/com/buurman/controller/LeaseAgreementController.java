@@ -1,13 +1,11 @@
 package com.buurman.controller;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.request.UpdateContractLeaseClausesRequest;
 import com.buurman.dto.response.DocumentResponse;
-import com.buurman.dto.response.ResolvedLeaseClauseResponse;
+import com.buurman.dto.response.LeaseClausesResponse;
 import com.buurman.generated.api.LeaseAgreementApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
@@ -25,13 +23,13 @@ public class LeaseAgreementController implements LeaseAgreementApi {
   private final LeaseAgreementGenerationService leaseAgreementGenerationService;
 
   @Override
-  public List<ResolvedLeaseClauseResponse> getLeaseClauses(ContractIdentifier contractIdentifier) {
+  public LeaseClausesResponse getLeaseClauses(ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return leaseClauseService.getClauses(contractIdentifier, principal);
   }
 
   @Override
-  public List<ResolvedLeaseClauseResponse> updateLeaseClauses(
+  public LeaseClausesResponse updateLeaseClauses(
       ContractIdentifier contractIdentifier,
       UpdateContractLeaseClausesRequest updateContractLeaseClausesRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();

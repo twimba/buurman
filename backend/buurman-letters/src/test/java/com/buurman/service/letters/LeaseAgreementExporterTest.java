@@ -42,6 +42,7 @@ import com.buurman.domain.UnitResidentialDetails;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.LeaseNotAvailableException;
 import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
@@ -275,6 +276,19 @@ class LeaseAgreementExporterTest {
     assertThat(firstClauses).extracting(c -> c.get("title")).containsExactly("Term of Lease");
     assertThat(secondClauses).extracting(c -> c.get("title")).containsExactly("Pets");
     assertThat(firstClauses).isNotEqualTo(secondClauses);
+  }
+
+  @Test
+  @DisplayName("an unavailable country surfaces LeaseNotAvailableException so generate maps to 409")
+  void unavailableCountryPropagatesTypedException() {
+    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
+        .thenThrow(LeaseNotAvailableException.forCountry("IT"));
+
+    assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_NOT_AVAILABLE_FOR_COUNTRY"));
+    verifyNoInteractions(documentTemplateService);
   }
 
   @Test

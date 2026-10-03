@@ -3216,6 +3216,31 @@ components:
           type: string
           description: Shown to the provider's audit trail and, where supported, the signers themselves
           maxLength: 500
+    LeaseAvailability:
+      type: string
+      description: Whether, and in what form, a lease agreement can be produced for a contract
+      enum:
+        - AVAILABLE_DOCUMENT
+        - AVAILABLE_EXAMPLE_TEXT
+        - UNAVAILABLE_COUNTRY
+        - UNAVAILABLE_NO_COUNTRY
+    LeaseClausesResponse:
+      type: object
+      description: Lease availability for a contract with its resolved clauses (empty when unavailable)
+      properties:
+        availability:
+          $ref: '#/components/schemas/LeaseAvailability'
+        countryCode:
+          type: string
+          nullable: true
+          description: ISO 3166-1 alpha-2 country of the contract; absent when the contract has none
+        clauses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+      required:
+        - availability
+        - clauses
     ResolvedLeaseClauseResponse:
       type: object
       description: A lease clause template resolved against a contract, with per-contract inclusion state
@@ -8864,6 +8889,10 @@ components:
         title:
           type: string
           description: Short human-readable summary
+        code:
+          type: string
+          nullable: true
+          description: Machine-readable error code (for example LEASE_NOT_AVAILABLE_FOR_COUNTRY or LEASE_CONTRACT_HAS_NO_COUNTRY); present only on errors that define one
     WwsCalculationRequest:
       type: object
       properties:

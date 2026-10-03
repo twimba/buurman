@@ -18,11 +18,13 @@ import org.springframework.context.MessageSource;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractLeaseClause;
+import com.buurman.domain.LeaseAvailability;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Sid;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.LeaseNotAvailableException;
 import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.LeaseClauseTemplateRepository;
 
@@ -264,5 +266,97 @@ class LeaseClauseResolverTest {
 
     assertThat(resolver.templatesFor(contract("DE"), LeaseKind.RESIDENTIAL_FURNISHED))
         .containsExactly(legacy);
+  }
+
+  private LeaseClauseTemplate legacyTemplate() {
+    return LeaseClauseTemplate.builder()
+        .id(UUID.randomUUID())
+        .identifier(Optional.of(Sid.of("LCT0000000000000000000000002")))
+        .countryCode("BE")
+        .leaseKind(LeaseKind.LEGACY)
+        .clauseKey("term")
+        .titleI18nKey("lease.term.title")
+        .bodyI18nKey("lease.term.body")
+        .defaultIncluded(true)
+        .optional(false)
+        .sortOrder(1)
+        .version(1)
+        .build();
+  }
+
+  @Test
+  void availabilityForContractWithoutCountryIsUnavailableNoCountry() {
+    Contract noCountry = Contract.builder().id(CONTRACT_ID).teamId(TEAM_ID).build();
+
+    var availability = resolver.availabilityFor(noCountry, LeaseKind.RESIDENTIAL);
+
+    assertThat(availability.state()).isEqualTo(LeaseAvailability.UNAVAILABLE_NO_COUNTRY);
+    assertThat(availability.templates()).isEmpty();
+  }
+
+  @Test
+  void availabilityForCountryWithoutTemplatesIsUnavailableCountry() {
+    var availability = resolver.availabilityFor(contract("IT"), LeaseKind.RESIDENTIAL_FURNISHED);
+
+    assertThat(availability.state()).isEqualTo(LeaseAvailability.UNAVAILABLE_COUNTRY);
+    assertThat(availability.templates()).isEmpty();
+  }
+
+  @Test
+  void availabilityForLegacyOnlyCountryIsExampleText() {
+    var legacy = legacyTemplate();
+    when(templateRepository.findByCountryAndKind("BE", LeaseKind.LEGACY))
+        .thenReturn(List.of(legacy));
+
+    var availability = resolver.availabilityFor(contract("BE"), LeaseKind.RESIDENTIAL);
+
+    assertThat(availability.state()).isEqualTo(LeaseAvailability.AVAILABLE_EXAMPLE_TEXT);
+    assertThat(availability.templates()).containsExactly(legacy);
+  }
+
+  @Test
+  void availabilityForResidentialTemplatesIsDocument() {
+    var residential = template("parties", true, false, 1);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(residential));
+
+    var availability = resolver.availabilityFor(contract("NL"), LeaseKind.RESIDENTIAL);
+
+    assertThat(availability.state()).isEqualTo(LeaseAvailability.AVAILABLE_DOCUMENT);
+    assertThat(availability.templates()).containsExactly(residential);
+  }
+
+  @Test
+  void availabilityForFurnishedFallingBackToRealResidentialIsDocument() {
+    var residential = template("parties", true, false, 1);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(residential));
+
+    assertThat(resolver.availabilityFor(contract("NL"), LeaseKind.RESIDENTIAL_FURNISHED).state())
+        .isEqualTo(LeaseAvailability.AVAILABLE_DOCUMENT);
+  }
+
+  @Test
+  void templatesForUnsupportedCountryThrowsCountryCode() {
+    assertThatThrownBy(() -> resolver.templatesFor(contract("IT"), LeaseKind.RESIDENTIAL))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_NOT_AVAILABLE_FOR_COUNTRY"));
+  }
+
+  @Test
+  void resolveForContractWithoutCountryThrowsNoCountryCode() {
+    Contract noCountry = Contract.builder().id(CONTRACT_ID).teamId(TEAM_ID).build();
+
+    assertThatThrownBy(() -> resolver.resolve(noCountry, Locale.ENGLISH, LeaseKind.RESIDENTIAL))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_CONTRACT_HAS_NO_COUNTRY"));
+  }
+
+  @Test
+  void resolveWithEmptyTemplateListThrowsCountryCode() {
+    assertThatThrownBy(() -> resolver.resolve(contract("IT"), Locale.ENGLISH, List.of()))
+        .isInstanceOf(LeaseNotAvailableException.class);
   }
 }

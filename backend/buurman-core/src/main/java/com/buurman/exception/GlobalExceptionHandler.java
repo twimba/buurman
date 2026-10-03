@@ -87,6 +87,14 @@ public class GlobalExceptionHandler {
     return problem;
   }
 
+  @ExceptionHandler(LeaseNotAvailableException.class)
+  public ProblemDetail handleLeaseNotAvailable(
+      LeaseNotAvailableException ex, HttpServletRequest request) {
+    ProblemDetail problem = handleBusinessRule(ex, request);
+    problem.setProperty("code", ex.getCode());
+    return problem;
+  }
+
   @ExceptionHandler(BadRequestException.class)
   public ProblemDetail handleBadRequest(BadRequestException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(BAD_REQUEST, ex.getMessage());

@@ -5381,7 +5381,7 @@ paths:
       tags:
         - Lease Agreement
       summary: Get resolved lease clauses
-      description: Returns every lease clause that applies to the contract's country, combined with any per-contract overrides, in sort order with each clause's current inclusion state
+      description: Returns the lease availability state for the contract's country and, when available, every lease clause that applies, combined with any per-contract overrides, in sort order with each clause's current inclusion state
       operationId: getLeaseClauses
       parameters:
         - name: contractIdentifier
@@ -5392,13 +5392,11 @@ paths:
             $ref: '#/components/schemas/ContractIdentifier'
       responses:
         "200":
-          description: Resolved clause list with inclusion state
+          description: Availability of a lease agreement for the contract plus the resolved clause list (empty when unavailable)
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+                $ref: '#/components/schemas/LeaseClausesResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -5459,13 +5457,11 @@ paths:
               $ref: '#/components/schemas/UpdateContractLeaseClausesRequest'
       responses:
         "200":
-          description: Updated clause list
+          description: Updated availability envelope with the resolved clause list
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+                $ref: '#/components/schemas/LeaseClausesResponse'
         "400":
           description: Bad request - validation error or malformed input, including an attempt to exclude a non-optional clause
           content:
@@ -25382,6 +25378,31 @@ components:
           type: string
           description: Shown to the provider's audit trail and, where supported, the signers themselves
           maxLength: 500
+    LeaseAvailability:
+      type: string
+      description: Whether, and in what form, a lease agreement can be produced for a contract
+      enum:
+        - AVAILABLE_DOCUMENT
+        - AVAILABLE_EXAMPLE_TEXT
+        - UNAVAILABLE_COUNTRY
+        - UNAVAILABLE_NO_COUNTRY
+    LeaseClausesResponse:
+      type: object
+      description: Lease availability for a contract with its resolved clauses (empty when unavailable)
+      properties:
+        availability:
+          $ref: '#/components/schemas/LeaseAvailability'
+        countryCode:
+          type: string
+          nullable: true
+          description: ISO 3166-1 alpha-2 country of the contract; absent when the contract has none
+        clauses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+      required:
+        - availability
+        - clauses
     ResolvedLeaseClauseResponse:
       type: object
       description: A lease clause template resolved against a contract, with per-contract inclusion state
@@ -31030,6 +31051,10 @@ components:
         title:
           type: string
           description: Short human-readable summary
+        code:
+          type: string
+          nullable: true
+          description: Machine-readable error code (for example LEASE_NOT_AVAILABLE_FOR_COUNTRY or LEASE_CONTRACT_HAS_NO_COUNTRY); present only on errors that define one
     WwsCalculationRequest:
       type: object
       properties:

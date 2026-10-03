@@ -2749,7 +2749,7 @@ lease-clauses:
     tags:
       - Lease Agreement
     summary: Get resolved lease clauses
-    description: Returns every lease clause that applies to the contract's country, combined with any per-contract overrides, in sort order with each clause's current inclusion state
+    description: Returns the lease availability state for the contract's country and, when available, every lease clause that applies, combined with any per-contract overrides, in sort order with each clause's current inclusion state
     operationId: getLeaseClauses
     parameters:
       - name: contractIdentifier
@@ -2760,13 +2760,11 @@ lease-clauses:
           $ref: '#/components/schemas/ContractIdentifier'
     responses:
       "200":
-        description: Resolved clause list with inclusion state
+        description: Availability of a lease agreement for the contract plus the resolved clause list (empty when unavailable)
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+              $ref: '#/components/schemas/LeaseClausesResponse'
       "400":
         description: Bad request - validation error or malformed input
         content:
@@ -2827,13 +2825,11 @@ lease-clauses:
             $ref: '#/components/schemas/UpdateContractLeaseClausesRequest'
     responses:
       "200":
-        description: Updated clause list
+        description: Updated availability envelope with the resolved clause list
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+              $ref: '#/components/schemas/LeaseClausesResponse'
       "400":
         description: Bad request - validation error or malformed input, including an attempt to exclude a non-optional clause
         content:
