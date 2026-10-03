@@ -65,6 +65,11 @@ class EnResidentialLeaseRenderTest {
   }
 
   private String render(List<String> orderedKeys, boolean withOptionalValues) {
+    return render(orderedKeys, withOptionalValues, Map.of());
+  }
+
+  private String render(
+      List<String> orderedKeys, boolean withOptionalValues, Map<String, Object> overrides) {
     List<Map<String, Object>> clauses = new ArrayList<>();
     Map<String, Integer> refs = new HashMap<>();
     for (int i = 0; i < orderedKeys.size(); i++) {
@@ -101,6 +106,7 @@ class EnResidentialLeaseRenderTest {
     vars.put("fixedTerm", withOptionalValues);
     vars.put("clauses", clauses);
     vars.put("refs", refs);
+    vars.putAll(overrides);
     Context ctx = new Context(Locale.ENGLISH);
     ctx.setVariables(vars);
     return engine.process("lease-agreement/_shell", ctx);
@@ -155,5 +161,23 @@ class EnResidentialLeaseRenderTest {
         .doesNotContain("data-ref=\"deposit\"")
         .doesNotContain("data-ref=\"rent-adjustment\"");
     assertCleanEnglish(html);
+  }
+
+  @Test
+  @DisplayName("payment: a due day other than the 1st is not called payment in advance")
+  void paymentDueDay() {
+    String first = clauseBody(render(ALL, true, Map.of("paymentDueDay", 1)), "payment");
+    assertThat(first).contains("in advance").contains("no later than day <strong>1</strong>");
+    String fifth = clauseBody(render(ALL, true, Map.of("paymentDueDay", 5)), "payment");
+    assertThat(fifth)
+        .contains("no later than day <strong>5</strong> of the month")
+        .doesNotContain("in advance");
+  }
+
+  private static String clauseBody(String html, String key) {
+    int start = html.indexOf("data-clause=\"" + key + "\"");
+    assertThat(start).as("clause %s rendered", key).isPositive();
+    int end = html.indexOf("class=\"clause-title\"", start);
+    return html.substring(start, end < 0 ? html.length() : end).replaceAll("\\s+", " ");
   }
 }

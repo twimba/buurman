@@ -11,6 +11,7 @@
                wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
                tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
                7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Numerals normalised to digits for the translation fidelity gate (every numeric quantity in the prose is a digit).
   reviewed-by: none
   translation: authoritative
   Draft text, not vetted by legal counsel. Each clause-<key> fragment holds only the clause body; the shell
@@ -29,7 +30,7 @@
   <p th:if="${#strings.isEmpty(tenantNames)}">de hieronder ondertekende huurder(s), hierna (gezamenlijk) te
     noemen &ldquo;de huurder&rdquo;,</p>
   <p>verklaren te zijn overeengekomen zoals in deze huurovereenkomst is bepaald. Noemt deze overeenkomst
-    meer dan &eacute;&eacute;n huurder, dan is ieder van hen hoofdelijk aansprakelijk voor de nakoming van alle
+    meer dan 1 huurder, dan is ieder van hen hoofdelijk aansprakelijk voor de nakoming van alle
     verplichtingen van de huurder uit deze overeenkomst.</p>
 </div>
 
@@ -52,9 +53,9 @@
       woonruimte eindigt niet door het enkele verloop van de huurtijd. Elk van beide partijen kan de huur
       opzeggen tegen een voor de betaling van de huurprijs overeengekomen dag, maar niet eerder dan tegen het
       einde van de bepaalde tijd (artikel 7:271 lid 1 BW).</p>
-    <p>Dit is alleen anders bij een huur voor ten hoogste twee jaar aan een huurder die behoort tot een bij
+    <p>Dit is alleen anders bij een huur voor ten hoogste 2 jaar aan een huurder die behoort tot een bij
       algemene maatregel van bestuur aangewezen categorie (artikel 7:271 lid 2 BW). In dat geval informeert de
-      verhuurder de huurder niet eerder dan drie maanden en uiterlijk een maand v&oacute;&oacute;r het verstrijken
+      verhuurder de huurder niet eerder dan 3 maanden en uiterlijk 1 maand v&oacute;&oacute;r het verstrijken
       van de huurtermijn schriftelijk over de dag waarop de huur eindigt; doet de verhuurder dat niet, dan wordt
       de huur na het verstrijken van de termijn voor onbepaalde tijd verlengd. De huurder kan zo&rsquo;n huur ook
       v&oacute;&oacute;r het verstrijken van de termijn opzeggen tegen een voor de betaling van de huurprijs
@@ -69,14 +70,14 @@
     vergoedingen voor nutsvoorzieningen en servicekosten verschuldigd (zie artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
   <p>Voor zover op het gehuurde een wettelijke maximale huurprijs van toepassing is, waaronder de regels die
     met de Wet betaalbare huur per 1 juli 2024 zijn ingevoerd, is de huurder niet meer verschuldigd dan die
-    maximale huurprijs. De huurder kan tot uiterlijk zes maanden na het ingaan van een door hem voor de eerste
+    maximale huurprijs. De huurder kan tot uiterlijk 6 maanden na het ingaan van een door hem voor de eerste
     maal met betrekking tot deze woonruimte aangegane huurovereenkomst de huurcommissie verzoeken uitspraak te
     doen over de redelijkheid van de overeengekomen huurprijs (artikel 7:249 BW).</p>
   <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Voor de aanpassing van de huurprijs geldt het daarover in deze overeenkomst bepaalde (zie artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
 </div>
 
 <div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
-  <p>De verhuurder kan de huurprijs eenmaal per jaar aanpassen, voor het eerst twaalf maanden na de
+  <p>De verhuurder kan de huurprijs 1 maal per jaar aanpassen, voor het eerst 12 maanden na de
     ingangsdatum van deze overeenkomst. De verhuurder deelt de aanpassing, met vermelding van de geldende en de
     nieuwe huurprijs en de ingangsdatum, tijdig en schriftelijk aan de huurder mee.</p>
   <p>De aanpassing is nooit hoger dan de wettelijk maximaal toegestane huurverhoging die op de ingangsdatum
@@ -90,7 +91,7 @@
   <p>Naast de huurprijs betaalt de huurder per betalingstermijn een voorschot op de kosten voor
     nutsvoorzieningen met een individuele meter en op de servicekosten (artikel 7:237 lid 3 BW), zoals in deze
     overeenkomst vermeld.</p>
-  <p>De verhuurder verstrekt de huurder elk jaar, uiterlijk zes maanden na het verstrijken van een
+  <p>De verhuurder verstrekt de huurder elk jaar, uiterlijk 6 maanden na het verstrijken van een
     kalenderjaar, een naar soort uitgesplitst overzicht van de in dat kalenderjaar in rekening gebrachte kosten,
     met vermelding van de wijze van berekening (artikel 7:259 lid 2 BW). Wat te veel of te weinig aan
     voorschotten is betaald, wordt na verstrekking van dat overzicht tussen partijen verrekend.</p>
@@ -104,11 +105,11 @@
   <p th:if="${depositAmount == null}">De huurder betaalt bij aanvang van de huur een waarborgsom ter hoogte van
     het tussen partijen schriftelijk overeengekomen bedrag.</p>
   <p>De waarborgsom strekt tot zekerheid van de nakoming van wat in deze overeenkomst is overeengekomen en
-    bedraagt ten hoogste tweemaal de kale huurprijs (artikel 7:261b leden 1 en 2 BW).</p>
-  <p>De verhuurder betaalt de waarborgsom terug binnen veertien dagen na beëindiging van de huurovereenkomst.
+    bedraagt ten hoogste 2 maal de kale huurprijs (artikel 7:261b leden 1 en 2 BW).</p>
+  <p>De verhuurder betaalt de waarborgsom terug binnen 14 dagen na beëindiging van de huurovereenkomst.
     Is er schade aan het gehuurde waarvoor de huurder aansprakelijk is, of heeft de huurder nog huurprijs,
     servicekosten of een energieprestatievergoeding te voldoen, dan betaalt de verhuurder het restant terug
-    binnen dertig dagen na beëindiging, na verrekening van de aantoonbaar gemaakte herstelkosten
+    binnen 30 dagen na beëindiging, na verrekening van de aantoonbaar gemaakte herstelkosten
     respectievelijk de nog verschuldigde bedragen. Van een verrekening stelt de verhuurder de huurder
     schriftelijk in kennis, met een volledige kostenspecificatie (artikel 7:261b leden 3 en 4 BW).<span
     class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Voor de vaststelling
@@ -135,7 +136,7 @@
     gehuurde bevinden, veroorzaken geen overlast voor omwonenden.</p>
   <p>Veranderingen aan de inrichting of gedaante van het gehuurde die bij het einde van de huur niet zonder
     noemenswaardige kosten ongedaan kunnen worden gemaakt, brengt de huurder alleen aan na schriftelijke
-    toestemming van de verhuurder. De verhuurder verleent binnen acht weken toestemming in ieder geval als de
+    toestemming van de verhuurder. De verhuurder verleent binnen 8 weken toestemming in ieder geval als de
     verandering de verhuurbaarheid niet schaadt en niet tot een waardedaling van het gehuurde leidt
     (artikel 7:215 BW).</p>
 </div>
@@ -187,8 +188,8 @@
 <div th:fragment="clause-termination" data-clause="termination">
   <p>Opzegging van deze overeenkomst geschiedt bij deurwaardersexploot of bij aangetekende brief, tegen een
     voor de betaling van de huurprijs overeengekomen dag (artikel 7:271 leden 3 en 4 BW).</p>
-  <p>De huurder neemt een opzegtermijn in acht die gelijk is aan de tijd tussen twee opeenvolgende
-    betaaldagen, maar niet korter dan een maand en niet langer dan drie maanden (artikel 7:271 lid 6 onder a
+  <p>De huurder neemt een opzegtermijn in acht die gelijk is aan de tijd tussen 2 opeenvolgende
+    betaaldagen, maar niet korter dan 1 maand en niet langer dan 3 maanden (artikel 7:271 lid 6 onder a
     BW).</p>
   <p th:if="${fixedTerm}">Is de huur voor bepaalde tijd aangegaan, dan kan in afwijking hiervan geen van beide
     partijen opzeggen tegen een dag die valt v&oacute;&oacute;r het einde van de bepaalde tijd<span
@@ -198,9 +199,9 @@
     huurder ook eerder opzeggen.</p>
   <p>De verhuurder kan slechts opzeggen op een van de gronden die de wet daarvoor noemt (artikel 7:274 lid 1
     BW) en vermeldt die gronden in de opzegging; een opzegging op andere gronden is nietig. De opzegtermijn voor
-    de verhuurder is ten minste drie maanden, verlengd met een maand voor elk jaar dat de huurder het gehuurde
-    krachtens overeenkomst ononderbroken in gebruik heeft gehad, tot ten hoogste zes maanden. Bij de opzegging
-    vraagt de verhuurder de huurder binnen zes weken mee te delen of hij in de beëindiging toestemt (artikel
+    de verhuurder is ten minste 3 maanden, verlengd met 1 maand voor elk jaar dat de huurder het gehuurde
+    krachtens overeenkomst ononderbroken in gebruik heeft gehad, tot ten hoogste 6 maanden. Bij de opzegging
+    vraagt de verhuurder de huurder binnen 6 weken mee te delen of hij in de beëindiging toestemt (artikel
     7:271 leden 5 en 6 onder b BW). Stemt de huurder niet schriftelijk in, dan blijft de overeenkomst van kracht
     totdat de rechter onherroepelijk heeft beslist op een vordering van de verhuurder (artikel 7:272 BW).</p>
   <p>Partijen kunnen de huur, nadat deze is ingegaan, ook met wederzijds goedvinden beëindigen
@@ -225,7 +226,7 @@
   <p>Geschillen waarover de huurcommissie volgens de wet uitspraak kan doen, zoals over de redelijkheid van de
     huurprijs en over servicekosten, kunnen partijen aan de huurcommissie voorleggen. Partijen worden geacht te
     zijn overeengekomen wat de huurcommissie in haar uitspraak heeft vastgesteld, tenzij een van hen binnen
-    acht weken nadat een afschrift van de uitspraak is verzonden een beslissing van de rechter vordert
+    8 weken nadat een afschrift van de uitspraak is verzonden een beslissing van de rechter vordert
     (artikel 7:262 BW). Andere geschillen worden voorgelegd aan de bevoegde rechter.</p>
 </div>
 

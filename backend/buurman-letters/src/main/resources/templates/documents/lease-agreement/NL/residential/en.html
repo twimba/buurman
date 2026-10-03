@@ -11,6 +11,7 @@
                wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
                tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
                7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Numerals normalised to digits for the translation fidelity gate (every numeric quantity in the prose is a digit).
   reviewed-by: none
   translation: machine-drafted
   English courtesy translation of nl.html; the Dutch text is authoritative. Draft text, not vetted by legal
@@ -31,7 +32,7 @@
   <p th:if="${#strings.isEmpty(tenantNames)}">the tenant(s) signing below, hereinafter (jointly) referred
     to as &ldquo;the tenant&rdquo;,</p>
   <p>declare that they have agreed as set out in this lease agreement. If this agreement names more than
-    one tenant, each of them is jointly and severally liable (hoofdelijk aansprakelijk) for the performance of
+    1 tenant, each of them is jointly and severally liable (hoofdelijk aansprakelijk) for the performance of
     all obligations of the tenant under this agreement.</p>
 </div>
 
@@ -54,10 +55,10 @@
       fixed term does not end by the mere expiry of the lease term. Either party may terminate the lease
       with effect from a day agreed for the payment of the rent, but not earlier than the end of the
       fixed term (article 7:271 paragraph 1 of the Civil Code).</p>
-    <p>This is different only for a lease of at most two years to a tenant who belongs to a category
+    <p>This is different only for a lease of at most 2 years to a tenant who belongs to a category
       designated by general administrative order (algemene maatregel van bestuur) (article 7:271 paragraph 2
-      of the Civil Code). In that case the landlord informs the tenant in writing, no earlier than three months and
-      no later than one month before the lease term expires, of the day on which the lease ends; if the
+      of the Civil Code). In that case the landlord informs the tenant in writing, no earlier than 3 months and
+      no later than 1 month before the lease term expires, of the day on which the lease ends; if the
       landlord does not do so, the lease is extended for an indefinite period after the term expires. The
       tenant may also terminate such a lease before the term expires, with effect from a day agreed for the
       payment of the rent.</p>
@@ -71,14 +72,14 @@
     payments for utilities and service charges (servicekosten) (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
   <p>Where a statutory maximum rent applies to the leased property, including the rules introduced by the
     Wet betaalbare huur (Affordable Rent Act) on 1 July 2024, the tenant owes no more than that
-    maximum rent. No later than six months after the start of a lease first entered into by the tenant
+    maximum rent. No later than 6 months after the start of a lease first entered into by the tenant
     in respect of these residential premises, the tenant may ask the rent assessment committee (huurcommissie)
     to rule on the reasonableness of the agreed rent (article 7:249 of the Civil Code).</p>
   <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The adjustment of the rent is governed by what this agreement provides on the subject (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
 </div>
 
 <div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
-  <p>The landlord may adjust the rent once a year, for the first time twelve months after the
+  <p>The landlord may adjust the rent 1 time per year, for the first time 12 months after the
     start date of this agreement. The landlord notifies the tenant of the adjustment in good time and in
     writing, stating the current and the new rent and the effective date.</p>
   <p>The adjustment is never higher than the statutory maximum permitted rent increase that applies to the
@@ -92,7 +93,7 @@
   <p>In addition to the rent, the tenant pays, for each payment period, an advance on the costs of
     utilities with an individual meter and on the service charges (servicekosten) (article 7:237 paragraph 3 of the Civil Code),
     as stated in this agreement.</p>
-  <p>Every year, no later than six months after the end of a calendar year, the landlord provides the tenant
+  <p>Every year, no later than 6 months after the end of a calendar year, the landlord provides the tenant
     with an overview, broken down by type, of the costs charged in that calendar year,
     stating the method of calculation (article 7:259 paragraph 2 of the Civil Code). Any amount overpaid or underpaid in
     advances is settled between the parties after that overview has been provided.</p>
@@ -106,11 +107,11 @@
   <p th:if="${depositAmount == null}">At the start of the lease the tenant pays a security deposit (waarborgsom) in
     the amount agreed in writing between the parties.</p>
   <p>The security deposit serves as security for the performance of what has been agreed in this agreement and
-    is at most twice the net rent (article 7:261b paragraphs 1 and 2 of the Civil Code).</p>
-  <p>The landlord repays the security deposit within fourteen days after the lease agreement ends.
+    is at most 2 times the net rent (article 7:261b paragraphs 1 and 2 of the Civil Code).</p>
+  <p>The landlord repays the security deposit within 14 days after the lease agreement ends.
     If there is damage to the leased property for which the tenant is liable, or if the tenant still owes rent,
     service charges or an energy performance fee, the landlord repays the remainder
-    within thirty days after the end of the lease, after deducting the demonstrably incurred costs of repair
+    within 30 days after the end of the lease, after deducting the demonstrably incurred costs of repair
     or the amounts still owed, respectively. The landlord notifies the tenant of any deduction
     in writing, with a full specification of costs (article 7:261b paragraphs 3 and 4 of the Civil Code).<span
     class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The determination
@@ -137,7 +138,7 @@
     leased property with the tenant&rsquo;s permission cause no nuisance to neighbours.</p>
   <p>Changes to the layout or appearance of the leased property that cannot be undone at the end of the lease
     without significant cost are made by the tenant only after written permission from the landlord. The
-    landlord gives permission within eight weeks in any case if the change does not harm
+    landlord gives permission within 8 weeks in any case if the change does not harm
     the lettability and does not reduce the value of the leased property
     (article 7:215 of the Civil Code).</p>
 </div>
@@ -189,8 +190,8 @@
 <div th:fragment="clause-termination" data-clause="termination">
   <p>Notice of termination of this agreement is given by bailiff&rsquo;s writ or by registered letter, with effect from a
     day agreed for the payment of the rent (article 7:271 paragraphs 3 and 4 of the Civil Code).</p>
-  <p>The tenant observes a notice period equal to the time between two consecutive
-    payment days, but not shorter than one month and not longer than three months (article 7:271 paragraph 6 under a
+  <p>The tenant observes a notice period equal to the time between 2 consecutive
+    payment days, but not shorter than 1 month and not longer than 3 months (article 7:271 paragraph 6 under a
     of the Civil Code).</p>
   <p th:if="${fixedTerm}">If the lease has been entered into for a fixed term, then, by way of derogation from the above, neither
     party may give notice with effect from a day that falls before the end of the fixed term<span
@@ -200,9 +201,9 @@
     tenant also give notice earlier.</p>
   <p>The landlord may give notice only on one of the grounds that the law lists for that purpose (article 7:274 paragraph 1
     of the Civil Code) and states those grounds in the notice; notice on other grounds is void. The notice period for
-    the landlord is at least three months, extended by one month for each year that the tenant has had the leased property
-    in uninterrupted use under an agreement, up to a maximum of six months. In the notice,
-    the landlord asks the tenant to state within six weeks whether the tenant consents to the termination (article
+    the landlord is at least 3 months, extended by 1 month for each year that the tenant has had the leased property
+    in uninterrupted use under an agreement, up to a maximum of 6 months. In the notice,
+    the landlord asks the tenant to state within 6 weeks whether the tenant consents to the termination (article
     7:271 paragraphs 5 and 6 under b of the Civil Code). If the tenant does not consent in writing, the agreement remains in force
     until the court has given an irrevocable decision on a claim by the landlord (article 7:272 of the Civil Code).</p>
   <p>After it has started, the parties may also terminate the lease by mutual consent
@@ -227,7 +228,7 @@
   <p>Disputes on which the rent assessment committee (huurcommissie) can rule under the law, such as on the reasonableness of the
     rent and on service charges, the parties may submit to the rent assessment committee. The parties are deemed to
     have agreed what the rent assessment committee has determined in its decision, unless one of them, within
-    eight weeks after a copy of the decision was sent, claims a decision from the court
+    8 weeks after a copy of the decision was sent, claims a decision from the court
     (article 7:262 of the Civil Code). Other disputes are submitted to the competent court.</p>
 </div>
 
