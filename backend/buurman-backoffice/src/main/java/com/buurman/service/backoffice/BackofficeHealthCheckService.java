@@ -45,6 +45,7 @@ public class BackofficeHealthCheckService {
   private final ObjectProvider<MailgunMessagesApi> mailgunProvider;
   private final ObjectProvider<JavaMailSender> mailSenderProvider;
   private final DocumensoProperties documensoProperties;
+  private final RestClient documensoRestClient;
 
   public BackofficeHealthCheckService(
       DSLContext dsl,
@@ -67,6 +68,7 @@ public class BackofficeHealthCheckService {
     this.mailgunProvider = mailgunProvider;
     this.mailSenderProvider = mailSenderProvider;
     this.documensoProperties = documensoProperties;
+    this.documensoRestClient = RestClient.create(documensoProperties.baseUrl());
   }
 
   @PreDestroy
@@ -235,7 +237,7 @@ public class BackofficeHealthCheckService {
     // A plain reachability check against the sidecar's web root — not an authenticated API call —
     // since this service only needs to prove the container is up, not exercise its signing API.
     long start = System.currentTimeMillis();
-    RestClient.create(documensoProperties.baseUrl()).get().retrieve().toBodilessEntity();
+    documensoRestClient.get().retrieve().toBodilessEntity();
     long latency = System.currentTimeMillis() - start;
     return new ServiceHealth(
         "Documenso", Status.UP, Optional.of(latency), Optional.empty(), Optional.empty());
