@@ -1,0 +1,235 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Monatsmieten" in German), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  German courtesy translation of nl.html (a translation of Dutch law, not German law); the Dutch text is
+  authoritative. Draft text, not vetted by legal counsel. Only prose differs from nl.html: fragments, th:
+  expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Die Unterzeichnenden:</p>
+  <p><strong th:text="${landlordName}">Vermieter</strong>, nachfolgend &bdquo;der Vermieter&ldquo; (verhuurder) genannt, und</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Mieter</strong>, nachfolgend
+    (gemeinsam) &bdquo;der Mieter&ldquo; (huurder) genannt,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">der bzw. die nachstehend unterzeichnende(n) Mieter, nachfolgend
+    (gemeinsam) &bdquo;der Mieter&ldquo; (huurder) genannt,</p>
+  <p>erkl&auml;ren, dass sie sich wie in diesem Mietvertrag bestimmt geeinigt haben. Nennt dieser Vertrag
+    mehr als 1 Mieter, so haftet jeder von ihnen gesamtschuldnerisch (hoofdelijk aansprakelijk) f&uuml;r die
+    Erf&uuml;llung aller Verpflichtungen des Mieters aus diesem Vertrag.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Der Vermieter vermietet dem Mieter, der die Miete annimmt, die Wohnung in
+    <strong th:text="${propertyAddress}">Adresse</strong> nebst den dazugeh&ouml;rigen unbeweglichen Nebenr&auml;umen,
+    nachfolgend &bdquo;die Mietsache&ldquo; (het gehuurde) genannt.</p>
+  <p>Auf diesen Vertrag sind die gesetzlichen Bestimmungen &uuml;ber die Wohnraummiete anwendbar (Buch 7,
+    Titel 4, Abschnitt 5 des niederl&auml;ndischen B&uuml;rgerlichen Gesetzbuchs, Burgerlijk Wetboek). Soweit das Gesetz
+    bestimmt, dass nicht zum Nachteil des Mieters davon abgewichen werden darf, gehen diese Bestimmungen
+    abweichenden Vereinbarungen in diesem Vertrag vor.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Dieser Vertrag beginnt am <strong th:text="${startDate}">Beginn</strong>.</p>
+  <p th:if="${!fixedTerm}">Der Vertrag ist auf unbestimmte Zeit geschlossen.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Der Vertrag ist auf bestimmte Zeit geschlossen<span th:if="${endDate != null}">, bis einschlie&szlig;lich
+      <strong th:text="${endDate}">Ende</strong></span>. Eine auf bestimmte Zeit geschlossene Wohnraummiete
+      endet nicht durch den blo&szlig;en Ablauf der Mietzeit. Jede der beiden Parteien kann die Miete
+      zu einem f&uuml;r die Zahlung der Miete vereinbarten Tag k&uuml;ndigen, jedoch nicht vor dem
+      Ende der bestimmten Zeit (Art. 7:271 Abs. 1 BW).</p>
+    <p>Etwas anderes gilt nur bei einer Miete von h&ouml;chstens 2 Jahren mit einem Mieter, der zu einer durch
+      Verordnung (algemene maatregel van bestuur) bestimmten Kategorie geh&ouml;rt (Art. 7:271 Abs. 2 BW). In
+      diesem Fall informiert der Vermieter den Mieter fr&uuml;hestens 3 Monate und sp&auml;testens 1 Monat vor Ablauf
+      der Mietzeit schriftlich &uuml;ber den Tag, an dem die Miete endet; unterl&auml;sst der Vermieter dies, so wird
+      die Miete nach Ablauf der Mietzeit auf unbestimmte Zeit verl&auml;ngert. Der Mieter kann eine solche Miete
+      auch vor Ablauf der Mietzeit zu einem f&uuml;r die Zahlung der Miete vereinbarten Tag k&uuml;ndigen.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Die Miete f&uuml;r die blo&szlig;e Nutzung der Mietsache (Kaltmiete, kale huurprijs, Art. 7:237 Abs. 2 BW) betr&auml;gt
+    <strong th:text="${rentAmount}">Betrag</strong> <span th:text="${paymentFrequency}">pro Monat</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Zus&auml;tzlich schuldet der Mieter die
+    Verg&uuml;tungen f&uuml;r Versorgungsleistungen und Servicekosten (servicekosten) (siehe Artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Soweit f&uuml;r die Mietsache eine gesetzliche H&ouml;chstmiete gilt, darunter die mit dem
+    Wet betaalbare huur (Gesetz &uuml;ber bezahlbare Mieten) zum 1. Juli 2024 eingef&uuml;hrten Regeln, schuldet der Mieter nicht mehr als diese
+    H&ouml;chstmiete. Der Mieter kann sp&auml;testens 6 Monate nach Beginn eines von ihm erstmals in Bezug auf diese
+    Wohnung geschlossenen Mietvertrags die Mietkommission (huurcommissie) bitten, &uuml;ber die
+    Angemessenheit der vereinbarten Miete zu entscheiden (Art. 7:249 BW).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">F&uuml;r die Anpassung der Miete gilt das hierzu in diesem Vertrag Bestimmte (siehe Artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Der Vermieter kann die Miete 1 Mal pro Jahr anpassen, erstmals 12 Monate nach dem
+    Beginn dieses Vertrags. Der Vermieter teilt dem Mieter die Anpassung unter Angabe der geltenden und der
+    neuen Miete sowie des Wirksamkeitsdatums rechtzeitig und schriftlich mit.</p>
+  <p>Die Anpassung ist nie h&ouml;her als die gesetzlich h&ouml;chstzul&auml;ssige Mieterh&ouml;hung, die am Wirksamkeitsdatum
+    der Anpassung f&uuml;r die Mietsache gilt. F&uuml;hrt diese Bestimmung zu einer h&ouml;heren Erh&ouml;hung als gesetzlich
+    zul&auml;ssig, so ist die Bestimmung insoweit nichtig, und die Miete gilt als um die zul&auml;ssige
+    Erh&ouml;hung erh&ouml;ht (Art. 7:248 BW). Soweit das Gesetz dies zul&auml;sst, kann der Mieter die Mietkommission (huurcommissie) bitten,
+    &uuml;ber eine Erh&ouml;hung zu entscheiden.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Neben der Miete zahlt der Mieter je Zahlungszeitraum eine Vorauszahlung auf die Kosten f&uuml;r
+    Versorgungsleistungen mit individuellem Z&auml;hler und auf die Servicekosten (servicekosten) (Art. 7:237 Abs. 3 BW), wie in diesem
+    Vertrag angegeben.</p>
+  <p>Der Vermieter stellt dem Mieter jedes Jahr, sp&auml;testens 6 Monate nach Ablauf eines
+    Kalenderjahres, eine nach Art aufgeschl&uuml;sselte &Uuml;bersicht der in diesem Kalenderjahr berechneten Kosten zur Verf&uuml;gung,
+    unter Angabe der Berechnungsweise (Art. 7:259 Abs. 2 BW). Was an Vorauszahlungen zu viel oder zu wenig gezahlt wurde,
+    wird nach Zurverf&uuml;gungstellung dieser &Uuml;bersicht zwischen den Parteien verrechnet.</p>
+  <p>Erzielen die Parteien keine Einigung &uuml;ber die geschuldeten Kosten, so kann jede von ihnen die
+    Mietkommission (huurcommissie) bitten, hier&uuml;ber zu entscheiden (Art. 7:260 BW).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Der Mieter zahlt bei Mietbeginn eine Kaution (waarborgsom) in H&ouml;he von
+    <strong th:text="${depositAmount}">Betrag</strong>.</p>
+  <p th:if="${depositAmount == null}">Der Mieter zahlt bei Mietbeginn eine Kaution (waarborgsom) in H&ouml;he
+    des zwischen den Parteien schriftlich vereinbarten Betrags.</p>
+  <p>Die Kaution dient der Sicherung der Erf&uuml;llung dessen, was in diesem Vertrag vereinbart ist, und
+    betr&auml;gt h&ouml;chstens 2 Kaltmieten (kale huurprijs) (Art. 7:261b Abs. 1 und 2 BW).</p>
+  <p>Der Vermieter zahlt die Kaution innerhalb von 14 Tagen nach Beendigung des Mietvertrags zur&uuml;ck.
+    Besteht ein Schaden an der Mietsache, f&uuml;r den der Mieter haftet, oder hat der Mieter noch Miete,
+    Servicekosten oder eine Energieleistungsverg&uuml;tung zu zahlen, so zahlt der Vermieter den Restbetrag
+    innerhalb von 30 Tagen nach Beendigung zur&uuml;ck, nach Verrechnung der nachweislich entstandenen Reparaturkosten
+    bzw. der noch geschuldeten Betr&auml;ge. Von einer Verrechnung unterrichtet der Vermieter den Mieter
+    schriftlich, mit einer vollst&auml;ndigen Kostenaufstellung (Art. 7:261b Abs. 3 und 4 BW).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> F&uuml;r die Feststellung
+    von Sch&auml;den ist die &Uuml;bergabe ma&szlig;geblich (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Der Mieter zahlt die Miete<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (siehe Artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> und die Vorauszahlungen auf die Servicekosten</span>
+    <span th:text="${paymentFrequency}">pro Monat</span><span th:if="${paymentDueDay == 1}"> im
+    Voraus</span>,
+    <span th:if="${paymentDueDay != null}">sp&auml;testens am <strong th:text="${paymentDueDay}">1</strong>. Tag
+      des Monats, in dem der Zahlungszeitraum beginnt</span><span th:if="${paymentDueDay == null}">sp&auml;testens am zwischen den Parteien
+      vereinbarten Zahlungstag</span>, per &Uuml;berweisung auf das Konto, das der Vermieter hierf&uuml;r schriftlich
+    angegeben hat.</p>
+  <p>Zahlt der Mieter nicht rechtzeitig, so schuldet er auf den &uuml;berf&auml;lligen Betrag die gesetzlichen Zinsen
+    und ersetzt au&szlig;ergerichtliche Inkassokosten nur, soweit das Gesetz dies
+    erlaubt.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Der Mieter nutzt die Mietsache ausschlie&szlig;lich als Wohnraum und verh&auml;lt sich bei der Nutzung
+    wie ein guter Mieter (goed huurder) (Art. 7:213 BW). Der Mieter und diejenigen, die sich mit seiner Erlaubnis in der
+    Mietsache aufhalten, verursachen keine Bel&auml;stigung f&uuml;r Anwohner.</p>
+  <p>Ver&auml;nderungen an der Einrichtung oder Gestalt der Mietsache, die bei Mietende nicht ohne
+    nennenswerte Kosten r&uuml;ckg&auml;ngig gemacht werden k&ouml;nnen, nimmt der Mieter nur nach schriftlicher
+    Zustimmung des Vermieters vor. Der Vermieter erteilt die Zustimmung innerhalb von 8 Wochen jedenfalls dann, wenn die
+    Ver&auml;nderung die Vermietbarkeit nicht beeintr&auml;chtigt und nicht zu einer Wertminderung der Mietsache f&uuml;hrt
+    (Art. 7:215 BW).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Der Mieter &uuml;berl&auml;sst die Mietsache nicht ganz oder teilweise einem anderen zur Nutzung, es sei denn, der Vermieter
+    hat hierzu vorher schriftlich seine Zustimmung erteilt.</p>
+  <p>Hat der Mieter in der Mietsache, sofern sie eine selbstst&auml;ndige Wohnung ist, seinen Hauptwohnsitz, so ist er
+    gesetzlich berechtigt, einen Teil davon einem anderen zur Nutzung zu &uuml;berlassen (Art. 7:244 BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Der Vermieter beseitigt auf Verlangen des Mieters M&auml;ngel (gebreken) an der Mietsache, es sei denn, dies ist unm&ouml;glich
+    oder erfordert Aufwendungen, die dem Vermieter unter den gegebenen Umst&auml;nden vern&uuml;nftigerweise nicht zuzumuten sind
+    (Art. 7:206 BW). Der Mieter meldet einen Mangel so schnell wie m&ouml;glich dem Vermieter.</p>
+  <p>Der Mieter f&uuml;hrt auf eigene Kosten die Kleinreparaturen (kleine herstellingen) aus, es sei denn, diese sind erforderlich geworden, weil der
+    Vermieter seiner Verpflichtung zur Beseitigung von M&auml;ngeln nicht nachgekommen ist (Art. 7:217 BW). Welche
+    Reparaturen als klein gelten, ergibt sich aus der gesetzlichen Regelung hierzu.</p>
+  <p>Ist der Vermieter mit der Beseitigung eines Mangels in Verzug, so kann der Mieter den Mangel selbst
+    beseitigen und die angemessenen Kosten vom Vermieter ersetzt verlangen, auf Wunsch durch Abzug von der
+    Miete (Art. 7:206 Abs. 3 BW). Von diesen Regeln kann nicht zum Nachteil des Mieters
+    abgewichen werden (Art. 7:242 BW).</p>
+  <p>Der Mieter gibt dem Vermieter Gelegenheit, dringende Arbeiten an der
+    Mietsache auszuf&uuml;hren, unbeschadet seiner gesetzlichen Anspr&uuml;che auf Mietminderung, Aufl&ouml;sung und Schadensersatz
+    (Art. 7:220 Abs. 1 BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Bei Neuvermietung einer bestehenden Wohnung ist nach dem
+    Besluit bouwwerken leefomgeving (Verordnung &uuml;ber Bauwerke und Lebensumwelt) ein g&uuml;ltiger Energieausweis (energielabel) vorgeschrieben. Der Vermieter &uuml;bergibt dem Mieter sp&auml;testens bei Abschluss dieses
+    Vertrags eine Kopie des g&uuml;ltigen Energieausweises der Mietsache. Ein Energieausweis ist bis zu dem
+    auf dem Ausweis angegebenen Datum g&uuml;ltig.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Bei Mietbeginn erstellen die Parteien gemeinsam eine Beschreibung des Zustands der Mietsache
+    (opnamerapport). Beide Parteien unterzeichnen die Beschreibung, und jede erh&auml;lt ein Exemplar.</p>
+  <p>Bei Mietende stellt der Mieter die Mietsache dem Vermieter wieder zur Verf&uuml;gung, in dem
+    Zustand, in dem er sie nach dieser Beschreibung angenommen hat, mit Ausnahme zul&auml;ssiger Ver&auml;nderungen
+    und Erg&auml;nzungen sowie dessen, was durch Alter untergegangen oder besch&auml;digt ist. Wurde keine Beschreibung erstellt,
+    so wird vermutet, vorbehaltlich des Gegenbeweises, dass der Mieter die Mietsache in dem Zustand erhalten hat, in dem
+    sie sich bei Mietende befindet (Art. 7:224 BW).</p>
+  <p>Die Parteien f&uuml;hren vor Mietende eine gemeinsame Vorabnahme durch, damit der
+    Mieter etwaige M&auml;ngel noch selbst beheben kann, und bei der &Uuml;bergabe eine Endabnahme.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Die Abrechnung der Kaution folgt
+    danach (siehe Artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Die K&uuml;ndigung dieses Vertrags erfolgt durch Gerichtsvollzieherzustellung (deurwaardersexploot) oder durch Einschreiben, zu einem
+    f&uuml;r die Zahlung der Miete vereinbarten Tag (Art. 7:271 Abs. 3 und 4 BW).</p>
+  <p>Der Mieter h&auml;lt eine K&uuml;ndigungsfrist ein, die der Zeit zwischen 2 aufeinanderfolgenden
+    Zahlungstagen entspricht, jedoch nicht k&uuml;rzer als 1 Monat und nicht l&auml;nger als 3 Monate ist (Art. 7:271 Abs. 6 Buchst. a
+    BW).</p>
+  <p th:if="${fixedTerm}">Ist die Miete auf bestimmte Zeit geschlossen, so kann abweichend hiervon keine der beiden
+    Parteien zu einem Tag k&uuml;ndigen, der vor dem Ende der bestimmten Zeit liegt<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (siehe Artikel <span th:text="${refs['term']}"></span>)</span>;
+    die K&uuml;ndigungsfristen dieses Artikels gelten dann f&uuml;r die K&uuml;ndigung zu diesem Ende oder einem sp&auml;teren
+    Zahlungstag (Art. 7:271 Abs. 1 BW). Nur bei einer befristeten Miete im Sinne von Art. 7:271 Abs. 2 BW kann der
+    Mieter auch fr&uuml;her k&uuml;ndigen.</p>
+  <p>Der Vermieter kann nur aus einem der Gr&uuml;nde k&uuml;ndigen, die das Gesetz hierf&uuml;r nennt (Art. 7:274 Abs. 1
+    BW), und gibt diese Gr&uuml;nde in der K&uuml;ndigung an; eine K&uuml;ndigung aus anderen Gr&uuml;nden ist nichtig. Die K&uuml;ndigungsfrist f&uuml;r
+    den Vermieter betr&auml;gt mindestens 3 Monate, verl&auml;ngert um 1 Monat f&uuml;r jedes Jahr, in dem der Mieter die Mietsache
+    aufgrund eines Vertrags ununterbrochen genutzt hat, bis zu h&ouml;chstens 6 Monaten. In der K&uuml;ndigung
+    bittet der Vermieter den Mieter, innerhalb von 6 Wochen mitzuteilen, ob er der Beendigung zustimmt (Art.
+    7:271 Abs. 5 und 6 Buchst. b BW). Stimmt der Mieter nicht schriftlich zu, so bleibt der Vertrag in Kraft,
+    bis das Gericht &uuml;ber eine Klage des Vermieters unanfechtbar entschieden hat (Art. 7:272 BW).</p>
+  <p>Die Parteien k&ouml;nnen die Miete, nachdem sie begonnen hat, auch einvernehmlich beenden
+    (Art. 7:271 Abs. 10 BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> F&uuml;r die &Uuml;bergabe gilt das hierzu in diesem Vertrag Bestimmte (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Die Kaution wird zur&uuml;ckgezahlt, wie
+    in diesem Vertrag bestimmt (siehe Artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Der Vermieter verarbeitet personenbezogene Daten des Mieters nur, soweit dies f&uuml;r den Abschluss und die
+    Durchf&uuml;hrung dieses Vertrags und zur Erf&uuml;llung gesetzlicher Pflichten erforderlich ist, gem&auml;&szlig; der
+    Datenschutz-Grundverordnung (DSGVO; niederl&auml;ndisch: Algemene verordening gegevensbescherming, AVG, Verordnung (EU) 2016/679). Der Vermieter speichert diese
+    Daten nicht l&auml;nger, als hierf&uuml;r erforderlich ist.</p>
+  <p>Der Mieter kann gegen&uuml;ber dem Vermieter seine Rechte aus der DSGVO aus&uuml;ben, darunter das Recht auf
+    Auskunft, Berichtigung und L&ouml;schung seiner personenbezogenen Daten, und kann bei der
+    Aufsichtsbeh&ouml;rde Beschwerde einlegen, in den Niederlanden bei der Autoriteit Persoonsgegevens (niederl&auml;ndische Datenschutzbeh&ouml;rde).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Auf diesen Vertrag ist niederl&auml;ndisches Recht anwendbar.</p>
+  <p>Streitigkeiten, &uuml;ber die die Mietkommission (huurcommissie) nach dem Gesetz entscheiden kann, etwa &uuml;ber die Angemessenheit der
+    Miete und &uuml;ber Servicekosten, k&ouml;nnen die Parteien der Mietkommission vorlegen. Die Parteien gelten als
+    &uuml;bereingekommen in dem, was die Mietkommission in ihrer Entscheidung festgestellt hat, es sei denn, eine von ihnen, innerhalb von
+    8 Wochen nachdem eine Abschrift der Entscheidung versandt wurde, verlangt eine Entscheidung des Gerichts
+    (Art. 7:262 BW). Andere Streitigkeiten werden dem zust&auml;ndigen Gericht vorgelegt.</p>
+</div>
+
+</body>
+</html>
