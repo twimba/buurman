@@ -127,20 +127,7 @@ public class ExtensionDocumentGenerationService {
 
         DocumentResponse response = documentMapper.toResponse(saved);
         String downloadUrl = s3StorageService.generatePresignedUrl(saved.getFileKey()).toString();
-        results.add(
-            new DocumentResponse(
-                response.identifier(),
-                response.entityType(),
-                response.entityIdentifier(),
-                response.fileKey(),
-                response.fileName(),
-                response.fileSize(),
-                response.mimeType(),
-                response.title(),
-                response.notes(),
-                response.sourceDocumentIdentifier(),
-                response.uploadedAt(),
-                Optional.of(downloadUrl)));
+        results.add(response.withDownloadUrl(downloadUrl));
       }
     }
 

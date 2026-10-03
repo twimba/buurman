@@ -82,18 +82,6 @@ public class LeaseAgreementGenerationService {
 
     log.info("Generated lease agreement document for contract {}", contractIdentifier.value());
 
-    return new DocumentResponse(
-        response.identifier(),
-        response.entityType(),
-        response.entityIdentifier(),
-        response.fileKey(),
-        response.fileName(),
-        response.fileSize(),
-        response.mimeType(),
-        response.title(),
-        response.notes(),
-        response.sourceDocumentIdentifier(),
-        response.uploadedAt(),
-        Optional.of(downloadUrl));
+    return response.withDownloadUrl(downloadUrl);
   }
 }

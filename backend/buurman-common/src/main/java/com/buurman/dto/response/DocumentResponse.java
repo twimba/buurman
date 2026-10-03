@@ -22,4 +22,22 @@ public record DocumentResponse(
     // unrelated row. Empty for everything else, including the original itself.
     Optional<Sid> sourceDocumentIdentifier,
     Instant uploadedAt,
-    Optional<String> downloadUrl) {}
+    Optional<String> downloadUrl) {
+
+  /** Copy of this response with only {@code downloadUrl} replaced. */
+  public DocumentResponse withDownloadUrl(String downloadUrl) {
+    return new DocumentResponse(
+        identifier,
+        entityType,
+        entityIdentifier,
+        fileKey,
+        fileName,
+        fileSize,
+        mimeType,
+        title,
+        notes,
+        sourceDocumentIdentifier,
+        uploadedAt,
+        Optional.of(downloadUrl));
+  }
+}
