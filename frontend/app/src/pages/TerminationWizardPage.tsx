@@ -10,7 +10,10 @@ import {
 import type { ContractTerminationResponse } from '@/generated/models';
 import { WhoGivesNoticeStep } from '@/components/contractTermination/WhoGivesNoticeStep';
 import { NoticeDateAndGroundStep } from '@/components/contractTermination/NoticeDateAndGroundStep';
-import { ReviewComputedDateStep } from '@/components/contractTermination/ReviewComputedDateStep';
+import {
+  ReviewComputedDateStep,
+  isOverrideEarlier,
+} from '@/components/contractTermination/ReviewComputedDateStep';
 import { LetterPreviewStep } from '@/components/contractTermination/LetterPreviewStep';
 import { ConfirmationStep } from '@/components/contractTermination/ConfirmationStep';
 
@@ -78,10 +81,10 @@ export const TerminationWizardPage = () => {
     // means a stale reason can never ride along in the submitted request even if that clear
     // were ever bypassed (e.g. the date field's value came from somewhere other than the
     // review step's own input in a future change).
-    const effectiveEndDateIsEarlier =
-      !!effectiveEndDate &&
-      !!computedEndDate &&
-      effectiveEndDate < computedEndDate;
+    const effectiveEndDateIsEarlier = isOverrideEarlier(
+      effectiveEndDate,
+      computedEndDate
+    );
 
     terminateMutation.mutate(
       {

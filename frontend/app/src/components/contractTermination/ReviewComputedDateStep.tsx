@@ -22,8 +22,9 @@ interface ReviewComputedDateStepProps {
 }
 
 // The override is only "earlier" once both dates are known — string comparison is safe
-// because both values are ISO 8601 (yyyy-mm-dd) dates.
-const isOverrideEarlier = (
+// because both values are ISO 8601 (yyyy-mm-dd) dates. Exported so TerminationWizardPage's
+// submit-time re-check uses the exact same condition instead of a second, hand-copied one.
+export const isOverrideEarlier = (
   effectiveEndDate: string,
   computedEndDate: string | undefined
 ) =>
