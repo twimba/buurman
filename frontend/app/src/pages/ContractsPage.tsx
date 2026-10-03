@@ -130,14 +130,7 @@ export const ContractsPage = () => {
       ] as const,
     [t]
   );
-  const {
-    pageParams,
-    page,
-    size,
-    handlePageChange,
-    handleSizeChange,
-    resetPage,
-  } = usePagination({
+  const { page, size, handlePageChange, handleSizeChange, resetPage } = usePagination({
     defaultPage: (() => {
       const raw = Number(searchParams.get('page'));
       return Number.isInteger(raw) && raw >= 0 ? raw : 0;
@@ -156,7 +149,11 @@ export const ContractsPage = () => {
     error,
   } = useContracts({
     ...(statusFilter.length > 0 ? { status: statusFilter } : {}),
-    ...pageParams,
+    // Only page/size come from usePagination — its own sort/direction tracking is unused here;
+    // this page's sort state is its own typed SortField/'ASC'|'DESC', tracked separately above
+    // and synced to the URL, so there's no second source of truth to shadow.
+    page,
+    size,
     search: debouncedSearch || undefined,
     endingWithinDays,
     sort: sortField,
@@ -379,8 +376,7 @@ export const ContractsPage = () => {
             min={0}
             value={endingWithinDays ?? ''}
             onChange={(e) => {
-              const raw = e.target.value;
-              setEndingWithinDays(raw === '' ? undefined : Number(raw));
+              setEndingWithinDays(parseEndingWithinDays(e.target.value));
               resetPage();
             }}
             placeholder={t('list.endingWithinDays')}

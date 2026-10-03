@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useLocation } from 'react-router-dom';
 import { ToastProvider } from '@buurman/ui';
@@ -172,6 +172,26 @@ describe('ContractsPage URL sync', () => {
         ])
       );
       expect(lastCallParams?.sort).toBe('endDate');
+    });
+  });
+
+  it('a non-numeric endingWithinDays input value never becomes NaN', async () => {
+    renderWithProviders(
+      <ToastProvider>
+        <ContractsPage />
+      </ToastProvider>
+    );
+
+    const input = await screen.findByLabelText(/ending within/i);
+    // A real type="number" input can still end up with a non-numeric value in edge cases
+    // (locale decimal separators, paste, browser quirks) that userEvent.type can't simulate —
+    // fireEvent.change bypasses native input validation to exercise that path directly.
+    fireEvent.change(input, { target: { value: 'abc' } });
+
+    await waitFor(() => {
+      const lastCallParams = mockUseContracts.mock.calls.at(-1)?.[0];
+      expect(lastCallParams?.endingWithinDays).not.toBeNaN();
+      expect(lastCallParams?.endingWithinDays).toBeUndefined();
     });
   });
 
