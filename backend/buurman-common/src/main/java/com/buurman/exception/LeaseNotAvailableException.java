@@ -1,5 +1,7 @@
 package com.buurman.exception;
 
+import java.util.Optional;
+
 import com.buurman.util.SkipTestCoverage;
 
 /**
@@ -26,6 +28,14 @@ public class LeaseNotAvailableException extends BusinessRuleException {
 
   public static LeaseNotAvailableException noCountry() {
     return new LeaseNotAvailableException("Contract has no country code set", CODE_NO_COUNTRY);
+  }
+
+  /** No country (empty or blank) maps to the no-country code, otherwise to the country code. */
+  public static LeaseNotAvailableException forContract(Optional<String> countryCode) {
+    return countryCode
+        .filter(c -> !c.isBlank())
+        .map(LeaseNotAvailableException::forCountry)
+        .orElseGet(LeaseNotAvailableException::noCountry);
   }
 
   public String getCode() {

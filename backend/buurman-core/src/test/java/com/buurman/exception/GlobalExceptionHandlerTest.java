@@ -1,52 +1,74 @@
 package com.buurman.exception;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
-import org.springframework.http.ProblemDetail;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 class GlobalExceptionHandlerTest {
 
-  private final MessageSource messageSource = mock(MessageSource.class);
-  private final GlobalExceptionHandler handler = new GlobalExceptionHandler(messageSource);
-  private final MockHttpServletRequest request =
-      new MockHttpServletRequest("POST", "/contracts/CNT1/lease-agreement");
+  @RestController
+  static class ThrowingController {
+    @GetMapping("/lease-country")
+    String country() {
+      throw LeaseNotAvailableException.forCountry("IT");
+    }
 
-  GlobalExceptionHandlerTest() {
+    @GetMapping("/lease-no-country")
+    String noCountry() {
+      throw LeaseNotAvailableException.noCountry();
+    }
+
+    @GetMapping("/plain")
+    String plain() {
+      throw new BusinessRuleException("nope");
+    }
+  }
+
+  private MockMvc mvc;
+
+  @BeforeEach
+  void setUp() {
+    MessageSource messageSource = mock(MessageSource.class);
     when(messageSource.getMessage(anyString(), any(), any())).thenReturn("Conflict");
+    mvc =
+        MockMvcBuilders.standaloneSetup(new ThrowingController())
+            .setControllerAdvice(new GlobalExceptionHandler(messageSource))
+            .build();
   }
 
   @Test
-  void leaseNotAvailableIs409WithCodeProperty() {
-    ProblemDetail problem =
-        handler.handleLeaseNotAvailable(LeaseNotAvailableException.forCountry("IT"), request);
-
-    assertThat(problem.getStatus()).isEqualTo(409);
-    assertThat(problem.getTitle()).isEqualTo("Conflict");
-    assertThat(problem.getDetail()).contains("IT");
-    assertThat(problem.getInstance()).hasToString("/contracts/CNT1/lease-agreement");
-    assertThat(problem.getProperties()).containsEntry("code", "LEASE_NOT_AVAILABLE_FOR_COUNTRY");
+  void leaseNotAvailableIs409WithCodeInJson() throws Exception {
+    mvc.perform(get("/lease-country"))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.code").value("LEASE_NOT_AVAILABLE_FOR_COUNTRY"))
+        .andExpect(jsonPath("$.title").value("Conflict"))
+        .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString("IT")))
+        .andExpect(jsonPath("$.instance").value("/lease-country"));
   }
 
   @Test
-  void noCountryUsesItsOwnCode() {
-    ProblemDetail problem =
-        handler.handleLeaseNotAvailable(LeaseNotAvailableException.noCountry(), request);
-
-    assertThat(problem.getProperties()).containsEntry("code", "LEASE_CONTRACT_HAS_NO_COUNTRY");
+  void noCountryUsesItsOwnCode() throws Exception {
+    mvc.perform(get("/lease-no-country"))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.code").value("LEASE_CONTRACT_HAS_NO_COUNTRY"));
   }
 
   @Test
-  void plainBusinessRuleExceptionHasNoCode() {
-    ProblemDetail problem = handler.handleBusinessRule(new BusinessRuleException("nope"), request);
-
-    assertThat(problem.getStatus()).isEqualTo(409);
-    assertThat(problem.getProperties()).isNull();
+  void plainBusinessRuleExceptionHasNoCode() throws Exception {
+    mvc.perform(get("/plain"))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.code").doesNotExist());
   }
 }

@@ -75,7 +75,7 @@ public class LeaseClauseService {
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
-    if (contract.getCountryCode().isEmpty()) {
+    if (contract.getCountryCode().filter(c -> !c.isBlank()).isEmpty()) {
       throw LeaseNotAvailableException.noCountry();
     }
 
@@ -93,7 +93,7 @@ public class LeaseClauseService {
     LeaseClauseResolver.Availability availability =
         resolver.availabilityFor(contract, leaseKind(contract, teamId));
     if (!availability.state().isAvailable()) {
-      throw LeaseNotAvailableException.forCountry(contract.getCountryCode().orElse("?"));
+      throw LeaseNotAvailableException.forContract(contract.getCountryCode());
     }
     List<LeaseClauseTemplate> templates = availability.templates();
 

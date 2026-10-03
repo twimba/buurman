@@ -359,4 +359,28 @@ class LeaseClauseResolverTest {
     assertThatThrownBy(() -> resolver.resolve(contract("IT"), Locale.ENGLISH, List.of()))
         .isInstanceOf(LeaseNotAvailableException.class);
   }
+
+  @Test
+  void availabilityForBlankCountryIsUnavailableNoCountry() {
+    Contract blank = contract("  ");
+
+    assertThat(resolver.availabilityFor(blank, LeaseKind.RESIDENTIAL).state())
+        .isEqualTo(LeaseAvailability.UNAVAILABLE_NO_COUNTRY);
+    assertThatThrownBy(() -> resolver.templatesFor(blank, LeaseKind.RESIDENTIAL))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_CONTRACT_HAS_NO_COUNTRY"));
+  }
+
+  @Test
+  void availabilityForCommercialKindWithLegacyOnlyTemplatesIsExampleText() {
+    var legacy = legacyTemplate();
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.LEGACY))
+        .thenReturn(List.of(legacy));
+
+    var availability = resolver.availabilityFor(contract("NL"), LeaseKind.COMMERCIAL);
+
+    assertThat(availability.state()).isEqualTo(LeaseAvailability.AVAILABLE_EXAMPLE_TEXT);
+    assertThat(availability.templates()).containsExactly(legacy);
+  }
 }

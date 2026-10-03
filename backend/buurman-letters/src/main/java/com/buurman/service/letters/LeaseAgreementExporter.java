@@ -117,6 +117,8 @@ public class LeaseAgreementExporter {
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
     LeaseKind kind = leaseKindResolver.resolveFor(contract, property, teamId);
+    // Fail fast for an unavailable country before any document lookup or rendering work.
+    clauseResolver.templatesFor(contract, kind);
     Optional<LeaseDocumentLocator.LeaseDocument> document =
         contract.getCountryCode().flatMap(cc -> documentLocator.locate(cc, kind, lang));
     String languageUsed =

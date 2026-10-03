@@ -55,6 +55,7 @@ public class LeaseClauseResolver {
   public Availability availabilityFor(Contract contract, LeaseKind kind) {
     return contract
         .getCountryCode()
+        .filter(countryCode -> !countryCode.isBlank())
         .map(
             countryCode ->
                 kind.fallbackChain().stream()
@@ -81,11 +82,8 @@ public class LeaseClauseResolver {
    */
   public List<LeaseClauseTemplate> templatesFor(Contract contract, LeaseKind kind) {
     Availability availability = availabilityFor(contract, kind);
-    if (availability.state() == LeaseAvailability.UNAVAILABLE_NO_COUNTRY) {
-      throw LeaseNotAvailableException.noCountry();
-    }
-    if (availability.state() == LeaseAvailability.UNAVAILABLE_COUNTRY) {
-      throw LeaseNotAvailableException.forCountry(contract.getCountryCode().orElse("?"));
+    if (!availability.state().isAvailable()) {
+      throw LeaseNotAvailableException.forContract(contract.getCountryCode());
     }
     return availability.templates();
   }
@@ -103,10 +101,7 @@ public class LeaseClauseResolver {
   public List<ResolvedLeaseClauseResponse> resolve(
       Contract contract, Locale locale, List<LeaseClauseTemplate> templates) {
     if (templates.isEmpty()) {
-      throw contract
-          .getCountryCode()
-          .map(LeaseNotAvailableException::forCountry)
-          .orElseGet(LeaseNotAvailableException::noCountry);
+      throw LeaseNotAvailableException.forContract(contract.getCountryCode());
     }
 
     Map<UUID, ContractLeaseClause> overridesByTemplateId =

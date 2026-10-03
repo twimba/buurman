@@ -43,9 +43,11 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.LeaseNotAvailableException;
+import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.LeaseClauseTemplateRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UnitResidentialDetailsRepository;
@@ -278,17 +280,67 @@ class LeaseAgreementExporterTest {
     assertThat(firstClauses).isNotEqualTo(secondClauses);
   }
 
-  @Test
-  @DisplayName("an unavailable country surfaces LeaseNotAvailableException so generate maps to 409")
-  void unavailableCountryPropagatesTypedException() {
-    when(clauseResolver.resolve(eq(contract), any(Locale.class), eq(LeaseKind.RESIDENTIAL)))
-        .thenThrow(LeaseNotAvailableException.forCountry("IT"));
+  private LeaseAgreementExporter exporterWithRealResolver(LeaseClauseTemplateRepository repo) {
+    return new LeaseAgreementExporter(
+        contractRepository,
+        propertyRepository,
+        rentComponentRepository,
+        rentPeriodRepository,
+        new LeaseClauseResolver(repo, mock(ContractLeaseClauseRepository.class), messageSource),
+        leaseKindResolver,
+        documentLocator,
+        teamRepository,
+        helper,
+        documentTemplateService,
+        messageSource,
+        clock);
+  }
 
-    assertThatThrownBy(() -> exporter.generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
+  private void assertNothingRendered() {
+    verifyNoInteractions(documentTemplateService);
+    verifyNoInteractions(documentLocator);
+  }
+
+  @Test
+  @DisplayName(
+      "a country without templates throws the typed exception before locating or rendering")
+  void unavailableCountryThrowsTypedExceptionBeforeAnyWork() {
+    LeaseClauseTemplateRepository repo = mock(LeaseClauseTemplateRepository.class);
+    when(repo.findByCountryAndKind(anyString(), any(LeaseKind.class))).thenReturn(List.of());
+    contract =
+        Contract.builder()
+            .id(CONTRACT_ID)
+            .teamId(TEAM_ID)
+            .propertyId(PROPERTY_ID)
+            .countryCode(Optional.of("IT"))
+            .build();
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contract);
+
+    assertThatThrownBy(
+            () -> exporterWithRealResolver(repo).generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
         .isInstanceOfSatisfying(
             LeaseNotAvailableException.class,
             ex -> assertThat(ex.getCode()).isEqualTo("LEASE_NOT_AVAILABLE_FOR_COUNTRY"));
-    verifyNoInteractions(documentTemplateService);
+    assertNothingRendered();
+  }
+
+  @Test
+  @DisplayName(
+      "a contract without a country throws the typed exception before locating or rendering")
+  void contractWithoutCountryThrowsTypedExceptionBeforeAnyWork() {
+    LeaseClauseTemplateRepository repo = mock(LeaseClauseTemplateRepository.class);
+    contract = Contract.builder().id(CONTRACT_ID).teamId(TEAM_ID).propertyId(PROPERTY_ID).build();
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contract);
+
+    assertThatThrownBy(
+            () -> exporterWithRealResolver(repo).generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_CONTRACT_HAS_NO_COUNTRY"));
+    assertNothingRendered();
+    verifyNoInteractions(repo);
   }
 
   @Test
