@@ -120,7 +120,8 @@ public class LeaseAgreementExporter {
     // Fail fast for an unavailable country before any document lookup or rendering work.
     clauseResolver.templatesFor(contract, kind);
     Optional<LeaseDocumentLocator.LeaseDocument> document =
-        contract.getCountryCode().flatMap(cc -> documentLocator.locate(cc, kind, lang));
+        LeaseClauseResolver.effectiveCountryCode(contract, property)
+            .flatMap(cc -> documentLocator.locate(cc, kind, lang));
     String languageUsed =
         document.map(LeaseDocumentLocator.LeaseDocument::languageUsed).orElse(lang);
     Locale locale = LetterTemplateService.resolveLocale(languageUsed);

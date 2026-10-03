@@ -286,7 +286,8 @@ class LeaseAgreementExporterTest {
         propertyRepository,
         rentComponentRepository,
         rentPeriodRepository,
-        new LeaseClauseResolver(repo, mock(ContractLeaseClauseRepository.class), messageSource),
+        new LeaseClauseResolver(
+            repo, mock(ContractLeaseClauseRepository.class), messageSource, propertyRepository),
         leaseKindResolver,
         documentLocator,
         teamRepository,
@@ -341,6 +342,25 @@ class LeaseAgreementExporterTest {
             ex -> assertThat(ex.getCode()).isEqualTo("LEASE_CONTRACT_HAS_NO_COUNTRY"));
     assertNothingRendered();
     verifyNoInteractions(repo);
+  }
+
+  @Test
+  @DisplayName("a contract without a country uses the property's country for the lease document")
+  void contractWithoutCountryFallsBackToPropertyCountry() {
+    LeaseClauseTemplateRepository repo = mock(LeaseClauseTemplateRepository.class);
+    when(repo.findByCountryAndKind("IT", LeaseKind.RESIDENTIAL)).thenReturn(List.of());
+    contract = Contract.builder().id(CONTRACT_ID).teamId(TEAM_ID).propertyId(PROPERTY_ID).build();
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contract);
+    property.setCountryCode("IT");
+
+    assertThatThrownBy(
+            () -> exporterWithRealResolver(repo).generate(CONTRACT_IDENTIFIER, TEAM_ID, "en"))
+        .isInstanceOfSatisfying(
+            LeaseNotAvailableException.class,
+            ex -> assertThat(ex.getCode()).isEqualTo("LEASE_NOT_AVAILABLE_FOR_COUNTRY"));
+    verify(repo, org.mockito.Mockito.atLeastOnce())
+        .findByCountryAndKind("IT", LeaseKind.RESIDENTIAL);
   }
 
   @Test

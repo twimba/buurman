@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -21,12 +24,14 @@ import com.buurman.domain.ContractLeaseClause;
 import com.buurman.domain.LeaseAvailability;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
+import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.dto.response.ResolvedLeaseClauseResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.LeaseNotAvailableException;
 import com.buurman.repository.ContractLeaseClauseRepository;
 import com.buurman.repository.LeaseClauseTemplateRepository;
+import com.buurman.repository.PropertyRepository;
 
 class LeaseClauseResolverTest {
 
@@ -35,16 +40,31 @@ class LeaseClauseResolverTest {
   private final ContractLeaseClauseRepository overrideRepository =
       mock(ContractLeaseClauseRepository.class);
   private final MessageSource messageSource = mock(MessageSource.class);
+  private final PropertyRepository propertyRepository = mock(PropertyRepository.class);
 
   private final LeaseClauseResolver resolver =
-      new LeaseClauseResolver(templateRepository, overrideRepository, messageSource);
+      new LeaseClauseResolver(
+          templateRepository, overrideRepository, messageSource, propertyRepository);
 
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID CONTRACT_ID = UUID.randomUUID();
 
+  private static final UUID PROPERTY_ID = UUID.randomUUID();
+
+  private void propertyWithoutCountry() {
+    when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID))
+        .thenReturn(Property.builder().id(PROPERTY_ID).build());
+  }
+
+  private void propertyInCountry(String countryCode) {
+    when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID))
+        .thenReturn(Property.builder().id(PROPERTY_ID).countryCode(countryCode).build());
+  }
+
   private Contract contract(String countryCode) {
     return Contract.builder()
         .id(CONTRACT_ID)
+        .propertyId(PROPERTY_ID)
         .teamId(TEAM_ID)
         .countryCode(Optional.of(countryCode))
         .build();
@@ -286,7 +306,9 @@ class LeaseClauseResolverTest {
 
   @Test
   void availabilityForContractWithoutCountryIsUnavailableNoCountry() {
-    Contract noCountry = Contract.builder().id(CONTRACT_ID).teamId(TEAM_ID).build();
+    Contract noCountry =
+        Contract.builder().id(CONTRACT_ID).propertyId(PROPERTY_ID).teamId(TEAM_ID).build();
+    propertyWithoutCountry();
 
     var availability = resolver.availabilityFor(noCountry, LeaseKind.RESIDENTIAL);
 
@@ -346,7 +368,9 @@ class LeaseClauseResolverTest {
 
   @Test
   void resolveForContractWithoutCountryThrowsNoCountryCode() {
-    Contract noCountry = Contract.builder().id(CONTRACT_ID).teamId(TEAM_ID).build();
+    Contract noCountry =
+        Contract.builder().id(CONTRACT_ID).propertyId(PROPERTY_ID).teamId(TEAM_ID).build();
+    propertyWithoutCountry();
 
     assertThatThrownBy(() -> resolver.resolve(noCountry, Locale.ENGLISH, LeaseKind.RESIDENTIAL))
         .isInstanceOfSatisfying(
@@ -363,6 +387,7 @@ class LeaseClauseResolverTest {
   @Test
   void availabilityForBlankCountryIsUnavailableNoCountry() {
     Contract blank = contract("  ");
+    propertyInCountry("  ");
 
     assertThat(resolver.availabilityFor(blank, LeaseKind.RESIDENTIAL).state())
         .isEqualTo(LeaseAvailability.UNAVAILABLE_NO_COUNTRY);
@@ -382,5 +407,53 @@ class LeaseClauseResolverTest {
 
     assertThat(availability.state()).isEqualTo(LeaseAvailability.AVAILABLE_EXAMPLE_TEXT);
     assertThat(availability.templates()).containsExactly(legacy);
+  }
+
+  @Test
+  void contractWithoutCountryFallsBackToThePropertysCountry() {
+    Contract noCountry =
+        Contract.builder().id(CONTRACT_ID).propertyId(PROPERTY_ID).teamId(TEAM_ID).build();
+    propertyInCountry("nl");
+    var template = template("parties", true, false, 1);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(template));
+
+    var availability = resolver.availabilityFor(noCountry, LeaseKind.RESIDENTIAL);
+
+    assertThat(availability.state()).isEqualTo(LeaseAvailability.AVAILABLE_DOCUMENT);
+    assertThat(resolver.templatesFor(noCountry, LeaseKind.RESIDENTIAL)).containsExactly(template);
+  }
+
+  @Test
+  void contractCountryWinsOverThePropertysCountry() {
+    propertyInCountry("DE");
+    var template = template("parties", true, false, 1);
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(template));
+
+    var availability = resolver.availabilityFor(contract("NL"), LeaseKind.RESIDENTIAL);
+
+    assertThat(availability.templates()).containsExactly(template);
+    verify(templateRepository, never()).findByCountryAndKind(eq("DE"), any());
+  }
+
+  @Test
+  void effectiveCountryIsEmptyWhenContractAndPropertyBothLackOne() {
+    assertThat(
+            LeaseClauseResolver.effectiveCountryCode(
+                Contract.builder().build(), Property.builder().countryCode(" ").build()))
+        .isEmpty();
+    assertThat(
+            LeaseClauseResolver.effectiveCountryCode(
+                Contract.builder().build(), Property.builder().build()))
+        .isEmpty();
+  }
+
+  @Test
+  void effectiveCountryUsesThePropertyWhenTheContractCountryIsBlank() {
+    assertThat(
+            LeaseClauseResolver.effectiveCountryCode(
+                contract(" "), Property.builder().countryCode("be").build()))
+        .contains("BE");
   }
 }

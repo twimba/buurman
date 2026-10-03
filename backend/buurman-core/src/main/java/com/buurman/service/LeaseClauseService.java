@@ -3,6 +3,7 @@ package com.buurman.service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -49,18 +50,22 @@ public class LeaseClauseService {
       ContractIdentifier contractIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
+    Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
     LeaseClauseResolver.Availability availability =
-        resolver.availabilityFor(contract, leaseKind(contract, teamId));
-    return envelope(contract, availability);
+        resolver.availabilityFor(contract, leaseKind(contract, property, teamId));
+    return envelope(contract, property, availability);
   }
 
   private LeaseClausesResponse envelope(
-      Contract contract, LeaseClauseResolver.Availability availability) {
+      Contract contract, Property property, LeaseClauseResolver.Availability availability) {
     List<ResolvedLeaseClauseResponse> clauses =
         availability.state().isAvailable()
             ? resolver.resolve(contract, contractLocale(contract), availability.templates())
             : List.of();
-    return new LeaseClausesResponse(availability.state(), contract.getCountryCode(), clauses);
+    return new LeaseClausesResponse(
+        availability.state(),
+        LeaseClauseResolver.effectiveCountryCode(contract, property),
+        clauses);
   }
 
   // ContractLeaseClauseRepository.replaceForContract() hard-deletes every existing override and
@@ -75,7 +80,9 @@ public class LeaseClauseService {
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
-    if (contract.getCountryCode().filter(c -> !c.isBlank()).isEmpty()) {
+    Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
+    Optional<String> country = LeaseClauseResolver.effectiveCountryCode(contract, property);
+    if (country.isEmpty()) {
       throw LeaseNotAvailableException.noCountry();
     }
 
@@ -91,9 +98,9 @@ public class LeaseClauseService {
     }
 
     LeaseClauseResolver.Availability availability =
-        resolver.availabilityFor(contract, leaseKind(contract, teamId));
+        resolver.availabilityFor(contract, leaseKind(contract, property, teamId));
     if (!availability.state().isAvailable()) {
-      throw LeaseNotAvailableException.forContract(contract.getCountryCode());
+      throw LeaseNotAvailableException.forContract(country);
     }
     List<LeaseClauseTemplate> templates = availability.templates();
 
@@ -101,7 +108,7 @@ public class LeaseClauseService {
         request.clauses().stream().map(selection -> toClause(selection, templates)).toList();
 
     overrideRepository.replaceForContract(contract.getId(), teamId, principal.getUserId(), toSave);
-    return envelope(contract, availability);
+    return envelope(contract, property, availability);
   }
 
   private ContractLeaseClause toClause(
@@ -135,8 +142,7 @@ public class LeaseClauseService {
         .build();
   }
 
-  private LeaseKind leaseKind(Contract contract, UUID teamId) {
-    Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
+  private LeaseKind leaseKind(Contract contract, Property property, UUID teamId) {
     return leaseKindResolver.resolveFor(contract, property, teamId);
   }
 

@@ -283,6 +283,37 @@ class LeaseClauseServiceTest {
   }
 
   @Test
+  void getClausesEnvelopeReportsThePropertysCountryWhenTheContractHasNone() {
+    Property property = Property.builder().id(PROPERTY_ID).countryCode("be").build();
+    when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(property);
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contractIn(Optional.empty()));
+    when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL)))
+        .thenReturn(
+            new LeaseClauseResolver.Availability(LeaseAvailability.UNAVAILABLE_COUNTRY, List.of()));
+
+    LeaseClausesResponse response = service.getClauses(CONTRACT_IDENTIFIER, principal);
+
+    assertThat(response.countryCode()).contains("BE");
+  }
+
+  @Test
+  void updateClausesDoesNotRejectAContractWhoseCountryComesFromTheProperty() {
+    Property property = Property.builder().id(PROPERTY_ID).countryCode("NL").build();
+    when(propertyRepository.getByIdAndTeamId(PROPERTY_ID, TEAM_ID)).thenReturn(property);
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contractIn(Optional.empty()));
+    when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(available());
+    when(resolver.resolve(any(), any(), anyList())).thenReturn(List.of());
+
+    LeaseClausesResponse response =
+        service.updateClauses(
+            CONTRACT_IDENTIFIER, new UpdateContractLeaseClausesRequest(List.of()), principal);
+
+    assertThat(response.countryCode()).contains("NL");
+  }
+
+  @Test
   void updateClausesForContractWithoutCountryThrowsNoCountryCodeBeforeAnyWrite() {
     Contract noCountry = contractIn(Optional.empty());
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
