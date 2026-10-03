@@ -1,6 +1,6 @@
 import {
   keepPreviousData,
-  useQueries,
+  useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
 import { useMutationWithToast } from './useMutationWithToast';
@@ -10,31 +10,50 @@ import {
   updateLeaseClauseTemplate,
   deleteLeaseClauseTemplate,
 } from '../generated/api/backoffice-lease-clause-templates/backoffice-lease-clause-templates';
-import { combineTemplateQueries } from '../lib/combineTemplateQueries';
+import {
+  LEASE_TEMPLATES_KEY_PREFIX,
+  leaseTemplatesKey,
+  mergeSettled,
+} from '../lib/leaseTemplateQuery';
 import type {
   DocumentLanguage,
   UpsertLeaseClauseTemplateRequest,
 } from '../generated/models';
 
-const BASE_KEY = ['lease-clause-templates'];
+const EMPTY: never[] = [];
+const NO_FAILURES: string[] = [];
+const BASE_KEY = [LEASE_TEMPLATES_KEY_PREFIX];
 
 /**
- * Loads the templates of several countries in parallel (one request each) with titles and
- * bodies resolved in `language`. Mutations invalidate the whole prefix, so every language
- * and country view refreshes.
+ * Loads the templates of several countries (one request each, settled independently) with
+ * titles and bodies resolved in `language`. A single query keyed by countries + language keeps
+ * the previous rows while a new key loads (`isPlaceholderData`). Mutations invalidate the
+ * whole prefix.
  */
 export const useLeaseClauseTemplates = (
   countryCodes: string[],
   language: DocumentLanguage
 ) => {
-  return useQueries({
-    queries: countryCodes.map((countryCode) => ({
-      queryKey: [...BASE_KEY, countryCode, language],
-      queryFn: () => listLeaseClauseTemplates({ countryCode, language }),
-      placeholderData: keepPreviousData,
-    })),
-    combine: combineTemplateQueries,
+  const query = useQuery({
+    queryKey: leaseTemplatesKey(countryCodes, language),
+    queryFn: async () =>
+      mergeSettled(
+        countryCodes,
+        await Promise.allSettled(
+          countryCodes.map((countryCode) =>
+            listLeaseClauseTemplates({ countryCode, language })
+          )
+        )
+      ),
+    placeholderData: keepPreviousData,
   });
+  return {
+    data: query.data?.templates ?? EMPTY,
+    failedCountries: query.data?.failedCountries ?? NO_FAILURES,
+    isLoading: query.data === undefined && query.isLoading,
+    isRefreshing: query.isPlaceholderData,
+    refetch: () => query.refetch(),
+  };
 };
 
 export const useCreateLeaseClauseTemplate = () => {

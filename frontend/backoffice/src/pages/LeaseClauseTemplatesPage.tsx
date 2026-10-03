@@ -110,7 +110,7 @@ export const LeaseClauseTemplatesPage = () => {
   const {
     data: templates,
     isLoading,
-    isError,
+    failedCountries,
     isRefreshing,
     refetch,
   } = useLeaseClauseTemplates(loadedCountries, language);
@@ -343,12 +343,12 @@ export const LeaseClauseTemplatesPage = () => {
         )}
       </p>
 
-      {isError && (
+      {failedCountries.length > 0 && (
         <div
           role="alert"
           className="mb-4 rounded-lg border border-error-border bg-error-bg px-4 py-3 text-sm text-error-text"
         >
-          Couldn&apos;t load clause templates for every country
+          Couldn&apos;t load clause templates for {failedCountries.join(', ')}
           {templates.length > 0 ? '; showing what loaded.' : '.'}{' '}
           <button
             type="button"
@@ -362,7 +362,8 @@ export const LeaseClauseTemplatesPage = () => {
 
       {isLoading ? (
         <LoadingSpinner message="Loading clause templates..." />
-      ) : groups.length === 0 ? (
+      ) : groups.length === 0 &&
+        failedCountries.length > 0 ? null : groups.length === 0 ? (
         <div className="rounded-lg border border-border-default bg-surface-card px-4 py-12 text-center text-sm text-text-muted">
           {filtersActive
             ? 'No clauses match these filters.'
