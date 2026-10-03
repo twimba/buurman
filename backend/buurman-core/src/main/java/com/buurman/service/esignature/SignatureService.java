@@ -99,28 +99,30 @@ public class SignatureService {
     Document document = documentRepository.getByIdentifierAndTeamId(documentIdentifier, teamId);
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
-    // Keyed by lower-cased email to dedupe: a contract party resolving to the same address as
-    // another party, or as the landlord's own email, must never produce two signer entries for
-    // the same person (Documenso may error, or double-send, on a duplicate signer email).
-    //
-    // Each signer also gets a "placeholder" — the literal PDF text DocumensoClient asks Documenso
-    // to locate to place that signer's signature field. "signature-landlord" for the landlord,
+    // Each signer gets a "placeholder" — the literal PDF text DocumensoClient asks Documenso to
+    // locate to place that signer's signature field. "signature-landlord" for the landlord,
     // "signature-tenant-N" for the Nth distinct tenant email encountered (1-based) — this must
-    // match LeaseAgreementExporter's own signatureBlocks numbering exactly, since both sides
-    // independently iterate contractPartyRepository.findByContractIdAndTeamId in the same order.
-    Map<String, SignerRequest> signerRequestsByEmail = new LinkedHashMap<>();
-    signerRequestsByEmail.put(
-        principal.getEmail().toLowerCase(Locale.ROOT),
+    // match LetterExporterHelper.signatureBlocks' numbering exactly, since both sides
+    // independently iterate contractPartyRepository.findByContractIdAndTeamId in the same order,
+    // and signatureBlocks has no way to know in advance who will eventually click "send" (it
+    // renders the PDF's placeholders before any signature request exists). Tenants are therefore
+    // numbered here by distinct TENANT email alone, the same rule signatureBlocks uses — seeding
+    // the dedup set with the landlord's own email before numbering tenants (as this used to)
+    // shifts every tenant after a collision down by one in this method but not in the PDF's own
+    // labels, misattributing a real signer's field.
+    SignerRequest landlordSigner =
         new SignerRequest(
             principal.getEmail(),
             principal.getName(),
             SignatureSignerRole.LANDLORD,
-            "signature-landlord"));
+            "signature-landlord");
+    String landlordEmailKey = principal.getEmail().toLowerCase(Locale.ROOT);
 
     // The Buurman-side contact a tenant signer came from is kept here, keyed by the same
     // lower-cased email, so the persisted SignatureSigner can carry it.
     Map<String, UUID> contactIdByEmail = new LinkedHashMap<>();
 
+    Map<String, SignerRequest> tenantSignersByEmail = new LinkedHashMap<>();
     List<ContractParty> parties =
         contractPartyRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     int[] tenantIndex = {0};
@@ -132,11 +134,11 @@ public class SignatureService {
           .ifPresent(
               email -> {
                 String emailKey = email.toLowerCase(Locale.ROOT);
-                if (signerRequestsByEmail.containsKey(emailKey)) {
+                if (tenantSignersByEmail.containsKey(emailKey)) {
                   return;
                 }
                 tenantIndex[0]++;
-                signerRequestsByEmail.put(
+                tenantSignersByEmail.put(
                     emailKey,
                     new SignerRequest(
                         email,
@@ -146,7 +148,18 @@ public class SignatureService {
                 partyContactId.ifPresent(contactId -> contactIdByEmail.put(emailKey, contactId));
               });
     }
-    List<SignerRequest> signerRequests = new ArrayList<>(signerRequestsByEmail.values());
+
+    // Only now, after every tenant's number is final, drop a tenant whose email matches the
+    // sender's — Documenso rejects (or double-sends) a duplicate recipient email, and the
+    // landlord's own recipient already covers it. This does not renumber anyone: the dropped
+    // tenant's placeholder simply gets no field, every other tenant's number is unaffected, and
+    // signatureBlocks' PDF labels stay aligned with this list for every signer that is actually
+    // sent.
+    tenantSignersByEmail.remove(landlordEmailKey);
+
+    List<SignerRequest> signerRequests = new ArrayList<>();
+    signerRequests.add(landlordSigner);
+    signerRequests.addAll(tenantSignersByEmail.values());
 
     SignatureRequest request =
         signatureRequestRepository.save(

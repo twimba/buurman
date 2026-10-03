@@ -574,4 +574,86 @@ class SignatureServiceTest {
             org.mockito.ArgumentMatchers.argThat(signers -> signers.size() == 2));
     org.mockito.Mockito.verify(signatureSignerRepository, org.mockito.Mockito.times(2)).save(any());
   }
+
+  @Test
+  @DisplayName(
+      "a tenant whose email matches the sender's (landlord) is dropped from the signer list"
+          + " without renumbering any OTHER tenant — LetterExporterHelper.signatureBlocks has no"
+          + " way to know in advance who will send the document, so it numbers tenants by email"
+          + " alone; a shift here but not there would misattribute a later tenant's placeholder")
+  void tenantCollidingWithSenderEmailIsDroppedWithoutRenumbering() {
+    UUID collidingContactId = UUID.randomUUID();
+    UUID secondContactId = UUID.randomUUID();
+    ContractParty collidingParty =
+        ContractParty.builder()
+            .contractId(CONTRACT_ID)
+            .contactId(Optional.of(collidingContactId))
+            .role(ContractPartyRole.PRIMARY_TENANT)
+            .build();
+    ContractParty secondParty =
+        ContractParty.builder()
+            .contractId(CONTRACT_ID)
+            .contactId(Optional.of(secondContactId))
+            .role(ContractPartyRole.GUARANTOR)
+            .build();
+    when(contractPartyRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(List.of(collidingParty, secondParty));
+
+    // Same email as the principal (the sender) in setUp() — landlord@example.com.
+    Contact collidingContact =
+        Contact.builder().id(collidingContactId).email(Optional.of("landlord@example.com")).build();
+    Contact secondContact =
+        Contact.builder().id(secondContactId).email(Optional.of("tenant2@example.com")).build();
+    when(contactRepository.findByIdAndTeamId(collidingContactId, TEAM_ID))
+        .thenReturn(Optional.of(collidingContact));
+    when(contactRepository.findByIdAndTeamId(secondContactId, TEAM_ID))
+        .thenReturn(Optional.of(secondContact));
+
+    when(providerClient.createSubmission(any(byte[].class), any(String.class), anyList()))
+        .thenReturn(
+            new SignatureSubmission(
+                "envelope_5",
+                List.of(
+                    new ProviderSigner("1", "landlord@example.com"),
+                    new ProviderSigner("2", "tenant2@example.com"))));
+    when(signatureRequestRepository.save(any()))
+        .thenAnswer(
+            invocation -> {
+              var request = (com.buurman.domain.SignatureRequest) invocation.getArgument(0);
+              request.setId(UUID.randomUUID());
+              request.setIdentifier(Optional.of(Sid.of("SGR00000000000000000000013")));
+              return request;
+            });
+    when(signatureSignerRepository.save(any()))
+        .thenAnswer(
+            invocation -> {
+              var signer = (SignatureSigner) invocation.getArgument(0);
+              signer.setId(UUID.randomUUID());
+              return signer;
+            });
+
+    service.createSignatureRequest(
+        ContractIdentifier.of("CON00000000000000000000001"),
+        DocumentIdentifier.of("DOC00000000000000000000001"),
+        principal);
+
+    org.mockito.Mockito.verify(providerClient)
+        .createSubmission(
+            any(byte[].class),
+            any(String.class),
+            org.mockito.ArgumentMatchers.argThat(
+                signers ->
+                    // Only 2 signers: the landlord, and the second tenant — the colliding first
+                    // tenant was merged into the landlord's own recipient, not sent twice.
+                    signers.size() == 2
+                        && signers.stream()
+                            .anyMatch(
+                                s ->
+                                    s.email().equals("tenant2@example.com")
+                                        // Still "tenant-2", matching signatureBlocks' numbering
+                                        // (which counts the colliding first tenant too) — not
+                                        // renumbered down to "tenant-1" just because that first
+                                        // tenant was dropped here.
+                                        && s.placeholder().equals("signature-tenant-2"))));
+  }
 }
