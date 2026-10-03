@@ -312,6 +312,71 @@ class SignatureWebhookServiceTest {
 
   @Test
   @DisplayName(
+      "a redelivered DOCUMENT_COMPLETED reuses an already-uploaded signed PDF/certificate instead"
+          + " of duplicating them")
+  void documentCompletedRetryReusesAlreadyUploadedDocuments() {
+    when(signatureRequestRepository.findByProviderAndProviderSubmissionId(
+            "documenso", "envelope_abc123"))
+        .thenReturn(Optional.of(existingRequest(SignatureRequestStatus.PARTIALLY_SIGNED)));
+    when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID))
+        .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
+    when(providerClient.downloadCompleted("envelope_abc123"))
+        .thenReturn(new SignedDocument("%PDF-signed".getBytes(), "%PDF-cert".getBytes()));
+    Document originalDocument =
+        Document.builder()
+            .id(DOCUMENT_ID)
+            .teamId(TEAM_ID)
+            .entityType("CONTRACT")
+            .entityId(UUID.randomUUID())
+            .identifier(Optional.of(com.buurman.domain.Sid.of("DOC00000000000000000000009")))
+            .fileName("addendum.pdf")
+            .build();
+    when(documentRepository.findByIdAndTeamId(DOCUMENT_ID, TEAM_ID))
+        .thenReturn(Optional.of(originalDocument));
+
+    // A prior, partially-failed attempt already uploaded the signed PDF — this is what a
+    // webhook redelivery after that partial success looks like from the repository's view.
+    Document alreadyUploadedSigned =
+        Document.builder()
+            .id(UUID.randomUUID())
+            .teamId(TEAM_ID)
+            .entityType("CONTRACT")
+            .entityId(originalDocument.getEntityId())
+            .fileName("signed-addendum.pdf")
+            .build();
+    when(documentRepository.findByEntityAndFileNamePatternAndTeamId(
+            "CONTRACT", originalDocument.getEntityId(), "signed-addendum.pdf", TEAM_ID))
+        .thenReturn(List.of(alreadyUploadedSigned));
+    when(s3StorageService.uploadFile(any(byte[].class), any(), any(), any(), any(), any()))
+        .thenReturn("k2");
+    when(documentRepository.save(any()))
+        .thenAnswer(
+            invocation -> {
+              Document d = invocation.getArgument(0);
+              d.setId(UUID.randomUUID());
+              return d;
+            });
+
+    service.processDocumensoEvent(completedEventPayload(), "secret");
+
+    // Only the certificate gets uploaded/saved this time; the signed PDF is reused as-is.
+    verify(s3StorageService, org.mockito.Mockito.times(1))
+        .uploadFile(any(), any(), any(), any(), any(), eq("certificate-addendum.pdf"));
+    org.mockito.ArgumentCaptor<Document> savedDocuments =
+        org.mockito.ArgumentCaptor.forClass(Document.class);
+    verify(documentRepository, org.mockito.Mockito.times(1)).save(savedDocuments.capture());
+    org.assertj.core.api.Assertions.assertThat(savedDocuments.getValue().getFileName())
+        .isEqualTo("certificate-addendum.pdf");
+    verify(signatureRequestRepository)
+        .save(
+            org.mockito.ArgumentMatchers.argThat(
+                r ->
+                    r.getStatus() == SignatureRequestStatus.COMPLETED
+                        && r.getSignedDocumentId().orElse(null) == alreadyUploadedSigned.getId()));
+  }
+
+  @Test
+  @DisplayName(
       "a processing failure during DOCUMENT_COMPLETED propagates instead of being swallowed, so"
           + " the webhook responds 5xx and Documenso retries delivery")
   void processingFailurePropagates() {

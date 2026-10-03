@@ -255,7 +255,47 @@ public class SignatureWebhookService {
         teamRepository.findById(request.getTeamId()).flatMap(Team::getIdentifier).orElseThrow();
     Sid documentIdentifier = original.getIdentifier().orElseThrow();
 
+    // A retry (e.g. the webhook redelivering after this method threw partway through on a prior
+    // attempt, before the request reached COMPLETED) must not re-upload a signed PDF that's
+    // already there — reuse it instead of creating a duplicate Document/S3 object.
     String fileName = "signed-" + original.getFileName();
+    Document savedSignedDocument =
+        documentRepository
+            .findByEntityAndFileNamePatternAndTeamId(
+                original.getEntityType(), original.getEntityId(), fileName, request.getTeamId())
+            .stream()
+            .findFirst()
+            .orElseGet(
+                () ->
+                    uploadSignedDocument(
+                        request, original, teamIdentifier, documentIdentifier, signed, fileName));
+
+    // The provider's audit certificate is the evidence of who signed what and when, so it is
+    // persisted as its own Document on the same entity as the signed PDF — sourceDocumentId
+    // groups it (and the signed copy) under the original in the Documents list. It deliberately
+    // does not go in signature_requests.signed_document_id: that column points at the signed PDF
+    // only.
+    Document savedCertificateDocument =
+        persistCertificate(request, original, teamIdentifier, documentIdentifier, signed);
+
+    request.setSignedDocumentId(Optional.of(savedSignedDocument.getId()));
+    request.setStatus(SignatureRequestStatus.COMPLETED);
+    signatureRequestRepository.save(request);
+
+    log.info(
+        "Signature request {} completed; signed document {} and certificate {} stored",
+        envelopeId,
+        savedSignedDocument.getId(),
+        savedCertificateDocument.getId());
+  }
+
+  private Document uploadSignedDocument(
+      SignatureRequest request,
+      Document original,
+      Sid teamIdentifier,
+      Sid documentIdentifier,
+      SignedDocument signed,
+      String fileName) {
     String fileKey =
         s3StorageService.uploadFile(
             signed.signedPdfBytes(),
@@ -279,25 +319,7 @@ public class SignatureWebhookService {
             .sourceDocumentId(Optional.of(original.getId()))
             .uploadedBy(request.getUpdatedBy())
             .build();
-    Document savedSignedDocument = documentRepository.save(signedDocument);
-
-    // The provider's audit certificate is the evidence of who signed what and when, so it is
-    // persisted as its own Document on the same entity as the signed PDF — sourceDocumentId
-    // groups it (and the signed copy) under the original in the Documents list. It deliberately
-    // does not go in signature_requests.signed_document_id: that column points at the signed PDF
-    // only.
-    Document savedCertificateDocument =
-        persistCertificate(request, original, teamIdentifier, documentIdentifier, signed);
-
-    request.setSignedDocumentId(Optional.of(savedSignedDocument.getId()));
-    request.setStatus(SignatureRequestStatus.COMPLETED);
-    signatureRequestRepository.save(request);
-
-    log.info(
-        "Signature request {} completed; signed document {} and certificate {} stored",
-        envelopeId,
-        savedSignedDocument.getId(),
-        savedCertificateDocument.getId());
+    return documentRepository.save(signedDocument);
   }
 
   private Document persistCertificate(
@@ -307,6 +329,35 @@ public class SignatureWebhookService {
       Sid documentIdentifier,
       SignedDocument signed) {
     String certificateFileName = "certificate-" + original.getFileName();
+
+    // Same retry hazard as the signed PDF above: a redelivery landing after this upload
+    // succeeded but before the request reached COMPLETED must reuse it, not duplicate it.
+    return documentRepository
+        .findByEntityAndFileNamePatternAndTeamId(
+            original.getEntityType(),
+            original.getEntityId(),
+            certificateFileName,
+            request.getTeamId())
+        .stream()
+        .findFirst()
+        .orElseGet(
+            () ->
+                uploadCertificate(
+                    request,
+                    original,
+                    teamIdentifier,
+                    documentIdentifier,
+                    signed,
+                    certificateFileName));
+  }
+
+  private Document uploadCertificate(
+      SignatureRequest request,
+      Document original,
+      Sid teamIdentifier,
+      Sid documentIdentifier,
+      SignedDocument signed,
+      String certificateFileName) {
     String certificateFileKey =
         s3StorageService.uploadFile(
             signed.certificatePdfBytes(),
