@@ -278,6 +278,7 @@
                                 <importMapping>RateLimitConfigSummary=com.buurman.dto.response.backoffice.RateLimitConfigSummary</importMapping>
                                 <importMapping>RateLimitBucketSummaryResponse=com.buurman.dto.response.backoffice.RateLimitBucketSummaryResponse</importMapping>
                                 <importMapping>RateLimitBucketDeleteResponse=com.buurman.dto.response.backoffice.RateLimitBucketDeleteResponse</importMapping>
+                                <importMapping>LeaseKind=com.buurman.domain.LeaseKind</importMapping>
                                 <importMapping>LeaseClauseTemplateResponse=com.buurman.dto.response.LeaseClauseTemplateResponse</importMapping>
                                 <importMapping>UpsertLeaseClauseTemplateRequest=com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest</importMapping>
                             </importMappings>

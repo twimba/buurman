@@ -4946,6 +4946,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: leaseKind
+          in: query
+          description: Lease kind to filter templates by (all kinds when omitted)
+          required: false
+          schema:
+            $ref: "#/components/schemas/LeaseKind"
       responses:
         "200":
           description: OK
@@ -8284,6 +8290,17 @@ components:
     LeaseClauseTemplateIdentifier:
       type: string
       description: Lease clause template identifier
+    LeaseKind:
+      type: string
+      enum:
+        - LEGACY
+        - RESIDENTIAL
+        - RESIDENTIAL_FURNISHED
+        - COMMERCIAL
+        - MIXED_USE
+        - AGRICULTURAL
+        - SHORT_TERM
+        - STUDENT_MOBILITY
     LeaseClauseTemplateResponse:
       type: object
       properties:
@@ -8291,6 +8308,8 @@ components:
           type: string
         countryCode:
           type: string
+        leaseKind:
+          $ref: "#/components/schemas/LeaseKind"
         clauseKey:
           type: string
         titleI18nKey:
@@ -8300,6 +8319,8 @@ components:
         defaultIncluded:
           type: boolean
         optional:
+          type: boolean
+        pinned:
           type: boolean
         sortOrder:
           type: integer
@@ -8308,11 +8329,13 @@ components:
       required:
         - identifier
         - countryCode
+        - leaseKind
         - clauseKey
         - titleI18nKey
         - bodyI18nKey
         - defaultIncluded
         - optional
+        - pinned
         - sortOrder
         - version
     UpsertLeaseClauseTemplateRequest:
@@ -8320,6 +8343,8 @@ components:
       properties:
         countryCode:
           type: string
+        leaseKind:
+          $ref: "#/components/schemas/LeaseKind"
         clauseKey:
           type: string
         titleI18nKey:
@@ -8330,6 +8355,8 @@ components:
           type: boolean
         optional:
           type: boolean
+        pinned:
+          type: boolean
         sortOrder:
           type: integer
       required:
@@ -8339,6 +8366,7 @@ components:
         - bodyI18nKey
         - defaultIncluded
         - optional
+        - pinned
         - sortOrder
     RentRegulationCatalogInfo:
       type: object

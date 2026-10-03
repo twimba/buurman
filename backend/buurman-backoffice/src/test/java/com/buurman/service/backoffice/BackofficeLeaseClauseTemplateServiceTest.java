@@ -11,10 +11,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.buurman.domain.LeaseClauseTemplate;
+import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.LeaseClauseTemplateIdentifier;
 import com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest;
@@ -33,18 +35,44 @@ class BackofficeLeaseClauseTemplateServiceTest {
 
   private static final UUID ACTOR_ID = UUID.randomUUID();
 
+  private static UpsertLeaseClauseTemplateRequest request(
+      String titleKey,
+      boolean defaultIncluded,
+      boolean optional,
+      @Nullable LeaseKind leaseKind,
+      boolean pinned) {
+    return new UpsertLeaseClauseTemplateRequest(
+        "NL",
+        leaseKind,
+        "governing_law",
+        titleKey,
+        "clause.governingLaw.body",
+        defaultIncluded,
+        optional,
+        pinned,
+        10);
+  }
+
+  private static LeaseClauseTemplate storedTemplate(LeaseKind kind) {
+    return LeaseClauseTemplate.builder()
+        .identifier(Optional.of(LeaseClauseTemplateIdentifier.of("LCT01")))
+        .countryCode("NL")
+        .leaseKind(kind)
+        .clauseKey("governing_law")
+        .titleI18nKey("clause.governingLaw.title")
+        .bodyI18nKey("clause.governingLaw.body")
+        .defaultIncluded(true)
+        .optional(false)
+        .sortOrder(10)
+        .version(1)
+        .build();
+  }
+
   @Test
   @DisplayName("create persists and returns the right response shape")
   void createPersistsAndReturnsResponse() {
     UpsertLeaseClauseTemplateRequest request =
-        new UpsertLeaseClauseTemplateRequest(
-            "NL",
-            "governing_law",
-            "clause.governingLaw.title",
-            "clause.governingLaw.body",
-            true,
-            false,
-            10);
+        request("clause.governingLaw.title", true, false, null, false);
 
     when(repository.save(any(LeaseClauseTemplate.class)))
         .thenAnswer(
@@ -71,14 +99,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
   @DisplayName("create records the acting backoffice admin as both createdBy and updatedBy")
   void createRecordsActor() {
     UpsertLeaseClauseTemplateRequest request =
-        new UpsertLeaseClauseTemplateRequest(
-            "NL",
-            "governing_law",
-            "clause.governingLaw.title",
-            "clause.governingLaw.body",
-            true,
-            false,
-            10);
+        request("clause.governingLaw.title", true, false, null, false);
     when(repository.save(any(LeaseClauseTemplate.class)))
         .thenAnswer(
             invocation -> {
@@ -120,14 +141,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
     when(repository.save(any(LeaseClauseTemplate.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     UpsertLeaseClauseTemplateRequest request =
-        new UpsertLeaseClauseTemplateRequest(
-            "NL",
-            "governing_law",
-            "clause.governingLaw.title (edited)",
-            "clause.governingLaw.body",
-            true,
-            false,
-            10);
+        request("clause.governingLaw.title (edited)", true, false, null, false);
 
     service.update(identifier, request, ACTOR_ID);
 
@@ -147,14 +161,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
   @DisplayName("create rejects a required clause that defaults to excluded")
   void createRejectsRequiredButExcludedByDefault() {
     UpsertLeaseClauseTemplateRequest request =
-        new UpsertLeaseClauseTemplateRequest(
-            "NL",
-            "governing_law",
-            "clause.governingLaw.title",
-            "clause.governingLaw.body",
-            false,
-            false,
-            10);
+        request("clause.governingLaw.title", false, false, null, false);
 
     assertThatThrownBy(() -> service.create(request, ACTOR_ID))
         .isInstanceOf(BadRequestException.class);
@@ -165,14 +172,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
   void updateRejectsRequiredButExcludedByDefault() {
     Sid identifier = LeaseClauseTemplateIdentifier.of("LCT01");
     UpsertLeaseClauseTemplateRequest request =
-        new UpsertLeaseClauseTemplateRequest(
-            "NL",
-            "governing_law",
-            "clause.governingLaw.title",
-            "clause.governingLaw.body",
-            false,
-            false,
-            10);
+        request("clause.governingLaw.title", false, false, null, false);
 
     assertThatThrownBy(() -> service.update(identifier, request, ACTOR_ID))
         .isInstanceOf(BadRequestException.class);
@@ -183,14 +183,7 @@ class BackofficeLeaseClauseTemplateServiceTest {
   void updateOnNonexistentIdentifierThrows() {
     Sid identifier = LeaseClauseTemplateIdentifier.of("LCT99");
     UpsertLeaseClauseTemplateRequest request =
-        new UpsertLeaseClauseTemplateRequest(
-            "NL",
-            "governing_law",
-            "clause.governingLaw.title",
-            "clause.governingLaw.body",
-            true,
-            false,
-            10);
+        request("clause.governingLaw.title", true, false, null, false);
 
     when(repository.getByIdentifier(identifier))
         .thenThrow(new NotFoundException("Lease clause template not found"));
@@ -217,10 +210,98 @@ class BackofficeLeaseClauseTemplateServiceTest {
 
     when(repository.findByCountryCode("NL")).thenReturn(List.of(nlTemplate));
 
-    List<LeaseClauseTemplateResponse> responses = service.list("NL");
+    List<LeaseClauseTemplateResponse> responses = service.list("NL", Optional.empty());
 
     assertThat(responses).hasSize(1);
     assertThat(responses.get(0).countryCode()).isEqualTo("NL");
     verify(repository).findByCountryCode("NL");
+  }
+
+  @Test
+  @DisplayName("create with an explicit kind and pinned persists both")
+  void createPersistsKindAndPinned() {
+    when(repository.save(any(LeaseClauseTemplate.class)))
+        .thenAnswer(
+            invocation -> {
+              LeaseClauseTemplate template = invocation.getArgument(0);
+              template.setIdentifier(Optional.of(LeaseClauseTemplateIdentifier.of("LCT01")));
+              return template;
+            });
+
+    LeaseClauseTemplateResponse response =
+        service.create(request("t", true, false, LeaseKind.COMMERCIAL, true), ACTOR_ID);
+
+    org.mockito.ArgumentCaptor<LeaseClauseTemplate> captor =
+        org.mockito.ArgumentCaptor.forClass(LeaseClauseTemplate.class);
+    verify(repository).save(captor.capture());
+    assertThat(captor.getValue().getLeaseKind()).isEqualTo(LeaseKind.COMMERCIAL);
+    assertThat(captor.getValue().isPinned()).isTrue();
+    assertThat(response.leaseKind()).isEqualTo(LeaseKind.COMMERCIAL);
+    assertThat(response.pinned()).isTrue();
+  }
+
+  @Test
+  @DisplayName("create without a kind defaults to RESIDENTIAL")
+  void createDefaultsKindToResidential() {
+    when(repository.save(any(LeaseClauseTemplate.class)))
+        .thenAnswer(
+            invocation -> {
+              LeaseClauseTemplate template = invocation.getArgument(0);
+              template.setIdentifier(Optional.of(LeaseClauseTemplateIdentifier.of("LCT01")));
+              return template;
+            });
+
+    LeaseClauseTemplateResponse response =
+        service.create(request("t", true, false, null, false), ACTOR_ID);
+
+    assertThat(response.leaseKind()).isEqualTo(LeaseKind.RESIDENTIAL);
+    assertThat(response.pinned()).isFalse();
+  }
+
+  @Test
+  @DisplayName("update rejects a kind different from the stored one")
+  void updateRejectsKindChange() {
+    Sid identifier = LeaseClauseTemplateIdentifier.of("LCT01");
+    when(repository.getByIdentifier(identifier)).thenReturn(storedTemplate(LeaseKind.RESIDENTIAL));
+
+    assertThatThrownBy(
+            () ->
+                service.update(
+                    identifier, request("t", true, false, LeaseKind.COMMERCIAL, false), ACTOR_ID))
+        .isInstanceOf(BadRequestException.class)
+        .hasMessage("Lease kind of an existing template cannot be changed");
+  }
+
+  @Test
+  @DisplayName("update accepts the same or omitted kind and may change pinned")
+  void updateMayChangePinned() {
+    Sid identifier = LeaseClauseTemplateIdentifier.of("LCT01");
+    when(repository.getByIdentifier(identifier)).thenReturn(storedTemplate(LeaseKind.COMMERCIAL));
+    when(repository.save(any(LeaseClauseTemplate.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+
+    LeaseClauseTemplateResponse same =
+        service.update(identifier, request("t", true, false, LeaseKind.COMMERCIAL, true), ACTOR_ID);
+    LeaseClauseTemplateResponse omitted =
+        service.update(identifier, request("t", true, false, null, false), ACTOR_ID);
+
+    assertThat(same.pinned()).isTrue();
+    assertThat(same.leaseKind()).isEqualTo(LeaseKind.COMMERCIAL);
+    assertThat(omitted.pinned()).isFalse();
+    assertThat(omitted.leaseKind()).isEqualTo(LeaseKind.COMMERCIAL);
+  }
+
+  @Test
+  @DisplayName("list with a kind filters via findByCountryAndKind")
+  void listWithKindFilters() {
+    when(repository.findByCountryAndKind("NL", LeaseKind.COMMERCIAL))
+        .thenReturn(List.of(storedTemplate(LeaseKind.COMMERCIAL)));
+
+    List<LeaseClauseTemplateResponse> responses =
+        service.list("NL", Optional.of(LeaseKind.COMMERCIAL));
+
+    assertThat(responses).hasSize(1);
+    verify(repository).findByCountryAndKind("NL", LeaseKind.COMMERCIAL);
+    verify(repository, org.mockito.Mockito.never()).findByCountryCode(any());
   }
 }

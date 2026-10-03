@@ -1,12 +1,14 @@
 package com.buurman.service.backoffice;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.LeaseClauseTemplate;
+import com.buurman.domain.LeaseKind;
 import com.buurman.domain.Sid;
 import com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest;
 import com.buurman.dto.response.LeaseClauseTemplateResponse;
@@ -22,8 +24,11 @@ public class BackofficeLeaseClauseTemplateService {
   private final LeaseClauseTemplateRepository repository;
 
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
-  public List<LeaseClauseTemplateResponse> list(String countryCode) {
-    return repository.findByCountryCode(countryCode).stream().map(this::toResponse).toList();
+  public List<LeaseClauseTemplateResponse> list(String countryCode, Optional<LeaseKind> kind) {
+    List<LeaseClauseTemplate> templates =
+        kind.map(k -> repository.findByCountryAndKind(countryCode, k))
+            .orElseGet(() -> repository.findByCountryCode(countryCode));
+    return templates.stream().map(this::toResponse).toList();
   }
 
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
@@ -34,11 +39,13 @@ public class BackofficeLeaseClauseTemplateService {
         repository.save(
             LeaseClauseTemplate.builder()
                 .countryCode(request.countryCode())
+                .leaseKind(Optional.ofNullable(request.leaseKind()).orElse(LeaseKind.RESIDENTIAL))
                 .clauseKey(request.clauseKey())
                 .titleI18nKey(request.titleI18nKey())
                 .bodyI18nKey(request.bodyI18nKey())
                 .defaultIncluded(request.defaultIncluded())
                 .optional(request.optional())
+                .pinned(request.pinned())
                 .sortOrder(request.sortOrder())
                 .version(1)
                 .createdBy(actorId)
@@ -52,10 +59,17 @@ public class BackofficeLeaseClauseTemplateService {
       Sid identifier, UpsertLeaseClauseTemplateRequest request, UUID actorId) {
     rejectRequiredButExcludedByDefault(request);
     LeaseClauseTemplate existing = repository.getByIdentifier(identifier);
+    Optional.ofNullable(request.leaseKind())
+        .filter(kind -> kind != existing.getLeaseKind())
+        .ifPresent(
+            kind -> {
+              throw new BadRequestException("Lease kind of an existing template cannot be changed");
+            });
     existing.setTitleI18nKey(request.titleI18nKey());
     existing.setBodyI18nKey(request.bodyI18nKey());
     existing.setDefaultIncluded(request.defaultIncluded());
     existing.setOptional(request.optional());
+    existing.setPinned(request.pinned());
     existing.setSortOrder(request.sortOrder());
     existing.setUpdatedBy(actorId);
     // Bumped on every content change so a stale cached resolution (keyed by version) is
@@ -84,11 +98,13 @@ public class BackofficeLeaseClauseTemplateService {
     return new LeaseClauseTemplateResponse(
         t.getIdentifier().orElseThrow(),
         t.getCountryCode(),
+        t.getLeaseKind(),
         t.getClauseKey(),
         t.getTitleI18nKey(),
         t.getBodyI18nKey(),
         t.isDefaultIncluded(),
         t.isOptional(),
+        t.isPinned(),
         t.getSortOrder(),
         t.getVersion());
   }

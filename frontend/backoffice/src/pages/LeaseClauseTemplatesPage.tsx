@@ -8,6 +8,7 @@ import {
   useDeleteLeaseClauseTemplate,
 } from '../hooks/useLeaseClauseTemplateHooks';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { LeaseKind } from '../generated/models';
 import type { LeaseClauseTemplateResponse } from '../generated/models';
 
 // The 7 countries seeded with placeholder lease clause templates (BUUR-105).
@@ -28,24 +29,28 @@ const INPUT_CLASS =
   'w-full px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 
 interface TemplateForm {
+  leaseKind: LeaseKind;
   clauseKey: string;
   titleI18nKey: string;
   bodyI18nKey: string;
   sortOrder: number;
   optional: boolean;
   defaultIncluded: boolean;
+  pinned: boolean;
 }
 
 const emptyForm = (
   countryCode: string
 ): TemplateForm & { countryCode: string } => ({
   countryCode,
+  leaseKind: LeaseKind.RESIDENTIAL,
   clauseKey: '',
   titleI18nKey: '',
   bodyI18nKey: '',
   sortOrder: 0,
   optional: true,
   defaultIncluded: true,
+  pinned: false,
 });
 
 /**
@@ -78,12 +83,14 @@ export const LeaseClauseTemplatesPage = () => {
     setEditingTemplate(template);
     setForm({
       countryCode: template.countryCode,
+      leaseKind: template.leaseKind,
       clauseKey: template.clauseKey,
       titleI18nKey: template.titleI18nKey,
       bodyI18nKey: template.bodyI18nKey,
       sortOrder: template.sortOrder,
       optional: template.optional,
       defaultIncluded: template.defaultIncluded,
+      pinned: template.pinned,
     });
     setShowForm(true);
   };
@@ -97,12 +104,14 @@ export const LeaseClauseTemplatesPage = () => {
     e.preventDefault();
     const data = {
       countryCode: form.countryCode,
+      leaseKind: form.leaseKind,
       clauseKey: form.clauseKey,
       titleI18nKey: form.titleI18nKey,
       bodyI18nKey: form.bodyI18nKey,
       sortOrder: form.sortOrder,
       optional: form.optional,
       defaultIncluded: form.defaultIncluded,
+      pinned: form.pinned,
     };
     if (editingTemplate) {
       updateTemplate.mutate(
@@ -192,11 +201,13 @@ export const LeaseClauseTemplatesPage = () => {
               <thead>
                 <tr className="border-b border-border-default">
                   <th className={TH_CLASS}>Order</th>
+                  <th className={TH_CLASS}>Kind</th>
                   <th className={TH_CLASS}>Clause Key</th>
                   <th className={TH_CLASS}>Title Key</th>
                   <th className={TH_CLASS}>Body Key</th>
                   <th className={TH_CLASS}>Optional</th>
                   <th className={TH_CLASS}>Default Included</th>
+                  <th className={TH_CLASS}>Pinned</th>
                   <th className={TH_CLASS}>Version</th>
                   <th className={`${TH_CLASS} text-right`}>Actions</th>
                 </tr>
@@ -205,7 +216,7 @@ export const LeaseClauseTemplatesPage = () => {
                 {sortedTemplates.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={8}
+                      colSpan={10}
                       className="px-4 py-12 text-center text-sm text-text-muted"
                     >
                       No clause templates for this country yet.
@@ -219,6 +230,9 @@ export const LeaseClauseTemplatesPage = () => {
                     >
                       <td className="px-4 py-3 text-sm text-text-secondary">
                         {template.sortOrder}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-text-secondary">
+                        {template.leaseKind}
                       </td>
                       <td className="px-4 py-3 text-sm font-medium text-text-primary">
                         {template.clauseKey}
@@ -234,6 +248,9 @@ export const LeaseClauseTemplatesPage = () => {
                       </td>
                       <td className="px-4 py-3 text-sm text-text-secondary">
                         {template.defaultIncluded ? 'Yes' : 'No'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-text-secondary">
+                        {template.pinned ? 'Yes' : 'No'}
                       </td>
                       <td className="px-4 py-3 text-sm text-text-secondary">
                         v{template.version}
@@ -284,6 +301,31 @@ export const LeaseClauseTemplatesPage = () => {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  Lease Kind
+                </label>
+                <select
+                  disabled={!!editingTemplate}
+                  value={form.leaseKind}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      leaseKind: e.target.value as LeaseKind,
+                    }))
+                  }
+                  className={
+                    INPUT_CLASS +
+                    (editingTemplate ? ' opacity-50 cursor-not-allowed' : '')
+                  }
+                >
+                  {Object.values(LeaseKind).map((kind) => (
+                    <option key={kind} value={kind}>
+                      {kind}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
                   Clause Key
@@ -377,6 +419,17 @@ export const LeaseClauseTemplatesPage = () => {
                     className="rounded border-border-default text-primary-500 focus:ring-primary-500/20"
                   />
                   Included by default
+                </label>
+                <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.pinned}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, pinned: e.target.checked }))
+                    }
+                    className="rounded border-border-default text-primary-500 focus:ring-primary-500/20"
+                  />
+                  Pinned (fixed position in the lease, not reorderable)
                 </label>
               </div>
               <div className="flex justify-end gap-3 pt-2">

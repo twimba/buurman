@@ -1,10 +1,12 @@
 package com.buurman.controller.backoffice;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.LeaseKind;
 import com.buurman.domain.identifier.LeaseClauseTemplateIdentifier;
 import com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest;
 import com.buurman.dto.response.LeaseClauseTemplateResponse;
@@ -21,8 +23,9 @@ public class BackofficeLeaseClauseTemplateController implements BackofficeLeaseC
   private final BackofficeLeaseClauseTemplateService leaseClauseTemplateService;
 
   @Override
-  public List<LeaseClauseTemplateResponse> listLeaseClauseTemplates(String countryCode) {
-    return leaseClauseTemplateService.list(countryCode);
+  public List<LeaseClauseTemplateResponse> listLeaseClauseTemplates(
+      String countryCode, Optional<LeaseKind> leaseKind) {
+    return leaseClauseTemplateService.list(countryCode, leaseKind);
   }
 
   @Override
