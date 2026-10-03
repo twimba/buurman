@@ -29,7 +29,7 @@
   <p><strong th:text="${landlordName}">hyresvärd</strong>, nedan kallad &rdquo;hyresvärden&rdquo; (verhuurder), och</p>
   <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">hyresgäst</strong>, nedan
     (gemensamt) kallad &rdquo;hyresgästen&rdquo; (huurder),</p>
-  <p th:if="${#strings.isEmpty(tenantNames)}">den eller de hyresgäster som undertecknar nedan, nedan
+  <p th:if="${#strings.isEmpty(tenantNames)}">den eller de hyresgäster som undertecknar nedan,
     (gemensamt) kallade &rdquo;hyresgästen&rdquo; (huurder),</p>
   <p>förklarar att de har kommit överens om vad som bestäms i detta hyresavtal. Anges i detta avtal
     fler än 1 hyresgäst, svarar var och en av dem solidariskt (hoofdelijk aansprakelijk) för fullgörandet av
@@ -187,7 +187,7 @@
 </div>
 
 <div th:fragment="clause-termination" data-clause="termination">
-  <p>Uppsägning av detta avtal sker genom delgivning av en gerechtsdeurwaarder (deurwaardersexploot) eller genom rekommenderat brev, till en
+  <p>Uppsägning av detta avtal sker genom delgivning genom en nederländsk stämningsman (gerechtsdeurwaarder; deurwaardersexploot) eller genom rekommenderat brev, till en
     dag som har avtalats för betalning av hyran (art. 7:271 st. 3 och 4 BW).</p>
   <p>Hyresgästen iakttar en uppsägningstid som motsvarar tiden mellan 2 på varandra följande
     betalningsdagar, dock inte kortare än 1 månad och inte längre än 3 månader (art. 7:271 st. 6 bokstav a

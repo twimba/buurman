@@ -296,6 +296,68 @@ class TranslatedResidentialLeaseRenderTest {
     assertThat(fifth).contains(lang.dueDay5()).doesNotContain(lang.inAdvance());
   }
 
+  private static final Pattern DUTCH_MARKERS =
+      Pattern.compile(
+          "\\b(?:de verhuurder|tenzij|overeenkomst|zie artikel|deurwaardersexploot)\\b",
+          Pattern.CASE_INSENSITIVE);
+  private static final Pattern PARENTHETICAL = Pattern.compile("\\([^()]*\\)");
+
+  /**
+   * Dutch marker words left in the text outside parentheses (Dutch terms are only allowed as
+   * parenthetical glosses after the translated term).
+   */
+  static List<String> dutchOutsideParentheses(String html) {
+    String text =
+        html.replaceAll("(?s)<!--.*?-->", " ")
+            .replaceAll("(?s)<style.*?</style>", " ")
+            .replaceAll("(?s)<[^>]*>", " ")
+            .replace("&nbsp;", " ");
+    String previous;
+    do {
+      previous = text;
+      text = PARENTHETICAL.matcher(text).replaceAll(" ");
+    } while (!text.equals(previous));
+    List<String> found = new ArrayList<>();
+    Matcher m = DUTCH_MARKERS.matcher(text.replaceAll("\\s+", " "));
+    while (m.find()) {
+      found.add(m.group());
+    }
+    return found;
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("languages")
+  @DisplayName("no Dutch marker words outside parenthetical glosses")
+  void noDutchOutsideParentheses(Lang lang) {
+    assertThat(dutchOutsideParentheses(render(lang, ALL, true))).isEmpty();
+    assertThat(dutchOutsideParentheses(render(lang, REQUIRED, false))).isEmpty();
+  }
+
+  @org.junit.jupiter.api.Test
+  @DisplayName(
+      "Dutch marker check: bites on the Dutch text and on an injected term, spares glosses")
+  void dutchMarkerCheckBites() throws java.io.IOException {
+    String nl =
+        new String(
+            new org.springframework.core.io.ClassPathResource(
+                    "templates/documents/lease-agreement/NL/residential/nl.html")
+                .getInputStream()
+                .readAllBytes(),
+            java.nio.charset.StandardCharsets.UTF_8);
+    assertThat(dutchOutsideParentheses(nl))
+        .contains("de verhuurder", "tenzij", "overeenkomst", "deurwaardersexploot");
+    assertThat(dutchOutsideParentheses("<p>Zie artikel 5 voor meer.</p>"))
+        .containsExactly("Zie artikel");
+    assertThat(
+            dutchOutsideParentheses("<p>Uppsägning sker bij deurwaardersexploot eller brev.</p>"))
+        .containsExactly("deurwaardersexploot");
+    assertThat(
+            dutchOutsideParentheses(
+                "<p>Uppsägning sker genom delgivning (gerechtsdeurwaarder; deurwaardersexploot)"
+                    + " eller brev.</p>"))
+        .isEmpty();
+  }
+
   private static String clauseBody(String html, String key) {
     int start = html.indexOf("data-clause=\"" + key + "\"");
     assertThat(start).as("clause %s rendered", key).isPositive();

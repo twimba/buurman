@@ -29,7 +29,7 @@
   <p><strong th:text="${landlordName}">vuokranantaja</strong>, jäljempänä &rdquo;vuokranantaja&rdquo; (verhuurder), ja</p>
   <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">vuokralainen</strong>, jäljempänä
     (yhdessä) &rdquo;vuokralainen&rdquo; (huurder),</p>
-  <p th:if="${#strings.isEmpty(tenantNames)}">jäljempänä allekirjoittava vuokralainen tai allekirjoittavat vuokralaiset, jäljempänä
+  <p th:if="${#strings.isEmpty(tenantNames)}">alla allekirjoittanut vuokralainen tai allekirjoittaneet vuokralaiset, jäljempänä
     (yhdessä) &rdquo;vuokralainen&rdquo; (huurder),</p>
   <p>vakuuttavat sopineensa siitä, mitä tässä vuokrasopimuksessa määrätään. Jos tässä sopimuksessa
     mainitaan useampi kuin 1 vuokralainen, kukin heistä vastaa yhteisvastuullisesti (hoofdelijk aansprakelijk) kaikkien
@@ -154,7 +154,7 @@
   <p>Vuokralainen suorittaa omalla kustannuksellaan pienet korjaukset (kleine herstellingen), ellei niiden tarve johdu siitä, että
     vuokranantaja on laiminlyönyt velvollisuutensa korjata viat (BW:n 7:217 artikla). Mitkä
     korjaukset katsotaan pieniksi, ilmenee niitä koskevasta lakisääteisestä sääntelystä.</p>
-  <p>Jos vuokranantaja viivyttää vian korjaamista, vuokralainen voi korjata
+  <p>Jos vuokranantaja on viivästyksessä vian korjaamisessa, vuokralainen voi korjata
     vian itse ja periä kohtuulliset kustannukset vuokranantajalta, halutessaan vähentämällä ne
     vuokrasta (BW:n 7:206 artiklan 3 momentti). Näistä säännöistä ei voida poiketa vuokralaisen vahingoksi
     (BW:n 7:242 artikla).</p>
@@ -185,7 +185,7 @@
 </div>
 
 <div th:fragment="clause-termination" data-clause="termination">
-  <p>Tämän sopimuksen irtisanominen tapahtuu oikeudenpalvelijan (gerechtsdeurwaarder) toimittamalla tiedoksiannolla (deurwaardersexploot) tai kirjatulla kirjeellä
+  <p>Tämän sopimuksen irtisanominen tapahtuu haastemiehen (gerechtsdeurwaarder) toimittamalla tiedoksiannolla (deurwaardersexploot) tai kirjatulla kirjeellä
     vuokran maksamista varten sovitulle päivälle (BW:n 7:271 artiklan 3 ja 4 momentti).</p>
   <p>Vuokralainen noudattaa irtisanomisaikaa, joka vastaa 2 peräkkäisen
     maksupäivän välistä aikaa, kuitenkin vähintään 1 kuukautta ja enintään 3 kuukautta (BW:n 7:271 artiklan 6 momentin a
@@ -216,7 +216,7 @@
     tietosuoja-asetuksen mukaisesti (GDPR; hollanniksi: Algemene verordening gegevensbescherming, AVG, asetus (EU) 2016/679). Vuokranantaja säilyttää nämä
     tiedot vain niin kauan kuin se on tarpeen.</p>
   <p>Vuokralainen voi käyttää vuokranantajaa kohtaan GDPR:n mukaisia oikeuksiaan, mukaan lukien oikeus
-    tutustua henkilötietoihinsa, oikaista ne ja poistaa ne, ja voi tehdä valituksen
+    saada pääsy henkilötietoihinsa sekä oikeus niiden oikaisemiseen ja poistamiseen, ja voi tehdä valituksen
     valvontaviranomaiselle, Alankomaissa Autoriteit Persoonsgegevens (Alankomaiden tietosuojaviranomainen).</p>
 </div>
 
