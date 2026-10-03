@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -282,13 +283,21 @@ public class SignatureService {
     contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Sid resolvedDocumentIdentifier = document.getIdentifier().orElseThrow();
 
-    return signatureRequestRepository.findByDocumentIdAndTeamId(document.getId(), teamId).stream()
+    List<SignatureRequest> requests =
+        signatureRequestRepository.findByDocumentIdAndTeamId(document.getId(), teamId);
+    Map<UUID, List<SignatureSigner>> signersByRequestId =
+        signatureSignerRepository
+            .findBySignatureRequestIds(requests.stream().map(SignatureRequest::getId).toList())
+            .stream()
+            .collect(Collectors.groupingBy(SignatureSigner::getSignatureRequestId));
+
+    return requests.stream()
         .map(
             request ->
                 toResponse(
                     request,
                     resolvedDocumentIdentifier,
-                    signatureSignerRepository.findBySignatureRequestId(request.getId())))
+                    signersByRequestId.getOrDefault(request.getId(), List.of())))
         .toList();
   }
 

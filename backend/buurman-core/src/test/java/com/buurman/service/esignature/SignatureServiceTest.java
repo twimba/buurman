@@ -24,6 +24,7 @@ import com.buurman.domain.Document;
 import com.buurman.domain.Sid;
 import com.buurman.domain.SignatureRequestStatus;
 import com.buurman.domain.SignatureSigner;
+import com.buurman.domain.SignatureSignerStatus;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.SignatureRequestIdentifier;
@@ -359,7 +360,7 @@ class SignatureServiceTest {
                     .providerSubmissionId("envelope_old")
                     .status(SignatureRequestStatus.DECLINED)
                     .build()));
-    when(signatureSignerRepository.findBySignatureRequestId(any())).thenReturn(List.of());
+    when(signatureSignerRepository.findBySignatureRequestIds(any())).thenReturn(List.of());
 
     var responses =
         service.listSignatureRequests(
@@ -379,6 +380,86 @@ class SignatureServiceTest {
         .allSatisfy(
             r ->
                 assertThat(r.documentIdentifier().value()).isEqualTo("DOC00000000000000000000001"));
+  }
+
+  @Test
+  @DisplayName(
+      "listSignatureRequests fetches signers for every request in one batch, not one query each")
+  void listSignatureRequestsBatchesSignerLookups() {
+    Document document =
+        Document.builder()
+            .id(DOCUMENT_ID)
+            .teamId(TEAM_ID)
+            .identifier(Optional.of(Sid.of("DOC00000000000000000000001")))
+            .fileKey("k")
+            .fileName("addendum.pdf")
+            .build();
+    when(documentRepository.getByIdentifierAndTeamId(
+            any(Sid.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(document);
+
+    UUID requestAId = UUID.randomUUID();
+    UUID requestBId = UUID.randomUUID();
+    when(signatureRequestRepository.findByDocumentIdAndTeamId(DOCUMENT_ID, TEAM_ID))
+        .thenReturn(
+            List.of(
+                com.buurman.domain.SignatureRequest.builder()
+                    .id(requestAId)
+                    .identifier(Optional.of(Sid.of("SGR00000000000000000000008")))
+                    .teamId(TEAM_ID)
+                    .documentId(DOCUMENT_ID)
+                    .provider("documenso")
+                    .providerSubmissionId("envelope_a")
+                    .status(SignatureRequestStatus.PENDING)
+                    .build(),
+                com.buurman.domain.SignatureRequest.builder()
+                    .id(requestBId)
+                    .identifier(Optional.of(Sid.of("SGR00000000000000000000009")))
+                    .teamId(TEAM_ID)
+                    .documentId(DOCUMENT_ID)
+                    .provider("documenso")
+                    .providerSubmissionId("envelope_b")
+                    .status(SignatureRequestStatus.PENDING)
+                    .build()));
+
+    com.buurman.domain.SignatureSigner signerA =
+        com.buurman.domain.SignatureSigner.builder()
+            .id(UUID.randomUUID())
+            .signatureRequestId(requestAId)
+            .email("a@example.com")
+            .role(com.buurman.domain.SignatureSignerRole.TENANT)
+            .providerSignerId("ps_a")
+            .status(SignatureSignerStatus.PENDING)
+            .build();
+    com.buurman.domain.SignatureSigner signerB =
+        com.buurman.domain.SignatureSigner.builder()
+            .id(UUID.randomUUID())
+            .signatureRequestId(requestBId)
+            .email("b@example.com")
+            .role(com.buurman.domain.SignatureSignerRole.TENANT)
+            .providerSignerId("ps_b")
+            .status(SignatureSignerStatus.PENDING)
+            .build();
+    when(signatureSignerRepository.findBySignatureRequestIds(any()))
+        .thenReturn(List.of(signerA, signerB));
+
+    var responses =
+        service.listSignatureRequests(
+            ContractIdentifier.of("CON00000000000000000000001"),
+            DocumentIdentifier.of("DOC00000000000000000000001"),
+            principal);
+
+    org.mockito.Mockito.verify(signatureSignerRepository, org.mockito.Mockito.never())
+        .findBySignatureRequestId(any());
+    org.mockito.Mockito.verify(signatureSignerRepository, org.mockito.Mockito.times(1))
+        .findBySignatureRequestIds(
+            org.mockito.ArgumentMatchers.argThat(
+                ids -> ids.containsAll(List.of(requestAId, requestBId)) && ids.size() == 2));
+    assertThat(responses)
+        .extracting(r -> r.identifier().value(), r -> r.signers().size())
+        .containsExactlyInAnyOrder(
+            org.assertj.core.api.Assertions.tuple("SGR00000000000000000000008", 1),
+            org.assertj.core.api.Assertions.tuple("SGR00000000000000000000009", 1));
   }
 
   @Test

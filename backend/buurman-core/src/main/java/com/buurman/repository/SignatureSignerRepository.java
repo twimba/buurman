@@ -57,6 +57,18 @@ public class SignatureSignerRepository {
             .map(mapper::toDomain));
   }
 
+  public List<SignatureSigner> findBySignatureRequestIds(List<UUID> signatureRequestIds) {
+    if (signatureRequestIds.isEmpty()) {
+      return List.of();
+    }
+    return List.copyOf(
+        dsl.selectFrom(SIGNATURE_SIGNERS)
+            .where(SIGNATURE_SIGNERS.SIGNATURE_REQUEST_ID.in(signatureRequestIds))
+            .orderBy(SIGNATURE_SIGNERS.CREATED_AT.asc())
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
   public void updateStatus(UUID id, SignatureSignerStatus status, Optional<Instant> signedAt) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(SIGNATURE_SIGNERS)
