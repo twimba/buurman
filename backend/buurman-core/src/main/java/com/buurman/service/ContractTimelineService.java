@@ -3,8 +3,10 @@ package com.buurman.service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -146,9 +148,13 @@ public class ContractTimelineService {
 
   private List<TimelineEventResponse> mapSignatureRequests(List<Document> documents, UUID teamId) {
     List<TimelineEventResponse> events = new ArrayList<>();
+    List<UUID> documentIds = documents.stream().map(Document::getId).toList();
+    Map<UUID, List<SignatureRequest>> requestsByDocumentId =
+        signatureRequestRepository.findByDocumentIdsAndTeamId(documentIds, teamId).stream()
+            .collect(Collectors.groupingBy(SignatureRequest::getDocumentId));
     for (Document document : documents) {
       for (SignatureRequest request :
-          signatureRequestRepository.findByDocumentIdAndTeamId(document.getId(), teamId)) {
+          requestsByDocumentId.getOrDefault(document.getId(), List.of())) {
         events.add(
             new TimelineEventResponse(
                 TimelineEventType.SIGNATURE_SENT,

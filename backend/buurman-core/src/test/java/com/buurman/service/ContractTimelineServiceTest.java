@@ -145,7 +145,7 @@ class ContractTimelineServiceTest {
             .build();
     when(documentRepository.findByEntityAndTeamId("CONTRACT", CONTRACT_ID, TEAM_ID))
         .thenReturn(List.of(document));
-    when(signatureRequestRepository.findByDocumentIdAndTeamId(documentId, TEAM_ID))
+    when(signatureRequestRepository.findByDocumentIdsAndTeamId(List.of(documentId), TEAM_ID))
         .thenReturn(
             List.of(
                 SignatureRequest.builder()

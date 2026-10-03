@@ -6,6 +6,7 @@ import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -113,6 +114,24 @@ public class SignatureRequestRepository {
                 SIGNATURE_REQUESTS
                     .DOCUMENT_ID
                     .eq(documentId)
+                    .and(SIGNATURE_REQUESTS.TEAM_ID.eq(teamId))
+                    .and(SIGNATURE_REQUESTS.DELETED_AT.isNull()))
+            .orderBy(SIGNATURE_REQUESTS.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
+  public List<SignatureRequest> findByDocumentIdsAndTeamId(
+      Collection<UUID> documentIds, UUID teamId) {
+    if (documentIds.isEmpty()) {
+      return List.of();
+    }
+    return List.copyOf(
+        dsl.selectFrom(SIGNATURE_REQUESTS)
+            .where(
+                SIGNATURE_REQUESTS
+                    .DOCUMENT_ID
+                    .in(documentIds)
                     .and(SIGNATURE_REQUESTS.TEAM_ID.eq(teamId))
                     .and(SIGNATURE_REQUESTS.DELETED_AT.isNull()))
             .orderBy(SIGNATURE_REQUESTS.CREATED_AT.desc())
