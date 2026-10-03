@@ -286,6 +286,18 @@
                                 <importMapping>LeaseKind=com.buurman.domain.LeaseKind</importMapping>
                                 <importMapping>LeaseClauseTemplateResponse=com.buurman.dto.response.LeaseClauseTemplateResponse</importMapping>
                                 <importMapping>UpsertLeaseClauseTemplateRequest=com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest</importMapping>
+                                <importMapping>LeaseAvailability=com.buurman.domain.LeaseAvailability</importMapping>
+                                <importMapping>LeasePreviewContractType=com.buurman.domain.Contract.ContractType</importMapping>
+                                <importMapping>LeasePreviewPaymentFrequency=com.buurman.domain.Contract.PaymentFrequency</importMapping>
+                                <importMapping>LeasePreviewRentComponentType=com.buurman.domain.RentComponentType</importMapping>
+                                <importMapping>LeasePreviewSource=com.buurman.dto.response.backoffice.LeaseAgreementPreviewResponse.Source</importMapping>
+                                <importMapping>LeasePreviewRentComponent=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.RentComponent</importMapping>
+                                <importMapping>LeasePreviewMoney=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.Money</importMapping>
+                                <importMapping>LeasePreviewSample=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.Sample</importMapping>
+                                <importMapping>LeasePreviewClauseChoice=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.ClauseChoice</importMapping>
+                                <importMapping>LeasePreviewClause=com.buurman.dto.response.backoffice.LeaseAgreementPreviewResponse.Clause</importMapping>
+                                <importMapping>LeaseAgreementPreviewRequest=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest</importMapping>
+                                <importMapping>LeaseAgreementPreviewResponse=com.buurman.dto.response.backoffice.LeaseAgreementPreviewResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

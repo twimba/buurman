@@ -269,6 +269,18 @@ public class LeaseAgreementExporter {
         false, SHELL_TEMPLATE, plan.locale(), variables, plan.languageUsed(), allClauses);
   }
 
+  /**
+   * Renders the assembled lease to HTML without the PDF engine, with the same template choice as
+   * {@link #render}. Used by the backoffice preview.
+   */
+  String renderHtml(AssembledLease lease) {
+    return lease.legacy()
+        ? documentTemplateService.renderToHtml(
+            lease.templateName(), lease.locale(), lease.variables())
+        : documentTemplateService.renderTemplateToHtml(
+            lease.templateName(), lease.locale(), lease.variables());
+  }
+
   /** The real path's final step: the same {@code LetterTemplateService} calls as always. */
   private RenderedLease render(AssembledLease lease) {
     byte[] pdf =

@@ -5038,6 +5038,63 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/lease-clause-templates/preview:
+    post:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: Preview a lease agreement
+      description: >-
+        Renders a country lease agreement to HTML from synthetic sample values, applying the given
+        clause choices with the same rules as a real lease (required clauses stay included, pinned
+        clauses keep their position). Nothing is persisted and no real contract is read. A country
+        without a lease answers 200 with an UNAVAILABLE_* availability and no html. The html carries
+        a SAMPLE banner and a Content-Security-Policy and is meant for a sandboxed iframe.
+      operationId: previewLeaseAgreement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeaseAgreementPreviewRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaseAgreementPreviewResponse"
+        "400":
+          description: Bad request - validation error, malformed input or unknown clause key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "422":
+          description: No clause is included, or a clause has no fragment in the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /backoffice/lease-clause-templates/{identifier}:
     put:
       tags:
@@ -8361,6 +8418,214 @@ components:
     DocumentLanguage:
       type: string
       enum: [en, nl, de, fr, pt, es, sv, it, fi, el, pl, da, nb]
+    LeaseAvailability:
+      type: string
+      description: Whether, and in what form, a lease agreement can be produced
+      enum:
+        - AVAILABLE_DOCUMENT
+        - AVAILABLE_EXAMPLE_TEXT
+        - UNAVAILABLE_COUNTRY
+        - UNAVAILABLE_NO_COUNTRY
+    LeasePreviewContractType:
+      type: string
+      enum:
+        - FIXED_TERM
+        - INDEFINITE
+    LeasePreviewPaymentFrequency:
+      type: string
+      enum:
+        - MONTHLY
+        - QUARTERLY
+        - ANNUALLY
+    LeasePreviewRentComponentType:
+      type: string
+      enum:
+        - BASE_RENT
+        - UTILITIES_ADVANCE
+        - SERVICE_COSTS
+        - HOA_FEES
+        - FURNITURE_RENTAL
+        - PARKING
+        - STORAGE
+        - GARBAGE_COLLECTION
+        - OTHER
+    LeasePreviewSource:
+      type: string
+      description: Whether the html is a reviewed per-language document or the placeholder example text
+      enum:
+        - DOCUMENT
+        - EXAMPLE_TEXT
+    LeasePreviewRentComponent:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/LeasePreviewRentComponentType"
+        amount:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1000000000
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+      required:
+        - type
+        - amount
+        - currency
+    LeasePreviewMoney:
+      type: object
+      properties:
+        amount:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1000000000
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+      required:
+        - amount
+        - currency
+    LeasePreviewSample:
+      type: object
+      description: The made-up contract values the preview is rendered from. All amounts share one currency.
+      properties:
+        contractType:
+          $ref: "#/components/schemas/LeasePreviewContractType"
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          description: Must be after startDate when given
+        rentComponents:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/LeasePreviewRentComponent"
+        deposit:
+          $ref: "#/components/schemas/LeasePreviewMoney"
+        paymentDueDay:
+          type: integer
+          minimum: 1
+          maximum: 31
+        paymentFrequency:
+          $ref: "#/components/schemas/LeasePreviewPaymentFrequency"
+        landlordName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        tenantNames:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+        propertyAddress:
+          type: string
+          minLength: 1
+          maxLength: 200
+        regionCode:
+          type: string
+          pattern: "^[A-Za-z0-9-]{1,10}$"
+      required:
+        - contractType
+        - startDate
+        - rentComponents
+        - landlordName
+        - propertyAddress
+    LeasePreviewClauseChoice:
+      type: object
+      properties:
+        clauseKey:
+          type: string
+          pattern: "^[a-z0-9-]{1,64}$"
+        included:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+      required:
+        - clauseKey
+        - included
+        - sortOrder
+    LeaseAgreementPreviewRequest:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          pattern: "^[A-Z]{2}$"
+        leaseKind:
+          $ref: "#/components/schemas/LeaseKind"
+        language:
+          $ref: "#/components/schemas/DocumentLanguage"
+        sample:
+          $ref: "#/components/schemas/LeasePreviewSample"
+        clauses:
+          type: array
+          maxItems: 100
+          description: Clause choices; omitted keys keep the template default. Keys must be unique.
+          items:
+            $ref: "#/components/schemas/LeasePreviewClauseChoice"
+      required:
+        - countryCode
+        - leaseKind
+        - language
+        - sample
+    LeasePreviewClause:
+      type: object
+      description: What the resolver decided for one clause, in document order
+      properties:
+        clauseKey:
+          type: string
+        title:
+          type: string
+        included:
+          type: boolean
+        optional:
+          type: boolean
+        pinned:
+          type: boolean
+        articleNumber:
+          type: integer
+          format: int32
+          description: 0 when the clause is excluded
+        sortOrder:
+          type: integer
+          format: int32
+      required:
+        - clauseKey
+        - title
+        - included
+        - optional
+        - pinned
+        - articleNumber
+        - sortOrder
+    LeaseAgreementPreviewResponse:
+      type: object
+      description: >-
+        When availability is UNAVAILABLE_*, html, languageUsed, kindUsed and source are absent and
+        clauses is empty.
+      properties:
+        availability:
+          $ref: "#/components/schemas/LeaseAvailability"
+        html:
+          type: string
+          nullable: true
+        languageUsed:
+          $ref: "#/components/schemas/DocumentLanguage"
+        kindUsed:
+          $ref: "#/components/schemas/LeaseKind"
+        source:
+          $ref: "#/components/schemas/LeasePreviewSource"
+        clauses:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeasePreviewClause"
+      required:
+        - availability
+        - clauses
     UpsertLeaseClauseTemplateRequest:
       type: object
       properties:

@@ -8,11 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.LeaseKind;
 import com.buurman.domain.identifier.LeaseClauseTemplateIdentifier;
+import com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest;
 import com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest;
 import com.buurman.dto.response.LeaseClauseTemplateResponse;
+import com.buurman.dto.response.backoffice.LeaseAgreementPreviewResponse;
 import com.buurman.generated.backoffice.api.BackofficeLeaseClauseTemplatesApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.service.backoffice.BackofficeLeaseClauseTemplateService;
+import com.buurman.service.letters.LeasePreviewService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class BackofficeLeaseClauseTemplateController implements BackofficeLeaseClauseTemplatesApi {
 
   private final BackofficeLeaseClauseTemplateService leaseClauseTemplateService;
+  private final LeasePreviewService leasePreviewService;
 
   @Override
   public List<LeaseClauseTemplateResponse> listLeaseClauseTemplates(
@@ -45,6 +49,12 @@ public class BackofficeLeaseClauseTemplateController implements BackofficeLeaseC
   @Override
   public void deleteLeaseClauseTemplate(LeaseClauseTemplateIdentifier identifier) {
     leaseClauseTemplateService.delete(identifier, currentActorId());
+  }
+
+  @Override
+  public LeaseAgreementPreviewResponse previewLeaseAgreement(
+      LeaseAgreementPreviewRequest leaseAgreementPreviewRequest) {
+    return leasePreviewService.preview(leaseAgreementPreviewRequest);
   }
 
   private UUID currentActorId() {
