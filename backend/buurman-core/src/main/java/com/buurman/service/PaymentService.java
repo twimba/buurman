@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +44,8 @@ import com.buurman.domain.AmountStats;
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactCredit;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Payment.PaymentType;
@@ -90,7 +93,9 @@ import com.buurman.mapper.PaymentReceivalMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PaymentPlanRepository;
 import com.buurman.repository.PaymentReceivalRepository;
@@ -118,6 +123,8 @@ public class PaymentService {
   private final ContactCreditRepository creditRepository;
   private final PaymentPlanRepository paymentPlanRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final PropertyRepository propertyRepository;
   private final ContactRepository contactRepository;
   private final ContractPartyService contractPartyService;
@@ -139,7 +146,6 @@ public class PaymentService {
   private final Clock clock;
   private final PlatformTransactionManager transactionManager;
   private final Validator validator;
-  private final PaymentSchedulingService paymentSchedulingService;
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
@@ -1181,11 +1187,24 @@ public class PaymentService {
 
     List<Payment> generatedPayments = new ArrayList<>();
 
+    List<UUID> contractIds = activeContracts.stream().map(Contract::getId).toList();
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId).stream()
+            .collect(Collectors.groupingBy(ContractExtension::getContractId));
+    Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<Payment>> paymentsByContract =
+        paymentRepository.findByContractIdsAndTeamId(contractIds, teamId).stream()
+            .collect(Collectors.groupingBy(Payment::getContractId));
+
     for (Contract contract : activeContracts) {
       LocalDate dueDate = calculateDueDate(month, contract);
 
       Optional<LocalDate> billingEndDate =
-          paymentSchedulingService.billingEndDate(contract, teamId);
+          EffectiveEndDateHelper.computeEffectiveEndDate(
+              contract.getEndDate(),
+              extensionsByContract.getOrDefault(contract.getId(), List.of()),
+              Optional.ofNullable(terminationsByContract.get(contract.getId())));
       if (billingEndDate.isPresent() && dueDate.isAfter(billingEndDate.get())) {
         log.debug(
             "Due date {} is after contract {}'s end date {}, skipping",
@@ -1195,7 +1214,7 @@ public class PaymentService {
         continue;
       }
 
-      List<Payment> existingPayments = paymentRepository.findByContractId(contract.getId(), teamId);
+      List<Payment> existingPayments = paymentsByContract.getOrDefault(contract.getId(), List.of());
       boolean paymentExists =
           existingPayments.stream().anyMatch(p -> p.getDueDate().equals(dueDate));
 

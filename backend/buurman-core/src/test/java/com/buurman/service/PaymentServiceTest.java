@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,7 +44,9 @@ import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.AuditLogRepository;
 import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PaymentPlanRepository;
 import com.buurman.repository.PaymentReceivalRepository;
@@ -69,6 +72,8 @@ class PaymentServiceTest {
   @Mock private ContactCreditRepository creditRepository;
   @Mock private PaymentPlanRepository paymentPlanRepository;
   @Mock private ContractRepository contractRepository;
+  @Mock private ContractExtensionRepository contractExtensionRepository;
+  @Mock private ContractTerminationRepository contractTerminationRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContactRepository contactRepository;
   @Mock private ContractPartyService contractPartyService;
@@ -89,7 +94,6 @@ class PaymentServiceTest {
   @Mock private AppProperties appProperties;
   @Mock private PlatformTransactionManager transactionManager;
   @Mock private Validator validator;
-  @Mock private PaymentSchedulingService paymentSchedulingService;
 
   private final Clock clock = Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
 
@@ -110,6 +114,8 @@ class PaymentServiceTest {
             creditRepository,
             paymentPlanRepository,
             contractRepository,
+            contractExtensionRepository,
+            contractTerminationRepository,
             propertyRepository,
             contactRepository,
             contractPartyService,
@@ -130,8 +136,7 @@ class PaymentServiceTest {
             appProperties,
             clock,
             transactionManager,
-            validator,
-            paymentSchedulingService);
+            validator);
 
     principal =
         new UserPrincipal(
@@ -737,8 +742,15 @@ class PaymentServiceTest {
               .build();
       when(contractRepository.findInForceByTeamId(TEAM_ID)).thenReturn(List.of(underNotice));
       // Notice ends the tenancy on 2026-04-15, so May's rent must not be generated.
-      when(paymentSchedulingService.billingEndDate(underNotice, TEAM_ID))
-          .thenReturn(Optional.of(LocalDate.of(2026, 4, 15)));
+      when(contractTerminationRepository.findByContractIdsAndTeamId(
+              List.of(underNotice.getId()), TEAM_ID))
+          .thenReturn(
+              Map.of(
+                  underNotice.getId(),
+                  com.buurman.domain.ContractTermination.builder()
+                      .contractId(underNotice.getId())
+                      .effectiveEndDate(LocalDate.of(2026, 4, 15))
+                      .build()));
 
       List<com.buurman.dto.response.PaymentResponse> result =
           service.bulkGeneratePayments(

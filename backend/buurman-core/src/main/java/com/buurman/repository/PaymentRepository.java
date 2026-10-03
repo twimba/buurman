@@ -132,6 +132,26 @@ public class PaymentRepository {
         .toList();
   }
 
+  public List<Payment> findByContractIdsAndTeamId(Collection<UUID> contractIds, UUID teamId) {
+    if (contractIds.isEmpty()) {
+      return List.of();
+    }
+    return dsl
+        .selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS
+                .CONTRACT_ID
+                .in(contractIds)
+                .and(PAYMENTS.TEAM_ID.eq(teamId))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .orderBy(PAYMENTS.DUE_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
   /**
    * Cash-basis lookup: paid rent whose {@code payment_date} fell in the window. Use for cash-flow
    * charts that bucket actual cash movement by month.
