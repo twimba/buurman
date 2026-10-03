@@ -52,6 +52,32 @@ describe('SignatureRequestPanel', () => {
     });
   });
 
+  it('a failed send shows an error toast and leaves the Send button clickable again, without an unhandled rejection', async () => {
+    vi.spyOn(signaturesApi, 'listSignatureRequests').mockResolvedValue([]);
+    vi.spyOn(signaturesApi, 'createSignatureRequest').mockRejectedValue(
+      new Error('network error')
+    );
+
+    renderWithProviders(
+      <ToastProvider>
+        <SignatureRequestPanel
+          contractId="CON00000000000000000000001"
+          documentId="DOC00000000000000000000001"
+        />
+      </ToastProvider>
+    );
+
+    const button = await screen.findByRole('button', {
+      name: /send for signature/i,
+    });
+    await userEvent.click(button);
+
+    await waitFor(() => {
+      expect(screen.getByText(/network error/i)).toBeInTheDocument();
+    });
+    expect(button).not.toBeDisabled();
+  });
+
   it('rehydrates from an existing in-flight request instead of offering to send again', async () => {
     // The duplicate-send hazard: on mount the panel has no local state, so without the list
     // query it would show "Send for signature" on a document already out for signing.

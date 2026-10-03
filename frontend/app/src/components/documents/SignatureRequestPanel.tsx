@@ -175,8 +175,13 @@ export const SignatureRequestPanel = ({
   );
 
   const handleSend = async () => {
-    const created = await createMutation.mutateAsync(documentId);
-    setCreatedRequestId(created.identifier);
+    try {
+      const created = await createMutation.mutateAsync(documentId);
+      setCreatedRequestId(created.identifier);
+    } catch {
+      // useMutationWithToast's onError already shows the failure toast — this catch exists only
+      // to stop the rejected mutateAsync promise from surfacing as an unhandled rejection.
+    }
   };
 
   const handleConfirmCancel = (reason: string) => {
