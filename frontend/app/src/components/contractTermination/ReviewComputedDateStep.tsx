@@ -75,6 +75,22 @@ export const ReviewComputedDateStep = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overrideIsEarlier]);
 
+  useEffect(() => {
+    // The valid ground codes depend on the contract/givenBy/noticeDate the preview resolved for
+    // — if any of those change (e.g. the landlord navigates back and edits an earlier step),
+    // a previously-picked code may no longer be in the new list. The <select>'s value then
+    // matches no <option> and renders blank while groundCode still silently holds the stale,
+    // now-invalid value, which would otherwise ride along into the submitted request.
+    if (
+      preview?.groundsCodes &&
+      groundCode &&
+      !preview.groundsCodes.includes(groundCode)
+    ) {
+      onGroundCodeChange('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preview?.groundsCodes]);
+
   const groundMissing =
     !!preview?.groundsRequired && groundCode.trim().length === 0;
   const overrideReasonMissing = overrideIsEarlier && !overrideReason.trim();

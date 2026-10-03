@@ -253,6 +253,78 @@ describe('ReviewComputedDateStep', () => {
     expect(onOverrideReasonChange).toHaveBeenCalledWith('');
   });
 
+  it('clears a ground code that is no longer valid once the preview resolves to a new list', () => {
+    mockedUseTerminationPreview.mockReturnValue({
+      data: {
+        computedEndDate: '2026-03-01',
+        noticeDays: 30,
+        groundsRequired: true,
+        groundsCodes: ['NON_PAYMENT', 'BREACH_OF_CONTRACT'],
+        source: 'CATALOG_RULE',
+      },
+      isLoading: false,
+      isError: false,
+    });
+    const onGroundCodeChange = vi.fn();
+
+    const { rerender } = render(
+      <ReviewComputedDateStep
+        {...baseProps}
+        groundCode="NON_PAYMENT"
+        onGroundCodeChange={onGroundCodeChange}
+      />
+    );
+    expect(onGroundCodeChange).not.toHaveBeenCalled();
+
+    // The landlord goes back and changes an earlier step, resolving a new preview whose
+    // grounds no longer include the previously-picked one.
+    mockedUseTerminationPreview.mockReturnValue({
+      data: {
+        computedEndDate: '2026-04-01',
+        noticeDays: 60,
+        groundsRequired: true,
+        groundsCodes: ['OWNER_MOVE_IN'],
+        source: 'CATALOG_RULE',
+      },
+      isLoading: false,
+      isError: false,
+    });
+    rerender(
+      <ReviewComputedDateStep
+        {...baseProps}
+        groundCode="NON_PAYMENT"
+        onGroundCodeChange={onGroundCodeChange}
+      />
+    );
+
+    expect(onGroundCodeChange).toHaveBeenCalledWith('');
+  });
+
+  it('does not clear a ground code that is still valid in the resolved preview', () => {
+    mockedUseTerminationPreview.mockReturnValue({
+      data: {
+        computedEndDate: '2026-03-01',
+        noticeDays: 30,
+        groundsRequired: true,
+        groundsCodes: ['NON_PAYMENT', 'BREACH_OF_CONTRACT'],
+        source: 'CATALOG_RULE',
+      },
+      isLoading: false,
+      isError: false,
+    });
+    const onGroundCodeChange = vi.fn();
+
+    render(
+      <ReviewComputedDateStep
+        {...baseProps}
+        groundCode="NON_PAYMENT"
+        onGroundCodeChange={onGroundCodeChange}
+      />
+    );
+
+    expect(onGroundCodeChange).not.toHaveBeenCalled();
+  });
+
   it('calls onBack when Back is clicked', () => {
     mockedUseTerminationPreview.mockReturnValue({
       data: {
