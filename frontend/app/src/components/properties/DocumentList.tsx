@@ -14,6 +14,7 @@ import {
   Square,
   Check,
   ChevronRight,
+  CornerDownRight,
   Loader2,
 } from 'lucide-react';
 import { ErrorMessage } from '../ErrorMessage';
@@ -229,27 +230,41 @@ export const DocumentList = ({
       <tr
         key={doc.identifier}
         className={`hover:bg-surface-inset cursor-pointer ${
-          isSelected ? 'bg-info-bg' : ''
+          isSelected ? 'bg-info-bg' : isChild ? 'bg-surface-page' : ''
         }`}
         onClick={() => setPreviewIndex(documents.indexOf(doc))}
       >
         <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={(e) => handleSelectDocument(doc.identifier, e.shiftKey)}
-            className="text-text-secondary hover:text-text-secondary"
-          >
-            {isSelected ? (
-              <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
-                <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
-              </div>
-            ) : (
-              <Square className="h-5 w-5" />
-            )}
-          </button>
+          {isChild ? (
+            // Generated documents aren't individually bulk-selectable — this connector glyph
+            // replaces the checkbox so the row's very first cell already signals "this belongs
+            // to the row above", before a reader even gets to the indent or muted styling.
+            <CornerDownRight
+              className="h-4 w-4 text-text-muted"
+              aria-hidden="true"
+            />
+          ) : (
+            <button
+              onClick={(e) => handleSelectDocument(doc.identifier, e.shiftKey)}
+              className="text-text-secondary hover:text-text-secondary"
+            >
+              {isSelected ? (
+                <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
+                  <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+                </div>
+              ) : (
+                <Square className="h-5 w-5" />
+              )}
+            </button>
+          )}
         </td>
-        <td className={`px-6 py-4 ${isChild ? 'pl-12' : ''}`}>
-          <div className="flex items-center gap-3">
-            {getFileIcon(doc.mimeType ?? '')}
+        <td className="px-6 py-4">
+          <div className={`flex items-center gap-3 ${isChild ? 'ml-3' : ''}`}>
+            {isChild ? (
+              <FileText className="h-5 w-5 text-text-muted flex-shrink-0" />
+            ) : (
+              getFileIcon(doc.mimeType ?? '')
+            )}
             <div>
               <div
                 className={`text-sm font-medium ${isChild ? 'text-text-secondary' : 'text-text-primary'}`}
@@ -324,13 +339,18 @@ export const DocumentList = ({
   const renderGroupToggleRow = (doc: DocumentResponse, count: number) => {
     const isExpanded = expandedGroups.has(doc.identifier);
     return (
-      <tr key={`toggle-${doc.identifier}`} className="hover:bg-surface-inset">
-        <td className="px-6 py-1.5" />
-        <td colSpan={4} className="px-6 py-1.5">
+      <tr
+        key={`toggle-${doc.identifier}`}
+        // Same background as the child rows below it (when expanded) so the disclosure reads as
+        // the header of that group rather than a row of its own.
+        className={`hover:bg-surface-inset ${isExpanded ? 'bg-surface-page' : ''}`}
+      >
+        <td className="px-6 py-2" />
+        <td colSpan={4} className="px-6 py-2">
           <button
             type="button"
             onClick={() => toggleGroup(doc.identifier)}
-            className="inline-flex items-center gap-1 text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
           >
             <ChevronRight
               className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
@@ -368,12 +388,24 @@ export const DocumentList = ({
           className={`border p-3 ${isChild ? 'ml-6' : ''} ${
             isSelected
               ? 'border-primary-500 bg-info-bg'
-              : 'border-border-default bg-surface-card'
+              : isChild
+                ? 'border-border-default bg-surface-page'
+                : 'border-border-default bg-surface-card'
           }`}
         >
           <div className="flex items-start gap-3">
+            {isChild && (
+              <CornerDownRight
+                className="h-4 w-4 text-text-muted flex-shrink-0 mt-1"
+                aria-hidden="true"
+              />
+            )}
             <div className="flex-shrink-0 mt-0.5">
-              {getFileIcon(doc.mimeType ?? '')}
+              {isChild ? (
+                <FileText className="h-6 w-6 text-text-muted" />
+              ) : (
+                getFileIcon(doc.mimeType ?? '')
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <div
