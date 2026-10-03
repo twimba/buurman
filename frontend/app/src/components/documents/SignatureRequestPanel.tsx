@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { PenLine, Ban, AlertTriangle, X } from 'lucide-react';
+import { FileSignature, Ban, AlertTriangle, X } from 'lucide-react';
 import { SignatureStatusBadge } from './SignatureStatusBadge';
 import {
   useSignatureRequest,
@@ -63,7 +63,7 @@ const CancelSignatureRequestModal = ({
       <div className="flex items-center justify-center min-h-[100dvh] px-4 py-8">
         <div className="fixed inset-0 bg-surface-overlay backdrop-blur-sm" />
         <div
-          className="relative bg-surface-card rounded-lg shadow-xl w-full max-w-md"
+          className="relative bg-surface-card rounded-lg shadow-xl w-full max-w-md text-left"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="px-6 pt-6 pb-2">
@@ -187,7 +187,7 @@ export const SignatureRequestPanel = ({
         className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors disabled:opacity-50"
         title="Send for signature"
       >
-        <PenLine className="h-4 w-4" />
+        <FileSignature className="h-4 w-4" />
       </button>
     );
   }
