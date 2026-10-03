@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,7 @@ public class ContractTerminationService {
   private final DocumentRepository documentRepository;
   private final S3StorageService s3StorageService;
   private final TransactionTemplate transactionTemplate;
+  private final Clock clock;
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   @Transactional
@@ -158,7 +160,8 @@ public class ContractTerminationService {
    * picked up again on the next run.
    */
   public void sweepDueTerminations() {
-    List<ContractTermination> due = terminationRepository.findDueForTransition(LocalDate.now());
+    List<ContractTermination> due =
+        terminationRepository.findDueForTransition(LocalDate.now(clock));
     for (ContractTermination termination : due) {
       try {
         transactionTemplate.executeWithoutResult(status -> sweepOneTermination(termination));
@@ -179,8 +182,17 @@ public class ContractTerminationService {
     termination.setStatus(ContractTerminationStatus.TERMINATED);
     terminationRepository.save(termination);
 
-    contractService.transitionStatus(
-        contract, Contract.ContractStatus.TERMINATED, Constants.SYSTEM_USER_ID, Optional.empty());
+    // If some other path already moved the contract to TERMINATED, transitionStatus's own
+    // validateStatusTransition rejects TERMINATED->TERMINATED with an IllegalArgumentException —
+    // which, thrown inside this method's transaction, rolls back the termination.save() above
+    // too. The row reverts to NOTICE_GIVEN, findDueForTransition picks it up again on the next
+    // run, and the same failure repeats forever. Skipping the call when the contract is already
+    // TERMINATED reconciles this termination's own row without re-attempting an invalid
+    // transition.
+    if (contract.getStatus() != Contract.ContractStatus.TERMINATED) {
+      contractService.transitionStatus(
+          contract, Contract.ContractStatus.TERMINATED, Constants.SYSTEM_USER_ID, Optional.empty());
+    }
 
     log.info(
         "Termination for contract {} swept to TERMINATED (effective end date {})",

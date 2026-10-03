@@ -10,7 +10,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,6 +57,7 @@ class ContractTerminationServiceTest {
   private final DocumentRepository documentRepository = mock(DocumentRepository.class);
   private final S3StorageService s3StorageService = mock(S3StorageService.class);
   private final TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
+  private final Clock clock = Clock.fixed(Instant.parse("2026-03-15T12:00:00Z"), ZoneOffset.UTC);
 
   private ContractTerminationService service;
 
@@ -81,7 +85,8 @@ class ContractTerminationServiceTest {
             depositService,
             documentRepository,
             s3StorageService,
-            transactionTemplate);
+            transactionTemplate,
+            clock);
 
     // sweepDueTerminations runs each termination through transactionTemplate rather than a
     // method-level @Transactional (see its javadoc) — the mock must actually invoke the callback
@@ -374,6 +379,52 @@ class ContractTerminationServiceTest {
             org.mockito.ArgumentMatchers.eq(Contract.ContractStatus.TERMINATED),
             org.mockito.ArgumentMatchers.eq(Constants.SYSTEM_USER_ID),
             org.mockito.ArgumentMatchers.any());
+  }
+
+  @Test
+  @DisplayName(
+      "sweepDueTerminations reconciles the termination row without re-attempting an invalid"
+          + " TERMINATED->TERMINATED transition when the contract was already terminated by"
+          + " another path — a prior version of this code threw there, rolling back the"
+          + " termination.save() in the same transaction and leaving it NOTICE_GIVEN forever")
+  void sweepReconcilesAlreadyTerminatedContractWithoutRetransitioning() {
+    ContractTermination due =
+        ContractTermination.builder()
+            .id(UUID.randomUUID())
+            .teamId(TEAM_ID)
+            .contractId(CONTRACT_ID)
+            .status(ContractTerminationStatus.NOTICE_GIVEN)
+            .effectiveEndDate(LocalDate.now().minusDays(1))
+            .build();
+    Contract alreadyTerminatedContract =
+        Contract.builder()
+            .id(CONTRACT_ID)
+            .teamId(TEAM_ID)
+            .status(Contract.ContractStatus.TERMINATED)
+            .build();
+    when(terminationRepository.findDueForTransition(any())).thenReturn(List.of(due));
+    when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(alreadyTerminatedContract);
+
+    service.sweepDueTerminations();
+
+    verify(terminationRepository)
+        .save(
+            org.mockito.ArgumentMatchers.argThat(
+                t -> t.getStatus() == ContractTerminationStatus.TERMINATED));
+    verifyNoInteractions(contractService);
+  }
+
+  @Test
+  @DisplayName(
+      "sweepDueTerminations computes \"today\" from the injected Clock, not the system default"
+          + " clock, so the NOTICE_GIVEN->TERMINATED boundary is testable and timezone-stable")
+  void sweepUsesInjectedClockNotSystemClock() {
+    when(terminationRepository.findDueForTransition(any())).thenReturn(List.of());
+
+    service.sweepDueTerminations();
+
+    verify(terminationRepository).findDueForTransition(LocalDate.of(2026, 3, 15));
   }
 
   @Test
