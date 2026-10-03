@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.ContractRentPeriod;
@@ -119,30 +121,96 @@ public class LeaseAgreementExporter {
     LeaseKind kind = leaseKindResolver.resolveFor(contract, property, teamId);
     // Fail fast for an unavailable country before any document lookup or rendering work.
     Optional<String> country = LeaseClauseResolver.effectiveCountryCode(contract, property);
+    LeaseRenderPlan plan = plan(country, kind, lang);
+
+    List<ResolvedLeaseClauseResponse> includedClauses =
+        requireIncluded(clauseResolver.resolve(contract, country, plan.locale(), plan.templates()));
+
+    LeaseRenderInput input = loadInput(contract, property, teamId, plan);
+    return render(assemble(plan, input, includedClauses));
+  }
+
+  /** Which templates and per-language document apply, and the language the output is in. */
+  record LeaseRenderPlan(
+      Optional<String> country,
+      LeaseKind kind,
+      String requestedLang,
+      List<LeaseClauseTemplate> templates,
+      Optional<LeaseDocumentLocator.LeaseDocument> document,
+      String languageUsed,
+      Locale locale) {
+
+    /** The legacy {@code generic.html} path applies when no per-language document exists. */
+    boolean legacy() {
+      return document.isEmpty();
+    }
+  }
+
+  /** The template and variables ready to hand to {@link LetterTemplateService}. */
+  record AssembledLease(
+      boolean legacy,
+      String templateName,
+      Locale locale,
+      Map<String, Object> variables,
+      String languageUsed) {}
+
+  /**
+   * Looks up templates (failing fast for an unavailable country) and locates the per-language
+   * document. Holds no contract state, so a synthetic caller can use it with a request's country.
+   */
+  LeaseRenderPlan plan(Optional<String> country, LeaseKind kind, String lang) {
     List<LeaseClauseTemplate> templates = clauseResolver.templatesFor(country, kind);
     Optional<LeaseDocumentLocator.LeaseDocument> document =
         country.flatMap(cc -> documentLocator.locate(cc, kind, lang));
     String languageUsed =
         document.map(LeaseDocumentLocator.LeaseDocument::languageUsed).orElse(lang);
-    Locale locale = LetterTemplateService.resolveLocale(languageUsed);
+    return new LeaseRenderPlan(
+        country,
+        kind,
+        lang,
+        templates,
+        document,
+        languageUsed,
+        LetterTemplateService.resolveLocale(languageUsed));
+  }
 
-    List<ResolvedLeaseClauseResponse> includedClauses =
-        clauseResolver.resolve(contract, country, locale, templates).stream()
-            .filter(ResolvedLeaseClauseResponse::included)
-            .toList();
-    if (includedClauses.isEmpty()) {
+  /** Keeps the included clauses; a document with none cannot be rendered. */
+  static List<ResolvedLeaseClauseResponse> requireIncluded(
+      List<ResolvedLeaseClauseResponse> resolved) {
+    List<ResolvedLeaseClauseResponse> included =
+        resolved.stream().filter(ResolvedLeaseClauseResponse::included).toList();
+    if (included.isEmpty()) {
       throw new BusinessRuleException(
           "No lease clauses are included for this contract — at least the required clauses must"
               + " remain included");
     }
+    return included;
+  }
 
-    List<ContractRentComponent> rentComponents = activeRentComponents(contract, teamId);
-    Map<String, Object> variables =
-        buildTemplateVariables(contract, property, teamId, locale, rentComponents);
-    if (document.isEmpty()) {
+  /**
+   * Resolves the plan's templates against explicit overrides (same required/pinned/numbering rules
+   * as for a real contract) and assembles the document.
+   */
+  AssembledLease assemble(
+      LeaseRenderPlan plan,
+      LeaseRenderInput input,
+      Collection<LeaseClauseResolver.ClauseOverride> overrides) {
+    return assemble(
+        plan,
+        input,
+        requireIncluded(
+            clauseResolver.resolve(plan.templates(), overrides, plan.country(), plan.locale())));
+  }
+
+  /** Builds the template name and variables from the plan, input and included clauses. */
+  AssembledLease assemble(
+      LeaseRenderPlan plan,
+      LeaseRenderInput input,
+      List<ResolvedLeaseClauseResponse> includedClauses) {
+    Map<String, Object> variables = variables(input, plan.locale(), !plan.legacy());
+    if (plan.legacy()) {
       variables.put("clauses", legacyClauses(includedClauses));
-      return new RenderedLease(
-          documentTemplateService.renderToPdf(DOCUMENT_TYPE, locale, variables), languageUsed);
+      return new AssembledLease(true, DOCUMENT_TYPE, plan.locale(), variables, plan.languageUsed());
     }
 
     includedClauses.forEach(
@@ -151,19 +219,79 @@ public class LeaseAgreementExporter {
             throw new BusinessRuleException("Lease clause has an invalid key: " + c.clauseKey());
           }
         });
-    LeaseDocumentLocator.LeaseDocument doc = document.get();
+    LeaseDocumentLocator.LeaseDocument doc = plan.document().orElseThrow();
     requireClauseFragments(doc, includedClauses);
-    addTypedValues(variables, contract, teamId, locale, rentComponents);
     variables.put("clauses", shellClauses(includedClauses));
     variables.put("clauseSource", doc.templatePath());
     variables.put("refs", clauseRefs(includedClauses));
     variables.put("authoritative", doc.authoritative());
-    variables.put("languageUsed", languageUsed);
-    variables.put("requestedLang", lang);
-    variables.put("fallbackUsed", !languageUsed.equals(lang));
-    return new RenderedLease(
-        documentTemplateService.renderToPdfTemplate(SHELL_TEMPLATE, locale, variables),
-        languageUsed);
+    variables.put("languageUsed", plan.languageUsed());
+    variables.put("requestedLang", plan.requestedLang());
+    variables.put("fallbackUsed", !plan.languageUsed().equals(plan.requestedLang()));
+    return new AssembledLease(false, SHELL_TEMPLATE, plan.locale(), variables, plan.languageUsed());
+  }
+
+  /** The real path's final step: the same {@code LetterTemplateService} calls as always. */
+  private RenderedLease render(AssembledLease lease) {
+    byte[] pdf =
+        lease.legacy()
+            ? documentTemplateService.renderToPdf(
+                lease.templateName(), lease.locale(), lease.variables())
+            : documentTemplateService.renderToPdfTemplate(
+                lease.templateName(), lease.locale(), lease.variables());
+    return new RenderedLease(pdf, lease.languageUsed());
+  }
+
+  /**
+   * Everything the render needs from the database, resolved for one real contract. The typed
+   * landlord/tenant values are only loaded when the per-language document path will use them.
+   */
+  LeaseRenderInput loadInput(
+      Contract contract, Property property, UUID teamId, LeaseRenderPlan plan) {
+    Locale locale = plan.locale();
+    List<ContractRentComponent> components = activeRentComponents(contract, teamId);
+
+    LetterExporterHelper.Addressee addressee = helper.addressee(contract.getId(), teamId);
+    LetterExporterHelper.PremisesInfo premisesInfo =
+        helper.premisesInfo(contract, property, messageSource, locale);
+    List<Map<String, String>> signatureBlocks =
+        helper.signatureBlocks(contract.getId(), teamId, messageSource, "letter.signature", locale);
+
+    Optional<String> landlordName = Optional.empty();
+    Optional<String> tenantNames = Optional.empty();
+    if (!plan.legacy()) {
+      landlordName = Optional.of(teamRepository.getById(teamId).getName());
+      LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
+      tenantNames =
+          Optional.of(helper.buildContactNamesList(partyData.parties(), partyData.contactMap()));
+    }
+
+    return new LeaseRenderInput(
+        contract
+            .getIdentifier()
+            .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
+            .value(),
+        LocalDate.now(clock),
+        contract.getRegionCode(),
+        contract.getStartDate(),
+        contract.getEndDate(),
+        contract.getContractType(),
+        contract.getPaymentFrequency(),
+        contract.getLandlordNoticeDays(),
+        contract.getTenantNoticeDays(),
+        components.stream()
+            .map(c -> new LeaseRenderInput.RentLine(c.getComponentType(), c.getAmount()))
+            .toList(),
+        baseRent(contract, components),
+        contract.getDepositAmount().or(contract::getSecurityDeposit),
+        contract.getPaymentDueDay(),
+        contract.getCountryMetadata(),
+        landlordName,
+        tenantNames,
+        addressee.contact().map(Contact::getDisplayName),
+        LetterExporterHelper.buildAddressMap(addressee.address()),
+        LetterExporterHelper.premisesAddress(property, premisesInfo),
+        signatureBlocks);
   }
 
   private static List<Map<String, String>> legacyClauses(
@@ -267,81 +395,61 @@ public class LeaseAgreementExporter {
     return MoneyAmount.of(sum, base.get(0).getAmount().currency());
   }
 
-  private Map<String, Object> buildTemplateVariables(
-      Contract contract,
-      Property property,
-      UUID teamId,
-      Locale locale,
-      List<ContractRentComponent> components) {
+  /**
+   * The template variable map. {@code typed} adds the pre-formatted values the per-language clause
+   * fragments reference; the legacy {@code generic.html} path must not receive them.
+   */
+  Map<String, Object> variables(LeaseRenderInput input, Locale locale, boolean typed) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
-    Map<String, Object> vars =
-        LetterExporterHelper.headerVariables(contract, LocalDate.now(clock), dateFmt);
-
-    vars.putAll(helper.addressee(contract.getId(), teamId).variables());
-
-    LetterExporterHelper.PremisesInfo premisesInfo =
-        helper.premisesInfo(contract, property, messageSource, locale);
-    vars.put("propertyAddress", LetterExporterHelper.premisesAddress(property, premisesInfo));
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("generatedDate", input.today().format(dateFmt));
+    vars.put("contractIdentifier", input.contractIdentifier());
+    vars.put("primaryContactName", input.primaryContactName().orElse(null));
+    vars.put("contactAddress", input.contactAddress().orElse(null));
+    vars.put("propertyAddress", input.propertyAddress());
 
     vars.put(
         "rentComponents",
-        components.stream()
+        input.rentComponents().stream()
             .map(
                 c ->
                     Map.of(
                         "type",
                             messageSource.getMessage(
-                                "lease.rentComponent." + c.getComponentType().name(), null, locale),
-                        "amount",
-                            CurrencyUtils.formatCurrency(
-                                c.getAmount().value(), c.getAmount().currency(), locale)))
+                                "lease.rentComponent." + c.type().name(), null, locale),
+                        "amount", formatMoney(c.amount(), locale)))
             .toList());
+    vars.put("signatureBlocks", input.signatureBlocks());
 
-    vars.put(
-        "signatureBlocks",
-        helper.signatureBlocks(
-            contract.getId(), teamId, messageSource, "letter.signature", locale));
-
+    if (typed) {
+      addTypedValues(vars, input, locale, dateFmt);
+    }
     return vars;
   }
 
   /** Typed, pre-formatted values the per-language clause fragments may reference. */
   private void addTypedValues(
-      Map<String, Object> vars,
-      Contract contract,
-      UUID teamId,
-      Locale locale,
-      List<ContractRentComponent> components) {
-    DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
-    vars.put("landlordName", teamRepository.getById(teamId).getName());
-    LetterExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
-    vars.put(
-        "tenantNames", helper.buildContactNamesList(partyData.parties(), partyData.contactMap()));
-    vars.put("startDate", contract.getStartDate().format(dateFmt));
-    vars.put("endDate", contract.getEndDate().map(d -> d.format(dateFmt)).orElse(null));
+      Map<String, Object> vars, LeaseRenderInput input, Locale locale, DateTimeFormatter dateFmt) {
+    vars.put("landlordName", input.landlordName().orElseThrow());
+    vars.put("tenantNames", input.tenantNames().orElseThrow());
+    vars.put("startDate", input.startDate().format(dateFmt));
+    vars.put("endDate", input.endDate().map(d -> d.format(dateFmt)).orElse(null));
     // The lease regime follows the contract type; an end date alone does not make it fixed-term.
-    vars.put("fixedTerm", contract.getContractType() == Contract.ContractType.FIXED_TERM);
+    vars.put("fixedTerm", input.contractType() == Contract.ContractType.FIXED_TERM);
     vars.put(
         "contractTypeLabel",
         messageSource.getMessage(
-            "lease.contractType." + contract.getContractType().name(), null, locale));
-    vars.put("rentAmount", formatMoney(baseRent(contract, components), locale));
-    // Same precedence as the product's deposit card: depositAmount, else securityDeposit.
-    vars.put(
-        "depositAmount",
-        contract
-            .getDepositAmount()
-            .or(contract::getSecurityDeposit)
-            .map(m -> formatMoney(m, locale))
-            .orElse(null));
-    vars.put("paymentDueDay", contract.getPaymentDueDay().orElse(null));
+            "lease.contractType." + input.contractType().name(), null, locale));
+    vars.put("rentAmount", formatMoney(input.baseRent(), locale));
+    vars.put("depositAmount", input.deposit().map(m -> formatMoney(m, locale)).orElse(null));
+    vars.put("paymentDueDay", input.paymentDueDay().orElse(null));
     vars.put(
         "paymentFrequency",
         messageSource.getMessage(
-            "lease.paymentFrequency." + contract.getPaymentFrequency().name(), null, locale));
-    vars.put("landlordNoticeDays", contract.getLandlordNoticeDays());
-    vars.put("tenantNoticeDays", contract.getTenantNoticeDays());
-    vars.put("countryMetadata", contract.getCountryMetadata().orElse(null));
+            "lease.paymentFrequency." + input.paymentFrequency().name(), null, locale));
+    vars.put("landlordNoticeDays", input.landlordNoticeDays());
+    vars.put("tenantNoticeDays", input.tenantNoticeDays());
+    vars.put("countryMetadata", input.countryMetadata().orElse(null));
   }
 
   private static String formatMoney(MoneyAmount amount, Locale locale) {

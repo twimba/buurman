@@ -242,26 +242,43 @@ class LetterExporterHelper {
       MessageSource messageSource,
       String landlordLabelKey,
       Locale locale) {
-    List<Map<String, String>> blocks = new ArrayList<>();
-    blocks.add(
-        Map.of(
-            "label",
-            messageSource.getMessage(landlordLabelKey, null, locale),
-            "placeholder",
-            "signature-landlord"));
+    return assembleSignatureBlocks(
+        messageSource.getMessage(landlordLabelKey, null, locale),
+        tenantSignerLabels(contractId, teamId));
+  }
 
+  /**
+   * The display label of each distinct tenant signer, in contract-party order. Position {@code i}
+   * (zero-based) is the signer behind placeholder {@code "signature-tenant-" + (i + 1)}.
+   */
+  List<String> tenantSignerLabels(UUID contractId, UUID teamId) {
     PartyData partyData = loadPartyData(contractId, teamId);
+    List<String> labels = new ArrayList<>();
     Set<String> seenEmails = new HashSet<>();
-    int tenantIndex = 0;
     for (ContractParty party : partyData.parties()) {
       Optional<Contact> contact = party.getContactId().map(partyData.contactMap()::get);
       Optional<String> email = contact.flatMap(Contact::getEmail);
       if (email.isEmpty() || !seenEmails.add(email.get().toLowerCase(Locale.ROOT))) {
         continue;
       }
-      tenantIndex++;
-      String label = contact.map(Contact::getDisplayName).orElse(email.get());
-      blocks.add(Map.of("label", label, "placeholder", "signature-tenant-" + tenantIndex));
+      labels.add(contact.map(Contact::getDisplayName).orElse(email.get()));
+    }
+    return labels;
+  }
+
+  /**
+   * Builds the blocks from already-resolved labels: the landlord first with the fixed placeholder
+   * {@code "signature-landlord"}, then one block per tenant label numbered {@code
+   * "signature-tenant-N"} (1-based). Needs no repository, so a synthetic document can supply sample
+   * labels.
+   */
+  static List<Map<String, String>> assembleSignatureBlocks(
+      String landlordLabel, List<String> tenantLabels) {
+    List<Map<String, String>> blocks = new ArrayList<>();
+    blocks.add(Map.of("label", landlordLabel, "placeholder", "signature-landlord"));
+    for (int i = 0; i < tenantLabels.size(); i++) {
+      blocks.add(
+          Map.of("label", tenantLabels.get(i), "placeholder", "signature-tenant-" + (i + 1)));
     }
     return blocks;
   }

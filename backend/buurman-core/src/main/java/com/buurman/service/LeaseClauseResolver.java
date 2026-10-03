@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -16,7 +17,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.Contract;
-import com.buurman.domain.ContractLeaseClause;
 import com.buurman.domain.LeaseAvailability;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
@@ -141,20 +141,41 @@ public class LeaseClauseResolver {
       throw LeaseNotAvailableException.forContract(country);
     }
 
-    Map<UUID, ContractLeaseClause> overridesByTemplateId =
+    List<ClauseOverride> overrides =
         overrideRepository
             .findByContractIdAndTeamId(contract.getId(), contract.getTeamId())
             .stream()
-            .collect(
-                Collectors.toMap(ContractLeaseClause::getClauseTemplateId, Function.identity()));
+            .map(o -> new ClauseOverride(o.getClauseTemplateId(), o.isIncluded(), o.getSortOrder()))
+            .toList();
+    return resolve(templates, overrides, country, locale);
+  }
+
+  /** A per-contract (or synthetic) choice for one template: inclusion and position. */
+  public record ClauseOverride(UUID templateId, boolean included, int sortOrder) {}
+
+  /**
+   * Same rules as {@link #resolve(Contract, Optional, Locale, List)} but against explicit overrides
+   * instead of the contract's stored ones, so required/pinned/numbering stay in one place.
+   */
+  public List<ResolvedLeaseClauseResponse> resolve(
+      List<LeaseClauseTemplate> templates,
+      Collection<ClauseOverride> overrides,
+      Optional<String> country,
+      Locale locale) {
+    if (templates.isEmpty()) {
+      throw LeaseNotAvailableException.forContract(country);
+    }
+
+    Map<UUID, ClauseOverride> overridesByTemplateId =
+        overrides.stream()
+            .collect(Collectors.toMap(ClauseOverride::templateId, Function.identity()));
 
     List<Resolved> ordered =
         templates.stream()
             .map(
                 t -> {
-                  ContractLeaseClause override = overridesByTemplateId.get(t.getId());
-                  boolean included =
-                      override != null ? override.isIncluded() : t.isDefaultIncluded();
+                  ClauseOverride override = overridesByTemplateId.get(t.getId());
+                  boolean included = override != null ? override.included() : t.isDefaultIncluded();
                   // Required clauses are always included, regardless of a stored override or the
                   // template's default — this is the single source of truth enforcing that a
                   // non-optional clause can never be excluded from the generated document, even
@@ -162,9 +183,7 @@ public class LeaseClauseResolver {
                   included = included || !t.isOptional();
                   // A pinned clause keeps its template position; any override sortOrder is ignored.
                   int sortOrder =
-                      override != null && !t.isPinned()
-                          ? override.getSortOrder()
-                          : t.getSortOrder();
+                      override != null && !t.isPinned() ? override.sortOrder() : t.getSortOrder();
                   return new Resolved(t, included, sortOrder);
                 })
             .sorted(
