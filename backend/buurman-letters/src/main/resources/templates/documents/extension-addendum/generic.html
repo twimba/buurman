@@ -69,13 +69,6 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
 .sig-field-label { font-size: 11px; color: #57534e; display: inline; }
 .sig-field-line { display: inline-block; width: 75%; border-bottom: 1px solid #78716c;
   margin-left: 4px; height: 14px; vertical-align: bottom; }
-/*
-  Carries a signer's placeholder as faint, tiny text alongside the visible role label —
-  present in the PDF's text layer (so Documenso's placeholder-text matching finds it) without
-  reading as visible clutter. Do not use display:none/visibility:hidden: some PDF text
-  extraction paths drop such content from the text layer entirely.
-*/
-.sig-placeholder { font-size: 5px; color: #e7e5e4; letter-spacing: 0; }
 
 /* Footer elements */
 .disclaimer { margin-top: 40px; padding: 16px; background-color: #fafaf9;
@@ -83,6 +76,7 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
   font-style: italic; }
 .generated-date { text-align: center; margin-top: 20px; font-size: 11px; color: #a8a29e; }
 </style>
+<style th:replace="~{_letter-styles :: sig-placeholder-css}">/* replaced by shared fragment */</style>
 </head>
 <body>
 

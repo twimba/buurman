@@ -1,4 +1,18 @@
 <!-- Shared letter/document styles — included via th:replace in letter-style templates -->
+<!--
+  sig-placeholder-css is factored out separately so extension-addendum/generic.html, whose page
+  layout (cover page, detail-grid, signature-table) is otherwise unrelated to the simple-letter
+  layout below, can still share this one rule instead of duplicating it.
+-->
+<style th:fragment="sig-placeholder-css">
+/*
+  Carries a signer's placeholder as faint, tiny text alongside the visible label — present in
+  the PDF's text layer (so Documenso's placeholder-text matching finds it) without reading as
+  visible clutter. Do not use display:none/visibility:hidden: some PDF text extraction paths
+  drop such content from the text layer entirely.
+*/
+.sig-placeholder { font-size: 5px; color: #e7e5e4; letter-spacing: 0; }
+</style>
 <style th:fragment="letter-css">
 @page { margin: 60px 60px 70px 60px; size: A4; }
 body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0;
