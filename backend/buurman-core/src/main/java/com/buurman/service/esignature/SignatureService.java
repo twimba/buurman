@@ -29,8 +29,10 @@ import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.SignatureRequestIdentifier;
 import com.buurman.dto.response.SignatureRequestResponse;
 import com.buurman.dto.response.SignatureSignerResponse;
+import com.buurman.dto.response.SignatureSigningLinkResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.ExternalServiceException;
+import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRepository;
@@ -349,6 +351,78 @@ public class SignatureService {
     log.info("Cancelled signature request {}", request.getIdentifier().orElseThrow().value());
 
     return toResponse(request, resolvedDocumentIdentifier, signers);
+  }
+
+  /**
+   * Live signing links for the signers of a request still in flight. Nothing is stored: the links
+   * are bearer credentials fetched from the provider on demand, handed to the caller, and kept out
+   * of logs and exceptions. A signer who has already signed or declined gets no link.
+   */
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public List<SignatureSigningLinkResponse> getSigningLinks(
+      ContractIdentifier contractIdentifier,
+      DocumentIdentifier documentIdentifier,
+      SignatureRequestIdentifier signatureRequestIdentifier,
+      UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    SignatureRequest request =
+        signatureRequestRepository.getByIdentifierAndTeamId(signatureRequestIdentifier, teamId);
+    // Unlike the status endpoints, this one hands out secrets: the path's document must really be
+    // the request's document (both team-scoped), otherwise it is a 404.
+    Document document = documentRepository.getByIdentifierAndTeamId(documentIdentifier, teamId);
+    if (!document.getId().equals(request.getDocumentId())) {
+      throw new NotFoundException("Signature request not found");
+    }
+
+    if (TERMINAL_STATUSES.contains(request.getStatus())) {
+      throw new BusinessRuleException(
+          "This signature request is "
+              + request.getStatus().name().toLowerCase(Locale.ROOT)
+              + "; there are no signing links to share");
+    }
+
+    List<ProviderSigningLink> providerLinks;
+    try {
+      providerLinks = providerClient.fetchSigningLinks(request.getProviderSubmissionId());
+    } catch (RuntimeException e) {
+      throw new ExternalServiceException(
+          "We couldn't load the signing links. Please try again in a few minutes.", e);
+    }
+
+    List<SignatureSigner> signers =
+        signatureSignerRepository.findBySignatureRequestId(request.getId(), teamId);
+    List<SignatureSigningLinkResponse> response =
+        signers.stream().map(signer -> toSigningLink(signer, providerLinks)).toList();
+
+    log.info(
+        "Signing links fetched: request {} by user {} ({} signers)",
+        request.getIdentifier().orElseThrow().value(),
+        principal.getUserId(),
+        response.size());
+    return response;
+  }
+
+  private static SignatureSigningLinkResponse toSigningLink(
+      SignatureSigner signer, List<ProviderSigningLink> providerLinks) {
+    Optional<ProviderSigningLink> match =
+        providerLinks.stream()
+            .filter(l -> l.providerSignerId().equals(signer.getProviderSignerId()))
+            .findFirst()
+            .or(
+                () ->
+                    providerLinks.stream()
+                        .filter(l -> l.email().equalsIgnoreCase(signer.getEmail()))
+                        .findFirst());
+    boolean usable =
+        signer.getStatus() == SignatureSignerStatus.PENDING
+            || signer.getStatus() == SignatureSignerStatus.VIEWED;
+    return new SignatureSigningLinkResponse(
+        match.map(ProviderSigningLink::name).orElse(signer.getEmail()),
+        signer.getEmail(),
+        signer.getRole(),
+        signer.getStatus(),
+        usable ? match.flatMap(ProviderSigningLink::signingUrl) : Optional.empty(),
+        signer.getStatus() == SignatureSignerStatus.SIGNED);
   }
 
   private Sid resolveDocumentIdentifier(UUID documentId, UUID teamId) {

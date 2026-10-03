@@ -160,7 +160,81 @@ class DocumensoClientTest {
     return new DocumensoClient(
         restClient,
         new ObjectMapper(),
-        new DocumensoProperties(baseUrl, "api_test", Optional.of(webhookSecret)));
+        new DocumensoProperties(baseUrl, "api_test", Optional.of(webhookSecret), Optional.empty()));
+  }
+
+  private DocumensoClient clientWithPublicUrl(@Nullable String publicUrl) {
+    SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+    factory.setConnectTimeout(Duration.ofSeconds(2));
+    factory.setReadTimeout(Duration.ofSeconds(5));
+    String baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
+    RestClient restClient =
+        RestClient.builder().baseUrl(baseUrl + "/api/v2").requestFactory(factory).build();
+    return new DocumensoClient(
+        restClient,
+        new ObjectMapper(),
+        new DocumensoProperties(
+            baseUrl, "api_test", Optional.of("secret"), Optional.ofNullable(publicUrl)));
+  }
+
+  private static final String RECIPIENTS_ENVELOPE =
+      "{\"status\":\"PENDING\",\"recipients\":["
+          + "{\"id\":7,\"name\":\"Lena Landlord\",\"email\":\"l@example.com\","
+          + "\"token\":\"tok_landlord\",\"signingStatus\":\"NOT_SIGNED\"},"
+          + "{\"id\":8,\"name\":\"t@example.com\",\"email\":\"t@example.com\","
+          + "\"token\":\"tok_tenant\",\"signingStatus\":\"SIGNED\"},"
+          + "{\"id\":9,\"name\":\"No Token\",\"email\":\"n@example.com\"}]}";
+
+  @Test
+  @DisplayName(
+      "fetchSigningLinks maps every recipient, building the link from the token on the PUBLIC url")
+  void fetchSigningLinksBuildsPublicLinks() {
+    envelopeResponse = RECIPIENTS_ENVELOPE;
+
+    List<ProviderSigningLink> links =
+        clientWithPublicUrl("https://sign.example.com/").fetchSigningLinks("envelope_abc123");
+
+    assertThat(links).hasSize(3);
+    assertThat(links.get(0).providerSignerId()).isEqualTo("7");
+    assertThat(links.get(0).name()).isEqualTo("Lena Landlord");
+    assertThat(links.get(0).email()).isEqualTo("l@example.com");
+    assertThat(links.get(0).signingUrl()).contains("https://sign.example.com/sign/tok_landlord");
+    assertThat(links.get(1).signingUrl()).contains("https://sign.example.com/sign/tok_tenant");
+    assertThat(links.get(2).signingUrl()).isEmpty();
+  }
+
+  @Test
+  @DisplayName("fetchSigningLinks falls back to the base url when no public url is configured")
+  void fetchSigningLinksFallsBackToBaseUrl() {
+    envelopeResponse = RECIPIENTS_ENVELOPE;
+
+    List<ProviderSigningLink> links =
+        clientWithPublicUrl(null).fetchSigningLinks("envelope_abc123");
+
+    assertThat(links.get(0).signingUrl().orElseThrow())
+        .startsWith("http://127.0.0.1:" + server.getAddress().getPort() + "/sign/tok_landlord");
+  }
+
+  @Test
+  @DisplayName("fetchSigningLinks failure maps to ExternalServiceException without echoing tokens")
+  void fetchSigningLinksFailureDoesNotLeakTokens() {
+    envelopeResponse = "not json tok_secret_value";
+
+    assertThatThrownBy(
+            () -> clientWithPublicUrl("https://x.example").fetchSigningLinks("envelope_abc123"))
+        .isInstanceOf(ExternalServiceException.class)
+        .satisfies(
+            e -> {
+              assertThat(e.getMessage()).doesNotContain("tok_secret_value");
+              assertThat(e.getCause()).isNull();
+            });
+  }
+
+  @Test
+  @DisplayName("fetchSigningLinks on an unknown envelope maps to ExternalServiceException")
+  void fetchSigningLinksUnknownEnvelope() {
+    assertThatThrownBy(() -> clientWithPublicUrl("https://x.example").fetchSigningLinks("nope"))
+        .isInstanceOf(ExternalServiceException.class);
   }
 
   @Test

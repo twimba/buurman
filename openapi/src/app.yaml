@@ -215,6 +215,8 @@ paths:
     $ref: 'paths/contracts.yaml#/signature-requests'
   /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}:
     $ref: 'paths/contracts.yaml#/signature-requests-item'
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}/signing-links:
+    $ref: 'paths/contracts.yaml#/signature-requests-item-signing-links'
   /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}/cancel:
     $ref: 'paths/contracts.yaml#/signature-requests-item-cancel'
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
@@ -3177,6 +3179,33 @@ components:
         - email
         - role
         - status
+    SignatureSigningLinkResponse:
+      type: object
+      description: >-
+        A signer with the link they sign through. signingUrl is a bearer credential; it is absent
+        for a signer who already signed or declined.
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [LANDLORD, TENANT]
+        status:
+          type: string
+          enum: [PENDING, VIEWED, SIGNED, DECLINED]
+        signingUrl:
+          type: string
+          nullable: true
+        signed:
+          type: boolean
+      required:
+        - name
+        - email
+        - role
+        - status
+        - signed
     SignatureRequestResponse:
       type: object
       description: An e-signature request for a document, with per-signer status

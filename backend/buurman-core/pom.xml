@@ -532,6 +532,7 @@
                                 <importMapping>PaymentReceivalResponse=com.buurman.dto.response.PaymentReceivalResponse</importMapping>
                                 <importMapping>SignatureRequestResponse=com.buurman.dto.response.SignatureRequestResponse</importMapping>
                                 <importMapping>SignatureSignerResponse=com.buurman.dto.response.SignatureSignerResponse</importMapping>
+                                <importMapping>SignatureSigningLinkResponse=com.buurman.dto.response.SignatureSigningLinkResponse</importMapping>
                                 <importMapping>PaymentResponse=com.buurman.dto.response.PaymentResponse</importMapping>
                                 <importMapping>PaymentStatsResponse=com.buurman.dto.response.PaymentStatsResponse</importMapping>
                                 <importMapping>PaymentSummary=com.buurman.dto.response.PaymentSummary</importMapping>

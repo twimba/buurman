@@ -151,6 +151,9 @@ twilio:
 # Documenso Configuration (self-hosted e-signature sidecar; see docker-compose.yml)
 documenso:
   base-url: ${DOCUMENSO_BASE_URL:https://documenso.local.buurman.io}
+  # Browser-reachable origin used to build signing links handed to signers. Empty = base-url.
+  # Must be set whenever base-url is an internal host (see application-docker.yml).
+  public-url: ${DOCUMENSO_PUBLIC_URL:}
   # Matches the fixed dev token docker/documenso/seed.sql creates — zero-config for local dev.
   # Never a real credential: override DOCUMENSO_API_KEY in any environment with real documents.
   api-key: ${DOCUMENSO_API_KEY:api_buurman_dev_seed_token_insecure}

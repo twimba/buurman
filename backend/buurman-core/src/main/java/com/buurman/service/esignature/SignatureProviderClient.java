@@ -28,6 +28,12 @@ public interface SignatureProviderClient {
   /** Cancels a pending submission so its signers can no longer sign it. */
   void cancelSubmission(String providerSubmissionId, @Nullable String reason);
 
+  /**
+   * Fetches the per-recipient signing links of a submission, live. Links are bearer credentials and
+   * must never be persisted or logged by callers.
+   */
+  List<ProviderSigningLink> fetchSigningLinks(String providerSubmissionId);
+
   /** Validates a webhook's shared-secret header against the configured secret. */
   boolean isValidWebhookSecret(@Nullable String providedSecret);
 }

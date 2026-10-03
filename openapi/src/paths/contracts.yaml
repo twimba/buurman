@@ -2673,6 +2673,85 @@ signature-requests-item:
     security:
       - bearer-jwt: []
 
+signature-requests-item-signing-links:
+  get:
+    tags:
+      - Signatures
+    summary: Get the signing links of a pending signature request
+    description: |
+      Live-fetches one signing link per signer from the signature provider. The links are bearer
+      credentials (anyone holding one can sign as that person), so nothing is stored, the response
+      is sent with Cache-Control no-store, and the links must never be logged or persisted.
+      Signers who already signed or declined have no signingUrl. Only TEAM_ADMIN and TEAM_EDITOR
+      may call this.
+    operationId: getSigningLinks
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+      - name: signatureRequestIdentifier
+        in: path
+        description: Signature request identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/SignatureRequestIdentifier'
+    responses:
+      "200":
+        description: One entry per signer
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SignatureSigningLinkResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions (TEAM_VIEWER)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - the request already reached a final state, so there are no links
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "502":
+        description: The signature provider could not be reached
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 signature-requests-item-cancel:
   post:
     tags:

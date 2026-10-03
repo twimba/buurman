@@ -9,12 +9,14 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.SignatureRequestIdentifier;
 import com.buurman.dto.response.SignatureRequestResponse;
+import com.buurman.dto.response.SignatureSigningLinkResponse;
 import com.buurman.generated.api.SignaturesApi;
 import com.buurman.generated.model.CancelSignatureRequestRequest;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.esignature.SignatureService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 /** Sends contract documents for e-signature and reports on the resulting signature request. */
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class SignatureController implements SignaturesApi {
 
   private final SignatureService signatureService;
+  private final HttpServletResponse httpServletResponse;
 
   @Override
   public SignatureRequestResponse createSignatureRequest(
@@ -60,6 +63,19 @@ public class SignatureController implements SignaturesApi {
       SignatureRequestIdentifier signatureRequestIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return signatureService.getSignatureRequest(
+        contractIdentifier, documentIdentifier, signatureRequestIdentifier, principal);
+  }
+
+  @Override
+  public List<SignatureSigningLinkResponse> getSigningLinks(
+      ContractIdentifier contractIdentifier,
+      DocumentIdentifier documentIdentifier,
+      SignatureRequestIdentifier signatureRequestIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    // The links are bearer credentials: no browser, proxy or service worker may keep them.
+    httpServletResponse.setHeader("Cache-Control", "no-store");
+    httpServletResponse.setHeader("Pragma", "no-cache");
+    return signatureService.getSigningLinks(
         contractIdentifier, documentIdentifier, signatureRequestIdentifier, principal);
   }
 }

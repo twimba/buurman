@@ -1,5 +1,7 @@
 package com.buurman.service.esignature;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.ByteArrayResource;
@@ -16,6 +19,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.util.UriUtils;
 
 import com.buurman.config.models.DocumensoProperties;
 import com.buurman.exception.ExternalServiceException;
@@ -29,12 +34,15 @@ public class DocumensoClient implements SignatureProviderClient {
   private final RestClient client;
   private final ObjectMapper objectMapper;
   private final @Nullable String webhookSecret;
+  private final String publicUrl;
 
   public DocumensoClient(
       RestClient documensoRestClient, ObjectMapper objectMapper, DocumensoProperties properties) {
     this.client = documensoRestClient;
     this.objectMapper = objectMapper;
     this.webhookSecret = properties.webhookSecret().orElse(null);
+    String origin = properties.publicUrl().orElse(properties.baseUrl());
+    this.publicUrl = origin.endsWith("/") ? origin.substring(0, origin.length() - 1) : origin;
   }
 
   // Parse with the app's Jackson 2 ObjectMapper — Boot 4's RestClient converter is Jackson 3 and
@@ -286,6 +294,60 @@ public class DocumensoClient implements SignatureProviderClient {
     } catch (Exception e) {
       throw new ExternalServiceException(
           "Documenso download failed for " + providerSubmissionId, e);
+    }
+  }
+
+  /**
+   * {@code GET /envelope/{id}} returns each recipient's {@code token} but, unlike {@code
+   * envelope/distribute}, no {@code signingUrl}; Documenso's own {@code formatSigningLink} is
+   * {@code <NEXT_PUBLIC_WEBAPP_URL>/sign/<token>}, so the link is built the same way on the
+   * configured public origin. Failures are rethrown without the cause: a client exception can echo
+   * the response body, which carries the tokens.
+   */
+  @Override
+  public List<ProviderSigningLink> fetchSigningLinks(String providerSubmissionId) {
+    try {
+      String body =
+          client
+              .get()
+              .uri("/envelope/{envelopeId}", providerSubmissionId)
+              .retrieve()
+              .body(String.class);
+      JsonNode envelope = readTree(body);
+      if (envelope == null) {
+        throw new ExternalServiceException("Documenso envelope not found: " + providerSubmissionId);
+      }
+      List<ProviderSigningLink> links = new ArrayList<>();
+      for (JsonNode recipient : envelope.path("recipients")) {
+        String email = recipient.path("email").asText("");
+        String token = recipient.path("token").asText("");
+        Optional<String> signingUrl =
+            token.isBlank()
+                ? Optional.empty()
+                : Optional.of(publicUrl + "/sign/" + UriUtils.encodePathSegment(token, UTF_8));
+        links.add(
+            new ProviderSigningLink(
+                recipient.path("id").asText(),
+                email,
+                recipient.path("name").asText(email),
+                signingUrl));
+      }
+      return links;
+    } catch (ExternalServiceException e) {
+      throw e;
+    } catch (RestClientResponseException e) {
+      throw new ExternalServiceException(
+          "Documenso returned HTTP "
+              + e.getStatusCode().value()
+              + " fetching recipients of "
+              + providerSubmissionId);
+    } catch (Exception e) {
+      throw new ExternalServiceException(
+          "Documenso recipient fetch failed for "
+              + providerSubmissionId
+              + " ("
+              + e.getClass().getSimpleName()
+              + ")");
     }
   }
 

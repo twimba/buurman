@@ -49,6 +49,8 @@ booklet:
 # Documenso runs as a sibling container; reach it over the internal network.
 documenso:
   base-url: http://documenso:3000
+  # Signing links are opened by signers in a browser, never over the internal docker host.
+  public-url: ${DOCUMENSO_PUBLIC_URL:https://documenso.local.buurman.io}
 
 app:
   public-url: https://app.local.buurman.io

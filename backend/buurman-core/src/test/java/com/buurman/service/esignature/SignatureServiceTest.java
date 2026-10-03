@@ -280,6 +280,247 @@ class SignatureServiceTest {
     assertThat(response.documentIdentifier().value()).isEqualTo("DOC00000000000000000000099");
   }
 
+  private static final String LINKS_REQUEST_SID = "SGR00000000000000000000020";
+  private static final String SECRET_URL = "https://sign.example.com/sign/tok_secret_landlord";
+
+  private com.buurman.domain.SignatureRequest linksRequest(SignatureRequestStatus status) {
+    UUID requestId = UUID.randomUUID();
+    com.buurman.domain.SignatureRequest request =
+        com.buurman.domain.SignatureRequest.builder()
+            .id(requestId)
+            .identifier(Optional.of(Sid.of(LINKS_REQUEST_SID)))
+            .teamId(TEAM_ID)
+            .documentId(DOCUMENT_ID)
+            .provider("documenso")
+            .providerSubmissionId("envelope_links")
+            .status(status)
+            .build();
+    when(signatureRequestRepository.getByIdentifierAndTeamId(
+            any(SignatureRequestIdentifier.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(request);
+    return request;
+  }
+
+  private static SignatureSigner linksSigner(
+      UUID requestId,
+      String email,
+      com.buurman.domain.SignatureSignerRole role,
+      String providerSignerId,
+      SignatureSignerStatus status) {
+    return SignatureSigner.builder()
+        .signatureRequestId(requestId)
+        .teamId(TEAM_ID)
+        .email(email)
+        .role(role)
+        .providerSignerId(providerSignerId)
+        .status(status)
+        .build();
+  }
+
+  private List<com.buurman.dto.response.SignatureSigningLinkResponse> fetchLinks() {
+    return service.getSigningLinks(
+        ContractIdentifier.of("CON00000000000000000000001"),
+        DocumentIdentifier.of("DOC00000000000000000000001"),
+        SignatureRequestIdentifier.of(LINKS_REQUEST_SID),
+        principal);
+  }
+
+  @Test
+  @DisplayName(
+      "getSigningLinks returns a link for pending/viewed signers and none for signed/declined")
+  void getSigningLinksPendingVersusSignedVersusDeclined() {
+    var request = linksRequest(SignatureRequestStatus.PARTIALLY_SIGNED);
+    var landlordRole = com.buurman.domain.SignatureSignerRole.LANDLORD;
+    var tenantRole = com.buurman.domain.SignatureSignerRole.TENANT;
+    when(signatureSignerRepository.findBySignatureRequestId(request.getId(), TEAM_ID))
+        .thenReturn(
+            List.of(
+                linksSigner(
+                    request.getId(),
+                    "landlord@example.com",
+                    landlordRole,
+                    "1",
+                    SignatureSignerStatus.PENDING),
+                linksSigner(
+                    request.getId(),
+                    "a@example.com",
+                    tenantRole,
+                    "2",
+                    SignatureSignerStatus.VIEWED),
+                linksSigner(
+                    request.getId(),
+                    "b@example.com",
+                    tenantRole,
+                    "3",
+                    SignatureSignerStatus.SIGNED),
+                linksSigner(
+                    request.getId(),
+                    "c@example.com",
+                    tenantRole,
+                    "4",
+                    SignatureSignerStatus.DECLINED)));
+    when(providerClient.fetchSigningLinks("envelope_links"))
+        .thenReturn(
+            List.of(
+                new ProviderSigningLink(
+                    "1", "landlord@example.com", "Landlord", Optional.of(SECRET_URL)),
+                new ProviderSigningLink(
+                    "2", "a@example.com", "Ann", Optional.of("https://sign.example.com/sign/a")),
+                new ProviderSigningLink(
+                    "3", "b@example.com", "Bob", Optional.of("https://sign.example.com/sign/b")),
+                new ProviderSigningLink(
+                    "4", "c@example.com", "Cy", Optional.of("https://sign.example.com/sign/c"))));
+
+    var links = fetchLinks();
+
+    assertThat(links).hasSize(4);
+    assertThat(links.get(0).signingUrl()).contains(SECRET_URL);
+    assertThat(links.get(0).name()).isEqualTo("Landlord");
+    assertThat(links.get(0).signed()).isFalse();
+    assertThat(links.get(1).signingUrl()).contains("https://sign.example.com/sign/a");
+    assertThat(links.get(1).status()).isEqualTo(SignatureSignerStatus.VIEWED);
+    assertThat(links.get(2).signingUrl()).isEmpty();
+    assertThat(links.get(2).signed()).isTrue();
+    assertThat(links.get(3).signingUrl()).isEmpty();
+    assertThat(links.get(3).signed()).isFalse();
+  }
+
+  @Test
+  @DisplayName("getSigningLinks falls back to email match and to the email as the name")
+  void getSigningLinksFallsBackToEmailMatch() {
+    var request = linksRequest(SignatureRequestStatus.PENDING);
+    when(signatureSignerRepository.findBySignatureRequestId(request.getId(), TEAM_ID))
+        .thenReturn(
+            List.of(
+                linksSigner(
+                    request.getId(),
+                    "Tenant@Example.com",
+                    com.buurman.domain.SignatureSignerRole.TENANT,
+                    "tenant@example.com",
+                    SignatureSignerStatus.PENDING),
+                linksSigner(
+                    request.getId(),
+                    "gone@example.com",
+                    com.buurman.domain.SignatureSignerRole.TENANT,
+                    "99",
+                    SignatureSignerStatus.PENDING)));
+    when(providerClient.fetchSigningLinks("envelope_links"))
+        .thenReturn(
+            List.of(
+                new ProviderSigningLink(
+                    "5",
+                    "tenant@example.com",
+                    "Tess",
+                    Optional.of("https://sign.example.com/sign/t"))));
+
+    var links = fetchLinks();
+
+    assertThat(links.get(0).signingUrl()).contains("https://sign.example.com/sign/t");
+    assertThat(links.get(0).name()).isEqualTo("Tess");
+    assertThat(links.get(1).signingUrl()).isEmpty();
+    assertThat(links.get(1).name()).isEqualTo("gone@example.com");
+  }
+
+  @Test
+  @DisplayName("getSigningLinks rejects every final-state request with a business-rule error")
+  void getSigningLinksRejectsFinalStates() {
+    for (SignatureRequestStatus status :
+        List.of(
+            SignatureRequestStatus.COMPLETED,
+            SignatureRequestStatus.DECLINED,
+            SignatureRequestStatus.CANCELLED,
+            SignatureRequestStatus.FAILED)) {
+      linksRequest(status);
+      assertThatThrownBy(this::fetchLinks)
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining(status.name().toLowerCase(java.util.Locale.ROOT));
+    }
+    verifyNoInteractions(providerClient);
+  }
+
+  @Test
+  @DisplayName(
+      "getSigningLinks for another team's request is not found and never hits the provider")
+  void getSigningLinksCrossTeamIsNotFound() {
+    when(signatureRequestRepository.getByIdentifierAndTeamId(
+            any(SignatureRequestIdentifier.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenThrow(new NotFoundException("Signature request not found"));
+
+    assertThatThrownBy(this::fetchLinks).isInstanceOf(NotFoundException.class);
+
+    verifyNoInteractions(providerClient);
+  }
+
+  @Test
+  @DisplayName("getSigningLinks 404s when the path document is not the request's document")
+  void getSigningLinksDocumentMismatchIsNotFound() {
+    linksRequest(SignatureRequestStatus.PENDING);
+    Document other =
+        Document.builder().id(UUID.randomUUID()).teamId(TEAM_ID).fileKey("k").fileName("x").build();
+    when(documentRepository.getByIdentifierAndTeamId(
+            any(Sid.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
+        .thenReturn(other);
+
+    assertThatThrownBy(this::fetchLinks).isInstanceOf(NotFoundException.class);
+
+    verifyNoInteractions(providerClient);
+  }
+
+  @Test
+  @DisplayName("getSigningLinks wraps a provider failure in a friendly ExternalServiceException")
+  void getSigningLinksWrapsProviderFailure() {
+    var request = linksRequest(SignatureRequestStatus.PENDING);
+    when(signatureSignerRepository.findBySignatureRequestId(request.getId(), TEAM_ID))
+        .thenReturn(List.of());
+    when(providerClient.fetchSigningLinks("envelope_links"))
+        .thenThrow(new ExternalServiceException("Documenso is down"));
+
+    assertThatThrownBy(this::fetchLinks)
+        .isInstanceOf(ExternalServiceException.class)
+        .hasMessageContaining("couldn't load the signing links")
+        .hasMessageNotContaining("Documenso");
+  }
+
+  @Test
+  @DisplayName("getSigningLinks audit-logs user and request SID, never the signing URL")
+  void getSigningLinksLogsAuditLineWithoutUrl() {
+    var request = linksRequest(SignatureRequestStatus.PENDING);
+    when(signatureSignerRepository.findBySignatureRequestId(request.getId(), TEAM_ID))
+        .thenReturn(
+            List.of(
+                linksSigner(
+                    request.getId(),
+                    "landlord@example.com",
+                    com.buurman.domain.SignatureSignerRole.LANDLORD,
+                    "1",
+                    SignatureSignerStatus.PENDING)));
+    when(providerClient.fetchSigningLinks("envelope_links"))
+        .thenReturn(
+            List.of(
+                new ProviderSigningLink(
+                    "1", "landlord@example.com", "Landlord", Optional.of(SECRET_URL))));
+
+    ch.qos.logback.classic.Logger logger =
+        (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(SignatureService.class);
+    ch.qos.logback.classic.Level previous = logger.getLevel();
+    logger.setLevel(ch.qos.logback.classic.Level.DEBUG);
+    ch.qos.logback.core.read.ListAppender<ch.qos.logback.classic.spi.ILoggingEvent> appender =
+        new ch.qos.logback.core.read.ListAppender<>();
+    appender.start();
+    logger.addAppender(appender);
+    try {
+      fetchLinks();
+    } finally {
+      logger.detachAppender(appender);
+      logger.setLevel(previous);
+    }
+
+    List<String> lines = appender.list.stream().map(e -> e.getFormattedMessage()).toList();
+    assertThat(lines)
+        .anyMatch(l -> l.contains(LINKS_REQUEST_SID) && l.contains(USER_ID.toString()));
+    assertThat(lines).noneMatch(l -> l.contains("tok_secret") || l.contains("https://sign."));
+  }
+
   @Test
   @DisplayName(
       "persists the tenant signer's contactId, and leaves it empty for the landlord (a TeamMember,"
