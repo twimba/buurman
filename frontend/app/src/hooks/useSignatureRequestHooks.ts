@@ -93,9 +93,16 @@ export const useCancelSignatureRequest = (
         signatureRequestId,
         reason ? { reason } : undefined
       ),
-    onSuccess: () => {
+    onSuccess: (_data, { signatureRequestId }) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.signatureRequests.all(contractId, documentId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.signatureRequests.detail(
+          contractId,
+          documentId,
+          signatureRequestId
+        ),
       });
     },
   });
