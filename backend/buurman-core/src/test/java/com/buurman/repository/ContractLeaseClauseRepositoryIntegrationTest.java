@@ -21,6 +21,7 @@ class ContractLeaseClauseRepositoryIntegrationTest extends AbstractRepositoryInt
   private UUID teamAContractId;
   private UUID teamBContractId;
   private UUID templateId;
+  private UUID secondTemplateId;
 
   @BeforeEach
   void setUp() {
@@ -49,6 +50,48 @@ class ContractLeaseClauseRepositoryIntegrationTest extends AbstractRepositoryInt
                 .updatedBy(USER_ID)
                 .build());
     templateId = template.getId();
+
+    LeaseClauseTemplate secondTemplate =
+        templateRepository.save(
+            LeaseClauseTemplate.builder()
+                .countryCode("NL")
+                .clauseKey("pets")
+                .titleI18nKey("lease.pets.title")
+                .bodyI18nKey("lease.pets.body")
+                .defaultIncluded(false)
+                .optional(true)
+                .sortOrder(6)
+                .version(1)
+                .createdBy(USER_ID)
+                .updatedBy(USER_ID)
+                .build());
+    secondTemplateId = secondTemplate.getId();
+  }
+
+  @Test
+  @DisplayName("replaceForContract inserts every clause in the batch, not just the first")
+  void batchInsertsAllClauses() {
+    repository.replaceForContract(
+        teamAContractId,
+        TEAM_A_ID,
+        USER_ID,
+        List.of(
+            ContractLeaseClause.builder()
+                .clauseTemplateId(templateId)
+                .included(false)
+                .sortOrder(5)
+                .build(),
+            ContractLeaseClause.builder()
+                .clauseTemplateId(secondTemplateId)
+                .included(true)
+                .sortOrder(6)
+                .build()));
+
+    var saved = repository.findByContractIdAndTeamId(teamAContractId, TEAM_A_ID);
+    assertThat(saved).hasSize(2);
+    assertThat(saved)
+        .extracting(ContractLeaseClause::getClauseTemplateId)
+        .containsExactlyInAnyOrder(templateId, secondTemplateId);
   }
 
   @Test

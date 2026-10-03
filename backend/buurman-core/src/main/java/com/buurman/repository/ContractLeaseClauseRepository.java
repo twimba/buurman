@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jooq.Query;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractLeaseClause;
@@ -50,19 +51,26 @@ public class ContractLeaseClauseRepository {
                 .and(CONTRACT_LEASE_CLAUSES.TEAM_ID.eq(teamId)))
         .execute();
 
-    for (ContractLeaseClause clause : clauses) {
-      dsl.insertInto(CONTRACT_LEASE_CLAUSES)
-          .set(CONTRACT_LEASE_CLAUSES.ID, UUID.randomUUID())
-          .set(CONTRACT_LEASE_CLAUSES.TEAM_ID, teamId)
-          .set(CONTRACT_LEASE_CLAUSES.CONTRACT_ID, contractId)
-          .set(CONTRACT_LEASE_CLAUSES.CLAUSE_TEMPLATE_ID, clause.getClauseTemplateId())
-          .set(CONTRACT_LEASE_CLAUSES.INCLUDED, clause.isIncluded())
-          .set(CONTRACT_LEASE_CLAUSES.SORT_ORDER, clause.getSortOrder())
-          .set(CONTRACT_LEASE_CLAUSES.CREATED_AT, now)
-          .set(CONTRACT_LEASE_CLAUSES.UPDATED_AT, now)
-          .set(CONTRACT_LEASE_CLAUSES.CREATED_BY, actorId)
-          .set(CONTRACT_LEASE_CLAUSES.UPDATED_BY, actorId)
-          .execute();
+    if (clauses.isEmpty()) {
+      return;
     }
+    List<Query> inserts =
+        clauses.stream()
+            .<Query>map(
+                clause ->
+                    dsl.insertInto(CONTRACT_LEASE_CLAUSES)
+                        .set(CONTRACT_LEASE_CLAUSES.ID, UUID.randomUUID())
+                        .set(CONTRACT_LEASE_CLAUSES.TEAM_ID, teamId)
+                        .set(CONTRACT_LEASE_CLAUSES.CONTRACT_ID, contractId)
+                        .set(
+                            CONTRACT_LEASE_CLAUSES.CLAUSE_TEMPLATE_ID, clause.getClauseTemplateId())
+                        .set(CONTRACT_LEASE_CLAUSES.INCLUDED, clause.isIncluded())
+                        .set(CONTRACT_LEASE_CLAUSES.SORT_ORDER, clause.getSortOrder())
+                        .set(CONTRACT_LEASE_CLAUSES.CREATED_AT, now)
+                        .set(CONTRACT_LEASE_CLAUSES.UPDATED_AT, now)
+                        .set(CONTRACT_LEASE_CLAUSES.CREATED_BY, actorId)
+                        .set(CONTRACT_LEASE_CLAUSES.UPDATED_BY, actorId))
+            .toList();
+    dsl.batch(inserts).execute();
   }
 }
