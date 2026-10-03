@@ -481,7 +481,10 @@ public class ContractRepository {
                               .and(CP_DELETED_AT.isNull()))));
     }
     if (search != null && !search.trim().isEmpty()) {
-      String pattern = "%" + search.trim().toLowerCase(Locale.ROOT) + "%";
+      // Escape the user's own literal % and _ so e.g. searching "100%" matches that literal
+      // string instead of "100" followed by a wildcard matching anything.
+      String pattern =
+          "%" + org.jooq.impl.DSL.escape(search.trim().toLowerCase(Locale.ROOT), '\\') + "%";
       condition =
           condition.and(
               org.jooq
@@ -503,7 +506,7 @@ public class ContractRepository {
                                   .eq(CONTRACTS.ID)
                                   .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
                                   .and(CONTRACT_PARTIES.DELETED_AT.isNull())
-                                  .and(lower(CONTACTS.DISPLAY_NAME).like(pattern))))
+                                  .and(lower(CONTACTS.DISPLAY_NAME).like(pattern, '\\'))))
                   .or(
                       org.jooq.impl.DSL.exists(
                           dsl.selectOne()
@@ -516,9 +519,9 @@ public class ContractRepository {
                                       .and(PROPERTIES.DELETED_AT.isNull())
                                       .and(
                                           lower(PROPERTIES.STREET)
-                                              .like(pattern)
-                                              .or(lower(PROPERTIES.CITY).like(pattern))))))
-                  .or(lower(CONTRACTS.IDENTIFIER.cast(String.class)).like(pattern)));
+                                              .like(pattern, '\\')
+                                              .or(lower(PROPERTIES.CITY).like(pattern, '\\'))))))
+                  .or(lower(CONTRACTS.IDENTIFIER.cast(String.class)).like(pattern, '\\')));
     }
     if (endingWithinDays != null) {
       LocalDate today = LocalDate.now(clock);

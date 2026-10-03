@@ -215,6 +215,43 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   }
 
   @Test
+  @DisplayName("search escapes the user's own literal % so it isn't treated as a wildcard")
+  void searchEscapesLikeWildcards() {
+    UUID literalPercentPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    dsl.update(DSL.table("properties"))
+        .set(DSL.field("street", String.class), "100% Clean Street")
+        .where(DSL.field("id", UUID.class).eq(literalPercentPropertyId))
+        .execute();
+    UUID literalPercentUnitId = UUID.randomUUID();
+    TestDataHelper.insertUnit(
+        dsl, literalPercentUnitId, literalPercentPropertyId, TEAM_A_ID, "1", "OCCUPIED");
+    Contract literalPercentContract =
+        repository.save(
+            contractBuilder()
+                .propertyId(literalPercentPropertyId)
+                .unitId(literalPercentUnitId)
+                .build());
+
+    UUID noPercentPropertyId = TestDataHelper.insertProperty(dsl, TEAM_A_ID, USER_ID);
+    dsl.update(DSL.table("properties"))
+        .set(DSL.field("street", String.class), "100X Clean Street")
+        .where(DSL.field("id", UUID.class).eq(noPercentPropertyId))
+        .execute();
+    UUID noPercentUnitId = UUID.randomUUID();
+    TestDataHelper.insertUnit(
+        dsl, noPercentUnitId, noPercentPropertyId, TEAM_A_ID, "1", "OCCUPIED");
+    repository.save(
+        contractBuilder().propertyId(noPercentPropertyId).unitId(noPercentUnitId).build());
+
+    // An unescaped "%" in the query would be reinterpreted as a wildcard, matching "100X Clean
+    // Street" too (both contain "100" followed by something). Escaped, only the literal "100%"
+    // match survives.
+    var results = repository.findAllByTeamId(TEAM_A_ID, null, "100%", null);
+
+    assertThat(results).extracting(Contract::getId).containsExactly(literalPercentContract.getId());
+  }
+
+  @Test
   @DisplayName(
       "the database itself rejects a contract whose unit_id belongs to a different property"
           + " (fk_contracts_unit_property, V072)")
