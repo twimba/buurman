@@ -46,6 +46,7 @@ import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
+import com.buurman.domain.LeaseRegime;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
 import com.buurman.domain.Sid;
@@ -409,8 +410,11 @@ class LeaseRenderCharacterizationTest {
   void beLegacy() throws IOException {
     when(templateRepository.findByCountryAndKind("BE", LeaseKind.LEGACY))
         .thenReturn(legacyTemplates("BE"));
+    // BE has per-language RESIDENTIAL/COMMERCIAL documents since V097; a short-term lease (a kind
+    // without documents) still takes the legacy generic.html path
     givenContract(
         baseContract("BE")
+            .leaseRegime(LeaseRegime.SHORT_TERM)
             .contractType(Contract.ContractType.FIXED_TERM)
             .endDate(Optional.of(LocalDate.of(2027, 1, 31)))
             .build());
@@ -424,7 +428,11 @@ class LeaseRenderCharacterizationTest {
   void beLegacyFrench() throws IOException {
     when(templateRepository.findByCountryAndKind("BE", LeaseKind.LEGACY))
         .thenReturn(legacyTemplates("BE"));
-    givenContract(baseContract("BE").securityDeposit(Optional.of(eur("1500.00"))).build());
+    givenContract(
+        baseContract("BE")
+            .leaseRegime(LeaseRegime.SHORT_TERM)
+            .securityDeposit(Optional.of(eur("1500.00")))
+            .build());
     givenTenants("L. Peeters", "lies@example.com");
 
     assertGolden("be-legacy-fr", "fr", false);

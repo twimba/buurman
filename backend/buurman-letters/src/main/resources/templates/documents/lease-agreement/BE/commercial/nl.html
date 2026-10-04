@@ -1,0 +1,345 @@
+<!--
+  legal-basis: Handelshuurwet: wet van 30 april 1951, inserted as oud Burgerlijk Wetboek, boek III, titel VIII,
+               hoofdstuk II, afdeling 2bis "Regels betreffende de handelshuur in het bijzonder", art. 1-31, consolidated
+               text www.ejustice.just.fgov.be (Justel 1951043003, text updated to 14-05-2019), with the regional
+               versions: art. 1 (Walloon Region: § 2 and § 3, DWG 2018-07-17, in force 18-10-2018), art. 2, 1° (Flemish
+               Region: DVR 2016-06-17, in force 01-09-2016; Walloon Region: DWG 2018-03-15, in force 01-05-2018;
+               Brussels-Capital Region: ORD 2019-04-25, in force 19-05-2019: a lease concluded in writing for 1 year or
+               less is excluded and governed by the regional short-term commercial lease rules), art. 3 and 13 (Walloon
+               Region: agreement evidenced by a written document presented for registration, DWG 2018-03-15, in force
+               07-04-2018). Commercial leases are a regional competence since the sixth state reform; no region has
+               replaced the Handelshuurwet itself (checked 2026-10-04; Flemish Parliament proposals on brewery-tied
+               leases not adopted). Region branches on countryCode == 'BE' and the catalog region codes VLG / WAL / BRU
+               only where the regional versions differ (art. 1, 3, 13); general text otherwise.
+               Oud Burgerlijk Wetboek (Justel PDF 1804032154, updated to 28-05-2024): art. 1720, 1724, 1728bis, 1730,
+               1731, 1754, 1762bis (general lease rules, applicable to commercial leases in all regions).
+               VAT: Btw-Wetboek (exemption of the letting of immovable property and the optional taxed letting of
+               business buildings, cited generally). Registration duties: fiscal law, cited generally.
+               GDPR: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04 against www.ejustice.just.fgov.be.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "3 jaar huur" is "3 years' rent" in English, "3 années de loyer" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Belgian law in Dutch (handelshuur: lease of premises used mainly
+  for retail trade or by a craftsman in direct contact with the public). Each clause-<key> fragment holds only the
+  clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when the
+  clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Tussen</p>
+  <p><strong th:text="${landlordName}">verhuurder</strong>, hierna &ldquo;de verhuurder&rdquo;,</p>
+  <p>rechtsvorm, maatschappelijke zetel en ondernemingsnummer (Kruispuntbank van Ondernemingen):
+    ______________________________</p>
+  <p>btw-identificatienummer: ______________________________</p>
+  <p>vertegenwoordigd door: ______________________________, en</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">huurder</strong>, hierna
+    (samen) &ldquo;de huurder&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">de ondergetekende huurder(s), hierna (samen) &ldquo;de
+    huurder&rdquo;,</p>
+  <p>rechtsvorm, maatschappelijke zetel en ondernemingsnummer (Kruispuntbank van Ondernemingen):
+    ______________________________</p>
+  <p>btw-identificatienummer: ______________________________</p>
+  <p>vertegenwoordigd door: ______________________________,</p>
+  <p>wordt deze handelshuurovereenkomst gesloten. Zijn er meerdere huurders, dan zijn zij hoofdelijk en ondeelbaar
+    gehouden tot alle verplichtingen uit deze overeenkomst.</p>
+  <p>Op deze overeenkomst zijn de regels betreffende de handelshuur in het bijzonder van toepassing (boek III,
+    titel VIII, hoofdstuk II, afdeling 2bis, van het oud Burgerlijk Wetboek, hierna &ldquo;de
+    Handelshuurwet&rdquo;), en voor het overige de algemene regels van het oud Burgerlijk Wetboek over de huur van
+    goederen. Sinds de zesde staatshervorming zijn de gewesten bevoegd voor de handelshuur; de Handelshuurwet blijft
+    in de 3 gewesten van toepassing, met de wijzigingen die elk gewest heeft aangebracht.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>De verhuurder verhuurt aan de huurder, die aanvaardt, het onroerend goed gelegen te
+    <strong th:text="${propertyAddress}">adres</strong>, met een oppervlakte van ongeveer ________ m², bestaande
+    uit: ______________________________, hierna &ldquo;het gehuurde goed&rdquo;.</p>
+  <p>Voor bewoning bestemde lokalen of bijlokalen die mee worden verhuurd: ______________________________. Maken
+    voor bewoning bestemde lokalen deel uit van het geheel van de handelsinrichting en is de verhuurder dezelfde, of
+    zijn bijlokalen nodig voor de uitoefening van de handel en is die bestemming uitdrukkelijk in deze overeenkomst
+    vermeld, dan geldt de wettelijke huurtijd ook voor die lokalen (artikel 4 van de Handelshuurwet).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Het gehuurde goed wordt in hoofdzaak gebruikt voor de volgende kleinhandel of het volgende bedrijf van een
+    ambachtsman die rechtstreeks in contact staat met het publiek: ______________________________. Elke andere
+    activiteit vereist de voorafgaande en schriftelijke toestemming van de verhuurder. De huurder zorgt voor de
+    vergunningen die voor zijn activiteit nodig zijn.</p>
+  <p>De Handelshuurwet is van toepassing op de huur van onroerende goederen die, uitdrukkelijk of stilzwijgend
+    vanaf de ingenottreding van de huurder of krachtens een uitdrukkelijke overeenkomst van de partijen in de loop van
+    de huur, door de huurder of een onderhuurder in hoofdzaak worden gebruikt voor het uitoefenen van een kleinhandel
+    of voor het bedrijf van een ambachtsman die rechtstreeks in contact staat met het publiek (artikel 1 van de
+    Handelshuurwet). Een huur die schriftelijk is
+    gesloten voor een termijn van ten hoogste 1 jaar valt er niet onder en is onderworpen aan de gewestelijke regels
+    over de handelshuur van korte duur (artikel 2 van de Handelshuurwet). Valt het gebruik niet onder de
+    Handelshuurwet, dan gelden de algemene regels van het oud Burgerlijk Wetboek en hebben de bedingen van deze
+    overeenkomst over duur, hernieuwing en uitzettingsvergoeding alleen contractuele waarde.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">In het Waalse Gewest is de Handelshuurwet ook volledig
+    van toepassing op huurovereenkomsten die worden gesloten in het kader van een commerciële
+    samenwerkingsovereenkomst in de zin van artikel I.11, 2°, van het Wetboek van economisch recht, en wordt elk
+    beding dat uitsluitend betrekking heeft op de lokalen die voor de exploitatie van een bepaald merkteken worden
+    gehuurd, als ongeschreven beschouwd (artikel 1, § 3, van de Handelshuurwet).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>De huurovereenkomst neemt een aanvang op <strong th:text="${startDate}">aanvangsdatum</strong>.</p>
+  <p th:if="${fixedTerm}">Ze is gesloten voor een bepaalde duur<span th:if="${endDate != null}"> en eindigt op
+    <strong th:text="${endDate}">einddatum</strong></span>; de duur van de huur mag niet korter zijn dan 9 jaar
+    (artikel 3 van de Handelshuurwet).</p>
+  <p th:if="${!fixedTerm}">Ze is gesloten voor een duur van 9 jaar, de wettelijke minimumduur (artikel 3 van de
+    Handelshuurwet).</p>
+  <p>De huurder kan de lopende huur beëindigen bij het verstrijken van elke driejarige periode, mits hij ten minste
+    6 maanden vooraf opzegt bij gerechtsdeurwaardersexploot of bij aangetekende brief.</p>
+  <p>Recht van de verhuurder om de huur bij het verstrijken van elke driejarige periode te beëindigen, mits hij
+    1 jaar vooraf opzegt bij gerechtsdeurwaardersexploot of bij aangetekende brief, om in het goed werkelijk zelf een
+    handel uit te oefenen of die werkelijk te laten uitoefenen door de verwanten of de personenvennootschap vermeld in
+    artikel 3 van de Handelshuurwet, onder alle voorwaarden van dat artikel: toegekend / niet toegekend (doorhalen
+    wat niet past). Een verhuurder die van dat recht gebruikmaakt, kan een vergoeding wegens uitzetting verschuldigd
+    zijn (artikel 26 van de Handelshuurwet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">De partijen kunnen de lopende huur te allen tijde in
+    onderling akkoord beëindigen, op voorwaarde dat hun akkoord wordt vastgesteld bij een ter registratie aangeboden
+    schriftelijk document (artikel 3 van de Handelshuurwet, zoals van toepassing in het Waalse Gewest).</p>
+  <p th:if="${countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'BRU')}">De partijen kunnen de lopende
+    huur te allen tijde in onderling akkoord beëindigen, op voorwaarde dat hun akkoord wordt vastgesteld bij een
+    authentieke akte of bij een verklaring voor de rechter afgelegd (artikel 3 van de Handelshuurwet).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    partijen kunnen de lopende huur te allen tijde in onderling akkoord beëindigen, op voorwaarde dat hun akkoord
+    wordt vastgesteld in de vorm die het gewest voorschrijft: een authentieke akte of een verklaring voor de rechter
+    in het Vlaamse en het Brussels Hoofdstedelijk Gewest, een ter registratie aangeboden schriftelijk document in het
+    Waalse Gewest (artikel 3 van de Handelshuurwet).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>De huurprijs, zonder kosten, lasten en belastingen, bedraagt <strong th:text="${rentAmount}">bedrag</strong>
+    (<span th:text="${paymentFrequency}">per maand</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Daarnaast betaalt de huurder de kosten en lasten (zie artikel
+    <span th:text="${refs['service-costs']}"></span>).</span><span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Voor de belasting over de toegevoegde waarde geldt het daarover in deze overeenkomst
+    bepaalde (zie artikel <span th:text="${refs['vat']}"></span>).</span></p>
+  <p>De partijen bepalen de huurprijs vrij.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Voor de indexatie en de
+    herziening van de huurprijs geldt het daarover in deze overeenkomst bepaalde (zie artikel
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Indexatie van de huurprijs bedongen: ja / nee (doorhalen wat niet past). Is een aanpassing van de huurprijs aan
+    de kosten van levensonderhoud bedongen, dan is die slechts 1 keer per huurjaar toegelaten en ten vroegste op de
+    verjaardag van de inwerkingtreding van de huurovereenkomst; de aangepaste huurprijs mag niet hoger zijn dan:
+    basishuurprijs x nieuw indexcijfer / aanvangsindexcijfer, berekend op basis van het daartoe berekende en benoemde
+    indexcijfer (gezondheidsindex); het nieuwe indexcijfer is dat van de maand voorafgaand aan die van de verjaardag,
+    het aanvangsindexcijfer dat van de maand die voorafgaat aan de maand waarin de overeenkomst werd gesloten.
+    Contractuele bepalingen die verder gaan, kunnen tot die aanpassing worden ingekort (artikel 1728bis van het oud
+    Burgerlijk Wetboek). Aanvangsindexcijfer (maand en basisjaar): ______________________________</p>
+  <p>Bij het verstrijken van elke driejarige periode kan elke partij de vrederechter om herziening van de huurprijs
+    vragen, mits zij bewijst dat de normale huurwaarde van het gehuurde goed ten gevolge van nieuwe omstandigheden
+    ten minste 15 % hoger of lager is dan de huurprijs in de overeenkomst of bij de laatste herziening. De rechter
+    doet uitspraak naar billijkheid, zonder te letten op het gunstig of ongunstig rendement dat uitsluitend aan de
+    huurder is toe te schrijven. De vordering kan slechts worden ingesteld gedurende de laatste 3 maanden van de
+    lopende driejarige periode; de herziene huurprijs geldt vanaf de eerste dag van de volgende driejarige periode
+    (artikel 6 van de Handelshuurwet).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Naast de huurprijs betaalt de huurder de volgende kosten, lasten en belastingen, die hier limitatief worden
+    opgesomd, met hun verdeelsleutel en de vermelding of ze forfaitair of als provisie worden aangerekend:
+    ______________________________; bedrag van het forfait of van de provisie: ________ euro per maand.</p>
+  <p>Provisies worden ten minste jaarlijks afgerekend op basis van de werkelijke uitgaven; de verhuurder stelt de
+    bewijsstukken ter beschikking van de huurder. Kosten en lasten die niet in deze overeenkomst zijn vermeld, blijven
+    ten laste van de verhuurder.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>De verhuur van onroerende goederen is in beginsel vrijgesteld van de belasting over de toegevoegde waarde,
+    behoudens de uitzonderingen en de mogelijkheid om, onder de voorwaarden van het Btw-Wetboek, te kiezen voor een
+    met btw belaste verhuur van bedrijfsgebouwen.</p>
+  <p>Keuze voor een met btw belaste verhuur: ja / nee (doorhalen wat niet past). Kiezen de partijen daarvoor of is
+    de verhuur van rechtswege belast, dan worden de huurprijs en de kosten verhoogd met de btw tegen het geldende
+    tarief, en vermeldt de verhuurder de btw op zijn facturen.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Tot waarborg van de nakoming van zijn verplichtingen stelt de huurder een
+    huurwaarborg van <strong th:text="${depositAmount}">bedrag</strong>.</p>
+  <p th:if="${depositAmount == null}">Tot waarborg van de nakoming van zijn verplichtingen stelt de huurder een
+    huurwaarborg ten bedrage dat de partijen schriftelijk overeenkomen.</p>
+  <p>Vorm van de huurwaarborg (geblokkeerde rekening op naam van de huurder, bankwaarborg of andere vorm):
+    ______________________________</p>
+  <p>Voor de handelshuur bepaalt de wet geen maximumbedrag en geen verplichte vorm van de huurwaarborg; de
+    gewestelijke maxima voor woninghuur gelden niet. De waarborg wordt bij het einde van de huur vrijgegeven, na
+    aftrek van wat de huurder aan de verhuurder verschuldigd is.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>De huurder betaalt de huurprijs<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (zie artikel
+    <span th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> en de kosten en
+    lasten</span> per termijn (<span th:text="${paymentFrequency}">per maand</span>),
+    <span th:if="${paymentDueDay != null}">uiterlijk op dag <strong th:text="${paymentDueDay}">1</strong> van elke
+      betalingsperiode</span><span th:if="${paymentDueDay == null}">op de dag die de partijen overeenkomen</span>,
+    door overschrijving op de bankrekening van de verhuurder met nummer (IBAN): ______________________________</p>
+  <p>Bij laattijdige betaling is de huurder, na ingebrekestelling, de wettelijke interest verschuldigd op de
+    achterstallige bedragen, onverminderd een schadebeding dat de partijen hieronder overeenkomen:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>De verhuurder levert het gehuurde goed in alle opzichten in goede staat van onderhoud en doet gedurende de
+    huurtijd alle herstellingen die nodig mochten worden, behalve de herstellingen ten laste van de huurder
+    (artikel 1720 van het oud Burgerlijk Wetboek). Tenzij hieronder anders is bepaald, is de huurder gehouden tot de
+    huurherstellingen of geringe herstellingen tot onderhoud die door het plaatselijk gebruik als zodanig worden
+    beschouwd (artikel 1754 van het oud Burgerlijk Wetboek).</p>
+  <p>De huurder gedoogt dringende herstellingen die niet tot na het einde van de huur kunnen worden uitgesteld; duren
+    ze langer dan 40 dagen, dan wordt de huurprijs verminderd naar evenredigheid van de tijd en van het gedeelte van
+    het gehuurde goed waarvan hij het genot heeft moeten derven (artikel 1724 van het oud Burgerlijk Wetboek).</p>
+  <p>Afwijkende verdeling van de herstellingen en het onderhoud tussen de partijen: ______________________________</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>De huurder heeft het recht aan het gehuurde goed elke verbouwing uit te voeren die dienstig is voor zijn
+    onderneming en waarvan de kosten 3 jaar huur niet te boven gaan, mits daardoor noch de veiligheid, noch de
+    salubriteit, noch de esthetische waarde van het gebouw in het gedrang komt, en mits hij de verhuurder vooraf bij
+    aangetekende brief of bij gerechtsdeurwaardersexploot in kennis stelt van alle voorgenomen veranderingen, met
+    overlegging van de plannen en bestekken. De verhuurder die zich om wettige redenen wil verzetten, doet dat op
+    dezelfde wijze binnen 30 dagen na de ontvangst van het bericht, zo niet wordt hij geacht ermee in te stemmen; de
+    huurder die in zijn voornemen volhardt, dagvaardt hem binnen 30 dagen (artikel 7 van de Handelshuurwet).</p>
+  <p>De werken worden op risico van de huurder uitgevoerd en de verhuurder kan eisen dat de huurder zijn
+    aansprakelijkheid daarvoor verzekert (artikel 8 van de Handelshuurwet). Zijn verbouwingen met uitdrukkelijk of
+    stilzwijgend akkoord van de verhuurder of krachtens een rechterlijke beslissing op kosten van de huurder
+    uitgevoerd, dan kan de verhuurder, behoudens andersluidende overeenkomst, de verwijdering ervan bij het vertrek van
+    de huurder niet vorderen, maar kan hij zich ertegen verzetten; worden ze niet verwijderd, dan vergoedt hij naar
+    zijn keuze de waarde van de materialen en het arbeidsloon of de meerwaarde van het goed. Voor verbouwingen zonder
+    verlof kan de verhuurder het herstel in de vroegere toestand eisen, onverminderd schadevergoeding, of ze zonder
+    vergoeding behouden (artikel 9 van de Handelshuurwet).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Behoudens wat volgt, mag de huurder de huur niet overdragen en het goed niet onderverhuren zonder de
+    voorafgaande en schriftelijke toestemming van de verhuurder.</p>
+  <p>Het verbod om de huur over te dragen of het goed onder te verhuren, kan geen beletsel zijn voor een overdracht
+    of een onderverhuring die samen geschiedt met de overdracht of de verhuring van de handelszaak en slaat op de
+    gezamenlijke rechten van de hoofdhuurder, tenzij de verhuurder of zijn familie een gedeelte van het onroerend goed
+    bewoont. De huurder betekent het ontwerp van akte aan de verhuurder bij aangetekende brief of bij
+    gerechtsdeurwaardersexploot; de verhuurder die wettige redenen heeft om zich te verzetten, doet dat met redenen
+    omkleed op dezelfde wijze binnen 30 dagen na de betekening, zo niet wordt hij geacht ermee in te stemmen. Het
+    verzet is onder meer gegrond wanneer de huurder de handel sedert minder dan 2 jaren in het gehuurde goed heeft
+    uitgeoefend of de hernieuwing sedert minder dan 2 jaren heeft verkregen, behoudens overlijden of andere
+    buitengewone omstandigheden; de huurder kan binnen 15 dagen in rechte opkomen tegen het verzet (artikel 10 van de
+    Handelshuurwet). Bij overdracht blijft de oorspronkelijke huurder hoofdelijk gehouden tot alle verplichtingen uit
+    de huur (artikel 11 van de Handelshuurwet).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>De huurder verzekert zijn aansprakelijkheid voor brand en waterschade, zijn huurdersaansprakelijkheid en de
+    inhoud en inrichting van het gehuurde goed; de verhuurder verzekert het gebouw. Elke partij bezorgt de andere op
+    verzoek het bewijs van de verzekering en van de betaling van de premie.</p>
+  <p>Verzekeraars, polisnummers en eventuele wederzijdse afstand van verhaal: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Voor zover de regelgeving van het gewest waar het goed ligt een energieprestatiecertificaat voor de verhuur
+    van het gehuurde goed vereist, beschikt de verhuurder daarover en bezorgt hij de huurder een kopie.</p>
+  <p>Nummer, datum en energieklasse of prestatie-index van het certificaat: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>De huurovereenkomst wordt ter registratie aangeboden binnen de termijn en tegen het recht die de fiscale
+    wetgeving bepaalt; de registratie verleent haar een vaste datum ten aanzien van derden.</p>
+  <p>Partij die de registratierechten draagt: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>De partijen stellen op tegenspraak en voor gezamenlijke rekening een omstandige plaatsbeschrijving op, ofwel
+    tijdens de periode dat de ruimtes onbewoond zijn, ofwel tijdens de eerste maand van het gebruik; ze wordt bij de
+    huurovereenkomst gevoegd en geregistreerd. Bereiken de partijen geen akkoord, dan wijst de vrederechter op
+    verzoek een deskundige aan (artikel 1730 van het oud Burgerlijk Wetboek).</p>
+  <p>Is een omstandige plaatsbeschrijving opgemaakt, dan geeft de huurder het goed terug zoals hij het volgens die
+    beschrijving heeft ontvangen, met uitzondering van wat door ouderdom of overmacht is tenietgegaan of beschadigd; is
+    er geen opgemaakt, dan wordt vermoed dat de huurder het goed heeft ontvangen in de staat waarin het zich op het
+    einde van de huurovereenkomst bevindt, behoudens tegenbewijs (artikel 1731 van het oud Burgerlijk
+    Wetboek).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> De vrijgave van de
+    huurwaarborg volgt de plaatsbeschrijving bij uittrede (zie artikel
+    <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>De huurder heeft het recht, bij voorkeur boven alle andere personen, de hernieuwing van zijn huurovereenkomst te
+    verkrijgen om dezelfde handel voort te zetten, bij het verstrijken ervan of bij het verstrijken van de eerste of
+    de tweede hernieuwing, telkens voor een duur van 9 jaar; dat recht is beperkt tot 3 hernieuwingen (artikel 13 van
+    de Handelshuurwet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Een andere duur van de hernieuwing kan alleen worden
+    overeengekomen bij een akkoord van de partijen dat blijkt uit een ter registratie aangeboden schriftelijk document
+    (artikel 13 van de Handelshuurwet, zoals van toepassing in het Waalse Gewest).</p>
+  <p th:if="${countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'BRU')}">Een andere duur van de
+    hernieuwing kan alleen worden overeengekomen bij een akkoord van de partijen dat blijkt uit een authentieke akte of
+    uit een voor de rechter afgelegde verklaring (artikel 13 van de Handelshuurwet).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Een
+    andere duur van de hernieuwing kan alleen worden overeengekomen bij een akkoord van de partijen in de vorm die het
+    gewest voorschrijft: een authentieke akte of een voor de rechter afgelegde verklaring in het Vlaamse en het
+    Brussels Hoofdstedelijk Gewest, een ter registratie aangeboden schriftelijk document in het Waalse Gewest.</p>
+  <p>De huurder die de hernieuwing verlangt, brengt dat op straffe van verval bij gerechtsdeurwaardersexploot of bij
+    aangetekende brief ter kennis van de verhuurder, ten vroegste 18 maanden en ten laatste 15 maanden vóór het
+    eindigen van de lopende huur. De kennisgeving vermeldt op straffe van nietigheid de voorwaarden waaronder de
+    huurder bereid is de nieuwe huur aan te gaan, en dat de verhuurder geacht wordt met de hernieuwing onder die
+    voorwaarden in te stemmen als hij niet op dezelfde wijze binnen 3 maanden zijn met redenen omklede weigering,
+    andere voorwaarden of het aanbod van een derde ter kennis brengt (artikel 14 van de Handelshuurwet).</p>
+  <p>De verhuurder kan de hernieuwing weigeren om een van de redenen en onder de voorwaarden van artikel 16 van de
+    Handelshuurwet, of zonder reden mits betaling van een vergoeding wegens uitzetting gelijk aan 3 jaar huur,
+    eventueel verhoogd met een bedrag dat de veroorzaakte schade geheel vergoedt. Heeft de huurder zijn wil om de
+    hernieuwing te verkrijgen regelmatig te kennen gegeven en wordt ze hem geweigerd, dan heeft hij in de gevallen
+    van artikel 25 van de Handelshuurwet recht op de daar bepaalde forfaitaire vergoeding wegens uitzetting; zolang
+    hij de vergoeding waarop hij recht heeft, of het niet ernstig betwiste gedeelte ervan, niet heeft ontvangen, kan
+    hij het goed in gebruik houden zonder huur verschuldigd te zijn (artikel 27 van de Handelshuurwet).</p>
+  <p>Vanaf het begin van de achttiende maand vóór het eindigen van de lopende huur laat de huurder, overeenkomstig de
+    gebruiken, mogelijke gegadigden toe tot het bezichtigen van het goed.</p>
+</div>
+
+<div th:fragment="clause-transfer" data-clause="transfer">
+  <p>Zelfs wanneer de huurovereenkomst het recht voorbehoudt om de huurder bij vervreemding uit het goed te zetten,
+    mag de verkrijger van het goed de huurder er alleen uitzetten in de gevallen van artikel 16, I, 1° tot 4°, van de
+    Handelshuurwet, mits hij de huur 1 jaar vooraf opzegt binnen 3 maanden na de verkrijging, met duidelijke opgave
+    van de reden, alles op straffe van verval. Hetzelfde geldt wanneer de huur geen vaste datum heeft verkregen vóór
+    de vervreemding en de huurder het goed sinds ten minste 6 maanden in gebruik heeft (artikel 12 van de
+    Handelshuurwet). De verkrijger kan een vergoeding wegens uitzetting verschuldigd zijn.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>De huurder kan de huur bij het verstrijken van elke driejarige periode beëindigen en de verhuurder kan dat alleen
+    als deze overeenkomst hem dat recht toekent, onder de voorwaarden en met de opzeggingstermijnen die daarvoor
+    gelden<span class="clause-ref" data-ref="term" th:if="${refs['term']}"> (zie artikel
+    <span th:text="${refs['term']}"></span>)</span>.</p>
+  <p>Wordt de huurder die zijn recht op hernieuwing heeft verloren, na het eindigen van de huur in het bezit van het
+    goed gelaten, dan komt een nieuwe huur van onbepaalde duur tot stand, die de verhuurder kan beëindigen mits hij ze
+    ten minste 18 maanden vooraf opzegt, onverminderd het recht van de huurder om de hernieuwing te vragen
+    (artikel 14 van de Handelshuurwet).</p>
+  <p>Komt een partij haar verplichtingen niet na, dan kan de andere partij de ontbinding van de huurovereenkomst
+    vorderen bij de rechter; een uitdrukkelijk ontbindend beding wordt voor niet geschreven gehouden (artikel 1762bis
+    van het oud Burgerlijk Wetboek). Bij het einde van de huur geeft de huurder het goed vrij van personen en
+    goederen terug.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}">
+    Daarbij wordt een plaatsbeschrijving bij uittrede opgesteld (zie artikel
+    <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Elke partij verwerkt de persoonsgegevens van de andere partij en van de personen die voor haar optreden alleen
+    voor zover dat nodig is voor het sluiten en het uitvoeren van deze overeenkomst en het nakomen van haar wettelijke
+    verplichtingen, overeenkomstig de algemene verordening gegevensbescherming (AVG, Verordening (EU) 2016/679) en
+    de Belgische wetgeving ter uitvoering ervan, en bewaart ze niet langer dan nodig.</p>
+  <p>De betrokkenen kunnen de rechten uitoefenen die de AVG hun verleent en een klacht indienen bij de
+    Gegevensbeschermingsautoriteit.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Op deze huurovereenkomst is het Belgisch recht van toepassing. De rechtsvorderingen op grond van de
+    Handelshuurwet behoren, niettegenstaande elke andersluidende overeenkomst die vóór het ontstaan van het geschil is
+    gesloten, tot de bevoegdheid van de vrederechter van de plaats waar het voornaamste onroerend goed ligt
+    (artikel 29 van de Handelshuurwet).</p>
+  <p>Vóór het instellen van een vordering kan de eiser de toekomstige verweerder bij verzoekschrift tot minnelijke
+    schikking voor de vrederechter laten oproepen (artikel 30 van de Handelshuurwet). De bedingen van deze
+    overeenkomst die strijdig zijn met de dwingende bepalingen van de Handelshuurwet, hebben geen gevolg.</p>
+</div>
+
+</body>
+</html>
