@@ -1,0 +1,409 @@
+<!--
+  legal-basis: Czech Republic. Act No. 89/2012 Coll., the Civil Code (zákon č. 89/2012 Sb., občanský zákoník),
+               consolidated version 18 in force 01.01.2026 - 31.12.2026 (latest amendments in force 01.01.2026:
+               Acts No. 176/2025, 268/2025, 270/2025, 290/2025 and 333/2025 Coll.; of these only Act No. 176/2025
+               Coll., Part 12, Art. XIV touches the lease provisions: new section 2239(2), data-box delivery);
+               version 19 in force from 01.01.2027 (Act No. 159/2026 Coll.) compared word for word on
+               2026-10-04: sections 2201 to 2331 unchanged. Sections used: 1970 (late-payment interest), 2201 to
+               2234 (general provisions on lease: 2203, 2204, 2219, 2221, 2224, 2231, 2232) and 2235 to 2301 (lease of
+               a flat and of a house: 2235, 2236, 2237, 2239, 2242 to 2247, 2248 to 2254, 2255 to 2258, 2259 to
+               2269, 2270 to 2275, 2276 to 2278, 2279 to 2283, 2285 to 2296).
+               Act No. 67/2013 Coll. on services connected with the use of flats (zákon č. 67/2013 Sb.), version
+               in force 01.01.2026 (Act No. 176/2025 Coll. inserted section 9a): sections 2, 4, 7, 8, 9, 12, 13.
+               Government Regulation No. 453/2013 Coll. (comparable usual rent, nařízení vlády č. 453/2013 Sb.),
+               unamended since 01.01.2014: sections 1 to 5.
+               Government Regulation No. 308/2015 Coll. (routine maintenance and minor repairs), version in force
+               01.01.2026 as amended by Government Regulation No. 493/2025 Coll.: sections 2 to 6 (CZK 1500 per
+               repair, CZK 150 per m2 per calendar year).
+               Government Regulation No. 351/2013 Coll. (late-payment interest), version in force 01.01.2026:
+               section 2(1) (CNB repo rate plus 8 percentage points).
+               Act No. 406/2000 Coll. on energy management (zákon č. 406/2000 Sb., o hospodaření energií), version
+               in force 01.08.2026: section 7a(2), (3), (4), (5), (7) and (10) (energy performance certificate,
+               průkaz energetické náročnosti budovy).
+               Regulation (EU) 2016/679 (GDPR); Act No. 110/2019 Coll. on the processing of personal data.
+               Act No. 175/2025 Coll. on housing support (zákon o podpoře bydlení), in force 01.01.2026 (part 3
+               from 01.07.2026): public housing-support scheme, not reflected; this model is for a private lease.
+               Sources consulted 2026-10-04: consolidated texts and version histories on www.zakonyprolidi.cz;
+               the official collection e-Sbírka (e-sbirka.gov.cz) was not machine-readable from the drafting
+               environment, so each text should be confirmed there. Items not verified are listed as unverified in
+               the pack report and are stated only generally here.
+               No region branches: the Civil Code applies in the whole country.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out
+               ("3 months", never "three months"); checked by the number-word lint.
+  reviewed-by: none
+  translation: authoritative
+  English is the only language of this document: Czech is not among the document languages of the application,
+  and no Czech version exists. The runtime locator therefore shows the courtesy notice on this document, and the
+  text itself states that it is drawn up and signed in English only and should be checked by a person qualified in
+  Czech law. Czech legal terms are given in
+  parentheses at first use. Draft text, not vetted by legal counsel. Reflects Czech law (lease of a flat, nájem
+  bytu), not the law of any other country; not suitable for a flat in a housing cooperative let to a member, a
+  service flat (služební byt), a flat with a special purpose (byt zvláštního určení) or a lease for recreation or
+  another manifestly short-term purpose. Each clause-<key> fragment holds only the clause body; the shell supplies
+  article numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never
+  hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This lease of a flat (nájemní smlouva, nájem bytu) is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (pronajímatel),</p>
+  <p>date of birth or identification number (IČO) and address of the landlord: ______________________________,
+    and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (nájemce),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (nájemce),</p>
+  <p>date of birth and address of the tenant: ______________________________.</p>
+  <p>The lease is governed by Czech law, in particular by sections 2201 to 2234 (general provisions on lease) and
+    sections 2235 to 2301 (lease of a flat and of a house) of the Civil Code (Act No. 89/2012 Coll., občanský
+    zákoník). Agreements that shorten the tenant&rsquo;s rights under the provisions on the lease of a flat are
+    disregarded (section 2235(1) of the Civil Code). The agreement requires written form; the landlord may not
+    plead against the tenant that the agreement is invalid for lack of form (section 2237 of the Civil Code).</p>
+  <p>Where several persons conclude this agreement as tenants, they become joint tenants of the flat (společní
+    nájemci) with equal rights and obligations (sections 2270 and 2271 of the Civil Code). The parties agree that
+    the joint tenants are jointly and severally liable for all obligations of the tenant under this agreement.</p>
+  <p>Language: this agreement is drawn up and signed in English only; it is not a translation of a Czech original
+    and no Czech version exists. The Czech terms in parentheses are those of the Czech statutes. Czech courts and
+    authorities may require a Czech translation, as proceedings before them are conducted in Czech. The parties are
+    advised to have the agreement checked by a person qualified in Czech law before signing, or to sign a Czech
+    version as well.</p>
+  <p>If the parties also sign a Czech version of this agreement, they agree which version prevails in case of a
+    discrepancy: ______________________________</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, to meet the housing needs of the tenant and of the members of the
+    tenant&rsquo;s household, the flat (byt) at <strong th:text="${propertyAddress}">address</strong>, hereinafter
+    &ldquo;the flat&rdquo;.</p>
+  <p>flat number, floor and, where the flat is a unit (jednotka), its designation in the land register (katastr
+    nemovitostí): ______________________________</p>
+  <p>number of rooms, floor area and the rooms and spaces let with the flat (cellar, storage room, parking space or
+    other): ______________________________</p>
+  <p>furniture and equipment let with the flat (listed in an annex where applicable):
+    ______________________________</p>
+  <p>A flat is a room or a set of rooms which are part of a building, form a living space and are intended and used
+    for housing (section 2236(1) of the Civil Code). The provisions on the lease of a flat do not apply where the
+    flat is let for recreation or another manifestly short-term purpose (section 2235(2) of the Civil Code); this
+    agreement is not intended for such a lease, nor for a service flat (služební byt), a flat with a special
+    purpose (byt zvláštního určení) or a flat let by a housing cooperative to its member.</p>
+  <p>Where the flat is registered in the land register, the lease right is also entered in it if the owner so
+    proposes, or the tenant with the owner&rsquo;s consent (section 2203 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The lease is concluded for a fixed term (nájem na dobu určitou)<span
+    th:if="${endDate != null}"> and ends on <strong th:text="${endDate}">end date</strong></span>. Term, if it does
+    not follow from the end date: ______________________________</p>
+  <p th:if="${fixedTerm}">If the tenant continues to use the flat for at least 3 months after the day on which the
+    lease should have ended, and the landlord does not call on the tenant in that period, in writing, to leave the
+    flat, the lease is deemed agreed again for the same term as before, but for no more than 2 years, unless the
+    parties agree otherwise (section 2285 of the Civil Code). Agreement of the parties on this point, if any:
+    ______________________________</p>
+  <p th:if="${!fixedTerm}">The lease is concluded for an indefinite term (nájem na dobu neurčitou) (section
+    2204(1) of the Civil Code).</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Notice of termination is governed
+    by the provisions of this agreement on termination (see article <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent (nájemné) is <strong th:text="${rentAmount}">amount</strong> per month. The parties agree the rent as
+    a fixed amount; the rent is presumed to be agreed for 1 month (section 2246(1) of the Civil Code).</p>
+  <p class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}">The payments for services
+    connected with the use of the flat are not part of the rent and are governed by the provisions of this
+    agreement on services (see article <span th:text="${refs['service-costs']}"></span>).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes of the rent are
+    governed by the provisions of this agreement on rent adjustment (see article
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The parties agree (tick 1 box):</p>
+  <p>[ ] an annual increase of the rent (section 2248 of the Civil Code), on each anniversary of the start of the
+    lease, by the annual average rate of inflation measured by the consumer price index published by the Czech
+    Statistical Office (Český statistický úřad) for the previous calendar year, or as follows:
+    ______________________________; the landlord notifies the tenant in writing of the new rent;</p>
+  <p>[ ] no agreed increase; the statutory procedure described below then applies;</p>
+  <p>[ ] that increases of the rent under section 2249 of the Civil Code are expressly excluded.</p>
+  <p>If the parties have not agreed increases of the rent and have not expressly excluded them, the landlord may
+    propose to the tenant in writing an increase of the rent up to the comparable rent usual in the given place
+    (srovnatelné nájemné obvyklé v daném místě), provided that the proposed increase, together with the increases
+    made in the last 3 years, does not exceed 20 %. A proposal made before 12 months have elapsed in which the rent
+    was not increased, or a proposal which does not state the amount of the rent and does not show that these
+    conditions are met, is disregarded (section 2249(1) of the Civil Code). The comparable rent usual in the given
+    place is established by an expert opinion or on the basis of evidence of at least 3 comparable rents (section 3
+    of Government Regulation No. 453/2013 Coll.).</p>
+  <p>If the tenant agrees to the proposal, the tenant pays the increased rent from the 3rd calendar month after the
+    proposal was received. If the tenant does not inform the landlord in writing within 2 months of receiving the
+    proposal that the tenant agrees, the landlord may, within a further 3 months, ask the court to determine the
+    rent; the court decides on a rent up to the amount usual in the place and at the time, with effect from the day
+    the application was filed (section 2249(3) of the Civil Code). A tenant who proposes a reduction of the rent
+    proceeds in the same way (section 2249(4) of the Civil Code).</p>
+  <p>Where the landlord carries out building works which permanently improve the utility value of the flat or the
+    overall housing conditions in the building, or result in permanent savings of energy or water, the landlord may
+    agree with the tenants an increase of the rent of at most 10 % of the costs reasonably incurred per year; if the
+    tenants of at least 2/3 of the flats in the building agree, the increased rent also applies to the other
+    tenants. Failing agreement, the landlord may propose an increase on these grounds of 3.5 % of the costs incurred
+    per year (section 2250 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The landlord provides the following services connected with the use of the flat (služby spojené s užíváním
+    bytu): ______________________________. Failing such an agreement, the landlord provides the necessary services
+    during the lease, which are presumed to be the supply of water, the removal and drainage of waste water
+    including the cleaning of cesspits, the supply of heat, the removal of municipal waste, the lighting and
+    cleaning of the common parts of the building, the reception of radio and television broadcasting, the operation
+    and cleaning of chimneys and, where applicable, the operation of a lift (section 2247 of the Civil Code).</p>
+  <p>The tenant pays monthly advances (zálohy) on the costs of the services together with the rent (section 2251(1)
+    of the Civil Code); the monthly advance is ______________________________. The landlord may change the advance
+    during the year to the extent of a change in the price of a service or for another justified reason, at the
+    earliest from the first day of the month after the written notice of the new advance was delivered; the notice
+    must give reasons (section 4(4) of Act No. 67/2013 Coll.).</p>
+  <p>The billing period (zúčtovací období) lasts at most 12 months. The landlord delivers to the tenant the
+    statement of the actual costs and advances (vyúčtování) at the latest 4 months after the end of the billing
+    period, and the parties settle the balance within the agreed time, but at the latest within 4 months of the
+    delivery of the statement (sections 2 and 7 of Act No. 67/2013 Coll.). Within 30 days of the delivery of the
+    statement the tenant may ask in writing for the costs and the method of allocation to be documented, and may
+    raise objections within 30 days of the delivery of the statement or of those documents; without timely
+    objections the tenant is deemed to agree with the statement (section 8 of Act No. 67/2013 Coll.). The tenant
+    notifies the landlord in writing and without undue delay of changes in the number of persons relevant for
+    billing (osoby rozhodné pro rozúčtování) (section 12 of Act No. 67/2013 Coll.). That Act also provides for a penalty for failing to meet its duties
+    (section 13 of Act No. 67/2013 Coll.).</p>
+  <p>The parties may instead agree a flat-rate payment (paušální platba) for the services, which is then not
+    billed; for a lease for more than 24 months or for an indefinite term, the supply of heat and hot water and the
+    supply of water and drainage of waste water cannot be included in a flat-rate payment and are always billed
+    (section 9 of Act No. 67/2013 Coll.). Flat-rate payment agreed, if any: ______________________________</p>
+  <p>Services which the tenant arranges directly with the supplier (for example electricity or gas in the flat)
+    are paid by the tenant to the supplier: ______________________________</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant provides the landlord with a security deposit (jistota) of
+    <strong th:text="${depositAmount}">amount</strong> as security that the tenant pays the rent and fulfils the
+    other obligations arising from the lease.</p>
+  <p th:if="${depositAmount == null}">The parties do not agree a security deposit (jistota). Deposit agreed, if
+    any: ______________________________</p>
+  <p>The security deposit and the right to payment of any contractual penalties (smluvní pokuta) agreed for a
+    breach of those obligations may not, in total, exceed 3 times the monthly rent (section 2254(1) of the Civil
+    Code). The parties confirm that the deposit together with the contractual penalties agreed in this agreement
+    does not exceed that limit; any part of the deposit above it is returned to the tenant on request.</p>
+  <p>At the end of the lease the landlord returns the deposit to the tenant, setting off what the tenant owes under
+    the lease. The tenant is entitled to interest on the deposit from the day it was provided, at least at the
+    statutory rate (section 2254(2) of the Civil Code). Account for the deposit and the return of the deposit:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span
+    th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> and the advances on the
+    services</span> in advance (předem) for each month, <span th:if="${paymentDueDay != null}">no later than day
+    <strong th:text="${paymentDueDay}">5</strong> of the month to which the payment relates</span><span
+    th:if="${paymentDueDay == null}">no later than the 5th day of the month to which the payment relates</span>,
+    to the landlord&rsquo;s account: ______________________________.</p>
+  <p>Under section 2251(1) of the Civil Code the tenant pays the rent in advance for each month or for another
+    agreed payment period, at the latest by the 5th day of the period, unless a later day is agreed. The landlord
+    may not require from the tenant any payments other than the rent and the payments for services, whether as a
+    deposit (vklad) or otherwise, nor payment of the rent by a post-dated cheque or a similar method (section
+    2251(2) of the Civil Code); this does not concern the security deposit under section 2254 of the Civil
+    Code.</p>
+  <p>If the tenant is late with a payment, the landlord may claim late-payment interest (úrok z prodlení) unless
+    the tenant is not responsible for the delay, provided that the landlord has duly fulfilled its contractual
+    and statutory obligations (section 1970 of the Civil Code); unless the parties agree
+    otherwise, its annual rate equals the repo rate of the Czech National Bank on the first day of the calendar
+    period of 6 months (starting on 1 January or 1 July) in which the delay began, plus 8 percentage points (section 2(1) of Government Regulation No.
+    351/2013 Coll.).</p>
+  <p>If the parties disagree on the rent owed, the lease cannot be terminated for non-payment of the rent if the
+    tenant deposits the rent owed, or the disputed part of it, in notarial custody (notářská úschova) and informs
+    the landlord (section 2253(1) of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the flat properly in accordance with this agreement. If it does not cause an increased burden
+    for the flat or the building, the tenant may also work or carry on a business in the flat (section 2255 of the
+    Civil Code). The tenant observes the rules usual for conduct in the building and the landlord&rsquo;s reasonable
+    instructions for maintaining proper order (section 2256(2) of the Civil Code); house rules, if any, are
+    annexed.</p>
+  <p>The tenant may keep an animal in the flat if this does not cause the landlord or the other residents of the
+    building difficulties that are unreasonable with regard to the conditions in the building; if keeping the animal
+    increases the cost of maintaining the common parts of the building, the tenant reimburses that cost to the
+    landlord (section 2258 of the Civil Code).</p>
+  <p>The tenant may accept anyone into the tenant&rsquo;s household. If the tenant accepts a new member of the
+    household, the tenant notifies the landlord of the increase in the number of persons living in the flat without
+    undue delay; if the tenant fails to do so within 2 months of the change, the tenant is presumed to have seriously
+    breached this duty (section 2272(1) of the Civil Code). The tenant also notifies a decrease in the number of
+    members of the household without undue delay (section 2273 of the Civil Code). The landlord may require that
+    only as many persons live in the tenant&rsquo;s household as is reasonable with regard to the size of the flat
+    and allows all of them to live there in usual comfortable and hygienic conditions (section 2272(3) of the Civil
+    Code).</p>
+  <p>[ ] The landlord reserves the right to consent to the acceptance of a new member of the tenant&rsquo;s
+    household. This does not apply to a close person (osoba blízká) or to other cases deserving special
+    consideration; the landlord&rsquo;s consent to the acceptance of a person other than a close person requires
+    written form (section 2272(2) of the Civil Code).</p>
+  <p>If the tenant knows in advance of an absence from the flat of more than 2 months during which the flat will
+    be difficult to access, the tenant notifies the landlord in good time and names a person who will allow access
+    to the flat where this is strictly necessary; failing such a person, that person is the landlord (section
+    2269(1) of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>If the tenant permanently lives in the flat, the tenant may sublet part of the flat (podnájem) to a third
+    person even without the landlord&rsquo;s consent (section 2274 of the Civil Code).</p>
+  <p>If the tenant does not permanently live in the flat, the tenant may sublet the flat or part of it only with
+    the landlord&rsquo;s consent. The request for consent and the consent require written form. If the landlord does
+    not respond to the request within 1 month, consent is deemed given, unless a ban on subletting was agreed
+    (section 2275 of the Civil Code).</p>
+  <p>[ ] The parties agree a ban on subletting (zákaz podnájmu) for the cases of section 2275 of the Civil
+    Code.</p>
+  <p>Subletting in breach of sections 2274 and 2275 of the Civil Code is a gross breach of the tenant&rsquo;s duty
+    (section 2276 of the Civil Code). A sublease ends at the latest with the lease; when the lease ends, the tenant
+    informs the subtenant of the relevant facts, in particular the day the lease ends (sections 2277 and 2278 of the
+    Civil Code).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord keeps the flat and the building in a condition fit for use during the lease. The tenant carries
+    out and pays for only the routine maintenance (běžná údržba) and minor repairs (drobné opravy) connected with the
+    use of the flat (section 2257 of the Civil Code). These are defined in Government Regulation No. 308/2015 Coll.;
+    besides the repairs listed in section 4 of that Regulation, a repair is minor by cost where the cost of the
+    repair does not exceed CZK 1500, and once the costs of minor repairs in a calendar year exceed CZK 150 per m2 of
+    the floor area of the flat as defined in section 6(2) of that Regulation, further repairs in that year are not
+    minor repairs (sections 5 and 6(1) of that Regulation).</p>
+  <p>The tenant notifies the landlord immediately of damage or a defect in the flat that must be removed without
+    delay, and without undue delay of any other damage or defect that prevents usual housing (section 2264 of the
+    Civil Code). The landlord removes the damage or defect within a reasonable time after the notice; if the landlord
+    does not do so without undue delay and properly, the tenant may remove it and claim the justified costs or,
+    where applicable, a rent reduction, unless the damage or defect is not significant (section 2265 of the Civil
+    Code).</p>
+  <p>If the landlord notifies the tenant in advance within a reasonable time, the tenant allows the landlord, to the
+    necessary extent, to inspect the flat and to access it to carry out necessary repairs or maintenance; prior
+    notice is not required where this is necessary to prevent damage or where there is a risk in delay (section
+    2219(1) of the Civil Code).</p>
+  <p>The tenant may make alterations to the flat only with the landlord&rsquo;s consent (section 2263(1) of the
+    Civil Code). The tenant&rsquo;s duty to tolerate alterations and works by the landlord, and the procedure where
+    works require the flat to be vacated, are governed by sections 2259 to 2262 of the Civil Code.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The landlord presented to the tenant, before this agreement was concluded, the energy performance certificate
+    of the building (průkaz energetické náročnosti budovy) or a copy of it, and hands it or a copy to the tenant at
+    the latest on signing this agreement (section 7a(2) and (3) of Act No. 406/2000 Coll. on energy management).
+    Energy performance class and date of the certificate: ______________________________</p>
+  <p>Where the landlord is the owner of a unit, the landlord requests the certificate from the association of unit
+    owners (společenství vlastníků jednotek) or the manager; if it was not handed over to the landlord on written
+    request, the landlord may replace it by the bills for electricity, gas and heat supplied to the unit for the past
+    3 years (section 7a(3) and (7) of Act No. 406/2000 Coll.). A certificate is valid for 10 years from its issue or
+    until a major alteration of the building or a change of the method of heating, cooling or hot-water preparation
+    (section 7a(4) of Act No. 406/2000 Coll.). Some buildings, such as cultural monuments, are exempt (section 7a(5)
+    of Act No. 406/2000 Coll.), and no certificate is obtained where both parties so agree in writing and the
+    building was built, and last underwent a major alteration, before 1 January 1947 (section 7a(10) of Act No.
+    406/2000 Coll.).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The landlord makes the flat available to the tenant, fit for moving in and living, on
+    <strong th:text="${startDate}">start date</strong>. The flat is made available when the tenant has received the
+    keys and nothing prevents the tenant from entering it (section 2242(1) of the Civil Code). Unless otherwise
+    agreed, the flat is fit for moving in and living if it is clean and in a condition usually considered good and
+    the necessary services connected with its use are ensured (section 2243 of the Civil Code).</p>
+  <p>The parties record the handover in a handover record (předávací protokol) signed by both, stating the
+    condition of the flat and its equipment, existing defects, the meter readings and the number of keys handed
+    over.</p>
+  <p>The tenant hands the flat back to the landlord on the day the lease ends; the flat is handed back when the
+    landlord receives the keys and nothing else prevents the landlord from entering and using it (section 2292 of
+    the Civil Code). The tenant hands the flat back in the condition in which the tenant took it over, disregarding
+    normal wear and tear from normal use and defects that the landlord must remove (section 2293(1) of the Civil
+    Code). If the tenant does not hand the flat back on the day the lease ends, the landlord is entitled to
+    compensation equal to the agreed rent until the day the flat is actually handed back (section 2295 of the Civil
+    Code).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The return of the security
+    deposit is governed by the provisions of this agreement on the deposit (see article
+    <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>If the tenant dies and the lease is not a joint lease, the lease passes to a member of the tenant&rsquo;s
+    household who lived in the flat on the day of the tenant&rsquo;s death and has no flat of their own; if that person
+    is not the tenant&rsquo;s spouse, partner, parent, sibling, son-in-law, daughter-in-law, child or grandchild, the
+    lease passes to that person only if the landlord has consented (section 2279(1) of the Civil Code).</p>
+  <p>A lease that has passed in this way ends at the latest 2 years after the day it passed; this does not apply
+    where the person concerned had reached the age of 70 years on the day the lease passed; where that person had
+    not reached the age of 18 years, the lease ends at the latest on the day that person reaches the age of 20 years,
+    unless the landlord and the tenant agree otherwise (section 2279(2) of the Civil Code). Each person who meets the
+    conditions may notify the landlord in writing within 1 month of the tenant&rsquo;s death that they do not intend
+    to continue the lease (section 2279(4) of the Civil Code).</p>
+  <p>If the lease does not pass to a member of the household, it passes to the tenant&rsquo;s heir (section 2282 of
+    the Civil Code); the landlord and the heir may then terminate the lease with a notice period of 2 months within
+    the time limits of section 2283 of the Civil Code.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The parties may end the lease at any time by written agreement.</p>
+  <p>Notice of termination (výpověď) requires written form and must reach the other party. The notice period
+    (výpovědní doba) runs from the first day of the calendar month following the month in which the notice reached
+    the other party (section 2286(1) of the Civil Code).</p>
+  <p>The tenant may terminate a lease for an indefinite term by notice without giving reasons; the notice period is
+    3 months (section 2231 of the Civil Code). The tenant may terminate a lease for a fixed term if the
+    circumstances on which the parties evidently relied when the lease was concluded change to such an extent that
+    the tenant cannot reasonably be required to continue the lease (section 2287 of the Civil Code). The tenant may
+    terminate the lease without a notice period where section 2266 of the Civil Code so provides and in the other
+    cases provided by law.</p>
+  <p>The landlord may terminate the lease only on the grounds provided by law. A lease for a fixed or indefinite
+    term may be terminated by the landlord with a notice period of 3 months if (a) the tenant grossly breaches a duty
+    arising from the lease; (b) the tenant is convicted of an intentional criminal offence committed against the
+    landlord or a member of the landlord&rsquo;s household or a person living in the building where the flat is
+    located, or against property of others located in that building; (c) the flat must be vacated because, in the
+    public interest, the flat or the building must be dealt with in such a way that the flat cannot be used at all;
+    or (d) there is another similarly serious ground (section 2288(1) of the Civil Code).</p>
+  <p>A lease for an indefinite term may also be terminated by the landlord with a notice period of 3 months if (a)
+    the flat is to be used by the landlord, or by the landlord&rsquo;s spouse who intends to leave the family
+    household where a petition for divorce has been filed or the marriage has already been dissolved by divorce; or
+    (b) the landlord needs the flat for a relative of the landlord or of the landlord&rsquo;s spouse in the direct line
+    or in the collateral line in the 2nd degree (section 2288(2) of the Civil Code). If the landlord does not use the
+    flat for the stated purpose within 1 month of its vacation by the tenant, the landlord must let the flat to the
+    tenant again or compensate the tenant for the damage, subject to the conditions of section 2289 of the Civil
+    Code.</p>
+  <p>The landlord states the ground in the notice (section 2288(3) of the Civil Code) and informs the tenant of the
+    tenant&rsquo;s right to raise objections to the notice and to ask the court to review whether the notice is
+    justified; otherwise the notice is invalid (section 2286(2) of the Civil Code). The tenant may apply to the court
+    for that review within 2 months of the day the notice reached the tenant (section 2290 of the Civil Code).</p>
+  <p>If the tenant breaches a duty in a particularly serious manner, the landlord may terminate the lease without a
+    notice period and require the tenant to hand the flat back without undue delay, at the latest within 1 month of
+    the end of the lease (section 2291(1) of the Civil Code). Such a breach is, in particular, failing to pay the rent
+    and the costs of services for at least 3 months, damaging the flat or the building in a serious or irreparable
+    manner, otherwise causing serious damage or difficulties to the landlord or to persons living in the building,
+    or using the flat without authorisation in another way or for another purpose than agreed (section 2291(2) of
+    the Civil Code). The notice is disregarded if it does not state what the landlord considers to be the
+    particularly serious breach, or if the landlord did not, before delivering the notice, call on the tenant to
+    remedy the conduct or the unlawful situation within a reasonable time (section 2291(3) of the Civil Code).</p>
+  <p>The landlord may not terminate the lease of a flat in which the tenant lives on the ground of a change of
+    ownership (section 2224 of the Civil Code); the rights and obligations under the lease pass to the new owner
+    (section 2221(1) of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices and other documents under this agreement are delivered in writing to the addresses of the parties
+    stated in this agreement, or to another address the party has notified in writing.</p>
+  <p>[ ] The parties agree that documents may be delivered through data boxes (datové schránky); such an agreement
+    is presumed not to be manifestly unreasonable (section 2239(2) of the Civil Code). Data box identifiers:
+    ______________________________</p>
+  <p>E-mail addresses for other communications: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the personal data of the tenant and of the members of the tenant&rsquo;s household only
+    to the extent necessary to conclude and perform this agreement and to meet legal obligations, in accordance with
+    Regulation (EU) 2016/679 (General Data Protection Regulation) and Act No. 110/2019 Coll. on the processing of
+    personal data. The supervisory authority is the Office for Personal Data Protection (Úřad pro ochranu osobních
+    údajů).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Czech law. The parties first try to settle disputes amicably; failing that, the
+    competent Czech court decides.</p>
+  <p>Amendments to this agreement require written form.</p>
+</div>
+
+</body>
+</html>
