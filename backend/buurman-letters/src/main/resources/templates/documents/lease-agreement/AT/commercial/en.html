@@ -1,0 +1,353 @@
+<!--
+  legal-basis: Mietrechtsgesetz (MRG, BGBl. Nr. 520/1981, zuletzt geaendert durch BGBl. I Nr. 114/2025, 5. Mietrechtliches
+               Inflationslinderungsgesetz) as consolidated on ris.bka.gv.at (Gesetzesnummer 10002531):
+               § 1 (Abs. 1, Abs. 2, Abs. 4, Abs. 5), § 3, § 8, § 9, § 11, § 12a, § 15, § 16 (version in force
+               01.01.2026), § 16b, § 21, § 27, § 29 (minimum term only for Wohnungen), § 30, § 33, § 37, § 39.
+               Allgemeines buergerliches Gesetzbuch (ABGB, Gesetzesnummer 10001622): § 1000, § 1096, § 1097, § 1098,
+               § 1099, § 1100, § 1109, § 1111, § 1113, § 1114, § 1115, § 1117, § 1118, § 1333.
+               Unternehmensgesetzbuch (UGB) § 455 and § 456 (9,2 Prozentpunkte ueber dem Basiszinssatz between
+               Unternehmer); Umsatzsteuergesetz 1994 (UStG 1994, version in force 01.01.2026, BGBl. I Nr. 97/2025)
+               § 6 Abs. 1 Z 16 and § 6 Abs. 2; Gebuehrengesetz 1957 (GebG, version in force 24.12.2025) § 33 TP 5
+               (1 percent of the value, valuation rules, self-calculation by the landlord); Mieten-Wertsicherungsgesetz
+               (MieWeG) § 1 Abs. 1 (applies to Wohnungsmietvertraege only).
+               Zivilprozessordnung (ZPO) § 560; Jurisdiktionsnorm (JN) § 49 and § 83; Energieausweis-Vorlage-Gesetz 2012
+               (EAVG 2012, as amended by BGBl. I Nr. 38/2026, in force 01.07.2026) § 4, § 6, § 7; Heiz- und
+               Kaeltekostenabrechnungsgesetz (HeizKG, BGBl. I Nr. 101/2021) § 3 and § 10; Datenschutzgesetz (DSG) § 18
+               (Datenschutzbehoerde, secondary source jusline.at); DSGVO: Verordnung (EU) 2016/679
+               (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04 against ris.bka.gv.at (section texts of the tagesaktuelle Fassung read on that date).
+               The MRG regime (Vollanwendung, Teilanwendung under § 1 Abs. 4, Wirtschaftspark under § 1 Abs. 5,
+               Vollausnahme under § 1 Abs. 2) is not known to the system: the parties tick it in the premises clause and
+               every regime-dependent rule is stated conditionally. No regionCode branch: tenancy law is federal.
+               Pending: no pending MRG or GebG bill affecting business leases found on 2026-10-04.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in de.html, never spelled out (de "3 Monate" is "3 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of de.html; the German text is authoritative. It states Austrian law (MRG, ABGB) in
+  English and is not the law of any other country. Draft text, not vetted by legal counsel. Only prose differs from
+  de.html: fragments, th: expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references
+  use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;,</p>
+  <p>Company register number and register court (Firmenbuchnummer, Firmenbuchgericht): ______________________________</p>
+  <p>VAT identification number (UID): ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant(s) signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;,</p>
+  <p>Company register number and register court (Firmenbuchnummer, Firmenbuchgericht): ______________________________</p>
+  <p>VAT identification number (UID): ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p>the following lease of business premises (Mietvertrag über eine Geschäftsräumlichkeit) is concluded. If several
+    persons are tenants, they are liable for all obligations under this agreement jointly and severally (zur
+    ungeteilten Hand).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the business premises at
+    <strong th:text="${propertyAddress}">address</strong> with a usable floor area (Nutzfläche) of approximately
+    ________ m², together with the areas, parking spaces and fixtures let with them as described in this agreement,
+    hereinafter &ldquo;the leased premises&rdquo; (Mietgegenstand).</p>
+  <p>The provisions of the Austrian General Civil Code (Allgemeines bürgerliches Gesetzbuch, ABGB) on leases
+    (§§ 1090 ff. ABGB) and, insofar as it applies, the Tenancy Act (Mietrechtsgesetz, MRG) apply to this agreement.
+    The parties record (tick as applicable):</p>
+  <p>[ ] full application of the MRG (Vollanwendung) &nbsp; [ ] partial application of the MRG under § 1 para. 4
+    MRG (Teilanwendung: §§ 14, 16b, 29 to 36, 45, 46 and 49 MRG apply) &nbsp; [ ] leased premises in a business park
+    (Wirtschaftspark) under § 1 para. 5 MRG (§§ 14 and 29 to 36 MRG apply) &nbsp; [ ] full exemption from the MRG
+    under § 1 para. 2 MRG (Vollausnahme).</p>
+  <p>Terms of this agreement on partial application apply to leased premises in a business park only insofar as they
+    concern §§ 29 to 36 MRG. Insofar as mandatory provisions of the MRG apply, they prevail over deviating terms of
+    this agreement.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The leased premises are let exclusively for operating ______________________________ (business purpose,
+    Geschäftszweck). Any change of the business purpose requires the landlord&rsquo;s prior written consent.</p>
+  <p>The tenant obtains, at the tenant&rsquo;s own expense, the official permits concerning the tenant&rsquo;s
+    business. If a permit is refused or restricted because of the condition or location of the leased premises, the
+    tenant&rsquo;s statutory rights remain unaffected.</p>
+  <p>Under full and partial application of the MRG, it is an important ground for termination if the let premises are
+    not regularly used for the business activity stipulated in the agreement or an equivalent one, unless the tenant
+    is only temporarily absent because of holidays, illness or a stay at a health resort (§ 30 para. 2 no. 7 MRG).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The tenancy is concluded for an indefinite period.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>The tenancy is concluded for a fixed term<span th:if="${endDate != null}"> and ends at the end of
+      <strong th:text="${endDate}">end date</strong></span>. The parties agree in writing that the lease expires on
+      the end of the stipulated period without any notice of termination being required. During the agreed lease
+      term, ordinary notice is excluded for both parties.</p>
+    <p>Under full and partial application of the MRG, the expiry is enforceable only if it was agreed in writing in
+      the lease that it expires on the end of the stipulated period (§ 29 para. 1 no. 3 lit. a MRG); the statutory
+      minimum term applies only to dwellings. For a fixed-term agreement that is neither extended by contract nor
+      terminated after the agreed term has expired, § 29 para. 3 lit. b MRG applies.</p>
+    <p>Under full exemption from the MRG, the agreement expires when the agreed period ends (§ 1113 ABGB). If the
+      tenant continues to use the premises after expiry and the landlord lets this stand, the agreement is tacitly
+      renewed (§ 1114 ABGB, § 1115 ABGB).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The main rent (Hauptmietzins) is <strong th:text="${rentAmount}">amount</strong>
+    <span th:text="${paymentFrequency}">monthly</span>.<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> The statutory VAT is added (see section <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> In addition, the tenant bears the
+    share of the operating costs and current public charges (see section <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Under full application of the MRG, an agreement on the amount of the main rent for premises not used for
+    residential purposes is permitted up to the amount that is reasonable for the leased premises at the time the
+    agreement is concluded, having regard to size, type, nature, location, fixtures and state of repair; a trader
+    (Unternehmer) renting business premises may rely on the permitted maximum being exceeded only if the trader
+    objected to the excess without undue delay, but no later than on handover of the leased premises
+    (§ 16 para. 1 no. 1 MRG). The invalidity of an excessive rent agreement must be asserted within 3 years before
+    the court or the municipality (Gemeinde); for fixed-term main tenancies this period ends no earlier than
+    6 months after the tenancy ends or is converted into a tenancy for an indefinite period, and the limitation
+    period is then 10 years (§ 16 para. 8 MRG).</p>
+  <p>Under partial application and under full exemption from the MRG, the amount of the main rent is freely agreed.
+    Under full application, the agreements listed in § 27 para. 1 MRG, in particular on payments without equivalent
+    consideration (Ablösen), are void and prohibited.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The indexation of the main rent is governed by what this agreement provides (see section <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The main rent is index-linked. The benchmark is the Consumer Price Index 2020 (Verbraucherpreisindex,
+    VPI 2020) published by Statistics Austria (Bundesanstalt Statistik Österreich), or the index replacing it; the
+    base is the index figure published for the month in which the agreement is concluded. Fluctuations of the index
+    figure up to and including ________ percent are disregarded. If this threshold is exceeded, the main rent changes
+    by the full extent of the change, upwards or downwards, and the new index figure becomes the base for the further
+    calculation.</p>
+  <p>The party requesting the adjustment notifies the other party in writing, stating the index figures and the new
+    main rent; the changed main rent is payable from the rent due date (Zinstermin) following the notification. Under
+    full application of the MRG, the part of the index-linked main rent exceeding the amount permitted under
+    § 16 para. 1 to 7 MRG is invalid, and the landlord announces the request for the increase (Erhöhungsbegehren) in a
+    letter sent after the index change takes effect, but no later than 14 days before the rent due date
+    (§ 16 para. 9 MRG).</p>
+  <p>The limits of the Rents Value Protection Act (Mieten-Wertsicherungsgesetz) apply only to leases of dwellings
+    (§ 1 para. 1 MieWeG) and therefore not to this agreement.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The tenant bears the share of the operating costs (Betriebskosten) and the current public charges of the
+    property attributable to the leased premises and pays monthly instalments towards them together with the main
+    rent, in the amount stated in this agreement.</p>
+  <p>Under full application of the MRG, only the costs listed in §§ 21 to 24 MRG may be charged. The landlord may
+    charge on each rent due date a constant instalment calculated from the total amount of the preceding calendar
+    year, which may be exceeded by at most 10 percent in the event of an interim increase; the landlord settles the
+    account no later than 30 June of the following calendar year and grants inspection of the supporting documents.
+    A surplus must be refunded on the next rent due date but one, and a shortfall must be paid on the next rent due
+    date but one (§ 21 para. 3 MRG).</p>
+  <p>Under partial application and under full exemption from the MRG, the tenant bears the following costs:
+    ______________________________. The tenant does not bear any costs other than those listed here (§ 1099 ABGB).
+    The landlord settles the instalments annually and grants inspection of the supporting documents.</p>
+  <p>If the building with at least 4 units is supplied with heat, hot water or cooling by a common supply system
+    and is equipped, or must be equipped, with devices for recording consumption shares (§ 3 para. 1 HeizKG), the
+    energy costs for heating and hot water are allocated at least 55 and at most 85 percent according to
+    consumption shares and the rest according to the usable floor area that can be supplied, under the Heating and
+    Cooling Costs Settlement Act (Heiz- und Kältekostenabrechnungsgesetz) (§ 10 para. 1 HeizKG).</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The letting of land and buildings is in principle exempt from VAT (§ 6 para. 1 no. 16 UStG 1994, VAT Act,
+    Umsatzsteuergesetz). The landlord treats the letting as taxable (§ 6 para. 2 UStG 1994); the tenant therefore
+    pays the statutory VAT in addition on the main rent and on the instalments on the operating costs.</p>
+  <p>The waiver of the exemption is permitted only insofar as the tenant uses the leased premises almost exclusively
+    for transactions that do not exclude the deduction of input tax; the landlord must prove this condition
+    (§ 6 para. 2 UStG 1994). The tenant undertakes to use the leased premises only for such transactions, to provide
+    the landlord on request with the evidence required for this and to notify the landlord in writing without undue
+    delay of any change in the use.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">To secure the landlord&rsquo;s future claims under this lease, the tenant
+    hands over to the landlord a deposit (Kaution) in the amount of
+    <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">To secure the landlord&rsquo;s future claims under this lease, the tenant
+    hands over to the landlord a deposit (Kaution) in the amount agreed in writing between the parties.</p>
+  <p>There is no statutory maximum for the amount of the deposit. The deposit is due on handover of the leased
+    premises and may be provided as a sum of money or by an irrevocable, abstract bank guarantee of a credit
+    institution licensed in the European Economic Area. Under full and partial application of the MRG, the landlord
+    invests a deposit handed over as a sum of money at interest in a savings book (Sparbuch) or in another form that
+    offers equally good interest and the same level of security as a savings deposit and allows a clear separation
+    from the landlord&rsquo;s assets and, in the landlord&rsquo;s insolvency, separate satisfaction; the landlord
+    informs the tenant of this in writing on request (§ 16b para. 1 MRG).</p>
+  <p>After the lease ends, the landlord returns the deposit without undue delay, together with the interest earned on
+    its investment, or the guarantee document, insofar as it is not used to settle justified claims of the landlord
+    arising from the tenancy (§ 16b para. 2 MRG).<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Damage is established when the leased
+    premises are returned (see section <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see section
+    <span th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> together with the
+    instalments on the operating costs</span> <span th:text="${paymentFrequency}">monthly</span> in advance,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">5</strong> of the
+      payment period concerned</span><span th:if="${paymentDueDay == null}">no later than day 5 of the payment
+      period concerned</span>, by transfer to a bank account notified by the landlord.</p>
+  <p>Under full application of the MRG, the rent is payable in advance on the 5th of each calendar month unless a
+    later payment date has been agreed (§ 15 para. 3 MRG). For the lease of premises, the rent is payable monthly
+    on the 5th of the month unless otherwise agreed or customary in the locality (§ 1100 ABGB).</p>
+  <p>If both parties are traders (Unternehmer), the tenant owes, in the event of late payment, default interest of
+    9.2 percentage points above the base rate (Basiszinssatz), insofar as the tenant is responsible for the delay
+    (§ 455 UGB, § 456 UGB); otherwise the tenant owes default interest of 4 percent per year
+    (§ 1000 para. 1 ABGB, § 1333 para. 1 ABGB). The tenant compensates the necessary costs of appropriate
+    out-of-court collection or recovery measures, insofar as the tenant is at fault for them and they are reasonably
+    proportionate to the claim pursued (§ 1333 para. 2 ABGB).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord hands over the leased premises at the landlord&rsquo;s own expense in a usable condition
+    (§ 1096 para. 1 ABGB). Under full application of the MRG, the landlord&rsquo;s maintenance duty is governed by
+    § 3 MRG and the tenant&rsquo;s duty to service and keep in repair by § 8 para. 1 MRG. Otherwise the landlord
+    maintains the roof, the facade, the load-bearing structure, the common parts of the building and the central
+    building services; the tenant keeps the interior of the leased premises and the installations used exclusively
+    by the tenant in proper condition at the tenant&rsquo;s own expense.</p>
+  <p>If the leased premises are so defective on handover, or become so defective during the lease term without the
+    tenant&rsquo;s fault, that they are unfit for the stipulated use, the tenant is released from paying the rent for
+    the duration and to the extent of the unfitness; this release cannot be waived in advance
+    (§ 1096 para. 1 ABGB).</p>
+  <p>If repairs become necessary that are the landlord&rsquo;s responsibility, the tenant notifies the landlord
+    without delay (§ 1097 ABGB). The tenant must allow necessary repairs (§ 1118 ABGB); the landlord announces them
+    in good time and takes reasonable account of the tenant&rsquo;s business operations. The tenant is liable for
+    damage and for wear caused by misuse through the tenant&rsquo;s own fault and through the fault of a subtenant,
+    but not for chance events (§ 1111 ABGB).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant makes structural alterations, installations and conversions, and attaches advertising signs to the
+    facade, only with the landlord&rsquo;s prior written consent. The tenant bears the costs and obtains the
+    necessary official permits.</p>
+  <p>Under full application of the MRG, the tenant notifies the landlord of an intended material alteration; if the
+    landlord does not refuse it within 2 months after receiving the notification, consent is deemed given, and under
+    the conditions of § 9 para. 1 MRG the landlord cannot refuse it. For a material alteration not listed in
+    § 9 para. 2 MRG, the landlord may make consent conditional on the tenant&rsquo;s obligation to restore the
+    previous condition on return of the premises (§ 9 para. 3 MRG).</p>
+  <p>When the tenancy ends, the tenant removes the tenant&rsquo;s installations and restores the previous condition,
+    unless the parties agree otherwise in writing.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Subletting all or part of the leased premises, or otherwise letting third parties use them, requires the
+    landlord&rsquo;s prior written consent. Under full application of the MRG, the landlord may rely on this
+    prohibition only if there is an important reason against the subletting, for example if the leased premises are
+    to be sublet in their entirety (§ 11 para. 1 MRG); otherwise the contractual prohibition applies
+    (§ 1098 ABGB).</p>
+  <p>Under full application of the MRG, the following also applies: if the tenant sells the business operated in the
+    leased premises for continuation in those premises, the purchaser takes the tenant&rsquo;s place in the main
+    tenancy; the seller and the purchaser notify the landlord of the sale of the business without undue delay
+    (§ 12a para. 1 MRG). If the previous main rent is lower than the reasonable main rent under § 16 para. 1 MRG,
+    the landlord may, no later than 6 months after notification of the sale of the business, demand an increase up
+    to that amount, taking into account, however, the type of business activity carried on in the leased premises
+    (§ 12a para. 2 MRG). For decisive changes in the legal and economic control of a tenant company,
+    § 12a para. 3 MRG applies.</p>
+  <p>Under full application of the MRG, the tenant may lease out (verpachten) the business operated in the leased
+    premises notwithstanding any agreement to the contrary; the tenant and the lessee notify the landlord of the lease
+    of the business, stating its intended duration, without undue delay. The increase of the main rent during such a
+    lease of the business is governed by § 12a para. 5 and 6 MRG.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The landlord insures the building to an appropriate extent. The tenant insures the tenant&rsquo;s fittings,
+    goods and installations at the tenant&rsquo;s own expense and maintains business liability insurance
+    (Betriebshaftpflichtversicherung) of an appropriate amount for the duration of the tenancy; the tenant provides
+    proof of the insurance cover on request.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The landlord presented to the tenant, in good time before the tenant made the contractual declaration, an
+    energy performance certificate (Energieausweis) no more than 10 years old at that time and hands it over to the
+    tenant within 14 days after the agreement is concluded, on paper if the tenant so requests
+    (§ 4 para. 1 EAVG 2012, Energy Performance Certificate Presentation Act, Energieausweis-Vorlage-Gesetz). The
+    energy indicators stated in it are deemed a stipulated characteristic, taking into account the margins that are
+    unavoidable in determining them (§ 6 EAVG 2012).</p>
+  <p>If no energy performance certificate was presented, at least an overall energy efficiency corresponding to the
+    age and type of the building is deemed agreed (§ 7 para. 1 EAVG 2012). If the certificate is not handed over
+    after the agreement is concluded despite a request, the tenant may enforce the handover in court or obtain a
+    certificate and claim the reasonable costs from the landlord within 3 years after the agreement is concluded
+    (§ 7 para. 2 EAVG 2012).</p>
+</div>
+
+<div th:fragment="clause-contract-fee" data-clause="contract-fee">
+  <p>This lease is subject to the fee on leases (Gebühr für Bestandverträge) of 1 percent of the value
+    (§ 33 TP 5 para. 1 no. 1 GebG, Fees Act, Gebührengesetz). The value includes the one-off and recurring payments
+    agreed for the grant of use (§ 33 TP 5 para. 2 GebG). For an indefinite term, the recurring payments are valued at
+    3 times the annual value and, for a fixed term, at the annual value multiplied by that term, but at most at
+    18 times the annual value; a reservation of the right to give earlier notice is disregarded for this purpose
+    (§ 33 TP 5 para. 3 GebG).</p>
+  <p>If the landlord has a domicile, habitual residence, place of management or registered office in Austria or
+    maintains a permanent establishment in Austria, the landlord calculates the fee and pays it to the Austrian tax
+    office (Finanzamt Österreich) by the 15th day of the second month following the month in which the fee liability
+    arose (§ 33 TP 5 para. 5 no. 1 GebG). As between the parties, the tenant bears the fee and reimburses it to the
+    landlord within 14 days after being requested to do so.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>When the leased premises are handed over, the parties jointly draw up a handover report (Übergabeprotokoll) on
+    the condition of the leased premises, the meter readings and the keys handed over. Both parties sign the report
+    and each receives a copy.</p>
+  <p>After the tenancy ends, the tenant returns the leased premises vacated and with all keys in the condition in
+    which the tenant received them (§ 1109 ABGB); the parties then draw up a return report. The landlord&rsquo;s
+    claims for damage or wear caused by misuse must be asserted in court no later than within 1 year after the return
+    (§ 1111 ABGB); the tenant&rsquo;s claims for expenditure on the leased premises no later than within 6 months
+    after the return (§ 1097 ABGB).<span class="clause-ref" data-ref="alterations" th:if="${refs['alterations']}"> The
+    tenant&rsquo;s installations are governed by what this agreement provides (see section <span th:text="${refs['alterations']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The return of the deposit follows (see
+    section <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Under full and partial application of the MRG, the tenant may terminate the lease by notice given through the
+    court or in writing, the landlord, however, only through the court (§ 33 para. 1 MRG). The landlord may give
+    notice only for important reasons, in particular those listed in § 30 para. 2 MRG, and states the grounds for
+    termination briefly in the notice (§ 30 para. 1 MRG, § 33 para. 1 MRG). An agreement under which the landlord is
+    to have the right to give notice without restriction or to a greater extent than the law provides is void
+    (§ 30 para. 3 MRG). Under full exemption from the MRG these restrictions do not apply.</p>
+  <p th:if="${!fixedTerm}">Unless the parties agree otherwise, notice of termination (Aufkündigung) of the lease must
+    be given for 31 March, 30 June, 30 September or 31 December in such a way that the notice is served on the other
+    party no later than 3 months before the termination date (§ 560 para. 1 no. 2 lit. e ZPO).</p>
+  <p th:if="${fixedTerm}">During the agreed lease term<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (see section <span th:text="${refs['term']}"></span>)</span>, ordinary notice is
+    excluded. If the agreement is deemed concluded for an indefinite period, notice of termination must, unless the
+    parties agree otherwise, be given for 31 March, 30 June, 30 September or 31 December in such a way that the notice
+    is served on the other party no later than 3 months before the termination date
+    (§ 560 para. 1 no. 2 lit. e ZPO).</p>
+  <p>The tenant may withdraw from the agreement without notice if the leased premises are handed over in a condition,
+    or come without the tenant&rsquo;s fault into a condition, that makes them unfit for the stipulated use, or if a
+    considerable part is withdrawn or becomes unusable by chance for a longer period (§ 1117 ABGB). The landlord may
+    demand early cancellation of the agreement in particular if the tenant makes considerably detrimental use of the
+    leased premises or, after a payment reminder, is in default with paying the rent to such an extent that the
+    tenant has not paid the arrears in full when the due date expires (§ 1118 ABGB).<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return is governed by what this
+    agreement provides (see section <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes personal data of the other party, its representatives and contact persons only insofar as
+    this is necessary for concluding and performing this agreement and for complying with legal obligations, in
+    accordance with the General Data Protection Regulation (GDPR, Regulation (EU) 2016/679), and keeps them no longer
+    than necessary for those purposes.</p>
+  <p>The data subjects may exercise their rights under the GDPR, in particular the rights of access, rectification and
+    erasure, and may lodge a complaint with the Austrian Data Protection Authority (Datenschutzbehörde).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Austrian law.</p>
+  <p>Disputes arising from this tenancy fall within the jurisdiction of the district court (Bezirksgericht) in whose
+    district the leased premises are located (§ 49 para. 2 no. 5 JN, § 83 para. 1 JN). In the matters listed in
+    § 37 para. 1 MRG, such as the reasonableness of the main rent or the operating costs, the district court decides
+    in non-contentious proceedings (Verfahren außer Streitsachen); in municipalities with a conciliation office
+    (Schlichtungsstelle), the matter must first be brought before the municipality (§ 39 para. 1 MRG).</p>
+  <p>If a provision of this agreement is invalid, the validity of the remaining provisions is unaffected.</p>
+</div>
+
+</body>
+</html>

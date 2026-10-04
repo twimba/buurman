@@ -574,6 +574,78 @@ public final class LeaseDocumentRegistry {
   // ===== AT entries (country pack) =====
   // Constants, citation pattern and foreign markers for AT go here, only inside these markers.
 
+  /**
+   * The Austrian statute citation format: {@code § 29 Abs. 1 Z 3 MRG}, {@code § 16b Abs. 2 MRG},
+   * {@code § 1096 Abs. 1 ABGB}, {@code § 33 TP 5 Abs. 4 Z 1 GebG}. The token is the section number
+   * with an optional letter suffix; the gate pairs it with the next bare number in the same
+   * sentence, the "Abs." digit (English "para."), or for the fee act the "TP" (tariff item) digit,
+   * so every translation keeps the German order "§ n Abs. m Z k" ("§ n para. m no. k").
+   */
+  public static final Pattern AUSTRIAN_CITATION = Pattern.compile("§\\s*\\d+[a-z]?");
+
+  /** Austrian German marker words that must not leak into translations outside glosses. */
+  private static final List<String> AUSTRIAN_MARKERS =
+      List.of("der Vermieter", "der Mieter", "Mietverhältnis", "siehe Punkt", "unwirksam", "gemäß");
+
+  /** Mirror of V099__seed_at_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry AT_RESIDENTIAL =
+      new Entry(
+          "AT",
+          LeaseKind.RESIDENTIAL,
+          "de",
+          List.of("de", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", false, false, 12),
+              new ClauseSpec("registration", false, false, 13),
+              new ClauseSpec("handover-inspection", false, false, 14),
+              new ClauseSpec("termination", true, false, 15),
+              new ClauseSpec("data-protection", false, false, 16),
+              new ClauseSpec("disputes", false, false, 17)),
+          AUSTRIAN_MARKERS,
+          Optional.of(AUSTRIAN_CITATION));
+
+  /** Mirror of V099__seed_at_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry AT_COMMERCIAL =
+      new Entry(
+          "AT",
+          LeaseKind.COMMERCIAL,
+          "de",
+          List.of("de", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("subletting", false, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("energy-certificate", false, false, 15),
+              new ClauseSpec("contract-fee", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("termination", true, false, 18),
+              new ClauseSpec("data-protection", false, false, 19),
+              new ClauseSpec("disputes", false, false, 20)),
+          AUSTRIAN_MARKERS,
+          Optional.of(AUSTRIAN_CITATION));
+
   // ===== end AT =====
 
   // ===== BE entries (country pack) =====
@@ -673,6 +745,8 @@ public final class LeaseDocumentRegistry {
     entries.add(PT_COMMERCIAL);
 
     // ===== AT ENTRIES (country pack) =====
+    entries.add(AT_RESIDENTIAL);
+    entries.add(AT_COMMERCIAL);
 
     // ===== end AT ENTRIES =====
 
