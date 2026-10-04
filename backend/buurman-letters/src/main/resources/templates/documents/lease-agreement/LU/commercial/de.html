@@ -63,7 +63,9 @@
   <p>Jeder Mietvertrag über ein Gebäude, das zur Ausübung einer gewerblichen, industriellen oder handwerklichen
     Tätigkeit bestimmt ist, ist ein Geschäftsraummietvertrag (Artikel 1762-3 des Zivilgesetzbuches). Die besonderen
     Vorschriften für Geschäftsraummietverträge gelten nicht für Mietverträge mit einer Dauer von 1 Jahr oder weniger
-    (Artikel 1762-4 des Zivilgesetzbuches). Das geänderte Gesetz vom 21. September 2006 über die Wohnraummiete gilt
+    (Artikel 1762-4 des Zivilgesetzbuches). Sind die Mieträume für eine andere Tätigkeit bestimmt, insbesondere
+    für Verwaltungsbüros oder die Ausübung eines freien Berufs, so gelten die Angaben dieses Musters zu diesen
+    besonderen Vorschriften nicht. Das geänderte Gesetz vom 21. September 2006 über die Wohnraummiete gilt
     nicht für Räume, die gewerblichen, administrativen, industriellen oder handwerklichen Zwecken oder der Ausübung
     eines freien Berufs dienen, vorbehaltlich seiner Vorschriften über die Beilegung von Streitigkeiten (Artikel 1
     Absatz 3 dieses Gesetzes).</p>
@@ -88,7 +90,7 @@
     und endet am <strong th:text="${endDate}">Ende</strong></span>.</p>
   <p th:if="${!fixedTerm}">Dieser Vertrag wird auf unbestimmte Zeit geschlossen.</p>
   <p>Unbeschadet von Artikel 1739 des Zivilgesetzbuches verlängert sich jeder Mietvertrag, der aus welchem Grund auch
-    immer endet, stillschweigend auf unbestimmte Zeit; der Mieter ist verpflichtet, die vereinbarte Mietsicherheit
+    immer endet, stillschweigend auf unbestimmte Zeit; der Mieter ist verpflichtet, die vereinbarte Mietkaution
     entsprechend dieser Verlängerung zu erneuern oder anzupassen, sodass der Vermieter bis zum Ende des Mietverhältnisses
     über die Sicherheit verfügt (Artikel 1762-7 Absatz 2 des Zivilgesetzbuches).<span class="clause-ref"
     data-ref="renewal" th:if="${refs['renewal']}"> Das Recht auf Erneuerung ist in diesem Vertrag geregelt (siehe
@@ -144,15 +146,15 @@
 </div>
 
 <div th:fragment="clause-deposit" data-clause="deposit">
-  <p th:if="${depositAmount != null}">Der Mieter stellt dem Vermieter eine Mietsicherheit (garantie locative) in Höhe von
+  <p th:if="${depositAmount != null}">Der Mieter stellt dem Vermieter eine Mietkaution (garantie locative) in Höhe von
     <strong th:text="${depositAmount}">Betrag</strong> zur Sicherung der Zahlung der Miete oder aller übrigen
     Verpflichtungen aus dem Mietvertrag.</p>
-  <p th:if="${depositAmount == null}">Der Mieter stellt dem Vermieter eine Mietsicherheit (garantie locative) in
+  <p th:if="${depositAmount == null}">Der Mieter stellt dem Vermieter eine Mietkaution (garantie locative) in
     folgender Höhe zur Sicherung der Zahlung der Miete oder aller übrigen Verpflichtungen aus dem Mietvertrag: ________ Euro.</p>
-  <p>Die Mietsicherheit darf 6 Monatsmieten nicht übersteigen; der Vermieter darf eine Mietsicherheit in Form einer
+  <p>Die Mietkaution darf 6 Monatsmieten nicht übersteigen; der Vermieter darf eine Mietkaution in Form einer
     Bankgarantie auf erstes Anfordern oder des Abschlusses einer Versicherung oder einer anderen Sicherheit, die
     mindestens 6 Monatsmieten abdeckt, nicht ablehnen (Artikel 1762-5 Absatz 3 des Zivilgesetzbuches). Die
-    Parteien vereinbaren, dass der Betrag der Mietsicherheit 6 Monatsmieten nicht übersteigt.</p>
+    Parteien vereinbaren, dass der Betrag der Mietkaution 6 Monatsmieten nicht übersteigt.</p>
   <p>Vereinbarte Form der Sicherheit: ______________________________. Bei einer Verlängerung des Mietvertrags erneuert
     oder passt der Mieter die Sicherheit so an, dass der Vermieter bis zum Ende des Mietverhältnisses darüber verfügt
     (Artikel 1762-7 Absatz 2 des Zivilgesetzbuches).</p>
@@ -248,7 +250,7 @@
     es mehrere Vermieter, so ist das Verlangen an jeden von ihnen zu richten, vorbehaltlich einer abweichenden Klausel
     dieses Vertrags.</p>
   <p>Anschrift des Vermieters für das Erneuerungsverlangen: ______________________________</p>
-  <p>Der Vermieter kann nach einer Nutzungsdauer der Mieträume von mindestens 9 Jahren den Mietvertrag jederzeit kündigen
+  <p>Der Vermieter kann nach einer Nutzungsdauer der Mieträume von mindestens 9 Jahren den Mietvertrag in jedem Fall kündigen
     oder seine Erneuerung ablehnen, ohne dies begründen zu müssen, wenn der Vermieter oder ein Dritter dem Mieter vor dem
     Ende des Mietvertrags eine Räumungsentschädigung (indemnité d'éviction) zahlt; fehlt eine Klausel, die die Bestimmung
     ihrer Höhe ermöglicht, so können die Parteien den Friedensrichter anrufen, der die Entschädigung auf der Grundlage des
@@ -285,8 +287,8 @@
     data-ref="renewal" th:if="${refs['renewal']}"> Die Kündigung gegen Zahlung einer Räumungsentschädigung ist in diesem
     Vertrag geregelt (siehe Artikel <span th:text="${refs['renewal']}"></span>).</span></p>
   <p>Der Vermieter kann beim Friedensrichter nach Ablauf der Kündigungsfrist eine Entscheidung beantragen, die die
-    Zwangsräumung des Mieters erlaubt. Der Friedensrichter kann auf Antrag des zur Räumung verurteilten Mieters oder
-    Untermieters einen einmaligen Aufschub von höchstens 9 Monaten gewähren, unter den kumulativen Voraussetzungen, dass
+    Zwangsräumung des Mieters erlaubt. Der Friedensrichter kann auf Antrag des zur Räumung verurteilten Mieters oder gewerbetreibenden oder landwirtschaftlichen
+    Untermieters (sous-locataire commerçant ou fermier) einen einmaligen Aufschub von höchstens 9 Monaten gewähren, unter den kumulativen Voraussetzungen, dass
     alle fälligen Mieten und Nebenkostenvorauszahlungen am Tag der Antragstellung bezahlt sind und dass der Aufschub
     gewährt wird, damit der Antragsteller ein anderes Gebäude finden kann, um seine Tätigkeit fortzusetzen und seine
     Verpflichtungen aus den Arbeitsverträgen mit den Beschäftigten zu erfüllen (Artikel 1762-9 des Zivilgesetzbuches).</p>
