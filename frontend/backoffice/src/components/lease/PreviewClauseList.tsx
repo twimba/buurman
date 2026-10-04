@@ -73,7 +73,9 @@ export const PreviewClauseList = ({
             />
             <span className="min-w-0 flex-1 text-sm text-text-primary">
               <span className="text-text-muted">
-                {clause.included ? `Art. ${numbers.get(clause.clauseKey) ?? clause.articleNumber} ` : ''}
+                {clause.included
+                  ? `Art. ${numbers.get(clause.clauseKey) ?? clause.articleNumber} `
+                  : ''}
               </span>
               <span
                 className={

@@ -75,7 +75,11 @@ const renderPage = () =>
         <Route path="/properties/:pid/edit" element={<div>edit page</div>} />
       </Routes>
     </>,
-    { initialEntries: ['/contracts/CON00000000000000000000001?tab=leaseAgreement'] }
+    {
+      initialEntries: [
+        '/contracts/CON00000000000000000000001?tab=leaseAgreement',
+      ],
+    }
   );
 
 describe('ContractDetailPage lease agreement tab wiring', () => {
@@ -113,7 +117,9 @@ describe('ContractDetailPage lease agreement tab wiring', () => {
       await screen.findByRole('button', { name: 'stub go to documents' })
     );
 
-    expect(await screen.findByText('documents tab content')).toBeInTheDocument();
+    expect(
+      await screen.findByText('documents tab content')
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'stub go to documents' })
     ).toBeNull();

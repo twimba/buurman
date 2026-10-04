@@ -153,9 +153,7 @@ export const SignatureLinksSheet = ({
   );
   // The message is written in the tenants' language and sent to them, so it never carries the
   // landlord's own link (which would sign as the landlord); that link keeps its per-row actions.
-  const tenantLinks = signers.filter(
-    (s) => s.role === 'TENANT' && linkOf(s)
-  );
+  const tenantLinks = signers.filter((s) => s.role === 'TENANT' && linkOf(s));
 
   const handleCopyOne = async (signer: Signer) => {
     const url = linkOf(signer);

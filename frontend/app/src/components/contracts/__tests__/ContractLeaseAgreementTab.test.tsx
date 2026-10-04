@@ -671,13 +671,19 @@ describe('ContractLeaseAgreementTab', () => {
   describe('409 problem codes', () => {
     const CONTRACT = 'CON00000000000000000000001';
     const conflict = (code: string | undefined) =>
-      new AxiosError('Request failed', 'ERR_BAD_REQUEST', undefined, undefined, {
-        status: 409,
-        data: {
-          detail: 'Server English detail',
-          ...(code ? { code } : {}),
-        },
-      } as AxiosResponse);
+      new AxiosError(
+        'Request failed',
+        'ERR_BAD_REQUEST',
+        undefined,
+        undefined,
+        {
+          status: 409,
+          data: {
+            detail: 'Server English detail',
+            ...(code ? { code } : {}),
+          },
+        } as AxiosResponse
+      );
     const renderTab = () =>
       renderWithProviders(
         <ToastProvider>
@@ -753,7 +759,9 @@ describe('ContractLeaseAgreementTab', () => {
         screen.getByRole('button', { name: /save selection/i })
       );
 
-      expect(await screen.findByText('Server English detail')).toBeInTheDocument();
+      expect(
+        await screen.findByText('Server English detail')
+      ).toBeInTheDocument();
     });
 
     it('falls back to the server detail when there is no code', async () => {
@@ -770,7 +778,9 @@ describe('ContractLeaseAgreementTab', () => {
         screen.getByRole('button', { name: /generate lease/i })
       );
 
-      expect(await screen.findByText('Server English detail')).toBeInTheDocument();
+      expect(
+        await screen.findByText('Server English detail')
+      ).toBeInTheDocument();
     });
   });
 });
