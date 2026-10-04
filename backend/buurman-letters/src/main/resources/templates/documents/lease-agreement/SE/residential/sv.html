@@ -1,0 +1,334 @@
+<!--
+  legal-basis: Jordabalk (1970:994), 12 kap. Hyra (hyreslagen), consolidated text "Andrad t.o.m. SFS 2026:1498" read
+               in full on www.riksdagen.se and checked against the amendment register (SFSR) on rkrattsbaser.gov.se:
+               12 kap. 1, 1 b, 1 c, 1 d, 2, 3, 4, 5, 6, 7, 8, 9, 15, 16, 19, 20, 23, 24, 24 a, 25, 25 b, 26, 27, 28 a,
+               32, 34, 35, 39, 40, 41, 42, 43, 44, 45, 45 a, 46, 49, 53, 54, 55, 55 e, 61, 63, 65, 66, 69, 70, 71.
+               Recent amendments reflected: Lag (2024:313) (in force 2024-07-01: 25-25 c, 42, 43, 63), Lag
+               (2025:1262) (in force 2026-01-01: 55 c), Lag (2026:476) (in force 2026-05-29: 27 a), Lag (2026:773)
+               (prop. 2025/26:187, in force 2026-07-01: 1-1 f, 45, 45 a, 55, 55 a, 55 b, 55 f, 65 a, 69, 70), Lag
+               (2026:844) (in force 2026-07-02: 26).
+               Privatuthyrningslag (2026:772) (in force 2026-07-01, repealing lag (2012:978) om uthyrning av egen
+               bostad, which still governs leases concluded under it), 1 kap. 1 and 3 §§ - scope only: lettings by a
+               natural person or an estate covered by that act are NOT governed by this document (12 kap. 1 c § JB).
+               Hyresforhandlingslagen (1978:304), 19 a, 19 b, 22, 25 §§ (scope statements only). Lag (1973:188) om
+               arrendenamnder och hyresnamnder, 4 § (local competence of the hyresnamnd). Lag (2006:985) om
+               energideklaration for byggnader, consolidated to SFS 2026:747: 5, 6 b, 7, 13 §§. Rantelagen
+               (1975:635) (cited generally). GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679);
+               Lag (2018:218) med kompletterande bestammelser till EU:s dataskyddsforordning.
+               Pending: Lag (2026:1327) (new 12 kap. 1 c §, newly arrived immigrants act) and Lag (2026:1498) (new
+               12 kap. 22 a §, county administrative boards) enter into force 2027-01-01; neither changes the
+               clauses of this document. Lag (2026:747) changes 4 a § of the energy declaration act on 2027-01-01
+               (not cited).
+               No region branches: the rules above apply in the whole country.
+               Verified 2026-10-04 against www.riksdagen.se and rkrattsbaser.gov.se (texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in sv.html, never spelled out (sv "3 månader" is "3 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Swedish law (jordabalken 12 kap., hyreslagen) for the first-hand
+  lease of a whole dwelling (bostadslagenhet) by a landlord whose letting is not covered by the privatuthyrningslag
+  (2026:772), without a negotiation clause (forhandlingsklausul). Citations are written "(12 kap. 46 § 1 st. JB)":
+  the section number before "§", then the paragraph (stycke) as a digit; never "andra stycket", never section ranges
+  ("45-46 §§") and never two sections under one "§§". Each clause-<key> fragment holds only the clause body; the
+  shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is
+  excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Detta hyresavtal för en bostadslägenhet har ingåtts mellan följande parter.</p>
+  <p>Hyresvärd: <strong th:text="${landlordName}">hyresvärd</strong>, nedan &rdquo;hyresvärden&rdquo;.
+    Person- eller organisationsnummer: ______________________________. Adress där hyresvärden kan anträffas:
+    ______________________________.</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">Hyresgäst: <strong th:text="${tenantNames}">hyresgäst</strong>,
+    nedan (gemensamt) &rdquo;hyresgästen&rdquo;.</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">Hyresgäst: den eller de hyresgäster som undertecknar avtalet, nedan
+    (gemensamt) &rdquo;hyresgästen&rdquo;.</p>
+  <p>Hyresgästens personnummer och nuvarande adress: ______________________________.</p>
+  <p>Om flera personer är hyresgäster avtalar parterna att de svarar solidariskt för alla förpliktelser enligt detta
+    avtal.</p>
+  <p>Hyresvärden är skyldig att lämna hyresgästen uppgift om sitt namn och en adress där hyresvärden kan anträffas;
+    om hyresvärden är en juridisk person ska motsvarande uppgifter lämnas även om dess ställföreträdare. Uppgifterna
+    ska anges i ett skriftligt meddelande som anslås på väl synlig plats i huset (12 kap. 18 i § JB).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Hyresvärden hyr ut till hyresgästen bostadslägenheten på adressen
+    <strong th:text="${propertyAddress}">adress</strong>, nedan &rdquo;lägenheten&rdquo;.</p>
+  <p>Fastighetsbeteckning, lägenhetsnummer, våning, antal rum och bostadsyta: ______________________________.
+    Utrymmen och anordningar som ingår i upplåtelsen (till exempel förråd, parkeringsplats eller tvättstuga):
+    ______________________________.</p>
+  <p>På avtalet tillämpas 12 kap. jordabalken (JB, hyreslagen). Med bostadslägenhet avses en lägenhet som upplåtits
+    för att helt eller till en inte oväsentlig del användas som bostad (12 kap. 1 b § 1 st. JB). Avtalsvillkor som
+    strider mot en bestämmelse i 12 kap. JB är utan verkan mot hyresgästen eller den som har rätt att träda i
+    hyresgästens ställe, om inte annat anges (12 kap. 1 d § JB). Hyresavtal ska upprättas skriftligen om hyresvärden
+    eller hyresgästen begär det (12 kap. 2 § 1 st. JB).</p>
+  <p>Detta avtal är avsett för en förstahandsuthyrning av en hel lägenhet som inte utgör en del av hyresvärdens egen
+    bostad. Det är inte avsett för hyresavtal som omfattas av privatuthyrningslagen (2026:772) i stället för 12 kap.
+    JB (12 kap. 1 c § JB). Den lagen gäller när en fysisk person eller ett dödsbo hyr ut en bostad, om inte
+    hyresvärden regelmässigt hyr ut fler än 2 lägenheter som inte utgör del av hyresvärdens bostad, innehar
+    lägenheten med hyresrätt eller upplåtelsen avser fritidsändamål (1 kap. 1 § och 3 § privatuthyrningslagen).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Hyresförhållandet börjar den <strong th:text="${startDate}">begynnelsedag</strong>.</p>
+  <p th:if="${!fixedTerm}">Hyresavtalet gäller tills vidare (på obestämd tid) och ska sägas upp för att upphöra att
+    gälla (12 kap. 3 § 1 st. JB).</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Hyresavtalet gäller för bestämd tid<span th:if="${endDate != null}"> till och med den
+      <strong th:text="${endDate}">slutdag</strong></span>. Ett avtal för bestämd tid upphör att gälla vid
+      hyrestidens utgång, om inte annat har avtalats. Har hyresförhållandet varat mer än 9 månader i följd ska
+      avtalet dock alltid sägas upp för att upphöra att gälla (12 kap. 3 § 2 st. JB).</p>
+    <p>Parternas avtal om verkan av utebliven uppsägning (till exempel förlängning med en viss tid i taget):
+      ______________________________. Saknar avtalet en sådan bestämmelse och sägs det inte upp till hyrestidens
+      utgång trots att uppsägning ska ske, anses det förlängt på obestämd tid (12 kap. 3 § 3 st. 1 p. JB).</p>
+    <p>Avtalet anses också förlängt på obestämd tid om hyresgästen, trots att avtalet har upphört att gälla utan
+      uppsägning, har fortsatt att använda lägenheten 1 månad efter hyrestidens utgång utan att hyresvärden har
+      anmodat hyresgästen att flytta (12 kap. 3 § 3 st. 2 p. JB).</p>
+  </th:block>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Uppsägning och hyresgästens
+    besittningsskydd regleras i detta avtal (se artikel <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Hyran är <strong th:text="${rentAmount}">belopp</strong> (<span th:text="${paymentFrequency}">per månad</span>).
+    Hyran för en bostadslägenhet ska vara till beloppet bestämd i hyresavtalet (12 kap. 19 § 1 st. JB).<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Ersättning för uppvärmning,
+    varmvatten, el samt vatten och avlopp regleras särskilt i detta avtal (se artikel <span
+    th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Om hyresvärden och hyresgästen tvistar om hyrans storlek ska hyran fastställas till skäligt belopp. Hyran ska
+    inte anses som skälig om den är påtagligt högre än hyran för lägenheter som med hänsyn till bruksvärdet är
+    likvärdiga (12 kap. 55 § 1 st. JB). Vid prövningen ska främst sådan hyra för lägenheter som har bestämts i
+    förhandlingsöverenskommelser enligt hyresförhandlingslagen (1978:304) beaktas (12 kap. 55 § 2 st. JB).</p>
+  <p>Detta avtal innehåller inte någon förhandlingsklausul enligt hyresförhandlingslagen och är inte avsett för en
+    hyra som har bestämts i en förhandlingsöverenskommelse enligt 19 a § eller 19 b § i den lagen (presumtionshyra).</p>
+  <p>Den som begär, träffar avtal om eller tar emot en särskild ersättning för att upplåta en bostadslägenhet eller
+    för att överlåta hyresrätten till en sådan lägenhet gör sig skyldig till brott, och ett avtalsvillkor om
+    särskild ersättning är ogiltigt (12 kap. 65 § JB).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Ändring av hyran regleras i
+    detta avtal (se artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Hyran kan ändras genom en överenskommelse mellan parterna. Vill hyresvärden eller hyresgästen att
+    hyresvillkoren ska ändras ska parten skriftligen meddela detta till motparten. Om överenskommelse inte kan
+    träffas har parten rätt att hos hyresnämnden ansöka om ändring av hyresvillkoren; ansökan får göras tidigast
+    1 månad efter det att meddelandet lämnats till motparten (12 kap. 54 § 1 st. JB).</p>
+  <p>Hyresnämndens beslut om ändring av hyresvillkoren anses som avtal om villkor för fortsatt uthyrning (12 kap.
+    54 § 3 st. JB). Ett sådant beslut får inte avse tiden före de tidpunkter som anges i 12 kap. 55 e § JB.</p>
+  <p>Eftersom hyran ska vara till beloppet bestämd i hyresavtalet (12 kap. 19 § 1 st. JB) innehåller detta avtal
+    inte något villkor om att hyran ändras automatiskt enligt ett index.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Ingår i hyran: uppvärmning ______, varmvatten ______, hushållsel ______, vatten och avlopp ______. Ersättning
+    som hyresgästen betalar vid sidan av hyran och dess beräkningsgrund: ______________________________.</p>
+  <p>Kravet på att hyran ska vara till beloppet bestämd gäller inte ersättning för kostnader som hänför sig till
+    lägenhetens uppvärmning, nedkylning, förseende med varmvatten eller elektrisk ström eller avgifter för vatten och
+    avlopp, om hyresavtalet innehåller förhandlingsklausul och beräkningsgrunden för ersättningens storlek har fastställts
+    genom en förhandlingsöverenskommelse eller genom ett beslut enligt 22 § eller 25 § hyresförhandlingslagen; om
+    lägenheten är belägen i ett en- eller tvåfamiljshus eller inom en ägarlägenhetsfastighet; eller, i fråga om
+    avgifter för vatten och avlopp, om avgiften påförs hyresgästen efter individuell mätning. Detta följer av
+    12 kap. 19 § 1 st. JB.</p>
+  <p>Om en kostnad som hänför sig till lägenhetens uppvärmning, nedkylning eller förseende med varmvatten eller
+    elektrisk ström kan påföras hyresgästen efter individuell mätning, ska beräkningen av ersättningen för kostnaden
+    ta sin utgångspunkt i den uppmätta förbrukningen (12 kap. 19 § 4 st. JB). Har avtal träffats i strid med dessa
+    bestämmelser ska hyran utgå med ett belopp som är skäligt med hänsyn främst till parternas avsikter och övriga
+    förhållanden när avtalet träffades (12 kap. 19 § 5 st. JB).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Som säkerhet för sina förpliktelser enligt detta avtal betalar hyresgästen en
+    deposition om <strong th:text="${depositAmount}">belopp</strong> till hyresvärden.</p>
+  <p th:if="${depositAmount == null}">Som säkerhet för sina förpliktelser enligt detta avtal betalar hyresgästen en
+    deposition till hyresvärden om följande belopp: ______________________________.</p>
+  <p>Depositionen betalas senast ______________ till det konto som anges i detta avtal. Hyresvärden återbetalar
+    depositionen senast ______________ efter det att hyresförhållandet har upphört och lägenheten har lämnats, med
+    avdrag endast för förfallna fordringar som hyresvärden har mot hyresgästen på grund av hyresförhållandet.</p>
+  <p>Depositionen och dess villkor följer av parternas avtal; 12 kap. JB innehåller inte någon bestämmelse om ett
+    högsta belopp för en sådan säkerhet. Villkor som strider mot en bestämmelse i 12 kap. JB är utan verkan mot
+    hyresgästen (12 kap. 1 d § JB).</p>
+  <p>Är pant eller borgen ställd till säkerhet för att avtalet fullgörs, får pantsättaren eller borgensmannen säga
+    upp sitt åtagande att upphöra att gälla vid det månadsskifte som inträffar närmast efter 9 månader från
+    uppsägningen, dock tidigast till en tidpunkt som infaller 2 år från det att åtagandet började att gälla. Ett
+    villkor som inskränker denna rätt är ogiltigt (12 kap. 28 a § JB).</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Hyran förfaller till betalning <span th:if="${paymentDueDay != null}">dag
+    <strong th:text="${paymentDueDay}">1</strong> i varje kalendermånad</span><span
+    th:if="${paymentDueDay == null}">senast sista vardagen före varje kalendermånads början</span> och betalas till
+    följande konto (bankgiro, plusgiro eller bankkonto): ______________________________.</p>
+  <p>Om avtal inte har ingåtts om tiden för betalning av hyran ska hyran betalas senast sista vardagen före varje
+    kalendermånads början. Den hyra som avser en annan kalendermånad än den första får dock alltid betalas senast
+    sista vardagen före månadens början, även om en tidigare förfallodag har avtalats (12 kap. 20 § 1 st. JB).</p>
+  <p>Betalning får alltid ske genom en bank eller någon annan liknande betalningsförmedlare (12 kap. 20 § 2 st. JB).
+    Lämnar hyresgästen ett betalningsuppdrag på hyran till en bank eller någon annan liknande betalningsförmedlare
+    anses beloppet ha kommit hyresvärden till handa när betalningsuppdraget togs emot (12 kap. 20 § 3 st. JB).</p>
+  <p>Betalar hyresgästen inte hyran i rätt tid har hyresvärden rätt till dröjsmålsränta enligt räntelagen
+    (1975:635).<span class="clause-ref" data-ref="termination" th:if="${refs['termination']}"> Följderna av
+    dröjsmål med betalningen för hyresrätten regleras i detta avtal (se artikel <span
+    th:text="${refs['termination']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Lägenheten upplåts för att användas som bostad för hyresgästen och hyresgästens hushåll. Hyresgästen får inte
+    använda lägenheten för något annat ändamål än det avsedda; hyresvärden får dock inte åberopa avvikelser som är
+    utan betydelse för hyresvärden (12 kap. 23 § 1 st. JB).</p>
+  <p>Hyresgästen ska under hyrestiden väl vårda lägenheten med vad som hör till den. Hyresgästen är skyldig att
+    ersätta skada som uppkommer genom hyresgästens vållande eller genom vårdslöshet eller försummelse av någon som
+    hör till hyresgästens hushåll eller gästar hyresgästen eller av annan som hyresgästen har inrymt i lägenheten
+    eller som där utför arbete för hyresgästens räkning; för brandskada som hyresgästen inte själv har vållat är
+    hyresgästen dock ansvarig endast om hyresgästen har brustit i den omsorg och tillsyn som hyresgästen borde ha
+    iakttagit (12 kap. 24 § 1 st. JB).</p>
+  <p>Hyresgästen ska se till att det som krävs för att bevara trygghet, sundhet, ordning och gott skick inom
+    fastigheten inte åsidosätts och att de som bor i omgivningen inte utsätts för störningar som i sådan grad kan
+    vara skadliga för hälsan eller annars försämra deras bostadsmiljö att de inte skäligen bör tålas (12 kap. 25 §
+    JB). Hyresgästen ska hålla noggrann tillsyn över att de personer som hyresgästen svarar för inte gör sig
+    skyldiga till sådant beteende (12 kap. 25 b § JB). Hyresgästen ska följa de ordningsregler för fastigheten som
+    har lämnats till hyresgästen: ______________________________.</p>
+  <p>Hyresgästen får inte inrymma utomstående personer i lägenheten i en utsträckning som hyresvärden inte skäligen
+    ska behöva godta (12 kap. 41 § JB). Hyresgästen har rätt att på egen bekostnad utföra målning, tapetsering och
+    därmed jämförliga åtgärder i lägenheten; minskar lägenhetens bruksvärde därigenom har hyresvärden rätt till
+    ersättning för skadan (12 kap. 24 a § 1 st. JB). Parterna får avtala om att denna rätt helt eller delvis
+    inte ska gälla endast i de fall som anges i 12 kap. 24 a § 2 st. JB.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Hyresgästen får inte utan hyresvärdens samtycke hyra ut eller på något annat sätt upplåta lägenheten i andra
+    hand till någon annan för självständigt brukande (12 kap. 39 § 1 st. JB). Om hyresgästen inte använder
+    lägenheten som bostad i beaktansvärd utsträckning ska en upplåtelse av lägenheten eller en del av den alltid
+    anses vara för självständigt brukande (12 kap. 39 § 2 st. JB).</p>
+  <p>Hyresgästen får upplåta lägenheten i andra hand om hyresnämnden lämnar tillstånd till det. Tillstånd ska lämnas
+    om hyresgästen har beaktansvärda skäl för upplåtelsen på grund av särskilda familjeförhållanden, ålder, sjukdom,
+    tillfälligt arbete eller studier på annan ort, längre utlandsvistelse eller därmed jämförbara förhållanden, om
+    hyresvärden inte har befogad anledning att vägra samtycke och om hyran inte överstiger skälig hyra enligt
+    12 kap. 55 § 4 st. JB. Ett tillstånd ska begränsas till en viss tid och kan förenas med villkor (12 kap. 40 §
+    JB).</p>
+  <p>Hyresgästen får inte överlåta hyresrätten utan hyresvärdens samtycke (12 kap. 32 § 1 st. JB). Undantag gäller
+    bland annat för en make eller sambo i vissa fall och för överlåtelse till en närstående eller genom byte med
+    hyresnämndens tillstånd (12 kap. 33 §, 34 § och 35 § JB). Vägras
+    samtycke utan skälig anledning eller lämnar hyresvärden inte besked inom 3 veckor efter det att samtycke
+    begärdes, får hyresgästen säga upp hyresavtalet (12 kap. 32 § 2 st. JB).<span class="clause-ref"
+    data-ref="termination" th:if="${refs['termination']}"> En otillåten upplåtelse eller överlåtelse kan leda
+    till att hyresrätten förverkas (se artikel <span th:text="${refs['termination']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>På tillträdesdagen ska hyresvärden, om inte bättre skick har avtalats, tillhandahålla lägenheten i sådant skick
+    att den enligt den allmänna uppfattningen i orten är fullt brukbar för det avsedda ändamålet (12 kap. 9 § 1 st.
+    JB). Under hyrestiden ska hyresvärden hålla lägenheten i sådant skick, om inte något annat har avtalats eller
+    följer av lagen (12 kap. 15 § 1 st. JB).</p>
+  <p>Hyresvärden ska med skäliga tidsmellanrum ombesörja tapetsering, målning och andra sedvanliga reparationer med
+    anledning av lägenhetens försämring genom ålder och bruk. Detta gäller dock inte om något annat har avtalats och
+    hyresavtalet avser ett enfamiljshus eller en lägenhet inom en ägarlägenhetsfastighet, eller hyresavtalet
+    innehåller förhandlingsklausul och de avvikande bestämmelserna har tagits in i en förhandlingsöverenskommelse
+    (12 kap. 15 § 2 st. JB). Avtal om annan fördelning av underhållet, i den mån lagen tillåter det:
+    ______________________________.</p>
+  <p>I de fall som anges i 12 kap. 16 § 1 st. JB, bland annat när lägenheten skadas under hyrestiden utan att
+    hyresgästen är ansvarig för skadan, har hyresgästen bland annat rätt till skälig nedsättning av hyran. I sådana
+    fall kan hyresnämnden på ansökan av hyresgästen ålägga hyresvärden att åtgärda bristen
+    (åtgärdsföreläggande, 12 kap. 16 § 2 st. JB).</p>
+  <p>Hyresgästen ska meddela hyresvärden skador och brister i lägenheten på det sätt som anges i 12 kap. 24 § 2 st.
+    JB: en skada eller brist som ofördröjligen måste avhjälpas för att allvarlig olägenhet inte ska uppstå ska som
+    huvudregel meddelas genast, och annan skada eller brist utan oskäligt dröjsmål. Hyresvärden har på begäran rätt att utan uppskov få tillträde till lägenheten för att
+    utöva nödvändig tillsyn eller utföra förbättringsarbeten som inte kan skjutas upp utan skada (12 kap. 26 § 1 st.
+    JB). Efter tillsägelse minst 1 månad i förväg får hyresvärden låta utföra mindre brådskande förbättringsarbeten
+    som inte vållar väsentligt hinder eller men i nyttjanderätten; sådana arbeten får dock inte utföras utan
+    hyresgästens medgivande under den sista månad som hyresförhållandet består (12 kap. 26 § 3 st. JB).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Den som äger en byggnad som helt eller delvis upplåts med nyttjanderätt ska se till att det finns en
+    energideklaration upprättad för byggnaden (5 § 1 st. 3 p. lagen (2006:985) om energideklaration för byggnader).
+    Ägaren ska se till att den senast upprättade energideklarationen visas för en presumtiv nyttjanderättshavare och
+    överlämnas till en ny nyttjanderättshavare (13 § 1 st. lagen om energideklaration för byggnader). En
+    energideklaration får användas i 10 år efter att den har upprättats (6 b § i samma lag). Undantag kan följa av
+    föreskrifter som har meddelats med stöd av 7 § i samma lag.</p>
+  <p>Energideklarationen för byggnaden har visats för hyresgästen och en kopia har överlämnats. Upprättad den:
+    ______________; energiprestanda: ______________; eller skäl till att energideklaration saknas:
+    ______________________________.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Hyresgästen tillträder lägenheten den <strong th:text="${startDate}">tillträdesdag</strong>. Parterna
+    besiktigar lägenheten gemensamt vid tillträdet och när hyresförhållandet upphör och antecknar lägenhetens skick
+    och antalet utlämnade nycklar i ett besiktningsprotokoll som båda parter undertecknar.</p>
+  <p>När hyrestiden har löpt ut ska hyresgästen senast påföljande dag lämna lägenheten och senast klockan 12 den
+    dagen hålla lägenheten tillgänglig för den som ska tillträda den. Infaller den dag då lägenheten ska tillträdas
+    eller lämnas på en söndag, annan allmän helgdag, lördag, midsommarafton, julafton eller nyårsafton ska det i
+    stället ske nästa vardag, om inte annat har avtalats (12 kap. 7 § JB).</p>
+  <p>Hyresgästen återlämnar lägenheten städad och med samtliga nycklar. Om hyresgästen lämnar kvar egendom i
+    lägenheten gäller 12 kap. 27 § JB.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p th:if="${!fixedTerm}">Hyresavtalet kan, om inte längre uppsägningstid har avtalats, sägas upp för att upphöra
+    att gälla vid det månadsskifte som inträffar närmast efter 3 månader från uppsägningen (12 kap. 4 § 1 st. 1 p.
+    JB). Avtalad längre uppsägningstid för hyresvärden: ______________.</p>
+  <p th:if="${fixedTerm}">Ska avtalet sägas upp för att upphöra att gälla och är inte längre uppsägningstid
+    avtalad, ska uppsägningen ske senast 1 dag i förväg om hyrestiden är högst 2 veckor, 1 vecka i förväg om
+    hyrestiden är längre än 2 veckor men högst 3 månader och 3 månader i förväg om hyrestiden är längre än
+    3 månader (12 kap. 4 § 2 st. JB).</p>
+  <p>Hyresgästen får alltid säga upp hyresavtalet att upphöra att gälla vid månadsskifte som inträffar tidigast
+    efter 3 månader från uppsägningen (12 kap. 5 § 1 st. JB). Om hyresgästen har avlidit får dödsboet säga upp
+    avtalet enligt 12 kap. 5 § 2 st. JB.</p>
+  <p>En uppsägning ska vara skriftlig om hyresförhållandet har varat längre än 3 månader i följd vid den tidpunkt
+    till vilken uppsägningen sker; hyresgästens uppsägning får dock vara muntlig om hyresvärden lämnar ett skriftligt
+    erkännande av den (12 kap. 8 § 1 st. JB). Säger hyresvärden upp avtalet och måste uppsägningen vara skriftlig, bör
+    hyresvärden i uppsägningen ange orsaken till att avtalet ska upphöra, om inte hyresgästen saknar rätt till
+    förlängning enligt 12 kap. 45 § 1 st. 1-3 p. JB (12 kap. 8 § 2 st. JB). Skriftliga uppsägningar delges eller sänds i
+    rekommenderat brev på det sätt som anges i 12 kap. 8 § JB.</p>
+  <p>Hyresgästen har besittningsskydd: om hyresvärden har sagt upp avtalet har hyresgästen rätt till förlängning av
+    avtalet, utom i de fall som anges i 12 kap. 46 § 1 st. JB. Föreligger tvist om förlängning är uppsägningen utan
+    verkan, om inte hyresvärden senast 1 månad efter hyrestidens utgång hänskjuter tvisten till hyresnämnden eller
+    hyresgästen ändå har flyttat senast vid hyrestidens utgång (12 kap. 49 § 1 st. JB).</p>
+  <p>En överenskommelse om att hyresrätten inte ska vara förenad med rätt till förlängning gäller endast om den har
+    träffats i en särskilt upprättad handling och har godkänts av hyresnämnden, eller utan sådant godkännande i de
+    fall som anges i 12 kap. 45 a § 1 st. JB. Detta avtal innehåller inte någon sådan överenskommelse.</p>
+  <p>Hyresvärden får säga upp avtalet att upphöra i förtid om hyresrätten är förverkad på någon av de grunder som
+    anges i 12 kap. 42 § 1 st. JB, bland annat om hyresgästen dröjer med att betala hyran mer än 1 vecka efter
+    förfallodagen, med de undantag som följer av 12 kap. 55 e § JB, och avtalet upphör då genast att gälla, om inte
+    annat följer av 12 kap. 44 § JB (12 kap. 6 § 1 st. JB). Hyresrätten är inte förverkad om det som ligger
+    hyresgästen till last är av ringa betydelse (12 kap. 42 § 5 st. JB).</p>
+  <p>Har hyresvärden sagt upp avtalet på grund av dröjsmål med betalning av hyran får hyresgästen inte skiljas från
+    lägenheten på grund av dröjsmålet, om hyran betalas inom 3 veckor från det att hyresgästen har delgetts en
+    underrättelse om att hyresgästen genom att betala hyran får tillbaka hyresrätten och ett meddelande om
+    uppsägningen och anledningen till denna har lämnats till socialnämnden i den kommun där lägenheten är belägen,
+    med de övriga villkor och undantag som anges i 12 kap. 44 § JB.</p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Meddelanden enligt detta avtal lämnas skriftligen till följande adresser, om inte en part har lämnat uppgift om
+    en annan adress: hyresvärden ______________________________; hyresgästen: lägenhetens adress eller
+    ______________________________.</p>
+  <p>Ett meddelande som avses i 12 kap. 63 § 1 st. JB anses lämnat när det har avsänts i ett rekommenderat brev till
+    mottagarens vanliga adress. Har hyresgästen eller hyresvärden lämnat uppgift om en adress dit meddelanden ska
+    sändas anses den som hans eller hennes vanliga adress; har hyresgästen inte lämnat någon särskild adressuppgift
+    får hyresvärden sända meddelanden till den uthyrda lägenhetens adress (12 kap. 63 § 2 st. JB).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Hyresvärden behandlar hyresgästens personuppgifter endast i den utsträckning som behövs för att ingå och fullgöra
+    detta avtal och för att fullgöra hyresvärdens rättsliga förpliktelser, i enlighet med dataskyddsförordningen
+    (förordning (EU) 2016/679) och lagen (2018:218) med kompletterande bestämmelser till EU:s
+    dataskyddsförordning, och sparar dem inte längre än vad som behövs för dessa ändamål.</p>
+  <p>Hyresgästen kan utöva de rättigheter som följer av denna lagstiftning, bland annat rätten till tillgång,
+    rättelse och radering, och kan lämna klagomål till Integritetsskyddsmyndigheten (IMY).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>På avtalet tillämpas svensk lag. Hyresnämnden har till uppgift att medla i hyrestvister och att pröva de frågor
+    som enligt 12 kap. JB ankommer på nämnden, bland annat förlängning av hyresavtalet och ändring av
+    hyresvillkoren (12 kap. 69 § JB). Ett ärende tas upp av den hyresnämnd inom vars område fastigheten är belägen
+    (4 § lagen (1973:188) om arrendenämnder och hyresnämnder). Beslut av hyresnämnden kan i de fall som anges i
+    12 kap. 70 § JB överklagas till Svea hovrätt (12 kap. 71 § JB). Andra tvister prövas av allmän domstol.</p>
+  <p>Ett avtal om att framtida tvister ska avgöras av skiljemän utan förbehåll om rätt att klandra skiljedomen får
+    inte göras gällande i de frågor som anges i 12 kap. 66 § JB. Den som vill framställa fordringsanspråk på grund
+    av hyresförhållandet ska väcka talan inom 2 år från det att hyresgästen lämnade lägenheten, annars är rätten till
+    talan förlorad, om inte annat har avtalats (12 kap. 61 § JB).</p>
+</div>
+
+</body>
+</html>

@@ -650,6 +650,87 @@ public final class LeaseDocumentRegistry {
   // ===== SE entries (country pack) =====
   // Constants, citation pattern and foreign markers for SE go here, only inside these markers.
 
+  /**
+   * The Swedish statute citation format, the same token in Swedish and English: the section number
+   * before the section sign in Swedish ("12 kap. 46 § 1 st. JB", "12 kap. 18 i §", "13 § lagen
+   * (2006:985)") and after "section" in English ("Land Code, Chapter 12, section 46, paragraph 1").
+   * Only the section number (with a letter suffix, "45 a" -> "45a") is the token; the chapter
+   * number before it is a bare number in both languages, and the stycke/"paragraph" digit that
+   * follows within 3 words is the paragraph the gate pairs. SE documents therefore write the
+   * chapter BEFORE the section in English too, give every section its own "§" / "section" (no
+   * "45-46 §§", no "34 och 35 §§", no "sections 34 and 35"), and write the stycke as a digit ("1
+   * st.", never "första stycket").
+   */
+  public static final Pattern SWEDISH_CITATION =
+      Pattern.compile(
+          "\\b\\d+(?:\\s?[a-z])?(?=\\s{0,3}§)|(?<=\\bsection\\s{1,3})\\d+(?:\\s?[a-z])?\\b",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** Swedish marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> SWEDISH_MARKERS =
+      List.of("hyresvärden", "hyresgästen", "hyresavtalet", "lägenheten", "se artikel", "enligt");
+
+  /** Mirror of V108__seed_se_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry SE_RESIDENTIAL =
+      new Entry(
+          "SE",
+          LeaseKind.RESIDENTIAL,
+          "sv",
+          List.of("sv", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", false, false, 12),
+              new ClauseSpec("handover-inspection", false, false, 13),
+              new ClauseSpec("termination", true, false, 14),
+              new ClauseSpec("notices", false, false, 15),
+              new ClauseSpec("data-protection", false, false, 16),
+              new ClauseSpec("disputes", false, false, 17)),
+          SWEDISH_MARKERS,
+          Optional.of(SWEDISH_CITATION));
+
+  /** Mirror of V108__seed_se_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry SE_COMMERCIAL =
+      new Entry(
+          "SE",
+          LeaseKind.COMMERCIAL,
+          "sv",
+          List.of("sv", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("subletting", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("energy-certificate", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("renewal", false, false, 18),
+              new ClauseSpec("termination", true, false, 19),
+              new ClauseSpec("notices", false, false, 20),
+              new ClauseSpec("data-protection", false, false, 21),
+              new ClauseSpec("disputes", false, false, 22)),
+          SWEDISH_MARKERS,
+          Optional.of(SWEDISH_CITATION));
+
   // ===== end SE =====
 
   // ===== US entries (country pack) =====
@@ -733,6 +814,8 @@ public final class LeaseDocumentRegistry {
     // ===== end PL ENTRIES =====
 
     // ===== SE ENTRIES (country pack) =====
+    entries.add(SE_RESIDENTIAL);
+    entries.add(SE_COMMERCIAL);
 
     // ===== end SE ENTRIES =====
 
