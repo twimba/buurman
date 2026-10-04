@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -204,7 +205,7 @@ class LeaseDocumentFidelityTest {
     int last = 0;
     while (m.find()) {
       appendText(stack.isEmpty() ? root : stack.peek(), fragment.substring(last, m.start()));
-      String name = m.group(2).toLowerCase();
+      String name = m.group(2).toLowerCase(Locale.ROOT);
       boolean closing = !m.group(1).isEmpty();
       boolean selfClosing = m.group().endsWith("/>") || VOID_TAGS.contains(name);
       if (closing) {
@@ -240,7 +241,7 @@ class LeaseDocumentFidelityTest {
     List<String> result = new ArrayList<>();
     Matcher m = TAG.matcher(fragment);
     while (m.find()) {
-      result.add(m.group(1) + m.group(2).toLowerCase());
+      result.add(m.group(1) + m.group(2).toLowerCase(Locale.ROOT));
     }
     for (Element element : elements(fragment)) {
       result.add(

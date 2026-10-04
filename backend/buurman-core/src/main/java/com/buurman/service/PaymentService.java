@@ -466,7 +466,7 @@ public class PaymentService {
     }
     metricsService.incrementCounterBy(
         "payment.bulk.marked.paid.total",
-        results.stream().filter(BulkActionResult::isSuccess).count());
+        (double) results.stream().filter(BulkActionResult::isSuccess).count());
     return results;
   }
 

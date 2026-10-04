@@ -35,5 +35,5 @@ public record PaymentResponse(
     Optional<Instant> waivedAt,
     Optional<String> waiveReason,
     Optional<Sid> paymentPlanIdentifier,
-    /** Late fees charged on this payment; empty unless this is the rent that incurred them. */
+    // Late fees charged on this payment; empty unless this is the rent that incurred them.
     List<PaymentSummary> lateFees) {}

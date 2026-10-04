@@ -55,7 +55,7 @@ class I18nBundleParityTest {
    */
   private static final Set<String> BUDGETED = Set.of("sms-bodies:el");
 
-  private record Family(String name, Map<String, Resource> byLanguage) {}
+  record Family(String name, Map<String, Resource> byLanguage) {}
 
   private static List<Family> discover() throws IOException {
     Resource[] resources =

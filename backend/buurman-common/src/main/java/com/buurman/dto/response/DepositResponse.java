@@ -23,7 +23,7 @@ public record DepositResponse(
     Optional<LocalDate> returnedDate,
     BigDecimal returnedAmount,
     BigDecimal deductionsTotal,
-    /** amount minus deductions minus what was already returned. */
+    // amount minus deductions minus what was already returned.
     BigDecimal refundable,
     Optional<String> notes,
     List<DepositDeductionResponse> deductions,

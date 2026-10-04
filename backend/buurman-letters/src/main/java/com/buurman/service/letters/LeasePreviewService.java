@@ -99,6 +99,8 @@ public class LeasePreviewService {
   }
 
   /**
+   * Renders a preview of the lease agreement.
+   *
    * @throws BadRequestException for an invalid request or an unknown clause key
    * @throws com.buurman.exception.BusinessRuleException when no clause is included or a clause has
    *     no fragment in the document (rendered as a 409 ProblemDetail by the global handler)

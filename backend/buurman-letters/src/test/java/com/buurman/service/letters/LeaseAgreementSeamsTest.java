@@ -289,10 +289,8 @@ class LeaseAgreementSeamsTest {
     Map<String, String> address = new HashMap<>();
     address.put("street", null);
     address.put("city", "Amsterdam");
-    List<LeaseRenderInput.RentLine> lines = new java.util.ArrayList<>();
 
     LeaseRenderInput input = input(Optional.empty(), Optional.empty(), Optional.of(address));
-    lines.add(new LeaseRenderInput.RentLine(null, null));
 
     assertThat(input.contactAddress().orElseThrow()).containsEntry("city", "Amsterdam");
     assertThatThrownBy(() -> input.contactAddress().orElseThrow().put("x", "y"))

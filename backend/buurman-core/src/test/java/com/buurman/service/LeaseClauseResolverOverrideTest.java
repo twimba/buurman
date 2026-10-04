@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -38,7 +39,7 @@ class LeaseClauseResolverOverrideTest {
   private static LeaseClauseTemplate template(
       String key, boolean optional, boolean pinned, int sortOrder) {
     return LeaseClauseTemplate.builder()
-        .id(UUID.nameUUIDFromBytes(key.getBytes()))
+        .id(UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8)))
         .identifier(
             Optional.of(com.buurman.domain.Sid.of(String.format("LCT%023d", (int) key.charAt(0)))))
         .clauseKey(key)

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
@@ -106,7 +107,7 @@ class ContractTerminationServiceTest {
             .identifier(Optional.<Sid>of(IDENTIFIER))
             .teamId(TEAM_ID)
             .status(Contract.ContractStatus.ACTIVE)
-            .startDate(LocalDate.now().minusYears(2))
+            .startDate(LocalDate.now(ZoneId.systemDefault()).minusYears(2))
             .landlordNoticeDays(30)
             .rentAmount(MoneyAmount.of(new java.math.BigDecimal("1000.00"), "EUR"))
             .build();
@@ -148,9 +149,9 @@ class ContractTerminationServiceTest {
     var request =
         new TerminateContractRequest(
             TerminationGivenBy.LANDLORD,
-            LocalDate.now(),
+            LocalDate.now(ZoneId.systemDefault()),
             Optional.empty(),
-            Optional.of(LocalDate.now().plusDays(10)),
+            Optional.of(LocalDate.now(ZoneId.systemDefault()).plusDays(10)),
             Optional.empty(),
             Optional.empty());
 
@@ -168,7 +169,7 @@ class ContractTerminationServiceTest {
     var request =
         new TerminateContractRequest(
             TerminationGivenBy.LANDLORD,
-            LocalDate.now(),
+            LocalDate.now(ZoneId.systemDefault()),
             Optional.empty(),
             Optional.empty(),
             Optional.empty(),
@@ -185,7 +186,7 @@ class ContractTerminationServiceTest {
     var request =
         new TerminateContractRequest(
             TerminationGivenBy.LANDLORD,
-            LocalDate.now(),
+            LocalDate.now(ZoneId.systemDefault()),
             Optional.empty(),
             Optional.empty(),
             Optional.empty(),
@@ -210,9 +211,9 @@ class ContractTerminationServiceTest {
     var request =
         new TerminateContractRequest(
             TerminationGivenBy.LANDLORD,
-            LocalDate.now(),
+            LocalDate.now(ZoneId.systemDefault()),
             Optional.empty(),
-            Optional.of(LocalDate.now().plusDays(10)),
+            Optional.of(LocalDate.now(ZoneId.systemDefault()).plusDays(10)),
             Optional.of("   "),
             Optional.empty());
 
@@ -225,11 +226,11 @@ class ContractTerminationServiceTest {
   @Test
   @DisplayName("an earlier effective end date with a real overrideReason is accepted")
   void overrideWithReasonAccepted() {
-    LocalDate earlier = LocalDate.now().plusDays(10);
+    LocalDate earlier = LocalDate.now(ZoneId.systemDefault()).plusDays(10);
     var request =
         new TerminateContractRequest(
             TerminationGivenBy.LANDLORD,
-            LocalDate.now(),
+            LocalDate.now(ZoneId.systemDefault()),
             Optional.empty(),
             Optional.of(earlier),
             Optional.of("Tenant agreed to leave early"),
@@ -250,7 +251,7 @@ class ContractTerminationServiceTest {
   private TerminateContractRequest requestWithGround(Optional<String> groundCode) {
     return new TerminateContractRequest(
         TerminationGivenBy.LANDLORD,
-        LocalDate.now(),
+        LocalDate.now(ZoneId.systemDefault()),
         groundCode,
         Optional.empty(),
         Optional.empty(),
@@ -316,7 +317,7 @@ class ContractTerminationServiceTest {
     var request =
         new TerminateContractRequest(
             TerminationGivenBy.LANDLORD,
-            LocalDate.now(),
+            LocalDate.now(ZoneId.systemDefault()),
             Optional.empty(),
             Optional.empty(),
             Optional.empty(),
@@ -334,7 +335,7 @@ class ContractTerminationServiceTest {
   @Test
   @DisplayName("the deposit's return-due deadline is pushed to effective end date plus 30 days")
   void depositReturnDueDateIsSetThirtyDaysAfterEffectiveEndDate() {
-    LocalDate noticeDate = LocalDate.now();
+    LocalDate noticeDate = LocalDate.now(ZoneId.systemDefault());
     var request =
         new TerminateContractRequest(
             TerminationGivenBy.LANDLORD,
@@ -362,7 +363,7 @@ class ContractTerminationServiceTest {
             .teamId(TEAM_ID)
             .contractId(CONTRACT_ID)
             .status(com.buurman.domain.ContractTerminationStatus.NOTICE_GIVEN)
-            .effectiveEndDate(LocalDate.now().minusDays(1))
+            .effectiveEndDate(LocalDate.now(ZoneId.systemDefault()).minusDays(1))
             .build();
     when(terminationRepository.findDueForTransition(any())).thenReturn(List.of(due));
     when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(contract);
@@ -394,7 +395,7 @@ class ContractTerminationServiceTest {
             .teamId(TEAM_ID)
             .contractId(CONTRACT_ID)
             .status(ContractTerminationStatus.NOTICE_GIVEN)
-            .effectiveEndDate(LocalDate.now().minusDays(1))
+            .effectiveEndDate(LocalDate.now(ZoneId.systemDefault()).minusDays(1))
             .build();
     Contract alreadyTerminatedContract =
         Contract.builder()
@@ -451,7 +452,7 @@ class ContractTerminationServiceTest {
             .teamId(TEAM_ID)
             .contractId(CONTRACT_ID)
             .status(ContractTerminationStatus.NOTICE_GIVEN)
-            .effectiveEndDate(LocalDate.now().minusDays(1))
+            .effectiveEndDate(LocalDate.now(ZoneId.systemDefault()).minusDays(1))
             .build();
     ContractTermination succeeding =
         ContractTermination.builder()
@@ -459,7 +460,7 @@ class ContractTerminationServiceTest {
             .teamId(TEAM_ID)
             .contractId(otherContractId)
             .status(ContractTerminationStatus.NOTICE_GIVEN)
-            .effectiveEndDate(LocalDate.now().minusDays(1))
+            .effectiveEndDate(LocalDate.now(ZoneId.systemDefault()).minusDays(1))
             .build();
     Contract otherContract = Contract.builder().id(otherContractId).teamId(TEAM_ID).build();
     when(terminationRepository.findDueForTransition(any()))
@@ -494,7 +495,7 @@ class ContractTerminationServiceTest {
   @Test
   @DisplayName("previewTermination returns the resolver's computation without persisting anything")
   void previewTerminationHasNoSideEffects() {
-    LocalDate noticeDate = LocalDate.now();
+    LocalDate noticeDate = LocalDate.now(ZoneId.systemDefault());
     clearInvocations(
         terminationRepository, contractService, letterExporter, depositService, documentRepository);
 

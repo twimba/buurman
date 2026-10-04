@@ -69,6 +69,8 @@ public class LeaseDocumentLocator implements LeaseDocumentLanguageCatalog {
   }
 
   /**
+   * Locates the lease document for a country and language.
+   *
    * @param templatePath template name relative to {@code templates/documents/}, without {@code
    *     .html}
    * @param languageUsed the language of the document actually found

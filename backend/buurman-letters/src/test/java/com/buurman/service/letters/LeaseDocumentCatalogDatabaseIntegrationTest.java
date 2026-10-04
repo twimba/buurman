@@ -191,7 +191,7 @@ class LeaseDocumentCatalogDatabaseIntegrationTest {
       }
     }
     for (Map.Entry<String, Map<String, Set<String>>> doc : documents.entrySet()) {
-      String[] ck = doc.getKey().split("/");
+      String[] ck = doc.getKey().split("/", 2);
       Set<String> rowKeys = new TreeSet<>(rows(ck[0], ck[1]).stream().map(Row::clauseKey).toList());
       doc.getValue()
           .forEach(

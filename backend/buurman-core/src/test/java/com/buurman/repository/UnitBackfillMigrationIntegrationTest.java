@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -746,6 +747,6 @@ class UnitBackfillMigrationIntegrationTest extends AbstractMigrationIntegrationT
   }
 
   private static String randomSuffix() {
-    return UUID.randomUUID().toString().replace("-", "").substring(0, 26).toUpperCase();
+    return UUID.randomUUID().toString().replace("-", "").substring(0, 26).toUpperCase(Locale.ROOT);
   }
 }

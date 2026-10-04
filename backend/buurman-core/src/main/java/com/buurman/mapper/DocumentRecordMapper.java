@@ -44,6 +44,7 @@ public interface DocumentRecordMapper {
   @Mapping(
       target = "sourceDocumentId",
       expression = "java(document.getSourceDocumentId().orElse(null))")
+  @Mapping(target = "unitId", ignore = true)
   DocumentsRecord toRecord(Document document);
 
   List<Document> toDomainList(List<DocumentsRecord> records);

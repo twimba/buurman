@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -883,7 +884,7 @@ class LeasePreviewServiceTest {
 
     String html = service.preview(request).html();
 
-    assertThat(html.toLowerCase()).doesNotContain("<script");
+    assertThat(html.toLowerCase(Locale.ROOT)).doesNotContain("<script");
     assertThat(html).doesNotContain("<img src=x");
     assertThat(html).contains("&lt;script&gt;alert(1)&lt;/script&gt;");
   }
@@ -897,7 +898,7 @@ class LeasePreviewServiceTest {
 
     String html = service.preview(request).html();
 
-    assertThat(html.toLowerCase()).doesNotContain("<script");
+    assertThat(html.toLowerCase(Locale.ROOT)).doesNotContain("<script");
     assertThat(html).contains("&lt;script&gt;x&lt;/script&gt;");
   }
 

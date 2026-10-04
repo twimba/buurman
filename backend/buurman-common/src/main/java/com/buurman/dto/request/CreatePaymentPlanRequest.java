@@ -21,5 +21,5 @@ public record CreatePaymentPlanRequest(
     @NotNull(message = "Start date is required") LocalDate startDate,
     Optional<PaymentPlan.Frequency> frequency,
     @Size(max = 2000) Optional<String> notes,
-    /** Pause tenant reminders on the contract until the last instalment is due. Default true. */
+    // Pause tenant reminders on the contract until the last instalment is due. Default true.
     Optional<Boolean> pauseReminders) {}

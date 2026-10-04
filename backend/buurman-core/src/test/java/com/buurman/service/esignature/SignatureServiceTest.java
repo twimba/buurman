@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -97,7 +98,7 @@ class SignatureServiceTest {
             any(Sid.class), org.mockito.ArgumentMatchers.eq(TEAM_ID)))
         .thenReturn(document);
     when(s3StorageService.downloadFile("k"))
-        .thenReturn(new ByteArrayInputStream("%PDF-1.7\ndoc".getBytes()));
+        .thenReturn(new ByteArrayInputStream("%PDF-1.7\ndoc".getBytes(StandardCharsets.UTF_8)));
 
     com.buurman.domain.Contract contract =
         com.buurman.domain.Contract.builder().id(CONTRACT_ID).build();

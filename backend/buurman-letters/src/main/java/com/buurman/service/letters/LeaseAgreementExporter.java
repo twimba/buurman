@@ -100,6 +100,7 @@ public class LeaseAgreementExporter {
   }
 
   /** The rendered PDF together with the language it was actually rendered in. */
+  @SuppressWarnings("ArrayRecordComponent")
   public record RenderedLease(byte[] pdf, String languageUsed) {}
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")

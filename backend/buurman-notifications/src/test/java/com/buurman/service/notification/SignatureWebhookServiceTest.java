@@ -7,6 +7,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -251,7 +252,10 @@ class SignatureWebhookServiceTest {
     when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
     when(providerClient.downloadCompleted("envelope_abc123"))
-        .thenReturn(new SignedDocument("%PDF-signed".getBytes(), "%PDF-cert".getBytes()));
+        .thenReturn(
+            new SignedDocument(
+                "%PDF-signed".getBytes(StandardCharsets.UTF_8),
+                "%PDF-cert".getBytes(StandardCharsets.UTF_8)));
     Document originalDocument =
         Document.builder()
             .id(DOCUMENT_ID)
@@ -291,7 +295,9 @@ class SignatureWebhookServiceTest {
     org.assertj.core.api.Assertions.assertThat(uploadedNames.getAllValues())
         .containsExactly("signed-addendum.pdf", "certificate-addendum.pdf");
     org.assertj.core.api.Assertions.assertThat(uploadedBytes.getAllValues())
-        .containsExactly("%PDF-signed".getBytes(), "%PDF-cert".getBytes());
+        .containsExactly(
+            "%PDF-signed".getBytes(StandardCharsets.UTF_8),
+            "%PDF-cert".getBytes(StandardCharsets.UTF_8));
 
     org.mockito.ArgumentCaptor<Document> savedDocuments =
         org.mockito.ArgumentCaptor.forClass(Document.class);
@@ -322,7 +328,10 @@ class SignatureWebhookServiceTest {
     when(signatureSignerRepository.findBySignatureRequestId(REQUEST_ID, TEAM_ID))
         .thenReturn(List.of(existingSigner(SignatureSignerStatus.SIGNED)));
     when(providerClient.downloadCompleted("envelope_abc123"))
-        .thenReturn(new SignedDocument("%PDF-signed".getBytes(), "%PDF-cert".getBytes()));
+        .thenReturn(
+            new SignedDocument(
+                "%PDF-signed".getBytes(StandardCharsets.UTF_8),
+                "%PDF-cert".getBytes(StandardCharsets.UTF_8)));
     Document originalDocument =
         Document.builder()
             .id(DOCUMENT_ID)
@@ -373,7 +382,9 @@ class SignatureWebhookServiceTest {
             org.mockito.ArgumentMatchers.argThat(
                 r ->
                     r.getStatus() == SignatureRequestStatus.COMPLETED
-                        && r.getSignedDocumentId().orElse(null) == alreadyUploadedSigned.getId()));
+                        && alreadyUploadedSigned
+                            .getId()
+                            .equals(r.getSignedDocumentId().orElse(null))));
   }
 
   @Test

@@ -46,6 +46,7 @@ public interface UnitMapper {
   @Mapping(
       target = "status",
       expression = "java(request.status().orElse(com.buurman.domain.UnitStatus.VACANT))")
+  @Mapping(target = "version", ignore = true)
   Unit toEntity(CreateUnitRequest request);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -67,5 +68,8 @@ public interface UnitMapper {
           "java(com.buurman.util.MoneyAmount.ofNullable("
               + "request.wozValue().orElse(unit.getWozValue().map(com.buurman.util.MoneyAmount::value).orElse(null)),"
               + " request.wozValueCurrency().orElse(unit.getWozValue().map(com.buurman.util.MoneyAmount::currency).orElse(null))))")
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "wozSharePct", ignore = true)
+  @Mapping(target = "allocationShare", ignore = true)
   void updateEntity(@MappingTarget Unit unit, UpdateUnitRequest request);
 }

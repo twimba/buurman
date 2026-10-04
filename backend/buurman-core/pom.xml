@@ -325,6 +325,8 @@
                                 <documentationProvider>none</documentationProvider>
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
+                                <generateJsonIncludeAnnotations>false</generateJsonIncludeAnnotations>
+                                <generateJsonSetterNullsAnnotations>false</generateJsonSetterNullsAnnotations>
                             </configOptions>
                             <typeMappings>
                                 <typeMapping>DateTime=java.time.Instant</typeMapping>

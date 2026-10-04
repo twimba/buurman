@@ -3,6 +3,7 @@ package com.buurman.service.backoffice.cost;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class FxConverter {
     if ("EUR".equalsIgnoreCase(currency)) {
       return Optional.of(new Converted(amountMinor, BigDecimal.ONE));
     }
-    String cur = currency.toUpperCase();
+    String cur = currency.toUpperCase(Locale.ROOT);
     BigDecimal rate = fxRateRepository.rateOn(cur, onDate).orElse(null);
     if (rate == null || rate.signum() <= 0) {
       return Optional.empty();

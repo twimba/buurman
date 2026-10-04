@@ -384,7 +384,7 @@ public class UnitService {
   }
 
   /**
-   * {@code units} has more than one CHECK/unique constraint that jOOQ reports through the same
+   * The units table has more than one CHECK/unique constraint that jOOQ reports through the same
    * {@link IntegrityConstraintViolationException} type -- notably {@code
    * chk_units_allocation_share} (0-100) alongside {@code uq_units_property_number}. Rewriting every
    * such exception as "already exists" would misreport an out-of-range allocationShare as a

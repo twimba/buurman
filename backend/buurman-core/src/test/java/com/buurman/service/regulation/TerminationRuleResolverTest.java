@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,7 +35,7 @@ class TerminationRuleResolverTest {
 
   private Contract contractStartedYearsAgo(int years, Optional<String> countryCode) {
     return Contract.builder()
-        .startDate(LocalDate.now().minusYears(years))
+        .startDate(LocalDate.now(ZoneId.systemDefault()).minusYears(years))
         .countryCode(countryCode)
         .landlordNoticeDays(30)
         .tenantNoticeDays(30)
@@ -68,7 +69,7 @@ class TerminationRuleResolverTest {
         resolver.resolve(
             contractStartedYearsAgo(9, Optional.of("DE")),
             TerminationGivenBy.LANDLORD,
-            LocalDate.now());
+            LocalDate.now(ZoneId.systemDefault()));
 
     assertThat(result.noticeDays()).isEqualTo(270);
     assertThat(result.source()).isEqualTo(TerminationRuleResolver.Source.CATALOG_RULE);
@@ -108,12 +109,12 @@ class TerminationRuleResolverTest {
         resolver.resolve(
             contractStartedYearsAgo(1, Optional.of("DE")),
             TerminationGivenBy.LANDLORD,
-            LocalDate.now());
+            LocalDate.now(ZoneId.systemDefault()));
     var secondOrder =
         resolver.resolve(
             contractStartedYearsAgo(1, Optional.of("DE")),
             TerminationGivenBy.LANDLORD,
-            LocalDate.now());
+            LocalDate.now(ZoneId.systemDefault()));
 
     assertThat(firstOrder.noticeDays()).isEqualTo(secondOrder.noticeDays());
   }
@@ -126,7 +127,7 @@ class TerminationRuleResolverTest {
         resolver.resolve(
             contractStartedYearsAgo(1, Optional.of("XX")),
             TerminationGivenBy.LANDLORD,
-            LocalDate.now());
+            LocalDate.now(ZoneId.systemDefault()));
 
     assertThat(result.noticeDays()).isEqualTo(30);
     assertThat(result.source()).isEqualTo(TerminationRuleResolver.Source.CONTRACT_FALLBACK);
@@ -136,13 +137,15 @@ class TerminationRuleResolverTest {
   void fallsBackToHardcodedDefaultWhenContractHasNoCountryCode() {
     Contract contract =
         Contract.builder()
-            .startDate(LocalDate.now().minusYears(1))
+            .startDate(LocalDate.now(ZoneId.systemDefault()).minusYears(1))
             .countryCode(Optional.empty())
             .landlordNoticeDays(null)
             .rentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
             .build();
 
-    var result = resolver.resolve(contract, TerminationGivenBy.LANDLORD, LocalDate.now());
+    var result =
+        resolver.resolve(
+            contract, TerminationGivenBy.LANDLORD, LocalDate.now(ZoneId.systemDefault()));
 
     assertThat(result.noticeDays()).isEqualTo(TerminationRuleResolver.DEFAULT_NOTICE_DAYS);
     assertThat(result.source()).isEqualTo(TerminationRuleResolver.Source.HARDCODED_DEFAULT);

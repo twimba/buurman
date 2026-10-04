@@ -42,6 +42,7 @@ public interface PropertyMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "allocationBasis", ignore = true)
   Property toEntity(CreatePropertyRequest request);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -54,5 +55,6 @@ public interface PropertyMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "allocationBasis", ignore = true)
   void updateEntity(@MappingTarget Property property, UpdatePropertyRequest request);
 }

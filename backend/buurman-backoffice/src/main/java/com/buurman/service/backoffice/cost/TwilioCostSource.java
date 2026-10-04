@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -64,7 +65,7 @@ public class TwilioCostSource implements CostSource {
       }
       JsonNode record = records.get(0);
       double price = record.path("price").asDouble(0);
-      String currency = record.path("price_unit").asText("USD").toUpperCase();
+      String currency = record.path("price_unit").asText("USD").toUpperCase(Locale.ROOT);
       return ProviderReading.of(
           id(), CostSourceType.ACTUAL, currency, Math.round(Math.abs(price) * 100), List.of());
     } catch (RuntimeException | com.fasterxml.jackson.core.JsonProcessingException e) {

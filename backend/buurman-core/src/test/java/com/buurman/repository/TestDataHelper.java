@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -235,7 +236,9 @@ final class TestDataHelper {
         .set(DSL.field("file_size", Long.class), 1024L)
         .set(DSL.field("mime_type", String.class), "application/pdf")
         .set(DSL.field("uploaded_by", UUID.class), uploadedBy)
-        .set(DSL.field("uploaded_at", LocalDateTime.class), LocalDateTime.now())
+        .set(
+            DSL.field("uploaded_at", LocalDateTime.class),
+            LocalDateTime.now(ZoneId.systemDefault()))
         .execute();
     return id;
   }
