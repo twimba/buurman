@@ -25,7 +25,7 @@ class NlResidentialLeaseRenderTest {
 
   private static final String SOURCE = "lease-agreement/NL/residential/nl";
 
-  /** Template order of V092. */
+  /** Template order of the NL residential seed in V082. */
   private static final List<String> ALL =
       List.of(
           "parties",

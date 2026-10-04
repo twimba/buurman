@@ -1,3 +1,4 @@
+-- ===== from V077__esignature.sql =====
 CREATE TABLE signature_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     identifier VARCHAR(29) NOT NULL,
@@ -35,3 +36,53 @@ CREATE TABLE signature_signers (
 );
 
 CREATE INDEX idx_signature_signers_request ON signature_signers (signature_request_id);
+
+-- ===== from V078__esignature_feature_flag.sql =====
+INSERT INTO
+    feature_flags (
+        key,
+        value_type,
+        default_enabled,
+        default_value,
+        description
+    )
+VALUES
+    (
+        'esignature_enabled',
+        'boolean',
+        FALSE,
+        NULL,
+        'E-signature (Documenso) integration for generated letters/addenda'
+    );
+
+-- ===== from V088__signature_requests_document_team_index.sql =====
+-- findByDocumentIdAndTeamId filters on (document_id, team_id) and sorts by created_at desc;
+-- only single-column indexes existed. The new composite index covers the filter and the sort
+-- in one pass, making the old document_id-only index redundant.
+DROP INDEX idx_signature_requests_document;
+
+CREATE INDEX idx_signature_requests_document_team ON signature_requests (document_id, team_id, created_at DESC);
+
+-- ===== from V089__signature_signers_team_id.sql =====
+-- signature_signers had no team_id of its own, relying entirely on its signature_requests join
+-- for tenant isolation. No live leak today (every caller already scopes through the request),
+-- but every other table in the schema carries team_id directly for defense-in-depth — add it
+-- here too, backfilled from the parent request.
+ALTER TABLE signature_signers
+ADD COLUMN team_id UUID REFERENCES teams (id);
+
+UPDATE signature_signers ss
+SET
+    team_id = sr.team_id
+FROM
+    signature_requests sr
+WHERE
+    sr.id = ss.signature_request_id;
+
+ALTER TABLE signature_signers
+ALTER COLUMN team_id
+SET NOT NULL;
+
+DROP INDEX idx_signature_signers_request;
+
+CREATE INDEX idx_signature_signers_request_team ON signature_signers (signature_request_id, team_id);

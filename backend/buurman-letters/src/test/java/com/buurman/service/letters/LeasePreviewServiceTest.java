@@ -661,7 +661,7 @@ class LeasePreviewServiceTest {
   @Test
   @DisplayName("BE has only the placeholder example text for a kind without documents")
   void beIsExampleText() {
-    // BE has RESIDENTIAL/COMMERCIAL documents since V097; MIXED_USE still falls back to LEGACY
+    // BE has RESIDENTIAL/COMMERCIAL documents since V082; MIXED_USE still falls back to LEGACY
     LeaseAgreementPreviewResponse r =
         service.preview(request("BE", LeaseKind.MIXED_USE, "en", List.of()));
 

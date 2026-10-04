@@ -245,7 +245,10 @@ public final class LeaseDocumentRegistry {
     }
   }
 
-  /** Mirror of V092__seed_nl_residential_lease_clauses.sql. */
+  /**
+   * Mirror of the V092__seed_nl_residential_lease_clauses.sql section of
+   * V082__lease_clause_library.sql.
+   */
   private static final Entry NL_RESIDENTIAL =
       new Entry(
           "NL",
@@ -285,7 +288,10 @@ public final class LeaseDocumentRegistry {
       List.of(
           "der Vermieter", "der Mieter", "Mietverhältnis", "siehe Artikel", "unwirksam", "gemäß");
 
-  /** Mirror of V093__seed_de_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V093__seed_de_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry DE_RESIDENTIAL =
       new Entry(
           "DE",
@@ -314,7 +320,10 @@ public final class LeaseDocumentRegistry {
           GERMAN_MARKERS,
           Optional.of(GERMAN_CITATION));
 
-  /** Mirror of V093__seed_de_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V093__seed_de_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry DE_COMMERCIAL =
       new Entry(
           "DE",
@@ -362,7 +371,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> FRENCH_MARKERS =
       List.of("le bailleur", "le locataire", "le preneur", "voir l'article", "conformément");
 
-  /** Mirror of V094__seed_fr_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V094__seed_fr_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry FR_RESIDENTIAL =
       new Entry(
           "FR",
@@ -392,7 +404,10 @@ public final class LeaseDocumentRegistry {
           FRENCH_MARKERS,
           Optional.of(FRENCH_CITATION));
 
-  /** Mirror of V094__seed_fr_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V094__seed_fr_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry FR_COMMERCIAL =
       new Entry(
           "FR",
@@ -444,7 +459,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> SPANISH_MARKERS =
       List.of("el arrendador", "el arrendatario", "véase el artículo", "de conformidad con");
 
-  /** Mirror of V095__seed_es_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V095__seed_es_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry ES_RESIDENTIAL =
       new Entry(
           "ES",
@@ -474,7 +492,10 @@ public final class LeaseDocumentRegistry {
           SPANISH_MARKERS,
           Optional.of(SPANISH_CITATION));
 
-  /** Mirror of V095__seed_es_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V095__seed_es_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry ES_COMMERCIAL =
       new Entry(
           "ES",
@@ -527,7 +548,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> PORTUGUESE_MARKERS =
       List.of("o senhorio", "o arrendatário", "ver o artigo", "nos termos do");
 
-  /** Mirror of V096__seed_pt_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V096__seed_pt_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry PT_RESIDENTIAL =
       new Entry(
           "PT",
@@ -559,7 +583,10 @@ public final class LeaseDocumentRegistry {
           PORTUGUESE_MARKERS,
           Optional.of(PORTUGUESE_CITATION));
 
-  /** Mirror of V096__seed_pt_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V096__seed_pt_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry PT_COMMERCIAL =
       new Entry(
           "PT",
@@ -609,7 +636,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> AUSTRIAN_MARKERS =
       List.of("der Vermieter", "der Mieter", "Mietverhältnis", "siehe Punkt", "unwirksam", "gemäß");
 
-  /** Mirror of V099__seed_at_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V099__seed_at_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry AT_RESIDENTIAL =
       new Entry(
           "AT",
@@ -637,7 +667,10 @@ public final class LeaseDocumentRegistry {
           AUSTRIAN_MARKERS,
           Optional.of(AUSTRIAN_CITATION));
 
-  /** Mirror of V099__seed_at_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V099__seed_at_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry AT_COMMERCIAL =
       new Entry(
           "AT",
@@ -698,7 +731,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> BELGIAN_DUTCH_MARKERS =
       List.of("de verhuurder", "de huurder", "huurovereenkomst", "zie artikel", "overeenkomstig");
 
-  /** Mirror of V097__seed_be_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V097__seed_be_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry BE_RESIDENTIAL =
       new Entry(
           "BE",
@@ -729,7 +765,10 @@ public final class LeaseDocumentRegistry {
           BELGIAN_DUTCH_MARKERS,
           Optional.of(BELGIAN_CITATION));
 
-  /** Mirror of V097__seed_be_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V097__seed_be_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry BE_COMMERCIAL =
       new Entry(
           "BE",
@@ -786,7 +825,10 @@ public final class LeaseDocumentRegistry {
       List.of(
           "the landlord", "the tenant", "the lessor", "the lessee", "see article", "pursuant to");
 
-  /** Mirror of V111__seed_ca_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V111__seed_ca_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry CA_RESIDENTIAL =
       new Entry(
           "CA",
@@ -814,7 +856,10 @@ public final class LeaseDocumentRegistry {
           CANADIAN_ENGLISH_MARKERS,
           Optional.of(CANADIAN_CITATION));
 
-  /** Mirror of V111__seed_ca_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V111__seed_ca_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry CA_COMMERCIAL =
       new Entry(
           "CA",
@@ -869,7 +914,10 @@ public final class LeaseDocumentRegistry {
       List.of(
           "der Vermieter", "der Mieter", "Mietverhältnis", "Mietzins", "siehe Artikel", "gemäss");
 
-  /** Mirror of V110__seed_ch_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V110__seed_ch_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry CH_RESIDENTIAL =
       new Entry(
           "CH",
@@ -895,7 +943,10 @@ public final class LeaseDocumentRegistry {
           SWISS_GERMAN_MARKERS,
           Optional.of(SWISS_CITATION));
 
-  /** Mirror of V110__seed_ch_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V110__seed_ch_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry CH_COMMERCIAL =
       new Entry(
           "CH",
@@ -943,8 +994,9 @@ public final class LeaseDocumentRegistry {
           "(?<=\\bsections?\\s{1,20})\\d+[a-z]?(?:\\(\\d+\\))?", Pattern.CASE_INSENSITIVE);
 
   /**
-   * Mirror of V109__seed_cz_lease_clauses.sql (RESIDENTIAL rows). English only: Czech is not a
-   * document language, so English is the only (and authoritative) document; no foreign markers.
+   * Mirror of the V109__seed_cz_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows). English only: Czech is not a document language, so English is the only (and
+   * authoritative) document; no foreign markers.
    */
   private static final Entry CZ_RESIDENTIAL =
       new Entry(
@@ -974,7 +1026,10 @@ public final class LeaseDocumentRegistry {
           List.of(),
           Optional.of(CZECH_CITATION));
 
-  /** Mirror of V109__seed_cz_lease_clauses.sql (COMMERCIAL rows). English only. */
+  /**
+   * Mirror of the V109__seed_cz_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows). English only.
+   */
   private static final Entry CZ_COMMERCIAL =
       new Entry(
           "CZ",
@@ -1024,7 +1079,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> DANISH_MARKERS =
       List.of("udlejeren", "lejeren", "lejemålet", "lejeaftalen", "se artikel", "medmindre");
 
-  /** Mirror of V100__seed_dk_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V100__seed_dk_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry DK_RESIDENTIAL =
       new Entry(
           "DK",
@@ -1051,7 +1109,10 @@ public final class LeaseDocumentRegistry {
           DANISH_MARKERS,
           Optional.of(DANISH_CITATION));
 
-  /** Mirror of V100__seed_dk_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V100__seed_dk_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry DK_COMMERCIAL =
       new Entry(
           "DK",
@@ -1111,7 +1172,10 @@ public final class LeaseDocumentRegistry {
           "mitätön",
           "jollei");
 
-  /** Mirror of V101__seed_fi_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V101__seed_fi_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry FI_RESIDENTIAL =
       new Entry(
           "FI",
@@ -1139,7 +1203,10 @@ public final class LeaseDocumentRegistry {
           FINNISH_MARKERS,
           Optional.of(FINNISH_CITATION));
 
-  /** Mirror of V101__seed_fi_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V101__seed_fi_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry FI_COMMERCIAL =
       new Entry(
           "FI",
@@ -1190,8 +1257,9 @@ public final class LeaseDocumentRegistry {
           Pattern.CASE_INSENSITIVE);
 
   /**
-   * Mirror of V098__seed_gb_lease_clauses.sql (RESIDENTIAL rows). English only: no translation, so
-   * no fidelity comparison and no foreign markers; nation branches on regionCode ENG/WLS/SCT/NIR.
+   * Mirror of the V098__seed_gb_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows). English only: no translation, so no fidelity comparison and no foreign
+   * markers; nation branches on regionCode ENG/WLS/SCT/NIR.
    */
   private static final Entry GB_RESIDENTIAL =
       new Entry(
@@ -1225,7 +1293,10 @@ public final class LeaseDocumentRegistry {
           List.of(),
           Optional.of(UK_CITATION));
 
-  /** Mirror of V098__seed_gb_lease_clauses.sql (COMMERCIAL rows). English only. */
+  /**
+   * Mirror of the V098__seed_gb_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows). English only.
+   */
   private static final Entry GB_COMMERCIAL =
       new Entry(
           "GB",
@@ -1287,7 +1358,10 @@ public final class LeaseDocumentRegistry {
   public static final List<String> GREEK_MARKERS =
       List.of("ο εκμισθωτής", "ο μισθωτής", "μίσθιο", "βλ. άρθρο", "σύμφωνα με");
 
-  /** Mirror of V102__seed_gr_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V102__seed_gr_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry GR_RESIDENTIAL =
       new Entry(
           "GR",
@@ -1316,7 +1390,10 @@ public final class LeaseDocumentRegistry {
           GREEK_MARKERS,
           Optional.of(GREEK_CITATION));
 
-  /** Mirror of V102__seed_gr_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V102__seed_gr_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry GR_COMMERCIAL =
       new Entry(
           "GR",
@@ -1369,9 +1446,9 @@ public final class LeaseDocumentRegistry {
           Pattern.CASE_INSENSITIVE);
 
   /**
-   * Mirror of V103__seed_ie_lease_clauses.sql (RESIDENTIAL rows). English only: no translation, so
-   * no fidelity comparison and no foreign markers; no region branches (national rent limits since 1
-   * March 2026).
+   * Mirror of the V103__seed_ie_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows). English only: no translation, so no fidelity comparison and no foreign
+   * markers; no region branches (national rent limits since 1 March 2026).
    */
   private static final Entry IE_RESIDENTIAL =
       new Entry(
@@ -1403,7 +1480,10 @@ public final class LeaseDocumentRegistry {
           List.of(),
           Optional.of(IRISH_CITATION));
 
-  /** Mirror of V103__seed_ie_lease_clauses.sql (COMMERCIAL rows). English only. */
+  /**
+   * Mirror of the V103__seed_ie_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows). English only.
+   */
   private static final Entry IE_COMMERCIAL =
       new Entry(
           "IE",
@@ -1461,7 +1541,10 @@ public final class LeaseDocumentRegistry {
       List.of(
           "il locatore", "il conduttore", "vedi l'articolo", "ai sensi dell'art", "della legge");
 
-  /** Mirror of V104__seed_it_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V104__seed_it_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry IT_RESIDENTIAL =
       new Entry(
           "IT",
@@ -1492,7 +1575,10 @@ public final class LeaseDocumentRegistry {
           ITALIAN_MARKERS,
           Optional.of(ITALIAN_CITATION));
 
-  /** Mirror of V104__seed_it_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V104__seed_it_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry IT_COMMERCIAL =
       new Entry(
           "IT",
@@ -1558,7 +1644,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> LUXEMBOURG_FRENCH_MARKERS =
       List.of("le bailleur", "le locataire", "le preneur", "voir l'article", "conformément");
 
-  /** Mirror of V105__seed_lu_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V105__seed_lu_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry LU_RESIDENTIAL =
       new Entry(
           "LU",
@@ -1588,7 +1677,10 @@ public final class LeaseDocumentRegistry {
           LUXEMBOURG_FRENCH_MARKERS,
           Optional.of(LUXEMBOURG_CITATION));
 
-  /** Mirror of V105__seed_lu_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V105__seed_lu_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry LU_COMMERCIAL =
       new Entry(
           "LU",
@@ -1627,9 +1719,10 @@ public final class LeaseDocumentRegistry {
   // markers.
 
   /**
-   * Mirror of V113__seed_nl_commercial_lease_clauses.sql: huur van bedrijfsruimte, nl authoritative
-   * and an English courtesy translation (the other app languages fall back to nl). Same citation
-   * format and Dutch markers as NL residential.
+   * Mirror of the V113__seed_nl_commercial_lease_clauses.sql section of
+   * V082__lease_clause_library.sql: huur van bedrijfsruimte, nl authoritative and an English
+   * courtesy translation (the other app languages fall back to nl). Same citation format and Dutch
+   * markers as NL residential.
    */
   private static final Entry NL_COMMERCIAL =
       new Entry(
@@ -1682,7 +1775,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> NORWEGIAN_MARKERS =
       List.of("utleieren", "leieren", "leieavtalen", "husrommet", "med mindre");
 
-  /** Mirror of V106__seed_no_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V106__seed_no_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry NO_RESIDENTIAL =
       new Entry(
           "NO",
@@ -1710,7 +1806,10 @@ public final class LeaseDocumentRegistry {
           NORWEGIAN_MARKERS,
           Optional.of(NORWEGIAN_CITATION));
 
-  /** Mirror of V106__seed_no_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V106__seed_no_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry NO_COMMERCIAL =
       new Entry(
           "NO",
@@ -1777,7 +1876,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> POLISH_MARKERS =
       List.of("wynajmujący", "najemca", "najemcy", "zgodnie z", "zob. artykuł", "niniejsza umowa");
 
-  /** Mirror of V107__seed_pl_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V107__seed_pl_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry PL_RESIDENTIAL =
       new Entry(
           "PL",
@@ -1806,7 +1908,10 @@ public final class LeaseDocumentRegistry {
           POLISH_MARKERS,
           Optional.of(POLISH_CITATION));
 
-  /** Mirror of V107__seed_pl_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V107__seed_pl_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry PL_COMMERCIAL =
       new Entry(
           "PL",
@@ -1863,7 +1968,10 @@ public final class LeaseDocumentRegistry {
   private static final List<String> SWEDISH_MARKERS =
       List.of("hyresvärden", "hyresgästen", "hyresavtalet", "lägenheten", "se artikel", "enligt");
 
-  /** Mirror of V108__seed_se_lease_clauses.sql (RESIDENTIAL rows). */
+  /**
+   * Mirror of the V108__seed_se_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows).
+   */
   private static final Entry SE_RESIDENTIAL =
       new Entry(
           "SE",
@@ -1891,7 +1999,10 @@ public final class LeaseDocumentRegistry {
           SWEDISH_MARKERS,
           Optional.of(SWEDISH_CITATION));
 
-  /** Mirror of V108__seed_se_lease_clauses.sql (COMMERCIAL rows). */
+  /**
+   * Mirror of the V108__seed_se_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows).
+   */
   private static final Entry SE_COMMERCIAL =
       new Entry(
           "SE",
@@ -1945,9 +2056,10 @@ public final class LeaseDocumentRegistry {
           Pattern.CASE_INSENSITIVE);
 
   /**
-   * Mirror of V112__seed_us_lease_clauses.sql (RESIDENTIAL rows). English only: no translation, so
-   * no fidelity comparison and no foreign markers; state branches on the first 2 letters of
-   * regionCode (CA, DC, MA, MD, ME, MN, NJ, NY, OR, WA) with a general text for any other state.
+   * Mirror of the V112__seed_us_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (RESIDENTIAL rows). English only: no translation, so no fidelity comparison and no foreign
+   * markers; state branches on the first 2 letters of regionCode (CA, DC, MA, MD, ME, MN, NJ, NY,
+   * OR, WA) with a general text for any other state.
    */
   private static final Entry US_RESIDENTIAL =
       new Entry(
@@ -1979,7 +2091,10 @@ public final class LeaseDocumentRegistry {
           List.of(),
           Optional.of(US_CITATION));
 
-  /** Mirror of V112__seed_us_lease_clauses.sql (COMMERCIAL rows). English only. */
+  /**
+   * Mirror of the V112__seed_us_lease_clauses.sql section of V082__lease_clause_library.sql
+   * (COMMERCIAL rows). English only.
+   */
   private static final Entry US_COMMERCIAL =
       new Entry(
           "US",

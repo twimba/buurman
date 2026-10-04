@@ -410,7 +410,7 @@ class LeaseRenderCharacterizationTest {
   void beLegacy() throws IOException {
     when(templateRepository.findByCountryAndKind("BE", LeaseKind.LEGACY))
         .thenReturn(legacyTemplates("BE"));
-    // BE has per-language RESIDENTIAL/COMMERCIAL documents since V097; a short-term lease (a kind
+    // BE has per-language RESIDENTIAL/COMMERCIAL documents since V082; a short-term lease (a kind
     // without documents) still takes the legacy generic.html path
     givenContract(
         baseContract("BE")

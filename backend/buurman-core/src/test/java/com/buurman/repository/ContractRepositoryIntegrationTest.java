@@ -324,7 +324,7 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   @Test
   @DisplayName(
       "the database itself rejects a second ACTIVE contract on the same unit"
-          + " (uq_contracts_one_in_force_per_unit, V072/V085) -- a 409, not the 500"
+          + " (uq_contracts_one_in_force_per_unit, V072/V080) -- a 409, not the 500"
           + " TooManyRowsException used to throw once two concurrent activations raced past the"
           + " application-level guard")
   void rejectsASecondActiveContractOnTheSameUnit() {
@@ -339,7 +339,7 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
   @DisplayName(
       "the database itself rejects a NOTICE_GIVEN contract on a unit that already has an ACTIVE"
           + " one, and vice versa, and two NOTICE_GIVEN contracts on the same unit"
-          + " (uq_contracts_one_in_force_per_unit, V085) -- proving the DB backstop itself, not"
+          + " (uq_contracts_one_in_force_per_unit, V080) -- proving the DB backstop itself, not"
           + " just ContractService#assertUnitHasNoActiveContract")
   void rejectsAnyTwoInForceContractsOnTheSameUnit() {
     repository.save(contractBuilder().status(Contract.ContractStatus.ACTIVE).build());
@@ -580,7 +580,7 @@ class ContractRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
         .containsExactly(noticeContractId, farContractId);
   }
 
-  /** Mirrors {@code contract_terminations}' column set (V080) — no existing fixture for it. */
+  /** Mirrors {@code contract_terminations}' column set (V079) — no existing fixture for it. */
   private void insertContractTermination(
       UUID contractId, UUID teamId, UUID createdBy, LocalDate effectiveEndDate) {
     LocalDateTime now = LocalDateTime.of(2026, 3, 1, 12, 0, 0);

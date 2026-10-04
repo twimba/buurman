@@ -1,3 +1,4 @@
+-- ===== from V079__saved_contract_filters.sql =====
 CREATE TABLE saved_contract_filters (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     identifier VARCHAR(29) NOT NULL,

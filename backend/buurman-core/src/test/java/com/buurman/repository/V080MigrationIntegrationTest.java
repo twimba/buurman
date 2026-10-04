@@ -14,15 +14,15 @@ import org.junit.jupiter.api.Test;
 import com.buurman.util.SidGenerator;
 
 /**
- * V085 widens {@code uq_contracts_one_active_per_unit} (V072), which only ever covered {@code
+ * V080 widens {@code uq_contracts_one_active_per_unit} (V072), which only ever covered {@code
  * status = 'ACTIVE'}, into {@code uq_contracts_one_in_force_per_unit}, covering {@code ACTIVE} and
  * {@code NOTICE_GIVEN} -- a NOTICE_GIVEN contract still occupies its unit. Its own pre-flight
  * {@code DO} block must abort the migration loudly on pre-existing data that would violate the
  * wider constraint, rather than failing obscurely (or silently succeeding) when the index itself is
  * created.
  */
-@DisplayName("V085 widens the one-contract-per-unit index to cover NOTICE_GIVEN")
-class V085MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
+@DisplayName("V080 widens the one-contract-per-unit index to cover NOTICE_GIVEN")
+class V080MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
 
   private static final LocalDateTime NOW = LocalDateTime.of(2026, 3, 1, 12, 0);
 
@@ -31,7 +31,7 @@ class V085MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
       "aborts rather than silently succeeding when a unit already carries both an ACTIVE and a"
           + " NOTICE_GIVEN contract")
   void abortsOnPreExistingActiveAndNoticeGivenOnTheSameUnit() {
-    migrateTo("084");
+    migrateTo("079");
     seedTeamAndUser();
     UUID propertyId = seedProperty();
     UUID unitId = seedUnit(propertyId, "1");
@@ -48,7 +48,7 @@ class V085MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
       "aborts rather than silently succeeding when a unit already carries two NOTICE_GIVEN"
           + " contracts")
   void abortsOnPreExistingDuplicateNoticeGivenContracts() {
-    migrateTo("084");
+    migrateTo("079");
     seedTeamAndUser();
     UUID propertyId = seedProperty();
     UUID unitId = seedUnit(propertyId, "1");

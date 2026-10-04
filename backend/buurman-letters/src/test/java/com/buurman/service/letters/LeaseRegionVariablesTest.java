@@ -240,7 +240,7 @@ class LeaseRegionVariablesTest {
   @Test
   @DisplayName("the legacy example-text path does not receive the per-language variables")
   void legacyPathUnchanged() {
-    // BE has RESIDENTIAL documents since V097; MIXED_USE has none and takes the legacy path
+    // BE has RESIDENTIAL documents since V082; MIXED_USE has none and takes the legacy path
     when(resolver.templatesFor(Optional.of("BE"), LeaseKind.MIXED_USE))
         .thenReturn(List.of(template("BE", "rent")));
     var plan = exporter.plan(Optional.of("BE"), LeaseKind.MIXED_USE, "en");

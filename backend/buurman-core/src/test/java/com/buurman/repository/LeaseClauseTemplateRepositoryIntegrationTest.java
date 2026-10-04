@@ -123,17 +123,17 @@ class LeaseClauseTemplateRepositoryIntegrationTest extends AbstractRepositoryInt
   }
 
   /**
-   * Verifies the real {@code V083__seed_lease_clause_templates.sql} content — deliberately against
-   * a throwaway container it migrates itself, rather than the class's shared {@code dsl}. The
-   * shared container's {@code lease_clause_templates} table is truncated by {@code cleanDatabase()}
-   * before every test in this suite (including other test classes that share the same static
-   * container), so by the time any test method here runs, the seed rows the shared migration step
-   * inserted are long gone. Migrating a fresh schema here is what actually proves the seed
-   * migration does what it claims.
+   * Verifies the real legacy seed content of {@code V082__lease_clause_library.sql} — deliberately
+   * against a throwaway container it migrates itself, rather than the class's shared {@code dsl}.
+   * The shared container's {@code lease_clause_templates} table is truncated by {@code
+   * cleanDatabase()} before every test in this suite (including other test classes that share the
+   * same static container), so by the time any test method here runs, the seed rows the shared
+   * migration step inserted are long gone. Migrating a fresh schema here is what actually proves
+   * the seed migration does what it claims.
    */
   @Test
   @DisplayName(
-      "migration V083 seeds exactly 7 NL clause templates with the expected optional flags")
+      "migration V082 seeds exactly 7 legacy NL clause templates with the expected optional flags")
   void migrationSeedsNlClauseTemplates() {
     try (PostgreSQLContainer<?> seedContainer =
         new PostgreSQLContainer<>("postgres:18-alpine")
@@ -158,9 +158,9 @@ class LeaseClauseTemplateRepositoryIntegrationTest extends AbstractRepositoryInt
           new LeaseClauseTemplateRepository(
               seedDsl, new LeaseClauseTemplateRecordMapperImpl(), CLOCK);
 
-      // V092 adds the NL RESIDENTIAL set alongside the relabelled V083 rows; this test pins the
-      // V083 (LEGACY) set, LeaseDocumentCatalogDatabaseIntegrationTest (buurman-app) pins V092;
-      // V113 adds the 19 NL COMMERCIAL rows.
+      // V082 seeds the NL RESIDENTIAL set alongside the relabelled placeholder rows; this test pins
+      // the LEGACY set, LeaseDocumentCatalogDatabaseIntegrationTest (buurman-app) pins the
+      // RESIDENTIAL set; V082 also adds the 19 NL COMMERCIAL rows.
       assertThat(seedRepository.findByCountryCode("NL")).hasSize(7 + 16 + 19);
       assertThat(seedRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL)).hasSize(16);
       assertThat(seedRepository.findByCountryAndKind("NL", LeaseKind.COMMERCIAL)).hasSize(19);
