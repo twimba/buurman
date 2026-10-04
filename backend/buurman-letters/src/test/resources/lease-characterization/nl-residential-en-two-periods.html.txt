@@ -176,7 +176,6 @@
 <div class="sig-date"><span>Date:</span>
 <span class="sig-date-line"></span></div>
 </div>
-<div class="letter-disclaimer">Draft document, not legal advice: have it reviewed by qualified legal counsel before signing.</div>
 <div class="letter-footer">
 <span>Document generated on 15 January 2026</span>
 <span> &mdash; </span>

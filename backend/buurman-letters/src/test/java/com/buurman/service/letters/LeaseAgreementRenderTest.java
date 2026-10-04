@@ -136,15 +136,16 @@ class LeaseAgreementRenderTest {
   }
 
   @Test
-  @DisplayName("the shell disclaimer says draft, not legal advice, and to consult counsel")
-  void disclaimerAlwaysPresent() {
+  @DisplayName("the shell no longer renders a draft / not-legal-advice disclaimer")
+  void shellHasNoDisclaimer() {
     List<Map<String, Object>> clauses = List.of(clause("a", "A", 1));
     assertThat(render(clauses, Map.of("a", 1), true, false))
-        .contains("not legal advice")
-        .contains("qualified legal counsel");
+        .doesNotContain("class=\"letter-disclaimer\"")
+        .doesNotContain("not legal advice")
+        .doesNotContain("qualified legal counsel");
     assertThat(render(clauses, Map.of("a", 1), false, true))
-        .contains("not legal advice")
-        .contains("qualified legal counsel");
+        .doesNotContain("class=\"letter-disclaimer\"")
+        .doesNotContain("not legal advice");
   }
 
   @Test

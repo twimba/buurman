@@ -33,13 +33,12 @@ class LeaseBundleWordingTest {
   @ParameterizedTest
   @ValueSource(
       strings = {"en", "nl", "de", "fr", "es", "it", "pt", "sv", "da", "nb", "fi", "pl", "el"})
-  @DisplayName("the legacy disclaimer and the shell disclaimer are distinct and both present")
-  void disclaimersAreDistinct(String lang) {
+  @DisplayName("the legacy disclaimer is translated and the removed shell disclaimer key is gone")
+  void legacyDisclaimerOnly(String lang) {
     assertThat(message("lease.disclaimer.legacy", lang))
         .isNotBlank()
-        .doesNotStartWith("lease.disclaimer")
-        .isNotEqualTo(message("lease.disclaimer", lang));
-    assertThat(message("lease.disclaimer", lang)).doesNotStartWith("lease.disclaimer");
+        .doesNotStartWith("lease.disclaimer");
+    assertThat(message("lease.disclaimer", lang)).isEqualTo("lease.disclaimer");
   }
 
   @ParameterizedTest

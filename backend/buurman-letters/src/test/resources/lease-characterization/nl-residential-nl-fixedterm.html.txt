@@ -170,7 +170,6 @@
 <div class="sig-date"><span>Datum:</span>
 <span class="sig-date-line"></span></div>
 </div>
-<div class="letter-disclaimer">Conceptdocument, geen juridisch advies: laat het vóór ondertekening beoordelen door een gekwalificeerde juridisch adviseur.</div>
 <div class="letter-footer">
 <span>Document gegenereerd op 15 januari 2026</span>
 <span> &mdash; </span>

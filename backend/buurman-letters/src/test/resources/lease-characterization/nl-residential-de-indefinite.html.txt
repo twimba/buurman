@@ -181,7 +181,6 @@
 <div class="sig-date"><span>Datum:</span>
 <span class="sig-date-line"></span></div>
 </div>
-<div class="letter-disclaimer">Entwurf, keine Rechtsberatung: Lassen Sie das Dokument vor der Unterzeichnung von einem qualifizierten Rechtsberater prüfen.</div>
 <div class="letter-footer">
 <span>Dokument erstellt am 15 Januar 2026</span>
 <span> &mdash; </span>
