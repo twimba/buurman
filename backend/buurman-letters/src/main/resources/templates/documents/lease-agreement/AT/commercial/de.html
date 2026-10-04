@@ -7,13 +7,13 @@
                § 1099, § 1100, § 1109, § 1111, § 1113, § 1114, § 1115, § 1117, § 1118, § 1333.
                Unternehmensgesetzbuch (UGB) § 455 and § 456 (9,2 Prozentpunkte ueber dem Basiszinssatz between
                Unternehmer); Umsatzsteuergesetz 1994 (UStG 1994, version in force 01.01.2026, BGBl. I Nr. 97/2025)
-               § 6 Abs. 1 Z 16 and § 6 Abs. 2; Gebuehrengesetz 1957 (GebG, version in force 24.12.2025) § 33 TP 5
+               § 6 Abs. 1 Z 16, § 6 Abs. 2 and § 28 Abs. 38 Z 1 (transition of the 1. StabG 2012 restriction); Gebuehrengesetz 1957 (GebG, version in force 24.12.2025) § 33 TP 5
                (1 percent of the value, valuation rules, self-calculation by the landlord); Mieten-Wertsicherungsgesetz
                (MieWeG) § 1 Abs. 1 (applies to Wohnungsmietvertraege only).
                Zivilprozessordnung (ZPO) § 560; Jurisdiktionsnorm (JN) § 49 and § 83; Energieausweis-Vorlage-Gesetz 2012
                (EAVG 2012, as amended by BGBl. I Nr. 38/2026, in force 01.07.2026) § 4, § 6, § 7; Heiz- und
                Kaeltekostenabrechnungsgesetz (HeizKG, BGBl. I Nr. 101/2021) § 3 and § 10; Datenschutzgesetz (DSG) § 18
-               (Datenschutzbehoerde, secondary source jusline.at); DSGVO: Verordnung (EU) 2016/679
+               (Datenschutzbehoerde, ris.bka.gv.at Gesetzesnummer 10001597); DSGVO: Verordnung (EU) 2016/679
                (eur-lex.europa.eu CELEX 32016R0679).
                Verified 2026-10-04 against ris.bka.gv.at (section texts of the tagesaktuelle Fassung read on that date).
                The MRG regime (Vollanwendung, Teilanwendung under § 1 Abs. 4, Wirtschaftspark under § 1 Abs. 5,
@@ -149,7 +149,8 @@
   <p>Wird das Gebäude mit mindestens 4 Nutzungsobjekten durch eine gemeinsame Versorgungsanlage mit Wärme,
     Warmwasser oder Kälte versorgt und ist es mit Vorrichtungen zur Ermittlung der Verbrauchsanteile ausgestattet
     oder auszustatten (§ 3 Abs. 1 HeizKG), so werden die Energiekosten für Heizung und Warmwasser zu mindestens
-    55 und höchstens 85 Prozent nach den Verbrauchsanteilen und der Rest nach der versorgbaren Nutzfläche aufgeteilt
+    55 und höchstens 85 Prozent und die Energiekosten für Kälte zu mindestens 80 Prozent nach den
+    Verbrauchsanteilen und der jeweilige Rest nach der versorgbaren Nutzfläche aufgeteilt
     (§ 10 Abs. 1 HeizKG).</p>
 </div>
 
@@ -157,7 +158,10 @@
   <p>Die Vermietung von Grundstücken ist grundsätzlich von der Umsatzsteuer befreit (§ 6 Abs. 1 Z 16 UStG 1994). Der
     Vermieter behandelt die Vermietung als steuerpflichtig (§ 6 Abs. 2 UStG 1994); der Mieter zahlt daher auf den
     Hauptmietzins und auf die Teilbeträge auf die Betriebskosten die gesetzliche Umsatzsteuer zusätzlich.</p>
-  <p>Der Verzicht auf die Steuerbefreiung ist nur zulässig, soweit der Mieter den Mietgegenstand nahezu
+  <p>Sofern § 6 Abs. 2 UStG 1994 in der Fassung des 1. Stabilitätsgesetzes 2012 anzuwenden ist, insbesondere bei
+    Mietverhältnissen, die nach dem 31. August 2012 beginnen, wenn mit der Errichtung des Gebäudes durch den
+    Vermieter nicht bereits vor dem 1. September 2012 begonnen wurde (§ 28 Abs. 38 Z 1 UStG 1994), ist der Verzicht
+    auf die Steuerbefreiung nur zulässig, soweit der Mieter den Mietgegenstand nahezu
     ausschließlich für Umsätze verwendet, die den Vorsteuerabzug nicht ausschließen; der Vermieter hat diese
     Voraussetzung nachzuweisen (§ 6 Abs. 2 UStG 1994). Der Mieter verpflichtet sich, den Mietgegenstand nur für solche
     Umsätze zu verwenden, dem Vermieter auf Verlangen die hierfür erforderlichen Nachweise vorzulegen und ihm jede
@@ -179,8 +183,9 @@
     eine eindeutige Abgrenzung vom Vermögen des Vermieters und bei dessen Insolvenz eine Absonderung ermöglicht; er
     informiert den Mieter darüber auf Verlangen schriftlich (§ 16b Abs. 1 MRG).</p>
   <p>Nach Ende des Mietvertrags stellt der Vermieter die Kaution samt den aus ihrer Veranlagung erzielten Zinsen
-    oder die Garantieurkunde unverzüglich zurück, soweit sie nicht zur Tilgung von berechtigten Forderungen des
-    Vermieters aus dem Mietverhältnis herangezogen wird (§ 16b Abs. 2 MRG).<span class="clause-ref"
+    oder die Garantieurkunde unverzüglich zurück, soweit sie nicht zur Tilgung von berechtigten Forderungen des Vermieters aus dem Mietverhältnis herangezogen wird; im
+    Voll- und im Teilanwendungsbereich des MRG folgt dies aus § 16b Abs. 2 MRG, im Übrigen vereinbaren die Parteien
+    dieselben Regeln.<span class="clause-ref"
     data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Schäden werden bei der Rückstellung des
     Mietgegenstandes festgestellt (siehe Punkt <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
@@ -206,7 +211,8 @@
 <div th:fragment="clause-maintenance" data-clause="maintenance">
   <p>Der Vermieter übergibt den Mietgegenstand auf eigene Kosten in brauchbarem Zustand (§ 1096 Abs. 1 ABGB). Im
     Vollanwendungsbereich des MRG richtet sich seine Erhaltungspflicht nach § 3 MRG und die Wartungs- und
-    Instandhaltungspflicht des Mieters nach § 8 Abs. 1 MRG. Im Übrigen erhält der Vermieter Dach, Fassade, die
+    Instandhaltungspflicht des Mieters nach § 8 Abs. 1 MRG. Soweit § 3 MRG nicht anzuwenden ist (Teilanwendungsbereich, Wirtschaftspark und Vollausnahmebereich), erhält der
+    Vermieter Dach, Fassade, die
     tragenden Bauteile, die allgemeinen Teile des Hauses und die zentralen haustechnischen Anlagen; der Mieter hält das
     Innere des Mietgegenstandes und die ausschließlich von ihm genutzten Einrichtungen auf eigene Kosten in
     ordnungsgemäßem Zustand.</p>

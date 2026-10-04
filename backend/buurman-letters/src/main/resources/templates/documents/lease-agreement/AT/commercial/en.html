@@ -7,13 +7,13 @@
                § 1099, § 1100, § 1109, § 1111, § 1113, § 1114, § 1115, § 1117, § 1118, § 1333.
                Unternehmensgesetzbuch (UGB) § 455 and § 456 (9,2 Prozentpunkte ueber dem Basiszinssatz between
                Unternehmer); Umsatzsteuergesetz 1994 (UStG 1994, version in force 01.01.2026, BGBl. I Nr. 97/2025)
-               § 6 Abs. 1 Z 16 and § 6 Abs. 2; Gebuehrengesetz 1957 (GebG, version in force 24.12.2025) § 33 TP 5
+               § 6 Abs. 1 Z 16, § 6 Abs. 2 and § 28 Abs. 38 Z 1 (transition of the 1. StabG 2012 restriction); Gebuehrengesetz 1957 (GebG, version in force 24.12.2025) § 33 TP 5
                (1 percent of the value, valuation rules, self-calculation by the landlord); Mieten-Wertsicherungsgesetz
                (MieWeG) § 1 Abs. 1 (applies to Wohnungsmietvertraege only).
                Zivilprozessordnung (ZPO) § 560; Jurisdiktionsnorm (JN) § 49 and § 83; Energieausweis-Vorlage-Gesetz 2012
                (EAVG 2012, as amended by BGBl. I Nr. 38/2026, in force 01.07.2026) § 4, § 6, § 7; Heiz- und
                Kaeltekostenabrechnungsgesetz (HeizKG, BGBl. I Nr. 101/2021) § 3 and § 10; Datenschutzgesetz (DSG) § 18
-               (Datenschutzbehoerde, secondary source jusline.at); DSGVO: Verordnung (EU) 2016/679
+               (Datenschutzbehoerde, ris.bka.gv.at Gesetzesnummer 10001597); DSGVO: Verordnung (EU) 2016/679
                (eur-lex.europa.eu CELEX 32016R0679).
                Verified 2026-10-04 against ris.bka.gv.at (section texts of the tagesaktuelle Fassung read on that date).
                The MRG regime (Vollanwendung, Teilanwendung under § 1 Abs. 4, Wirtschaftspark under § 1 Abs. 5,
@@ -84,11 +84,10 @@
   <p th:if="${!fixedTerm}">The tenancy is concluded for an indefinite period.</p>
   <th:block th:if="${fixedTerm}">
     <p>The tenancy is concluded for a fixed term<span th:if="${endDate != null}"> and ends at the end of
-      <strong th:text="${endDate}">end date</strong></span>. The parties agree in writing that the lease expires on
-      the end of the stipulated period without any notice of termination being required. During the agreed lease
+      <strong th:text="${endDate}">end date</strong></span>. The parties agree in writing that the lease expires at the end of the stipulated period without any notice of termination being required. During the agreed lease
       term, ordinary notice is excluded for both parties.</p>
     <p>Under full and partial application of the MRG, the expiry is enforceable only if it was agreed in writing in
-      the lease that it expires on the end of the stipulated period (§ 29 para. 1 no. 3 lit. a MRG); the statutory
+      the lease that it expires at the end of the stipulated period (§ 29 para. 1 no. 3 lit. a MRG); the statutory
       minimum term applies only to dwellings. For a fixed-term agreement that is neither extended by contract nor
       terminated after the agreed term has expired, § 29 para. 3 lit. b MRG applies.</p>
     <p>Under full exemption from the MRG, the agreement expires when the agreed period ends (§ 1113 ABGB). If the
@@ -150,8 +149,9 @@
     The landlord settles the instalments annually and grants inspection of the supporting documents.</p>
   <p>If the building with at least 4 units is supplied with heat, hot water or cooling by a common supply system
     and is equipped, or must be equipped, with devices for recording consumption shares (§ 3 para. 1 HeizKG), the
-    energy costs for heating and hot water are allocated at least 55 and at most 85 percent according to
-    consumption shares and the rest according to the usable floor area that can be supplied, under the Heating and
+    energy costs for heating and hot water are allocated at least 55 and at most 85 percent, and the energy
+    costs for cooling at least 80 percent, according to consumption shares and the remainder in each case
+    according to the usable floor area that can be supplied, under the Heating and
     Cooling Costs Settlement Act (Heiz- und Kältekostenabrechnungsgesetz) (§ 10 para. 1 HeizKG).</p>
 </div>
 
@@ -159,7 +159,10 @@
   <p>The letting of land and buildings is in principle exempt from VAT (§ 6 para. 1 no. 16 UStG 1994, VAT Act,
     Umsatzsteuergesetz). The landlord treats the letting as taxable (§ 6 para. 2 UStG 1994); the tenant therefore
     pays the statutory VAT in addition on the main rent and on the instalments on the operating costs.</p>
-  <p>The waiver of the exemption is permitted only insofar as the tenant uses the leased premises almost exclusively
+  <p>Where § 6 para. 2 UStG 1994 as amended by the 1st Stability Act 2012 (Stabilitätsgesetz) applies, in
+    particular to tenancies beginning after 31 August 2012 where the landlord had not already begun constructing
+    the building before 1 September 2012 (§ 28 para. 38 no. 1 UStG 1994), the waiver of the exemption is permitted
+    only insofar as the tenant uses the leased premises almost exclusively
     for transactions that do not exclude the deduction of input tax; the landlord must prove this condition
     (§ 6 para. 2 UStG 1994). The tenant undertakes to use the leased premises only for such transactions, to provide
     the landlord on request with the evidence required for this and to notify the landlord in writing without undue
@@ -180,8 +183,9 @@
     from the landlord&rsquo;s assets and, in the landlord&rsquo;s insolvency, separate satisfaction; the landlord
     informs the tenant of this in writing on request (§ 16b para. 1 MRG).</p>
   <p>After the lease ends, the landlord returns the deposit without undue delay, together with the interest earned on
-    its investment, or the guarantee document, insofar as it is not used to settle justified claims of the landlord
-    arising from the tenancy (§ 16b para. 2 MRG).<span class="clause-ref"
+    its investment, or the guarantee document, insofar as it is not used to settle justified claims of the landlord arising from the tenancy; under full and
+    partial application of the MRG this follows from § 16b para. 2 MRG, otherwise the parties agree the same
+    rules.<span class="clause-ref"
     data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Damage is established when the leased
     premises are returned (see section <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
@@ -207,8 +211,8 @@
 <div th:fragment="clause-maintenance" data-clause="maintenance">
   <p>The landlord hands over the leased premises at the landlord&rsquo;s own expense in a usable condition
     (§ 1096 para. 1 ABGB). Under full application of the MRG, the landlord&rsquo;s maintenance duty is governed by
-    § 3 MRG and the tenant&rsquo;s duty to service and keep in repair by § 8 para. 1 MRG. Otherwise the landlord
-    maintains the roof, the facade, the load-bearing structure, the common parts of the building and the central
+    § 3 MRG and the tenant&rsquo;s duty to service and keep in repair by § 8 para. 1 MRG. Where § 3 MRG does not apply (partial application, business park and full exemption), the landlord maintains the
+    roof, the facade, the load-bearing structure, the common parts of the building and the central
     building services; the tenant keeps the interior of the leased premises and the installations used exclusively
     by the tenant in proper condition at the tenant&rsquo;s own expense.</p>
   <p>If the leased premises are so defective on handover, or become so defective during the lease term without the
