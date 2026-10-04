@@ -95,7 +95,7 @@
     data-ref="service-costs" th:if="${refs['service-costs']}"> El arrendatario abona además los gastos que asume en
     el presente contrato (véase el artículo <span th:text="${refs['service-costs']}"></span>).</span></p>
   <p>El arrendador tiene derecho a elevar la renta por las obras de mejora que realice desde el comienzo del
-    arrendamiento en los términos del artículo 19 de la LAU, salvo pacto en contrario (artículo 30 de la LAU).</p>
+    arrendamiento en los términos del artículo 19 de la LAU, salvo pacto en contrario (artículos 4.3 y 30 de la LAU).</p>
   <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">La actualización de la renta se rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['rent-adjustment']}"></span>).</p>
 </div>
 
@@ -148,7 +148,8 @@
     5 años, o de 7 años si el arrendador fuese persona jurídica, la actualización de la fianza se rige por lo pactado
     y, a falta de pacto específico, por lo acordado sobre actualización de la renta (artículo 36.3 de la LAU).</p>
   <p>Las partes pueden pactar cualquier tipo de garantía del cumplimiento por el arrendatario de sus obligaciones
-    adicional a la fianza en metálico (artículo 36.5 de la LAU). Garantía adicional pactada (aval bancario, depósito
+    adicional a la fianza en metálico (artículo 36.5 de la LAU). La cantidad entregada que exceda de
+    2 mensualidades de renta tiene la consideración de garantía adicional. Garantía adicional pactada (aval bancario, depósito
     u otra), en su caso: ______________________________</p>
   <p th:if="${countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT')}">El local está situado en
     Cataluña: el arrendador deposita la fianza en el Institut Català del Sòl (INCASÒL) en el plazo de 2 meses a
@@ -179,7 +180,7 @@
 
 <div th:fragment="clause-maintenance" data-clause="maintenance">
   <p>Salvo lo que las partes pacten en el presente contrato, se aplican a este arrendamiento los artículos 21, 22,
-    23 y 26 de la LAU (artículo 30 de la LAU): el arrendador realiza, sin derecho a elevar por ello la renta, las
+    23 y 26 de la LAU (artículos 4.3 y 30 de la LAU): el arrendador realiza, sin derecho a elevar por ello la renta, las
     reparaciones necesarias para conservar el local en condiciones de servir al uso convenido, salvo cuando el
     deterioro sea imputable al arrendatario conforme a los artículos 1563 y 1564 del Código Civil; el arrendatario
     soporta las obras de conservación y las de mejora que no puedan razonablemente diferirse hasta la conclusión del
@@ -285,7 +286,7 @@
     incumpliendo lo dispuesto en el artículo 32 de la LAU (artículo 35 de la LAU).</p>
   <p>Cuando la ejecución de obras de conservación o de obras acordadas por una autoridad competente haga inhabitable
     el local, el arrendatario puede optar entre suspender el contrato o desistir de él, sin indemnización alguna,
-    salvo pacto distinto (artículos 26 y 30 de la LAU). Las partes pueden poner fin al contrato de mutuo
+    salvo pacto distinto (artículos 4.3, 26 y 30 de la LAU). Las partes pueden poner fin al contrato de mutuo
     acuerdo.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La
     devolución del local se rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>

@@ -32,7 +32,7 @@ class EsLeaseRegionRenderTest {
   private static final Map<String, String> GENERAL =
       Map.of(
           "es", "Pueden aplicarse, por tanto, normas autonómicas sobre el depósito de la fianza.",
-          "en", "Regional rules on the deposit of the deposit may therefore apply.");
+          "en", "Regional rules on lodging the deposit (fianza) may therefore apply.");
 
   private TemplateEngine engine;
 

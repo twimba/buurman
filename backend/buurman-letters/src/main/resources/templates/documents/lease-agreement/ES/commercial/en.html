@@ -98,7 +98,7 @@
     data-ref="service-costs" th:if="${refs['service-costs']}"> In addition, the tenant pays the expenses it assumes
     under this agreement (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
   <p>The landlord is entitled to raise the rent for improvement works it carries out from the start of the lease
-    on the terms of article 19 of the LAU, unless otherwise agreed (article 30 of the LAU).</p>
+    on the terms of article 19 of the LAU, unless otherwise agreed (articles 4.3 and 30 of the LAU).</p>
   <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The update of the rent is governed by the terms of this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
 </div>
 
@@ -151,17 +151,18 @@
     governed by what has been agreed and, failing a specific agreement, by what has been agreed on updating the rent
     (article 36.3 of the LAU).</p>
   <p>The parties may agree any type of guarantee of the tenant&rsquo;s performance of its obligations in addition to
-    the cash deposit (article 36.5 of the LAU). Additional guarantee agreed (bank guarantee, deposit or other), where
+    the cash deposit (article 36.5 of the LAU). Any sum handed over in excess of 2 months&rsquo; rent is treated as an
+    additional guarantee. Additional guarantee agreed (bank guarantee, deposit or other), where
     applicable: ______________________________</p>
   <p th:if="${countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT')}">The premises are located in
-    Catalonia: the landlord deposits the deposit with the Catalan Land Institute (Institut Català del Sòl,
+    Catalonia: the landlord lodges the deposit (fianza) with the Catalan Land Institute (Institut Català del Sòl,
     INCASÒL) within 2 months from the conclusion of the agreement, in accordance with Catalan Law 13/1996 of
     29 July on the register and deposit of deposits under leases of urban properties (Llei del Registre i el
     dipòsit de fiances dels contractes de lloguer de finques urbanes).</p>
   <p th:if="${!(countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT'))}">Where the autonomous
-    community in which the premises are located has so provided, the landlord deposits the amount of the deposit,
+    community in which the premises are located has so provided, the landlord lodges the amount of the deposit (fianza),
     without interest, at the disposal of the regional administration or of the public body designated, until the
-    agreement ends (third additional provision of the LAU). Regional rules on the deposit of the deposit may
+    agreement ends (third additional provision of the LAU). Regional rules on lodging the deposit (fianza) may
     therefore apply.</p>
   <p>The balance of the deposit to be returned to the tenant at the end of the lease bears statutory interest once
     1 month has elapsed from the handing over of the keys without the return having been made (article 36.4 of the
@@ -183,7 +184,7 @@
 
 <div th:fragment="clause-maintenance" data-clause="maintenance">
   <p>Save as the parties agree in this agreement, articles 21, 22, 23 and 26 of the LAU apply to this lease
-    (article 30 of the LAU): the landlord carries out, without any right to raise the rent for that reason, the
+    (articles 4.3 and 30 of the LAU): the landlord carries out, without any right to raise the rent for that reason, the
     repairs needed to keep the premises fit for the agreed use, except where the deterioration is attributable to the
     tenant under articles 1563 and 1564 of the Civil Code; the tenant tolerates conservation works and improvement
     works that cannot reasonably be deferred until the end of the lease, with the rent reductions and compensation
@@ -286,7 +287,7 @@
     article 32 of the LAU (article 35 of the LAU).</p>
   <p>Where conservation works or works ordered by a competent authority make the premises uninhabitable, the tenant
     may choose between suspending the agreement or withdrawing from it, without any compensation, unless otherwise
-    agreed (articles 26 and 30 of the LAU). The parties may end the agreement by mutual consent.<span
+    agreed (articles 4.3, 26 and 30 of the LAU). The parties may end the agreement by mutual consent.<span
     class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the
     premises is governed by the terms of this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
