@@ -2962,6 +2962,17 @@ lease-agreement:
         required: true
         schema:
           $ref: '#/components/schemas/ContractIdentifier'
+      - name: lang
+        in: query
+        description: >-
+          Document language (ISO 639-1 code, same set as the booklets). When omitted, the contract's
+          first supported document language is used. A country without a document in the requested
+          language falls back to its national language with a courtesy notice. An unsupported code
+          is rejected with 400.
+        required: false
+        schema:
+          type: string
+          enum: [en, nl, de, es, fr, pt, it, sv, fi, el, pl, da, nb]
     responses:
       "200":
         description: Generated document
