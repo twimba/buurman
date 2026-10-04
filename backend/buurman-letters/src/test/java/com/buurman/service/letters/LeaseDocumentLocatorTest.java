@@ -261,4 +261,55 @@ class LeaseDocumentLocatorTest {
       }
     }
   }
+
+  @ParameterizedTest(name = "{0}/{1} -> {2}")
+  @MethodSource("availableLanguageCases")
+  @DisplayName("available languages are exactly those a generate request is honoured in")
+  void availableLanguages(String country, LeaseKind kind, List<String> expected) {
+    assertThat(defaults.availableLanguages(country, kind)).containsExactlyElementsOf(expected);
+  }
+
+  static Stream<Arguments> availableLanguageCases() {
+    return Stream.of(
+        Arguments.of("IT", LeaseKind.RESIDENTIAL, List.of("it", "en")),
+        Arguments.of("PT", LeaseKind.RESIDENTIAL, List.of("pt", "en")),
+        Arguments.of("DE", LeaseKind.COMMERCIAL, List.of("de", "en")),
+        Arguments.of("BE", LeaseKind.RESIDENTIAL, List.of("nl", "fr", "en")),
+        Arguments.of("CH", LeaseKind.RESIDENTIAL, List.of("de", "fr", "it", "en")),
+        Arguments.of("LU", LeaseKind.RESIDENTIAL, List.of("fr", "de", "en")),
+        Arguments.of("CA", LeaseKind.RESIDENTIAL, List.of("en", "fr")),
+        Arguments.of("CZ", LeaseKind.RESIDENTIAL, List.of("en")),
+        Arguments.of("GB", LeaseKind.RESIDENTIAL, List.of("en")),
+        Arguments.of("US", LeaseKind.COMMERCIAL, List.of("en")),
+        Arguments.of("NL", LeaseKind.COMMERCIAL, List.of("nl", "en")),
+        // furnished falls back to the residential documents, like locate()
+        Arguments.of("IT", LeaseKind.RESIDENTIAL_FURNISHED, List.of("it", "en")),
+        // no legacy (or mixed-use) per-language documents ship for any country
+        Arguments.of("IT", LeaseKind.LEGACY, List.of()),
+        Arguments.of("IT", LeaseKind.MIXED_USE, List.of()),
+        Arguments.of("XX", LeaseKind.RESIDENTIAL, List.of()));
+  }
+
+  @Test
+  @DisplayName("NL residential exists in all 13 languages, national language first")
+  void availableLanguagesNlResidential() {
+    List<String> nl = defaults.availableLanguages("NL", LeaseKind.RESIDENTIAL);
+    assertThat(nl).hasSize(13).containsExactlyInAnyOrderElementsOf(DocumentLanguages.ORDERED);
+    assertThat(nl).startsWith("nl", "en");
+  }
+
+  @Test
+  @DisplayName("available languages walk the kind fallback chain and reject invalid input")
+  void availableLanguagesKindFallbackAndInvalidInput() {
+    var fake = new LeaseDocumentLocator(Map.of("ZY", List.of("nl")));
+    // ZY has residential-furnished/en and residential/nl only: the furnished kind stops at its own
+    // (English) document, exactly as locate() does for a Dutch request
+    assertThat(fake.availableLanguages("ZY", LeaseKind.RESIDENTIAL_FURNISHED))
+        .containsExactly("en");
+    assertThat(fake.availableLanguages("ZY", LeaseKind.RESIDENTIAL)).containsExactly("nl");
+    assertThat(locator.availableLanguages("ZZ", LeaseKind.RESIDENTIAL)).containsExactly("nl", "en");
+    assertThat(defaults.availableLanguages(null, LeaseKind.RESIDENTIAL)).isEmpty();
+    assertThat(defaults.availableLanguages("it", LeaseKind.RESIDENTIAL)).isEmpty();
+    assertThat(defaults.availableLanguages("IT", null)).isEmpty();
+  }
 }

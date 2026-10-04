@@ -40,6 +40,7 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.util.DocumentLanguages;
 
 class LeaseClauseServiceTest {
 
@@ -49,10 +50,17 @@ class LeaseClauseServiceTest {
   private final LeaseClauseResolver resolver = mock(LeaseClauseResolver.class);
   private final PropertyRepository propertyRepository = mock(PropertyRepository.class);
   private final LeaseKindResolver leaseKindResolver = mock(LeaseKindResolver.class);
+  private final LeaseDocumentLanguageCatalog documentLanguageCatalog =
+      mock(LeaseDocumentLanguageCatalog.class);
 
   private final LeaseClauseService service =
       new LeaseClauseService(
-          contractRepository, overrideRepository, resolver, propertyRepository, leaseKindResolver);
+          contractRepository,
+          overrideRepository,
+          resolver,
+          propertyRepository,
+          leaseKindResolver,
+          documentLanguageCatalog);
 
   private static final UUID TEAM_ID = UUID.randomUUID();
   private static final UUID USER_ID = UUID.randomUUID();
@@ -182,7 +190,8 @@ class LeaseClauseServiceTest {
             overrideRepository,
             resolver,
             propertyRepository,
-            new LeaseKindResolver(unitRepo));
+            new LeaseKindResolver(unitRepo),
+            documentLanguageCatalog);
     Contract noUnit =
         Contract.builder()
             .id(CONTRACT_ID)
@@ -251,6 +260,51 @@ class LeaseClauseServiceTest {
   }
 
   @Test
+  void getClausesReportsTheDocumentLanguagesOfTheCountryAndDerivedKind() {
+    when(leaseKindResolver.resolveFor(any(), any(), eq(TEAM_ID))).thenReturn(LeaseKind.COMMERCIAL);
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contractIn(Optional.of("IT")));
+    when(resolver.availabilityFor(any(), eq(LeaseKind.COMMERCIAL))).thenReturn(available());
+    when(resolver.resolve(any(), any(), any(), anyList())).thenReturn(List.of());
+    when(documentLanguageCatalog.availableLanguages("IT", LeaseKind.COMMERCIAL))
+        .thenReturn(List.of("it", "en"));
+
+    LeaseClausesResponse response = service.getClauses(CONTRACT_IDENTIFIER, principal);
+
+    assertThat(response.documentLanguages()).containsExactly("it", "en");
+  }
+
+  @Test
+  void getClausesOffersEveryLanguageWhenOnlyTheLegacyGenericTemplateApplies() {
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contract());
+    when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(available());
+    when(resolver.resolve(any(), any(), any(), anyList())).thenReturn(List.of());
+    when(documentLanguageCatalog.availableLanguages("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of());
+
+    LeaseClausesResponse response = service.getClauses(CONTRACT_IDENTIFIER, principal);
+
+    assertThat(response.documentLanguages()).containsExactlyElementsOf(DocumentLanguages.ORDERED);
+  }
+
+  @Test
+  void updateClausesReportsTheDocumentLanguages() {
+    when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
+        .thenReturn(contract());
+    when(resolver.availabilityFor(any(), eq(LeaseKind.RESIDENTIAL))).thenReturn(available());
+    when(resolver.resolve(any(), any(), any(), anyList())).thenReturn(List.of());
+    when(documentLanguageCatalog.availableLanguages("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of("nl", "en"));
+
+    LeaseClausesResponse response =
+        service.updateClauses(
+            CONTRACT_IDENTIFIER, new UpdateContractLeaseClausesRequest(List.of()), principal);
+
+    assertThat(response.documentLanguages()).containsExactly("nl", "en");
+  }
+
+  @Test
   void getClausesForUnsupportedCountryReturnsEmptyEnvelopeWithoutThrowing() {
     Contract it = contractIn(Optional.of("IT"));
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID)).thenReturn(it);
@@ -263,6 +317,8 @@ class LeaseClauseServiceTest {
     assertThat(response.availability()).isEqualTo(LeaseAvailability.UNAVAILABLE_COUNTRY);
     assertThat(response.countryCode()).contains("IT");
     assertThat(response.clauses()).isEmpty();
+    assertThat(response.documentLanguages()).isEmpty();
+    verifyNoInteractions(documentLanguageCatalog);
     verify(resolver, never()).resolve(any(), any(), any(), anyList());
   }
 
@@ -469,7 +525,8 @@ class LeaseClauseServiceTest {
             overrideRepository,
             realResolver,
             propertyRepository,
-            leaseKindResolver);
+            leaseKindResolver,
+            documentLanguageCatalog);
     LeaseClauseTemplate t = template(Sid.of("LCT0000000000000000000000001"), "parties", false, 1);
     when(contractRepository.getByIdentifierAndTeamId(CONTRACT_IDENTIFIER, TEAM_ID))
         .thenReturn(contractIn(Optional.of("nl")));

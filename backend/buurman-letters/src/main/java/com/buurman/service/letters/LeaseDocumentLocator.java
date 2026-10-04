@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.document.DocumentTemplateSupport;
 import com.buurman.domain.LeaseKind;
+import com.buurman.service.LeaseDocumentLanguageCatalog;
 import com.buurman.util.DocumentLanguages;
 
 /**
@@ -20,7 +21,7 @@ import com.buurman.util.DocumentLanguages;
  * precedence over the language: {@link LeaseKind#fallbackChain()} is walked outermost.
  */
 @Component
-public class LeaseDocumentLocator {
+public class LeaseDocumentLocator implements LeaseDocumentLanguageCatalog {
 
   static final String BASE = "lease-agreement";
 
@@ -105,6 +106,29 @@ public class LeaseDocumentLocator {
                                 isAuthoritative(countryCode, lang),
                                 nationalLanguages(countryCode).isEmpty())))
         .findFirst();
+  }
+
+  /**
+   * A language is available when {@link #locate} honours a request for it, i.e. the located
+   * document is in that language (same kind fallback and existence check, no separate path logic).
+   * Ordered like {@link #languageChain}: national languages first, then English, then the other
+   * supported languages in {@link DocumentLanguages#ORDERED} order.
+   */
+  @Override
+  public List<String> availableLanguages(String countryCode, LeaseKind kind) {
+    if (countryCode == null) {
+      return List.of();
+    }
+    Set<String> candidates = new LinkedHashSet<>(languageChain(countryCode, null));
+    candidates.addAll(DocumentLanguages.ORDERED);
+    return candidates.stream()
+        .filter(
+            lang ->
+                locate(countryCode, kind, lang)
+                    .map(LeaseDocument::languageUsed)
+                    .filter(lang::equals)
+                    .isPresent())
+        .toList();
   }
 
   /**

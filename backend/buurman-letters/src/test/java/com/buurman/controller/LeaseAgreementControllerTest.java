@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,9 +21,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.buurman.domain.LeaseAvailability;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.LeaseClausesResponse;
 import com.buurman.exception.BadRequestException;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.LeaseClauseService;
@@ -35,8 +38,9 @@ class LeaseAgreementControllerTest {
 
   private final LeaseAgreementGenerationService generationService =
       mock(LeaseAgreementGenerationService.class);
+  private final LeaseClauseService leaseClauseService = mock(LeaseClauseService.class);
   private final LeaseAgreementController controller =
-      new LeaseAgreementController(mock(LeaseClauseService.class), generationService);
+      new LeaseAgreementController(leaseClauseService, generationService);
   private final DocumentResponse expected =
       new DocumentResponse(
           Sid.of("DOC00000000000000000000001"),
@@ -73,6 +77,20 @@ class LeaseAgreementControllerTest {
   @AfterEach
   void clear() {
     SecurityContextHolder.clearContext();
+  }
+
+  @Test
+  void returnsTheEnvelopeWithItsDocumentLanguages() {
+    LeaseClausesResponse envelope =
+        new LeaseClausesResponse(
+            LeaseAvailability.AVAILABLE_DOCUMENT,
+            Optional.of("IT"),
+            List.of(),
+            List.of("it", "en"));
+    when(leaseClauseService.getClauses(eq(CONTRACT), any())).thenReturn(envelope);
+
+    assertThat(controller.getLeaseClauses(CONTRACT).documentLanguages())
+        .containsExactly("it", "en");
   }
 
   @Test

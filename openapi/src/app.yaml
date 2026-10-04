@@ -3267,9 +3267,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+        documentLanguages:
+          type: array
+          description: >-
+            ISO 639-1 languages a lease agreement can be generated in for the contract's effective
+            country and lease kind (a generate request in any other language falls back to the
+            country's national language). Ordered by preference: the country's authoritative
+            language first, then its other national languages, English and further translations.
+            Empty when unavailable.
+          items:
+            type: string
       required:
         - availability
         - clauses
+        - documentLanguages
     ResolvedLeaseClauseResponse:
       type: object
       description: A lease clause template resolved against a contract, with per-contract inclusion state

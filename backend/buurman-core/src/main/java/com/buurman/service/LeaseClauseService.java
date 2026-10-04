@@ -44,6 +44,7 @@ public class LeaseClauseService {
   private final LeaseClauseResolver resolver;
   private final PropertyRepository propertyRepository;
   private final LeaseKindResolver leaseKindResolver;
+  private final LeaseDocumentLanguageCatalog documentLanguageCatalog;
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public LeaseClausesResponse getClauses(
@@ -52,19 +53,34 @@ public class LeaseClauseService {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
     Optional<String> country = LeaseClauseResolver.effectiveCountryCode(contract, property);
-    LeaseClauseResolver.Availability availability =
-        resolver.availabilityFor(country, leaseKind(contract, property, teamId));
-    return envelope(contract, country, availability);
+    LeaseKind kind = leaseKind(contract, property, teamId);
+    LeaseClauseResolver.Availability availability = resolver.availabilityFor(country, kind);
+    return envelope(contract, country, kind, availability);
   }
 
   private LeaseClausesResponse envelope(
-      Contract contract, Optional<String> country, LeaseClauseResolver.Availability availability) {
+      Contract contract,
+      Optional<String> country,
+      LeaseKind kind,
+      LeaseClauseResolver.Availability availability) {
+    if (!availability.state().isAvailable()) {
+      return new LeaseClausesResponse(availability.state(), country, List.of(), List.of());
+    }
     List<ResolvedLeaseClauseResponse> clauses =
-        availability.state().isAvailable()
-            ? resolver.resolve(
-                contract, country, contractLocale(contract), availability.templates())
-            : List.of();
-    return new LeaseClausesResponse(availability.state(), country, clauses);
+        resolver.resolve(contract, country, contractLocale(contract), availability.templates());
+    return new LeaseClausesResponse(
+        availability.state(), country, clauses, documentLanguages(country, kind));
+  }
+
+  /**
+   * The languages a generate request is honoured in. Without any per-language document the exporter
+   * renders the legacy generic template, which follows the requested language: then every document
+   * language is honoured.
+   */
+  private List<String> documentLanguages(Optional<String> country, LeaseKind kind) {
+    List<String> located =
+        country.map(cc -> documentLanguageCatalog.availableLanguages(cc, kind)).orElse(List.of());
+    return located.isEmpty() ? DocumentLanguages.ORDERED : located;
   }
 
   // ContractLeaseClauseRepository.replaceForContract() hard-deletes every existing override and
@@ -96,8 +112,8 @@ public class LeaseClauseService {
       }
     }
 
-    LeaseClauseResolver.Availability availability =
-        resolver.availabilityFor(country, leaseKind(contract, property, teamId));
+    LeaseKind kind = leaseKind(contract, property, teamId);
+    LeaseClauseResolver.Availability availability = resolver.availabilityFor(country, kind);
     if (!availability.state().isAvailable()) {
       throw LeaseNotAvailableException.forContract(country);
     }
@@ -107,7 +123,7 @@ public class LeaseClauseService {
         request.clauses().stream().map(selection -> toClause(selection, templates)).toList();
 
     overrideRepository.replaceForContract(contract.getId(), teamId, principal.getUserId(), toSave);
-    return envelope(contract, country, availability);
+    return envelope(contract, country, kind, availability);
   }
 
   private ContractLeaseClause toClause(
