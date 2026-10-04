@@ -54,6 +54,8 @@ public class SignatureService {
 
   private static final String PROVIDER = SignatureProviderClient.PROVIDER_DOCUMENSO;
 
+  private static final String PENDING_SUBMISSION_PREFIX = "pending-";
+
   private static final java.util.Set<SignatureRequestStatus> TERMINAL_STATUSES =
       java.util.Set.of(
           SignatureRequestStatus.COMPLETED,
@@ -170,7 +172,7 @@ public class SignatureService {
                 .teamId(teamId)
                 .documentId(document.getId())
                 .provider(PROVIDER)
-                .providerSubmissionId("pending-" + UUID.randomUUID())
+                .providerSubmissionId(PENDING_SUBMISSION_PREFIX + UUID.randomUUID())
                 .status(SignatureRequestStatus.PENDING)
                 .createdBy(principal.getUserId())
                 .updatedBy(principal.getUserId())
@@ -382,6 +384,12 @@ public class SignatureService {
           "This signature request is "
               + request.getStatus().name().toLowerCase(Locale.ROOT)
               + "; there are no signing links to share");
+    }
+
+    // The row is saved with a "pending-" placeholder before the provider round trip finishes;
+    // there is nothing to fetch yet, and that is not a provider failure.
+    if (request.getProviderSubmissionId().startsWith(PENDING_SUBMISSION_PREFIX)) {
+      return List.of();
     }
 
     List<ProviderSigningLink> providerLinks;

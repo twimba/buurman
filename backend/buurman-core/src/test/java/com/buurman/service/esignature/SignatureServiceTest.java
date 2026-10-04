@@ -509,6 +509,18 @@ class SignatureServiceTest {
   }
 
   @Test
+  @DisplayName(
+      "getSigningLinks returns an empty list, without calling the provider, while the submission"
+          + " is still being created")
+  void getSigningLinksWhileSubmissionNotYetCreatedIsEmpty() {
+    var request = linksRequest(SignatureRequestStatus.PENDING);
+    request.setProviderSubmissionId("pending-" + UUID.randomUUID());
+
+    assertThat(fetchLinks()).isEmpty();
+    verifyNoInteractions(providerClient);
+  }
+
+  @Test
   @DisplayName("getSigningLinks wraps a provider failure in a friendly ExternalServiceException")
   void getSigningLinksWrapsProviderFailure() {
     var request = linksRequest(SignatureRequestStatus.PENDING);

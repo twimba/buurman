@@ -5007,7 +5007,7 @@ paths:
         required: true
       responses:
         "200":
-          description: Created
+          description: Created. The titleText/bodyText fields are resolved in English; the list endpoint resolves them in the requested language.
           content:
             application/json:
               schema:
@@ -5117,7 +5117,7 @@ paths:
         required: true
       responses:
         "200":
-          description: Updated
+          description: Updated. The titleText/bodyText fields are resolved in English; the list endpoint resolves them in the requested language.
           content:
             application/json:
               schema:
@@ -8415,6 +8415,8 @@ components:
         - titleText
         - bodyText
         - missingLanguages
+    # NOTE: DocumentLanguage and the Lease* enums below are hand-written copies of the Java enums
+    # (DocumentLanguage, LeaseAvailability, LeasePreviewContractType, ...). Keep them in sync.
     DocumentLanguage:
       type: string
       enum: [en, nl, de, fr, pt, es, sv, it, fi, el, pl, da, nb]
