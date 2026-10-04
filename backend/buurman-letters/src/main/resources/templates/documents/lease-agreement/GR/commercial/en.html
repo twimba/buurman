@@ -14,13 +14,16 @@
                www.taxheaven.gr.
                Law 5177/2025 (FEK A 21/14.2.2025), code ratified by its first article, art. 3 par. 5 and art. 6:
                digital transaction duty of 3.60% on business leases not opted into VAT (VAT Code, Law
-               5144/2024), declared and paid by the landlord; www.e-nomothesia.gr.
+               5144/2024), declared and paid by the landlord, or by the tenant under art. 6 par. 3 (landlord
+               without an income-tax return obligation, or a Mount Athos monastery); www.e-nomothesia.gr.
                Law 4122/2013 art. 12 par. 1, 2, 5, 6, 7, 8 (energy performance certificate, PEA), consolidated
                text on www.taxheaven.gr.
                AADE: decision POL 1162/2018 (FEK B 3579/2018) on the electronic lease declaration, as amended
                by decision A.1068/2025 (FEK B 2703/02.06.2025: 30-day acceptance by the tenant).
-               Law 5222/2025 art. 210 (rent paid through a payment account; start date postponed several
-               times - see the pack report).
+               Law 5222/2025 (FEK A 134/28.07.2025, api.et.gr) art. 210: new par. 5 of art. 39 of the Income
+               Tax Code - rent that is not a business expense is paid into a landlord bank account notified to
+               the AADE; sanctions: loss of the landlord's deduction, tenant excluded from state rent benefits;
+               start date postponed several times - see the pack report.
                KPolD (Code of Civil Procedure) art. 29 par. 1 and art. 637 as replaced by Law 5221/2025 art. 72
                (FEK A 133/28.07.2025, in force 1.1.2026, api.et.gr).
                GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); Law 4624/2019.
@@ -94,7 +97,7 @@
     the Civil Code).</p>
   <p th:if="${!fixedTerm}">The lease is concluded for an indefinite term and ends by notice of termination
     (καταγγελία) given by either of the parties (article 608 of the Civil Code).</p>
-  <p>Where the lease falls within the scope of Presidential Decree 34/1995, it is valid for 3 years, even where it has
+  <p>Where the lease falls within the scope of Presidential Decree 34/1995, it lasts at least 3 years, even where it has
     been agreed for a shorter or an indefinite term, and may be ended by a later agreement proved by a document of
     certain date; notice of termination is given in writing and takes legal effect 3 months after it is served
     (article 13, paragraph 1, of Law 4242/2014). According to the case law of the Supreme Civil and Criminal Court
@@ -158,7 +161,8 @@
     for VAT has been exercised (yes or no): ______________________________</p>
   <p>Where the option for VAT has not been exercised, a lease of immovable property for a business activity is
     subject to the digital transaction duty (Ψηφιακό Τέλος Συναλλαγής) at the rate of 3.60% on the agreed rent, which
-    the landlord is liable to declare and pay; the parties agree between themselves how the cost of the duty is
+    the landlord is liable to declare and pay or, where the landlord has no obligation to file an income-tax return
+    or is a monastery of Mount Athos, the tenant; the parties agree between themselves how the cost of the duty is
     shared (articles 3, paragraph 5, and 6 of the Code ratified by Law 5177/2025). The duty is borne by: ______________________________</p>
 </div>
 
@@ -166,7 +170,7 @@
   <p th:if="${depositAmount != null}">As security for the performance of the tenant&rsquo;s obligations, the
     tenant pays the landlord, on signing this agreement, the sum of <strong th:text="${depositAmount}">amount</strong>
     as a security deposit (εγγύηση).</p>
-  <p th:if="${depositAmount == null}">The parties do not agree a security deposit (εγγύηση). Security agreed, if any
+  <p th:if="${depositAmount == null}">No security deposit (εγγύηση) is agreed. Security agreed, if any
     (cash deposit or bank letter of guarantee): ______________________________</p>
   <p>The parties agree that the security deposit is not set off against rent during the lease, bears no interest and
     is topped up by the tenant at each rent adjustment so that it corresponds to the same multiple of the rent. After
@@ -186,8 +190,9 @@
     In the absence of agreed or customary payment dates, the rent is paid at the end of the lease and, where payment
     at shorter intervals has been agreed, at the end of each interval (article 595 of the Civil Code).</p>
   <p>Payment is made by deposit or transfer to the landlord&rsquo;s bank account with IBAN: ______________________________.
-    From the time the law makes payment of rent through a bank account mandatory, payment is made exclusively in that
-    way (article 210 of Law 5222/2025). The landlord issues the documents required by tax legislation.</p>
+    Where the rent is not a business expense of the tenant, from the time the law makes its payment through a bank
+    account mandatory, payment is made exclusively into a bank account of the landlord notified to the AADE (article
+    210 of Law 5222/2025). The landlord issues the documents required by tax legislation.</p>
 </div>
 
 <div th:fragment="clause-maintenance" data-clause="maintenance">
@@ -247,7 +252,7 @@
   <p>When a building or building unit is let to a new tenant, an energy performance certificate (Πιστοποιητικό
     Ενεργειακής Απόδοσης, ΠΕΑ) must be issued, until the activation of the Building Identity (Ταυτότητα Κτιρίου),
     which must include the certificate and its period of validity, save in the cases excepted by law (article 12,
-    paragraphs 1, 6 and 7, of Law 4122/2013). The landlord showed the tenant the certificate or a copy of it and
+    paragraphs 1, 6 and 7, of Law 4122/2013). The landlord shows the tenant the certificate or a copy of it and
     hands it over to the tenant (article 12, paragraph 2, of Law 4122/2013). These obligations cannot be excluded by
     agreement of the parties (article 12, paragraph 5, of Law 4122/2013).</p>
   <p>The protocol number of the certificate must be entered in the declaration of the lease to a new tenant to the
@@ -260,8 +265,8 @@
     Εσόδων, ΑΑΔΕ) the declaration of the particulars of the lease of immovable property by the end of the month
     following the start of the lease or its amendment, and also declares its termination, under decision POL
     1162/2018 of the Governor of the AADE, as in force.</p>
-  <p>The tenant accepts or rejects the declaration electronically within 30 days of receiving the relevant
-    notification; if that period expires without action, the declaration is deemed accepted (decision A.1068/2025 of
+  <p>The tenant accepts or rejects the declaration electronically within 30 days of the sending of the
+    relevant notification; if that period expires without action, the declaration is deemed accepted (decision A.1068/2025 of
     the Governor of the AADE). Late filing or failure to file the declaration incurs the penalties laid down in tax
     legislation.</p>
   <p>Number of the lease declaration with the AADE (completed after filing): ______________________________</p>
@@ -274,9 +279,11 @@
     document provides otherwise (article 614 of the Civil Code). The parties do not agree any such contrary
     clause.</p>
   <p>If the lease is not proved by a document of certain date or contains a term that, on a disposal of the leased
-    premises, the new acquirer will be entitled to evict the tenant, the new acquirer may terminate the lease by
+    premises or on the grant of a right in rem excluding the tenant&rsquo;s use, the new acquirer will be entitled
+    to evict the tenant, the new acquirer may terminate the lease by
     notice given 1 month in advance if the lease has a term of up to 1 year, and 2 months in advance if its term is
-    longer than 1 year (article 615 of the Civil Code). Method of establishing the certain date of this document
+    longer than 1 year; if the new acquirer gives such notice, the tenant&rsquo;s rights to compensation against
+    the landlord remain intact (article 615 of the Civil Code). Method of establishing the certain date of this document
     chosen by the parties: ______________________________</p>
 </div>
 

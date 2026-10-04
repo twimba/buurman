@@ -2,18 +2,21 @@
   legal-basis: Astikos Kodikas (Civil Code, AK), mischosi pragmatos, art. 574-618 as consolidated on www.lawspot.gr
                (no official consolidation exists): 574, 575, 576-581, 585, 586, 588, 589, 590, 591, 592, 593,
                594, 595, 596, 597, 598, 599, 601, 602, 603, 608, 609, 611, 612, 612A, 613, 614, 615; art. 388.
-               Law 1703/1987 (FEK A 78/27.5.1987, api.et.gr): art. 1 (scope: main residence, predominant use)
-               and art. 2 par. 1 as replaced by Law 2235/1994 art. 1 par. 5 (FEK A 145/1.9.1994): minimum term
-               of 3 years, shortening by later notarial agreement, 75% cost-of-living default adjustment.
-               Art. 2 par. 2-4 of Law 1703/1987 (deposit limit, advance rent, common charges, inspections) are
-               NOT relied on: their force after 1.7.1997 is disputed (EirArgous 114/2023, www.dsanet.gr:
-               only art. 2 par. 1 remains in force).
+               Law 1703/1987 (FEK A 78/27.5.1987, api.et.gr) art. 2 par. 1 as replaced by Law 2235/1994 art. 1
+               par. 5 (FEK A 145/1.9.1994), the only provision kept in force after 1.7.1997: minimum term of 3
+               years for a lease of immovable property for housing, shortening by later notarial agreement, 75%
+               cost-of-living default adjustment. The rest of Law 1703/1987 (art. 1 scope, art. 2 par. 2-4:
+               deposit limit, advance rent, common charges, inspections) is NOT relied on: the law ended on
+               1.7.1997 (art. 10) except art. 2 par. 1 (EirArgous 114/2023, www.dsanet.gr). Whether art. 2
+               par. 1 covers only a main residence is debated; this model is written for a main residence.
                Law 4122/2013 art. 12 par. 1, 2, 5, 6, 7, 8 (energy performance certificate, PEA), consolidated
                text on www.taxheaven.gr.
                AADE: decision POL 1162/2018 (FEK B 3579/2018) on the electronic lease declaration, as amended
                by decision A.1068/2025 (FEK B 2703/02.06.2025: 30-day acceptance by the tenant).
-               Law 5222/2025 art. 210 (rent paid through a payment account; start date postponed several
-               times - see the pack report).
+               Law 5222/2025 (FEK A 134/28.07.2025, api.et.gr) art. 210: new par. 5 of art. 39 of the Income
+               Tax Code - rent that is not a business expense is paid into a landlord bank account notified to
+               the AADE; sanctions: loss of the landlord's deduction, tenant excluded from state rent benefits;
+               start date postponed several times - see the pack report.
                KPolD (Code of Civil Procedure) art. 29 par. 1 and art. 637 as replaced by Law 5221/2025 art. 72
                (FEK A 133/28.07.2025, in force 1.1.2026, api.et.gr).
                GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); Law 4624/2019.
@@ -57,10 +60,8 @@
     space or other): ______________________________</p>
   <p>electricity supply number and, where one exists, National Cadastre property code (ΚΑΕΚ): ______________________________</p>
   <p>furniture and equipment let together with the leased premises, if any: ______________________________</p>
-  <p>The leased premises are let for use as the tenant&rsquo;s main residence. Law 1703/1987 covers leases of
-    immovable property used under the lease as a main residence; where mixed use has been agreed, that law applies
-    only if use of the leased premises as a main residence is the predominant use (article 1, paragraphs 1 and 2, of
-    Law 1703/1987).</p>
+  <p>The leased premises are let for use as the tenant&rsquo;s main residence. This model is intended for the
+    lease of a main residence.</p>
   <p>This model is not intended for the lease of a secondary or holiday home, for a short-term rental or for the
     lease of business premises.</p>
 </div>
@@ -75,7 +76,7 @@
     the Civil Code).</p>
   <p th:if="${!fixedTerm}">The lease is concluded for an indefinite term and ends by notice of termination
     (καταγγελία) given by either of the parties (article 608 of the Civil Code).</p>
-  <p>A lease of immovable property for housing is valid for at least 3 years, even where it has been agreed for a
+  <p>A lease of immovable property for housing lasts at least 3 years, even where it has been agreed for a
     shorter period or for an indefinite term. This minimum term may be shortened only by a later agreement, made at
     least 6 months after the lease was concluded counting from its start, and proved by a notarial deed (article 2,
     paragraph 1, of Law 1703/1987, as replaced by article 1, paragraph 5, of Law 2235/1994).</p>
@@ -121,7 +122,7 @@
   <p th:if="${depositAmount != null}">As security for the performance of the tenant&rsquo;s obligations, the
     tenant pays the landlord, on signing this agreement, the sum of <strong th:text="${depositAmount}">amount</strong>
     as a security deposit (εγγύηση).</p>
-  <p th:if="${depositAmount == null}">The parties do not agree a security deposit (εγγύηση). Security deposit agreed, if any: ______________________________</p>
+  <p th:if="${depositAmount == null}">No security deposit (εγγύηση) is agreed. Security deposit agreed, if any: ______________________________</p>
   <p>The parties agree that the security deposit is not set off against rent during the lease and bears no interest.
     After the lease has ended and the leased premises have been returned, the landlord returns the security deposit
     to the tenant, less the sums owed to the landlord under the lease, in particular unpaid rent and costs and
@@ -139,8 +140,10 @@
     In the absence of agreed or customary payment dates, the rent is paid at the end of the lease and, where payment
     at shorter intervals has been agreed, at the end of each interval (article 595 of the Civil Code).</p>
   <p>Payment is made by deposit or transfer to the landlord&rsquo;s bank account with IBAN: ______________________________.
-    From the time the law makes payment of rent through a bank account mandatory, payment is made exclusively in that
-    way (article 210 of Law 5222/2025).</p>
+    From the time the law makes payment of rent through a bank account mandatory, payment is made exclusively into a
+    bank account of the landlord notified to the AADE; if the rent is not paid in that way, the landlord loses a tax
+    deduction on the rental income and the tenant is excluded, for this lease, from every benefit, aid or allowance
+    granted by the State for leases (article 210 of Law 5222/2025).</p>
 </div>
 
 <div th:fragment="clause-use" data-clause="use">
@@ -162,7 +165,7 @@
     of the Civil Code). The parties agree that the tenant does not sublet the leased premises or give a third party
     the use of them, in whole or in part, for consideration or free of charge, nor offer them for short-term rental,
     without the landlord&rsquo;s prior written consent.</p>
-  <p>The landlord&rsquo;s consent to a sublease or to the transfer of use does not release the tenant from liability
+  <p>The landlord&rsquo;s consent to a sublease or to the transfer of use does not by itself release the tenant from liability
     for the fault of the third party (article 593 of the Civil Code). When the lease ends, the landlord may also claim
     the leased premises from the subtenant or from the person to whom the use was transferred (article 599 of the
     Civil Code).</p>
@@ -191,7 +194,7 @@
   <p>When a building or building unit is let to a new tenant, an energy performance certificate (Πιστοποιητικό
     Ενεργειακής Απόδοσης, ΠΕΑ) must be issued, until the activation of the Building Identity (Ταυτότητα Κτιρίου),
     which must include the certificate and its period of validity, save in the cases excepted by law (article 12,
-    paragraphs 1, 6 and 7, of Law 4122/2013). The landlord showed the tenant the certificate or a copy of it and
+    paragraphs 1, 6 and 7, of Law 4122/2013). The landlord shows the tenant the certificate or a copy of it and
     hands it over to the tenant (article 12, paragraph 2, of Law 4122/2013). These obligations cannot be excluded by
     agreement of the parties (article 12, paragraph 5, of Law 4122/2013).</p>
   <p>The protocol number of the certificate must be entered in the declaration of the lease to a new tenant to the
@@ -204,8 +207,8 @@
     Εσόδων, ΑΑΔΕ) the declaration of the particulars of the lease of immovable property by the end of the month
     following the start of the lease or its amendment, and also declares its termination, under decision POL
     1162/2018 of the Governor of the AADE, as in force.</p>
-  <p>The tenant accepts or rejects the declaration electronically within 30 days of receiving the relevant
-    notification; if that period expires without action, the declaration is deemed accepted (decision A.1068/2025 of
+  <p>The tenant accepts or rejects the declaration electronically within 30 days of the sending of the
+    relevant notification; if that period expires without action, the declaration is deemed accepted (decision A.1068/2025 of
     the Governor of the AADE). Late filing or failure to file the declaration incurs the penalties laid down in tax
     legislation.</p>
   <p>Number of the lease declaration with the AADE (completed after filing): ______________________________</p>
@@ -218,9 +221,11 @@
     document provides otherwise (article 614 of the Civil Code). The parties do not agree any such contrary
     clause.</p>
   <p>If the lease is not proved by a document of certain date or contains a term that, on a disposal of the leased
-    premises, the new acquirer will be entitled to evict the tenant, the new acquirer may terminate the lease by
+    premises or on the grant of a right in rem excluding the tenant&rsquo;s use, the new acquirer will be entitled
+    to evict the tenant, the new acquirer may terminate the lease by
     notice given 1 month in advance if the lease has a term of up to 1 year, and 2 months in advance if its term is
-    longer than 1 year (article 615 of the Civil Code). Method of establishing the certain date of this document
+    longer than 1 year; if the new acquirer gives such notice, the tenant&rsquo;s rights to compensation against
+    the landlord remain intact (article 615 of the Civil Code). Method of establishing the certain date of this document
     chosen by the parties: ______________________________</p>
 </div>
 
@@ -247,7 +252,7 @@
     before its expiry, if the parties so agree (minimum period of the lease, notice period, any compensation): ______________________________</p>
   <p th:if="${!fixedTerm}">Notice of termination of a lease of indefinite term, where the rent is set by the month,
     is given, unless otherwise agreed, at least 15 days in advance and takes effect at the end of the calendar month
-    (article 609 of the Civil Code); the lease is, however, valid for at least 3 years, unless that term has been
+    (article 609 of the Civil Code); the lease, however, lasts at least 3 years, unless that term has been
     lawfully shortened.</p>
   <p>If the tenant is in arrears with the rent, wholly or in part, the landlord is entitled to terminate the lease by
     notice given at least 1 month in advance in the case of a lease whose term was agreed for 1 year or more, and 10
