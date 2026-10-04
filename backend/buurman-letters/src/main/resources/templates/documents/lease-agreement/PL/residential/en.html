@@ -111,7 +111,7 @@
     notice period agreed by the parties, if any: ______________________________</p>
   <p>An increase as a result of which the annual amount of the rent or other charges for the use of the Premises
     exceeds, or which starts from a level higher than, 3 % of the replacement value of the Premises may take place
-    only in the justified cases referred to in Article 8a, paragraph 4a or paragraph 4e, of the Tenant Protection
+    in the justified cases referred to in Article 8a, paragraph 4a or paragraph 4e, of the Tenant Protection
     Act; at the Tenant&rsquo;s written request the Landlord, within 14 days of receiving that request, presents in
     writing the reason for the increase and its calculation, failing which the increase is void (Article 8a,
     paragraph 4, of the Tenant Protection Act). The replacement value of the Premises is the product of their usable
@@ -119,8 +119,8 @@
     (Article 9, paragraph 8, of the Tenant Protection Act).</p>
   <p>Within 2 months of the date of the notice the Tenant may refuse the increase in writing, with the effect that
     the agreement terminates when the notice period expires, or contest the increase referred to in Article 8a,
-    paragraph 4, of the Tenant Protection Act by bringing an action before the court for a declaration that the
-    increase is unjustified or justified but in a different amount; the burden of proving that the increase is
+    paragraph 4, of the Tenant Protection Act by bringing an action before the court for a declaration, on the basis of
+    paragraphs 4a&ndash;4e, that the increase is unjustified or justified but in a different amount; the burden of proving that the increase is
     justified lies on the Landlord (Article 8a, paragraph 5, of the Tenant Protection Act). In the first case the
     Tenant pays the rent in the current amount until the agreement terminates, and in the second case until the
     court&rsquo;s decision becomes final, with the obligation to pay the difference for the period from the expiry
@@ -152,7 +152,7 @@
   <p th:if="${depositAmount != null}">On conclusion of the agreement the Tenant pays the Landlord a security
     deposit (kaucja) securing the payment of the amounts due to the Landlord under the lease of the Premises on the
     day the Premises are vacated, in the amount of <strong th:text="${depositAmount}">amount</strong>.</p>
-  <p th:if="${depositAmount == null}">The parties do not agree a security deposit. Security deposit agreed by the
+  <p th:if="${depositAmount == null}">The parties do not provide for a security deposit. Security deposit agreed by the
     parties, if any: ______________________________</p>
   <p>The security deposit may not exceed 12 times the monthly rent for the Premises, calculated at the rent rate in
     force on the day the agreement is concluded (Article 6, paragraph 1, of the Tenant Protection Act); the parties
@@ -292,9 +292,9 @@
 </div>
 
 <div th:fragment="clause-termination" data-clause="termination">
-  <p>The Landlord may terminate the agreement only on the grounds laid down by statute, in particular in Article 11,
-    paragraphs 2&ndash;5, of the Tenant Protection Act; the notice must be given in writing, failing which it is void,
-    and must state the ground for termination (Article 11, paragraph 1, of the Tenant Protection Act).</p>
+  <p>The Landlord may terminate the agreement only on the grounds laid down by statute; the notice must be given
+    in writing, failing which it is void, and must state the ground for termination (Article 11, paragraph 1, of the
+    Tenant Protection Act).</p>
   <p>No later than 1 month in advance, for the end of a calendar month, the Landlord may terminate the agreement if
     the Tenant: (a) despite a written warning, continues to use the Premises in a manner contrary to the agreement or
     to their purpose, or neglects obligations, allowing damage to occur, or destroys equipment intended for the common
@@ -305,12 +305,12 @@
     intention to terminate and given an additional 1-month period to pay the arrears and current amounts due, or (c)
     has let, sublet or given for use free of charge the Premises or part of them without the required written consent
     of the Landlord (Article 11, paragraph 2, points 1&ndash;3, of the Tenant Protection Act).</p>
-  <p>The Landlord may further terminate the agreement only on the grounds, under the conditions and with the notice
-    periods laid down in Article 11, paragraph 2, point 4, and paragraphs 3&ndash;7 and 12, of the Tenant Protection
-    Act.</p>
+  <p th:if="${!fixedTerm}">The Landlord may further terminate an agreement concluded for an indefinite term only
+    on the grounds, under the conditions and with the notice periods laid down in Article 11, paragraph 2, point 4,
+    and paragraphs 3&ndash;7 and 12, of the Tenant Protection Act.</p>
   <p th:if="${fixedTerm}">The parties may terminate an agreement concluded for a fixed term in the cases specified
-    in the agreement (Article 673 § 3 of the Civil Code). The parties stipulate that the Landlord may terminate it in
-    the cases specified in Article 11, paragraphs 2 and 3, of the Tenant Protection Act, under the conditions and with
+    in the agreement (Article 673 § 3 of the Civil Code). The parties stipulate that the Landlord may terminate it only
+    in the cases specified in Article 11, paragraphs 2 and 3, of the Tenant Protection Act, under the conditions and with
     the notice periods laid down there, and the Tenant in the following cases and with the following notice period:
     ______________________________</p>
   <p th:if="${!fixedTerm}">The Tenant may terminate an agreement concluded for an indefinite term with the agreed

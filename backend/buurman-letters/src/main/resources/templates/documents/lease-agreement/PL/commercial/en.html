@@ -114,17 +114,19 @@
 <div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
   <p>The parties stipulate that the amount of the rent will be determined by a measure of value other than money
     (Article 358¹ § 2 of the Civil Code): the rent changes annually, starting from ____________________, by the
-    average annual index of prices of consumer goods and services overall for the previous calendar year announced by
-    the President of Statistics Poland (Prezes Głównego Urzędu Statystycznego), or by the following measure:
+    percentage change of the average annual index of prices of consumer goods and services overall for the previous
+    calendar year, announced by the President of Statistics Poland (Prezes Głównego Urzędu Statystycznego) (the index
+    minus 100), or by the following measure:
     ______________________________. The indexation takes effect on the basis of the Landlord&rsquo;s written
     notification and does not require an amendment of the agreement.</p>
   <p>The landlord of premises may increase the rent by giving notice of the current amount of the rent at the
     latest 1 month in advance, for the end of a calendar month (Article 685¹ of the Civil Code). Stipulations of the
-    parties on rent increases by this procedure, if any: ______________________________</p>
+    parties on rent increases by this procedure or on exclusion of this procedure, if any: ______________________________</p>
   <p>In the event of a material change in the purchasing power of money after the obligation arose, the court may,
     having considered the interests of the parties and in accordance with the principles of community life, change
     the amount or the manner of performance of the monetary obligation, even if they were fixed in the agreement
-    (Article 358¹ § 3 of the Civil Code).</p>
+    (Article 358¹ § 3 of the Civil Code); a party running an enterprise may not make that request if the performance
+    is connected with running that enterprise (Article 358¹ § 4 of the Civil Code).</p>
 </div>
 
 <div th:fragment="clause-service-costs" data-clause="service-costs">
@@ -154,7 +156,7 @@
   <p th:if="${depositAmount != null}">On conclusion of the agreement the Tenant pays the Landlord a security
     deposit (kaucja) securing the Landlord&rsquo;s claims under the agreement in the amount of
     <strong th:text="${depositAmount}">amount</strong>.</p>
-  <p th:if="${depositAmount == null}">The parties do not agree a security deposit. Security deposit or other
+  <p th:if="${depositAmount == null}">The parties do not provide for a security deposit. Security deposit or other
     security (bank or insurance guarantee, surety) agreed by the parties, if any: ______________________________</p>
   <p>The Civil Code does not set the amount of a security deposit in a lease of commercial premises; its amount, its
     use and the time limit for its repayment are agreed by the parties. The parties stipulate that the Landlord may

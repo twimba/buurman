@@ -36,12 +36,12 @@
 <body>
 
 <div th:fragment="clause-parties" data-clause="parties">
-  <p>Wynajmujący: <strong th:text="${landlordName}">Wynajmujący</strong>, zwany dalej &bdquo;Wynajmującym&rdquo;,</p>
+  <p>Wynajmujący: <strong th:text="${landlordName}">Wynajmujący</strong>, dalej: &bdquo;Wynajmujący&rdquo;,</p>
   <p>siedziba i adres, numer KRS albo wpis do CEIDG, NIP i REGON Wynajmującego: ______________________________</p>
   <p>reprezentowany przez: ______________________________, na podstawie: ______________________________,</p>
-  <p th:if="${!#strings.isEmpty(tenantNames)}">Najemca: <strong th:text="${tenantNames}">Najemca</strong>, zwany
-    dalej &bdquo;Najemcą&rdquo;,</p>
-  <p th:if="${#strings.isEmpty(tenantNames)}">Najemca podpisany na końcu umowy, zwany dalej &bdquo;Najemcą&rdquo;,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">Najemca: <strong th:text="${tenantNames}">Najemca</strong>, dalej:
+    &bdquo;Najemca&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">Najemca podpisany na końcu umowy, dalej: &bdquo;Najemca&rdquo;,</p>
   <p>siedziba i adres, numer KRS albo wpis do CEIDG, NIP i REGON Najemcy: ______________________________</p>
   <p>reprezentowany przez: ______________________________, na podstawie: ______________________________,</p>
   <p>zawierają umowę najmu lokalu użytkowego, do której stosuje się przepisy ustawy z dnia 23 kwietnia 1964 r. &ndash;
@@ -104,16 +104,18 @@
 
 <div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
   <p>Strony zastrzegają, że wysokość czynszu zostanie ustalona według innego niż pieniądz miernika wartości (art.
-    358¹ § 2 k.c.): czynsz ulega zmianie corocznie, począwszy od ____________________, o średnioroczny wskaźnik cen
-    towarów i usług konsumpcyjnych ogółem za poprzedni rok kalendarzowy ogłaszany przez Prezesa Głównego Urzędu
-    Statystycznego, albo według następującego miernika: ______________________________. Waloryzacja następuje na
+    358¹ § 2 k.c.): czynsz ulega zmianie corocznie, począwszy od ____________________, o procent zmiany
+    średniorocznego wskaźnika cen towarów i usług konsumpcyjnych ogółem za poprzedni rok kalendarzowy, ogłaszanego
+    przez Prezesa Głównego Urzędu Statystycznego (wskaźnik pomniejszony o 100), albo według następującego miernika: ______________________________. Waloryzacja następuje na
     podstawie pisemnego zawiadomienia Wynajmującego i nie wymaga zmiany umowy.</p>
   <p>Wynajmujący lokal może podwyższyć czynsz, wypowiadając dotychczasową wysokość czynszu najpóźniej na 1 miesiąc
     naprzód, na koniec miesiąca kalendarzowego (art. 685¹ k.c.). Postanowienia stron dotyczące podwyższania czynszu w
-    tym trybie, jeżeli są: ______________________________</p>
+    tym trybie lub wyłączenia tego trybu, jeżeli są: ______________________________</p>
   <p>W razie istotnej zmiany siły nabywczej pieniądza po powstaniu zobowiązania sąd może po rozważeniu interesów
     stron, zgodnie z zasadami współżycia społecznego, zmienić wysokość lub sposób spełnienia świadczenia pieniężnego,
-    chociażby były ustalone w umowie (art. 358¹ § 3 k.c.).</p>
+    chociażby były ustalone w umowie (art. 358¹ § 3 k.c.); z żądaniem tym nie może wystąpić strona prowadząca
+    przedsiębiorstwo, jeżeli świadczenie pozostaje w związku z prowadzeniem tego przedsiębiorstwa (art. 358¹ § 4
+    k.c.).</p>
 </div>
 
 <div th:fragment="clause-service-costs" data-clause="service-costs">
@@ -141,7 +143,7 @@
 <div th:fragment="clause-deposit" data-clause="deposit">
   <p th:if="${depositAmount != null}">Najemca wpłaca Wynajmującemu przy zawarciu umowy kaucję zabezpieczającą
     roszczenia Wynajmującego wynikające z umowy w kwocie <strong th:text="${depositAmount}">kwota</strong>.</p>
-  <p th:if="${depositAmount == null}">Strony nie uzgadniają kaucji. Kaucja lub inne zabezpieczenie (gwarancja
+  <p th:if="${depositAmount == null}">Strony nie przewidują kaucji. Kaucja lub inne zabezpieczenie (gwarancja
     bankowa lub ubezpieczeniowa, poręczenie) uzgodnione przez strony, jeżeli są: ______________________________</p>
   <p>Kodeks cywilny nie określa wysokości kaucji przy najmie lokalu użytkowego; jej wysokość, sposób wykorzystania i
     termin zwrotu ustalają strony. Strony postanawiają, że Wynajmujący może zaspokoić z kaucji wymagalne

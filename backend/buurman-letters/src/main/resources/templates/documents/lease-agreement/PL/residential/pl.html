@@ -38,12 +38,12 @@
 <body>
 
 <div th:fragment="clause-parties" data-clause="parties">
-  <p>Wynajmujący: <strong th:text="${landlordName}">Wynajmujący</strong>, zwany dalej &bdquo;Wynajmującym&rdquo;,</p>
+  <p>Wynajmujący: <strong th:text="${landlordName}">Wynajmujący</strong>, dalej: &bdquo;Wynajmujący&rdquo;,</p>
   <p>numer PESEL albo numer dokumentu tożsamości oraz adres zamieszkania lub siedziby Wynajmującego: ______________________________</p>
-  <p th:if="${!#strings.isEmpty(tenantNames)}">Najemca: <strong th:text="${tenantNames}">Najemca</strong>, zwany
-    dalej (łącznie) &bdquo;Najemcą&rdquo;,</p>
-  <p th:if="${#strings.isEmpty(tenantNames)}">Najemca lub najemcy podpisani na końcu umowy, zwani dalej (łącznie)
-    &bdquo;Najemcą&rdquo;,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">Najemca: <strong th:text="${tenantNames}">Najemca</strong>, dalej
+    (łącznie): &bdquo;Najemca&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">Najemca lub najemcy podpisani na końcu umowy, dalej (łącznie):
+    &bdquo;Najemca&rdquo;,</p>
   <p>numer PESEL albo numer dokumentu tożsamości oraz dotychczasowy adres zamieszkania Najemcy: ______________________________,</p>
   <p>zawierają umowę najmu lokalu mieszkalnego, do której stosuje się przepisy ustawy z dnia 23 kwietnia 1964 r. &ndash;
     Kodeks cywilny (tekst jednolity: Dz.U. z 2026 r. poz. 795; dalej: &bdquo;k.c.&rdquo;), w szczególności art. 659&ndash;692
@@ -111,7 +111,7 @@
     9 ust. 8 u.o.p.l.).</p>
   <p>W ciągu 2 miesięcy od dnia wypowiedzenia Najemca może odmówić na piśmie przyjęcia podwyżki ze skutkiem
     rozwiązania umowy z upływem okresu wypowiedzenia albo zakwestionować podwyżkę, o której mowa w art. 8a ust. 4
-    u.o.p.l., wnosząc do sądu pozew o ustalenie, że podwyżka jest niezasadna albo jest zasadna, lecz w innej
+    u.o.p.l., wnosząc do sądu pozew o ustalenie, na podstawie przepisów ust. 4a&ndash;4e, że podwyżka jest niezasadna albo jest zasadna, lecz w innej
     wysokości; udowodnienie zasadności podwyżki ciąży na Wynajmującym (art. 8a ust. 5 u.o.p.l.). W pierwszym
     przypadku Najemca uiszcza czynsz w dotychczasowej wysokości do dnia rozwiązania umowy, a w drugim &ndash; do dnia
     uprawomocnienia się orzeczenia sądu, z obowiązkiem zapłaty różnicy za okres od upływu terminu wypowiedzenia,
@@ -140,7 +140,7 @@
   <p th:if="${depositAmount != null}">Najemca wpłaca Wynajmującemu przy zawarciu umowy kaucję zabezpieczającą
     pokrycie należności z tytułu najmu Lokalu, przysługujących Wynajmującemu w dniu opróżnienia Lokalu, w kwocie
     <strong th:text="${depositAmount}">kwota</strong>.</p>
-  <p th:if="${depositAmount == null}">Strony nie uzgadniają kaucji. Kaucja uzgodniona przez strony, jeżeli jest:
+  <p th:if="${depositAmount == null}">Strony nie przewidują kaucji. Kaucja uzgodniona przez strony, jeżeli jest:
     ______________________________</p>
   <p>Kaucja nie może przekraczać 12-krotności miesięcznego czynszu za Lokal, obliczonego według stawki czynszu
     obowiązującej w dniu zawarcia umowy (art. 6 ust. 1 u.o.p.l.); strony postanawiają, że kwota kaucji nie przekracza
@@ -265,9 +265,8 @@
 </div>
 
 <div th:fragment="clause-termination" data-clause="termination">
-  <p>Wynajmujący może wypowiedzieć umowę tylko z przyczyn określonych w ustawie, w szczególności w
-    art. 11 ust. 2&ndash;5 u.o.p.l.; wypowiedzenie powinno być pod rygorem nieważności dokonane na piśmie oraz określać przyczynę
-    wypowiedzenia (art. 11 ust. 1 u.o.p.l.).</p>
+  <p>Wynajmujący może wypowiedzieć umowę tylko z przyczyn określonych w ustawie; wypowiedzenie powinno być pod
+    rygorem nieważności dokonane na piśmie oraz określać przyczynę wypowiedzenia (art. 11 ust. 1 u.o.p.l.).</p>
   <p>Nie później niż na 1 miesiąc naprzód, na koniec miesiąca kalendarzowego, Wynajmujący może wypowiedzieć umowę,
     jeżeli Najemca: a) pomimo pisemnego upomnienia nadal używa Lokalu w sposób sprzeczny z umową lub niezgodnie z jego
     przeznaczeniem lub zaniedbuje obowiązki, dopuszczając do powstania szkód, lub niszczy urządzenia przeznaczone do
@@ -278,11 +277,12 @@
     płatności pomimo uprzedzenia go na piśmie o zamiarze wypowiedzenia i wyznaczenia dodatkowego, 1-miesięcznego
     terminu do zapłaty zaległych i bieżących należności, lub c) wynajął, podnajął albo oddał do bezpłatnego używania
     Lokal lub jego część bez wymaganej pisemnej zgody Wynajmującego (art. 11 ust. 2 pkt 1&ndash;3 u.o.p.l.).</p>
-  <p>Wynajmujący może ponadto wypowiedzieć umowę wyłącznie z przyczyn, na warunkach i z zachowaniem terminów
-    określonych w art. 11 ust. 2 pkt 4 oraz ust. 3&ndash;7 i 12 u.o.p.l.</p>
+  <p th:if="${!fixedTerm}">Umowę zawartą na czas nieoznaczony Wynajmujący może ponadto wypowiedzieć wyłącznie z
+    przyczyn, na warunkach i z zachowaniem terminów określonych w art. 11 ust. 2 pkt 4 oraz ust. 3&ndash;7 i 12
+    u.o.p.l.</p>
   <p th:if="${fixedTerm}">Umowę zawartą na czas oznaczony strony mogą wypowiedzieć w wypadkach określonych w umowie
-    (art. 673 § 3 k.c.). Strony postanawiają, że Wynajmujący może ją wypowiedzieć w wypadkach określonych w art. 11
-    ust. 2 i 3 u.o.p.l., na warunkach i z zachowaniem terminów tam przewidzianych, a Najemca &ndash; w następujących
+    (art. 673 § 3 k.c.). Strony postanawiają, że Wynajmujący może ją wypowiedzieć wyłącznie w wypadkach określonych
+    w art. 11 ust. 2 i 3 u.o.p.l., na warunkach i z zachowaniem terminów tam przewidzianych, a Najemca &ndash; w następujących
     wypadkach i z zachowaniem następującego terminu wypowiedzenia: ______________________________</p>
   <p th:if="${!fixedTerm}">Najemca może wypowiedzieć umowę zawartą na czas nieoznaczony z zachowaniem terminu
     umownego, a w jego braku &ndash; jeżeli czynsz jest płatny miesięcznie &ndash; najpóźniej na 3 miesiące naprzód na

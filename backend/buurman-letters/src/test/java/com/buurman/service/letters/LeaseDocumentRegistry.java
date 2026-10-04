@@ -646,17 +646,29 @@ public final class LeaseDocumentRegistry {
   // Constants, citation pattern and foreign markers for PL go here, only inside these markers.
 
   /**
-   * The Polish statute citation format: the article number after "art." / "article(s)": {@code art.
-   * 688 § 1 k.c.} / {@code Article 688 § 1 of the Civil Code}, {@code art. 6 ust. 1 u.o.p.l.} /
-   * {@code Article 6, paragraph 1, of the Tenant Protection Act}, {@code art. 8a ust. 4} / {@code
-   * Article 8a, paragraph 4}, {@code art. 688¹} / {@code Article 688¹}. Only the digits are the
-   * token, so a letter or superscript suffix ("8a", "688¹") is skipped before the paragraph digit
-   * after "§" / "ust." / "paragraph" that the gate pairs; "art." / "Article" is repeated before
-   * every article number in both languages ("art. 19a i art. 19f" / "Article 19a and Article 19f").
+   * The Polish statute citation format. Two kinds of token, each WITH its letter or superscript
+   * suffix, so "art. 6b" vs "Article 6c", "688¹" vs "688²", "8a" vs "8" or "ust. 1b" vs "paragraph
+   * 1" differ:
+   *
+   * <ul>
+   *   <li>the article after "art." / "article(s)": {@code art. 688¹ § 1 k.c.} / {@code Article 688¹
+   *       § 1 of the Civil Code} give "688¹ 1"; {@code art. 6 ust. 1 u.o.p.l.} / {@code Article 6,
+   *       paragraph 1, of the Tenant Protection Act} give "6 1"; {@code art. 8a ust. 4} / {@code
+   *       Article 8a, paragraph 4} give "8a 4" (the plain paragraph digit after "§" / "ust." /
+   *       "paragraph" is paired by the gate);
+   *   <li>a paragraph that carries a letter, after "ust." / "paragraph(s)": {@code art. 9 ust. 1b}
+   *       / {@code Article 9, paragraph 1b} give "9" and "1b" (a plain paragraph digit is not a
+   *       token of its own, it stays paired with its article).
+   * </ul>
+   *
+   * The superscript is written as "¹" / "²" / "³" in every language, never "^1" or "(1)". "art." /
+   * "Article" is repeated before every article number in both languages ("art. 19a i art. 19f" /
+   * "Article 19a and Article 19f").
    */
   public static final Pattern POLISH_CITATION =
       Pattern.compile(
-          "(?<=\\b(?:art\\.|articles?)\\s{1,20})\\d+",
+          "(?<=\\b(?:art\\.|articles?)\\s{1,20})\\d+[a-z]*[¹²³]?"
+              + "|(?<=\\b(?:ust\\.|paragraphs?)\\s{1,20})\\d+[a-z]+",
           Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
   /** Polish marker words that must not leak into translations outside parenthetical glosses. */
