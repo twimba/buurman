@@ -7,8 +7,11 @@ type ToastMutationOptions<TData, TVars> = Omit<
   UseMutationOptions<TData, unknown, TVars>,
   'onError'
 > & {
-  /** Toast shown on success (omit to show none). */
-  successMessage?: string;
+  /**
+   * Toast shown on success (omit to show none). A function receives the mutation variables, so
+   * a single call can opt out by returning undefined.
+   */
+  successMessage?: string | ((variables: TVars) => string | undefined);
   /**
    * Translated toast text per ProblemDetail `code`; a response whose code is listed shows that
    * text instead of the server's detail. Other errors keep the default handling.
@@ -29,8 +32,12 @@ export function useMutationWithToast<TData, TVars>(
   return useMutation<TData, unknown, TVars>({
     ...rest,
     onSuccess: (...args) => {
-      if (successMessage) {
-        showToast(successMessage, 'success');
+      const message =
+        typeof successMessage === 'function'
+          ? successMessage(args[1])
+          : successMessage;
+      if (message) {
+        showToast(message, 'success');
       }
       onSuccess?.(...args);
     },

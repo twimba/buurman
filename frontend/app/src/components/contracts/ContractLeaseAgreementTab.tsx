@@ -127,16 +127,20 @@ export const ContractLeaseAgreementTab = ({
     }));
   };
 
-  /** Persists the local selection; rejects (after the hook's error toast) when the save fails. */
-  const saveSelection = async () => {
-    await updateMutation.mutateAsync(
-      orderedClauses().map((clause, index) => ({
+  /**
+   * Persists the local selection; rejects (after the hook's error toast) when the save fails.
+   * `silent` skips the success toast when a generate (with its own toast) follows.
+   */
+  const saveSelection = async (silent = false) => {
+    await updateMutation.mutateAsync({
+      clauses: orderedClauses().map((clause, index) => ({
         templateIdentifier: clause.templateIdentifier,
         included: isIncluded(clause),
         // The server ignores a pinned clause's sortOrder, so it is sent unchanged.
         sortOrder: clause.pinned || !order ? clause.sortOrder : index + 1,
-      }))
-    );
+      })),
+      silent,
+    });
     setOverrides({});
     setOrder(null);
   };
@@ -156,7 +160,7 @@ export const ContractLeaseAgreementTab = ({
       // Generate only from the saved selection: wait for the save, and stop if it fails.
       setSavingThenGenerating(true);
       try {
-        await saveSelection();
+        await saveSelection(true);
       } catch {
         setSavingThenGenerating(false);
         return;

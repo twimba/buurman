@@ -261,9 +261,36 @@ describe('ContractLeaseAgreementTab', () => {
         expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'en' });
       });
       expect(calls).toEqual(['save', 'generate']);
+      // Exactly one success toast: the generate one, not "saved" followed by "generated".
       expect(
-        await screen.findByText(/find it in the documents tab/i)
-      ).toBeInTheDocument();
+        await screen.findAllByText(/find it in the documents tab/i)
+      ).toHaveLength(1);
+      expect(screen.queryByText('Clause selection saved')).toBeNull();
+    });
+
+    it('keeps the saved toast for the standalone Save selection button', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      vi.spyOn(leaseAgreementApi, 'updateLeaseClauses').mockResolvedValue(
+        documentEnvelope([CLAUSES[0], { ...CLAUSES[1], included: false }])
+      );
+      const generateSpy = vi.spyOn(leaseAgreementApi, 'generateLeaseAgreement');
+      generateSpy.mockClear();
+      await renderTab();
+
+      await userEvent.click(
+        screen.getByRole('checkbox', { name: 'Furnished addendum' })
+      );
+      await userEvent.click(
+        screen.getByRole('button', { name: /save selection/i })
+      );
+
+      expect(await screen.findAllByText('Clause selection saved')).toHaveLength(
+        1
+      );
+      expect(screen.queryByText(/find it in the documents tab/i)).toBeNull();
+      expect(generateSpy).not.toHaveBeenCalled();
     });
 
     it('does not generate when the save fails and shows the error toast', async () => {

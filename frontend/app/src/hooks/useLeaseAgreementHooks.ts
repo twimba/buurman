@@ -38,13 +38,21 @@ const useLeaseErrorCodeMessages = (): Record<string, string> => {
   };
 };
 
+export interface UpdateLeaseClausesVariables {
+  clauses: UpdateContractLeaseClausesRequestClausesItem[];
+  /** Skip the success toast (errors are still shown). */
+  silent?: boolean;
+}
+
 export const useUpdateLeaseClauses = (contractId: string) => {
   const queryClient = useQueryClient();
   const errorCodeMessages = useLeaseErrorCodeMessages();
   return useMutationWithToast({
     errorCodeMessages,
-    successMessage: 'Clause selection saved',
-    mutationFn: (clauses: UpdateContractLeaseClausesRequestClausesItem[]) =>
+    // Silent when the save is the first step of save-and-generate: the generate toast follows.
+    successMessage: ({ silent }) =>
+      silent ? undefined : 'Clause selection saved',
+    mutationFn: ({ clauses }: UpdateLeaseClausesVariables) =>
       updateLeaseClauses(contractId, { clauses }),
     onSuccess: (data) => {
       queryClient.setQueryData(
