@@ -1,0 +1,264 @@
+<!--
+  legal-basis: Buergerliches Gesetzbuch (BGB) Buch 2, Abschnitt 8, Titel 5 (Mietvertrag, Pachtvertrag), Untertitel 1
+               and 2 (Mietverhaeltnisse ueber Wohnraum), as published on gesetze-im-internet.de:
+               § 288, § 535, § 536, § 536c, § 538, § 540, § 543, § 546, § 548, § 550, § 551, § 553, § 555, § 555a,
+               § 556, § 556b, § 556d, § 556g, § 557, § 557a, § 557b, § 558, § 560, § 566, § 566a, § 568, § 569,
+               § 573, § 573c, § 574, § 574b, § 575.
+               Mietpreisbremse: § 556d Abs. 2 BGB, Land ordinances must expire by 31.12.2029 (federal extension,
+               Gesetz vom 17.07.2025, BGBl. 2025 I Nr. 163); designated areas are set per municipality by the
+               Laender, so no regionCode branch is made.
+               Betriebskostenverordnung (BetrKV) § 2; Heizkostenverordnung (HeizkostenV) § 7; Kohlendioxidkosten-
+               aufteilungsgesetz (CO2KostAufG); Gebaeudeenergiegesetz (GEG) § 80 Abs. 4 and 5; Bundesmeldegesetz
+               (BMG) § 17 and § 19; Zivilprozessordnung (ZPO) § 29a; Gerichtsverfassungsgesetz (GVG) § 23.
+               DSGVO: Verordnung (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04 against gesetze-im-internet.de (section texts read on that date).
+               Pending: Mietrechtspaket 2026 (BT-Drs. 21/6807, Regierungsentwurf, first reading 09.07.2026:
+               Indexmiete cap in tight markets, furnished-letting surcharge, short-term lets) - re-verify
+               § 557b and the term and rent clauses after it is enacted.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in de.html, never spelled out (de "3 Monatsmieten" is "3 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of de.html; the German text is authoritative. It states German law (BGB) in
+  English and is not the law of any other country. Draft text, not vetted by legal counsel. Only prose differs
+  from de.html: fragments, th: expressions and attributes are identical (enforced by LeaseDocumentFidelityTest).
+  Each clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles.
+  Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers
+  of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant(s) signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;,</p>
+  <p>the following lease of residential premises (Mietvertrag über Wohnraum) is concluded. If several persons
+    are tenants, they are liable for all obligations under this agreement as joint and several debtors
+    (Gesamtschuldner).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, for residential purposes, the dwelling at
+    <strong th:text="${propertyAddress}">address</strong> together with the ancillary rooms and fixtures
+    described in this agreement, hereinafter &ldquo;the leased property&rdquo; (Mietsache).</p>
+  <p>The provisions of the German Civil Code (Bürgerliches Gesetzbuch, BGB) on leases of residential premises
+    (§§ 535 ff. BGB) apply to this agreement. Where under those provisions an agreement deviating to the
+    tenant&rsquo;s disadvantage is invalid, those provisions prevail over deviating terms of this agreement.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The tenancy is concluded for an indefinite period.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>The tenancy is concluded for a fixed term<span th:if="${endDate != null}"> and ends at the end of
+      <strong th:text="${endDate}">end date</strong></span>. A tenancy of residential premises may be entered
+      into for a fixed term only if, after the end of the lease term, the landlord intends to use the premises
+      for himself, his family members or members of his household, to remove them lawfully or to alter or repair
+      them substantially, or to let them to a person obliged to render services, and the landlord informs the
+      tenant in writing of the reason for the fixed term when the agreement is concluded; otherwise the tenancy
+      is deemed concluded for an indefinite period (§ 575 para. 1 BGB).</p>
+    <p>Reason for the fixed term: ______________________________________________</p>
+    <p>The tenant may, at the earliest 4 months before the fixed term expires, require the landlord to state
+      within 1 month whether the reason for the fixed term still exists; if the landlord replies later, the
+      tenant may demand an extension by the period of the delay (§ 575 para. 2 BGB). If the reason arises
+      later or ceases to exist, the tenant&rsquo;s claims under § 575 para. 3 BGB apply.</p>
+  </th:block>
+  <p>If this agreement is concluded for longer than 1 year and not in written form, it is deemed concluded for
+    an indefinite period (§ 550 BGB).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent excluding operating costs (net rent, Nettokaltmiete) is <strong th:text="${rentAmount}">amount</strong>
+    <span th:text="${paymentFrequency}">monthly</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> In addition, the tenant makes advance payments on the operating costs (see
+    article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>If the dwelling is located in an area with a tight housing market designated by ordinance of the Land
+    government (Landesregierung), the rent at the start of the tenancy may exceed the customary local
+    comparative rent (ortsübliche Vergleichsmiete) by at most 10 percent, unless a statutory exception applies
+    (§ 556d para. 1 BGB, §§ 556e and 556f BGB). If the landlord relies on such an exception, the landlord must
+    inform the tenant of it, unprompted, before the tenant makes the contractual declaration
+    (§ 556g para. 1a BGB). An agreement on a higher rent is invalid to that extent.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are governed by what this agreement provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Rent increases are governed by the statutory provisions. The landlord may demand consent to an increase of
+    the rent up to the customary local comparative rent if, at the time the increase is to take effect, the rent
+    has remained unchanged for 15 months; the demand may be made at the earliest 1 year after the last rent
+    increase (§ 558 para. 1 BGB).</p>
+  <p>Within 3 years the rent may not increase by more than 20 percent (capping limit, Kappungsgrenze); in
+    areas designated by ordinance of the Land government, the capping limit is 15 percent
+    (§ 558 para. 3 BGB). Increases for modernisation and for higher operating costs are governed by the
+    statutory provisions applicable to them.</p>
+  <p>A graduated rent (Staffelmiete) or an index-linked rent (Indexmiete) applies only if the parties have
+    agreed it separately in writing; § 557a BGB and § 557b BGB then apply, and the rent must in each case remain
+    unchanged for at least 1 year. An agreement deviating to the tenant&rsquo;s disadvantage is invalid
+    (§ 558 para. 6 BGB).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The tenant bears the operating costs (Betriebskosten) within the meaning of § 2 of the Operating Costs
+    Ordinance (Betriebskostenverordnung, BetrKV), insofar as they arise for the leased property
+    (§ 556 para. 1 BGB). For these the tenant makes monthly advance payments together with the rent, in the
+    amount stated in this agreement; advance payments may only be agreed in a reasonable amount
+    (§ 556 para. 2 BGB).</p>
+  <p>The landlord settles the advance payments annually. The statement must be communicated to the tenant no
+    later than the end of the 12th month after the end of the settlement period; after that, a claim for
+    additional payment is excluded unless the landlord is not responsible for the delay. The tenant raises
+    objections to the statement no later than the end of the 12th month after receiving it
+    (§ 556 para. 3 BGB). On request, the landlord grants inspection of the supporting documents.</p>
+  <p>After a settlement, either party may adjust the advance payments to a reasonable amount by a declaration
+    in text form (Textform) (§ 560 para. 4 BGB). The costs of heating and hot water are allocated predominantly
+    according to recorded consumption under the Heating Costs Ordinance (Heizkostenverordnung); carbon dioxide
+    costs are shared between the parties under the Carbon Dioxide Cost Allocation Act
+    (Kohlendioxidkostenaufteilungsgesetz).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant provides the landlord with security for the performance of the
+    tenant&rsquo;s obligations (rent deposit, Mietkaution) in the amount of <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">The tenant provides the landlord with security for the performance of the
+    tenant&rsquo;s obligations (rent deposit, Mietkaution) in the amount agreed in writing between the parties.</p>
+  <p>The security may not exceed 3 months&rsquo; rent, excluding operating costs shown as a flat rate or as
+    advance payments (§ 551 para. 1 BGB). The tenant is entitled to pay a sum of money in 3 equal monthly
+    instalments; the first instalment is due at the start of the tenancy, the further instalments fall due
+    together with the immediately following rent payments (§ 551 para. 2 BGB).</p>
+  <p>The landlord invests the sum of money separately from the landlord&rsquo;s own assets with a credit
+    institution at the interest rate customary for savings deposits with a notice period of 3 months; the
+    income belongs to the tenant and increases the security (§ 551 para. 3 BGB). An agreement deviating to the
+    tenant&rsquo;s disadvantage is invalid (§ 551 para. 4 BGB). After the tenancy ends, the landlord settles the
+    security within a reasonable period and repays the amount not required.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Damage is
+    assessed on the return of the leased property (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the advance payments on operating costs</span>
+    <span th:text="${paymentFrequency}">monthly</span> in advance,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of the
+      payment period concerned; if that day falls before the 3rd working day, payment by the 3rd working day is sufficient</span><span
+    th:if="${paymentDueDay == null}">no later than the 3rd working day of the payment period concerned</span>
+    (§ 556b para. 1 BGB), by transfer to the account designated by the landlord in text form. Payment is in
+    time if the payment order has been given in time.</p>
+  <p>The tenant may set off claims under §§ 536a, 539 BGB or for rent paid in excess, or exercise a right of
+    retention, if the tenant has notified the landlord in text form at least 1 month before the rent falls due
+    (§ 556b para. 2 BGB).</p>
+  <p>In the event of late payment the tenant owes default interest of 5 percentage points above the base rate
+    (Basiszinssatz) (§ 288 para. 1 BGB). A contractual penalty at the tenant&rsquo;s expense is invalid
+    (§ 555 BGB).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The leased property may be used for residential purposes only. The tenant treats the leased property with
+    care and shows consideration for the other occupants of the building and the neighbours; any house rules
+    (Hausordnung) form part of this agreement insofar as they do not conflict with it.</p>
+  <p>The tenant makes structural alterations, installations or conversions only with the landlord&rsquo;s prior
+    consent in text form. When the tenancy ends, the tenant restores the original condition unless otherwise
+    agreed.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant is not entitled, without the landlord&rsquo;s permission, to let a third party use the leased
+    property, in particular to sublet it. If the landlord refuses permission, the tenant may terminate the
+    tenancy extraordinarily with the statutory notice period, unless there is a compelling reason relating to
+    the person of the third party (§ 540 para. 1 BGB).</p>
+  <p>If, after this agreement is concluded, the tenant acquires a legitimate interest in letting a third party
+    use part of the dwelling, the tenant may demand the landlord&rsquo;s permission, unless a compelling reason
+    stands in the way (§ 553 para. 1 BGB). If the tenant lets a third party use the property, the tenant is
+    responsible for any fault of the third party in that use (§ 540 para. 2 BGB).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>During the lease term the landlord maintains the leased property in a condition suitable for the
+    contractual use (§ 535 para. 1 BGB). If a defect appears, or a measure to protect the leased property
+    against an unforeseen danger becomes necessary, the tenant notifies the landlord without undue delay
+    (§ 536c para. 1 BGB).</p>
+  <p>If a defect removes or reduces the fitness of the leased property for the contractual use, the tenant is,
+    in accordance with § 536 BGB, exempt from the rent or entitled to pay an appropriately reduced rent; an
+    agreement deviating to the tenant&rsquo;s disadvantage is invalid (§ 536 para. 4 BGB).</p>
+  <p>Cosmetic repairs (Schönheitsreparaturen) are not the tenant&rsquo;s responsibility under this agreement.
+    The tenant is not responsible for changes or deterioration of the leased property caused by contractual use
+    (§ 538 BGB); for damage going beyond that, the tenant is liable under the statutory provisions.</p>
+  <p>The tenant tolerates measures necessary for the maintenance or repair of the leased property; the landlord
+    announces them in good time unless they have only an insignificant effect or their immediate execution is
+    imperative (§ 555a paras. 1 and 2 BGB). Where the law of the Land requires smoke detectors, its provisions
+    on installation and maintenance apply.</p>
+</div>
+
+<div th:fragment="clause-minor-repairs" data-clause="minor-repairs">
+  <p>The tenant bears the cost of minor maintenance work on those parts of the leased property that are exposed
+    to the tenant&rsquo;s frequent and direct access, such as installations for electricity, water and gas,
+    heating and cooking appliances, window and door fastenings and the locking devices of shutters.</p>
+  <p>This cost bearing is limited to ________ EUR per individual job and to a total of ________ EUR per
+    calendar year. If the cost of a job exceeds the amount per job, the tenant bears no part of it. The tenant
+    is not obliged to carry out the work.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The landlord presented an energy performance certificate (Energieausweis) or a copy of it to the tenant
+    no later than at the viewing and hands the energy performance certificate or a copy of it to the tenant
+    without undue delay after this agreement is concluded (§ 80 paras. 4 and 5 GEG, Building Energy Act).</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>The landlord, as the provider of the dwelling (Wohnungsgeber), confirms the move-in to the tenant in
+    writing, or electronically to the registration authority, within 2 weeks after moving in, so that the
+    tenant can comply with the duty to register (§ 19 para. 1 BMG, § 17 para. 1 BMG).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>When the leased property is handed over, the parties jointly draw up a handover report
+    (Übergabeprotokoll) on the condition of the leased property, the meter readings and the keys handed over.
+    Both parties sign the report and each receives a copy.</p>
+  <p>After the tenancy ends, the tenant returns the leased property with all keys (§ 546 para. 1 BGB). The
+    parties then draw up a return report. The landlord&rsquo;s claims for compensation for changes to or
+    deterioration of the leased property become time-barred 6 months after the landlord gets the property back
+    (§ 548 para. 1 BGB).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The settlement
+    of the rent deposit follows (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Notice of termination (Kündigung) must be given in written form (§ 568 para. 1 BGB). Ordinary notice is
+    permissible no later than the 3rd working day of a calendar month with effect from the end of the month
+    after next (§ 573c para. 1 sentence 1 BGB). For the landlord the notice period is extended by 3 months each
+    after 5 and 8 years since the dwelling was handed over (§ 573c para. 1 sentence 2 BGB).</p>
+  <p>The landlord may give notice only if the landlord has a legitimate interest in ending the tenancy, in
+    particular in the cases of § 573 para. 2 BGB; the reasons must be stated in the notice letter
+    (§ 573 para. 3 BGB). The landlord should inform the tenant in good time of the possibility, form and time
+    limit of an objection under §§ 574 to 574b BGB (§ 568 para. 2 BGB); the objection must be declared in text
+    form no later than 2 months before the tenancy ends (§ 574b para. 2 BGB).</p>
+  <p th:if="${fixedTerm}">If the tenancy has validly been concluded for a fixed term<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span>,
+    ordinary notice is excluded for both parties during the agreed lease term; the right to extraordinary notice
+    remains unaffected.</p>
+  <p>Either party may terminate the tenancy extraordinarily without notice for good cause
+    (§ 543 para. 1 BGB, § 569 BGB); the good cause leading to the termination must be stated in the notice
+    letter (§ 569 para. 4 BGB). The parties may end the tenancy by mutual agreement at any time.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the property is governed by what this agreement provides (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant&rsquo;s personal data only insofar as this is necessary for concluding
+    and performing this agreement and for complying with legal obligations, in accordance with the General Data
+    Protection Regulation (GDPR, Regulation (EU) 2016/679). The landlord keeps the data no longer than
+    necessary for those purposes.</p>
+  <p>The tenant may exercise the rights under the GDPR against the landlord, in particular the rights of
+    access, rectification and erasure, and may lodge a complaint with the competent data protection supervisory
+    authority.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by the law of the Federal Republic of Germany.</p>
+  <p>Disputes arising from this tenancy fall within the exclusive jurisdiction of the local court (Amtsgericht)
+    in whose district the leased property is located (§ 29a para. 1 ZPO, § 23 GVG). If a provision of this
+    agreement is invalid, the validity of the remaining provisions is unaffected; the statutory rule takes the
+    place of the invalid provision.</p>
+</div>
+
+</body>
+</html>

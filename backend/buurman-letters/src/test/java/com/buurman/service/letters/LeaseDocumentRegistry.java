@@ -252,8 +252,76 @@ public final class LeaseDocumentRegistry {
           List.of("de verhuurder", "tenzij", "overeenkomst", "zie artikel", "deurwaardersexploot"),
           Optional.of(DUTCH_CITATION));
 
+  /** The German statute citation format: {@code § 556}, {@code § 556d}, {@code § 573c}. */
+  public static final Pattern GERMAN_CITATION = Pattern.compile("§\\s*\\d+[a-z]?");
+
+  /** German marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> GERMAN_MARKERS =
+      List.of(
+          "der Vermieter", "der Mieter", "Mietverhältnis", "siehe Artikel", "unwirksam", "gemäß");
+
+  /** Mirror of V093__seed_de_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry DE_RESIDENTIAL =
+      new Entry(
+          "DE",
+          LeaseKind.RESIDENTIAL,
+          "de",
+          List.of("de", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("minor-repairs", false, false, 12),
+              new ClauseSpec("energy-certificate", false, false, 13),
+              new ClauseSpec("registration", false, false, 14),
+              new ClauseSpec("handover-inspection", false, false, 15),
+              new ClauseSpec("termination", true, false, 16),
+              new ClauseSpec("data-protection", false, false, 17),
+              new ClauseSpec("disputes", false, false, 18)),
+          GERMAN_MARKERS,
+          Optional.of(GERMAN_CITATION));
+
+  /** Mirror of V093__seed_de_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry DE_COMMERCIAL =
+      new Entry(
+          "DE",
+          LeaseKind.COMMERCIAL,
+          "de",
+          List.of("de", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("subletting", false, false, 13),
+              new ClauseSpec("competition", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("energy-certificate", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("termination", true, false, 18),
+              new ClauseSpec("data-protection", false, false, 19),
+              new ClauseSpec("disputes", false, false, 20)),
+          GERMAN_MARKERS,
+          Optional.of(GERMAN_CITATION));
+
   /** Every shipped (country, kind); add new entries here. */
-  public static final List<Entry> ENTRIES = List.of(NL_RESIDENTIAL);
+  public static final List<Entry> ENTRIES = List.of(NL_RESIDENTIAL, DE_RESIDENTIAL, DE_COMMERCIAL);
 
   /** The entry for a country and kind. */
   public static Optional<Entry> find(String countryCode, LeaseKind kind) {

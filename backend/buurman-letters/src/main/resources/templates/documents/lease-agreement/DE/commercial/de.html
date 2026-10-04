@@ -1,0 +1,259 @@
+<!--
+  legal-basis: Buergerliches Gesetzbuch (BGB) Buch 2, Abschnitt 8, Titel 5 (Mietvertrag, Pachtvertrag), Untertitel 1
+               (allgemeine Vorschriften) and 3 (Mietverhaeltnisse ueber andere Sachen: Geschaeftsraeume), as published
+               on gesetze-im-internet.de: § 288, § 535, § 536, § 536c, § 538, § 539, § 540, § 543, § 546, § 548,
+               § 550, § 555a, § 556b, § 566, § 569, § 578, § 579, § 580a.
+               Form: § 578 Abs. 1 BGB as amended by the Viertes Buerokratieentlastungsgesetz (BEG IV): a lease of
+               business premises for longer than 1 year not concluded in text form (Textform, § 126b BGB) is deemed
+               concluded for an indefinite period; in force 01.01.2025, written form remained decisive for leases
+               concluded before that date until 31.12.2025 (transition per secondary sources ihk.de, haufe.de).
+               Preisklauselgesetz (PrKG) § 3 and § 8; Umsatzsteuergesetz (UStG) § 4 and § 9;
+               Betriebskostenverordnung (BetrKV) § 2; Heizkostenverordnung (HeizkostenV); Kohlendioxidkosten-
+               aufteilungsgesetz (CO2KostAufG); Gebaeudeenergiegesetz (GEG) § 80 Abs. 4 and 5;
+               Zivilprozessordnung (ZPO) § 29a.
+               DSGVO: Verordnung (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04 against gesetze-im-internet.de (section texts read on that date).
+               Pending: Mietrechtspaket 2026 (BT-Drs. 21/6807, "Recht der Wohn- und Geschaeftsraummiete", first
+               reading 09.07.2026) - re-verify after it is enacted.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in de.html, never spelled out (de "10 Jahre" is "10 years" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects German law (BGB). Each clause-<key> fragment holds only the
+  clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when
+  the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Zwischen</p>
+  <p><strong th:text="${landlordName}">Vermieter</strong>, nachfolgend &bdquo;der Vermieter&ldquo;,</p>
+  <p>Registergericht und Registernummer: ______________________________</p>
+  <p>Umsatzsteuer-Identifikationsnummer: ______________________________</p>
+  <p>vertreten durch: ______________________________, und</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Mieter</strong>, nachfolgend
+    (gemeinsam) &bdquo;der Mieter&ldquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">dem oder den unten unterzeichnenden Mieter(n), nachfolgend
+    (gemeinsam) &bdquo;der Mieter&ldquo;,</p>
+  <p>Registergericht und Registernummer: ______________________________</p>
+  <p>Umsatzsteuer-Identifikationsnummer: ______________________________</p>
+  <p>vertreten durch: ______________________________,</p>
+  <p>wird der folgende Mietvertrag über Geschäftsräume geschlossen. Sind mehrere Personen Mieter, so haften sie
+    für alle Verpflichtungen aus diesem Vertrag als Gesamtschuldner.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Der Vermieter vermietet dem Mieter die Geschäftsräume in <strong th:text="${propertyAddress}">Anschrift</strong>
+    mit einer Mietfläche von etwa ________ m² nebst den in diesem Vertrag bezeichneten Nebenflächen, Stellplätzen
+    und Einrichtungen, nachfolgend &bdquo;die Mietsache&ldquo;.</p>
+  <p>Auf diesen Vertrag sind die allgemeinen Vorschriften des Bürgerlichen Gesetzbuchs über Mietverhältnisse
+    (§§ 535 bis 548 BGB) und die Vorschriften über Mietverhältnisse über Räume, die keine Wohnräume sind
+    (§§ 578 bis 580a BGB), anzuwenden. Die besonderen Schutzvorschriften für Wohnraum gelten nur, soweit das
+    Gesetz sie für Geschäftsräume für entsprechend anwendbar erklärt.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Die Mietsache wird ausschließlich zum Betrieb von ______________________________ vermietet
+    (Mietzweck). Eine Änderung des Mietzwecks bedarf der vorherigen Zustimmung des Vermieters in Textform.</p>
+  <p>Behördliche Genehmigungen, die den Betrieb des Mieters betreffen, beschafft der Mieter auf eigene Kosten.
+    Beruht die Versagung oder Beschränkung einer Genehmigung auf der Beschaffenheit oder Lage der Mietsache,
+    so bleiben die gesetzlichen Rechte des Mieters unberührt.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Das Mietverhältnis beginnt am <strong th:text="${startDate}">Mietbeginn</strong>.</p>
+  <p th:if="${!fixedTerm}">Das Mietverhältnis wird auf unbestimmte Zeit geschlossen und kann nach den
+    gesetzlichen Fristen ordentlich gekündigt werden.</p>
+  <p th:if="${fixedTerm}">Das Mietverhältnis wird auf bestimmte Zeit geschlossen<span
+    th:if="${endDate != null}"> und endet mit Ablauf des <strong th:text="${endDate}">Mietende</strong></span>.
+    Während der vereinbarten Mietzeit ist die ordentliche Kündigung für beide Parteien ausgeschlossen.</p>
+  <p>Ein Mietvertrag über Geschäftsräume, der für längere Zeit als 1 Jahr nicht in Textform geschlossen wird,
+    gilt für unbestimmte Zeit; die Kündigung ist dann frühestens zum Ablauf von 1 Jahr nach Überlassung der
+    Mietsache zulässig (§ 578 Abs. 1 BGB, § 550 BGB). Die Parteien schließen diesen Vertrag sowie alle
+    Änderungen und Nebenabreden deshalb in Textform und verbinden etwaige Anlagen erkennbar mit diesem
+    Vertrag.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Die Miete ohne Betriebskosten (Nettokaltmiete) beträgt <strong th:text="${rentAmount}">Betrag</strong>
+    <span th:text="${paymentFrequency}">monatlich</span>.<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Hinzu kommt die gesetzliche Umsatzsteuer (siehe Artikel <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Daneben leistet der Mieter
+    Vorauszahlungen auf die Betriebskosten (siehe Artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Für Geschäftsräume gelten die Vorschriften über die Begrenzung der Miethöhe bei Wohnraum nicht; die Höhe der
+    Miete ist frei vereinbart.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Für Änderungen der Miete gilt das in diesem Vertrag Bestimmte (siehe Artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Ist dieser Vertrag für eine feste Laufzeit von mindestens 10 Jahren geschlossen, verzichtet der Vermieter
+    für mindestens 10 Jahre auf das Recht zur ordentlichen Kündigung oder hat der Mieter das Recht, die
+    Vertragsdauer auf mindestens 10 Jahre zu verlängern, so gilt Folgendes (Wertsicherung,
+    § 3 Abs. 1 Nr. 1 PrKG): Ändert sich der vom Statistischen Bundesamt ermittelte Verbraucherpreisindex für
+    Deutschland gegenüber dem Stand bei Mietbeginn oder bei der letzten Anpassung, so ändert sich die
+    Nettokaltmiete im gleichen prozentualen Verhältnis, nach oben wie nach unten.</p>
+  <p>Eine Anpassung erfolgt frühestens 12 Monate nach Mietbeginn oder nach der letzten Anpassung. Die Partei, die
+    die Anpassung verlangt, teilt sie der anderen Partei unter Angabe der Indexstände und der neuen Miete in
+    Textform mit; die geänderte Miete ist ab dem Monat zu zahlen, der auf den Zugang der Mitteilung folgt.</p>
+  <p>Sind die Voraussetzungen des § 3 Abs. 1 Nr. 1 PrKG nicht erfüllt, so ändert sich die Miete nur durch
+    Vereinbarung der Parteien. Die Unwirksamkeit einer Preisklausel tritt erst zum Zeitpunkt des rechtskräftig
+    festgestellten Verstoßes gegen das Preisklauselgesetz ein (§ 8 PrKG). Eine Staffelmiete gilt nur, wenn die
+    Parteien sie gesondert in Textform vereinbart haben.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Der Mieter trägt die Betriebskosten im Sinne von § 2 der Betriebskostenverordnung (BetrKV), soweit sie für
+    die Mietsache anfallen, sowie die folgenden weiteren Kosten: ______________________________. Andere als die
+    hier bezeichneten Kosten trägt der Mieter nicht. Hierauf leistet er mit der Miete monatliche
+    Vorauszahlungen in der in diesem Vertrag ausgewiesenen Höhe.</p>
+  <p>Über die Vorauszahlungen rechnet der Vermieter jährlich ab und teilt die Abrechnung dem Mieter spätestens
+    bis zum Ablauf des 12. Monats nach Ende des Abrechnungszeitraums mit. Auf Verlangen gewährt der Vermieter
+    Einsicht in die Abrechnungsbelege. Nach einer Abrechnung kann jede Partei durch Erklärung in Textform eine
+    Anpassung der Vorauszahlungen auf eine angemessene Höhe vornehmen.</p>
+  <p>Die Kosten der Heizung und Warmwasserversorgung werden nach der Heizkostenverordnung überwiegend nach dem
+    erfassten Verbrauch verteilt; Kohlendioxidkosten werden nach dem Kohlendioxidkostenaufteilungsgesetz
+    zwischen den Parteien aufgeteilt.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>Die Vermietung von Grundstücken ist grundsätzlich von der Umsatzsteuer befreit (§ 4 Nr. 12 UStG). Der
+    Vermieter verzichtet auf diese Steuerbefreiung (§ 9 Abs. 1 UStG); der Mieter zahlt daher auf die Miete und auf
+    die Betriebskostenvorauszahlungen die gesetzliche Umsatzsteuer zusätzlich.</p>
+  <p>Der Verzicht ist nur zulässig, soweit der Mieter die Mietsache ausschließlich für Umsätze verwendet oder zu
+    verwenden beabsichtigt, die den Vorsteuerabzug nicht ausschließen (§ 9 Abs. 2 UStG). Der Mieter verpflichtet
+    sich, die Mietsache nur für solche Umsätze zu nutzen, dem Vermieter auf Verlangen die hierfür erforderlichen
+    Nachweise vorzulegen und ihm jede Änderung der Nutzung unverzüglich in Textform mitzuteilen.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Der Mieter leistet dem Vermieter für die Erfüllung seiner Pflichten eine
+    Sicherheit (Mietsicherheit) in Höhe von <strong th:text="${depositAmount}">Betrag</strong>.</p>
+  <p th:if="${depositAmount == null}">Der Mieter leistet dem Vermieter für die Erfüllung seiner Pflichten eine
+    Sicherheit (Mietsicherheit) in der zwischen den Parteien in Textform vereinbarten Höhe.</p>
+  <p>Für Geschäftsräume gilt keine gesetzliche Obergrenze der Mietsicherheit. Die Sicherheit ist bei Mietbeginn
+    fällig und kann als Barkaution oder durch eine unbefristete, selbstschuldnerische Bürgschaft eines in der
+    Europäischen Union zugelassenen Kreditinstituts geleistet werden. Eine Barkaution legt der Vermieter getrennt
+    von seinem Vermögen bei einem Kreditinstitut zu einem üblichen Zinssatz an; die Zinsen stehen dem Mieter zu
+    und erhöhen die Sicherheit.</p>
+  <p>Nach Beendigung des Mietverhältnisses rechnet der Vermieter über die Sicherheit innerhalb angemessener Frist
+    ab und gibt den nicht benötigten Betrag oder die Bürgschaftsurkunde zurück.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Für die Feststellung von Schäden gilt
+    die Rückgabe der Mietsache (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Der Mieter zahlt die Miete<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (siehe Artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> und die Betriebskostenvorauszahlungen</span>
+    <span th:text="${paymentFrequency}">monatlich</span> im Voraus,
+    <span th:if="${paymentDueDay != null}">spätestens am <strong th:text="${paymentDueDay}">1</strong>. Tag des
+      jeweiligen Zahlungszeitraums; liegt dieser Tag vor dem 3. Werktag, so genügt die Zahlung bis zum 3. Werktag</span><span
+    th:if="${paymentDueDay == null}">spätestens bis zum 3. Werktag des jeweiligen Zahlungszeitraums</span>
+    (§ 579 Abs. 2 BGB, § 556b Abs. 1 BGB), durch Überweisung auf das vom Vermieter in Textform benannte Konto.</p>
+  <p>Gegen Forderungen des Vermieters aus diesem Vertrag kann der Mieter nur mit unbestrittenen oder rechtskräftig
+    festgestellten Forderungen aufrechnen. Das Recht des Mieters, wegen eines Mangels die Miete zu mindern oder zu
+    viel gezahlte Miete zurückzufordern, bleibt unberührt.</p>
+  <p>Bei Zahlungsverzug schuldet der Mieter Verzugszinsen in Höhe von 9 Prozentpunkten über dem Basiszinssatz
+    (§ 288 Abs. 2 BGB).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Der Vermieter erhält Dach und Fach, die tragenden Bauteile, die gemeinschaftlich genutzten Flächen sowie die
+    zentralen technischen Anlagen in einem zum vertragsgemäßen Gebrauch geeigneten Zustand (§ 535 Abs. 1 BGB).
+    Der Mieter hält das Innere der Mietsache und die ausschließlich von ihm genutzten Einrichtungen auf eigene
+    Kosten in ordnungsgemäßem Zustand und führt die Schönheitsreparaturen innerhalb der Mietsache nach Bedarf
+    aus, nicht nach starren Fristen.</p>
+  <p>Zeigt sich ein Mangel oder wird eine Maßnahme zum Schutz der Mietsache gegen eine nicht vorhergesehene
+    Gefahr erforderlich, so zeigt der Mieter dies dem Vermieter unverzüglich an (§ 536c Abs. 1 BGB). Die Rechte
+    des Mieters wegen Mängeln richten sich nach § 536 BGB. Veränderungen oder Verschlechterungen, die durch den
+    vertragsgemäßen Gebrauch herbeigeführt werden, hat der Mieter nicht zu vertreten (§ 538 BGB).</p>
+  <p>Der Mieter duldet Maßnahmen, die zur Instandhaltung oder Instandsetzung der Mietsache erforderlich sind
+    (§ 578 Abs. 2 BGB, § 555a Abs. 1 BGB); der Vermieter kündigt sie rechtzeitig an und nimmt auf den
+    Geschäftsbetrieb des Mieters angemessen Rücksicht.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Bauliche Veränderungen, Ein- und Umbauten sowie die Anbringung von Werbeanlagen an der Fassade nimmt der
+    Mieter nur nach vorheriger Zustimmung des Vermieters in Textform vor. Der Mieter trägt die Kosten und
+    beschafft die erforderlichen behördlichen Genehmigungen.</p>
+  <p>Bei Beendigung des Mietverhältnisses entfernt der Mieter seine Einbauten und stellt den ursprünglichen
+    Zustand wieder her, soweit die Parteien nichts anderes in Textform vereinbaren. Der Mieter ist berechtigt,
+    eine Einrichtung wegzunehmen, mit der er die Mietsache versehen hat (§ 539 Abs. 2 BGB).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Der Mieter ist ohne die Erlaubnis des Vermieters nicht berechtigt, den Gebrauch der Mietsache einem
+    Dritten zu überlassen, insbesondere sie weiter zu vermieten. Verweigert der Vermieter die Erlaubnis, so kann
+    der Mieter das Mietverhältnis außerordentlich mit der gesetzlichen Frist kündigen, sofern nicht in der Person
+    des Dritten ein wichtiger Grund vorliegt (§ 540 Abs. 1 BGB).</p>
+  <p>Überlässt der Mieter den Gebrauch einem Dritten, so hat er ein dem Dritten bei dem Gebrauch zur Last
+    fallendes Verschulden zu vertreten (§ 540 Abs. 2 BGB). Eine Übertragung des Mietverhältnisses auf einen
+    Dritten bedarf einer Vereinbarung aller Beteiligten in Textform.</p>
+</div>
+
+<div th:fragment="clause-competition" data-clause="competition">
+  <p>Der Vermieter verpflichtet sich, während der Mietzeit in demselben Gebäude und auf demselben Grundstück
+    keine Räume an einen Wettbewerber zu vermieten oder selbst zu nutzen, der dasselbe Hauptsortiment oder
+    dieselbe Hauptleistung wie der Mieter nach dem vereinbarten Mietzweck anbietet. Nebensortimente und
+    Nebenleistungen sind vom Konkurrenzschutz nicht erfasst.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Der Vermieter versichert das Gebäude in üblichem Umfang. Der Mieter versichert seine Einrichtung, Waren und
+    Einbauten auf eigene Kosten und unterhält für die Dauer des Mietverhältnisses eine Betriebshaftpflichtversicherung
+    in angemessener Höhe; er weist den Versicherungsschutz auf Verlangen nach.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Der Vermieter hat dem Mieter spätestens bei der Besichtigung einen Energieausweis oder eine Kopie davon
+    vorgelegt und übergibt ihm unverzüglich nach Abschluss dieses Vertrags den Energieausweis oder eine Kopie
+    davon (§ 80 Abs. 4 und 5 GEG).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Bei Übergabe der Mietsache erstellen die Parteien gemeinsam ein Übergabeprotokoll über den Zustand der
+    Mietsache, die Zählerstände und die übergebenen Schlüssel. Beide Parteien unterzeichnen das Protokoll und
+    erhalten je ein Exemplar.</p>
+  <p>Nach Beendigung des Mietverhältnisses gibt der Mieter die Mietsache geräumt, besenrein und mit allen
+    Schlüsseln zurück (§ 546 Abs. 1 BGB); die Parteien erstellen dabei ein Rückgabeprotokoll. Ersatzansprüche des
+    Vermieters wegen Veränderungen oder Verschlechterungen der Mietsache verjähren in 6 Monaten ab Rückerhalt
+    der Mietsache (§ 548 Abs. 1 BGB).<span class="clause-ref" data-ref="alterations" th:if="${refs['alterations']}">
+    Für Einbauten des Mieters gilt das in diesem Vertrag Bestimmte (siehe Artikel <span th:text="${refs['alterations']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Die Abrechnung der Mietsicherheit folgt
+    danach (siehe Artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Jede Kündigung bedarf der schriftlichen Form.</p>
+  <p th:if="${!fixedTerm}">Die ordentliche Kündigung ist spätestens am 3. Werktag eines Kalendervierteljahres zum
+    Ablauf des nächsten Kalendervierteljahres zulässig (§ 580a Abs. 2 BGB).</p>
+  <p th:if="${fixedTerm}">Während der vereinbarten Mietzeit<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (siehe Artikel <span th:text="${refs['term']}"></span>)</span> ist die ordentliche
+    Kündigung ausgeschlossen. Gilt dieser Vertrag nach § 550 BGB als auf unbestimmte Zeit geschlossen, so ist die
+    ordentliche Kündigung spätestens am 3. Werktag eines Kalendervierteljahres zum Ablauf des nächsten
+    Kalendervierteljahres zulässig (§ 580a Abs. 2 BGB).</p>
+  <p>Jede Partei kann das Mietverhältnis aus wichtigem Grund außerordentlich fristlos kündigen
+    (§ 543 Abs. 1 BGB, § 578 Abs. 2 BGB, § 569 Abs. 2 BGB). Die Parteien können das Mietverhältnis jederzeit
+    einvernehmlich in Textform beenden.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Für die Rückgabe gilt das in diesem Vertrag Bestimmte (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Jede Partei verarbeitet personenbezogene Daten der anderen Partei, ihrer Vertreter und Ansprechpartner nur,
+    soweit dies für den Abschluss und die Durchführung dieses Vertrags und zur Erfüllung gesetzlicher Pflichten
+    erforderlich ist, nach der Datenschutz-Grundverordnung (DSGVO, Verordnung (EU) 2016/679), und speichert sie
+    nicht länger als hierfür erforderlich.</p>
+  <p>Die betroffenen Personen können ihre Rechte aus der DSGVO geltend machen, insbesondere die Rechte auf
+    Auskunft, Berichtigung und Löschung, und können sich bei der zuständigen Datenschutz-Aufsichtsbehörde
+    beschweren.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Für diesen Vertrag gilt das Recht der Bundesrepublik Deutschland.</p>
+  <p>Für Streitigkeiten aus diesem Mietverhältnis ist ausschließlich das Gericht zuständig, in dessen Bezirk sich
+    die Mietsache befindet (§ 29a Abs. 1 ZPO). Sollte eine Bestimmung dieses Vertrags unwirksam sein, so bleibt
+    die Wirksamkeit der übrigen Bestimmungen unberührt.</p>
+</div>
+
+</body>
+</html>
