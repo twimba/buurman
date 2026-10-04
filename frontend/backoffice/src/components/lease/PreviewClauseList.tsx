@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, Lock, Pin } from 'lucide-react';
 import type { LeasePreviewClause } from '../../generated/models';
-import type { MoveButton } from '../../lib/leasePreviewClauses';
+import { articleNumbers, type MoveButton } from '../../lib/leasePreviewClauses';
 
 export interface FocusRequest {
   clauseKey: string;
@@ -33,6 +33,7 @@ export const PreviewClauseList = ({
   onFocusApplied,
 }: PreviewClauseListProps) => {
   const listRef = useRef<HTMLUListElement>(null);
+  const numbers = articleNumbers(clauses);
   useEffect(() => {
     if (focusRequest) {
       listRef.current
@@ -72,7 +73,7 @@ export const PreviewClauseList = ({
             />
             <span className="min-w-0 flex-1 text-sm text-text-primary">
               <span className="text-text-muted">
-                {clause.included ? `Art. ${clause.articleNumber} ` : ''}
+                {clause.included ? `Art. ${numbers.get(clause.clauseKey) ?? clause.articleNumber} ` : ''}
               </span>
               <span
                 className={

@@ -36,7 +36,10 @@ export function useMutationWithToast<TData, TVars>(
     },
     onError: (error) => {
       const code = getProblemCode(error);
-      const mapped = code ? errorCodeMessages?.[code] : undefined;
+      const mapped =
+        code && errorCodeMessages && Object.hasOwn(errorCodeMessages, code)
+          ? errorCodeMessages[code]
+          : undefined;
       showToast(mapped ?? getErrorMessage(error), 'error');
     },
   });

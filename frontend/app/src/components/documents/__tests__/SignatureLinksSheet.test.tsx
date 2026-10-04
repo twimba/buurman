@@ -224,6 +224,52 @@ describe('SignatureLinksSheet', () => {
     ).toBeNull();
   });
 
+  it('leaves the unsigned landlord out of the copy-all message', async () => {
+    const landlord: SignatureSigningLinkResponse = {
+      ...luis,
+      status: 'PENDING',
+      signingUrl: 'https://sign.example.com/sign/token-landlord',
+      signed: false,
+    };
+    vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([
+      landlord,
+      maria,
+      jan,
+    ]);
+    renderSheet();
+    const user = userEvent.setup();
+    setClipboard({ writeText });
+
+    await user.click(
+      await screen.findByRole('button', { name: /copy all as message/i })
+    );
+
+    const message = writeText.mock.calls[0][0] as string;
+    expect(message.split('\n')).toHaveLength(2);
+    expect(message).not.toContain('token-landlord');
+    // The landlord keeps their own per-row copy button.
+    expect(
+      screen.getByRole('button', { name: /copy signing link for luis santos/i })
+    ).toBeInTheDocument();
+  });
+
+  it('hides Copy all with one pending tenant even when the landlord is pending too', async () => {
+    vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([
+      {
+        ...luis,
+        status: 'PENDING',
+        signingUrl: 'https://sign.example.com/sign/token-landlord',
+        signed: false,
+      },
+      maria,
+    ]);
+    renderSheet();
+    await screen.findByText('Maria Jansen');
+    expect(
+      screen.queryByRole('button', { name: /copy all as message/i })
+    ).toBeNull();
+  });
+
   it('tracks signature_links_opened once per open, with no payload', async () => {
     vi.spyOn(signaturesApi, 'getSigningLinks').mockResolvedValue([maria]);
     renderSheet();

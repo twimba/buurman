@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  articleNumbers,
   moveButtonFocus,
   moveClause,
   reconcileChoices,
@@ -157,5 +158,23 @@ describe('preview clause list', () => {
     // parking is last: down is disabled, so focus up
     expect(moveButtonFocus(ordered, 'parking', 1)).toBe('up');
     expect(moveButtonFocus(ordered, 'pets', 1)).toBe('down');
+  });
+});
+
+describe('articleNumbers', () => {
+  it('numbers only the included clauses, in display order', () => {
+    const numbers = articleNumbers(list);
+    expect(numbers.get('parties')).toBe(1);
+    expect(numbers.get('rent')).toBe(3);
+    expect(numbers.get('pets')).toBe(4);
+    expect(numbers.has('parking')).toBe(false);
+  });
+
+  it('renumbers immediately after a toggle and a move', () => {
+    const toggled = toggleClause(list, 'pets');
+    expect(articleNumbers(toggled).get('pets')).toBeUndefined();
+    const moved = moveClause(list, 'pets', -1);
+    expect(articleNumbers(moved).get('pets')).toBe(3);
+    expect(articleNumbers(moved).get('rent')).toBe(4);
   });
 });

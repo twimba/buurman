@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { AlertTriangle, ArrowLeft, Info, Plus, X } from 'lucide-react';
+import { ArrowLeft, Info, Plus, X } from 'lucide-react';
 import { Button } from '@buurman/ui';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { LanguageSwitcher } from '../components/lease/LanguageSwitcher';
+import { LegalDisclaimer } from '../components/lease/LegalDisclaimer';
 import { PreviewClauseList } from '../components/lease/PreviewClauseList';
 import type { FocusRequest } from '../components/lease/PreviewClauseList';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
@@ -239,16 +240,7 @@ export const LeaseAgreementPreviewPage = () => {
         </span>
       </div>
 
-      <div
-        role="alert"
-        className="mb-4 flex items-start gap-3 rounded-lg border border-warning-border bg-warning-bg px-4 py-3"
-      >
-        <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-warning-text" />
-        <p className="text-sm text-warning-text">
-          NL residential clauses are draft legal text pending counsel review;
-          other countries use placeholder text. Not vetted legal content.
-        </p>
-      </div>
+      <LegalDisclaimer className="mb-4" />
 
       <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
         <form
@@ -454,7 +446,6 @@ export const LeaseAgreementPreviewPage = () => {
             ) : (
               <PreviewClauseList
                 clauses={clauses}
-                disabled={loadingScope}
                 onFocusApplied={() => setFocusRequest(null)}
                 focusRequest={focusRequest}
                 onToggle={(key) => changeClauses(toggleClause(clauses, key))}

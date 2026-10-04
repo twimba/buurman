@@ -116,3 +116,17 @@ export const moveButtonFocus = (
   }
   return canDown || !canUp ? 'down' : 'up';
 };
+
+/**
+ * Article numbers of the included clauses, counted locally in display order so they stay correct
+ * between a toggle or move and the next server response.
+ */
+export const articleNumbers = (
+  clauses: LeasePreviewClause[]
+): Map<string, number> => {
+  const numbers = new Map<string, number>();
+  orderedClauses(clauses)
+    .filter((c) => c.included)
+    .forEach((c, i) => numbers.set(c.clauseKey, i + 1));
+  return numbers;
+};

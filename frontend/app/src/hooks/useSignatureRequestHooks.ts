@@ -113,7 +113,7 @@ const SIGNING_LINKS_POLL_MS = 15_000;
 
 /**
  * Per-signer signing links of an in-flight request. The links are bearer credentials, so the
- * query is never cached (gcTime 0), only runs while the sheet showing it is open, and stops
+ * cache entry is removed when the sheet closes (gcTime 0 covers the unobserved case), the query only runs while the sheet showing it is open, and stops
  * polling once it fails (a 409/403 will not fix itself; the user retries explicitly).
  */
 export const useSignatureSigningLinks = (

@@ -1,6 +1,5 @@
 import { Fragment, useMemo, useState } from 'react';
 import {
-  AlertTriangle,
   Eye,
   Languages,
   Lock,
@@ -22,6 +21,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { DocumentLanguage, LeaseKind } from '../generated/models';
 import type { LeaseClauseTemplateResponse } from '../generated/models';
 import { LanguageSwitcher } from '../components/lease/LanguageSwitcher';
+import { LegalDisclaimer } from '../components/lease/LegalDisclaimer';
 import { LeaseKindBadge } from '../components/lease/LeaseKindBadge';
 import { LeaseKindLegend } from '../components/lease/LeaseKindLegend';
 import { Popover } from '../components/lease/Popover';
@@ -206,16 +206,7 @@ export const LeaseClauseTemplatesPage = () => {
     <div>
       {/* Legal content disclaimer — persistent and non-dismissible per the feature's design doc:
           "do not ship this page without it". No close button, no auto-hide. */}
-      <div
-        role="alert"
-        className="mb-6 flex items-start gap-3 rounded-lg border border-warning-border bg-warning-bg px-4 py-3"
-      >
-        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-warning-text mt-0.5" />
-        <p className="text-sm text-warning-text">
-          NL residential clauses are draft legal text pending counsel review;
-          other countries use placeholder text. Not vetted legal content.
-        </p>
-      </div>
+      <LegalDisclaimer className="mb-6" />
 
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>

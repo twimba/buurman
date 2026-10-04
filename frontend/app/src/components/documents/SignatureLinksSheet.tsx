@@ -151,7 +151,11 @@ export const SignatureLinksSheet = ({
   const signers = [...(open && !error ? (data ?? []) : [])].sort(
     (a, b) => Number(a.signed) - Number(b.signed)
   );
-  const copyable = signers.filter((s) => linkOf(s));
+  // The message is written in the tenants' language and sent to them, so it never carries the
+  // landlord's own link (which would sign as the landlord); that link keeps its per-row actions.
+  const tenantLinks = signers.filter(
+    (s) => s.role === 'TENANT' && linkOf(s)
+  );
 
   const handleCopyOne = async (signer: Signer) => {
     const url = linkOf(signer);
@@ -177,7 +181,7 @@ export const SignatureLinksSheet = ({
       lng && i18n.hasResourceBundle(lng, 'documents') ? lng : null,
       'documents'
     );
-    const message = copyable
+    const message = tenantLinks
       .map((s) =>
         tMessage('signatureLinks.message', {
           name: s.name,
@@ -388,7 +392,7 @@ export const SignatureLinksSheet = ({
       snapPoints={[0.6, 0.92]}
       footer={
         <>
-          {copyable.length >= 2 && (
+          {tenantLinks.length >= 2 && (
             <Button
               variant="secondary"
               size="md"
