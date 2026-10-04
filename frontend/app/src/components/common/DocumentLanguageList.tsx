@@ -38,12 +38,12 @@ export const DocumentLanguageList = ({
 
   return (
     <div
-      className={`${divided ? 'border-t border-border-subtle ' : ''}pt-2 pb-2`}
+      className={`${divided ? 'border-t border-border-subtle ' : ''}flex min-h-0 flex-col pt-2 pb-2`}
     >
       <div className="px-4 pb-1 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
         {t('documentDownload.language')}
       </div>
-      <div className="max-h-72 overflow-y-auto px-2">
+      <div className="min-h-0 max-h-72 overflow-y-auto px-2">
         {orderDocumentLanguages(uiLanguage).map(({ code, label }) => {
           const isCurrent = code === uiLanguage;
           const isSelected = code === highlighted;

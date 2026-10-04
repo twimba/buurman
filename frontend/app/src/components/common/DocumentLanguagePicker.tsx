@@ -29,11 +29,11 @@ export const DocumentLanguagePicker = ({
   disabled = false,
 }: DocumentLanguagePickerProps) => {
   const { i18n } = useTranslation('common');
-  const { open, setOpen, triggerRef, pos } = useAnchoredPopover('left');
+  const { open, setOpen, triggerRef, popoverRef, popoverStyle } = useAnchoredPopover('left');
   const valueLabel = documentLanguageLabel(value);
 
   const popover =
-    open && pos
+    open
       ? createPortal(
           <>
             <div
@@ -44,8 +44,9 @@ export const DocumentLanguagePicker = ({
             <div
               role="menu"
               aria-label={label}
-              className="fixed w-72 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] overflow-hidden animate-in fade-in zoom-in-95 duration-100"
-              style={pos}
+              className="fixed w-72 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-100"
+              ref={popoverRef}
+              style={popoverStyle}
             >
               <DocumentLanguageList
                 uiLanguage={baseLanguage(i18n.language)}

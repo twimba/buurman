@@ -28,7 +28,7 @@ export const DocumentDownloadMenu = ({
 }: DocumentDownloadMenuProps) => {
   const { t, i18n } = useTranslation('common');
   const { showToast } = useToast();
-  const { open, setOpen, triggerRef, pos } = useAnchoredPopover();
+  const { open, setOpen, triggerRef, popoverRef, popoverStyle } = useAnchoredPopover();
   const [docType, setDocType] = useState<DocType>('booklet');
   const [downloadingLang, setDownloadingLang] = useState<string | null>(null);
 
@@ -57,7 +57,7 @@ export const DocumentDownloadMenu = ({
   ];
 
   const popover =
-    open && pos
+    open
       ? createPortal(
           <>
             <div
@@ -68,8 +68,9 @@ export const DocumentDownloadMenu = ({
             <div
               role="menu"
               aria-label={t('documentDownload.title')}
-              className="fixed w-80 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] overflow-hidden animate-in fade-in zoom-in-95 duration-100"
-              style={pos}
+              className="fixed w-80 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-100"
+              ref={popoverRef}
+              style={popoverStyle}
             >
               {/* Document-type chooser */}
               <div className="p-3 pb-2">
