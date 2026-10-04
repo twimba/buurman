@@ -1901,6 +1901,92 @@ public final class LeaseDocumentRegistry {
   // ===== US entries (country pack) =====
   // Constants, citation pattern and foreign markers for US go here, only inside these markers.
 
+  /**
+   * The United States statute citation format: the section number after "§" / "§§" / "section(s)"
+   * or after the code abbreviations "ORS", "RCW" and "N.J.S.A.", keeping every dotted, colon or
+   * hyphen segment and letter suffix in the token: {@code § 1950.5}, {@code § 2079.10a}, {@code §
+   * 7-108}, {@code § 235-b}, {@code § 504B.178}, {@code § 4852d}, {@code section 15B}, {@code ORS
+   * 90.323}, {@code RCW 59.18.280}, {@code N.J.S.A. 46:8-21.2}. US is English only (no translation
+   * is compared), so the pattern documents the format for the fidelity gate should a translation
+   * ever be added.
+   */
+  public static final Pattern US_CITATION =
+      Pattern.compile(
+          "(?<=(?:§|§§|\\bsections?|\\bORS|\\bRCW|\\bN\\.J\\.S\\.A\\.)\\s{0,3})"
+              + "\\d+[A-Za-z]?(?:[.:-]\\d+[A-Za-z]?)*(?:-[A-Za-z](?![A-Za-z]))?",
+          Pattern.CASE_INSENSITIVE);
+
+  /**
+   * Mirror of V112__seed_us_lease_clauses.sql (RESIDENTIAL rows). English only: no translation, so
+   * no fidelity comparison and no foreign markers; state branches on the first 2 letters of
+   * regionCode (CA, DC, MA, MD, ME, MN, NJ, NY, OR, WA) with a general text for any other state.
+   */
+  private static final Entry US_RESIDENTIAL =
+      new Entry(
+          "US",
+          LeaseKind.RESIDENTIAL,
+          "en",
+          List.of("en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", true, false, 11),
+              new ClauseSpec("entry", false, false, 12),
+              new ClauseSpec("disclosures", true, false, 13),
+              new ClauseSpec("safety", false, false, 14),
+              new ClauseSpec("fair-housing", false, false, 15),
+              new ClauseSpec("handover-inspection", false, false, 16),
+              new ClauseSpec("termination", true, false, 17),
+              new ClauseSpec("notices", false, false, 18),
+              new ClauseSpec("data-protection", false, false, 19),
+              new ClauseSpec("disputes", false, false, 20)),
+          List.of(),
+          Optional.of(US_CITATION));
+
+  /** Mirror of V112__seed_us_lease_clauses.sql (COMMERCIAL rows). English only. */
+  private static final Entry US_COMMERCIAL =
+      new Entry(
+          "US",
+          LeaseKind.COMMERCIAL,
+          "en",
+          List.of("en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("renewal-option", false, false, 5),
+              new ClauseSpec("rent", true, false, 6),
+              new ClauseSpec("rent-adjustment", false, false, 7),
+              new ClauseSpec("service-costs", false, false, 8),
+              new ClauseSpec("sales-tax", false, false, 9),
+              new ClauseSpec("deposit", false, false, 10),
+              new ClauseSpec("payment", true, false, 11),
+              new ClauseSpec("maintenance", false, false, 12),
+              new ClauseSpec("alterations", false, false, 13),
+              new ClauseSpec("accessibility", false, false, 14),
+              new ClauseSpec("assignment", false, false, 15),
+              new ClauseSpec("insurance", false, false, 16),
+              new ClauseSpec("subordination", false, false, 17),
+              new ClauseSpec("holdover", false, false, 18),
+              new ClauseSpec("handover-inspection", false, false, 19),
+              new ClauseSpec("termination", true, false, 20),
+              new ClauseSpec("notices", false, false, 21),
+              new ClauseSpec("guarantor", false, false, 22),
+              new ClauseSpec("recording", false, false, 23),
+              new ClauseSpec("data-protection", false, false, 24),
+              new ClauseSpec("disputes", false, false, 25)),
+          List.of(),
+          Optional.of(US_CITATION));
+
   // ===== end US =====
 
   /** Every shipped (country, kind); a country pack adds its entries inside its own markers. */
@@ -2014,6 +2100,8 @@ public final class LeaseDocumentRegistry {
     // ===== end SE ENTRIES =====
 
     // ===== US ENTRIES (country pack) =====
+    entries.add(US_RESIDENTIAL);
+    entries.add(US_COMMERCIAL);
 
     // ===== end US ENTRIES =====
 

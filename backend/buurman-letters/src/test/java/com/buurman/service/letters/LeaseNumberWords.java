@@ -80,7 +80,13 @@ final class LeaseNumberWords {
 
   private static final Rule EN =
       new Rule(
-          idiom("(?:the|these|those) two (?:contracting )?parties"),
+          // the last 2 alternatives are wording prescribed verbatim by California Civil Code
+          // § 1946.2(f)(3) and § 1947.12(d)(5)(B)(i) (US residential lease), not quantities to
+          // digit
+          idiom(
+              "(?:the|these|those) two (?:contracting )?parties"
+                  + "|at least one of the tenants has continuously"
+                  + "|at least one member is a corporation"),
           lint(
               "two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen"
                   + "|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty"
