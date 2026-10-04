@@ -202,6 +202,8 @@
                                 <importMapping>RentRegulationCountryResponse=com.buurman.dto.response.RentRegulationCountryResponse</importMapping>
                                 <importMapping>RentRegulationRegionResponse=com.buurman.dto.response.RentRegulationRegionResponse</importMapping>
                                 <importMapping>RentRegulationRuleResponse=com.buurman.dto.response.RentRegulationRuleResponse</importMapping>
+                                <importMapping>RentRegulationTenancyRuleResponse=com.buurman.dto.response.RentRegulationTenancyRuleResponse</importMapping>
+                                <importMapping>TenancyRuleTopic=com.buurman.domain.TenancyRuleTopic</importMapping>
                                 <importMapping>BulkImportResult=com.buurman.dto.response.BulkImportResult</importMapping>
                                 <importMapping>CountryRegulationRequestSummary=com.buurman.dto.response.CountryRegulationRequestSummary</importMapping>
                                 <importMapping>CountryRegulationRequester=com.buurman.dto.response.CountryRegulationRequester</importMapping>

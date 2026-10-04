@@ -23,6 +23,7 @@ import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRegionResponse;
 import com.buurman.dto.response.RentRegulationReloadResult;
 import com.buurman.dto.response.RentRegulationRuleResponse;
+import com.buurman.dto.response.RentRegulationTenancyRuleResponse;
 import com.buurman.generated.backoffice.api.BackofficeRentRegulationsApi;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.security.SecurityUtils;
@@ -126,6 +127,11 @@ public class BackofficeRentRegulationController implements BackofficeRentRegulat
   @Override
   public List<RentRegulationRuleResponse> listRentRegulationRules(String code) {
     return backofficeRentRegulationService.listRules(code);
+  }
+
+  @Override
+  public List<RentRegulationTenancyRuleResponse> listRentRegulationTenancyRules(String code) {
+    return backofficeRentRegulationService.listTenancyRules(code);
   }
 
   @Override

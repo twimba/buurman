@@ -24,7 +24,13 @@ import {
   useBulkCreateRules,
   useUpdateRule,
   useDeleteRule,
+  useRentRegulationTenancyRules,
 } from '../hooks/useRentRegulationHooks';
+import {
+  groupTenancyRules,
+  tenancyRuleScope,
+  tenancyRuleSourceHref,
+} from '../lib/tenancyRules';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import type {
   RentRegulationCountryResponse,
@@ -33,7 +39,7 @@ import type {
   CreateRuleRequest,
 } from '../types';
 
-type Tab = 'overview' | 'regions' | 'rules';
+type Tab = 'overview' | 'regions' | 'rules' | 'tenancy-rules';
 
 const countryCodeToFlag = (code: string): string =>
   code
@@ -164,6 +170,12 @@ export const RentRegulationCountryDetailPage = () => {
           >
             Rules
           </button>
+          <button
+            className={TAB_CLASS(activeTab === 'tenancy-rules')}
+            onClick={() => setActiveTab('tenancy-rules')}
+          >
+            Tenancy Rules
+          </button>
         </nav>
       </div>
 
@@ -175,6 +187,9 @@ export const RentRegulationCountryDetailPage = () => {
         <RegionsTab countryCode={countryCode} />
       )}
       {activeTab === 'rules' && <RulesTab countryCode={countryCode} />}
+      {activeTab === 'tenancy-rules' && (
+        <TenancyRulesTab countryCode={countryCode} />
+      )}
 
       {/* Delete confirmation */}
       {showDeleteDialog && (
@@ -359,6 +374,91 @@ function DetailRow({
     <div className="flex items-center justify-between py-1.5 border-b border-border-subtle last:border-b-0">
       <span className="text-xs text-text-secondary">{label}</span>
       <span className="text-sm font-medium text-text-primary">{value}</span>
+    </div>
+  );
+}
+
+// ── Tenancy Rules Tab ────────────────────────────────────────────────
+
+function TenancyRulesTab({ countryCode }: { countryCode: string }) {
+  const { data: rules, isLoading } = useRentRegulationTenancyRules(countryCode);
+  const groups = useMemo(() => groupTenancyRules(rules), [rules]);
+
+  if (isLoading) {
+    return <LoadingSpinner message="Loading tenancy rules..." />;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-semibold text-text-primary">
+          Tenancy Rules
+        </h3>
+        <p className="mt-1 text-xs text-text-secondary">
+          Display-only reference facts from the bundled catalog. Landlords see
+          label, value, effective date, legal basis and source, but not the
+          notes shown here. Edit them in rent-regulations.json and reload.
+        </p>
+      </div>
+      {groups.length === 0 ? (
+        <div className="bg-surface-card rounded-lg border border-border-default p-5 text-sm text-text-secondary">
+          No tenancy rules recorded for this country.
+        </div>
+      ) : (
+        groups.map((group) => (
+          <div
+            key={group.topic}
+            className="bg-surface-card rounded-lg border border-border-default overflow-hidden"
+          >
+            <div className="px-5 py-3 border-b border-border-default">
+              <h4 className="text-sm font-semibold text-text-primary">
+                {group.label}
+              </h4>
+            </div>
+            <ul className="divide-y divide-border-subtle">
+              {group.rules.map((rule) => {
+                const href = tenancyRuleSourceHref(rule);
+                return (
+                  <li key={rule.identifier} className="px-5 py-4 space-y-1.5">
+                    <div className="flex items-start justify-between gap-4">
+                      <p className="text-sm font-medium text-text-primary">
+                        {rule.label}
+                      </p>
+                      <span className="shrink-0 text-xs text-text-secondary">
+                        {tenancyRuleScope(rule)}
+                        {rule.effectiveFrom
+                          ? ` · from ${rule.effectiveFrom}`
+                          : ''}
+                      </span>
+                    </div>
+                    <p className="text-sm text-text-primary">{rule.value}</p>
+                    {rule.legalBasis && (
+                      <p className="text-xs text-text-secondary">
+                        Legal basis: {rule.legalBasis}
+                      </p>
+                    )}
+                    {rule.notes && (
+                      <p className="text-xs text-text-secondary">
+                        Notes: {rule.notes}
+                      </p>
+                    )}
+                    {href && (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block text-xs text-primary-500 hover:underline break-all"
+                      >
+                        {href}
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))
+      )}
     </div>
   );
 }

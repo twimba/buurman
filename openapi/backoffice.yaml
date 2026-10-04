@@ -4758,6 +4758,57 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/rent-regulations/countries/{code}/tenancy-rules:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: List tenancy rules for country
+      description: >-
+        List the display-only tenancy-law facts (notice periods, duration, deposit, registration,
+        ...) of a country, including their notes, as seeded from the bundled catalog
+      operationId: listRentRegulationTenancyRules
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RentRegulationTenancyRuleResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /backoffice/rent-regulations/rules/{identifier}:
     put:
       tags:
@@ -8783,6 +8834,44 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RentRegulationCountryDiff"
+    TenancyRuleTopic:
+      type: string
+      enum:
+        - NOTICE_PERIOD
+        - TENANCY_DURATION
+        - DEPOSIT
+        - LEASE_FORM
+        - REGISTRATION
+        - FEES_AND_PENALTIES
+        - OTHER
+    RentRegulationTenancyRuleResponse:
+      type: object
+      required: [identifier, topic, label, value]
+      properties:
+        identifier:
+          type: string
+        topic:
+          $ref: "#/components/schemas/TenancyRuleTopic"
+        regionCode:
+          type: string
+          nullable: true
+        label:
+          type: string
+        value:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+          nullable: true
+        legalBasis:
+          type: string
+          nullable: true
+        sourceUrl:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
     MaxIncreaseType:
       type: string
       enum:

@@ -347,6 +347,7 @@ public class RentRegulationCatalogService {
         cAdded++;
         int regions = safe(t.regions()).size();
         int rules = safe(t.rules()).size();
+        int tenancyRules = safe(t.tenancyRules()).size();
         rAgg[0] += regions;
         ruAgg[0] += rules;
         byCountry.add(
@@ -359,7 +360,14 @@ public class RentRegulationCatalogService {
                     new RentRegulationDiffEntry(
                         "COUNTRY",
                         "ADDED",
-                        t.countryName() + " — " + rules + " rules, " + regions + " regions",
+                        t.countryName()
+                            + " — "
+                            + rules
+                            + " rules, "
+                            + tenancyRules
+                            + " tenancy rules, "
+                            + regions
+                            + " regions",
                         List.of()))));
       } else if (c != null) {
         cRemoved++;
