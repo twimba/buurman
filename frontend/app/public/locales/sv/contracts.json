@@ -1079,6 +1079,8 @@
     "required": "Obligatorisk",
     "saveSelection": "Spara urval",
     "generate": "Generera hyresavtal",
+    "saveAndGenerate": "Spara och generera hyresavtal",
+    "language": "Hyresavtalets språk",
     "pinned": "Fast",
     "moveUp": "Flytta upp {{title}}",
     "moveDown": "Flytta ned {{title}}",

@@ -1079,6 +1079,8 @@
     "required": "Pakollinen",
     "saveSelection": "Tallenna valinta",
     "generate": "Luo vuokrasopimus",
+    "saveAndGenerate": "Tallenna ja luo vuokrasopimus",
+    "language": "Vuokrasopimuksen kieli",
     "pinned": "Kiinnitetty",
     "moveUp": "Siirrä {{title}} ylös",
     "moveDown": "Siirrä {{title}} alas",

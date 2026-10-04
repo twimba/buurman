@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, FileSignature } from 'lucide-react';
 import { Button, LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import { DocumentLanguagePicker } from '@/components/common/DocumentLanguagePicker';
+import {
+  defaultDocumentLanguage,
+  type DocumentLanguageCode,
+} from '@/components/common/documentLanguages';
 import { LeaseUnavailableState } from '@/components/contracts/LeaseUnavailableState';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { trackEvent } from '@/utils/analytics';
@@ -16,6 +21,13 @@ import {
   LeaseAvailability,
   type ResolvedLeaseClauseResponse,
 } from '@/generated/models';
+import {
+  isClauseIncluded,
+  isLeaseSelectionDirty,
+  orderClauses,
+  type ClauseOrder,
+  type ClauseOverrides,
+} from './leaseClauseSelection';
 
 export interface ContractLeaseAgreementTabProps {
   contractId: string;
@@ -69,39 +81,26 @@ export const ContractLeaseAgreementTab = ({
   // deviations from the server's `included` are stored, so there is nothing to re-sync when the
   // query refetches — unset entries fall back to `clause.included` below. Cleared on a successful
   // save so the overrides don't linger once the server reflects them.
-  const [overrides, setOverrides] = useState<Record<string, boolean>>({});
+  const [overrides, setOverrides] = useState<ClauseOverrides>({});
 
   // Local clause order (templateIdentifiers) once the landlord has moved something; null means
   // "show the server order". Cleared on a successful save, like overrides.
-  const [order, setOrder] = useState<string[] | null>(null);
+  const [order, setOrder] = useState<ClauseOrder>(null);
+
+  // Same default as the booklet menu: the user's UI language (English when PDFs don't exist in
+  // it). The server falls back to the country's national language when it has no document in it.
+  const [language, setLanguage] = useState<DocumentLanguageCode>(() =>
+    defaultDocumentLanguage(i18n.language)
+  );
+
+  // True while "Save and generate" runs, covering both requests so the button spins throughout.
+  const [savingThenGenerating, setSavingThenGenerating] = useState(false);
 
   const isIncluded = (clause: ResolvedLeaseClauseResponse) =>
-    clause.optional
-      ? (overrides[clause.templateIdentifier] ?? clause.included)
-      : true;
+    isClauseIncluded(clause, overrides);
 
-  const orderedClauses = (): ResolvedLeaseClauseResponse[] => {
-    // Pinned clauses (parties, premises) always lead; the rest follow by sortOrder.
-    const base = (clauses ?? [])
-      .slice()
-      .sort(
-        (a, b) =>
-          Number(b.pinned) - Number(a.pinned) || a.sortOrder - b.sortOrder
-      );
-    if (!order) {
-      return base;
-    }
-    const byId = new Map(base.map((c) => [c.templateIdentifier, c]));
-    const known = new Set(order);
-    const ordered = order
-      .map((id) => byId.get(id))
-      .filter((c): c is ResolvedLeaseClauseResponse => !!c);
-    // A refetch may add clauses the local order has never seen; keep them in server order.
-    const unseen = base.filter((c) => !known.has(c.templateIdentifier));
-    return [...ordered, ...unseen].sort(
-      (a, b) => Number(b.pinned) - Number(a.pinned)
-    );
-  };
+  const orderedClauses = (): ResolvedLeaseClauseResponse[] =>
+    orderClauses(clauses ?? [], order);
 
   const handleMove = (index: number, delta: -1 | 1) => {
     const current = orderedClauses();
@@ -128,28 +127,48 @@ export const ContractLeaseAgreementTab = ({
     }));
   };
 
-  const handleSave = () => {
-    if (!clauses) {
-      return;
-    }
-    updateMutation.mutate(
+  /** Persists the local selection; rejects (after the hook's error toast) when the save fails. */
+  const saveSelection = async () => {
+    await updateMutation.mutateAsync(
       orderedClauses().map((clause, index) => ({
         templateIdentifier: clause.templateIdentifier,
         included: isIncluded(clause),
         // The server ignores a pinned clause's sortOrder, so it is sent unchanged.
         sortOrder: clause.pinned || !order ? clause.sortOrder : index + 1,
-      })),
-      {
-        onSuccess: () => {
-          setOverrides({});
-          setOrder(null);
-        },
-      }
+      }))
     );
+    setOverrides({});
+    setOrder(null);
   };
 
-  const handleGenerate = () => {
-    generateMutation.mutate();
+  const handleSave = () => {
+    if (!clauses) {
+      return;
+    }
+    // The failure toast comes from the mutation hook; nothing else to do here.
+    saveSelection().catch(() => {});
+  };
+
+  const isDirty = !!clauses && isLeaseSelectionDirty(clauses, overrides, order);
+
+  const handleGenerate = async () => {
+    if (isDirty) {
+      // Generate only from the saved selection: wait for the save, and stop if it fails.
+      setSavingThenGenerating(true);
+      try {
+        await saveSelection();
+      } catch {
+        setSavingThenGenerating(false);
+        return;
+      }
+    }
+    try {
+      await generateMutation.mutateAsync(language);
+    } catch {
+      // The failure toast comes from the mutation hook.
+    } finally {
+      setSavingThenGenerating(false);
+    }
   };
 
   if (isLoading) {
@@ -292,22 +311,31 @@ export const ContractLeaseAgreementTab = ({
       )}
 
       {!isUnavailable && (
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Button
             variant="secondary"
             onClick={handleSave}
-            isLoading={updateMutation.isPending}
-            disabled={sortedClauses.length === 0}
+            isLoading={updateMutation.isPending && !savingThenGenerating}
+            disabled={sortedClauses.length === 0 || savingThenGenerating}
           >
             {t('leaseAgreement.saveSelection')}
           </Button>
+          <DocumentLanguagePicker
+            value={language}
+            onChange={setLanguage}
+            label={t('leaseAgreement.language')}
+            disabled={savingThenGenerating || generateMutation.isPending}
+          />
           <Button
             variant="primary"
             leftIcon={<FileSignature />}
             onClick={handleGenerate}
-            isLoading={generateMutation.isPending}
+            isLoading={savingThenGenerating || generateMutation.isPending}
+            disabled={updateMutation.isPending && !savingThenGenerating}
           >
-            {t('leaseAgreement.generate')}
+            {isDirty
+              ? t('leaseAgreement.saveAndGenerate')
+              : t('leaseAgreement.generate')}
           </Button>
         </div>
       )}
