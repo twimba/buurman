@@ -41,4 +41,20 @@ class LeaseBundleWordingTest {
         .isNotEqualTo(message("lease.disclaimer", lang));
     assertThat(message("lease.disclaimer", lang)).doesNotStartWith("lease.disclaimer");
   }
+
+  @ParameterizedTest
+  @ValueSource(
+      strings = {"en", "nl", "de", "fr", "es", "it", "pt", "sv", "da", "nb", "fi", "pl", "el"})
+  @DisplayName("the no-national-version notice is translated and distinct from the courtesy notice")
+  void noNationalVersionNoticeIsTranslated(String lang) {
+    String notice = message("lease.notice.noNationalVersion", lang);
+    assertThat(notice)
+        .doesNotStartWith("lease.notice")
+        .doesNotContain("!")
+        .doesNotContain("\'")
+        .isNotEqualTo(message("lease.notice.courtesy", lang));
+    if (!lang.equals("en")) {
+      assertThat(notice).isNotEqualTo(message("lease.notice.noNationalVersion", "en"));
+    }
+  }
 }

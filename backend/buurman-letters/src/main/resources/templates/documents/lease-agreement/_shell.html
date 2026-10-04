@@ -32,7 +32,9 @@
 
   <div class="letter-subject" th:text="#{lease.title}">Lease Agreement</div>
 
-  <div th:if="${!authoritative}" class="lease-notice" th:text="#{lease.notice.courtesy}"></div>
+  <!-- noNationalVersion (CZ): the courtesy notice would point to a national version that does not exist. -->
+  <div th:if="${!authoritative and noNationalVersion != true}" class="lease-notice" th:text="#{lease.notice.courtesy}"></div>
+  <div th:if="${!authoritative and noNationalVersion == true}" class="lease-notice" th:text="#{lease.notice.noNationalVersion}"></div>
   <div th:if="${fallbackUsed}" class="lease-notice" th:text="#{lease.notice.fallback(${requestedLang})}"></div>
 
   <div class="letter-body">

@@ -90,10 +90,12 @@ import com.buurman.util.DocumentLanguages;
  * <h2>Countries without a national language (CZ)</h2>
  *
  * The locator never flags a document authoritative when the country has no national language, so
- * the English CZ document renders WITH the courtesy notice at runtime, even though the registry
- * entry names English as authoritative (header {@code translation: authoritative}, number-word
- * lint, fidelity source). {@code authoritativeRenders} forces {@code authoritative=true} and so
- * does not show the runtime notice; {@code LeaseDocumentLocatorTest} covers the runtime flag.
+ * the English CZ document renders WITH a notice at runtime (the no-national-version notice {@code
+ * lease.notice.noNationalVersion}, not the courtesy one, which would point to a national version
+ * that does not exist), even though the registry entry names English as authoritative (header
+ * {@code translation: authoritative}, number-word lint, fidelity source). {@code
+ * authoritativeRenders} forces {@code authoritative=true} and so does not show the runtime notice;
+ * {@code LeaseDocumentLocatorTest} covers the runtime flag.
  */
 public final class LeaseDocumentRegistry {
 
