@@ -604,6 +604,91 @@ public final class LeaseDocumentRegistry {
   // ===== FI entries (country pack) =====
   // Constants, citation pattern and foreign markers for FI go here, only inside these markers.
 
+  /**
+   * The Finnish statute citation format, the same token in all three FI languages: the section
+   * number before the section sign in Finnish and Swedish ("AHVL 52 § 2 mom.", "13 a §") and after
+   * "section" in English ("AHVL section 52, subsection 2", "section 13 a"). Only the number (with a
+   * letter suffix) is the token, so the three forms pair alike; the "mom."/"subsection" digit that
+   * follows within 3 words is the paragraph the gate pairs. FI documents write every citation in
+   * parentheses with nothing but the subsection (and point) after the section, never the genitive
+   * "52 §:n" (the colon would end the gate's sentence) and never section ranges.
+   */
+  public static final Pattern FINNISH_CITATION =
+      Pattern.compile(
+          "\\b\\d+(?:\\s?[a-z])?(?=\\s{0,3}§)|(?<=\\bsections?\\s{1,3})\\d+(?:\\s?[a-z])?\\b",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** Finnish marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> FINNISH_MARKERS =
+      List.of(
+          "vuokranantaja",
+          "vuokranantajan",
+          "vuokralainen",
+          "vuokralaisen",
+          "vuokrasopimus",
+          "mitätön",
+          "jollei");
+
+  /** Mirror of V101__seed_fi_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry FI_RESIDENTIAL =
+      new Entry(
+          "FI",
+          LeaseKind.RESIDENTIAL,
+          "fi",
+          List.of("fi", "sv", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", false, false, 12),
+              new ClauseSpec("handover-inspection", false, false, 13),
+              new ClauseSpec("termination", true, false, 14),
+              new ClauseSpec("notices", false, false, 15),
+              new ClauseSpec("data-protection", false, false, 16),
+              new ClauseSpec("disputes", false, false, 17)),
+          FINNISH_MARKERS,
+          Optional.of(FINNISH_CITATION));
+
+  /** Mirror of V101__seed_fi_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry FI_COMMERCIAL =
+      new Entry(
+          "FI",
+          LeaseKind.COMMERCIAL,
+          "fi",
+          List.of("fi", "sv", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("subletting", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("energy-certificate", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("termination", true, false, 18),
+              new ClauseSpec("notices", false, false, 19),
+              new ClauseSpec("data-protection", false, false, 20),
+              new ClauseSpec("disputes", false, false, 21)),
+          FINNISH_MARKERS,
+          Optional.of(FINNISH_CITATION));
+
   // ===== end FI =====
 
   // ===== GB entries (country pack) =====
@@ -697,6 +782,8 @@ public final class LeaseDocumentRegistry {
     // ===== end DK ENTRIES =====
 
     // ===== FI ENTRIES (country pack) =====
+    entries.add(FI_RESIDENTIAL);
+    entries.add(FI_COMMERCIAL);
 
     // ===== end FI ENTRIES =====
 

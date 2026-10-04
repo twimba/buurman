@@ -1,0 +1,327 @@
+<!--
+  legal-basis: Laki liikehuoneiston vuokrauksesta (LHVL, 482/1995; Swedish: lag om hyra av affärslokal),
+               consolidated text including the amending Act 532/2026 (HE 33/2026, in force 01.10.2026), read in
+               Finnish and Swedish on finlex.fi (opendata.finlex.fi consolidated versions fin@20260532 and
+               swe@20260532): sections 1, 2, 3, 4, 4 a, 7, 11, 11 a, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 27,
+               28, 29, 30, 36, 37, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 53, 55, 56, 57.
+               Arvonlisaverolaki (1501/1993), sections 27 and 30 (finlex.fi, consolidated with Act 597/2026).
+               Laki indeksiehdon kayton rajoittamisesta (1195/2000), still cited in LHVL section 24, is no longer in
+               force (finlex.fi "Ei voimassa"; vm.fi: the restriction was not extended beyond 2012).
+               Laki rakennuksen energiatodistuksesta (50/2013), consolidated with Act 1010/2024, sections 3 and 6.
+               Korkolaki (633/1982). Oikeudenkaymiskaari (4/1734), chapter 10. Tietosuojalaki (1050/2018); GDPR:
+               Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679). Aland: Hyreslag (1999:19) for
+               landskapet Aland (regeringen.ax) applies instead of the LHVL in the Aland Islands; not covered by
+               this document.
+               Verified 2026-10-04 against finlex.fi (section texts read on that date).
+               Pending: HE 164/2026 (new Act on the energy performance of buildings, given to Parliament
+               10.09.2026) would replace Act 50/2013 - re-verify the energy-certificate clause after enactment.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fi.html, never spelled out (fi "3 kuukautta" is "3 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Swedish courtesy translation of fi.html; the Finnish text is authoritative. It states the law of mainland
+  Finland (LHVL, whose official Swedish version is lagen om hyra av affärslokal) in Swedish, using the
+  Finland-Swedish statutory terms, and is not the law of Sweden or of any other country. Draft text, not vetted by
+  legal counsel. Only prose differs from fi.html: fragments, th: expressions and attributes are identical (enforced
+  by LeaseDocumentFidelityTest). Citations are written "(LHVL 42 § 2 mom.)" as in fi.html. Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Detta hyresavtal för en affärslokal har ingåtts mellan följande parter:</p>
+  <p><strong th:text="${landlordName}">hyresvärd</strong>, nedan &rdquo;hyresvärden&rdquo;,</p>
+  <p>FO-nummer: ______________________________</p>
+  <p>Momsregistreringsnummer: ______________________________</p>
+  <p>Företrädare: ______________________________, och</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">hyresgäst</strong>, nedan
+    (gemensamt) &rdquo;hyresgästen&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">den eller de undertecknade hyresgästerna, nedan (gemensamt)
+    &rdquo;hyresgästen&rdquo;,</p>
+  <p>FO-nummer: ______________________________</p>
+  <p>Momsregistreringsnummer: ______________________________</p>
+  <p>Företrädare: ______________________________.</p>
+  <p>Om det finns flera hyresgäster svarar de solidariskt för alla hyresgästens förpliktelser enligt detta
+    avtal.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Hyresvärden hyr ut till hyresgästen, för annat ändamål än boende, den lokal som är belägen på adressen
+    <strong th:text="${propertyAddress}">adress</strong>, nedan &rdquo;affärslokalen&rdquo;. Yta cirka ________ m².
+    Utrymmen och bilplatser som hör till affärslokalen: ______________________________.</p>
+  <p>Hyresvärdens rätt att hyra ut affärslokalen grundar sig på följande: ______________________________.
+    Hyresvärden är skyldig att meddela hyresgästen vad hyresvärdens rätt att hyra ut lokalen grundar sig på eller
+    vad som begränsar denna rätt (LHVL 30 §).</p>
+  <p>På detta avtal tillämpas lagen om hyra av affärslokal (482/1995, nedan LHVL). Avtal om avvikelse från lagens
+    bestämmelser kan ingås, om inte något annat stadgas i lagen eller avvikelsen annars ska anses vara förbjuden
+    (LHVL 2 §).</p>
+  <p>Detta dokument har upprättats enligt lagstiftningen i Fastlandsfinland. På en lokal som är belägen i
+    landskapet Åland tillämpas landskapets egen hyreslagstiftning (Hyreslag för landskapet Åland, 1999:19), enligt
+    vilken detta dokument inte har upprättats.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Affärslokalen hyrs ut för att användas uteslutande för följande ändamål: ______________________________
+    (användningsändamål). En ändring av användningsändamålet förutsätter hyresvärdens skriftliga samtycke på
+    förhand.</p>
+  <p>Lokalens användningsändamål bestäms enligt vad som har avtalats om lokalens huvudsakliga användning
+    (LHVL 1 § 1 mom.). Om lokalen används för något annat ändamål eller på något annat sätt än som förutsattes då
+    hyresavtalet ingicks, kan hyresvärden ha rätt att häva hyresavtalet (LHVL 48 § 1 mom. 3 punkten). Hyresgästen
+    skaffar på egen bekostnad de myndighetstillstånd som verksamheten kräver.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Hyresförhållandet börjar den <strong th:text="${startDate}">begynnelsedag</strong>.</p>
+  <p th:if="${!fixedTerm}">Hyresavtalet gäller tills vidare.</p>
+  <p th:if="${fixedTerm}">Hyresavtalet är tidsbestämt<span th:if="${endDate != null}"> och upphör den
+    <strong th:text="${endDate}">slutdag</strong></span>. Ett tidsbestämt hyresavtal upphör vid utgången av avtalets
+    giltighetstid (LHVL 3 § 2 mom.). Ett tidsbestämt hyresavtal upphör till följd av uppsägning endast när
+    hyresgästen har avlidit, så som anges i lag (LHVL 41 § 2 mom.), eller på en grund som anges i någon annan lag
+    (LHVL 41 § 3 mom.).</p>
+  <p>Hyresavtalet och ändringar i det ska ingås skriftligen. Om hyresavtalet inte har ingåtts skriftligen, anses
+    det vara i kraft tills vidare (LHVL 4 §). Som skriftligt avtal betraktas också ett elektroniskt avtal i en form
+    som allmänt kan lagras och återges under en tid som är lämplig med hänsyn till dess syfte (LHVL 4 a §).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Hyran är <strong th:text="${rentAmount}">belopp</strong> <span th:text="${paymentFrequency}">månatligen</span>.<span
+    class="clause-ref" data-ref="vat" th:if="${refs['vat']}"> Mervärdesskatten regleras i detta avtal (se artikel <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Dessutom betalar hyresgästen de
+    avtalade användningsavgifterna (se artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Hyran bestäms enligt vad som har avtalats, om inte något annat följer av lag (LHVL 24 §). Hyresvärden eller
+    hyresgästen kan medan hyresförhållandet består föra frågan om skäligheten av hyran eller av ett villkor om hur
+    den bestäms till domstol för prövning (LHVL 25 § 1 mom.).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Justeringen av hyran regleras i detta avtal (se artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Hyran justeras årligen från och med ______________ enligt följande grund:
+    ______________________________ (till exempel förändringen i det levnadskostnadsindex som Statistikcentralen
+    publicerar eller en fast procentuell höjning). Beräkningssätt för justeringen: ______________________________.</p>
+  <p>Hyresvärden meddelar hyresgästen skriftligen den justerade hyran och tidpunkten då den träder i kraft innan den
+    justerade hyran träder i kraft. Justeringsvillkoret utgör en del av den avtalade hyran (LHVL 24 §), och dess
+    skälighet kan föras till domstol för prövning (LHVL 25 § 1 mom.).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Utöver hyran betalar hyresgästen följande användnings- och underhållsavgifter till hyresvärden: vatten
+    ______________, elektricitet ______________, uppvärmning ______________, avfallshantering ______________,
+    övrigt ______________.</p>
+  <p>Förbrukningsbaserade avgifter faktureras enligt mätarställningar eller någon annan avtalad grund, och
+    hyresvärden lämnar på begäran hyresgästen en redogörelse för grunderna för avgifterna.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>Överlåtelse av nyttjanderätt till en fastighet är befriad från mervärdesskatt (mervärdesskattelagen
+    1501/1993, 27 §), om inte överlåtaren ansöker om att bli skattskyldig för överlåtelsen (mervärdesskattelagen
+    30 §). Skattskyldigheten gäller endast den fastighet eller del av den som nämns i ansökan, och den förutsätter
+    att fastigheten fortgående används i verksamhet som berättigar till avdrag enligt 10 kap. i
+    mervärdesskattelagen eller att fastighetens användare är staten eller någon av de läroanstalter som räknas upp i
+    lagen (mervärdesskattelagen 30 §).</p>
+  <p>Hyresvärden har ansökt eller ansöker om att bli skattskyldig för affärslokalen (ja / nej): ______________. Om
+    hyresvärden är skattskyldig, läggs mervärdesskatt enligt den vid varje tidpunkt gällande skattesatsen till hyran
+    och till de övriga betalningarna enligt detta avtal. Hyresgästen förbinder sig att fortgående använda
+    affärslokalen i verksamhet som berättigar till avdrag och att utan dröjsmål skriftligen meddela hyresvärden om
+    ändringar i användningen, och hyresgästen ersätter hyresvärden för skada som uppkommer om dessa förpliktelser
+    försummas.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Hyresgästen ställer säkerhet till hyresvärden för fullgörandet av
+    hyresgästens förpliktelser. Säkerhetens belopp är <strong th:text="${depositAmount}">belopp</strong>.</p>
+  <p th:if="${depositAmount == null}">Hyresgästen ställer säkerhet till hyresvärden för fullgörandet av
+    hyresgästens förpliktelser. Säkerhetens belopp är det som parterna har avtalat skriftligen.</p>
+  <p>Säkerhetens form (till exempel kontant säkerhet eller bankgaranti) och tidpunkt för när den ska ställas:
+    ______________________________. Avtal kan ingås om att en skälig säkerhet ska ställas; om säkerhet inte ställs
+    inom avtalad tid, har hyresvärden rätt att häva avtalet, förutom om säkerheten har ställts innan meddelandet om
+    hävning delgavs (LHVL 7 §). Lagen anger inget högsta belopp, i euro eller i förhållande till hyran, för
+    säkerhet vid hyra av affärslokal.</p>
+  <p>Säkerheten täcker alla förpliktelser för hyresgästen som följer av hyresförhållandet. Hyresvärden återställer
+    eller frigör säkerheten utan dröjsmål efter att hyresförhållandet har upphört och affärslokalen har återlämnats,
+    med avdrag för hyresvärdens förfallna fordringar, för vilka hyresvärden ger hyresgästen en skriftlig
+    redogörelse.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Lokalens skick konstateras när den överlämnas (se artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Hyresgästen betalar hyran<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (se artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> och användningsavgifterna</span><span th:if="${refs['vat']}"> jämte mervärdesskatt</span>
+    <span th:text="${paymentFrequency}">månatligen</span>
+    <span th:if="${paymentDueDay != null}">senast dag
+      <strong th:text="${paymentDueDay}">1</strong> i varje hyresbetalningsperiod</span><span
+    th:if="${paymentDueDay == null}">senast dag 2 i varje hyresbetalningsperiod (LHVL 27 § 1 mom.)</span>
+    till det bankkonto som hyresvärden har angett ______________________________.</p>
+  <p>Att hyran ska betalas i förskott för en eller flera hyresbetalningsperioder kan avtalas när hyresavtalet ingås,
+    och av särskilda skäl när villkoren i hyresavtalet ändras eller hyresgästen byts; ett villkor enligt vilket
+    hyresgästen annars under hyresförhållandet åläggs att betala hyra i förskott är ogiltigt (LHVL 29 § 1 mom.).
+    Förskottshyra: ______________________________.</p>
+  <p>Vid försenad betalning är hyresgästen skyldig att betala dröjsmålsränta enligt räntelagen (633/1982).
+    Underlåtenhet att betala hyran inom stadgad eller avtalad tid kan ge hyresvärden rätt att häva hyresavtalet
+    (LHVL 48 § 1 mom. 1 punkten).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Parterna kan avtala om rättigheter och skyldigheter som gäller lokalens användning, skick och underhåll; om
+    inte något annat har avtalats, tillämpas bestämmelserna i 2 kap. i LHVL, av vilka vissa är tvingande till
+    förmån för hyresgästen (LHVL 14 §). Parterna avtalar om följande ansvarsfördelning: hyresvärden ansvarar för
+    ______________________________; hyresgästen ansvarar för ______________________________.</p>
+  <p>Om inte något annat avtalas, ska lokalen när hyresförhållandet börjar och medan det består vara i ett sådant
+    skick som hyresgästen med beaktande av lokalens ålder, skicket i lokaler som på området används för motsvarande
+    syfte och övriga lokala förhållanden skäligen kan kräva (LHVL 18 § 1 mom.).</p>
+  <p>Hyresgästen ska vårda lokalen omsorgsfullt; hyresgästen är inte ansvarig för sedvanligt slitage, om hyresvärden
+    svarar för lokalens skick och underhåll (LHVL 23 § 1 mom.). Hyresgästen ska utan dröjsmål underrätta hyresvärden
+    om skada på lokalen eller om en brist som hyresvärden ansvarar för att avhjälpa (LHVL 22 § 1 mom.).</p>
+  <p>Hyresvärden får omedelbart utföra arbete som inte kan skjutas upp utan att skada uppstår, och arbete som inte
+    medför väsentlig olägenhet efter att ha meddelat hyresgästen minst 14 dagar innan arbetet inleds
+    (LHVL 19 § 2 mom.). Om andra reparations- eller ändringsarbeten ska hyresvärden meddela minst 6 månader innan
+    arbetet inleds, och hyresgästen har rätt att inom 14 dagar från det att meddelandet togs emot häva avtalet så
+    att det upphör när arbetet tidigast får inledas (LHVL 19 § 3 mom.).</p>
+  <p>Hyresvärden och hyresvärdens företrädare har rätt att få tillträde till lokalen när det är nödvändigt för
+    tillsyn över lokalens skick och skötsel eller för reparations- och ändringsarbeten eller skötselåtgärder, samt
+    att visa lokalen om den ska säljas eller kan hyras ut på nytt; besöket ordnas vid en tidpunkt som passar
+    parterna, om inte ärendets brådskande natur eller art hindrar det (LHVL 20 §).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Hyresgästen har inte rätt att utan hyresvärdens tillstånd utföra andra reparations- eller ändringsarbeten än
+    för att avhjälpa en brist som hyresvärden ansvarar för, men hyresgästen får alltid vidta åtgärder för att
+    förhindra eller begränsa en omedelbar skada på lokalen (LHVL 19 § 1 mom.). Hyresgästens ändrings- och
+    inredningsarbeten utförs i enlighet med hyresvärdens skriftliga tillstånd på förhand och på hyresgästens
+    bekostnad: ______________________________.</p>
+  <p>När ett tidsbestämt avtal upphör har hyresgästen rätt till ersättning för de reparations- och ändringsarbeten
+    som hyresgästen utfört och som höjt lokalens värde, enligt deras värde vid den tidpunkt då hyresförhållandet
+    upphör, om hyresgästen enligt lag har haft rätt att utföra arbetena och de inte redan har ersatts
+    (LHVL 45 § 1 mom.); ett villkor som begränsar denna rätt är ogiltigt (LHVL 47 §). När hyresförhållandet upphör
+    återställer hyresgästen lokalen i ursprungligt skick i den mån det har avtalats i hyresvärdens tillstånd.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Hyresgästen får inte utan tillstånd i hyresavtalet eller särskilt tillstånd av hyresvärden överlåta sin
+    hyresrätt, om inte något annat föreskrivs i lag. När hyresgästen överlåter sin hyresrätt ska hyresgästen
+    omedelbart skriftligen meddela hyresvärden detta; om hyresgästen har rätt att överlåta hyresrätten, befrias
+    hyresgästen från sina skyldigheter när hyresgästen har meddelat hyresvärden överlåtelsen (LHVL 36 §).</p>
+  <p>När hyresgästen under firma som är antecknad i handelsregistret idkar rörelse i en lokal som helt eller delvis
+    har hyrts för detta, har hyresgästen när rörelsen överlåts rätt att överlåta hyresrätten till förvärvaren utan
+    tillstånd av hyresvärden, om inte något annat har avtalats eller hyresvärden har grundad anledning att motsätta
+    sig överlåtelsen (LHVL 37 § 1 mom.). Hyresgästen ska skriftligen meddela hyresvärden överlåtelsen senast
+    2 månader före den, och en hyresvärd som inte godkänner överlåtelsen ska inom 1 månad från det att hyresvärden
+    fick meddelandet föra frågan om grunden för sin vägran till domstol för prövning (LHVL 37 § 2 mom.).</p>
+  <p>Parterna avtalar följande om rätten att överlåta hyresrätten när rörelsen överlåts (till exempel att rätten
+    utesluts eller förutsätter hyresvärdens samtycke): ______________________________.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Om inte något annat avtalas, får hyresgästen utan tillstånd av hyresvärden genom underuthyrning eller annars
+    upplåta högst hälften av lokalen för att användas av någon annan, om detta inte vållar hyresvärden avsevärd
+    olägenhet eller störning (LHVL 16 §). Parterna avtalar följande om underuthyrning:
+    ______________________________.</p>
+  <p>När hyresgästen har upplåtit lokalen helt eller delvis för att användas av någon annan, svarar hyresgästen
+    fortfarande gentemot hyresvärden för skyldigheterna enligt hyresavtalet och för skada som den som fått använda
+    lokalen är skyldig att ersätta hyresvärden (LHVL 17 §).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Hyresgästen tecknar och upprätthåller under hyresförhållandet en ansvars- och egendomsförsäkring som är
+    tillräcklig för verksamheten och visar på begäran upp ett intyg om den. Hyresvärden försäkrar byggnaden.
+    Försäkringarnas minimibelopp: ______________________________.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Hyresvärden har hållit ett giltigt energicertifikat för byggnaden eller en del av den tillgängligt för
+    hyresgästen vid visningen och överlämnar det till hyresgästen i original eller som kopia (lagen om
+    energicertifikat för byggnader 50/2013, 6 § 1 mom.).</p>
+  <p>Energicertifikatet behöver inte hållas tillgängligt eller överlämnas, om uthyrningen gäller tidsbestämd
+    uthyrning för högst 1 år, om det är fråga om underuthyrning eller uthyrning mellan sammanslutningar inom samma
+    koncern (lag 50/2013, 6 § 2 mom.) eller om byggnaden har undantagits från lagens tillämpningsområde
+    (lag 50/2013, 3 §).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Hyresvärden ska hålla lokalen tillgänglig för hyresgästen den dag då hyresgästen har rätt att få den i sin
+    besittning (LHVL 15 § 1 mom.). Parterna besiktar lokalen gemensamt innan den överlämnas och antecknar dess
+    skick, de överlämnade nycklarna och mätarställningarna i ett besiktningsprotokoll, som båda parterna
+    undertecknar och av vilket båda får ett exemplar.</p>
+  <p>Flyttningsdagen är den vardag som följer efter att hyresavtalet har upphört (LHVL 55 §). Hyresgästen
+    återlämnar lokalen och alla nycklar till hyresvärden senast den dagen, och parterna besiktar lokalen gemensamt.
+    I ett hyresförhållande som gäller tills vidare kan domstolen under de förutsättningar som anges i lag skjuta
+    fram flyttningsdagen med högst 6 månader (LHVL 56 § 2 mom.); talan ska väckas inom 7 dagar från delfåendet av
+    uppsägningen eller hävningen och före flyttningsdagen (LHVL 57 § 1 mom.).<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Återställandet av säkerheten regleras i detta avtal (se artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Om inte något annat har avtalats om uppsägningstiden, är uppsägningstiden för ett hyresavtal som gäller tills
+    vidare 3 månader när hyresvärden säger upp avtalet och 1 månad när hyresgästen säger upp avtalet
+    (LHVL 42 § 2 mom.). Uppsägningstiden räknas från den sista dagen i den kalendermånad under vilken uppsägningen
+    har skett, om inte något annat avtalas (LHVL 42 § 1 mom.). Avtalade uppsägningstider:
+    ______________________________.</p>
+  <p>Hyresvärdens uppsägningsmeddelande ska lämnas skriftligen, och i det ska anges den tidpunkt då
+    hyresförhållandet upphör och grunden för uppsägningen (LHVL 43 § 1 mom.). Hyresgästens uppsägningsmeddelande
+    lämnas skriftligen till hyresvärden eller till den som hyresvärden har gett i uppdrag att uppbära hyran, dock
+    inte till en penninginrättning (LHVL 43 § 2 mom.). Uppsägningsmeddelandet ska delges bevisligen
+    (LHVL 11 a § 1 mom.), och en uppsägning som har verkställts på annat sätt är utan verkan (LHVL 43 § 5 mom.).</p>
+  <p>Domstolen ska på yrkande av hyresgästen förklara att en uppsägning som hyresvärden verkställt är utan verkan i
+    de fall som anges i lag (LHVL 44 § 1 mom.). Yrkandet ska framställas medan hyresförhållandet består och senast
+    1 månad efter delfåendet av uppsägningen (LHVL 44 § 2 mom.).</p>
+  <p>Om ett hyresförhållande som gäller tills vidare upphör på grund av en uppsägning från hyresvärdens sida som
+    inte kan anses överensstämma med god sed i hyresförhållanden, har hyresgästen rätt till ersättning för
+    reparations- och ändringsarbeten som höjt lokalens värde (LHVL 45 § 1 mom.) samt för flyttningskostnaderna och
+    kostnaderna för anskaffning av en ny lokal. En hyresgäst som på basis av hyresavtalet i lokalen har bedrivit
+    handel, hantverk, industrirörelse eller annan förvärvsverksamhet minst 2 år har dessutom rätt till skälig
+    ersättning för den minskning eller förlust av kundkretsen som flyttningen vållar samt för den ökning av lokalens
+    hyresvärde som har uppstått genom hyresgästens verksamhet, om den följande innehavaren av lokalen börjar idka i
+    väsentligt avseende likadan förvärvsverksamhet i lokalen (LHVL 45 § 2 mom.). Ett villkor som begränsar dessa
+    rättigheter är ogiltigt (LHVL 47 §). Hyresgästen förlorar dessa rättigheter om hyresgästen efter uppsägningen
+    försummar sina skyldigheter som hyresgäst på annat än ringa sätt (LHVL 46 §).</p>
+  <p th:if="${fixedTerm}">Ett tidsbestämt hyresavtal<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (se artikel <span th:text="${refs['term']}"></span>)</span> kan inte sägas upp annat
+    än i de fall som anges i lag (LHVL 41 § 2 mom.).</p>
+  <p>Hyresvärden har rätt att häva hyresavtalet på de grunder som anges i lag, till exempel om hyresgästen
+    underlåter att betala hyran inom stadgad eller avtalad tid eller på ett väsentligt sätt annars bryter mot det som
+    har avtalats i fråga om lokalen (LHVL 48 § 1 mom.); rätt till hävning föreligger inte om det förfarande som
+    utgör hävningsgrund är av ringa betydelse (LHVL 48 § 3 mom.). På vissa grunder förutsätter hävning att
+    hyresgästen först har fått en skriftlig varning (LHVL 49 §). Hyresgästen har rätt att häva hyresavtalet på de
+    grunder som anges i lag, till exempel om hyresvärden väsentligt bryter mot det som har avtalats i fråga om
+    lokalen (LHVL 50 § 1 mom.). Meddelandet om hävning ska lämnas skriftligen, och i det ska hävningsgrunden anges
+    (LHVL 53 § 1 mom.); det ska delges bevisligen (LHVL 11 a § 1 mom.).</p>
+  <p>Parterna kan alltid avtala om att hyresförhållandet upphör.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Återlämnandet av lokalen regleras i detta avtal (se artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Meddelanden kan delges per post genom brev till den postadress som mottagaren vanligen använder
+    (LHVL 11 § 1 mom.).</p>
+  <p>Parterna avtalar uttryckligen om att meddelanden också kan delges genom följande elektroniska
+    kommunikationskanal med hjälp av den senaste kontaktinformation som mottagaren uppgett:
+    ______________________________ (till exempel en e-postadress). Om ingen elektronisk kommunikationskanal har
+    avtalats på detta sätt och inte heller något annat uttryckligen har avtalats, får meddelanden delges genom en
+    elektronisk kommunikationskanal som parterna etablerat har använt för kommunikationen sinsemellan under
+    hyresförhållandet (LHVL 11 § 2 mom.).</p>
+  <p>Om brevet inte returneras till avsändaren och det inte i samband med att det elektroniska meddelandet sänds är
+    uppenbart att mottagaren inte har fått det, anses delfåendet, om inte något annat visas, ha skett dag 7 efter
+    det att meddelandet postades och, vid användning av den avtalade elektroniska kanalen, dag 3 efter det att
+    meddelandet sändes (LHVL 11 § 4 mom.). Parterna ska utan dröjsmål meddela ändringar i sin postadress och
+    elektroniska kontaktinformation (LHVL 11 § 3 mom.).</p>
+  <p>Meddelanden om uppsägning och hävning samt varningen före hävning ska delges bevisligen; ett villkor enligt
+    vilket de kan delges på något annat sätt än vad som föreskrivs i lag är ogiltigt (LHVL 11 a § 4 mom.).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Vardera parten behandlar personuppgifter om den andra partens företrädare och kontaktpersoner endast i den mån
+    det är nödvändigt för att ingå och fullgöra detta avtal och för att uppfylla lagstadgade förpliktelser, i
+    enlighet med EU:s allmänna dataskyddsförordning (förordning (EU) 2016/679) och dataskyddslagen (1050/2018).
+    Uppgifterna bevaras endast så länge det är nödvändigt för dessa ändamål.</p>
+  <p>De registrerade har de rättigheter som följer av dataskyddsförordningen, särskilt rätt till tillgång till
+    uppgifterna samt rätt till rättelse och radering, och rätt att lämna in klagomål till dataombudsmannen.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>På detta avtal tillämpas finsk lag.</p>
+  <p>Parterna strävar efter att i första hand lösa meningsskiljaktigheter genom förhandlingar. Tvister avgörs av
+    behörig tingsrätt enligt bestämmelserna om forum i 10 kap. i rättegångsbalken. Om ett villkor i detta avtal är
+    ogiltigt, gäller avtalet i övrigt, och lagen tillämpas i stället för det ogiltiga villkoret.</p>
+</div>
+
+</body>
+</html>

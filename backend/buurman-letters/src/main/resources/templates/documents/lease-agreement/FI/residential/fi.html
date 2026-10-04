@@ -1,0 +1,342 @@
+<!--
+  legal-basis: Laki asuinhuoneiston vuokrauksesta (AHVL, 481/1995; Swedish: lag om hyra av bostadslägenhet),
+               consolidated text including the amending Act 531/2026 (HE 33/2026, in force 01.10.2026), read in
+               Finnish and Swedish on finlex.fi (opendata.finlex.fi consolidated versions fin@20260531 and
+               swe@20260531): sections 2, 3, 4, 5, 5 a, 8, 11, 13, 13 a, 16, 17, 17 a, 18, 19, 20, 21, 22, 23, 24,
+               25, 26, 26 a, 27, 27 a, 29, 34, 35, 36, 37, 44, 45, 51, 52, 53, 54, 55, 56, 58, 61, 62, 63, 66, 68,
+               68 a, 69. Transitional rule of Act 531/2026: leases concluded before 01.10.2026 keep the former
+               4 (2), 8 (1) and (2), 27, 32 (2), 52 (2) and (4) and 68 unless otherwise agreed after that date; this
+               document is drafted for leases concluded on or after 01.10.2026.
+               Act 790/2020 (water metering, transitional rule). Laki rakennuksen energiatodistuksesta (50/2013),
+               consolidated with Act 1010/2024, sections 3 and 6 (finlex.fi). Korkolaki (633/1982).
+               Laki kuluttajariitalautakunnasta (8/2007), consolidated with Act 1495/2025, section 2.
+               Oikeudenkaymiskaari (4/1734), chapter 10 and chapter 6 a (added by Act 398/2026, in force
+               01.09.2026). Tietosuojalaki (1050/2018); GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679). Aland: Hyreslag (1999:19) for landskapet Aland (regeringen.ax) applies instead of the
+               AHVL in the Aland Islands; not covered by this document.
+               Verified 2026-10-04 against finlex.fi (section texts read on that date).
+               Pending: HE 164/2026 (new Act on the energy performance of buildings, given to Parliament
+               10.09.2026) would replace Act 50/2013 - re-verify the energy-certificate clause after enactment.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fi.html, never spelled out (fi "3 kuukauden vuokra" is "3 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects the law of mainland Finland (AHVL). Citations are written in
+  parentheses as "(AHVL 52 § 2 mom.)" so that the fidelity gate pairs section and subsection. Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Tämä asuinhuoneiston vuokrasopimus on tehty seuraavien osapuolten kesken:</p>
+  <p><strong th:text="${landlordName}">vuokranantaja</strong>, jäljempänä &rdquo;vuokranantaja&rdquo;, ja</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">vuokralainen</strong>, jäljempänä
+    (yhdessä) &rdquo;vuokralainen&rdquo;.</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">alla allekirjoittanut vuokralainen tai allekirjoittaneet
+    vuokralaiset, jäljempänä (yhdessä) &rdquo;vuokralainen&rdquo;.</p>
+  <p>Osapuolten yhteystiedot: ______________________________</p>
+  <p>Jos vuokralaisia on useampia, he vastaavat yhteisvastuullisesti kaikista tämän sopimuksen mukaisista
+    vuokralaisen velvoitteista. Aviopuolisot ja avioliitonomaisissa olosuhteissa elävät henkilöt vastaavat
+    yhteisvastuullisesti vuokrasopimuksesta johtuvista velvoitteista, jos he asuvat yhdessä vuokraamassaan tai
+    toisen puolison vuokraamassa huoneistossa (AHVL 11 §).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Vuokranantaja vuokraa vuokralaiselle asuinkäyttöön huoneiston, joka sijaitsee osoitteessa
+    <strong th:text="${propertyAddress}">osoite</strong>, jäljempänä &rdquo;huoneisto&rdquo;. Huoneiston tyyppi ja
+    pinta-ala: ______________________________. Huoneistoon kuuluvat lisätilat (esimerkiksi varasto tai
+    autopaikka): ______________________________.</p>
+  <p>Vuokranantajan oikeus antaa huoneisto vuokralle perustuu seuraavaan (esimerkiksi omistusoikeus tai
+    huoneiston hallintaan oikeuttavat osakkeet): ______________________________. Vuokranantajan on ilmoitettava
+    vuokralaiselle, mihin vuokranantajan oikeus antaa huoneisto vuokralle perustuu taikka mikä rajoittaa tätä
+    oikeutta (AHVL 37 §).</p>
+  <p>Tähän sopimukseen sovelletaan lakia asuinhuoneiston vuokrauksesta (481/1995, jäljempänä AHVL). Lain
+    säännöksistä voidaan sopimuksella poiketa vain, jollei laissa toisin säädetä tai poikkeamista muutoin ole
+    katsottava kielletyksi (AHVL 3 §). Lakia ei sovelleta sopimukseen, jolla huoneisto vuokrataan käytettäväksi
+    lyhytaikaiseen ja tilapäiseen asumiseen (AHVL 2 § 1 mom.).</p>
+  <p>Tämä asiakirja on laadittu Manner-Suomen lainsäädännön mukaan. Ahvenanmaan maakunnassa sijaitsevaan
+    huoneistoon sovelletaan maakunnan omaa vuokralainsäädäntöä (Hyreslag för landskapet Åland, 1999:19), jonka
+    mukaan tätä asiakirjaa ei ole laadittu.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Vuokrasuhde alkaa <strong th:text="${startDate}">alkamispäivä</strong>.</p>
+  <p th:if="${!fixedTerm}">Vuokrasopimus on voimassa toistaiseksi.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Vuokrasopimus on määräaikainen<span th:if="${endDate != null}">, ja se päättyy
+      <strong th:text="${endDate}">päättymispäivä</strong></span>. Määräaikainen vuokrasopimus päättyy sen
+      voimassaoloajan umpeuduttua (AHVL 4 § 2 mom.). Määräaikainen vuokrasopimus päättyy irtisanomisen johdosta
+      vain laissa säädetyissä tapauksissa (AHVL 51 § 2 mom.).</p>
+    <p>Jos vuokrasuhteesta sovitaan useammin kuin 2 kertaa peräkkäin saman vuokralaisen kanssa enintään
+      3 kuukauden määräajaksi, vuokrasopimus on määräaikaa koskevasta ehdosta huolimatta toistaiseksi voimassa
+      oleva (AHVL 4 § 1 mom.).</p>
+    <p>Jos vuokralainen vähintään 3 kuukautta ennen määräajan päättymistä ilmoittaa vuokranantajalle haluavansa
+      jatkaa vuokrasuhdetta ja vuokranantaja kieltäytyy siitä ilman huoneenvuokrasuhteessa hyväksyttävänä
+      pidettävää syytä, vuokralaisella on oikeus korvaukseen suorittamistaan huoneiston arvoa nostaneista korjaus-
+      ja muutostöistä niiden päättymisajankohdan mukaisesta arvosta, jos hänellä on ollut lain mukaan oikeus
+      suorittaa työt eikä niitä ole jo korvattu (AHVL 58 §).</p>
+  </th:block>
+  <p>Vuokrasopimus ja sen muutokset tehdään kirjallisesti. Jollei vuokrasopimusta ole tehty kirjallisesti, sen
+    katsotaan olevan voimassa toistaiseksi (AHVL 5 § 1 mom.). Kirjallisena pidetään myös sähköistä sopimusta,
+    joka on yleisesti tallennettavissa ja toisinnettavissa olevassa sähköisessä muodossa käyttötarkoituksensa
+    kannalta asianmukaisen ajan (AHVL 5 a §).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Vuokra on <strong th:text="${rentAmount}">määrä</strong> <span th:text="${paymentFrequency}">kuukausittain</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Lisäksi vuokralainen maksaa
+    sovitut käyttökorvaukset (ks. <span th:text="${refs['service-costs']}"></span>. artikla).</span></p>
+  <p>Vuokra määräytyy sen mukaan, mitä siitä on sovittu, jollei laista muuta johdu (AHVL 27 § 1 mom.).
+    Vuokranantaja tai vuokralainen voi vuokrasuhteen kestäessä saattaa vuokran tai sen määräytymistä koskevan
+    ehdon kohtuullisuuden tuomioistuimen tutkittavaksi (AHVL 29 § 1 mom.). Vuokranantaja ei saa irtisanoa
+    vuokrasopimusta sinä aikana, kun vuokran kohtuullisuus on vuokralaisen vaatimuksesta käräjäoikeuden
+    tutkittavana (AHVL 29 § 2 mom.).</p>
+  <p>Tätä asiakirjaa ei ole laadittu huoneistoille, joiden vuokraan sovelletaan aravarajoituslain tai
+    korkotukilainsäädännön vuokranmääritystä koskevia säännöksiä (AHVL 27 § 4 mom.).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Vuokran tarkistamisesta määrätään tässä sopimuksessa (ks. <span th:text="${refs['rent-adjustment']}"></span>. artikla).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Vuokraa tarkistetaan vuosittain ______________ alkaen seuraavan perusteen mukaan:
+    ______________________________ (esimerkiksi Tilastokeskuksen julkaiseman elinkustannusindeksin muutos tai
+    kiinteä prosenttikorotus).</p>
+  <p>Ehto, jonka mukaan vuokranantaja saa vuokrasuhteen aikana yksipuolisesti määrätä vuokran korotuksen
+    ajankohdan tai määrän, on mitätön, jos ei ole myös sovittu perusteesta, jonka mukaan vuokraa saadaan korottaa
+    (AHVL 27 § 2 mom.).</p>
+  <p>Vuokranantajan on ilmoitettava korotuksesta, uudesta vuokrasta ja korotuksen voimaantuloajankohdasta
+    vuokralaiselle kirjallisesti. Korotettu vuokra tulee voimaan aikaisintaan 1 kuukauden kuluttua ilmoituksen
+    tekemistä lähinnä seuraavan vuokranmaksukauden alusta, eikä sitä saa periä takautuvasti. Vuokranantajan on
+    vuokralaisen pyynnöstä annettava tälle maksutta ja viipymättä tiedot korotuksen perusteesta ja uuden vuokran
+    laskutavasta (AHVL 27 § 2 mom.).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Vuokran lisäksi vuokralainen maksaa vuokranantajalle seuraavat käyttökorvaukset: vesi ______________,
+    sähkö ______________, autopaikka ______________, muut ______________.</p>
+  <p>Vuokran korottamista koskevia säännöksiä ei sovelleta veteen, sähköön tai muuhun vuokrasuhteeseen liittyvään
+    käyttökorvaukseen, jos niiden korvaamisesta ja korvauksen määräytymisestä on sovittu. Jos korvaus määräytyy
+    kulutuksen tai käytön perusteella, vuokranantajan on korvauksen perimisen yhteydessä ilmoitettava
+    vuokralaiselle tiedot kulutuksesta tai käytöstä sekä mahdollisuuksien mukaan muista korvauksen perusteista, ja
+    korvauksen määräytymisen perusteen muuttumisesta on ilmoitettava viipymättä (AHVL 27 § 3 mom.).</p>
+  <p>Jos rakennukseen on kustannusten jakamiseksi asennettu huoneistokohtaiset vesimittarit, vedestä perittävän
+    korvauksen on perustuttava luotettavasti mitattuun todelliseen kulutukseen, vuokralaiselle on toimitettava
+    kuukausittain tiedot veden kulutuksesta, eikä tietojen antamisesta saa periä erillistä maksua (AHVL 27 a §).
+    Tätä ei sovelleta, jos vesimittarit on asennettu ennen 23.11.2020 haetun rakennusluvan perusteella
+    (laki 790/2020).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Vuokralainen asettaa vuokranantajalle vakuuden vuokralaisen velvoitteiden
+    täyttämisestä. Vakuuden määrä on <strong th:text="${depositAmount}">määrä</strong>.</p>
+  <p th:if="${depositAmount == null}">Vuokralainen asettaa vuokranantajalle vakuuden vuokralaisen velvoitteiden
+    täyttämisestä. Vakuuden määrä on osapuolten kirjallisesti sopima.</p>
+  <p>Vakuuden muoto (esimerkiksi rahavakuus, vuokravakuustili tai pankkitakaus) ja asettamisaika:
+    ______________________________. Vakuus kattaa kaikki vuokrasuhteesta seuraavat velvoitteet, jollei muuta ole
+    sovittu. Jos vakuutta ei sovitussa ajassa aseteta, vuokranantajalla on oikeus purkaa sopimus, paitsi jos vakuus
+    on asetettu ennen purkamisilmoituksen tiedoksisaamista (AHVL 8 § 1 mom.).</p>
+  <p>Ehto, jonka mukaan vakuus on suurempi kuin 3 kuukauden vuokran määrä, on mitätön (AHVL 8 § 5 mom.).
+    Vuokralainen ei siten ole velvollinen asettamaan vakuutta tätä määrää suurempana.</p>
+  <p>Vakuus on palautettava tai vapautettava taikka sen pidättämisestä on annettava kirjallinen ilmoitus viipymättä
+    ja viimeistään 14 päivän määräajassa vuokrasopimuksen päättymisestä tai sen jälkeen tapahtuneesta hallinnan
+    luovuttamisesta; perustellusta syystä johtuvan esteen sattuessa toimenpide on tehtävä viipymättä ja viimeistään
+    14 päivän määräajassa esteen poistumisesta. Ilmoituksesta on käytävä ilmi vakuudella katettavan saatavan
+    peruste sekä kohtuudella vaadittavalla tavalla tehty arvio sen määrästä (AHVL 8 § 2 mom.).</p>
+  <p>Vakuudesta pidätettävä osuus saa vastata enintään saatavan määrää tai ilmoitettua arviota sen määrästä;
+    vuokravakuustilille talletetun vakuuden saa kuitenkin pidättää kokonaan siihen saakka, kunnes saatavan määrä on
+    selvinnyt (AHVL 8 § 3 mom.). Vakuuden asettaneella on oikeus korvaukseen aiheettomasta pidättämisestä tai
+    vapauttamatta jättämisestä aiheutuneesta vahingosta, paitsi jos vuokranantaja osoittaa, ettei se ole
+    aiheutunut vuokranantajan viaksi luettavasta syystä, laiminlyönnistä tai muusta huolimattomuudesta
+    (AHVL 8 § 4 mom.).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Huoneiston kunto todetaan sen luovutuksen yhteydessä (ks. <span th:text="${refs['handover-inspection']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Vuokralainen maksaa vuokran<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (ks. <span th:text="${refs['rent']}"></span>. artikla)</span><span
+    th:if="${refs['service-costs']}"> ja käyttökorvaukset</span>
+    <span th:text="${paymentFrequency}">kuukausittain</span>
+    <span th:if="${paymentDueDay != null}">viimeistään kunkin vuokranmaksukauden
+      <strong th:text="${paymentDueDay}">1</strong>. päivänä</span><span
+    th:if="${paymentDueDay == null}">viimeistään kunkin vuokranmaksukauden 2. päivänä (AHVL 34 § 1 mom.)</span>
+    vuokranantajan ilmoittamalle pankkitilille ______________________________.</p>
+  <p>Rahana maksettava vuokra saadaan suorittaa pankin tai muun maksupalveluntarjoajan välityksellä; muu
+    sopimusehto on mitätön (AHVL 35 § 1 mom.).</p>
+  <p>Vuokran maksamisesta ennakolta useammalta vuokranmaksukaudelta voidaan sopia vuokrasopimusta tehtäessä vain
+    erityisestä syystä (AHVL 36 § 1 mom.). Ehto, jonka mukaan vuokraa on maksettava ennakolta pidemmältä ajalta
+    kuin 3 kuukaudelta tai, jos vuokranmaksukausi on sitä pidempi, 1 vuokranmaksukaudelta, on mitätön
+    (AHVL 36 § 2 mom.).</p>
+  <p>Viivästyneelle maksulle vuokralainen on velvollinen maksamaan korkolain (633/1982) mukaista viivästyskorkoa.
+    Vuokran maksun laiminlyönti säädetyssä tai sovitussa ajassa voi oikeuttaa vuokranantajan purkamaan
+    vuokrasopimuksen (AHVL 61 § 1 mom. 1 kohta).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Huoneistoa saa käyttää vain asumiseen. Vuokralainen saa käyttää huoneistoa omana tai yhteisenä asuntona
+    puolisonsa ja perheeseen kuuluvien lasten kanssa (AHVL 17 § 1 mom.).</p>
+  <p>Jos vuokralainen käyttää huoneistoa muiden henkilöiden kanssa, hänen on ilmoitettava vuokranantajalle
+    kirjallisesti asukkaiden lukumäärä ja peruste heidän oikeudelleen asua huoneistossa sekä täysi-ikäisten
+    asukkaiden nimet, syntymäajat ja yhteystiedot. Jollei ilmoitusta anneta vuokrasopimusta tehtäessä, se on
+    annettava viipymättä sen jälkeen, kun vuokralainen on saanut huoneiston hallintaansa, ja tämän jälkeen aina,
+    kun huoneistoon muuttaa uusi asukas; ilmoitetun asukkaan poismuutosta on myös ilmoitettava viipymättä
+    kirjallisesti (AHVL 17 a §).</p>
+  <p>Vuokralaisen on hoidettava huoneistoa huolellisesti (AHVL 25 § 1 mom.), ja hänen on noudatettava
+    taloyhtiön järjestyssääntöjä.</p>
+  <p>Poltettavaksi tai muutoin kuumennettavaksi tarkoitetun tupakkatuotteen ja vastaavien tupakkalaissa
+    tarkoitettujen tuotteiden käyttäminen huoneiston sisätiloissa, huoneistoon kuuluvalla parvekkeella ja muussa
+    huoneistoon liittyvässä yksityisessä sisä- tai ulkotilassa on kiellettyä. Vuokranantaja voi antaa luvan
+    niiden käyttämiseen edellyttäen, että muu lainsäädäntö, viranomaisen määräys tai yhtiöjärjestyksen määräys ei
+    sitä kiellä tai estä (AHVL 26 a §). Vuokranantajan lupa: ______________________________.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Jollei siitä aiheudu vuokranantajalle huomattavaa haittaa tai häiriötä, vuokralainen saa käyttää huoneistoa
+    yhteisenä asuntona myös lähisukulaisensa ja puolisonsa lähisukulaisen kanssa taikka luovuttaa alivuokrauksena
+    tai muutoin enintään puolet huoneistosta toisen käytettäväksi asumiseen (AHVL 17 § 1 mom.). Muussa
+    tapauksessa huoneiston tai sen osan luovuttaminen toisen käytettäväksi edellyttää vuokrasopimuksessa olevaa
+    suostumusta tai vuokranantajan erikseen antamaa lupaa (AHVL 17 § 2 mom.).</p>
+  <p>Vuokralainen saa enintään 2 vuodeksi luovuttaa koko huoneiston toisen käytettäväksi asumiseen, jos hän
+    työnsä, opintojensa, sairauden tai muun vastaavan syyn takia tilapäisesti oleskelee toisella paikkakunnalla tai
+    luovuttamiseen on muu erityinen syy eikä vuokranantajalla ole perusteltua syytä vastustaa luovutusta. Vuokralaisen
+    on viimeistään 1 kuukautta ennen luovutusta ilmoitettava vuokranantajalle kirjallisesti luovutuksesta, sen
+    kestosta ja luovutuksensaajasta; vuokranantajan, joka ei hyväksy luovutusta, on 14 päivän kuluessa
+    ilmoituksen saatuaan saatettava vastustamisensa peruste tuomioistuimen tutkittavaksi (AHVL 18 §).</p>
+  <p>Jollei toisin sovita, vuokralainen vastaa edelleen vuokralaisen velvollisuuksista sekä vahingosta, jonka
+    huoneiston käytettäväkseen saanut on velvollinen korvaamaan vuokranantajalle (AHVL 19 §). Vuokralainen ei
+    saa ilman vuokrasopimuksessa annettua tai vuokranantajan erikseen antamaa lupaa siirtää vuokraoikeuttaan, ellei
+    laissa toisin säädetä, kuten vuokraoikeuden siirrosta perheenjäsenelle (AHVL 44 § 1 mom., 45 §).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Huoneiston on vuokrasuhteen alkaessa ja sen aikana oltava sellaisessa kunnossa kuin vuokralainen huoneiston
+    iän, alueen huoneistokannan ja muut paikalliset olosuhteet huomioon ottaen kohtuudella voi vaatia, jollei
+    muusta kunnosta ole sovittu (AHVL 20 § 1 mom.). Vuokranantaja vastaa huoneiston kunnossapidosta, jollei
+    tässä sopimuksessa toisin sovita. Vuokralaisen vastuulla olevat kunnossapitotehtävät:
+    ______________________________.</p>
+  <p>Vuokralaisen on viipymättä ilmoitettava vuokranantajalle huoneiston vahingoittumisesta tai sellaisesta
+    puutteellisuudesta, jonka korjaamisesta vuokranantaja on vastuussa, ja heti, jos korjaus on vahingon
+    suurenemisen estämiseksi suoritettava viipymättä (AHVL 24 § 1 mom.). Vuokralainen ei vastaa tavanomaisesta
+    kulumisesta, jos vuokranantaja vastaa huoneiston kunnosta ja kunnossapidosta, mutta korvaa vahingon, jonka hän
+    tai huoneistossa hänen luvallaan oleskeleva henkilö aiheuttaa huoneistolle tahallisesti taikka laiminlyönnillä
+    tai muulla huolimattomuudella (AHVL 25 §).</p>
+  <p>Vuokralaisella on oikeus saada vapautus vuokran maksamisesta tai vuokra kohtuullisesti alennetuksi siltä
+    ajalta, jolta huoneistoa ei ole voitu käyttää tai jolta se ei ole ollut vaadittavassa tai sovitussa kunnossa,
+    paitsi jos puutteellinen kunto johtuu vuokralaisen laiminlyönnistä tai muusta huolimattomuudesta taikka
+    korjaus- tai muutostyö on suoritettu vuokralaisen vastattavan vahingon johdosta; oikeutta ei ole ajalta ennen
+    kuin vuokranantaja on saanut tiedon puutteellisuudesta (AHVL 23 § 2 mom.).</p>
+  <p>Vuokralaisella ei ole oikeutta suorittaa ilman vuokranantajan lupaa huoneistossa muuta korjaus- tai
+    muutostyötä kuin vuokranantajan laiminlyömän puutteellisuuden korjaamiseksi, mutta hän saa aina ryhtyä
+    toimenpiteisiin välittömän vahingon estämiseksi tai rajoittamiseksi (AHVL 21 § 1 mom.). Vuokranantaja saa
+    suorittaa välittömästi työn, jota ei voi vahinkoa aiheuttamatta siirtää, ja olennaista haittaa
+    aiheuttamattoman työn ilmoitettuaan siitä vähintään 14 päivää ennen työn aloittamista (AHVL 21 § 2 mom.).
+    Muusta korjaus- tai muutostyöstä vuokranantajan on ilmoitettava vähintään 6 kuukautta ennen työn aloittamista,
+    ja vuokralaisella on oikeus 14 päivän kuluessa ilmoituksen saamisesta purkaa sopimus päättymään silloin, kun
+    työhön aikaisintaan saadaan ryhtyä (AHVL 21 § 3 mom.).</p>
+  <p>Vuokranantajalla ja tämän edustajalla on oikeus päästä huoneistoon, kun se on tarpeellista huoneiston kunnon
+    ja hoidon valvomista tai korjaus- ja muutostöitä tai hoitotoimenpiteitä varten, sekä esitellä huoneistoa, jos
+    se on tarkoitus myydä tai se on uudelleen vuokrattavissa; käynti järjestetään osapuolille sopivana aikana,
+    jollei asian kiireellisyys tai laatu sitä estä (AHVL 22 §). Ehto, jolla vuokralaisen laissa säädettyjä
+    oikeuksia huoneiston kunnon osalta rajoitetaan tai vuokralaisen vastuu sovitaan laissa säädettyä ankarammaksi,
+    on mitätön (AHVL 26 §).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Vuokranantaja on pitänyt rakennuksen tai sen osan voimassa olevan energiatodistuksen vuokralaisen nähtävillä
+    esittelytilanteessa ja antaa sen vuokralaiselle alkuperäisenä tai jäljennöksenä (laki rakennuksen
+    energiatodistuksesta 50/2013, 6 § 1 mom.).</p>
+  <p>Energiatodistusta ei tarvitse laittaa nähtäville eikä antaa, jos vuokraus koskee vuokraamista määräaikaisesti
+    enintään 1 vuodeksi, jos kyseessä on alivuokraus tai samaan konserniin kuuluvien yhteisöjen välinen vuokraus
+    (laki 50/2013, 6 § 2 mom.) taikka jos rakennus on jätetty lain soveltamisalan ulkopuolelle (laki 50/2013,
+    3 §).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Vuokranantajan on pidettävä huoneisto vuokralaisen saatavana sinä päivänä, jona vuokralaisella on oikeus
+    saada se hallintaansa (AHVL 16 § 1 mom.). Osapuolet tarkastavat huoneiston yhdessä ennen sen luovuttamista
+    ja kirjaavat sen kunnon, luovutetut avaimet ja mittarilukemat tarkastuspöytäkirjaan, jonka kumpikin osapuoli
+    allekirjoittaa ja josta kumpikin saa kappaleen.</p>
+  <p>Muuttopäivä on vuokrasopimuksen päättymispäivä (AHVL 68 §). Vuokralainen luovuttaa huoneiston ja kaikki
+    avaimet vuokranantajalle viimeistään tuona päivänä, ja osapuolet tarkastavat huoneiston yhdessä. Toistaiseksi
+    voimassa olevassa vuokrasuhteessa tuomioistuin voi laissa säädetyin edellytyksin siirtää muuttopäivää
+    (AHVL 69 §).</p>
+  <p>Huoneistoon vuokrasuhteen päätyttyä jäänyt omaisuus siirtyy laissa säädetyin edellytyksin ja määräajoin
+    vastikkeetta vuokranantajalle (AHVL 68 a §).<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> Vakuuden palauttamisesta määrätään tässä sopimuksessa (ks. <span th:text="${refs['deposit']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Toistaiseksi voimassa olevan vuokrasopimuksen irtisanomisaika alkaa kulua sen kalenterikuukauden viimeisestä
+    päivästä, jonka aikana irtisanominen on suoritettu (AHVL 52 § 1 mom.). Vuokranantajan irtisanomisaika on
+    4 kuukautta, jos vuokrasuhde on välittömästi ennen irtisanomista kestänyt yhtäjaksoisesti vähintään 2 vuotta,
+    ja muussa tapauksessa 3 kuukautta (AHVL 52 § 2 mom.). Vuokralaisen irtisanomisaika on 1 kuukausi
+    (AHVL 52 § 3 mom.).</p>
+  <p>Ehto, jolla vuokranantajan irtisanomisaikaa lyhennetään tai vuokralaisen irtisanomisaikaa pidennetään, on
+    mitätön, samoin ehto, jonka mukaan irtisanomisaika voi alkaa ensimmäisen kerran tietyn ajan kuluttua
+    vuokrasuhteen alkamisesta (AHVL 52 § 4 mom.).</p>
+  <p>Vuokranantajan irtisanomisilmoitus on annettava kirjallisesti, ja siinä on mainittava vuokrasuhteen
+    päättymisajankohta ja irtisanomisen peruste (AHVL 54 § 1 mom.). Vuokralaisen irtisanomisilmoitus annetaan
+    kirjallisesti vuokranantajalle tai sille, jolle vuokranantaja on antanut tehtäväksi periä vuokran, ei
+    kuitenkaan rahalaitokselle (AHVL 54 § 2 mom.). Irtisanomisilmoitus on annettava tiedoksi todisteellisesti
+    (AHVL 13 a § 1 mom.), ja muulla tavoin suoritettu irtisanominen on tehoton (AHVL 54 § 5 mom.).</p>
+  <p>Kun puolisot asuvat huoneistossa yhteisenä kotinaan, puoliso ei saa irtisanoa vuokrasopimusta ilman toisen
+    puolison suostumusta, jollei suostumusta voida hankaluudetta saada (AHVL 53 § 1 mom.).</p>
+  <p>Tuomioistuimen on vuokralaisen vaatimuksesta julistettava vuokranantajan suorittama irtisanominen tehottomaksi
+    laissa säädetyissä tapauksissa (AHVL 56 § 1 mom.). Vaatimus on pantava vireille vuokrasuhteen kestäessä ja
+    viimeistään 3 kuukauden kuluessa irtisanomisen tiedoksisaannista (AHVL 56 § 2 mom.).</p>
+  <p th:if="${fixedTerm}">Määräaikaista vuokrasopimusta<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (ks. <span th:text="${refs['term']}"></span>. artikla)</span> ei voi irtisanoa
+    muutoin kuin laissa säädetyissä tapauksissa; tuomioistuin voi laissa säädetyllä erityisellä perusteella
+    oikeuttaa vuokralaisen tai vuokranantajan irtisanomaan vuokrasopimuksen (AHVL 55 § 1 mom.).</p>
+  <p>Vuokranantajalla on oikeus purkaa vuokrasopimus laissa säädetyillä perusteilla, kuten jos vuokralainen
+    laiminlyö suorittaa vuokran säädetyssä tai sovitussa ajassa (AHVL 61 § 1 mom.); oikeutta ei ole, jos
+    purkamisperusteen aiheuttaneella menettelyllä on vähäinen merkitys (AHVL 61 § 3 mom.). Eräillä perusteilla
+    purkaminen edellyttää, että vuokralaiselle on ensin annettu kirjallinen varoitus (AHVL 62 §). Vuokralaisella
+    on oikeus purkaa vuokrasopimus laissa säädetyillä perusteilla, kuten jos vuokralaisen tai hänen kotiväkeensä
+    kuuluvan terveydelle aiheutuu ilmeistä vaaraa huoneiston käyttämisestä sopimuksessa edellytettyyn
+    tarkoitukseen (AHVL 63 § 1 mom.). Purkamisilmoitus on annettava kirjallisesti, ja siinä on mainittava
+    purkamisperuste (AHVL 66 § 1 mom.).</p>
+  <p>Osapuolet voivat aina sopia vuokrasuhteen päättymisestä.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Huoneiston luovuttamisesta määrätään tässä sopimuksessa (ks. <span th:text="${refs['handover-inspection']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Ilmoitukset voidaan antaa tiedoksi postitse kirjeellä vastaanottajan tavallisesti käyttämään
+    postiosoitteeseen (AHVL 13 § 1 mom.).</p>
+  <p>Osapuolet sopivat yksilöllisesti ja kirjallisesti, että ilmoitukset voidaan antaa tiedoksi myös seuraavassa
+    sähköisessä viestintäkanavassa: ______________________________ (esimerkiksi sähköpostiosoite). Ilmoitus
+    lähetetään tällöin vastaanottajan ilmoittamaan viimeisimpään yhteystietoon edellyttäen, että lähettäjä ei
+    tiennyt eikä hänen olisi pitänytkään tietää, että vastaanottaja on ikääntymisen, vamman tai muun vastaavan
+    syyn vuoksi estynyt käyttämästä sovittua kanavaa (AHVL 13 § 2 mom.).</p>
+  <p>Jos kirje ei palaudu lähettäjälle eikä sähköisen viestin lähettämisen yhteydessä ole ilmeistä, ettei
+    vastaanottaja ole saanut sitä, tiedoksisaannin katsotaan tapahtuneen, jollei muuta näytetä, 7. päivänä sen
+    jälkeen, kun ilmoitus on annettu postin kuljetettavaksi, ja sähköistä kanavaa käytettäessä 3. päivänä sen
+    jälkeen, kun ilmoitus on lähetetty (AHVL 13 § 4 mom.). Osapuolten on viipymättä ilmoitettava postiosoitettaan
+    ja sähköistä yhteystietoaan koskevista muutoksista (AHVL 13 § 3 mom.).</p>
+  <p>Irtisanomis- ja purkamisilmoitukset sekä purkamista edeltävä varoitus on annettava tiedoksi todisteellisesti;
+    ehto, jonka mukaan ne voidaan antaa tiedoksi muulla kuin laissa säädetyllä tavalla, on mitätön
+    (AHVL 13 a § 4 mom.).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Vuokranantaja käsittelee vuokralaisen ja huoneistossa asuvien henkilöiden henkilötietoja vain siltä osin kuin
+    se on tarpeen tämän sopimuksen tekemiseksi ja täyttämiseksi sekä lakisääteisten velvoitteiden noudattamiseksi,
+    EU:n yleisen tietosuoja-asetuksen (asetus (EU) 2016/679) ja tietosuojalain (1050/2018) mukaisesti. Tietoja
+    säilytetään vain niin kauan kuin se on näitä tarkoituksia varten tarpeen.</p>
+  <p>Vuokralaisella on tietosuoja-asetuksen mukaiset oikeudet, erityisesti oikeus saada pääsy tietoihin sekä
+    oikeus tietojen oikaisemiseen ja poistamiseen, ja oikeus tehdä valitus tietosuojavaltuutetulle.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Tähän sopimukseen sovelletaan Suomen lakia.</p>
+  <p>Osapuolet pyrkivät ratkaisemaan erimielisyydet ensisijaisesti neuvottelemalla. Kuluttajana oleva vuokralainen
+    tai yksityishenkilönä oleva vuokranantaja voi saattaa asuinhuoneiston vuokraukseen liittyvän erimielisyyden
+    kuluttajariitalautakunnan käsiteltäväksi, ja lautakunta antaa asiassa ratkaisusuosituksen (laki
+    kuluttajariitalautakunnasta 8/2007, 2 § 1 mom. 4 kohta).</p>
+  <p>Riidat ratkaisee toimivaltainen käräjäoikeus oikeudenkäymiskaaren 10 luvun oikeuspaikkasäännösten mukaisesti.
+    Asuinhuoneiston vuokrasuhteeseen perustuva riita-asia voidaan käsitellä pienten riita-asioiden menettelyssä
+    siten kuin oikeudenkäymiskaaren 6 a luvussa säädetään. Jos tämän sopimuksen ehto on mitätön, sopimus on
+    muilta osin voimassa, ja mitättömän ehdon sijasta sovelletaan lakia.</p>
+</div>
+
+</body>
+</html>

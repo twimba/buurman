@@ -1,0 +1,326 @@
+<!--
+  legal-basis: Laki liikehuoneiston vuokrauksesta (LHVL, 482/1995; Swedish: lag om hyra av affärslokal),
+               consolidated text including the amending Act 532/2026 (HE 33/2026, in force 01.10.2026), read in
+               Finnish and Swedish on finlex.fi (opendata.finlex.fi consolidated versions fin@20260532 and
+               swe@20260532): sections 1, 2, 3, 4, 4 a, 7, 11, 11 a, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 27,
+               28, 29, 30, 36, 37, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 53, 55, 56, 57.
+               Arvonlisaverolaki (1501/1993), sections 27 and 30 (finlex.fi, consolidated with Act 597/2026).
+               Laki indeksiehdon kayton rajoittamisesta (1195/2000), still cited in LHVL section 24, is no longer in
+               force (finlex.fi "Ei voimassa"; vm.fi: the restriction was not extended beyond 2012).
+               Laki rakennuksen energiatodistuksesta (50/2013), consolidated with Act 1010/2024, sections 3 and 6.
+               Korkolaki (633/1982). Oikeudenkaymiskaari (4/1734), chapter 10. Tietosuojalaki (1050/2018); GDPR:
+               Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679). Aland: Hyreslag (1999:19) for
+               landskapet Aland (regeringen.ax) applies instead of the LHVL in the Aland Islands; not covered by
+               this document.
+               Verified 2026-10-04 against finlex.fi (section texts read on that date).
+               Pending: HE 164/2026 (new Act on the energy performance of buildings, given to Parliament
+               10.09.2026) would replace Act 50/2013 - re-verify the energy-certificate clause after enactment.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fi.html, never spelled out (fi "3 kuukautta" is "3 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects the law of mainland Finland (LHVL). Citations are written in
+  parentheses as "(LHVL 42 § 2 mom.)" so that the fidelity gate pairs section and subsection. Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Tämä liikehuoneiston vuokrasopimus on tehty seuraavien osapuolten kesken:</p>
+  <p><strong th:text="${landlordName}">vuokranantaja</strong>, jäljempänä &rdquo;vuokranantaja&rdquo;,</p>
+  <p>Y-tunnus: ______________________________</p>
+  <p>Arvonlisäverotunniste: ______________________________</p>
+  <p>Edustaja: ______________________________, ja</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">vuokralainen</strong>, jäljempänä
+    (yhdessä) &rdquo;vuokralainen&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">alla allekirjoittanut vuokralainen tai allekirjoittaneet
+    vuokralaiset, jäljempänä (yhdessä) &rdquo;vuokralainen&rdquo;,</p>
+  <p>Y-tunnus: ______________________________</p>
+  <p>Arvonlisäverotunniste: ______________________________</p>
+  <p>Edustaja: ______________________________.</p>
+  <p>Jos vuokralaisia on useampia, he vastaavat yhteisvastuullisesti kaikista tämän sopimuksen mukaisista
+    vuokralaisen velvoitteista.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Vuokranantaja vuokraa vuokralaiselle muuhun kuin asuinkäyttöön huoneiston, joka sijaitsee osoitteessa
+    <strong th:text="${propertyAddress}">osoite</strong>, jäljempänä &rdquo;liikehuoneisto&rdquo;. Pinta-ala noin
+    ________ m². Liikehuoneistoon kuuluvat lisätilat ja autopaikat: ______________________________.</p>
+  <p>Vuokranantajan oikeus antaa liikehuoneisto vuokralle perustuu seuraavaan: ______________________________.
+    Vuokranantajan on ilmoitettava vuokralaiselle, mihin vuokranantajan oikeus antaa huoneisto vuokralle perustuu
+    taikka mikä rajoittaa tätä oikeutta (LHVL 30 §).</p>
+  <p>Tähän sopimukseen sovelletaan lakia liikehuoneiston vuokrauksesta (482/1995, jäljempänä LHVL). Lain
+    säännöksistä voidaan sopimuksella poiketa, jollei laissa toisin säädetä tai poikkeamista muutoin ole
+    katsottava kielletyksi (LHVL 2 §).</p>
+  <p>Tämä asiakirja on laadittu Manner-Suomen lainsäädännön mukaan. Ahvenanmaan maakunnassa sijaitsevaan
+    huoneistoon sovelletaan maakunnan omaa vuokralainsäädäntöä (Hyreslag för landskapet Åland, 1999:19), jonka
+    mukaan tätä asiakirjaa ei ole laadittu.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Liikehuoneisto vuokrataan käytettäväksi ainoastaan seuraavaan tarkoitukseen: ______________________________
+    (käyttötarkoitus). Käyttötarkoituksen muuttaminen edellyttää vuokranantajan etukäteen antamaa kirjallista
+    suostumusta.</p>
+  <p>Huoneiston käyttötarkoitus määräytyy sen mukaan, mikä on huoneiston sovittu pääasiallinen käyttö
+    (LHVL 1 § 1 mom.). Huoneiston käyttäminen muuhun tarkoitukseen tai muulla tavalla kuin vuokrasopimusta
+    tehtäessä on edellytetty voi oikeuttaa vuokranantajan purkamaan vuokrasopimuksen (LHVL 48 § 1 mom. 3 kohta).
+    Vuokralainen hankkii omalla kustannuksellaan toimintansa edellyttämät viranomaisluvat.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Vuokrasuhde alkaa <strong th:text="${startDate}">alkamispäivä</strong>.</p>
+  <p th:if="${!fixedTerm}">Vuokrasopimus on voimassa toistaiseksi.</p>
+  <p th:if="${fixedTerm}">Vuokrasopimus on määräaikainen<span th:if="${endDate != null}">, ja se päättyy
+    <strong th:text="${endDate}">päättymispäivä</strong></span>. Määräaikainen vuokrasopimus päättyy sen
+    voimassaoloajan umpeuduttua (LHVL 3 § 2 mom.). Määräaikainen vuokrasopimus päättyy irtisanomisen johdosta
+    vain vuokralaisen kuoltua laissa säädetyllä tavalla (LHVL 41 § 2 mom.) tai muussa laissa säädetyllä
+    perusteella (LHVL 41 § 3 mom.).</p>
+  <p>Vuokrasopimus ja sen muutokset tehdään kirjallisesti. Jollei vuokrasopimusta ole tehty kirjallisesti, sen
+    katsotaan olevan voimassa toistaiseksi (LHVL 4 §). Kirjallisena pidetään myös sähköistä sopimusta, joka on
+    yleisesti tallennettavissa ja toisinnettavissa olevassa sähköisessä muodossa käyttötarkoituksensa kannalta
+    asianmukaisen ajan (LHVL 4 a §).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Vuokra on <strong th:text="${rentAmount}">määrä</strong> <span th:text="${paymentFrequency}">kuukausittain</span>.<span
+    class="clause-ref" data-ref="vat" th:if="${refs['vat']}"> Arvonlisäverosta määrätään tässä sopimuksessa (ks. <span th:text="${refs['vat']}"></span>. artikla).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Lisäksi vuokralainen maksaa
+    sovitut käyttökorvaukset (ks. <span th:text="${refs['service-costs']}"></span>. artikla).</span></p>
+  <p>Vuokra määräytyy sen mukaan, mitä siitä on sovittu, jollei laista muuta johdu (LHVL 24 §). Vuokranantaja tai
+    vuokralainen voi vuokrasuhteen kestäessä saattaa vuokran tai sen määräytymistä koskevan ehdon kohtuullisuuden
+    tuomioistuimen tutkittavaksi (LHVL 25 § 1 mom.).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Vuokran tarkistamisesta määrätään tässä sopimuksessa (ks. <span th:text="${refs['rent-adjustment']}"></span>. artikla).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Vuokraa tarkistetaan vuosittain ______________ alkaen seuraavan perusteen mukaan:
+    ______________________________ (esimerkiksi Tilastokeskuksen julkaiseman elinkustannusindeksin muutos tai
+    kiinteä prosenttikorotus). Tarkistuksen laskentatapa: ______________________________.</p>
+  <p>Vuokranantaja ilmoittaa tarkistetun vuokran ja sen voimaantuloajankohdan vuokralaiselle kirjallisesti ennen
+    tarkistetun vuokran voimaantuloa. Tarkistusehto on osa sovittua vuokraa (LHVL 24 §), ja sen kohtuullisuus
+    voidaan saattaa tuomioistuimen tutkittavaksi (LHVL 25 § 1 mom.).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Vuokran lisäksi vuokralainen maksaa vuokranantajalle seuraavat käyttö- ja ylläpitokorvaukset: vesi
+    ______________, sähkö ______________, lämmitys ______________, jätehuolto ______________, muut
+    ______________.</p>
+  <p>Kulutukseen perustuvat korvaukset laskutetaan mittarilukemien tai muun sovitun perusteen mukaan, ja
+    vuokranantaja antaa vuokralaiselle pyynnöstä selvityksen korvausten perusteista.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>Kiinteistön käyttöoikeuden luovuttaminen on arvonlisäverotonta (arvonlisäverolaki 1501/1993, 27 §), jollei
+    luovuttaja hakeudu luovutuksesta verovelvolliseksi (arvonlisäverolaki 30 §). Verovelvollisuus koskee vain
+    hakemuksessa mainittua kiinteistöä tai sen osaa, ja se edellyttää, että kiinteistöä käytetään jatkuvasti
+    arvonlisäverolain 10 luvussa tarkoitettuun vähennykseen oikeuttavaan toimintaan tai että kiinteistön
+    käyttäjänä on valtio tai jokin laissa luetelluista oppilaitoksista (arvonlisäverolaki 30 §).</p>
+  <p>Vuokranantaja on hakeutunut tai hakeutuu verovelvolliseksi liikehuoneiston osalta (kyllä / ei):
+    ______________. Jos vuokranantaja on verovelvollinen, vuokraan ja muihin tämän sopimuksen mukaisiin maksuihin
+    lisätään kulloinkin voimassa olevan verokannan mukainen arvonlisävero. Vuokralainen sitoutuu käyttämään
+    liikehuoneistoa jatkuvasti vähennykseen oikeuttavaan toimintaan ja ilmoittamaan vuokranantajalle viipymättä
+    kirjallisesti käytön muutoksista, ja vuokralainen korvaa vuokranantajalle vahingon, joka aiheutuu näiden
+    velvoitteiden laiminlyönnistä.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Vuokralainen asettaa vuokranantajalle vakuuden vuokralaisen velvoitteiden
+    täyttämisestä. Vakuuden määrä on <strong th:text="${depositAmount}">määrä</strong>.</p>
+  <p th:if="${depositAmount == null}">Vuokralainen asettaa vuokranantajalle vakuuden vuokralaisen velvoitteiden
+    täyttämisestä. Vakuuden määrä on osapuolten kirjallisesti sopima.</p>
+  <p>Vakuuden muoto (esimerkiksi rahavakuus tai pankkitakaus) ja asettamisaika: ______________________________.
+    Osapuolet voivat sopia kohtuullisen vakuuden asettamisesta; jos vakuutta ei sovitussa ajassa aseteta,
+    vuokranantajalla on oikeus purkaa sopimus, paitsi jos vakuus on asetettu ennen purkamisilmoituksen
+    tiedoksisaamista (LHVL 7 §). Laissa ei säädetä liikehuoneiston vakuudelle euromääräistä tai vuokraan sidottua
+    enimmäismäärää.</p>
+  <p>Vakuus kattaa kaikki vuokrasuhteesta seuraavat vuokralaisen velvoitteet. Vuokranantaja palauttaa vakuuden tai
+    vapauttaa sen viipymättä vuokrasuhteen päätyttyä ja liikehuoneiston tultua luovutetuksi, vähennettynä
+    vuokranantajan erääntyneillä saatavilla, joista vuokranantaja antaa vuokralaiselle kirjallisen
+    selvityksen.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Huoneiston kunto todetaan sen luovutuksen yhteydessä (ks. <span th:text="${refs['handover-inspection']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Vuokralainen maksaa vuokran<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (ks. <span th:text="${refs['rent']}"></span>. artikla)</span><span
+    th:if="${refs['service-costs']}"> ja käyttökorvaukset</span><span th:if="${refs['vat']}"> arvonlisäveroineen</span>
+    <span th:text="${paymentFrequency}">kuukausittain</span>
+    <span th:if="${paymentDueDay != null}">viimeistään kunkin vuokranmaksukauden
+      <strong th:text="${paymentDueDay}">1</strong>. päivänä</span><span
+    th:if="${paymentDueDay == null}">viimeistään kunkin vuokranmaksukauden 2. päivänä (LHVL 27 § 1 mom.)</span>
+    vuokranantajan ilmoittamalle pankkitilille ______________________________.</p>
+  <p>Vuokran maksamisesta ennakolta yhdeltä tai useammalta vuokranmaksukaudelta voidaan sopia vuokrasopimusta
+    tehtäessä, ja vuokrasopimuksen ehtoja muutettaessa tai vuokralaisen vaihtuessa erityisestä syystä; ehto, jonka
+    mukaan vuokralaiselle vuokrasuhteen aikana muulloin asetetaan velvollisuus maksaa vuokraa ennakolta, on mitätön
+    (LHVL 29 § 1 mom.). Ennakkovuokra: ______________________________.</p>
+  <p>Viivästyneelle maksulle vuokralainen on velvollinen maksamaan korkolain (633/1982) mukaista viivästyskorkoa.
+    Vuokran maksun laiminlyönti säädetyssä tai sovitussa ajassa voi oikeuttaa vuokranantajan purkamaan
+    vuokrasopimuksen (LHVL 48 § 1 mom. 1 kohta).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Osapuolet voivat sopia huoneiston käyttöä, kuntoa ja kunnossapitoa koskevista oikeuksista ja velvoitteista;
+    jollei muuta ole sovittu, noudatetaan LHVL:n 2 luvun säännöksiä, joista eräät ovat vuokralaisen hyväksi
+    pakottavia (LHVL 14 §). Osapuolet sopivat seuraavasta vastuunjaosta: vuokranantaja vastaa
+    ______________________________; vuokralainen vastaa ______________________________.</p>
+  <p>Jollei toisin sovita, huoneiston on vuokrasuhteen alkaessa ja sen aikana oltava sellaisessa kunnossa kuin
+    vuokralainen huoneiston iän, alueen vastaavaan tarkoitukseen käytettyjen huoneistojen kunnon ja muut paikalliset
+    olosuhteet huomioon ottaen kohtuudella voi vaatia (LHVL 18 § 1 mom.).</p>
+  <p>Vuokralaisen on hoidettava huoneistoa huolellisesti; vuokralainen ei vastaa tavanomaisesta kulumisesta, jos
+    vuokranantaja vastaa huoneiston kunnosta ja kunnossapidosta (LHVL 23 § 1 mom.). Vuokralaisen on viipymättä
+    ilmoitettava vuokranantajalle huoneiston vahingoittumisesta tai sellaisesta puutteellisuudesta, jonka
+    korjaamisesta vuokranantaja on vastuussa (LHVL 22 § 1 mom.).</p>
+  <p>Vuokranantaja saa suorittaa välittömästi työn, jota ei voi vahinkoa aiheuttamatta siirtää, ja olennaista
+    haittaa aiheuttamattoman työn ilmoitettuaan siitä vähintään 14 päivää ennen työn aloittamista
+    (LHVL 19 § 2 mom.). Muusta korjaus- tai muutostyöstä vuokranantajan on ilmoitettava vähintään 6 kuukautta ennen
+    työn aloittamista, ja vuokralaisella on oikeus 14 päivän kuluessa ilmoituksen saamisesta purkaa sopimus
+    päättymään silloin, kun työhön aikaisintaan saadaan ryhtyä (LHVL 19 § 3 mom.).</p>
+  <p>Vuokranantajalla ja tämän edustajalla on oikeus päästä huoneistoon, kun se on tarpeellista huoneiston kunnon
+    ja hoidon valvomista tai korjaus- ja muutostöitä tai hoitotoimenpiteitä varten, sekä esitellä huoneistoa, jos
+    se on tarkoitus myydä tai se on uudelleen vuokrattavissa; käynti järjestetään osapuolille sopivana aikana,
+    jollei asian kiireellisyys tai laatu sitä estä (LHVL 20 §).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Vuokralaisella ei ole oikeutta suorittaa ilman vuokranantajan lupaa muuta korjaus- tai muutostyötä kuin
+    vuokranantajan vastuulla olevan puutteellisuuden korjaamiseksi, mutta vuokralainen saa aina ryhtyä
+    toimenpiteisiin huoneistoa koskevan välittömän vahingon estämiseksi tai rajoittamiseksi (LHVL 19 § 1 mom.).
+    Vuokralaisen muutos- ja sisustustyöt tehdään vuokranantajan etukäteen antaman kirjallisen luvan mukaisesti ja
+    vuokralaisen kustannuksella: ______________________________.</p>
+  <p>Määräaikaisen sopimuksen päättyessä vuokralaisella on oikeus saada korvaus suorittamistaan huoneiston arvoa
+    nostaneista korjaus- ja muutostöistä niiden vuokrasuhteen päättymisajankohdan mukaisesta arvosta, jos
+    vuokralaisella on ollut lain mukaan oikeus suorittaa nämä työt eikä niitä ole jo korvattu (LHVL 45 § 1 mom.);
+    tätä oikeutta rajoittava ehto on mitätön (LHVL 47 §). Vuokrasuhteen päättyessä vuokralainen palauttaa
+    huoneiston alkuperäiseen kuntoon siltä osin kuin vuokranantajan luvassa on niin sovittu.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Vuokralainen ei saa ilman vuokrasopimuksessa annettua tai vuokranantajan erikseen antamaa lupaa siirtää
+    vuokraoikeuttaan, ellei laissa toisin säädetä. Kun vuokralainen siirtää vuokraoikeutensa, hänen on välittömästi
+    ilmoitettava siitä kirjallisesti vuokranantajalle; jos vuokralaisella on oikeus siirtää vuokraoikeutensa, hän
+    vapautuu velvollisuuksistaan ilmoitettuaan siirrosta (LHVL 36 §).</p>
+  <p>Kun vuokralainen harjoittaa kaupparekisteriin merkityllä toiminimellä liikettä huoneistossa, joka kokonaan tai
+    osaksi on vuokrattu sitä varten, vuokralaisella on liikkeensä luovuttaessaan oikeus siirtää vuokraoikeus
+    luovutuksensaajalle ilman vuokranantajan lupaa, jollei toisin ole sovittu tai jollei vuokranantajalla ole
+    perusteltua syytä vastustaa siirtoa (LHVL 37 § 1 mom.). Vuokralaisen on ilmoitettava siirrosta
+    vuokranantajalle kirjallisesti viimeistään 2 kuukautta ennen sitä, ja vuokranantajan, joka ei hyväksy siirtoa,
+    on 1 kuukauden kuluessa ilmoituksen saatuaan saatettava vastustamisensa peruste tuomioistuimen tutkittavaksi
+    (LHVL 37 § 2 mom.).</p>
+  <p>Osapuolet sopivat liikkeen luovutukseen liittyvästä siirto-oikeudesta seuraavaa (esimerkiksi siirto-oikeus
+    suljetaan pois tai se edellyttää vuokranantajan suostumusta): ______________________________.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Jollei toisin sovita, vuokralainen saa ilman vuokranantajan lupaa luovuttaa enintään puolet huoneistosta
+    alivuokrauksena tai muutoin toisen käytettäväksi, mikäli siitä ei aiheudu vuokranantajalle huomattavaa haittaa
+    tai häiriötä (LHVL 16 §). Osapuolet sopivat alivuokrauksesta seuraavaa: ______________________________.</p>
+  <p>Kun vuokralainen on luovuttanut huoneiston kokonaan tai osittain toisen käytettäväksi, vuokralainen vastaa
+    edelleen vuokranantajalle vuokrasopimuksen mukaisista velvollisuuksista sekä vahingosta, jonka huoneiston
+    käytettäväkseen saanut on velvollinen korvaamaan vuokranantajalle (LHVL 17 §).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Vuokralainen ottaa ja pitää voimassa vuokrasuhteen ajan toimintaansa varten riittävän vastuu- ja
+    omaisuusvakuutuksen ja esittää siitä pyynnöstä todistuksen. Vuokranantaja vakuuttaa rakennuksen. Vakuutusten
+    vähimmäismäärät: ______________________________.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Vuokranantaja on pitänyt rakennuksen tai sen osan voimassa olevan energiatodistuksen vuokralaisen nähtävillä
+    esittelytilanteessa ja antaa sen vuokralaiselle alkuperäisenä tai jäljennöksenä (laki rakennuksen
+    energiatodistuksesta 50/2013, 6 § 1 mom.).</p>
+  <p>Energiatodistusta ei tarvitse laittaa nähtäville eikä antaa, jos vuokraus koskee vuokraamista määräaikaisesti
+    enintään 1 vuodeksi, jos kyseessä on alivuokraus tai samaan konserniin kuuluvien yhteisöjen välinen vuokraus
+    (laki 50/2013, 6 § 2 mom.) taikka jos rakennus on jätetty lain soveltamisalan ulkopuolelle (laki 50/2013,
+    3 §).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Vuokranantajan on pidettävä huoneisto vuokralaisen saatavana sinä päivänä, jona vuokralaisella on oikeus
+    saada se hallintaansa (LHVL 15 § 1 mom.). Osapuolet tarkastavat huoneiston yhdessä ennen sen luovuttamista ja
+    kirjaavat sen kunnon, luovutetut avaimet ja mittarilukemat tarkastuspöytäkirjaan, jonka kumpikin osapuoli
+    allekirjoittaa ja josta kumpikin saa kappaleen.</p>
+  <p>Muuttopäivä on vuokrasopimuksen päättymisen jälkeinen arkipäivä (LHVL 55 §). Vuokralainen luovuttaa
+    huoneiston ja kaikki avaimet vuokranantajalle viimeistään tuona päivänä, ja osapuolet tarkastavat huoneiston
+    yhdessä. Toistaiseksi voimassa olevassa vuokrasuhteessa tuomioistuin voi laissa säädetyin edellytyksin siirtää
+    muuttopäivää enintään 6 kuukaudella (LHVL 56 § 2 mom.); kanne on pantava vireille 7 päivän kuluessa
+    irtisanomisen tai purkamisen tiedoksisaannista ja ennen muuttopäivää (LHVL 57 § 1 mom.).<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Vakuuden palauttamisesta määrätään tässä sopimuksessa (ks. <span th:text="${refs['deposit']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Jollei irtisanomisajasta ole toisin sovittu, toistaiseksi voimassa olevan vuokrasopimuksen irtisanomisaika on
+    3 kuukautta vuokranantajan irtisanoessa ja 1 kuukausi vuokralaisen irtisanoessa (LHVL 42 § 2 mom.).
+    Irtisanomisaika lasketaan sen kalenterikuukauden viimeisestä päivästä, jonka aikana irtisanominen on
+    suoritettu, jollei toisin sovita (LHVL 42 § 1 mom.). Sovitut irtisanomisajat:
+    ______________________________.</p>
+  <p>Vuokranantajan irtisanomisilmoitus on annettava kirjallisesti, ja siinä on mainittava vuokrasuhteen
+    päättymisajankohta ja irtisanomisen peruste (LHVL 43 § 1 mom.). Vuokralaisen irtisanomisilmoitus annetaan
+    kirjallisesti vuokranantajalle tai sille, jolle vuokranantaja on antanut tehtäväksi periä vuokran, ei
+    kuitenkaan rahalaitokselle (LHVL 43 § 2 mom.). Irtisanomisilmoitus on annettava tiedoksi todisteellisesti
+    (LHVL 11 a § 1 mom.), ja muulla tavoin suoritettu irtisanominen on tehoton (LHVL 43 § 5 mom.).</p>
+  <p>Tuomioistuimen on vuokralaisen vaatimuksesta julistettava vuokranantajan suorittama irtisanominen tehottomaksi
+    laissa säädetyissä tapauksissa (LHVL 44 § 1 mom.). Vaatimus on pantava vireille vuokrasuhteen kestäessä ja
+    viimeistään 1 kuukauden kuluttua irtisanomisen tiedoksisaannista (LHVL 44 § 2 mom.).</p>
+  <p>Jos toistaiseksi voimassa oleva vuokrasuhde päättyy vuokranantajan irtisanomiseen, jota ei voida pitää
+    vuokrasuhteissa noudatettavan hyvän tavan mukaisena, vuokralaisella on oikeus korvaukseen huoneiston arvoa
+    nostaneista korjaus- ja muutostöistä (LHVL 45 § 1 mom.) sekä muuttokustannuksista ja uuden huoneiston
+    hankkimisesta aiheutuneista kuluista. Vuokralaisella, joka vuokrasopimuksen perusteella on harjoittanut
+    huoneistossa kauppaa, käsityötä, teollista liikettä tai muuta ansiotoimintaa vähintään 2 vuotta, on lisäksi
+    oikeus kohtuulliseen korvaukseen muuton aiheuttamasta asiakaspiirin vähentymisestä tai menettämisestä sekä
+    vuokralaisen toiminnan johdosta syntyneestä huoneiston vuokra-arvon lisäyksestä, jos huoneiston seuraava haltija
+    ryhtyy harjoittamaan huoneistossa olennaisesti samanlaista ansiotoimintaa (LHVL 45 § 2 mom.). Näitä oikeuksia
+    rajoittava ehto on mitätön (LHVL 47 §). Vuokralainen menettää oikeutensa, jos hän irtisanomisen jälkeen
+    laiminlyö velvollisuutensa vuokralaisena muutoin kuin vähäisesti (LHVL 46 §).</p>
+  <p th:if="${fixedTerm}">Määräaikaista vuokrasopimusta<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (ks. <span th:text="${refs['term']}"></span>. artikla)</span> ei voi irtisanoa
+    muutoin kuin laissa säädetyissä tapauksissa (LHVL 41 § 2 mom.).</p>
+  <p>Vuokranantajalla on oikeus purkaa vuokrasopimus laissa säädetyillä perusteilla, kuten jos vuokralainen
+    laiminlyö suorittaa vuokran säädetyssä tai sovitussa ajassa tai olennaisella tavalla muutoin rikkoo sitä, mitä
+    huoneiston osalta on sovittu (LHVL 48 § 1 mom.); oikeutta ei ole, jos purkamisperusteen aiheuttaneella
+    menettelyllä on vähäinen merkitys (LHVL 48 § 3 mom.). Eräillä perusteilla purkaminen edellyttää, että
+    vuokralaiselle on ensin annettu kirjallinen varoitus (LHVL 49 §). Vuokralaisella on oikeus purkaa
+    vuokrasopimus laissa säädetyillä perusteilla, kuten jos vuokranantaja olennaisesti rikkoo sitä, mitä huoneiston
+    osalta on sovittu (LHVL 50 § 1 mom.). Purkamisilmoitus on annettava kirjallisesti, ja siinä on mainittava
+    purkamisperuste (LHVL 53 § 1 mom.); se on annettava tiedoksi todisteellisesti (LHVL 11 a § 1 mom.).</p>
+  <p>Osapuolet voivat aina sopia vuokrasuhteen päättymisestä.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Huoneiston luovuttamisesta määrätään tässä sopimuksessa (ks. <span th:text="${refs['handover-inspection']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Ilmoitukset voidaan antaa tiedoksi postitse kirjeellä vastaanottajan tavallisesti käyttämään
+    postiosoitteeseen (LHVL 11 § 1 mom.).</p>
+  <p>Osapuolet sopivat nimenomaisesti, että ilmoitukset voidaan antaa tiedoksi myös seuraavassa sähköisessä
+    viestintäkanavassa vastaanottajan ilmoittamaa viimeisintä yhteystietoa käyttäen:
+    ______________________________ (esimerkiksi sähköpostiosoite). Jos sähköisestä viestintäkanavasta ei ole näin
+    sovittu eikä toisin ole muutenkaan nimenomaisesti sovittu, ilmoitukset saadaan antaa tiedoksi sellaisessa
+    sähköisessä viestintäkanavassa, jota osapuolet ovat vuokrasuhteen aikana vakiintuneesti käyttäneet keskinäiseen
+    viestintään (LHVL 11 § 2 mom.).</p>
+  <p>Jos kirje ei palaudu lähettäjälle eikä sähköisen viestin lähettämisen yhteydessä ole ilmeistä, ettei
+    vastaanottaja ole saanut sitä, tiedoksisaannin katsotaan tapahtuneen, jollei muuta näytetä, 7. päivänä sen
+    jälkeen, kun ilmoitus on annettu postin kuljetettavaksi, ja sovittua sähköistä kanavaa käytettäessä 3. päivänä
+    sen jälkeen, kun ilmoitus on lähetetty (LHVL 11 § 4 mom.). Osapuolten on viipymättä ilmoitettava
+    postiosoitettaan ja sähköistä yhteystietoaan koskevista muutoksista (LHVL 11 § 3 mom.).</p>
+  <p>Irtisanomis- ja purkamisilmoitukset sekä purkamista edeltävä varoitus on annettava tiedoksi todisteellisesti;
+    ehto, jonka mukaan ne voidaan antaa tiedoksi muulla kuin laissa säädetyllä tavalla, on mitätön
+    (LHVL 11 a § 4 mom.).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Kumpikin osapuoli käsittelee toisen osapuolen edustajien ja yhteyshenkilöiden henkilötietoja vain siltä osin
+    kuin se on tarpeen tämän sopimuksen tekemiseksi ja täyttämiseksi sekä lakisääteisten velvoitteiden
+    noudattamiseksi, EU:n yleisen tietosuoja-asetuksen (asetus (EU) 2016/679) ja tietosuojalain (1050/2018)
+    mukaisesti. Tietoja säilytetään vain niin kauan kuin se on näitä tarkoituksia varten tarpeen.</p>
+  <p>Rekisteröidyllä on tietosuoja-asetuksen mukaiset oikeudet, erityisesti oikeus saada pääsy tietoihin sekä
+    oikeus tietojen oikaisemiseen ja poistamiseen, ja oikeus tehdä valitus tietosuojavaltuutetulle.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Tähän sopimukseen sovelletaan Suomen lakia.</p>
+  <p>Osapuolet pyrkivät ratkaisemaan erimielisyydet ensisijaisesti neuvottelemalla. Riidat ratkaisee
+    toimivaltainen käräjäoikeus oikeudenkäymiskaaren 10 luvun oikeuspaikkasäännösten mukaisesti. Jos tämän
+    sopimuksen ehto on mitätön, sopimus on muilta osin voimassa, ja mitättömän ehdon sijasta sovelletaan lakia.</p>
+</div>
+
+</body>
+</html>

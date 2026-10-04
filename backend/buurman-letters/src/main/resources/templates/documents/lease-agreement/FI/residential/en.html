@@ -1,0 +1,357 @@
+<!--
+  legal-basis: Laki asuinhuoneiston vuokrauksesta (AHVL, 481/1995; Swedish: lag om hyra av bostadslägenhet),
+               consolidated text including the amending Act 531/2026 (HE 33/2026, in force 01.10.2026), read in
+               Finnish and Swedish on finlex.fi (opendata.finlex.fi consolidated versions fin@20260531 and
+               swe@20260531): sections 2, 3, 4, 5, 5 a, 8, 11, 13, 13 a, 16, 17, 17 a, 18, 19, 20, 21, 22, 23, 24,
+               25, 26, 26 a, 27, 27 a, 29, 34, 35, 36, 37, 44, 45, 51, 52, 53, 54, 55, 56, 58, 61, 62, 63, 66, 68,
+               68 a, 69. Transitional rule of Act 531/2026: leases concluded before 01.10.2026 keep the former
+               4 (2), 8 (1) and (2), 27, 32 (2), 52 (2) and (4) and 68 unless otherwise agreed after that date; this
+               document is drafted for leases concluded on or after 01.10.2026.
+               Act 790/2020 (water metering, transitional rule). Laki rakennuksen energiatodistuksesta (50/2013),
+               consolidated with Act 1010/2024, sections 3 and 6 (finlex.fi). Korkolaki (633/1982).
+               Laki kuluttajariitalautakunnasta (8/2007), consolidated with Act 1495/2025, section 2.
+               Oikeudenkaymiskaari (4/1734), chapter 10 and chapter 6 a (added by Act 398/2026, in force
+               01.09.2026). Tietosuojalaki (1050/2018); GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679). Aland: Hyreslag (1999:19) for landskapet Aland (regeringen.ax) applies instead of the
+               AHVL in the Aland Islands; not covered by this document.
+               Verified 2026-10-04 against finlex.fi (section texts read on that date).
+               Pending: HE 164/2026 (new Act on the energy performance of buildings, given to Parliament
+               10.09.2026) would replace Act 50/2013 - re-verify the energy-certificate clause after enactment.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fi.html, never spelled out (fi "3 kuukauden vuokra" is "3 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of fi.html; the Finnish text is authoritative. It states the law of mainland
+  Finland (AHVL) in English and is not the law of any other country. Draft text, not vetted by legal counsel. Only
+  prose differs from fi.html: fragments, th: expressions and attributes are identical (enforced by
+  LeaseDocumentFidelityTest). Citations are written "(AHVL section 52, subsection 2)" to pair with the Finnish
+  "(AHVL 52 § 2 mom.)". Each clause-<key> fragment holds only the clause body; the shell supplies article numbers
+  and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article
+  numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This lease of a residential dwelling (asuinhuoneiston vuokrasopimus) is concluded between the following
+    parties:</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (vuokranantaja), and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (vuokralainen).</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (vuokralainen).</p>
+  <p>Contact details of the parties: ______________________________</p>
+  <p>If there are several tenants, they are jointly and severally liable for all obligations of the tenant under
+    this agreement. Spouses and persons living in a marriage-like relationship are jointly and severally liable for
+    the obligations arising from the lease if they live together in a dwelling that they have rented or that one
+    of the spouses has rented (AHVL section 11).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, for residential use, the dwelling located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the dwelling&rdquo; (huoneisto). Type
+    and floor area of the dwelling: ______________________________. Additional spaces belonging to the dwelling
+    (for example a storage room or a parking space): ______________________________.</p>
+  <p>The landlord&rsquo;s right to let the dwelling is based on the following (for example ownership or shares
+    entitling to possession of the dwelling): ______________________________. The landlord must inform the tenant
+    of what the landlord&rsquo;s right to let the dwelling is based on or what restricts that right
+    (AHVL section 37).</p>
+  <p>This agreement is governed by the Act on Residential Leases (laki asuinhuoneiston vuokrauksesta, 481/1995,
+    hereinafter AHVL). The provisions of the Act may be departed from by agreement only where the Act does not
+    provide otherwise and the departure is not otherwise to be regarded as prohibited (AHVL section 3). The Act
+    does not apply to an agreement by which a dwelling is let for short-term and temporary accommodation
+    (AHVL section 2, subsection 1).</p>
+  <p>This document is drafted under the legislation of mainland Finland. A dwelling located in the Åland Islands
+    is governed by the province&rsquo;s own tenancy legislation (Hyreslag för landskapet Åland, 1999:19), under
+    which this document has not been drafted.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The lease is concluded for an indefinite period (toistaiseksi voimassa oleva).</p>
+  <th:block th:if="${fixedTerm}">
+    <p>The lease is concluded for a fixed term (määräaikainen)<span th:if="${endDate != null}"> and ends on
+      <strong th:text="${endDate}">end date</strong></span>. A fixed-term lease ends when its term expires
+      (AHVL section 4, subsection 2). A fixed-term lease ends by notice of termination only in the cases provided
+      by law (AHVL section 51, subsection 2).</p>
+    <p>If a tenancy with the same tenant is agreed more than 2 times in succession for a fixed term of at most
+      3 months, the lease is in force for an indefinite period notwithstanding the term on the fixed period
+      (AHVL section 4, subsection 1).</p>
+    <p>If the tenant, at least 3 months before the fixed term ends, notifies the landlord that the tenant wishes to
+      continue the tenancy and the landlord refuses without a reason regarded as acceptable in a tenancy, the
+      tenant is entitled to compensation for the repair and alteration works carried out by the tenant that have
+      increased the value of the dwelling, at their value at the end of the tenancy, if the tenant was entitled by
+      law to carry out the works and they have not already been compensated (AHVL section 58).</p>
+  </th:block>
+  <p>The lease and any amendment to it are made in writing. If the lease has not been made in writing, it is
+    deemed to be in force for an indefinite period (AHVL section 5, subsection 1). An electronic agreement in a
+    form that can generally be stored and reproduced for a period appropriate to its purpose also counts as
+    written (AHVL section 5 a).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is <strong th:text="${rentAmount}">amount</strong> <span th:text="${paymentFrequency}">monthly</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> In addition, the tenant pays the
+    agreed usage charges (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The rent is determined by what has been agreed, unless otherwise provided by law (AHVL section 27,
+    subsection 1). During the tenancy, the landlord or the tenant may bring the reasonableness of the rent or of a
+    term on its determination before a court (AHVL section 29, subsection 1). The landlord may not give notice
+    of termination while the reasonableness of the rent is being examined by the district court (käräjäoikeus) at
+    the tenant&rsquo;s request (AHVL section 29, subsection 2).</p>
+  <p>This document is not drafted for dwellings whose rent is subject to the rent-setting provisions of the
+    ARAVA restrictions legislation or the interest-subsidy legislation (AHVL section 27, subsection 4).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The review of the rent is governed by this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is reviewed annually from ______________ on the following basis:
+    ______________________________ (for example the change in the cost-of-living index (elinkustannusindeksi)
+    published by Statistics Finland (Tilastokeskus) or a fixed percentage increase).</p>
+  <p>A term under which the landlord may, during the tenancy, unilaterally determine the time or amount of a rent
+    increase is void unless the basis on which the rent may be increased has also been agreed (AHVL section 27,
+    subsection 2).</p>
+  <p>The landlord must notify the tenant in writing of the increase, the new rent and the date on which the
+    increase takes effect. The increased rent takes effect at the earliest 1 month after the start of the rent
+    payment period next following the notice, and it may not be charged retroactively. At the tenant&rsquo;s
+    request, the landlord must provide, free of charge and without delay, information on the basis of the
+    increase and on how the new rent is calculated (AHVL section 27, subsection 2).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant pays the landlord the following usage charges: water ______________,
+    electricity ______________, parking space ______________, other ______________.</p>
+  <p>The provisions on rent increases do not apply to charges for water, electricity or other usage connected
+    with the tenancy if their payment and the way they are determined have been agreed. If a charge is based on
+    consumption or use, the landlord must, when collecting the charge, inform the tenant of the consumption or use
+    and, as far as possible, of the other bases of the charge, and must inform the tenant without delay of any
+    change in the basis on which the charge is determined (AHVL section 27, subsection 3).</p>
+  <p>If apartment-specific water meters have been installed in the building for cost allocation, the water charge
+    must be based on reliably measured actual consumption, the tenant must be given information on water
+    consumption monthly, and no separate fee may be charged for that information (AHVL section 27 a). This does
+    not apply if the water meters were installed under a building permit applied for before 23.11.2020
+    (Act 790/2020).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant provides the landlord with security (vakuus) for the performance
+    of the tenant&rsquo;s obligations. The amount of the security is <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">The tenant provides the landlord with security (vakuus) for the performance
+    of the tenant&rsquo;s obligations. The amount of the security is the amount agreed in writing between the
+    parties.</p>
+  <p>Form of the security (for example a cash deposit, a rent deposit account (vuokravakuustili) or a bank
+    guarantee) and time for providing it: ______________________________. The security covers all obligations
+    arising from the tenancy unless otherwise agreed. If the security is not provided within the agreed time, the
+    landlord is entitled to rescind the agreement, except where the security has been provided before the notice
+    of rescission was received (AHVL section 8, subsection 1).</p>
+  <p>A term under which the security exceeds an amount equal to 3 months&rsquo; rent is void (AHVL section 8,
+    subsection 5). The tenant is therefore not obliged to provide security above that amount.</p>
+  <p>The security must be returned or released, or a written notice of its retention must be given, without delay
+    and no later than within 14 days after the lease ended or after possession was surrendered later; if there is
+    an impediment for a justified reason, the measure must be taken without delay and no later than within 14 days
+    after the impediment ceased. The notice must state the grounds of the claim covered by the security and an
+    estimate of its amount made in a reasonably required manner (AHVL section 8, subsection 2).</p>
+  <p>The part of the security retained may not exceed the amount of the claim or the notified estimate of its
+    amount; however, security deposited in a rent deposit account may be retained in full until the amount of the
+    claim has been established (AHVL section 8, subsection 3). The person who provided the security is entitled to
+    compensation for damage caused by an unjustified retention or failure to release, unless the landlord shows
+    that it was not caused by a reason, omission or other negligence attributable to the landlord
+    (AHVL section 8, subsection 4).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The condition of the dwelling is recorded at its handover (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the usage charges</span>
+    <span th:text="${paymentFrequency}">monthly</span>
+    <span th:if="${paymentDueDay != null}">no later than day
+      <strong th:text="${paymentDueDay}">1</strong> of each rent payment period</span><span
+    th:if="${paymentDueDay == null}">no later than day 2 of each rent payment period (AHVL section 34, subsection 1)</span>
+    to the bank account designated by the landlord ______________________________.</p>
+  <p>Rent payable in money may be paid through a bank or another payment service provider; any other term is void
+    (AHVL section 35, subsection 1).</p>
+  <p>Payment of rent in advance for several rent payment periods may be agreed when the lease is concluded
+    only for a special reason (AHVL section 36, subsection 1). A term under which rent must be paid in advance for
+    a longer period than 3 months or, if the rent payment period is longer, for more than 1 rent payment period is
+    void (AHVL section 36, subsection 2).</p>
+  <p>On late payment the tenant is obliged to pay default interest under the Interest Act (korkolaki, 633/1982).
+    Failure to pay the rent within the statutory or agreed time may entitle the landlord to rescind the lease
+    (AHVL section 61, subsection 1, paragraph 1).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The dwelling may be used for residential purposes only. The tenant may use the dwelling as the
+    tenant&rsquo;s own home or as a joint home with the tenant&rsquo;s spouse and the children belonging to the
+    family (AHVL section 17, subsection 1).</p>
+  <p>If the tenant uses the dwelling together with other persons, the tenant must notify the landlord in writing
+    of the number of residents and the basis of their right to live in the dwelling, and of the names, dates of
+    birth and contact details of the adult residents. If that notice is not given when the lease is concluded, it
+    must be given without delay after the tenant has obtained possession of the dwelling and thereafter whenever a
+    new resident moves in; the moving out of a notified resident must also be notified in writing without delay
+    (AHVL section 17 a).</p>
+  <p>The tenant must take good care of the dwelling (AHVL section 25, subsection 1), and the tenant must comply
+    with the house rules (järjestyssäännöt) of the housing company.</p>
+  <p>The use of tobacco products intended for smoking or other heating, and of comparable products referred to in
+    the Tobacco Act, is prohibited inside the dwelling, on a balcony belonging to the dwelling and in any other
+    private indoor or outdoor space connected with the dwelling. The landlord may permit their use provided that
+    other legislation, an order of an authority or a provision of the articles of association does not prohibit
+    or prevent it (AHVL section 26 a). Landlord&rsquo;s permission: ______________________________.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Provided that this does not cause the landlord considerable inconvenience or disturbance, the tenant may also
+    use the dwelling as a joint home with a close relative of the tenant or of the tenant&rsquo;s spouse, or may
+    sublet or otherwise give up to half of the dwelling for use by another person as a home (AHVL section 17,
+    subsection 1). In other cases, giving the dwelling or part of it for use by another person requires consent
+    in the lease or permission given separately by the landlord (AHVL section 17, subsection 2).</p>
+  <p>The tenant may give the entire dwelling for use by another person as a home for at most 2 years if the tenant
+    is temporarily staying in another locality because of work, studies, illness or another comparable reason, or
+    if there is another special reason for doing so, and the landlord has no justified reason to object. The
+    tenant must notify the landlord in writing, no later than 1 month before the transfer of use, of the transfer,
+    its duration and the person to whom the dwelling is given; a landlord who does not accept the transfer must,
+    within 14 days of receiving the notice, bring the grounds of the objection before a court (AHVL section 18).</p>
+  <p>Unless otherwise agreed, the tenant remains liable for the tenant&rsquo;s obligations and for damage that the
+    person who received the dwelling for use is obliged to compensate to the landlord (AHVL section 19). The
+    tenant may not assign the tenancy without permission given in the lease or separately by the landlord, unless
+    the law provides otherwise, as for an assignment of the tenancy to a family member (AHVL section 44,
+    subsection 1, section 45).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>At the start of the tenancy and during it, the dwelling must be in the condition that the tenant can
+    reasonably require, taking into account the age of the dwelling, the housing stock of the area and the other
+    local circumstances, unless another condition has been agreed (AHVL section 20, subsection 1). The landlord is
+    responsible for the maintenance of the dwelling unless otherwise agreed in this agreement. Maintenance tasks
+    for which the tenant is responsible: ______________________________.</p>
+  <p>The tenant must notify the landlord without delay of damage to the dwelling or of a defect for whose repair
+    the landlord is responsible, and immediately if the repair must be carried out without delay to prevent the
+    damage from increasing (AHVL section 24, subsection 1). The tenant is not liable for ordinary wear and tear if
+    the landlord is responsible for the condition and maintenance of the dwelling, but compensates damage that the
+    tenant, or a person staying in the dwelling with the tenant&rsquo;s permission, causes to the dwelling
+    intentionally, by omission or by other negligence (AHVL section 25).</p>
+  <p>The tenant is entitled to be released from paying rent or to a reasonable reduction of the rent for the time
+    during which the dwelling could not be used or was not in the required or agreed condition, except where the
+    defective condition results from the tenant&rsquo;s omission or other negligence or the repair or alteration
+    work was carried out because of damage for which the tenant is liable; there is no such right for the time
+    before the landlord was informed of the defect (AHVL section 23, subsection 2).</p>
+  <p>The tenant has no right, without the landlord&rsquo;s permission, to carry out repair or alteration works in
+    the dwelling other than to remedy a defect that the landlord has failed to repair, but the tenant may always
+    take measures to prevent or limit immediate damage (AHVL section 21, subsection 1). The landlord may carry out
+    immediately work that cannot be postponed without causing damage, and work that causes no substantial
+    inconvenience after notifying the tenant at least 14 days before the work starts (AHVL section 21,
+    subsection 2). For other repair or alteration works the landlord must give notice at least 6 months before the
+    work starts, and the tenant is entitled, within 14 days of receiving the notice, to rescind the agreement with
+    effect from the earliest date on which the work may begin (AHVL section 21, subsection 3).</p>
+  <p>The landlord and the landlord&rsquo;s representative are entitled to enter the dwelling when this is
+    necessary to supervise its condition and upkeep or for repair and alteration works or upkeep measures, and to
+    show the dwelling if it is to be sold or is available for re-letting; the visit is arranged at a time suitable
+    for the parties unless the urgency or nature of the matter prevents this (AHVL section 22). A term restricting
+    the tenant&rsquo;s statutory rights concerning the condition of the dwelling, or making the tenant&rsquo;s
+    liability stricter than provided by law, is void (AHVL section 26).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The landlord has made a valid energy performance certificate (energiatodistus) for the building or part of it
+    available to the tenant at the viewing and gives it to the tenant as an original or a copy (Act on Energy
+    Performance Certificates for Buildings, laki rakennuksen energiatodistuksesta, 50/2013, section 6,
+    subsection 1).</p>
+  <p>The energy performance certificate need not be made available or given if the letting is for a fixed term of
+    at most 1 year, if it is a sublease or a letting between entities of the same group (Act 50/2013, section 6,
+    subsection 2), or if the building is excluded from the scope of that Act (Act 50/2013,
+    section 3).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The landlord must keep the dwelling available to the tenant on the day on which the tenant is entitled to
+    obtain possession of it (AHVL section 16, subsection 1). The parties inspect the dwelling together before it
+    is handed over and record its condition, the keys handed over and the meter readings in an inspection report,
+    which each party signs and of which each party receives a copy.</p>
+  <p>The moving day (muuttopäivä) is the day on which the lease ends (AHVL section 68). The tenant returns the
+    dwelling and all keys to the landlord no later than on that day, and the parties inspect the dwelling
+    together. In a tenancy for an indefinite period, a court may postpone the moving day under the conditions
+    provided by law (AHVL section 69).</p>
+  <p>Property left in the dwelling after the tenancy has ended passes to the landlord without consideration under
+    the conditions and time limits provided by law (AHVL section 68 a).<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> The return of the security is governed by this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The notice period (irtisanomisaika) of a lease for an indefinite period starts to run from the last day of
+    the calendar month during which notice was given (AHVL section 52, subsection 1). The landlord&rsquo;s notice
+    period is 4 months if the tenancy has lasted continuously for at least 2 years immediately before the notice,
+    and otherwise 3 months (AHVL section 52, subsection 2). The tenant&rsquo;s notice period is 1 month
+    (AHVL section 52, subsection 3).</p>
+  <p>A term that shortens the landlord&rsquo;s notice period or lengthens the tenant&rsquo;s notice period is void,
+    as is a term under which the notice period may start for the first time only after a certain period from the
+    start of the tenancy (AHVL section 52, subsection 4).</p>
+  <p>The landlord&rsquo;s notice of termination must be given in writing and must state the date on which the
+    tenancy ends and the ground for the termination (AHVL section 54, subsection 1). The tenant&rsquo;s notice of
+    termination is given in writing to the landlord or to the person whom the landlord has instructed to collect
+    the rent, but not to a financial institution (AHVL section 54, subsection 2). The notice of termination must
+    be served in a verifiable manner (todisteellisesti) (AHVL section 13 a, subsection 1), and a termination made
+    in any other way is ineffective (AHVL section 54, subsection 5).</p>
+  <p>Where spouses live in the dwelling as their joint home, a spouse may not terminate the lease without the
+    other spouse&rsquo;s consent, unless the consent cannot be obtained without difficulty (AHVL section 53,
+    subsection 1).</p>
+  <p>At the tenant&rsquo;s request, the court must declare a termination made by the landlord ineffective in the
+    cases provided by law (AHVL section 56, subsection 1). The claim must be brought while the tenancy lasts and no
+    later than within 3 months after the notice of termination was received (AHVL section 56, subsection 2).</p>
+  <p th:if="${fixedTerm}">A fixed-term lease<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span> cannot be terminated by
+    notice other than in the cases provided by law; on a special ground provided by law, a court may authorise the
+    tenant or the landlord to terminate the lease by notice (AHVL section 55, subsection 1).</p>
+  <p>The landlord is entitled to rescind (purkaa) the lease on the grounds provided by law, such as where the
+    tenant fails to pay the rent within the statutory or agreed time (AHVL section 61, subsection 1); there is no
+    such right if the conduct giving rise to the ground for rescission is of minor significance (AHVL section 61,
+    subsection 3). On certain grounds, rescission requires that the tenant has first been given a written warning
+    (AHVL section 62). The tenant is entitled to rescind the lease on the grounds provided by law, such as where
+    using the dwelling for the purpose presupposed in the agreement causes an obvious danger to the health of the
+    tenant or of a member of the tenant&rsquo;s household (AHVL section 63, subsection 1). The notice of rescission
+    must be given in writing and must state the ground for rescission (AHVL section 66, subsection 1).</p>
+  <p>The parties may always agree on the end of the tenancy.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The return of the dwelling is governed by this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices may be served by letter sent by post to the postal address that the recipient usually uses
+    (AHVL section 13, subsection 1).</p>
+  <p>The parties agree individually and in writing that notices may also be served through the following
+    electronic communication channel: ______________________________ (for example an email address). The notice is
+    then sent to the most recent contact details given by the recipient, provided that the sender did not know and
+    should not have known that the recipient is prevented from using the agreed channel because of ageing,
+    disability or another comparable reason (AHVL section 13, subsection 2).</p>
+  <p>If the letter is not returned to the sender and it is not evident when the electronic message is sent that
+    the recipient has not received it, service is deemed, unless otherwise shown, to have taken place on day 7
+    after the notice was handed over for postal delivery and, where the electronic channel is used, on day 3 after
+    the notice was sent (AHVL section 13, subsection 4). The parties must notify changes to their postal address
+    and electronic contact details without delay (AHVL section 13, subsection 3).</p>
+  <p>Notices of termination and of rescission and the warning preceding rescission must be served in a verifiable
+    manner; a term under which they may be served in a way other than as provided by law is void
+    (AHVL section 13 a, subsection 4).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the personal data of the tenant and of the persons living in the dwelling only insofar
+    as this is necessary for concluding and performing this agreement and for complying with legal obligations, in
+    accordance with the EU General Data Protection Regulation (Regulation (EU) 2016/679) and the Finnish Data
+    Protection Act (tietosuojalaki, 1050/2018). The data are kept only as long as necessary for those
+    purposes.</p>
+  <p>The tenant has the rights under the General Data Protection Regulation, in particular the rights of access,
+    rectification and erasure, and the right to lodge a complaint with the Data Protection Ombudsman
+    (tietosuojavaltuutettu).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Finnish law.</p>
+  <p>The parties seek to resolve disagreements primarily through negotiation. A tenant who is a consumer, or a
+    landlord who is a private individual, may bring a disagreement relating to the lease of a dwelling before the
+    Consumer Disputes Board (kuluttajariitalautakunta), which issues a recommendation on the matter (Act on the
+    Consumer Disputes Board, 8/2007, section 2, subsection 1, paragraph 4).</p>
+  <p>Disputes are decided by the competent district court (käräjäoikeus) in accordance with the venue provisions
+    of Chapter 10 of the Code of Judicial Procedure (oikeudenkäymiskaari). A civil dispute based on the tenancy of
+    a dwelling may be heard in the small-claims procedure as provided in Chapter 6 a of the Code of Judicial
+    Procedure. If a term of this agreement is void, the remainder of the agreement remains in force, and the law
+    applies in place of the void term.</p>
+</div>
+
+</body>
+</html>
