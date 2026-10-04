@@ -4577,7 +4577,7 @@
             "countryCode": "GR",
             "countryName": "Greece",
             "hasRegionalRegulations": false,
-            "summary": "Residential rents are freely agreed: no statutory cap on the rent or its contractual adjustment (Civil Code arts. 574 ff.; \u03bd. 1703/1987 art. 2). Residential leases run for at least 3 years. Commercial leases under \u03c0.\u03b4. 34/1995 are capped at a 3% adjustment during 2026 (\u03bd. 5007/2022 art. 96, as amended by \u03bd. 5255/2025).",
+            "summary": "Residential rents are freely agreed: no statutory cap on the rent or its contractual adjustment (Civil Code arts. 574 ff.; \u03bd. 1703/1987 art. 2). A lease of the tenant's main residence runs for at least 3 years. Commercial leases under \u03c0.\u03b4. 34/1995 are capped at a 3% adjustment during 2026 (\u03bd. 5007/2022 art. 96, as amended by \u03bd. 5255/2025).",
             "lastReviewedAt": "2026-10-04T00:00:00Z",
             "lateFee": {
                 "policy": "ALLOWED",
@@ -4606,8 +4606,8 @@
                     "effectiveDate": "2025-01-01",
                     "frequency": "ANNUAL",
                     "additionalConditions": "Commercial leases within the scope of \u03c0.\u03b4. 34/1995: any rent adjustment between 1 January and 31 December 2025 may not exceed 3% of the 2024 rent, whatever the lease's indexation clause provides (\u03bd. 5007/2022 art. 96 par. 1).",
-                    "sourceUrl": "https://api.et.gr/apiLAW/1/2025/5255/pdf",
-                    "notes": "Wording of \u03bd. 5007/2022 art. 96 par. 1 in force for 2025 (period 1 January - 31 December 2025, base = 2024 rent), as quoted in the amending provision of \u03bd. 5255/2025 art. 59 par. 1 (\u03a6\u0395\u039a \u0391' 219/28.11.2025).",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/2024/5164/pdf",
+                    "notes": "\u03bd. 5164/2024 art. 75 (\u03a6\u0395\u039a \u0391' 202/12.12.2024) replaced the 2024 period and base year in \u03bd. 5007/2022 art. 96 par. 1 with 1 January - 31 December 2025 and the 2024 rent.",
                     "regime": "STATUTORY_CAP",
                     "propertyType": "COMMERCIAL"
                 },
@@ -4639,7 +4639,7 @@
             "tenancyRules": [
                 {
                     "topic": "TENANCY_DURATION",
-                    "label": "Minimum term of a residential lease",
+                    "label": "Minimum term of a lease of the tenant's main residence",
                     "value": "3 years",
                     "effectiveFrom": "1994-09-01",
                     "legalBasis": "\u03bd. 1703/1987 art. 2 par. 1, as replaced by \u03bd. 2235/1994 art. 1 par. 5 (\u03a6\u0395\u039a \u0391' 145/1.9.1994)",
@@ -4658,7 +4658,7 @@
                 {
                     "topic": "DEPOSIT",
                     "label": "Security deposit and advance rent (residential)",
-                    "value": "At most 2 months' rent; advance rent only for the current month",
+                    "value": "At most 2 months' rent; advance rent only for the current month (statutory limit whose continued force after 30 June 1997 is debated - verify with counsel)",
                     "legalBasis": "\u03bd. 1703/1987 art. 2 par. 2 (\u03a6\u0395\u039a \u0391' 78/27.5.1987)",
                     "sourceUrl": "https://api.et.gr/apiLAW/1/1987/1703/pdf",
                     "notes": "The statute forbids a security deposit (\u03b5\u03b3\u03b3\u03c5\u03bf\u03b4\u03bf\u03c3\u03af\u03b1) above 2 months' rent and any advance payment beyond the current rental month. Consolidated legal databases list the paragraph as in force, but whether it outlived the 30 June 1997 expiry of the rest of \u03bd. 1703/1987 (\u03bd. 2235/1994 art. 1 par. 1) is debated - verify before relying on it."

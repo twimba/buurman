@@ -216,7 +216,9 @@ class RentRegulationCatalogTest {
         .anySatisfy(
             rule -> {
               assertThat(rule.topic()).isEqualTo(TenancyRuleTopic.TENANCY_DURATION);
-              assertThat(rule.label()).containsIgnoringCase("residential");
+              // ν. 1703/1987 art. 1 par. 1 limits the law to the tenant's main residence; the
+              // scope must be visible, since the page does not render notes.
+              assertThat(rule.label()).containsIgnoringCase("main residence");
               assertThat(rule.value()).isEqualTo("3 years");
               assertThat(rule.legalBasis()).contains("1703/1987").contains("2235/1994");
             });
@@ -227,10 +229,38 @@ class RentRegulationCatalogTest {
             TenancyRuleTopic.DEPOSIT,
             TenancyRuleTopic.REGISTRATION,
             TenancyRuleTopic.NOTICE_PERIOD);
+    assertThat(greece.summary()).containsIgnoringCase("main residence");
+
+    // The 2025 cap was set by ν. 5164/2024 art. 75 (ΦΕΚ Α' 202/12.12.2024), not by the 2026
+    // extension.
+    assertThat(safe(greece.rules()))
+        .filteredOn(rule -> rule.year() == 2025 && "COMMERCIAL".equals(rule.propertyType()))
+        .singleElement()
+        .satisfies(
+            rule -> {
+              assertThat(rule.notes()).contains("5164/2024");
+              assertThat(rule.sourceUrl()).contains("2024/5164");
+            });
   }
 
   @Test
-  @DisplayName("Greece: every rule and tenancy fact carries a legal basis and an official source")
+  @DisplayName("Greece: the debated deposit cap carries its qualifier in the visible value")
+  void greece_depositValueIsQualified() {
+    // The regulations page renders label/value/legalBasis/source but never notes, so the
+    // "continued force debated" caveat on ν. 1703/1987 art. 2 par. 2 must sit in the value.
+    assertThat(safe(country("GR").tenancyRules()))
+        .filteredOn(rule -> rule.topic() == TenancyRuleTopic.DEPOSIT)
+        .singleElement()
+        .satisfies(
+            rule -> {
+              assertThat(rule.value()).contains("2 months' rent");
+              assertThat(rule.value()).containsIgnoringCase("debated");
+              assertThat(rule.value()).containsIgnoringCase("verify");
+            });
+  }
+
+  @Test
+  @DisplayName("Greece: every rule and tenancy fact has a legal basis and an https source")
   void greece_everyFactIsSourced() {
     CatalogCountry greece = country("GR");
 
@@ -253,6 +283,7 @@ class RentRegulationCatalogTest {
               assertThat(rule.sourceUrl())
                   .as("sourceUrl of '%s'", rule.label())
                   .startsWith("https://");
+              assertThat(rule.notes()).as("notes of '%s'", rule.label()).isNotBlank();
               assertThat(rule.regionCode()).as("GR has no regions").isNull();
             });
   }
