@@ -146,7 +146,69 @@ class UsLeaseRegionRenderTest {
     return STATES.contains(state) ? state : GENERAL;
   }
 
-  private static void assertOnlyBranch(String html, Map<String, String> phrases, String expected) {
+  /** Residential rent-adjustment clause: a distinctive phrase per state; MA has none. */
+  private static final Map<String, String> RESIDENTIAL_RENT_ADJUSTMENT =
+      Map.ofEntries(
+          Map.entry("CA", "Civil Code &sect; 827"),
+          Map.entry("DC", "D.C. Code &sect; 42-3509.04"),
+          Map.entry("MD", "Prince George&rsquo;s County"),
+          Map.entry("ME", "City of Portland"),
+          Map.entry("MN", "City of Saint Paul"),
+          Map.entry("NJ", "N.J.S.A. 2A:18-61.1"),
+          Map.entry("NY", "Real Property Law &sect; 226-c"),
+          Map.entry("OR", "ORS 90.324"),
+          Map.entry("WA", "RCW 59.18.720"),
+          Map.entry(GENERAL, "Some states and cities limit the amount or frequency"));
+
+  /** Residential disclosures clause: state notices; DC and WA get the general text. */
+  private static final Map<String, String> RESIDENTIAL_DISCLOSURES =
+      Map.ofEntries(
+          Map.entry("CA", "www.meganslaw.ca.gov"),
+          Map.entry("MA", "G.L. c. 111, &sect; 197"),
+          Map.entry("MD", "Maryland Tenants&rsquo; Bill of Rights"),
+          Map.entry("ME", "14 M.R.S. &sect; 6030-D"),
+          Map.entry("MN", "Minn. Stat. &sect; 504B.195"),
+          Map.entry("NJ", "Truth in Renting statement"),
+          Map.entry("NY", "Real Property Law &sect; 231-a"),
+          Map.entry("OR", "ORS 90.228"),
+          Map.entry(GENERAL, "Many states and cities require further disclosures"));
+
+  /** Residential entry clause: state notice rules; other states only the common text. */
+  private static final Map<String, String> RESIDENTIAL_ENTRY =
+      Map.ofEntries(
+          Map.entry("CA", "Civil Code &sect; 1954"),
+          Map.entry("MA", "G.L. c. 186, &sect; 15B, subsection (1)(a)"),
+          Map.entry("ME", "14 M.R.S. &sect; 6025"),
+          Map.entry("MN", "Minn. Stat. &sect; 504B.211"),
+          Map.entry("OR", "ORS 90.322"),
+          Map.entry("WA", "RCW 59.18.150"));
+
+  /** Residential maintenance clause: state habitability rules. */
+  private static final Map<String, String> RESIDENTIAL_MAINTENANCE =
+      Map.ofEntries(
+          Map.entry("CA", "Civil Code &sect; 1941.1"),
+          Map.entry("MD", "Real Property &sect; 8-208, subsection (c)(1)"),
+          Map.entry("MN", "Minn. Stat. &sect; 504B.161"),
+          Map.entry("NY", "Real Property Law &sect; 235-b"),
+          Map.entry("WA", "RCW 59.18.060"));
+
+  /** Residential handover-inspection clause: state inspection rules. */
+  private static final Map<String, String> RESIDENTIAL_HANDOVER =
+      Map.ofEntries(
+          Map.entry("CA", "subdivision (g)(2)"),
+          Map.entry("MA", "subsection (2)(c)"),
+          Map.entry("MD", "Real Property &sect; 8-203"),
+          Map.entry("MN", "Minn. Stat. &sect; 504B.182"),
+          Map.entry("NY", "General Obligations Law &sect; 7-108"),
+          Map.entry("WA", "RCW 59.18.260"));
+
+  private static void assertOnlyBranch(
+      String html, Map<String, String> phrases, String expectedState) {
+    // a state without its own branch in this clause gets the general text, where there is one
+    String expected =
+        phrases.containsKey(expectedState) || !phrases.containsKey(GENERAL)
+            ? expectedState
+            : GENERAL;
     assertThat(html).doesNotContain("${").doesNotContain("null");
     if (phrases.containsKey(expected)) {
       assertThat(html).contains(phrases.get(expected));
@@ -174,16 +236,31 @@ class UsLeaseRegionRenderTest {
         "US, WA",
         "US, NJ-HOBOKEN",
         "US, MN-STPAUL",
-        "US, MD-TAKOMA",
+        "US, MD-TAKOMAPARK",
+        "US, ME-PORTLAND",
+        "US, NJ-JERSEYCITY",
         "US, TX",
         "US, NULL",
         "CA, ON",
         "GB, NY"
       },
       nullValues = "NULL")
-  @DisplayName("residential deposit, payment and termination print exactly the state's branch")
+  @DisplayName("residential state clauses print exactly the state's branch")
   void residentialBranches(String country, String region) {
     String expected = expectedKey(country, region);
+    assertOnlyBranch(
+        render("residential", "rent-adjustment", country, region),
+        RESIDENTIAL_RENT_ADJUSTMENT,
+        expected);
+    assertOnlyBranch(
+        render("residential", "disclosures", country, region), RESIDENTIAL_DISCLOSURES, expected);
+    assertOnlyBranch(render("residential", "entry", country, region), RESIDENTIAL_ENTRY, expected);
+    assertOnlyBranch(
+        render("residential", "maintenance", country, region), RESIDENTIAL_MAINTENANCE, expected);
+    assertOnlyBranch(
+        render("residential", "handover-inspection", country, region),
+        RESIDENTIAL_HANDOVER,
+        expected);
     assertOnlyBranch(
         render("residential", "deposit", country, region), RESIDENTIAL_DEPOSIT, expected);
     assertOnlyBranch(
@@ -238,6 +315,8 @@ class UsLeaseRegionRenderTest {
     assertThat(general)
         .contains("Housing built before 1978 may contain lead-based paint.")
         .contains("Many states and cities require further disclosures")
+        .contains("Agent&rsquo;s statement")
+        .contains("subsections (b)(5), (b)(6) and (c)")
         .doesNotContain("www.meganslaw.ca.gov")
         .doesNotContain("Real Property Law &sect; 231-a");
     assertThat(render("residential", "disclosures", "US", "CA"))
@@ -283,6 +362,11 @@ class UsLeaseRegionRenderTest {
         .doesNotContain("Certified Access Specialist");
     assertThat(render("commercial", "service-costs", "US", "CA"))
         .contains("Civil Code &sect; 1950.9");
+    assertThat(render("commercial", "deposit", "US", "CA")).contains("Civil Code &sect; 1950.7");
+    assertThat(render("commercial", "deposit", "US", "NY"))
+        .doesNotContain("Civil Code &sect; 1950.7");
+    assertThat(render("residential", "termination", "US", "OR"))
+        .contains("4 or fewer residential dwelling units");
     assertThat(render("commercial", "service-costs", "US", "TX"))
         .doesNotContain("Civil Code &sect; 1950.9");
     assertThat(render("commercial", "disputes", "US", "CA"))

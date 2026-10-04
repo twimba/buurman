@@ -18,7 +18,8 @@
                tenant), § 1950.9 (building operating costs: allocation, 18 / 12 months, notice before
                execution, documentation within 30 days, waiver void; applies to leases executed or renewed on
                or after 1 January 2025, periodic tenancies, and earlier leases without a provision on building
-               operating costs), § 1632(b)(8) (translation for a qualified commercial tenant), § 1717
+               operating costs), § 1950.7 (non-residential deposits: claims, return within 2 weeks / 30 days),
+               § 1632(b)(8) (translation for a qualified commercial tenant), § 1717
                (reciprocal attorney's fees). Texts read on california.public.law (mirror of
                leginfo.legislature.ca.gov, verified 28 September 2026).
                Sources consulted 2026-10-04; rules stated only generally (holdover, mitigation, jury waiver
@@ -191,6 +192,17 @@
     landlord may commingle it with other funds unless that law provides otherwise. The landlord returns the
     deposit, less amounts lawfully applied, within ______ days after the end of the lease and the surrender of
     the premises, or within any shorter period the law of the state requires.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">In California the deposit is held for the tenant, and the landlord may claim from it
+      only amounts reasonably necessary to remedy defaults in the payment of rent, to repair damage caused by the
+      tenant or to clean the premises, if the deposit is made for those purposes. Where the claim is only for
+      unpaid rent and the deposit is no more than 1 month&rsquo;s rent plus a deposit clearly described as the
+      last month&rsquo;s rent, or where the claim includes repair or cleaning, the remainder is returned at the
+      agreed time but no later than 30 days after the landlord receives possession; where the claim is only for
+      unpaid rent and the deposit exceeds that amount, the part in excess of 1 month&rsquo;s rent is returned
+      no later than 2 weeks after the landlord receives possession, and the remainder is returned or accounted
+      for within 30 days (Civil Code &sect; 1950.7).</p>
+  </th:block>
 </div>
 
 <div th:fragment="clause-payment" data-clause="payment">

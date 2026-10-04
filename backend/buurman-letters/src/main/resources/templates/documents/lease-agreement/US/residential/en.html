@@ -9,8 +9,9 @@
                Federal: Residential Lead-Based Paint Hazard Reduction Act of 1992, 42 U.S.C. § 4852d, and
                40 CFR Part 745 Subpart F (§ 745.101 exemptions, § 745.103 target housing and 0-bedroom
                dwelling, § 745.107 disclosure before the lessee is obligated, § 745.113(b) Lead Warning
-               Statement for lessors, § 745.113(c) 3-year retention; eCFR as of 2026-09-01, amended
-               89 FR 89458, 12 November 2024). Fair Housing Act, 42 U.S.C. § 3604 (incl. § 3604(f)(3)(A)
+               Statement for lessors, § 745.113(b)(5) agent statement, (b)(6) certification, § 745.113(c)
+               3-year retention; eCFR as of 2026-09-01, amended 89 FR 89458, 12 November 2024); 42 U.S.C.
+               § 4851b(27) (target housing, quoted verbatim). Fair Housing Act, 42 U.S.C. § 3604 (incl. § 3604(f)(3)(A)
                reasonable modifications and § 3604(f)(3)(B) reasonable accommodations). Servicemembers Civil
                Relief Act, 50 U.S.C. § 3955 (lease termination, notice with orders, effective date for
                monthly rent, no early termination charge, refund within 30 days). E-SIGN Act, 15 U.S.C.
@@ -54,13 +55,15 @@
                2A:18-61.1, 2A:18-61.2, as described in the Department of Community Affairs guide "Truth in
                Renting" (nj.gov, revised 4 August 2025); the statutes themselves were not reachable.
                Oregon: ORS 90.228, 90.260, 90.300, 90.316, 90.322, 90.323, 90.324, 90.427
+               (incl. (6) relocation payment of 1 month's rent, not for owners of 4 or fewer units)
                (oregon.public.law mirror of oregonlegislature.gov, accessed May 2025 by the mirror).
                Washington: RCW 59.18.060, 59.18.140, 59.18.150, 59.18.170, 59.18.200, 59.18.260, 59.18.270,
                59.18.280, 59.18.283, 59.18.285, 59.18.650, 59.18.700, 59.18.710, 59.18.720 (2025 c 209,
                HB 1217, in force 7 May 2025; app.leg.wa.gov).
                Sources consulted 2026-10-04; provisions not re-read on that date and rules stated only
                generally are listed as unverified in the pack report.
-               Pending: California Civil Code § 1947.12 is repealed on 1 January 2030; RCW 59.18.700 to
+               Pending: California Civil Code §§ 1947.12 and 1946.2 are repealed on 1 January 2030 (each by its
+               own terms; § 1946.2 in its final subdivision); RCW 59.18.700 to
                59.18.720 expire on 1 July 2040; New York Real Property Law § 226-c changes after 15 June 2034
                (Article 6-A version); local rent stabilization ordinances change yearly.
                Convention: every numeric quantity in the prose is written as digits, never spelled out
@@ -558,10 +561,12 @@
   <p>Lead-based paint (42 U.S.C. &sect; 4852d and 40 CFR &sect; 745.113, subsection (b)): where the dwelling
     was built before 1978, the landlord provides the tenant, before the tenant is obligated under this
     agreement, with the EPA pamphlet &ldquo;Protect Your Family From Lead in Your Home&rdquo; (or an approved
-    equivalent) and with the following statement, unless the lease is exempt: a 0-bedroom dwelling or housing
-    for the elderly or persons with disabilities (unless a child under 6 years of age resides or is expected
-    to reside there), a lease of 100 days or less where no renewal or extension can occur, or a dwelling found
-    to be free of lead-based paint by a certified inspector.</p>
+    equivalent) and with the following statement. The rule applies to &ldquo;target housing&rdquo;, which the
+    statute defines as &ldquo;any housing constructed prior to 1978, except housing for the elderly or persons
+    with disabilities or any 0-bedroom dwelling (unless any child who is less than 6 years of age resides or is
+    expected to reside in such housing)&rdquo; (42 U.S.C. &sect; 4851b, paragraph (27)); it does not apply to a
+    lease of 100 days or less where no renewal or extension can occur, or to a dwelling found to be free of
+    lead-based paint by a certified inspector (40 CFR &sect; 745.101).</p>
   <p><strong>Lead Warning Statement.</strong> Housing built before 1978 may contain lead-based paint. Lead from
     paint, paint chips, and dust can pose health hazards if not managed properly. Lead exposure is especially
     harmful to young children and pregnant women. Before renting pre-1978 housing, lessors must disclose the
@@ -574,9 +579,16 @@
     pertaining to lead-based paint and/or lead-based paint hazards (list): ______________________________;
     [ ] the landlord has no such records or reports.</p>
   <p>Tenant&rsquo;s acknowledgment: the tenant has received copies of all information listed above and the
-    pamphlet &ldquo;Protect Your Family From Lead in Your Home&rdquo;. Initials of the tenant: __________.
-    The landlord, and any agent, keeps a copy of this disclosure for at least 3 years from the start of the
-    tenancy.</p>
+    pamphlet &ldquo;Protect Your Family From Lead in Your Home&rdquo;. Initials of the tenant: __________.</p>
+  <p>Agent&rsquo;s statement (where 1 or more agents act for the landlord in this lease): the agent has informed
+    the landlord of the landlord&rsquo;s obligations under 42 U.S.C. &sect; 4852d and is aware of the
+    agent&rsquo;s duty to ensure compliance with 40 CFR Part 745, Subpart F. Initials of the agent:
+    __________</p>
+  <p>Certification of accuracy: the landlord, any agent and the tenant have reviewed the information above and
+    certify, to the best of their knowledge, that the information they have provided is true and accurate.
+    Landlord: ______________ date ______; agent: ______________ date ______; tenant: ______________ date
+    ______. The landlord, and any agent, keeps a copy of this disclosure for at least 3 years from the start of
+    the tenancy (40 CFR &sect; 745.113, subsections (b)(5), (b)(6) and (c)).</p>
   <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
     <th:block th:if="${st == 'CA'}">
       <p>California notices:</p>
@@ -598,7 +610,7 @@
       <p>[ ] This dwelling is subject to Civil Code &sect;&sect; 1947.12 and 1946.2: California law limits the
         amount your rent can be increased. See Section 1947.12 of the Civil Code for more information.
         California law also provides that after all of the tenants have continuously and lawfully occupied the
-        property for 12 months or more or at least 1 of the tenants has continuously and lawfully occupied the
+        property for 12 months or more or at least one of the tenants has continuously and lawfully occupied the
         property for 24 months or more, a landlord must provide a statement of cause in any notice to
         terminate a tenancy. See Section 1946.2 of the Civil Code for more information.</p>
       <p>[ ] This dwelling is exempt under Civil Code &sect; 1947.12, subdivision (d)(5), and &sect; 1946.2,
@@ -606,7 +618,7 @@
         Civil Code and is not subject to the just cause requirements of Section 1946.2 of the Civil Code. This
         property meets the requirements of Sections 1947.12 (d)(5) and 1946.2 (e)(8) of the Civil Code and the
         owner is not any of the following: (1) a real estate investment trust, as defined by Section 856 of the
-        Internal Revenue Code; (2) a corporation; or (3) a limited liability company in which at least 1 member
+        Internal Revenue Code; (2) a corporation; or (3) a limited liability company in which at least one member
         is a corporation.</p>
       <p>The landlord has given the tenant the written bed bug information required by Civil Code &sect;
         1954.603, and discloses below any mold known to the landlord that requires disclosure under Health and
@@ -700,8 +712,10 @@
       earlier than 2 weeks before the end of the tenancy, at which the tenant may be present and after which
       the tenant may remedy the deficiencies identified (Civil Code &sect; 1950.5, subdivision (f)). For a
       tenancy that begins on or after 1 July 2025 the landlord photographs the dwelling immediately before, or
-      at the start of, the tenancy, and the landlord photographs it after the tenant returns possession and
-      before and after any repairs or cleaning to be deducted from the security (subdivision (g)).</p>
+      at the start of, the tenancy (subdivision (g)(1)). For every tenancy, since 1 April 2025, the landlord
+      photographs the dwelling within a reasonable time after possession is returned, before any repairs or
+      cleaning to be deducted from the security, and again within a reasonable time after those repairs or
+      cleaning are completed (subdivision (g)(2)).</p>
     <p th:if="${st == 'NY'}">In New York the landlord offers the tenant the opportunity to inspect the dwelling
       with the landlord before the tenant takes possession, and on request the parties sign a written
       agreement on its condition; after a notice to end the tenancy, the landlord notifies the tenant of the
@@ -760,7 +774,8 @@
         or no-fault just cause stated in the written notice; for a no-fault just cause the owner must provide
         relocation assistance, or waive the final month&rsquo;s rent, equal to 1 month&rsquo;s rent
         (subdivision (d)). That section does not apply to the dwellings listed in subdivision (e), and a local
-        just-cause ordinance may apply instead (subdivision (i)).</p>
+        just-cause ordinance may apply instead (subdivision (i)). That section is repealed on 1 January
+        2030.</p>
     </th:block>
     <th:block th:if="${st == 'NY'}">
       <p>In New York, if the landlord does not intend to renew the tenancy, the landlord gives written notice
@@ -789,7 +804,10 @@
       written notice. During the first year of occupancy the landlord may end it by at least 30 days&rsquo;
       written notice; after the first year of occupancy the landlord may end it only for a tenant cause, or
       for a qualifying landlord reason with at least 90 days&rsquo; written notice, as and under the
-      conditions that ORS 90.427 provides; a fixed term that ends after the first year of occupancy becomes a
+      conditions that ORS 90.427 provides; a landlord who ends the tenancy for a qualifying landlord reason
+      must state the reason and supporting facts in the notice and, unless the landlord has an ownership
+      interest in 4 or fewer residential dwelling units, pay the tenant, when delivering the notice, an amount
+      equal to 1 month&rsquo;s periodic rent (ORS 90.427, subsection (6)); a fixed term that ends after the first year of occupancy becomes a
       periodic (month-to-month) tenancy unless that section provides otherwise.</p>
     <p th:if="${st == 'WA'}">In Washington the landlord may not evict the tenant, refuse to continue the tenancy
       or end a periodic tenancy except for the causes listed in RCW 59.18.650 and in the limited cases of
@@ -841,9 +859,9 @@
   <p>This agreement is governed by the law of the state in which the dwelling is located and by applicable
     federal law. Any provision of this agreement by which the tenant waives a right or remedy that the law
     gives the tenant and that cannot be waived is void, and the rest of the agreement remains in effect.</p>
-  <p>Where a party is entitled by law or by this agreement to recover attorney&rsquo;s fees, the party that
-    prevails in a dispute about this agreement recovers its reasonable attorney&rsquo;s fees and costs,
-    whichever party it is. Disputes may be brought before the court with jurisdiction where the dwelling is
+  <p>Attorney&rsquo;s fees: [ ] the party that prevails in a dispute about this agreement recovers its
+    reasonable attorney&rsquo;s fees and costs from the other party, whichever party it is; [ ] each party
+    bears its own attorney&rsquo;s fees, except where a statute awards them. Disputes may be brought before the court with jurisdiction where the dwelling is
     located, including a small claims court within its limits.</p>
   <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
     <p th:if="${st == 'CA'}">In California a provision by which the tenant agrees to modify or waive the rights
