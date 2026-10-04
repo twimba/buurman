@@ -1,0 +1,391 @@
+<!--
+  legal-basis: Legge 9 dicembre 1998, n. 431 (locazioni abitative), text in force on 2026-10-04 read on
+               www.normattiva.it (latest update to the act 06/08/2026, which only concerns art. 8, tax benefits,
+               abrogated from 2027-01-01 by D.Lgs. 117/2026 art. 376): art. 1 (commi 2 and 4), 2 (commi 1 and 3,
+               with the 2019 authentic interpretation of comma 5), 3 (commi 1-6), 4-bis, 5 (commi 1-2), 13 (commi 1-4,
+               6).
+               Legge 27 luglio 1978, n. 392 (equo canone; residential provisions still in force after L. 431/1998
+               art. 14, comma 4): art. 2, 4, 5, 6 (with Corte costituzionale n. 404/1988), 8, 9, 10, 11, 80 (with
+               Corte costituzionale n. 185/1988); art. 32 (non-residential leases, cited for its scope only).
+               Codice civile (R.D. 16 marzo 1942, n. 262): art. 1130 n. 6, 1199, 1282, 1455, 1571, 1575, 1576, 1577,
+               1583, 1584, 1587, 1590, 1591, 1592, 1593, 1595, 1598, 1609, 1938, 1944.
+               Decreto ministeriale (MIT) 16 gennaio 2017, GU n. 62 del 15/03/2017: art. 1 comma 10, art. 2 comma 7,
+               art. 3 comma 4 (contratti tipo, allegati A, B, C) - www.mit.gov.it.
+               D.Lgs. 14 marzo 2011, n. 23, art. 3 (cedolare secca: commi 1, 2, 6, 11), abrogated from 2027-01-01 by
+               D.Lgs. 19 giugno 2026, n. 117 (testo unico delle imposte sui redditi, GU n. 152 del 03/07/2026, art. 377:
+               applies from 1 January 2027; corresponding art. 203, 204, 206 comma 3 read in the GU text).
+               D.P.R. 26 aprile 1986, n. 131 (imposta di registro): art. 13 comma 1, art. 17 comma 1, tariffa parte I
+               art. 5 (2 %, minimum 67 euro); D.Lgs. 1 agosto 2025, n. 123 (testo unico dell'imposta di registro),
+               art. 205: applies from 1 January 2027 (postponed by D.L. 200/2025).
+               D.Lgs. 19 agosto 2005, n. 192, art. 6 commi 2 and 3, allegato A punto 42; D.P.R. 16 aprile 2013, n. 74,
+               art. 6 comma 1.
+               Legge 20 maggio 2016, n. 76, art. 1 commi 20 and 44. Codice di procedura civile art. 21 and 447-bis.
+               D.Lgs. 4 marzo 2010, n. 28, art. 5 (commi 1, 2, 6). Regolamento (UE) 2016/679 (eur-lex.europa.eu
+               CELEX 32016R0679); D.Lgs. 30 giugno 2003, n. 196.
+               Pending: Government bill on faster evictions (approved by the Council of Ministers on 2026-04-30,
+               under examination in the Senate) - not law on 2026-10-04; it would amend L. 392/1978 procedural rules.
+               No region branches: the rules above apply in the whole country (local agreements only concern the
+               canone concordato contracts, which this model does not cover).
+               Verified 2026-10-04 against www.normattiva.it, www.gazzettaufficiale.it and www.mit.gov.it (texts
+               read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in it.html, never spelled out (it "3 mensilità" is "3 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of it.html; the Italian text is authoritative. It states Italian law (legge
+  431/1998, legge 392/1978, codice civile) in English and is not the law of any other country. Draft text, not
+  vetted by legal counsel. Only prose differs from it.html: fragments, th: expressions and attributes are
+  identical (enforced by LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the
+  shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is
+  excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between <strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (locatore),</p>
+  <p>tax code (codice fiscale), place and date of birth (or registered office) and residence of the landlord: ______________________________</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">and <strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (conduttore),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">and the tenant(s) signing at the end, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (conduttore),</p>
+  <p>tax code, place and date of birth and residence of the tenant: ______________________________,</p>
+  <p>this residential lease (contratto di locazione ad uso abitativo) is agreed and concluded under article 2,
+    paragraph 1, of Law no. 431 of 9 December 1998 (hereinafter &ldquo;Law 431/1998&rdquo;), and is further governed
+    by articles 1571 and following of the Italian Civil Code (codice civile) and, where applicable, by Law no. 392 of
+    27 July 1978 (hereinafter &ldquo;Law 392/1978&rdquo;). The agreement is made in writing, which is required for
+    the conclusion of valid leases (article 1, paragraph 4, of Law 431/1998).</p>
+  <p>Where there are several tenants, the parties stipulate that they are jointly and severally liable for all
+    obligations arising from this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the dwelling unit located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the premises&rdquo; (immobile),
+    consisting of: ______________________________</p>
+  <p>land register data (dati catastali: municipality, sheet, parcel, sub-unit, cadastral category and cadastral income): ______________________________</p>
+  <p>appurtenances let with the premises (cellar, garage, parking space or other): ______________________________</p>
+  <p>furniture, if the premises are let furnished: as per the inventory signed by the parties and annexed to this
+    agreement.</p>
+  <p>The premises are let exclusively for use as a dwelling. This model is drawn up for leases at freely agreed rent
+    (canone libero) under article 2, paragraph 1, of Law 431/1998. It is not suitable for leases at agreed rent
+    under local agreements (canone concordato, article 2, paragraph 3, of Law 431/1998), for leases of a transitory
+    nature (article 5, paragraph 1, of that law) or for leases to university students (article 5, paragraph 2, of
+    that law), which are concluded exclusively on the standard forms approved under article 4-bis of Law 431/1998
+    (annexes A, B and C to the decree of the Minister of Infrastructure and Transport of 16 January 2017, article 1,
+    paragraph 10, article 2, paragraph 7, and article 3, paragraph 4).</p>
+  <p>Nor is this model suitable for leases of buildings protected under Law no. 1089 of 1 June 1939 or included in
+    the cadastral categories A/1, A/8 and A/9, which, unless concluded in the manner provided for in article 2,
+    paragraph 3, of Law 431/1998, are governed exclusively by articles 1571 and following of the Civil Code, or for
+    public housing (edilizia residenziale pubblica) or dwellings let exclusively for tourist purposes (article 1,
+    paragraph 2, of Law 431/1998).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>This agreement is concluded for 4 years, starting on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The parties state the expiry date of the first period<span th:if="${endDate != null}">:
+    <strong th:text="${endDate}">end date</strong></span>. The term may not be shorter than 4 years (article 2,
+    paragraph 1, of Law 431/1998), and any agreement intended to depart from the limits on the duration of the lease
+    laid down by Law 431/1998 is void (article 13, paragraph 3, of that law).</p>
+  <p th:if="${!fixedTerm}">The parties do not state an expiry date: the term of 4 years stated above applies and may
+    not be reduced (article 2, paragraph 1, and article 13, paragraph 3, of Law 431/1998).</p>
+  <p>At the first expiry the agreement is renewed for a period of 4 years, except where the landlord intends to put
+    the premises to the uses or carry out on them the works referred to in article 3 of Law 431/1998, or to sell the
+    premises on the conditions and in the manner laid down in that article, and exercises the right to refuse
+    renewal provided for there (article 2, paragraph 1, of Law 431/1998).<span class="clause-ref"
+    data-ref="termination" th:if="${refs['termination']}"> Refusal of renewal and withdrawal are governed by this
+    agreement (see article <span th:text="${refs['termination']}"></span>).</span></p>
+  <p>At the second expiry each party is entitled to start the procedure for renewal on new terms or for waiving the
+    renewal of the agreement, by notifying its intention by registered letter (lettera raccomandata) sent to the
+    other party at least 6 months before expiry. The party so notified must reply by registered letter within 60
+    days of the date of receipt of the registered letter. In the absence of a reply or of agreement, the lease is
+    deemed to have expired on the date on which it ends. In the absence of the notice, the agreement is renewed
+    tacitly on the same terms (article 2, paragraph 1, of Law 431/1998).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent (canone di locazione) agreed by the parties is <strong th:text="${rentAmount}">amount</strong>
+    (payable <span th:text="${paymentFrequency}">monthly</span>).<span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> The tenant also pays the ancillary charges provided
+    for in this agreement (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Any agreement intended to set a rent higher than that stated in the written and registered agreement is void;
+    in that case the tenant, by an action that may be brought within 6 months of the return of the premises, may
+    claim repayment of the sums paid in excess of the rent stated in the written and registered agreement (article
+    13, paragraphs 1 and 2, of Law 431/1998).</p>
+  <p>For leases concluded under article 2, paragraph 1, of Law 431/1998, any agreement intended to grant the
+    landlord a rent higher than that laid down in the agreement is void where it conflicts with the provisions of
+    that law (article 13, paragraph 4, of Law 431/1998).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The rent update is governed by
+    this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The parties agree that the rent is updated annually, at the landlord&rsquo;s written request, by ________ % of
+    the change, as determined by the National Statistics Institute (ISTAT), in the consumer price index for blue-
+    and white-collar households over the previous year. The rate of the update is set by the parties. Article 32 of
+    Law 392/1978, which limits increases to 75 % of the change in the index, is placed in the chapter of that law
+    on leases of premises used for purposes other than housing.</p>
+  <p>If the landlord opts for the flat-rate rental income tax (cedolare secca), the right to request a rent update
+    is suspended for a period corresponding to the duration of the option, even if provided for in the agreement on
+    any ground, including the change determined by ISTAT in the national consumer price index for blue- and
+    white-collar households over the previous year. The option has no effect unless the landlord has given the
+    tenant prior notice of it by registered letter, waiving in it the right to request a rent update on any ground
+    (article 3, paragraph 11, of Legislative Decree no. 23 of 14 March 2011; from 1 January 2027, article 206,
+    paragraph 3, of the consolidated income tax act approved by Legislative Decree no. 117 of 19 June 2026).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Unless otherwise agreed, the tenant bears in full the costs of cleaning, of the operation and ordinary
+    maintenance of the lift, of the supply of water, electricity, heating and air conditioning, of the emptying of
+    cesspits and latrines, and of the supply of other common services. The costs of the porter service are borne by
+    the tenant at 90 %, unless the parties have agreed a lower rate (article 9, paragraphs 1 and 2, of Law
+    392/1978).</p>
+  <p>Different agreements of the parties on ancillary charges (oneri accessori) and any periodic advance payment: ______________________________</p>
+  <p>Payment must be made within 2 months of the request. Before paying, the tenant is entitled to a specific
+    statement of the costs indicating the allocation criteria and is also entitled to inspect the supporting
+    documents for the costs incurred (article 9, paragraph 3, of Law 392/1978).</p>
+  <p>The tenant has the right to vote, instead of the owner, on the resolutions of the condominium meeting
+    concerning the costs and management of the heating and air-conditioning services, and has the right to take
+    part, without a vote, in resolutions on changes to the other common services (article 10, paragraphs 1 and 2,
+    of Law 392/1978).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">As security for the obligations undertaken in this agreement, the tenant pays
+    the landlord, on signature, a security deposit (deposito cauzionale) of
+    <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">The parties do not agree a security deposit. Deposit agreed, if any:
+    ______________________________</p>
+  <p>The security deposit may not exceed 3 months&rsquo; rent and bears statutory interest, which must be paid to
+    the tenant at the end of each year (article 11 of Law 392/1978). The parties stipulate that the amount of the
+    deposit does not exceed 3 months&rsquo; rent.</p>
+  <p>The parties stipulate that the deposit is returned at the end of the lease, after the return of the premises
+    and the inspection of their condition, less any sums owed by the tenant for rent, ancillary charges or damage,
+    and that it may not be set off against rent during the lease.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the premises is governed
+    by this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the ancillary charges</span>
+    <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">by day <strong th:text="${paymentDueDay}">1</strong> of the period
+      concerned</span><span th:if="${paymentDueDay == null}">on the due date agreed by the parties</span>,
+    by bank transfer to the account designated by the landlord: ______________________________.</p>
+  <p>The landlord receiving payment must, at the tenant&rsquo;s request and expense, issue a receipt (article 1199
+    of the Civil Code). Unless otherwise agreed, claims for rent bear interest only from the time the tenant is put
+    in default (article 1282, paragraph 2, of the Civil Code).</p>
+  <p>Failure to pay the rent within 20 days of the due date, or failure to pay the ancillary charges within the
+    time allowed where the unpaid amount exceeds 2 months&rsquo; rent, is a ground for termination for breach under
+    article 1455 of the Civil Code (article 5 of Law 392/1978).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the premises exclusively as a dwelling for the tenant and the persons living with the tenant,
+    with the diligence of a careful tenant (diligenza del buon padre di famiglia) for the use laid down in the
+    agreement (article 1587, no. 1, of the Civil Code).</p>
+  <p>If the tenant puts the premises to a use other than that agreed, the landlord may claim termination of the
+    agreement within 3 months of becoming aware of it; once that period has passed without termination being
+    claimed, the legal regime corresponding to the actual use of the premises applies to the agreement and, where
+    the use other than that agreed is partial, the legal regime corresponding to the predominant use (article 80 of
+    Law 392/1978, as resulting from judgment no. 185 of 1988 of the Constitutional Court).</p>
+  <p>The parties stipulate that the tenant observes the condominium regulations, if any, of which the tenant
+    declares to have received a copy, and the resolutions of the condominium meeting.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may not sublet the premises in full, nor assign the agreement to others, without the landlord&rsquo;s
+    consent. Unless otherwise agreed, the tenant may sublet part of the premises after notifying the landlord by
+    registered letter stating the identity of the subtenant, the duration of the sublease and the rooms sublet
+    (article 2 of Law 392/1978).</p>
+  <p>Contrary agreement of the parties on partial subletting, if agreed: ______________________________</p>
+  <p>The nullity or termination of the lease also takes effect against the subtenant (article 1595, paragraph 3, of
+    the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord delivers the premises in a good state of repair, keeps them fit for the agreed use and guarantees
+    their peaceful enjoyment during the lease (article 1575 of the Civil Code). During the lease the landlord carries
+    out all necessary repairs, except minor maintenance repairs (piccola manutenzione), which are borne by the tenant
+    (article 1576, paragraph 1, of the Civil Code).</p>
+  <p>The minor maintenance repairs borne by the tenant are those resulting from deterioration caused by use, not
+    those resulting from age or from chance events; failing agreement, they are determined by local custom (article
+    1609 of the Civil Code).</p>
+  <p>Where the premises need repairs that are not borne by the tenant, the tenant must notify the landlord; in the
+    case of urgent repairs, the tenant may carry them out directly, subject to reimbursement, provided that the
+    tenant notifies the landlord at the same time (article 1577 of the Civil Code). The tenant must tolerate repairs
+    that cannot be postponed until the end of the agreement; if they last more than 1/6 of the duration of the lease
+    and, in any event, more than 20 days, the tenant is entitled to a rent reduction proportionate to the entire
+    duration of the repairs and to the extent of the loss of enjoyment (articles 1583 and 1584 of the Civil
+    Code).</p>
+  <p>The parties stipulate that the tenant makes no alterations, improvements or additions without the
+    landlord&rsquo;s written consent; articles 1592 and 1593 of the Civil Code apply to improvements and
+    additions.</p>
+  <p>The person responsible for the heating system, to whom its operation, running, inspection and maintenance are
+    entrusted, is the occupant, on whatever basis, in the case of individual residential units, and the
+    administrator in the case of buildings with central heating systems administered as a condominium (Legislative
+    Decree no. 192 of 19 August 2005, annex A, point 42, and article 6, paragraph 1, of Decree of the President of the
+    Republic no. 74 of 16 April 2013).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The tenant declares to have received the information and documentation, including the energy performance
+    certificate (attestato di prestazione energetica, APE), concerning the energy performance certification of the
+    premises (article 6, paragraph 3, of Legislative Decree no. 192 of 19 August 2005). For leases of individual
+    units, a copy of the certificate need not be annexed to the agreement.</p>
+  <p>The landlord made the certificate available to the tenant at the start of negotiations and delivers it at
+    their close (article 6, paragraph 2, of Legislative Decree no. 192/2005).</p>
+  <p>Identification code, date of issue and energy class of the certificate: ______________________________</p>
+  <p>If the declaration or annex is omitted where required, the parties are liable, jointly and in equal shares, to
+    an administrative fine which, for leases of individual units, ranges from 1,000 to 4,000 euro and is halved if
+    the duration of the lease does not exceed 3 years (article 6, paragraph 3, of Legislative Decree no.
+    192/2005).</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>The landlord registers the agreement within the mandatory period of 30 days and gives documented notice of it,
+    within the following 60 days, to the tenant and to the condominium administrator, also for the purposes of the
+    condominium register referred to in article 1130, no. 6, of the Civil Code (article 13, paragraph 1, of Law
+    431/1998).</p>
+  <p>If the landlord does not register the agreement within that period, the tenant may ask the court to bring the
+    lease into line with article 2, paragraph 1, or article 2, paragraph 3, of Law 431/1998; in those proceedings the
+    court determines the rent due within the limits laid down in article 13, paragraph 6, of that law.</p>
+  <p>The registration costs of the agreement are borne by the tenant and the landlord in equal shares (article 8 of
+    Law 392/1978). The registration tax (imposta di registro) is due at 2 % of the consideration, with a minimum of
+    67 euro (article 5 of the tariff, part I, annexed to Decree of the President of the Republic no. 131 of 26 April
+    1986), and is paid within 30 days (articles 13 and 17 of Decree of the President of the Republic no. 131/1986;
+    from 1 January 2027, the corresponding provisions of the consolidated act approved by Legislative Decree no. 123
+    of 1 August 2025).</p>
+  <p>As an alternative to the ordinary regime, the owner or holder of a real right of enjoyment may opt for the
+    flat-rate rental income tax (cedolare secca), a tax replacing personal income tax and the related surcharges as
+    well as the registration and stamp duties on the agreement, at a rate of 21 % of the annual rent set by the
+    parties; the option is not available for leases made in the course of a business, art or profession (article 3,
+    paragraphs 1, 2 and 6, of Legislative Decree no. 23/2011; from 1 January 2027, articles 203 and 204 of the
+    consolidated act approved by Legislative Decree no. 117/2026). Regime chosen by the landlord:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>On the death of the tenant, the spouse, the heirs and the relatives by blood or marriage habitually living with
+    the tenant succeed to the agreement (article 6, paragraph 1, of Law 392/1978), as does the unmarried cohabiting
+    partner, according to judgment no. 404 of 1988 of the Constitutional Court. On the death of the tenant or the
+    tenant&rsquo;s withdrawal from the lease of the common residence, the de facto cohabiting partner (convivente di
+    fatto) may succeed the tenant in the agreement (article 1, paragraph 44, of Law no. 76 of 20 May 2016); the
+    provisions referring to the spouse also apply to each party to a civil union, within the limits of article 1,
+    paragraph 20, of that law.</p>
+  <p>In the event of judicial separation, dissolution of the marriage or cessation of its civil effects, the other
+    spouse succeeds the tenant in the agreement if the court has granted that spouse the right to live in the family
+    home; in the event of consensual separation or annulment of the marriage, the other spouse succeeds if the spouses
+    have so agreed (article 6, paragraphs 2 and 3, of Law 392/1978).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The tenant declares to have viewed the premises and to receive them in a good state of repair, as described in
+    the handover report signed by the parties and annexed to this agreement. Condition of the premises, of the
+    installations and of any furniture at handover, and keys handed over: ______________________________</p>
+  <p>At the end of the lease the tenant returns the premises to the landlord in the same condition in which the
+    tenant received them, in accordance with the description made by the parties, except for deterioration or wear
+    resulting from use in accordance with the agreement. Failing a description, the tenant is presumed to have
+    received the premises in a good state of repair. The tenant is not liable for loss or deterioration due to age
+    (article 1590, paragraphs 1, 2 and 3, of the Civil Code).</p>
+  <p>The parties stipulate that the tenant allows the landlord to view the premises for justified reasons and, after
+    notice of refusal of renewal or of withdrawal, allows prospective tenants or buyers to view them, at agreed
+    times.</p>
+  <p>A tenant in default in returning the premises must pay the landlord the agreed consideration until they are
+    returned, without prejudice to the obligation to compensate any further damage (article 1591 of the Civil
+    Code).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The return of the security deposit
+    is governed by this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Where there are serious reasons (gravi motivi), the tenant may withdraw from the agreement at any time by
+    giving the landlord 6 months&rsquo; notice (article 3, paragraph 6, of Law 431/1998), to be given by registered
+    letter (article 4, paragraph 2, of Law 392/1978).</p>
+  <p>The parties may agree in the contract that the tenant may withdraw from the agreement at any time by notifying
+    the landlord, by registered letter, at least 6 months before the date on which the withdrawal is to take effect
+    (article 4, paragraph 1, of Law 392/1978). Contractual right of withdrawal of the tenant (agreed or excluded):
+    ______________________________</p>
+  <p>At the first expiry the landlord may exercise the right to refuse renewal of the agreement, by giving the tenant
+    at least 6 months&rsquo; notice, only on the following grounds (article 3, paragraph 1, of Law 431/1998): (a)
+    where the landlord intends to use the premises for residential, commercial, craft or professional purposes of
+    the landlord, the landlord&rsquo;s spouse, parents or children or relatives up to the second degree; (b) where
+    the landlord, being a legal person, company or public body or in any event pursuing public, social, mutual,
+    cooperative, welfare, cultural or religious purposes, intends to use the premises for activities pursuing those
+    purposes and offers the tenant other suitable premises fully at the landlord&rsquo;s disposal; (c) where the
+    tenant has full disposal of a vacant and suitable dwelling in the same municipality; (d) where the premises are
+    in a seriously damaged building that must be rebuilt or whose stability must be ensured, and the tenant&rsquo;s
+    continued presence would prevent indispensable works; (e) where the premises are in a building whose complete
+    renovation is planned, or which is to be demolished or radically transformed to create new constructions, or,
+    in the case of premises on the top floor, where the owner intends to add storeys in accordance with the law and
+    vacating the premises is indispensable for technical reasons to carry this out; (f) where, without any lawful
+    succession to the agreement having occurred, the tenant does not occupy the premises continuously without
+    justified reason; (g) where the landlord intends to sell the premises to third parties and owns no other
+    residential property apart from any used as the landlord&rsquo;s own home; in that case the tenant has a right
+    of pre-emption (diritto di prelazione), to be exercised in the manner laid down in articles 38 and 39 of Law
+    392/1978.</p>
+  <p>The landlord&rsquo;s notice must state, on pain of nullity, the ground, among those exhaustively listed, on
+    which it is based. In the cases under (d) and (e), holding the building permit or authorisation is a condition
+    for bringing the action for possession, and the tenant has a right of pre-emption, to be exercised in the manner
+    laid down in article 40 of Law 392/1978, if the owner lets the premises again once the works are completed
+    (article 3, paragraph 2, of Law 431/1998).</p>
+  <p>Where the landlord has regained possession of the dwelling through an unlawful exercise of the right to give
+    notice, the landlord must pay the tenant compensation of not less than 36 months of the last rent received; if,
+    within 12 months of the date on which the landlord regained possession, the landlord does not put the premises
+    to the uses for which notice was given, the tenant is entitled to reinstatement of the lease on the same terms
+    or, alternatively, to that compensation (article 3, paragraphs 3 and 5, of Law 431/1998).</p>
+  <p>The agreement may be terminated for breach that is not of minor importance under the general rules (articles
+    1453 and 1455 of the Civil Code).<span class="clause-ref" data-ref="payment" th:if="${refs['payment']}">
+    Non-payment of rent and ancillary charges is governed by this agreement (see article <span
+    th:text="${refs['payment']}"></span>).</span><span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The return of the premises is governed by this agreement (see
+    article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices for which the law prescribes a registered letter, including those provided for in article 2, paragraph
+    1, and article 3 of Law 431/1998 and in articles 2 and 4 of Law 392/1978, are given in that form.</p>
+  <p>Addresses for notices and any certified e-mail (posta elettronica certificata) addresses: landlord
+    ______________________________; tenant ______________________________. The parties stipulate that each of them
+    promptly notifies the other of any change of address and that, unless otherwise stated, the tenant elects
+    domicile at the leased premises.</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>The following person is party to this agreement as guarantor (fideiussore) of the tenant for the performance
+    of the obligations arising from this agreement: ______________________________ (name, tax code and residence),
+    up to a maximum guaranteed amount of ______________________________ (article 1938 of the Civil Code).</p>
+  <p>The guarantor is jointly and severally liable with the principal debtor for payment of the debt; the parties
+    may, however, agree that the guarantor is not required to pay before the principal debtor has been pursued
+    (article 1944 of the Civil Code). Guarantees given by third parties do not extend to obligations arising from
+    extensions of the duration of the agreement (article 1598 of the Civil Code). Extension of the guarantee to the
+    period after the first expiry, if agreed by the guarantor: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant&rsquo;s personal data only to the extent necessary for the conclusion and
+    performance of this agreement and for compliance with the related legal obligations, in particular tax
+    obligations, in accordance with Regulation (EU) 2016/679 and Legislative Decree no. 196 of 30 June 2003
+    (Personal Data Protection Code, Codice in materia di protezione dei dati personali), and does not keep them
+    longer than necessary for those purposes.</p>
+  <p>The tenant may exercise against the landlord the rights granted by that legislation, in particular the rights
+    of access, rectification and erasure, and may lodge a complaint with the Italian data protection authority
+    (Garante per la protezione dei dati personali).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Italian law. Actions concerning leases of immovable property fall within the
+    jurisdiction of the court of the place where the property is located (article 21, paragraph 1, of the Code of
+    Civil Procedure), and clauses departing from that jurisdiction are void (article 447-bis of the Code of Civil
+    Procedure).</p>
+  <p>Anyone intending to bring legal proceedings in a dispute concerning a lease must first undertake mediation
+    proceedings, which are a condition for the admissibility of the claim (article 5, paragraphs 1 and 2, of
+    Legislative Decree no. 28 of 4 March 2010); this does not apply, among other cases, to proceedings for the
+    validation of a notice to quit or eviction (convalida di licenza o sfratto) until the change of procedure
+    (article 5, paragraph 6, letter (b), of that legislative decree).</p>
+  <p>The nullities laid down in article 13 of Law 431/1998 for agreements contrary to that law remain
+    unaffected.</p>
+</div>
+
+</body>
+</html>

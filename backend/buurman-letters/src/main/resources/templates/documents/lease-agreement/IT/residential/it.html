@@ -1,0 +1,396 @@
+<!--
+  legal-basis: Legge 9 dicembre 1998, n. 431 (locazioni abitative), text in force on 2026-10-04 read on
+               www.normattiva.it (latest update to the act 06/08/2026, which only concerns art. 8, tax benefits,
+               abrogated from 2027-01-01 by D.Lgs. 117/2026 art. 376): art. 1 (commi 2 and 4), 2 (commi 1 and 3,
+               with the 2019 authentic interpretation of comma 5), 3 (commi 1-6), 4-bis, 5 (commi 1-2), 13 (commi 1-4,
+               6).
+               Legge 27 luglio 1978, n. 392 (equo canone; residential provisions still in force after L. 431/1998
+               art. 14, comma 4): art. 2, 4, 5, 6 (with Corte costituzionale n. 404/1988), 8, 9, 10, 11, 80 (with
+               Corte costituzionale n. 185/1988); art. 32 (non-residential leases, cited for its scope only).
+               Codice civile (R.D. 16 marzo 1942, n. 262): art. 1130 n. 6, 1199, 1282, 1455, 1571, 1575, 1576, 1577,
+               1583, 1584, 1587, 1590, 1591, 1592, 1593, 1595, 1598, 1609, 1938, 1944.
+               Decreto ministeriale (MIT) 16 gennaio 2017, GU n. 62 del 15/03/2017: art. 1 comma 10, art. 2 comma 7,
+               art. 3 comma 4 (contratti tipo, allegati A, B, C) - www.mit.gov.it.
+               D.Lgs. 14 marzo 2011, n. 23, art. 3 (cedolare secca: commi 1, 2, 6, 11), abrogated from 2027-01-01 by
+               D.Lgs. 19 giugno 2026, n. 117 (testo unico delle imposte sui redditi, GU n. 152 del 03/07/2026, art. 377:
+               applies from 1 January 2027; corresponding art. 203, 204, 206 comma 3 read in the GU text).
+               D.P.R. 26 aprile 1986, n. 131 (imposta di registro): art. 13 comma 1, art. 17 comma 1, tariffa parte I
+               art. 5 (2 %, minimum 67 euro); D.Lgs. 1 agosto 2025, n. 123 (testo unico dell'imposta di registro),
+               art. 205: applies from 1 January 2027 (postponed by D.L. 200/2025).
+               D.Lgs. 19 agosto 2005, n. 192, art. 6 commi 2 and 3, allegato A punto 42; D.P.R. 16 aprile 2013, n. 74,
+               art. 6 comma 1.
+               Legge 20 maggio 2016, n. 76, art. 1 commi 20 and 44. Codice di procedura civile art. 21 and 447-bis.
+               D.Lgs. 4 marzo 2010, n. 28, art. 5 (commi 1, 2, 6). Regolamento (UE) 2016/679 (eur-lex.europa.eu
+               CELEX 32016R0679); D.Lgs. 30 giugno 2003, n. 196.
+               Pending: Government bill on faster evictions (approved by the Council of Ministers on 2026-04-30,
+               under examination in the Senate) - not law on 2026-10-04; it would amend L. 392/1978 procedural rules.
+               No region branches: the rules above apply in the whole country (local agreements only concern the
+               canone concordato contracts, which this model does not cover).
+               Verified 2026-10-04 against www.normattiva.it, www.gazzettaufficiale.it and www.mit.gov.it (texts
+               read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in it.html, never spelled out (it "3 mensilità" is "3 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Italian law (legge 431/1998, legge 392/1978, codice civile) for
+  a residential lease at freely agreed rent (canone libero, art. 2, comma 1, legge 431/1998, 4 + 4 years). Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles.
+  Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of
+  this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Tra <strong th:text="${landlordName}">Locatore</strong>, di seguito &laquo;il locatore&raquo;,</p>
+  <p>codice fiscale, luogo e data di nascita (o sede) e residenza del locatore: ______________________________</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">e <strong th:text="${tenantNames}">Conduttore</strong>, di seguito
+    (congiuntamente) &laquo;il conduttore&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">e il conduttore o i conduttori che sottoscrivono in calce, di seguito
+    (congiuntamente) &laquo;il conduttore&raquo;,</p>
+  <p>codice fiscale, luogo e data di nascita e residenza del conduttore: ______________________________,</p>
+  <p>si conviene e si stipula il presente contratto di locazione ad uso abitativo, ai sensi dell'art. 2, comma 1,
+    della legge 9 dicembre 1998, n. 431 (di seguito &laquo;legge 431/1998&raquo;), regolato inoltre dagli articoli
+    1571 e seguenti del codice civile e, in quanto applicabile, dalla legge 27 luglio 1978, n. 392 (di seguito
+    &laquo;legge 392/1978&raquo;). Il contratto è stipulato in forma scritta, richiesta per la stipula di validi
+    contratti di locazione (art. 1, comma 4, della legge 431/1998).</p>
+  <p>Se i conduttori sono più d'uno, le parti stipulano che essi sono obbligati in solido per tutte le obbligazioni
+    derivanti dal presente contratto.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Il locatore concede in locazione al conduttore, che accetta, l'unità immobiliare sita in
+    <strong th:text="${propertyAddress}">Indirizzo</strong>, di seguito &laquo;l'immobile&raquo;, composta da:
+    ______________________________</p>
+  <p>dati catastali (comune, foglio, particella, subalterno, categoria e rendita catastale): ______________________________</p>
+  <p>pertinenze locate con l'immobile (cantina, box, posto auto o altro): ______________________________</p>
+  <p>arredi, se l'immobile è locato ammobiliato: come da inventario sottoscritto dalle parti e allegato al presente
+    contratto.</p>
+  <p>L'immobile è locato ad uso esclusivo di abitazione. Il presente modello è redatto per i contratti a canone
+    libero di cui all'art. 2, comma 1, della legge 431/1998. Non è adatto ai contratti a canone concordato (art. 2,
+    comma 3, della legge 431/1998), ai contratti di natura transitoria (art. 5, comma 1, della stessa legge) e ai
+    contratti per studenti universitari (art. 5, comma 2, della stessa legge), che sono stipulati esclusivamente
+    utilizzando i tipi di contratto approvati ai sensi dell'art. 4-bis della legge 431/1998 (allegati A, B e C al
+    decreto del Ministro delle infrastrutture e dei trasporti 16 gennaio 2017, art. 1, comma 10, art. 2, comma 7, e
+    art. 3, comma 4).</p>
+  <p>Il presente modello non è adatto nemmeno alle locazioni degli immobili vincolati ai sensi della legge 1° giugno
+    1939, n. 1089, o inclusi nelle categorie catastali A/1, A/8 e A/9, che, se non stipulate secondo le modalità
+    dell'art. 2, comma 3, della legge 431/1998, sono sottoposte esclusivamente alla disciplina degli articoli 1571 e
+    seguenti del codice civile, né agli alloggi di edilizia residenziale pubblica o agli alloggi locati
+    esclusivamente per finalità turistiche (art. 1, comma 2, della legge 431/1998).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Il contratto ha la durata di 4 anni, con decorrenza dal <strong th:text="${startDate}">data di decorrenza</strong>.</p>
+  <p th:if="${fixedTerm}">Le parti indicano la scadenza del primo periodo<span th:if="${endDate != null}">:
+    <strong th:text="${endDate}">data di scadenza</strong></span>. La durata non può essere inferiore a 4 anni
+    (art. 2, comma 1, della legge 431/1998) ed è nulla ogni pattuizione volta a derogare ai limiti di durata del
+    contratto stabiliti dalla legge 431/1998 (art. 13, comma 3, della stessa legge).</p>
+  <p th:if="${!fixedTerm}">Le parti non indicano una data di scadenza: si applica la durata di 4 anni sopra
+    indicata, che non può essere ridotta (art. 2, comma 1, e art. 13, comma 3, della legge 431/1998).</p>
+  <p>Alla prima scadenza il contratto è rinnovato per un periodo di 4 anni, fatti salvi i casi in cui il locatore
+    intenda adibire l'immobile agli usi o effettuare sullo stesso le opere di cui all'art. 3 della legge 431/1998,
+    ovvero vendere l'immobile alle condizioni e con le modalità di cui al medesimo articolo, esercitando la facoltà
+    di diniego del rinnovo ivi prevista (art. 2, comma 1, della legge 431/1998).<span class="clause-ref"
+    data-ref="termination" th:if="${refs['termination']}"> Il diniego del rinnovo e il recesso sono regolati dal
+    presente contratto (vedi l'articolo <span th:text="${refs['termination']}"></span>).</span></p>
+  <p>Alla seconda scadenza ciascuna delle parti ha diritto di attivare la procedura per il rinnovo a nuove
+    condizioni o per la rinuncia al rinnovo del contratto, comunicando la propria intenzione con lettera
+    raccomandata da inviare all'altra parte almeno 6 mesi prima della scadenza. La parte interpellata deve
+    rispondere a mezzo lettera raccomandata entro 60 giorni dalla data di ricezione della raccomandata. In mancanza
+    di risposta o di accordo il contratto si intende scaduto alla data di cessazione della locazione. In mancanza
+    della comunicazione il contratto è rinnovato tacitamente alle medesime condizioni (art. 2, comma 1, della legge
+    431/1998).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Il canone di locazione è convenuto dalle parti in <strong th:text="${rentAmount}">Importo</strong>
+    (periodicità <span th:text="${paymentFrequency}">mensile</span>).<span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> Il conduttore corrisponde inoltre gli oneri
+    accessori previsti dal presente contratto (vedi l'articolo <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>È nulla ogni pattuizione volta a determinare un importo del canone di locazione superiore a quello risultante
+    dal contratto scritto e registrato; in tal caso il conduttore, con azione proponibile nel termine di 6 mesi dalla
+    riconsegna dell'immobile locato, può chiedere la restituzione delle somme corrisposte in misura superiore al
+    canone risultante dal contratto scritto e registrato (art. 13, commi 1 e 2, della legge 431/1998).</p>
+  <p>Per i contratti stipulati in base all'art. 2, comma 1, della legge 431/1998 è nulla, ove in contrasto con le
+    disposizioni della stessa legge, qualsiasi pattuizione diretta ad attribuire al locatore un canone superiore a
+    quello contrattualmente stabilito (art. 13, comma 4, della legge 431/1998).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">L'aggiornamento del canone è
+    regolato dal presente contratto (vedi l'articolo <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Le parti convengono che il canone sia aggiornato annualmente, su richiesta scritta del locatore, nella misura
+    del ________ % della variazione, accertata dall'ISTAT, dell'indice dei prezzi al consumo per le famiglie di
+    operai e impiegati verificatasi nell'anno precedente. La misura dell'aggiornamento è stabilita dalle parti.
+    L'art. 32 della legge 392/1978, che limita gli aumenti al 75 % della variazione dell'indice, si trova nel capo
+    della stessa legge dedicato alle locazioni di immobili adibiti ad uso diverso da quello di abitazione.</p>
+  <p>Se il locatore opta per l'applicazione della cedolare secca, è sospesa, per un periodo corrispondente alla
+    durata dell'opzione, la facoltà di chiedere l'aggiornamento del canone, anche se prevista nel contratto a
+    qualsiasi titolo, inclusa la variazione accertata dall'ISTAT dell'indice nazionale dei prezzi al consumo per le
+    famiglie di operai e impiegati verificatasi nell'anno precedente. L'opzione non ha effetto se di essa il locatore
+    non ha dato preventiva comunicazione al conduttore con lettera raccomandata, con la quale rinuncia ad esercitare
+    la facoltà di chiedere l'aggiornamento del canone a qualsiasi titolo (art. 3, comma 11, del decreto legislativo
+    14 marzo 2011, n. 23; dal 1° gennaio 2027, art. 206, comma 3, del testo unico delle imposte sui redditi
+    approvato con decreto legislativo 19 giugno 2026, n. 117).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Sono interamente a carico del conduttore, salvo patto contrario, le spese relative al servizio di pulizia, al
+    funzionamento e all'ordinaria manutenzione dell'ascensore, alla fornitura dell'acqua, dell'energia elettrica, del
+    riscaldamento e del condizionamento dell'aria, allo spurgo dei pozzi neri e delle latrine, nonché alla fornitura
+    di altri servizi comuni. Le spese per il servizio di portineria sono a carico del conduttore nella misura del
+    90 %, salvo che le parti abbiano convenuto una misura inferiore (art. 9, commi 1 e 2, della legge 392/1978).</p>
+  <p>Patti diversi delle parti sugli oneri accessori ed eventuale acconto periodico: ______________________________</p>
+  <p>Il pagamento deve avvenire entro 2 mesi dalla richiesta. Prima di effettuare il pagamento il conduttore ha
+    diritto di ottenere l'indicazione specifica delle spese con la menzione dei criteri di ripartizione e ha inoltre
+    diritto di prendere visione dei documenti giustificativi delle spese effettuate (art. 9, comma 3, della legge
+    392/1978).</p>
+  <p>Il conduttore ha diritto di voto, in luogo del proprietario, nelle delibere dell'assemblea condominiale relative
+    alle spese e alle modalità di gestione dei servizi di riscaldamento e di condizionamento d'aria, e ha diritto di
+    intervenire, senza diritto di voto, sulle delibere relative alla modificazione degli altri servizi comuni (art.
+    10, commi 1 e 2, della legge 392/1978).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">A garanzia delle obbligazioni assunte con il presente contratto, il conduttore
+    versa al locatore, alla sottoscrizione, un deposito cauzionale di
+    <strong th:text="${depositAmount}">Importo</strong>.</p>
+  <p th:if="${depositAmount == null}">Le parti non convengono alcun deposito cauzionale. Deposito eventualmente
+    convenuto: ______________________________</p>
+  <p>Il deposito cauzionale non può essere superiore a 3 mensilità del canone ed è produttivo di interessi legali
+    che devono essere corrisposti al conduttore alla fine di ogni anno (art. 11 della legge 392/1978). Le parti
+    stipulano che l'importo del deposito non supera 3 mensilità del canone.</p>
+  <p>Le parti stipulano che il deposito è restituito al termine della locazione, dopo la riconsegna dell'immobile e
+    la verifica del suo stato, detratte le somme eventualmente dovute dal conduttore per canoni, oneri accessori o
+    danni, e che durante la locazione non può essere imputato in conto canoni.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La riconsegna dell'immobile è regolata
+    dal presente contratto (vedi l'articolo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Il conduttore paga il canone<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (vedi l'articolo <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> e gli oneri accessori</span> con periodicità
+    <span th:text="${paymentFrequency}">mensile</span>,
+    <span th:if="${paymentDueDay != null}">entro il giorno <strong th:text="${paymentDueDay}">1</strong> del periodo
+      di riferimento</span><span th:if="${paymentDueDay == null}">alla scadenza convenuta dalle parti</span>,
+    mediante bonifico bancario sul conto indicato dal locatore: ______________________________.</p>
+  <p>Il locatore che riceve il pagamento deve, a richiesta e a spese del conduttore, rilasciare quietanza (art. 1199
+    del codice civile). Salvo patto contrario, i crediti per canoni non producono interessi se non dalla costituzione
+    in mora (art. 1282, comma 2, del codice civile).</p>
+  <p>Il mancato pagamento del canone decorsi 20 giorni dalla scadenza prevista, ovvero il mancato pagamento, nel
+    termine previsto, degli oneri accessori quando l'importo non pagato superi quello di 2 mensilità del canone,
+    costituisce motivo di risoluzione, ai sensi dell'art. 1455 del codice civile (art. 5 della legge 392/1978).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Il conduttore destina l'immobile esclusivamente ad abitazione propria e delle persone con lui conviventi e se
+    ne serve con la diligenza del buon padre di famiglia per l'uso determinato nel contratto (art. 1587, n. 1, del
+    codice civile).</p>
+  <p>Se il conduttore adibisce l'immobile ad un uso diverso da quello pattuito, il locatore può chiedere la
+    risoluzione del contratto entro 3 mesi dal momento in cui ne ha avuto conoscenza; decorso tale termine senza che
+    la risoluzione sia stata chiesta, al contratto si applica il regime giuridico corrispondente all'uso effettivo
+    dell'immobile e, qualora la destinazione ad uso diverso da quello pattuito sia parziale, il regime giuridico
+    corrispondente all'uso prevalente (art. 80 della legge 392/1978, come risultante dalla sentenza della Corte
+    costituzionale n. 185 del 1988).</p>
+  <p>Le parti stipulano che il conduttore osserva il regolamento di condominio, se esistente, di cui dichiara di aver
+    ricevuto copia, e le deliberazioni dell'assemblea condominiale.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Il conduttore non può sublocare totalmente l'immobile, né può cedere ad altri il contratto senza il consenso del
+    locatore. Salvo patto contrario, il conduttore ha la facoltà di sublocare parzialmente l'immobile, previa
+    comunicazione al locatore con lettera raccomandata che indichi la persona del subconduttore, la durata del
+    contratto ed i vani sublocati (art. 2 della legge 392/1978).</p>
+  <p>Patto contrario delle parti sulla sublocazione parziale, se convenuto: ______________________________</p>
+  <p>La nullità o la risoluzione del contratto di locazione ha effetto anche nei confronti del subconduttore (art.
+    1595, comma 3, del codice civile).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Il locatore consegna l'immobile in buono stato di manutenzione, lo mantiene in stato da servire all'uso
+    convenuto e ne garantisce il pacifico godimento durante la locazione (art. 1575 del codice civile). Il locatore
+    esegue, durante la locazione, tutte le riparazioni necessarie, eccettuate quelle di piccola manutenzione che sono
+    a carico del conduttore (art. 1576, comma 1, del codice civile).</p>
+  <p>Le riparazioni di piccola manutenzione a carico del conduttore sono quelle dipendenti da deterioramenti prodotti
+    dall'uso, e non quelle dipendenti da vetustà o da caso fortuito; in mancanza di patto, sono determinate dagli usi
+    locali (art. 1609 del codice civile).</p>
+  <p>Quando l'immobile abbisogna di riparazioni che non sono a carico del conduttore, questi è tenuto a darne avviso
+    al locatore; se si tratta di riparazioni urgenti, il conduttore può eseguirle direttamente, salvo rimborso,
+    purché ne dia contemporaneamente avviso al locatore (art. 1577 del codice civile). Il conduttore deve tollerare
+    le riparazioni che non possono differirsi fino al termine del contratto; se la loro esecuzione si protrae per
+    oltre 1/6 della durata della locazione e, in ogni caso, per oltre 20 giorni, il conduttore ha diritto a una
+    riduzione del corrispettivo, proporzionata all'intera durata delle riparazioni stesse e all'entità del mancato
+    godimento (artt. 1583 e 1584 del codice civile).</p>
+  <p>Le parti stipulano che il conduttore non esegue innovazioni, migliorie o addizioni senza il consenso scritto del
+    locatore; per i miglioramenti e le addizioni si applicano gli articoli 1592 e 1593 del codice civile.</p>
+  <p>Responsabile dell'impianto termico, al quale sono affidati l'esercizio, la conduzione, il controllo e la
+    manutenzione dell'impianto, è l'occupante, a qualsiasi titolo, in caso di singole unità immobiliari residenziali
+    e l'amministratore in caso di edifici dotati di impianti termici centralizzati amministrati in condominio
+    (decreto legislativo 19 agosto 2005, n. 192, allegato A, punto 42, e art. 6, comma 1, del decreto del Presidente
+    della Repubblica 16 aprile 2013, n. 74).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Il conduttore dichiara di aver ricevuto le informazioni e la documentazione, comprensiva dell'attestato di
+    prestazione energetica (APE), in ordine alla attestazione della prestazione energetica dell'immobile (art. 6,
+    comma 3, del decreto legislativo 19 agosto 2005, n. 192). Per la locazione di singole unità immobiliari non è
+    richiesta l'allegazione al contratto di copia dell'attestato.</p>
+  <p>Il locatore ha reso disponibile l'attestato al conduttore all'avvio delle trattative e lo consegna alla fine
+    delle medesime (art. 6, comma 2, del decreto legislativo n. 192/2005).</p>
+  <p>Codice identificativo, data di rilascio e classe energetica dell'attestato: ______________________________</p>
+  <p>In caso di omessa dichiarazione o allegazione, se dovuta, le parti sono soggette al pagamento, in solido e in
+    parti uguali, di una sanzione amministrativa pecuniaria che, per i contratti di locazione di singole unità
+    immobiliari, è da 1.000 a 4.000 euro ed è ridotta alla metà se la durata della locazione non eccede i 3 anni
+    (art. 6, comma 3, del decreto legislativo n. 192/2005).</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>Il locatore provvede alla registrazione del contratto nel termine perentorio di 30 giorni, dandone documentata
+    comunicazione, nei successivi 60 giorni, al conduttore ed all'amministratore del condominio, anche ai fini della
+    tenuta dell'anagrafe condominiale di cui all'art. 1130, n. 6, del codice civile (art. 13, comma 1, della legge
+    431/1998).</p>
+  <p>Se il locatore non provvede alla registrazione nel termine, il conduttore può chiedere all'autorità giudiziaria
+    che la locazione venga ricondotta a condizioni conformi all'art. 2, comma 1, ovvero all'art. 2, comma 3, della
+    legge 431/1998; nel giudizio il giudice determina il canone dovuto entro i limiti stabiliti dall'art. 13, comma 6,
+    della stessa legge.</p>
+  <p>Le spese di registrazione del contratto sono a carico del conduttore e del locatore in parti uguali (art. 8
+    della legge 392/1978). L'imposta di registro è dovuta nella misura del 2 % del corrispettivo, con un minimo di 67
+    euro (art. 5 della tariffa, parte I, allegata al decreto del Presidente della Repubblica 26 aprile 1986, n. 131),
+    ed è assolta entro 30 giorni (artt. 13 e 17 del decreto del Presidente della Repubblica n. 131/1986; dal 1°
+    gennaio 2027, le corrispondenti disposizioni del testo unico approvato con decreto legislativo 1° agosto 2025, n.
+    123).</p>
+  <p>In alternativa al regime ordinario, il proprietario o il titolare di diritto reale di godimento può optare per
+    la cedolare secca, imposta sostitutiva dell'imposta sul reddito delle persone fisiche e delle relative
+    addizionali, nonché delle imposte di registro e di bollo sul contratto, con aliquota del 21 % sul canone annuo
+    stabilito dalle parti; l'opzione non è ammessa per le locazioni effettuate nell'esercizio di una attività
+    d'impresa, o di arti e professioni (art. 3, commi 1, 2 e 6, del decreto legislativo n. 23/2011; dal 1° gennaio
+    2027, artt. 203 e 204 del testo unico approvato con decreto legislativo n. 117/2026). Regime scelto dal locatore:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>In caso di morte del conduttore, gli succedono nel contratto il coniuge, gli eredi ed i parenti ed affini con lui
+    abitualmente conviventi (art. 6, comma 1, della legge 392/1978), nonché il convivente more uxorio, secondo la
+    sentenza della Corte costituzionale n. 404 del 1988. Nei casi di morte del conduttore o di suo recesso dal
+    contratto di locazione della casa di comune residenza, il convivente di fatto ha facoltà di succedergli nel
+    contratto (art. 1, comma 44, della legge 20 maggio 2016, n. 76); le disposizioni che si riferiscono al coniuge si
+    applicano anche a ciascuna delle parti dell'unione civile, nei limiti dell'art. 1, comma 20, della stessa
+    legge.</p>
+  <p>In caso di separazione giudiziale, di scioglimento del matrimonio o di cessazione degli effetti civili dello
+    stesso, nel contratto succede al conduttore l'altro coniuge, se il diritto di abitare nella casa familiare sia
+    stato attribuito dal giudice a quest'ultimo; in caso di separazione consensuale o di nullità matrimoniale succede
+    l'altro coniuge se tra i coniugi si sia così convenuto (art. 6, commi 2 e 3, della legge 392/1978).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Il conduttore dichiara di aver visitato l'immobile e di riceverlo in buono stato di manutenzione, come descritto
+    nel verbale di consegna sottoscritto dalle parti e allegato al presente contratto. Stato dell'immobile, degli
+    impianti e degli eventuali arredi alla consegna, e chiavi consegnate: ______________________________</p>
+  <p>Al termine della locazione il conduttore restituisce l'immobile al locatore nello stato medesimo in cui l'ha
+    ricevuto, in conformità della descrizione che ne sia stata fatta dalle parti, salvo il deterioramento o il
+    consumo risultante dall'uso in conformità del contratto. In mancanza di descrizione, si presume che il conduttore
+    abbia ricevuto l'immobile in buono stato di manutenzione. Il conduttore non risponde del perimento o del
+    deterioramento dovuti a vetustà (art. 1590, commi 1, 2 e 3, del codice civile).</p>
+  <p>Le parti stipulano che il conduttore consente la visita dell'immobile al locatore per giustificati motivi e,
+    dopo la comunicazione del diniego del rinnovo o del recesso, agli aspiranti conduttori o acquirenti, in orari
+    concordati.</p>
+  <p>Il conduttore in mora a restituire l'immobile è tenuto a dare al locatore il corrispettivo convenuto fino alla
+    riconsegna, salvo l'obbligo di risarcire il maggior danno (art. 1591 del codice civile).<span class="clause-ref"
+    data-ref="deposit" th:if="${refs['deposit']}"> La restituzione del deposito cauzionale è regolata dal presente
+    contratto (vedi l'articolo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Il conduttore, qualora ricorrano gravi motivi, può recedere in qualsiasi momento dal contratto, dando
+    comunicazione al locatore con preavviso di 6 mesi (art. 3, comma 6, della legge 431/1998) da comunicarsi con
+    lettera raccomandata (art. 4, comma 2, della legge 392/1978).</p>
+  <p>Le parti possono consentire contrattualmente che il conduttore possa recedere in qualsiasi momento dal
+    contratto dandone avviso al locatore, mediante lettera raccomandata, almeno 6 mesi prima della data in cui il
+    recesso deve avere esecuzione (art. 4, comma 1, della legge 392/1978). Facoltà di recesso convenzionale del
+    conduttore (convenuta o esclusa): ______________________________</p>
+  <p>Alla prima scadenza il locatore può avvalersi della facoltà di diniego del rinnovo del contratto, dandone
+    comunicazione al conduttore con preavviso di almeno 6 mesi, soltanto per i seguenti motivi (art. 3, comma 1,
+    della legge 431/1998): a) quando il locatore intenda destinare l'immobile ad uso abitativo, commerciale,
+    artigianale o professionale proprio, del coniuge, dei genitori, dei figli o dei parenti entro il secondo grado;
+    b) quando il locatore, persona giuridica, società o ente pubblico o comunque con finalità pubbliche, sociali,
+    mutualistiche, cooperative, assistenziali, culturali o di culto intenda destinare l'immobile all'esercizio delle
+    attività dirette a perseguire le predette finalità ed offra al conduttore altro immobile idoneo e di cui il
+    locatore abbia la piena disponibilità; c) quando il conduttore abbia la piena disponibilità di un alloggio libero
+    ed idoneo nello stesso comune; d) quando l'immobile sia compreso in un edificio gravemente danneggiato che debba
+    essere ricostruito o del quale debba essere assicurata la stabilità e la permanenza del conduttore sia di
+    ostacolo al compimento di indispensabili lavori; e) quando l'immobile si trovi in uno stabile del quale è
+    prevista l'integrale ristrutturazione, ovvero si intenda operare la demolizione o la radicale trasformazione per
+    realizzare nuove costruzioni, ovvero, trattandosi di immobile sito all'ultimo piano, il proprietario intenda
+    eseguire sopraelevazioni a norma di legge e per eseguirle sia indispensabile per ragioni tecniche lo sgombero
+    dell'immobile stesso; f) quando, senza che si sia verificata alcuna legittima successione nel contratto, il
+    conduttore non occupi continuativamente l'immobile senza giustificato motivo; g) quando il locatore intenda
+    vendere l'immobile a terzi e non abbia la proprietà di altri immobili ad uso abitativo oltre a quello
+    eventualmente adibito a propria abitazione; in tal caso al conduttore è riconosciuto il diritto di prelazione,
+    da esercitare con le modalità di cui agli artt. 38 e 39 della legge 392/1978.</p>
+  <p>Nella comunicazione del locatore deve essere specificato, a pena di nullità, il motivo, fra quelli
+    tassativamente indicati, sul quale la disdetta è fondata. Nei casi di cui alle lettere d) ed e), il possesso
+    della concessione o dell'autorizzazione edilizia è condizione di procedibilità dell'azione di rilascio, e il
+    conduttore ha diritto di prelazione, da esercitare con le modalità di cui all'art. 40 della legge 392/1978, se il
+    proprietario, terminati i lavori, concede nuovamente in locazione l'immobile (art. 3, comma 2, della legge
+    431/1998).</p>
+  <p>Qualora il locatore abbia riacquistato la disponibilità dell'alloggio a seguito di illegittimo esercizio della
+    facoltà di disdetta, è tenuto a corrispondere al conduttore un risarcimento in misura non inferiore a 36
+    mensilità dell'ultimo canone di locazione percepito; se il locatore non adibisce l'immobile, nel termine di 12
+    mesi dalla data in cui ne ha riacquistato la disponibilità, agli usi per i quali ha esercitato la facoltà di
+    disdetta, il conduttore ha diritto al ripristino del rapporto di locazione alle medesime condizioni o, in
+    alternativa, al risarcimento suddetto (art. 3, commi 3 e 5, della legge 431/1998).</p>
+  <p>Il contratto può essere risolto per inadempimento, che non sia di scarsa importanza, secondo le norme generali
+    (artt. 1453 e 1455 del codice civile).<span class="clause-ref" data-ref="payment" th:if="${refs['payment']}">
+    Il mancato pagamento del canone e degli oneri accessori è regolato dal presente contratto (vedi l'articolo <span
+    th:text="${refs['payment']}"></span>).</span><span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> La riconsegna dell'immobile è regolata dal presente contratto (vedi
+    l'articolo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Le comunicazioni per le quali la legge prescrive la lettera raccomandata, tra le quali quelle previste dall'art.
+    2, comma 1, e dall'art. 3 della legge 431/1998 e dagli artt. 2 e 4 della legge 392/1978, sono effettuate in tale
+    forma.</p>
+  <p>Indirizzi per le comunicazioni ed eventuali indirizzi di posta elettronica certificata: locatore
+    ______________________________; conduttore ______________________________. Le parti stipulano che ciascuna di
+    esse comunica tempestivamente all'altra ogni variazione del proprio indirizzo e che, in mancanza di diversa
+    indicazione, il conduttore elegge domicilio nell'immobile locato.</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>Interviene nel presente contratto, quale fideiussore del conduttore per l'adempimento delle obbligazioni
+    derivanti dal presente contratto, ______________________________ (nome, codice fiscale e residenza), fino
+    all'importo massimo garantito di ______________________________ (art. 1938 del codice civile).</p>
+  <p>Il fideiussore è obbligato in solido col debitore principale al pagamento del debito; le parti possono però
+    convenire che il fideiussore non sia tenuto a pagare prima dell'escussione del debitore principale (art. 1944 del
+    codice civile). Le garanzie prestate da terzi non si estendono alle obbligazioni derivanti da proroghe della
+    durata del contratto (art. 1598 del codice civile). Estensione della garanzia al periodo successivo alla prima
+    scadenza, se convenuta dal fideiussore: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Il locatore tratta i dati personali del conduttore soltanto nella misura necessaria alla conclusione e
+    all'esecuzione del presente contratto e all'adempimento dei connessi obblighi di legge, in particolare fiscali,
+    nel rispetto del regolamento (UE) 2016/679 e del decreto legislativo 30 giugno 2003, n. 196 (Codice in materia di
+    protezione dei dati personali), e non li conserva oltre il tempo necessario per tali finalità.</p>
+  <p>Il conduttore può esercitare nei confronti del locatore i diritti previsti da tale normativa, in particolare i
+    diritti di accesso, rettifica e cancellazione, e proporre reclamo al Garante per la protezione dei dati
+    personali.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Il presente contratto è regolato dalla legge italiana. Per le cause in materia di locazione di immobili è
+    competente il giudice del luogo dove è posto l'immobile (art. 21, comma 1, del codice di procedura civile), e sono
+    nulle le clausole di deroga alla competenza (art. 447-bis del codice di procedura civile).</p>
+  <p>Chi intende esercitare in giudizio un'azione relativa a una controversia in materia di locazione è tenuto
+    preliminarmente a esperire il procedimento di mediazione, che è condizione di procedibilità della domanda (art. 5,
+    commi 1 e 2, del decreto legislativo 4 marzo 2010, n. 28); la disposizione non si applica, tra l'altro, nei
+    procedimenti per convalida di licenza o sfratto, fino al mutamento del rito (art. 5, comma 6, lettera b), dello
+    stesso decreto legislativo).</p>
+  <p>Restano ferme le nullità previste dall'art. 13 della legge 431/1998 per le pattuizioni contrarie alla stessa
+    legge.</p>
+</div>
+
+</body>
+</html>
