@@ -1093,6 +1093,8 @@
     "required": "Obbligatoria",
     "saveSelection": "Salva selezione",
     "generate": "Genera contratto di locazione",
+    "saveAndGenerate": "Salva e genera contratto di locazione",
+    "language": "Lingua del contratto",
     "pinned": "Fissata",
     "moveUp": "Sposta su {{title}}",
     "moveDown": "Sposta giù {{title}}",

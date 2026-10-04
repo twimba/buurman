@@ -1079,6 +1079,8 @@
     "required": "Required",
     "saveSelection": "Save selection",
     "generate": "Generate lease agreement",
+    "saveAndGenerate": "Save and generate lease agreement",
+    "language": "Agreement language",
     "pinned": "Pinned",
     "moveUp": "Move up {{title}}",
     "moveDown": "Move down {{title}}",

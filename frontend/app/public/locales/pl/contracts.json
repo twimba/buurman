@@ -1107,6 +1107,8 @@
     "required": "Wymagana",
     "saveSelection": "Zapisz wybór",
     "generate": "Wygeneruj umowę najmu",
+    "saveAndGenerate": "Zapisz i wygeneruj umowę najmu",
+    "language": "Język umowy",
     "pinned": "Przypięta",
     "moveUp": "Przesuń w górę: {{title}}",
     "moveDown": "Przesuń w dół: {{title}}",

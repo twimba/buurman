@@ -1079,6 +1079,8 @@
     "required": "Erforderlich",
     "saveSelection": "Auswahl speichern",
     "generate": "Mietvertrag erstellen",
+    "saveAndGenerate": "Speichern und Mietvertrag erstellen",
+    "language": "Sprache des Mietvertrags",
     "pinned": "Fixiert",
     "moveUp": "{{title}} nach oben verschieben",
     "moveDown": "{{title}} nach unten verschieben",

@@ -1093,6 +1093,8 @@
     "required": "Obrigatória",
     "saveSelection": "Guardar seleção",
     "generate": "Gerar contrato de arrendamento",
+    "saveAndGenerate": "Guardar e gerar contrato de arrendamento",
+    "language": "Idioma do contrato",
     "pinned": "Fixada",
     "moveUp": "Mover {{title}} para cima",
     "moveDown": "Mover {{title}} para baixo",

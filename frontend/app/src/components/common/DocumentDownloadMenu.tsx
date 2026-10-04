@@ -1,32 +1,11 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  Download,
-  ChevronDown,
-  BookOpen,
-  FileText,
-  Loader2,
-  Check,
-} from 'lucide-react';
+import { Download, ChevronDown, BookOpen, FileText } from 'lucide-react';
 import { Button, useToast } from '@buurman/ui';
-
-/** PDF languages, in menu order. The active UI language is pinned to the top at render. */
-const SUPPORTED_LANGUAGES: { code: string; label: string }[] = [
-  { code: 'en', label: 'English' },
-  { code: 'nl', label: 'Nederlands' },
-  { code: 'de', label: 'Deutsch' },
-  { code: 'es', label: 'Español' },
-  { code: 'fr', label: 'Français' },
-  { code: 'pt', label: 'Português' },
-  { code: 'it', label: 'Italiano' },
-  { code: 'sv', label: 'Svenska' },
-  { code: 'fi', label: 'Suomi' },
-  { code: 'el', label: 'Ελληνικά' },
-  { code: 'pl', label: 'Polski' },
-  { code: 'da', label: 'Dansk' },
-  { code: 'nb', label: 'Norsk' },
-];
+import { DocumentLanguageList } from './DocumentLanguageList';
+import { baseLanguage } from './documentLanguages';
+import { useAnchoredPopover } from './useAnchoredPopover';
 
 type DocType = 'booklet' | 'summary';
 
@@ -49,44 +28,11 @@ export const DocumentDownloadMenu = ({
 }: DocumentDownloadMenuProps) => {
   const { t, i18n } = useTranslation('common');
   const { showToast } = useToast();
-  const [open, setOpen] = useState(false);
+  const { open, setOpen, triggerRef, pos } = useAnchoredPopover();
   const [docType, setDocType] = useState<DocType>('booklet');
   const [downloadingLang, setDownloadingLang] = useState<string | null>(null);
 
-  const currentLang = i18n.language.split('-')[0];
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
-
-  useEffect(() => {
-    if (!open || !triggerRef.current) {
-      return;
-    }
-    const rect = triggerRef.current.getBoundingClientRect();
-    setPos({
-      top: rect.bottom + window.scrollY + 8,
-      right: window.innerWidth - rect.right,
-    });
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setOpen(false);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
-
-  // Active language first, then the rest in canonical order.
-  const orderedLangs = (() => {
-    const current = SUPPORTED_LANGUAGES.find((l) => l.code === currentLang);
-    const rest = SUPPORTED_LANGUAGES.filter((l) => l.code !== currentLang);
-    return current ? [current, ...rest] : SUPPORTED_LANGUAGES;
-  })();
+  const currentLang = baseLanguage(i18n.language);
 
   const handleDownload = useCallback(
     async (lang: string) => {
@@ -102,7 +48,7 @@ export const DocumentDownloadMenu = ({
         setDownloadingLang(null);
       }
     },
-    [docType, onDownloadBooklet, onDownloadSummary, showToast, t]
+    [docType, onDownloadBooklet, onDownloadSummary, setOpen, showToast, t]
   );
 
   const types: { key: DocType; icon: typeof BookOpen }[] = [
@@ -123,7 +69,7 @@ export const DocumentDownloadMenu = ({
               role="menu"
               aria-label={t('documentDownload.title')}
               className="fixed w-80 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] overflow-hidden animate-in fade-in zoom-in-95 duration-100"
-              style={{ top: pos.top, right: pos.right }}
+              style={pos}
             >
               {/* Document-type chooser */}
               <div className="p-3 pb-2">
@@ -153,48 +99,12 @@ export const DocumentDownloadMenu = ({
                 </p>
               </div>
 
-              {/* Language list */}
-              <div className="border-t border-border-subtle pt-2 pb-2">
-                <div className="px-4 pb-1 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
-                  {t('documentDownload.language')}
-                </div>
-                <div className="max-h-72 overflow-y-auto px-2">
-                  {orderedLangs.map(({ code, label }) => {
-                    const isCurrent = code === currentLang;
-                    const isDownloading = downloadingLang === code;
-                    return (
-                      <button
-                        key={code}
-                        type="button"
-                        role="menuitem"
-                        onClick={() => handleDownload(code)}
-                        disabled={downloadingLang !== null}
-                        className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-colors disabled:opacity-60 ${
-                          isCurrent
-                            ? 'text-primary-600 dark:text-primary-300 font-medium hover:bg-primary-50 dark:hover:bg-primary-500/10'
-                            : 'text-text-primary hover:bg-surface-inset'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          {label}
-                          {isCurrent && (
-                            <span className="text-[10px] font-normal uppercase tracking-wide text-text-muted">
-                              {t('documentDownload.yourLanguage')}
-                            </span>
-                          )}
-                        </span>
-                        {isDownloading ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-text-muted" />
-                        ) : (
-                          isCurrent && (
-                            <Check className="h-4 w-4 text-primary-500" />
-                          )
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <DocumentLanguageList
+                uiLanguage={currentLang}
+                pendingCode={downloadingLang}
+                disabled={downloadingLang !== null}
+                onSelect={handleDownload}
+              />
             </div>
           </>,
           document.body

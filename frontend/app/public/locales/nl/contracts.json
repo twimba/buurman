@@ -1079,6 +1079,8 @@
     "required": "Verplicht",
     "saveSelection": "Selectie opslaan",
     "generate": "Huurovereenkomst genereren",
+    "saveAndGenerate": "Opslaan en huurovereenkomst genereren",
+    "language": "Taal van de huurovereenkomst",
     "pinned": "Vastgezet",
     "moveUp": "{{title}} omhoog verplaatsen",
     "moveDown": "{{title}} omlaag verplaatsen",

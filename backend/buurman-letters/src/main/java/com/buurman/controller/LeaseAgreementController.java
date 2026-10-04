@@ -1,7 +1,10 @@
 package com.buurman.controller;
 
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.document.DocumentLocale;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.request.UpdateContractLeaseClausesRequest;
 import com.buurman.dto.response.DocumentResponse;
@@ -38,8 +41,13 @@ public class LeaseAgreementController implements LeaseAgreementApi {
   }
 
   @Override
-  public DocumentResponse generateLeaseAgreement(ContractIdentifier contractIdentifier) {
+  public DocumentResponse generateLeaseAgreement(
+      ContractIdentifier contractIdentifier, Optional<String> lang) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return leaseAgreementGenerationService.generateAndPersist(contractIdentifier, principal);
+    // Strict like the other letters: an unsupported code is a 400, never a silent fallback, since
+    // the generated agreement is persisted as a contract document.
+    Optional<String> language = lang.map(code -> DocumentLocale.resolve(code).getLanguage());
+    return leaseAgreementGenerationService.generateAndPersist(
+        contractIdentifier, language, principal);
   }
 }

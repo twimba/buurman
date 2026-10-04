@@ -1093,6 +1093,8 @@
     "required": "Obligatoire",
     "saveSelection": "Enregistrer la sélection",
     "generate": "Générer le bail",
+    "saveAndGenerate": "Enregistrer et générer le bail",
+    "language": "Langue du bail",
     "pinned": "Épinglée",
     "moveUp": "Monter {{title}}",
     "moveDown": "Descendre {{title}}",

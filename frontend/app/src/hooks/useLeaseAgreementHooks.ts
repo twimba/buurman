@@ -7,6 +7,7 @@ import {
   generateLeaseAgreement,
 } from '../generated/api/lease-agreement/lease-agreement';
 import type {
+  GenerateLeaseAgreementLang,
   LeaseClausesResponse,
   UpdateContractLeaseClausesRequestClausesItem,
 } from '../generated/models';
@@ -37,13 +38,21 @@ const useLeaseErrorCodeMessages = (): Record<string, string> => {
   };
 };
 
+export interface UpdateLeaseClausesVariables {
+  clauses: UpdateContractLeaseClausesRequestClausesItem[];
+  /** Skip the success toast (errors are still shown). */
+  silent?: boolean;
+}
+
 export const useUpdateLeaseClauses = (contractId: string) => {
   const queryClient = useQueryClient();
   const errorCodeMessages = useLeaseErrorCodeMessages();
   return useMutationWithToast({
     errorCodeMessages,
-    successMessage: 'Clause selection saved',
-    mutationFn: (clauses: UpdateContractLeaseClausesRequestClausesItem[]) =>
+    // Silent when the save is the first step of save-and-generate: the generate toast follows.
+    successMessage: ({ silent }) =>
+      silent ? undefined : 'Clause selection saved',
+    mutationFn: ({ clauses }: UpdateLeaseClausesVariables) =>
       updateLeaseClauses(contractId, { clauses }),
     onSuccess: (data) => {
       queryClient.setQueryData(
@@ -58,7 +67,8 @@ export const useUpdateLeaseClauses = (contractId: string) => {
 };
 
 /**
- * Renders and persists the lease agreement PDF. Invalidates the documents query — same target
+ * Renders and persists the lease agreement PDF in the given language (omitted: the server uses
+ * the contract's document language). Invalidates the documents query — same target
  * useCreateSignatureRequest uses — so the newly generated document shows up in the Documents tab
  * without a manual refresh.
  */
@@ -68,7 +78,8 @@ export const useGenerateLeaseAgreement = (contractId: string) => {
   return useMutationWithToast({
     errorCodeMessages,
     successMessage: 'Lease agreement generated — find it in the Documents tab',
-    mutationFn: () => generateLeaseAgreement(contractId),
+    mutationFn: (lang?: GenerateLeaseAgreementLang) =>
+      generateLeaseAgreement(contractId, lang ? { lang } : undefined),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.documents(contractId),

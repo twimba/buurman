@@ -1079,6 +1079,8 @@
     "required": "Obligatorisk",
     "saveSelection": "Gem valg",
     "generate": "Generer lejekontrakt",
+    "saveAndGenerate": "Gem og generer lejekontrakt",
+    "language": "Lejekontraktens sprog",
     "pinned": "Fastlåst",
     "moveUp": "Flyt {{title}} op",
     "moveDown": "Flyt {{title}} ned",

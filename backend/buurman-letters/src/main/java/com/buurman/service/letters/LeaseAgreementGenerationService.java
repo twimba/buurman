@@ -36,16 +36,25 @@ public class LeaseAgreementGenerationService {
   private final S3StorageService s3StorageService;
   private final DocumentMapper documentMapper;
 
+  /**
+   * Renders, uploads and persists the lease agreement.
+   *
+   * @param language the requested document language; when empty the contract's first supported
+   *     document language is used. The exporter may still render another language when the country
+   *     has no document in the requested one (see {@link LeaseDocumentLocator}).
+   */
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   @Transactional
   public DocumentResponse generateAndPersist(
-      ContractIdentifier contractIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, Optional<String> language, UserPrincipal principal) {
 
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
-    String lang = DocumentLanguages.firstSupportedOrDefault(contract.getDocumentLanguages());
+    String lang =
+        language.orElseGet(
+            () -> DocumentLanguages.firstSupportedOrDefault(contract.getDocumentLanguages()));
     LeaseAgreementExporter.RenderedLease rendered =
         leaseAgreementExporter.generateWithLanguage(contractIdentifier, teamId, lang);
     byte[] pdf = rendered.pdf();

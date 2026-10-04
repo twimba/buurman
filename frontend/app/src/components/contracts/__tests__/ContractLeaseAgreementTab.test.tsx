@@ -1,10 +1,11 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ToastProvider } from '@buurman/ui';
 import { ContractLeaseAgreementTab } from '../ContractLeaseAgreementTab';
 import * as leaseAgreementApi from '@/generated/api/lease-agreement/lease-agreement';
 import * as analytics from '@/utils/analytics';
+import i18n from '@/i18n';
 import { renderWithProviders, createTestQueryClient } from '@/test/test-utils';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -129,11 +130,280 @@ describe('ContractLeaseAgreementTab', () => {
     await userEvent.click(generateButton);
 
     await waitFor(() => {
-      expect(generateSpy).toHaveBeenCalledWith('CON00000000000000000000001');
+      expect(generateSpy).toHaveBeenCalledWith('CON00000000000000000000001', {
+        lang: 'en',
+      });
     });
     expect(
       await screen.findByText(/find it in the documents tab/i)
     ).toBeInTheDocument();
+  });
+
+  describe('language and save-and-generate', () => {
+    const CONTRACT = 'CON00000000000000000000001';
+    const GENERATED = {
+      identifier: 'DOC00000000000000000000001',
+      entityType: 'CONTRACT',
+      entityIdentifier: CONTRACT,
+      fileKey: 'lease-agreement.pdf',
+      fileName: 'lease-agreement.pdf',
+      uploadedAt: '2026-03-01T12:00:00Z',
+    };
+
+    afterEach(async () => {
+      await i18n.changeLanguage('en');
+    });
+
+    const renderTab = async () => {
+      renderWithProviders(
+        <ToastProvider>
+          <ContractLeaseAgreementTab
+            contractId={CONTRACT}
+            onGoToDocuments={vi.fn()}
+            onEditProperty={vi.fn()}
+          />
+        </ToastProvider>
+      );
+      await screen.findByRole('checkbox', { name: 'Parties' });
+    };
+
+    const primaryButton = () =>
+      screen.getByRole('button', { name: /generate lease agreement/i });
+
+    it('labels the primary button Generate while nothing changed and generates only', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      const updateSpy = vi.spyOn(leaseAgreementApi, 'updateLeaseClauses');
+      const generateSpy = vi
+        .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
+        .mockResolvedValue(GENERATED);
+      await renderTab();
+
+      expect(primaryButton()).toHaveTextContent(/^Generate lease agreement$/);
+      await userEvent.click(primaryButton());
+
+      await waitFor(() => {
+        expect(generateSpy).toHaveBeenCalledTimes(1);
+      });
+      expect(updateSpy).not.toHaveBeenCalled();
+    });
+
+    it('turns into Save and generate once a clause is toggled, and back when it is undone', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      await renderTab();
+
+      const addendum = screen.getByRole('checkbox', {
+        name: 'Furnished addendum',
+      });
+      await userEvent.click(addendum);
+      expect(primaryButton()).toHaveTextContent(
+        'Save and generate lease agreement'
+      );
+
+      await userEvent.click(addendum);
+      expect(primaryButton()).toHaveTextContent(/^Generate lease agreement$/);
+    });
+
+    it('saves the selection first and generates only after the save succeeded', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      const calls: string[] = [];
+      let resolveSave: (v: LeaseClausesResponse) => void = () => {};
+      const updateSpy = vi
+        .spyOn(leaseAgreementApi, 'updateLeaseClauses')
+        .mockImplementation(
+          () =>
+            new Promise<LeaseClausesResponse>((resolve) => {
+              calls.push('save');
+              resolveSave = resolve;
+            })
+        );
+      const generateSpy = vi
+        .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
+        .mockImplementation(async () => {
+          calls.push('generate');
+          return GENERATED;
+        });
+      await renderTab();
+
+      await userEvent.click(
+        screen.getByRole('checkbox', { name: 'Furnished addendum' })
+      );
+      await userEvent.click(primaryButton());
+
+      await waitFor(() => {
+        expect(updateSpy).toHaveBeenCalledWith(CONTRACT, {
+          clauses: [
+            {
+              templateIdentifier: 'LCT00000000000000000000001',
+              included: true,
+              sortOrder: 1,
+            },
+            {
+              templateIdentifier: 'LCT00000000000000000000002',
+              included: false,
+              sortOrder: 2,
+            },
+          ],
+        });
+      });
+      // The save is still in flight: nothing may be generated from the stale selection yet.
+      expect(generateSpy).not.toHaveBeenCalled();
+
+      resolveSave(
+        documentEnvelope([CLAUSES[0], { ...CLAUSES[1], included: false }])
+      );
+      await waitFor(() => {
+        expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'en' });
+      });
+      expect(calls).toEqual(['save', 'generate']);
+      // Exactly one success toast: the generate one, not "saved" followed by "generated".
+      expect(
+        await screen.findAllByText(/find it in the documents tab/i)
+      ).toHaveLength(1);
+      expect(screen.queryByText('Clause selection saved')).toBeNull();
+    });
+
+    it('keeps the saved toast for the standalone Save selection button', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      vi.spyOn(leaseAgreementApi, 'updateLeaseClauses').mockResolvedValue(
+        documentEnvelope([CLAUSES[0], { ...CLAUSES[1], included: false }])
+      );
+      const generateSpy = vi.spyOn(leaseAgreementApi, 'generateLeaseAgreement');
+      generateSpy.mockClear();
+      await renderTab();
+
+      await userEvent.click(
+        screen.getByRole('checkbox', { name: 'Furnished addendum' })
+      );
+      await userEvent.click(
+        screen.getByRole('button', { name: /save selection/i })
+      );
+
+      expect(await screen.findAllByText('Clause selection saved')).toHaveLength(
+        1
+      );
+      expect(screen.queryByText(/find it in the documents tab/i)).toBeNull();
+      expect(generateSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not generate when the save fails and shows the error toast', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      vi.spyOn(leaseAgreementApi, 'updateLeaseClauses').mockRejectedValue(
+        new AxiosError(
+          'Request failed',
+          'ERR_BAD_REQUEST',
+          undefined,
+          undefined,
+          {
+            status: 409,
+            data: { code: 'LEASE_CONTRACT_HAS_NO_COUNTRY', detail: 'x' },
+          } as AxiosResponse
+        )
+      );
+      const generateSpy = vi.spyOn(leaseAgreementApi, 'generateLeaseAgreement');
+      await renderTab();
+
+      await userEvent.click(
+        screen.getByRole('checkbox', { name: 'Furnished addendum' })
+      );
+      await userEvent.click(primaryButton());
+
+      expect(
+        await screen.findByText(/Add a country to the property/)
+      ).toBeInTheDocument();
+      expect(generateSpy).not.toHaveBeenCalled();
+      // The selection stays dirty so the landlord can retry.
+      expect(primaryButton()).toHaveTextContent(
+        'Save and generate lease agreement'
+      );
+    });
+
+    it('marks a reorder as a change', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope([
+          ...CLAUSES,
+          {
+            ...CLAUSES[1],
+            templateIdentifier: 'LCT00000000000000000000003',
+            title: 'Pets',
+            sortOrder: 3,
+          },
+        ])
+      );
+      await renderTab();
+
+      const pets = screen
+        .getByRole('checkbox', { name: 'Pets' })
+        .closest('li') as HTMLElement;
+      await userEvent.click(
+        within(pets).getByRole('button', { name: /Move up/ })
+      );
+      expect(primaryButton()).toHaveTextContent(
+        'Save and generate lease agreement'
+      );
+    });
+
+    it('defaults the language to the UI language with the booklet list order', async () => {
+      await i18n.changeLanguage('nl');
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      const generateSpy = vi
+        .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
+        .mockResolvedValue(GENERATED);
+      await renderTab();
+
+      const picker = screen.getByRole('button', { name: /: Nederlands$/ });
+      await userEvent.click(picker);
+      const options = within(screen.getByRole('menu')).getAllByRole(
+        'menuitemradio'
+      );
+      expect(options).toHaveLength(13);
+      expect(options[0]).toHaveTextContent('Nederlands');
+      expect(options[0]).toHaveAttribute('aria-checked', 'true');
+      expect(options[1]).toHaveTextContent('English');
+      await userEvent.keyboard('{Escape}');
+
+      await userEvent.click(primaryButton());
+      await waitFor(() => {
+        expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'nl' });
+      });
+    });
+
+    it('generates in the language picked in the picker', async () => {
+      vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+        documentEnvelope(CLAUSES)
+      );
+      const generateSpy = vi
+        .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
+        .mockResolvedValue(GENERATED);
+      await renderTab();
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Agreement language: English' })
+      );
+      await userEvent.click(
+        screen.getByRole('menuitemradio', { name: /Deutsch/ })
+      );
+      expect(screen.queryByRole('menu')).toBeNull();
+      expect(
+        screen.getByRole('button', { name: 'Agreement language: Deutsch' })
+      ).toBeInTheDocument();
+
+      await userEvent.click(primaryButton());
+      await waitFor(() => {
+        expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'de' });
+      });
+    });
   });
 
   describe('clause ordering', () => {

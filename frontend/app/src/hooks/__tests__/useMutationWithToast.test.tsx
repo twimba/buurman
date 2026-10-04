@@ -51,3 +51,39 @@ describe('useMutationWithToast errorCodeMessages', () => {
     expect(typeof showToast.mock.calls[0][0]).toBe('string');
   });
 });
+
+describe('useMutationWithToast successMessage', () => {
+  beforeEach(() => showToast.mockClear());
+
+  const runSuccess = async (silent: boolean) => {
+    const queryClient = new QueryClient();
+    const onSuccess = vi.fn();
+    const { result } = renderHook(
+      () =>
+        useMutationWithToast<void, { silent: boolean }>({
+          mutationFn: () => Promise.resolve(),
+          successMessage: (vars) => (vars.silent ? undefined : 'Saved'),
+          onSuccess,
+        }),
+      {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      }
+    );
+    act(() => result.current.mutate({ silent }));
+    await waitFor(() => expect(onSuccess).toHaveBeenCalled());
+  };
+
+  it('shows the message the function returns for the variables', async () => {
+    await runSuccess(false);
+    expect(showToast).toHaveBeenCalledWith('Saved', 'success');
+  });
+
+  it('shows no toast when the function returns undefined', async () => {
+    await runSuccess(true);
+    expect(showToast).not.toHaveBeenCalled();
+  });
+});
