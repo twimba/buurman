@@ -1,0 +1,378 @@
+<!--
+  legal-basis: Loi modifiee du 21 septembre 2006 sur le bail a usage d'habitation et modifiant certaines dispositions du
+               Code civil, texte coordonne du 01/08/2024 published by the ministere du Logement
+               (logement.public.lu, bl-loi-modifiee-du-21-09-2006.pdf, linked as the current text on the page
+               updated 05.02.2026): art. 1er, 2, 2bis-2sexies, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16-18,
+               19, 31, 33bis.
+               Loi du 23 juillet 2024 (Memorial A n° 311 du 25 juillet 2024, legilux.public.lu filestore, in force
+               01/08/2024): colocation (art. 2bis-2sexies), 10 % cap per rent adaptation, garantie locative cut to
+               2 months with restitution rules (art. 5, paragraphe 2bis), agency fees shared by half, art. 1714 Code
+               civil (written form). Transitional rules art. 33bis: the new rules on art. 4, art. 5 paragraphe 1er
+               (second sentence of alinea 1 and alinea 2) and art. 12 paragraphe 1er apply to leases concluded after
+               01/08/2024; colocation only for colocation leases concluded after that date.
+               Code civil art. 1714, 1736, 1758, 1761 (wording as set by the loi du 21 septembre 2006, art. 31, and
+               the loi du 23 juillet 2024, art. 12).
+               Loi du 20 decembre 2019 (salubrite, hygiene, securite et habitabilite des logements) and reglement
+               grand-ducal du 20 decembre 2019; loi du 6 decembre 2019 (detecteurs autonomes de fumee); loi modifiee
+               du 5 aout 1993 and reglements grand-ducaux on the energy performance of residential buildings - as
+               summarised on guichet.public.lu (pages updated 26.06.2025, 26.08.2025 and 03.05.2022).
+               RGPD: reglement (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); loi du 1er aout 2018 portant
+               organisation de la Commission nationale pour la protection des donnees (Memorial A n° 686).
+               Verified 2026-10-04 against the coordinated text, the Memorial A texts (legilux.public.lu filestore)
+               and guichet.public.lu.
+               Pending: reform of the rent-capping method (5 % of the invested capital) under study only; no bill
+               adopted as of 2026-10-04 - re-verify the rent and rent-adjustment clauses.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fr.html, never spelled out (fr "2 mois de loyer" is "2 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of fr.html; the French text is authoritative. It states Luxembourg law (loi modifiee
+  du 21 septembre 2006 sur le bail a usage d'habitation) in English and is not the law of any other country. Draft
+  text, not vetted by legal counsel. Only prose differs from fr.html: fragments, th: expressions and attributes are
+  identical (enforced by LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the
+  shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is
+  excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">Landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (bailleur),</p>
+  <p>full identity of the landlord (surname and first names or corporate name, domicile or registered office,
+    number in the trade and companies register where applicable): ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Tenant</strong>, hereinafter
+    (together) &ldquo;the tenant&rdquo; (locataire),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the undersigned tenant or tenants, hereinafter (together)
+    &ldquo;the tenant&rdquo; (locataire),</p>
+  <p>full identity of each tenant (surname, first names, date and place of birth, current domicile): ______________________________</p>
+  <p>the present residential lease (bail à usage d'habitation) is concluded, governed by the articles of the Civil
+    Code (Code civil) on the letting of things, subject to the special rules of the amended Law of 21 September 2006
+    on residential leases and amending certain provisions of the Civil Code, hereinafter &ldquo;the amended Law of
+    21 September 2006&rdquo; (article 1, paragraph 1, of the amended Law of 21 September 2006).</p>
+  <p>This contract is drawn up in writing, on pain of nullity (article 5, paragraph 1, of the amended Law of
+    21 September 2006; article 1714 of the Civil Code). The parties stipulate that it is drawn up in as many
+    copies as there are parties.
+    Where several tenants are parties to this contract without falling under the shared-tenancy regime, the parties
+    stipulate that they are jointly and severally liable for all the obligations arising from it.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the dwelling located at
+    <strong th:text="${propertyAddress}">Address</strong>, hereinafter &ldquo;the dwelling&rdquo;.</p>
+  <p>cadastral reference of the dwelling: ______________________________</p>
+  <p>designation of all rooms and parts of the building covered by the lease (living rooms, kitchen, sanitary
+    facilities, cellar, attic, garage, parking space, garden, common parts): ______________________________</p>
+  <p>furnished dwelling: yes / no; where applicable, the inventory of the furniture is annexed to this contract.</p>
+  <p>Subject to articles 16 to 18 of the amended Law of 21 September 2006, that Law applies exclusively to the letting of dwellings for residential use to
+    natural persons, whatever the use stipulated in the lease, save justified objection by the landlord where the
+    tenant changes the use during the contract (article 1, paragraph 2, of the amended Law of 21 September 2006). It
+    does not apply in particular to buildings used for commercial, administrative, industrial or craft purposes or
+    for the exercise of a liberal profession, to second homes, to premises that are not an accessory of the dwelling
+    or to hotel rooms (article 1, paragraph 3, of the same Law); this model is not suitable for those cases.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease takes effect on <strong th:text="${startDate}">start date</strong>.</p>
+  <p>The lease may be concluded for a fixed or an indefinite term (article 12, paragraph 1, of the amended Law of
+    21 September 2006). The lease of a dwelling is deemed to be made for an indefinite term if the written lease
+    does not specify for what term the parties intended to be bound (article 1758 of the Civil
+    Code).</p>
+  <p th:if="${fixedTerm}">This contract is concluded for a fixed term<span th:if="${endDate != null}">
+    and ends on <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p th:if="${!fixedTerm}">This contract is concluded for an indefinite term.</p>
+  <p>Every lease covered by the amended Law of 21 September 2006 that comes to an end for whatever reason is extended
+    for an indefinite term, save in the cases listed in article 12, paragraph 2, of that
+    Law.<span class="clause-ref" data-ref="termination" th:if="${refs['termination']}"> The termination
+    arrangements are set out in this contract (see article <span th:text="${refs['termination']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent, excluding charges, is set at <strong th:text="${rentAmount}">Amount</strong> (payable
+    <span th:text="${paymentFrequency}">monthly</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> The advance payments or the flat rate for charges are set separately (see article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The letting of a dwelling for residential use may not yield the landlord an annual income exceeding a rate
+    of 5% of the capital invested in the dwelling (article 3, paragraph 1, of the amended Law of 21 September 2006).
+    The invested capital is determined, revalued and, where applicable, reduced for age under the rules of article 3,
+    paragraphs 2 to 4, of that Law. In a shared tenancy or a letting under multiple leases, the sum of the rents
+    may not exceed that maximum rent.</p>
+  <p>Rent supplement for the furniture, for a furnished dwelling (at most 1.5% of the total amount of the invoices for
+    the furniture in the dwelling, only furniture whose invoices are less than 10 years old on the day the lease is
+    concluded or the rent is adapted being taken into account): ________ euros per month.</p>
+  <p>Where the landlord offers one or more services to the tenant, the amount of the monthly cost of each service
+    is distinguished from the amount of the monthly rent (article 4 of the amended Law of 21 September 2006). Services
+    and the monthly cost of each, where applicable: ______________________________</p>
+  <p>The conclusion of the lease may not be made conditional on the payment of sums other than the rent. Where an
+    estate agent or another third party is involved in the letting of the dwelling, the fees and charges of those
+    persons are shared equally (par moitié) between the landlord and the tenant (article 5, paragraph 1, of the
+    amended Law of 21 September 2006).</p>
+  <p>The parties may refer a dispute over the setting of the rent to the rent commission (commission des loyers) in
+    accordance with article 8 of the amended Law of 21 September 2006.<span class="clause-ref" data-ref="disputes"
+    th:if="${refs['disputes']}"> The procedure is set out in this contract (see article
+    <span th:text="${refs['disputes']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The adaptation of the rent follows the terms of this contract (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent and the rent supplement for the furniture, whether set by agreement of the parties, by the rent
+    commission or by the courts, may be adapted only every 2 years. That period of 2 years does not end because of a
+    change of landlord; it ends by operation of law if there is a change of tenant, without prejudice to the
+    continuation of the lease provided for in article 13, subparagraph 1, of the amended Law of 21 September 2006
+    (article 3, paragraph 5, of the same Law).</p>
+  <p>The rent increase may not exceed 10% and the adapted rent remains subject to the ceiling of 5% of the invested
+    capital. If, in the case of a rent increase of more than 10%, the tenant sends the landlord an objection by
+    registered letter, the part of the rent exceeding the increase of 10% is not owed from the first rent period
+    following the date of that objection.</p>
+  <p>Contractual value clauses (clauses de valeur) that differ from the regime provided for by the Law cease to have effect from the first rent period following the date of an
+    objection sent to the landlord by registered letter (article 5, paragraph 5, of the amended Law of 21 September 2006). The parties consider that a clause
+    providing for automatic indexation of the rent is such a value clause.</p>
+  <p>The party requesting an increase or a reduction of the rent first notifies its intention to the other party
+    in writing, on pain of inadmissibility of its application to the rent commission; the setting of the rent by the
+    commission or by the court takes effect only from the first rent period falling due after the application is
+    lodged with the college of the mayor and aldermen (collège des bourgmestre et échevins) (articles 8 and 11 of the amended Law of 21 September
+    2006).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The landlord may charge to the tenant only the amounts that it proves it has itself paid on the tenant's
+    behalf. Only the costs incurred for energy consumption, for the routine maintenance of the dwelling and of the
+    common parts, for minor repairs and the taxes linked to the use of the dwelling may be charged to the tenant
+    (article 5, paragraph 3, of the amended Law of 21 September 2006).</p>
+  <p>Amount of the advance payments on charges or of the flat rate for charges: ________ euros per month (advance
+    payments / flat rate). The advance payments may be adapted to the costs actually incurred on the tenant's behalf
+    in previous financial years. The flat rate is allowed only if it corresponds to the tenant's normal consumption
+    and charges; it may be adapted during the lease, and the parties may agree during the lease to switch from one
+    regime to the other (article 5, paragraph 4, of the same Law).</p>
+  <p>Charges common to several dwellings are allocated annually according to the following method of calculation,
+    agreed between the parties: ______________________________. The parties stipulate that the landlord sends the
+    tenant an annual statement of charges, together with the supporting documents or copies of them. If the costs
+    result from a statement of a co-owned building approved by the general meeting, the items of that statement
+    chargeable to the tenant are presumed justified and due, proof to the contrary being admitted; at the tenant's
+    request, the landlord provides a copy of the extracts of the co-ownership regulations concerning the purpose of
+    the building, the enjoyment and use of the private and common parts and the share of the let unit in each
+    category of charges.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant provides the landlord with a rental guarantee (garantie locative) of
+    <strong th:text="${depositAmount}">Amount</strong>, to secure the payment of the rent or the other obligations
+    arising from the lease.</p>
+  <p th:if="${depositAmount == null}">The tenant provides the landlord with a rental guarantee (garantie locative) of
+    the following amount, to secure the payment of the rent or the other obligations arising from the lease: ________ euros.</p>
+  <p>The rental guarantee may not exceed 2 months' rent (article 5, paragraph 2, of the amended Law of
+    21 September 2006); the parties stipulate that the amount of the rental guarantee does not exceed 2 months'
+    rent. The landlord may not refuse, even after the lease has been concluded, a rental guarantee in the form of a
+    bank guarantee. Agreed form of the guarantee (bank guarantee, transfer to the landlord's account, other
+    form): ______________________________</p>
+  <p>Where, at the end of the lease, the exit inventory matches the entry inventory, save normal wear and tear,
+    and the landlord has no claim for rent arrears or rental damage, half of the rental guarantee is returned within
+    a maximum period of 1 month from the return of the keys to the landlord or its agent, by hand or by registered
+    letter with acknowledgement of receipt. The final settlement and the return of the balance, after deduction of
+    the sums still owed to the landlord in so far as they are duly justified, take place no later than within the
+    month following either receipt of the statements of rental charges, which the landlord must request from the
+    various services and authorities no later than 1 month after the end of the lease, or the final approval of the
+    annual accounts of the building at the next general meeting of the co-owners (article 5,
+    paragraph 2bis, of the amended Law of 21 September 2006).</p>
+  <p>If the entry inventory does not match the exit inventory, save normal wear and tear, or if the landlord raises
+    a dispute, the landlord may retain from the rental guarantee the sums still owed to it and any sum for which it
+    could be liable in the tenant's place, provided that it is duly justified by supporting documents within the
+    aforementioned maximum period of 1 month.</p>
+  <p>Failing return within the periods provided and from a formal notice (mise en demeure) sent by the tenant to
+    the landlord or its agent by registered letter with acknowledgement of receipt, the part of the guarantee still
+    owed to the tenant is increased by a sum equal to 10% of the monthly base rent for each monthly period begun
+    late, unless the failure to return it in time results from a reason attributable to the tenant.
+    If ownership of the dwelling is transferred, the guarantees pass by operation of law to the new
+    owner.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}">
+    The inventory is drawn up under the terms of this contract (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the advance payments or the flat rate for charges</span>
+    <span th:text="${paymentFrequency}">monthly</span>, in advance,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      payment period</span><span th:if="${paymentDueDay == null}">on the date agreed between the parties</span>,
+    by transfer to the account designated by the landlord or by any other agreed means.</p>
+  <p>Landlord's bank account (IBAN): ______________________________</p>
+  <p>Sums unpaid when due bear interest at the statutory rate under the conditions laid down by the Civil Code,
+    in particular after a formal notice. The parties stipulate that the landlord issues a receipt for the payments
+    received to a tenant who asks for one.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the dwelling with due care (en bon père de famille), in accordance with its residential purpose,
+    and complies with the house rules of the building and, where applicable, the extracts of the co-ownership
+    regulations communicated to it. The landlord may object, on justified grounds, to a change of use of the
+    dwelling by the tenant during the contract (article 1, paragraph 2, of the amended Law of 21 September 2006).</p>
+  <p>The tenant does not alter the dwelling without the landlord's prior written consent. The tenant allows access
+    to the dwelling for urgent repairs and, after having been warned in good time, for the visits necessary for the
+    upkeep of the dwelling and, at the end of the lease or in the event of a sale, for visits by prospective tenants
+    or buyers, on the days and at the times agreed between the parties.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>An assignment of a residential lease is prohibited only where the lease contains an express contractual
+    stipulation to that effect (article 2 of the amended Law of 21 September 2006). Assignment of the lease
+    prohibited: yes / no.</p>
+  <p>The parties stipulate that the tenant sublets all or part of the dwelling only with the landlord's prior
+    written consent. The rules of the amended Law of 21 September 2006 on the setting of the rent, charges, the
+    rental guarantee and the rent commission also apply to the relations between principal tenants and subtenants
+    or assignees (article 2, subparagraph 2, of that Law).</p>
+</div>
+
+<div th:fragment="clause-shared-tenancy" data-clause="shared-tenancy">
+  <p>This article applies only if the tenants opt, with the express consent of the landlord, for the shared-tenancy
+    regime (colocation) by signing a shared-tenancy pact (pacte de colocation) no later than the date of signature of
+    this single contract; a letting granted exclusively to spouses or to partners bound by a legal partnership is not
+    a shared tenancy, and the dwelling includes at least one living room or one sanitary room common to all
+    co-tenants (article 2bis of the amended Law of 21 September 2006). These rules are mandatory (d'ordre public).</p>
+  <p>Shared-tenancy regime: yes / no; date of signature of the shared-tenancy pact: ______________________________;
+    where applicable, the occupying landlord's share of the costs of shared living: ______________________________</p>
+  <p>The co-tenants are jointly and severally liable towards the landlord for the obligations arising from the lease
+    (article 2quater of the same Law). Where all the co-tenants end the lease at the same time, the notice is signed
+    by each of them and notified to the landlord by registered letter with acknowledgement of receipt, with a
+    termination period of 3 months. A co-tenant who wishes to be released from its obligations before the end of
+    the lease notifies the landlord, by registered letter with acknowledgement of receipt, and its co-tenants at the
+    same time, with a notice period of 3 months, and looks for a replacement co-tenant under the conditions laid down
+    in article 2quinquies, paragraph 2, of the same Law.</p>
+  <p>Where at least half of the co-tenants who signed the lease have given notice within an interval of
+    3 months, the landlord may end the contract within 1 month from the notification of the last notice,
+    with a termination period of 3 months, by registered letter with acknowledgement of receipt sent to
+    each co-tenant (article 2quinquies, paragraph 4, of the same Law). The departing co-tenant and its guarantor are
+    released for the future in the cases and on the dates laid down in article 2sexies of the same Law.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord delivers the dwelling in a good state of repair of every kind, maintains it in a condition fit for
+    residential use and carries out, during the lease, all repairs that may become necessary other than the tenant's
+    repairs (réparations locatives), in accordance with the Civil Code. The dwelling meets the criteria of health,
+    hygiene, safety and habitability laid down by the Law of 20 December 2019 and its implementing Grand-Ducal
+    regulation.</p>
+  <p>The tenant bears the routine maintenance of the dwelling, minor repairs and the tenant's repairs, unless they
+    are caused by age or force majeure. The tenant reports to the landlord without delay any damage or any repair for
+    which the landlord is responsible.</p>
+  <p>The landlord equips the dwelling with autonomous smoke detectors in accordance with the Law of 6 December
+    2019; the parties stipulate that the tenant carries out their routine maintenance.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The landlord gives the tenant a certified true copy of the valid energy performance certificate (certificat de
+    performance énergétique) of the dwelling, drawn up in accordance with the amended Law of 5 August 1993 on the
+    rational use of energy and the Grand-Ducal regulations on the energy performance of residential buildings.</p>
+  <p>Energy performance class: ________; thermal insulation class: ________;
+    date on which the certificate was drawn up: ______________________________</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>A tenant whose lease has been running for at least 18 years has a right of pre-emption over the let dwelling,
+    unless it is sold by public auction, transferred to a member of the landlord's family related by blood or marriage
+    up to and including the third degree, or transferred free of charge. That right may be exercised only if the
+    tenant has rented the whole building or if the let flat is under the co-ownership regime (article 15 of the
+    amended Law of 21 September 2006).</p>
+  <p>The landlord sends the tenant the offer to sell by registered letter, informing the tenant of its right to make
+    a counter-proposal. The tenant has 1 month to exercise its right and, where appropriate, make a
+    counter-proposal; its silence counts as refusal of the offer. That period is extended by 1 month if the tenant has
+    applied for a loan from a financial institution established in the Grand Duchy. The dwelling may be sold to a
+    third party only at a price higher than the one offered by the tenant. If it is sold to a third party despite
+    that right, the aggrieved tenant may claim from the seller damages that may not be less than the amount of the
+    rent for 1 year.</p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>If the tenant abandons the home or dies, the lease continues for an indefinite term for the benefit of the
+    spouse who cohabited with the tenant or of the partner who made a partnership declaration with the tenant and
+    lived as a couple with the tenant, and for the benefit of the descendants, ascendants or cohabiting partner
+    (concubin) who had lived with the tenant in a common household for at least 6 months
+    at the date of the abandonment of the home or of the death and who had declared their domicile with the municipality at the dwelling
+    during that period (article 13 of the amended Law of 21 September 2006).</p>
+  <p>Where there are several claims, the court decides according to the interests involved. The landlord's rights
+    against a tenant who abandoned the dwelling are not affected. If no person meets these conditions, the lease is
+    terminated by operation of law on the tenant's death.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>An entry inventory (état des lieux) is drawn up in writing and jointly by the parties, or by an expert chosen
+    by them, and signed no later than the day on which the tenant takes possession of the premises; where a rental
+    guarantee is stipulated, that record is mandatory (article 5, paragraph 2, of the amended Law of
+    21 September 2006). An exit inventory is drawn up in the same way when the keys are returned.</p>
+  <p>The parties stipulate that the fees of an expert chosen by mutual agreement are shared equally between them
+    and that each party receives a signed copy of each inventory.<span class="clause-ref"
+    data-ref="deposit" th:if="${refs['deposit']}"> The return of the rental guarantee follows the comparison of the
+    inventories (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p th:if="${!fixedTerm}">The tenant may terminate this indefinite-term contract with a termination period of
+    3 months, unless this contract provides for a longer period (article 1736 of the Civil Code).</p>
+  <p th:if="${fixedTerm}">The tenant is bound until the agreed end date, save with the landlord's consent. The parties
+    stipulate that a tenant who does not wish the lease to continue beyond its end date informs the landlord
+    by registered letter with acknowledgement of receipt at least 3 months before that date. The landlord may not
+    terminate the fixed-term contract before its end date, even if it declares that it wishes to occupy the dwelling
+    itself, unless otherwise agreed (article 1761 of the Civil Code).</p>
+  <p>Longer termination period agreed by the parties, where applicable: ________ months.</p>
+  <p>A contract that comes to an end for whatever reason is extended for an indefinite term unless:
+    a) the landlord declares that it needs the let premises in order to occupy them itself or to have them effectively
+    occupied by a relative by blood or marriage up to and including the third degree; b) the tenant does not fulfil
+    its obligations; c) there are other serious and legitimate grounds to be proved by the landlord, the transfer of
+    ownership of the dwelling not constituting a serious and legitimate ground (article 12, paragraph 2, of the amended Law of
+    21 September 2006).</p>
+  <p>In the case of point a), the termination period is 6 months. The letter of termination must be in writing,
+    reasoned and accompanied, where applicable, by the relevant documents, and be sent by registered post
+    with acknowledgement of receipt; on pain of nullity, it must reproduce the text of article 12,
+    paragraph 3, of the amended Law of 21 September 2006. The tenant may, under the conditions and within the periods laid down in
+    that paragraph, ask the justice of the peace (juge de paix) to extend the termination period.</p>
+  <p>The buyer of the dwelling may not evict a tenant whose lease has no certain date (date certaine) before the
+    buyer's deed of acquisition, but who had been put in possession of the premises before that date, unless one of the conditions
+    defined in article 12, paragraph 2, of the same Law is met. A buyer who wishes to occupy the dwelling
+    itself or through a relative by blood or marriage up to and including the third degree must send the tenant a
+    registered letter of termination within 3 months of the acquisition; paragraph 3 of that article applies,
+    except that the tenant must leave the dwelling no later than 12 months after the date on which the letter of termination was sent
+    (article 12, paragraph 6, of the same Law).</p>
+  <p>Registration of this contract with the Registration Duties, Estates and VAT Authority (Administration de
+    l'enregistrement, des domaines et de la TVA) is not a condition of its validity; it may give the contract a
+    certain date (date certaine), in particular as against a buyer of the dwelling.</p>
+  <p>Save in the case of force majeure, the former tenant is entitled to damages if, within the 3 months following
+    its departure, the premises are not occupied for the purposes invoked as the ground for termination, that period being
+    suspended for the duration of renovation and transformation works actually undertaken. If the
+    court finds that the ground invoked to prevent the statutory extension was fraudulent, those damages
+    may not be less than the amount of the rent for 1 year (article 14 of the amended Law of 21 September
+    2006).</p>
+  <p>The parties may end the contract by mutual agreement, preferably in writing. The justice of the peace may,
+    under the conditions laid down in articles 16 to 18 of the amended Law of 21 September 2006, grant a stay of
+    enforcement of an eviction decision.<span class="clause-ref" data-ref="shared-tenancy"
+    th:if="${refs['shared-tenancy']}"> In a shared tenancy, the special termination rules apply
+    (see article <span th:text="${refs['shared-tenancy']}"></span>).</span><span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the premises gives rise to an
+    exit inventory (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant's personal data only to the extent necessary for the conclusion and
+    performance of this contract and for compliance with its legal obligations, in accordance with the
+    General Data Protection Regulation (GDPR, Regulation (EU) 2016/679) and the Law of 1 August 2018
+    on the organisation of the National Commission for Data Protection. It does not keep those data
+    beyond the period necessary for those purposes.</p>
+  <p>The tenant may exercise against the landlord the rights conferred by the GDPR, in particular the rights of
+    access, rectification and erasure, and may lodge a complaint with the National Commission for Data
+    Protection (Commission nationale pour la protection des données, CNPD).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This contract is governed by Luxembourg law.</p>
+  <p>A party that considers itself entitled to request an increase or a reduction of the rent first notifies its
+    intention to the other party in writing; if no agreement has been reached within 1 month, it may
+    lodge an application with the college of the mayor and aldermen of the municipality where the dwelling is located, which
+    forwards it to the competent rent commission. The application is not admissible during the first 6 months of the
+    lease (article 8 of the amended Law of 21 September 2006). The commission endeavours to conciliate the parties and,
+    failing that, sets the rent; its decision may be challenged before the justice of the peace of the place where the dwelling is located,
+    on pain of forfeiture, within the month following notification of its minutes (articles 9 and 10 of the
+    same Law).</p>
+  <p>The justice of the peace of the place where the dwelling is located has jurisdiction over all disputes
+    between landlords, tenants or co-tenants relating to the existence and performance of the lease (article 19 of the
+    amended Law of 21 September 2006). Any term of this contract intended to deprive a
+    provision of that Law of effect is void by operation of law (article 5, paragraph 5, of the same Law).</p>
+</div>
+
+</body>
+</html>
